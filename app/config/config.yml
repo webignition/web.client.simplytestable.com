@@ -1,6 +1,8 @@
 imports:
     - { resource: parameters.yml }
+    - { resource: "@SimplyTestableWebClientBundle/Resources/config/parameters.yml" }    
     - { resource: security.yml }
+    - { resource: "@SimplyTestableWebClientBundle/Resources/config/services.yml" }
 
 framework:
     #esi:             ~

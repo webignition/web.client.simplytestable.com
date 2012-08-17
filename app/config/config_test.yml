@@ -1,5 +1,7 @@
 imports:
     - { resource: config_dev.yml }
+    - { resource: "@SimplyTestableWebClientBundle/Resources/config/parameters_test.yml" }    
+    - { resource: "@SimplyTestableWebClientBundle/Resources/config/services_test.yml" }      
 
 framework:
     test: ~
@@ -12,3 +14,10 @@ web_profiler:
 
 swiftmailer:
     disable_delivery: true
+
+doctrine:
+  dbal:
+    connections:
+      default:
+        driver: pdo_sqlite
+        path: /media/ramdisk/sqlite/test.db
