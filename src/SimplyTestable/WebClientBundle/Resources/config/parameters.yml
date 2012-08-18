@@ -1,0 +1,4 @@
+parameters:
+  content_type_web_resource_map:
+    default: webignition\WebResource\WebResource
+    application/json: webignition\WebResource\JsonDocument\JsonDocument  
