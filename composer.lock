@@ -1,5 +1,5 @@
 {
-    "hash": "81801c1dc40d257891bd04eea6359bce",
+    "hash": "af545576735b2a470a51b038a1ea24be",
     "packages": [
         {
             "package": "doctrine/common",
@@ -78,18 +78,6 @@
             "version": "1.1.0"
         },
         {
-            "package": "mopa/bootstrap-bundle",
-            "version": "dev-master",
-            "source-reference": "23272c68b57103c5a138d0e73248255f42e23e54",
-            "commit-date": "1344941872"
-        },
-        {
-            "package": "mopa/composer-bridge",
-            "version": "dev-master",
-            "source-reference": "84b8bf537163b4470f14d02554a0e9eb5d300172",
-            "commit-date": "1337596733"
-        },
-        {
             "package": "sensio/distribution-bundle",
             "version": "dev-master",
             "source-reference": "bd98b5fb0e4a5dddb4f7acd2e11f28c4cd7eacee",
@@ -166,12 +154,6 @@
             "version": "dev-master",
             "source-reference": "3e4057b4b14a2f90db7c895e3e9bcbd3d23875e8",
             "commit-date": "1345222881"
-        },
-        {
-            "package": "twitter/bootstrap",
-            "version": "master",
-            "source-reference": "master",
-            "commit-date": "1344546024"
         }
     ],
     "packages-dev": null,
@@ -187,7 +169,6 @@
         "symfony/monolog-bundle": 20,
         "sensio/distribution-bundle": 20,
         "sensio/framework-extra-bundle": 20,
-        "sensio/generator-bundle": 20,
-        "mopa/bootstrap-bundle": 20
+        "sensio/generator-bundle": 20
     }
 }
