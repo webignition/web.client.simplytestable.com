@@ -9,7 +9,7 @@ class AppController extends BaseViewController
     public function indexAction()
     {        
         return $this->render('SimplyTestableWebClientBundle:App:index.html.twig', array(
-            'test_start_url' => $this->getRouter()->generate('test_start')
+            'test_start_url' => $this->generateUrl('test_start')
         ));
     }
 }
