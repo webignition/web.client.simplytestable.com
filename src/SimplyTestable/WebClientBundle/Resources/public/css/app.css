@@ -16,7 +16,7 @@
     background-color:#00f;
     position:absolute;
     left:20%;
-    width:80%;
+    width:60%;
 }
 
 #outer #supplemental {
@@ -27,3 +27,16 @@
     right:0;
 }
 
+#main #input input {
+    margin:0;
+}
+
+#main #input .fields input {
+    font-size: 15px;
+    padding: 9px;
+    width: 78%;
+}
+
+#main #input .fields button i {
+
+}
