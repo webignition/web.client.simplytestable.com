@@ -1,0 +1,29 @@
+#outer {
+    width:100%;
+    position:relative;
+}
+
+#outer #latest {
+    height:500px;
+    background-color:#f00;
+    width:20%;
+    position:absolute;
+    left:0;
+}
+
+#outer #main {
+    height:500px;
+    background-color:#00f;
+    position:absolute;
+    left:20%;
+    width:80%;
+}
+
+#outer #supplemental {
+    height:500px;
+    background-color:#0f0;
+    width:20%;
+    position:absolute;
+    right:0;
+}
+

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}Yo!{% endblock %}</title>
+        {% block stylesheets %}
+        <link rel="stylesheet" href="/bundles/simplytestablewebclient/vendor/twitter-bootstrap/bootstrap/css/bootstrap.min.css" />        
+        <link rel="stylesheet" href="/bundles/simplytestablewebclient/vendor/font-awesome/latest/css/font-awesome.css" />
+        <link rel="stylesheet" href="/bundles/simplytestablewebclient/css/main.css" />        
+        <link rel="stylesheet" href="/bundles/simplytestablewebclient/css/app.css" />
+        {% endblock %}
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+        {% block javascripts %}{% endblock %}
+        {% block body_content %}{% endblock %}
+    </body>
+</html>
