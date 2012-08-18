@@ -1,5 +1,5 @@
 {
-    "hash": "a36e58cb367f6f55441aa55f209cae98",
+    "hash": "4f0e1025d7400c2da721b747e62b37ed",
     "packages": [
         {
             "package": "doctrine/common",
@@ -168,8 +168,28 @@
             "commit-date": "1344029348"
         },
         {
+            "package": "webignition/internet-media-type",
+            "version": "0.4"
+        },
+        {
+            "package": "webignition/quoted-string",
+            "version": "0.2"
+        },
+        {
+            "package": "webignition/string-parser",
+            "version": "0.1"
+        },
+        {
             "package": "webignition/url",
             "version": "1.1.1"
+        },
+        {
+            "package": "webignition/web-json-model",
+            "version": "0.1.1"
+        },
+        {
+            "package": "webignition/web-resource-model",
+            "version": "0.4"
         }
     ],
     "packages-dev": null,

@@ -19,7 +19,8 @@
         "jms/security-extra-bundle": "1.2.*",
         "jms/di-extra-bundle": "1.1.*",
         "webignition/url":">=1.1,<2.0",
-        "webignition/http-client":"*"
+        "webignition/http-client":"*",
+        "webignition/web-json-model":">=0.1,<2.0"
     },
     "repositories": [
         {
