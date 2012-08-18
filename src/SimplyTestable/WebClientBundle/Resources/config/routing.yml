@@ -1,7 +1,11 @@
-SimplyTestableWebClientBundle_homepage:
+homepage:
     pattern:  /hello/{name}
     defaults: { _controller: SimplyTestableWebClientBundle:Default:index }
 
-SimplyTestableWebClientBundle_app:
+app:
     pattern:  /app/
     defaults: { _controller: SimplyTestableWebClientBundle:App:index }
+
+test_start:
+    pattern:  /test/start/
+    defaults: { _controller: SimplyTestableWebClientBundle:Test:start }

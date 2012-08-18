@@ -4,10 +4,12 @@ namespace SimplyTestable\WebClientBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class AppController extends Controller
+class AppController extends BaseViewController
 {
     public function indexAction()
-    {
-        return $this->render('SimplyTestableWebClientBundle:App:index.html.twig');
+    {        
+        return $this->render('SimplyTestableWebClientBundle:App:index.html.twig', array(
+            'test_start_url' => $this->getRouter()->generate('test_start')
+        ));
     }
 }
