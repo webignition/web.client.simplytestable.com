@@ -3,7 +3,11 @@
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
+        {% block stylesheets %}
+        <link rel="stylesheet" href="/bundles/simplytestablewebclient/vendor/twitter-bootstrap/bootstrap/css/bootstrap.min.css" />        
+        <link rel="stylesheet" href="/bundles/simplytestablewebclient/vendor/font-awesome/latest/css/font-awesome.css" />
+        <link rel="stylesheet" href="/bundles/simplytestablewebclient/css/main.css" />        
+        {% endblock %}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body>
