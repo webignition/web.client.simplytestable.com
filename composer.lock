@@ -1,5 +1,5 @@
 {
-    "hash": "c999ce6b1795a4be86924f3befae982b",
+    "hash": "a36e58cb367f6f55441aa55f209cae98",
     "packages": [
         {
             "package": "doctrine/common",
@@ -154,6 +154,18 @@
             "version": "dev-master",
             "source-reference": "3e4057b4b14a2f90db7c895e3e9bcbd3d23875e8",
             "commit-date": "1345222881"
+        },
+        {
+            "package": "webignition/absolute-url-deriver",
+            "version": "dev-master",
+            "source-reference": "d84d6f74fe55429d4e19f7ede4d81fd3090738cc",
+            "commit-date": "1343344065"
+        },
+        {
+            "package": "webignition/http-client",
+            "version": "dev-master",
+            "source-reference": "17d70c76703029ea0b318c727e930b3c772a32a5",
+            "commit-date": "1344029348"
         },
         {
             "package": "webignition/url",
