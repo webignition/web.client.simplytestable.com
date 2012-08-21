@@ -13,3 +13,6 @@ services:
     arguments:
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
+        
+  simplytestable.services.teststatusservice:
+    class:   SimplyTestable\WebClientBundle\Services\TestStatusService 

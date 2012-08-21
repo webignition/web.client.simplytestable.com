@@ -1,7 +1,62 @@
 {% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
 
-{% block title %}Testing {{ test_website }} - {{ parent() }}{% endblock %}
+{% block title %}Testing {{test.website}} (#{{test.id}}) - {{ parent() }}{% endblock %}
 
 {% block main %}         
-    {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %}        
+    {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %}
+<div id="progress">
+    <section>
+        <p class="info"><i class="icon-info-sign"></i> <strong></strong> URLs</p>
+    </section>
+    <section>
+        <p class="info"><i class="icon-info-sign"></i> <strong></strong> URLs</p>
+    </section>
+</div>
+
+{% endblock %}
+
+{% block latest %}
+
+<section class="top">
+    <div id="completion" class="info">
+        <h2>Current status <i class="icon-info-sign"></i></h2>
+        <p>
+            <span class="total">{{ completion_percent}}%</span> <span class="complete">complete</span>
+        </p>
+        <!--
+        <p class="state">
+            {% if test.state == 'new' %}
+                New, waiting to be processeed
+            {% elseif test.state == 'preparing' %}
+                Preparing tests
+            {% elseif test.state == 'queued' %}                
+                Queued, waiting for tests to run
+            {% elseif test.state == 'in-progress' %}                
+                In progress
+            {% endif %}
+        </p>
+        -->
+    </div>        
+</section>
+
+<section>
+    <div class="info">
+        <h2>URLs found <i class="icon-info-sign"></i></h2>
+        <p class="total">{{ url_total }}</p>
+    </div>    
+</section>
+
+<section>
+    <div class="info">
+        <h2>Tests prepared <i class="icon-info-sign"></i></h2>
+        <p class="total">{{ task_total }}</p>
+        
+        {% if test.state == 'in-progress' or test.state == 'preparing' %}
+            <p class="listed"><strong>{{ task_state_total.queued }}</strong> queued</p>
+            <p class="listed"><strong>{{ task_state_total.in_progress }}</strong> in progress</p>
+            <p class="listed"><strong>{{ task_state_total.completed }}</strong> completed</p>        
+        {% endif %}
+    </div>    
+</section>
+
 {% endblock %}

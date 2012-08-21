@@ -26,40 +26,58 @@ body {
     margin:0 15%;
 }
 
-#main .leader {
+#main section {
     position: relative;
 }
 
-#main .leader h1,
-#main .leader h1 label {
+#main section h1,
+#main section h1 label {
     font-size: 28px;
     line-height: 32px; 
     font-weight: normal;
 }
 
-#main .leader h1 i {
-    width:auto;
-    height:auto;
-    line-height: 32px;    
-    color:#08c;
-    background: url('/bundles/simplytestablewebclient/images/circle40.png') transparent no-repeat top left;
+section .info i {   
+    color:#08c;    
     position: absolute;
-    left: -20px;
     padding-left: 10px;
     padding-top: 5px;
-    margin-top:-4px;
+    margin-top:-4px;   
+}
+
+#main section .info i {
+    background: url('/bundles/simplytestablewebclient/images/circle54.png') transparent no-repeat top left;
+    width:56px;
+    height:56px;
+    line-height: 32px;     
+    left: -28px;
+    font-size: 48px;
+    line-height: 48px;     
+    margin-top:-12px;
+}
+
+#main section p.info i {
+    margin-top: -16px;    
+}
+
+#main .leader h1 .sub-state {
+    font-size:16px;
+    opacity:0.4;
 }
 
 .app-results #main .leader h1 i {
     font-size:24px;
 }
 
-#main .leader {
-    background-color: #eee;
-    padding:20px;
+section.top {
+    height:110px;
 }
 
-
+#main section {
+    background-color: #eee;
+    padding:20px 30px;
+    margin-bottom: 30px;
+}
 
 #main #input .fields input {
     font-size: 15px;
@@ -75,31 +93,54 @@ body {
     margin-left:4px;
 }
 
+#main #progress p.info {
+    font-size:20px;
+    line-height: 22px;
+    margin:0;
+}
 
-/*#outer {
-    width:100%;
+#latest {
     position:relative;
 }
 
-#outer #latest {
-    height:500px;
-    width:20%;
-    position:absolute;
-    left:0;
+#latest h2 {
+    font-weight: normal;
 }
 
-#outer #main {
-    height:500px;
-    position:absolute;
-    left:20%;
-    width:60%;
+#latest h2 i {
+    right:-25px;
+    margin-top: -10px;    
+    font-size: 28px;
+    line-height: 32px;  
+    background: url('/bundles/simplytestablewebclient/images/circle40.png') transparent no-repeat top left;
+    width:40px;
+    height:40px;
+    line-height: 32px;    
 }
 
-#outer #supplemental {
-    height:500px;
-    width:20%;
-    position:absolute;
-    right:0;
+#latest section {
+    background-color: #eee;
+    padding:20px;
+    margin-bottom: 30px;    
 }
 
-*/
+#latest h2 {
+    font-size:20px;
+    line-height: 22px;
+    margin:0;
+}
+
+#latest .total {
+    font-size: 62px;
+    line-height: 70px;
+    margin-bottom: 0;
+}
+
+#latest #completion .state {
+    margin-top:0;
+    opacity:0.8;
+}
+
+#latest section p.listed {
+    margin-bottom:0;
+}

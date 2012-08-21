@@ -8,20 +8,21 @@ class AppController extends BaseViewController
 {
     private $progressStates = array(
         'new',
-        'in-progress'
+        'preparing',
+        'queued',        
+        'in-progress'        
     );
     
     private $completedStates = array(
         'cancelled',
-        'complete'
+        'completed'
     );
     
     public function indexAction()
     {   
         return $this->render('SimplyTestableWebClientBundle:App:index.html.twig', array(            
             'test_input_action_url' => $this->generateUrl('test_start'),
-            'test_start_error' => $this->hasFlash('test_start_error'),
-            'test_state' => 'start'
+            'test_start_error' => $this->hasFlash('test_start_error')
         ));
     }
     
@@ -41,15 +42,24 @@ class AppController extends BaseViewController
                 ),
                 true
             ));
-        }        
+        }
+        
+        $this->getTestStatusService()->setTestData($testStatusJsonObject);
         
         return $this->render('SimplyTestableWebClientBundle:App:progress.html.twig', array(
             'test_input_action_url' => $this->generateUrl('test_cancel', array(
                 'website' => $website,
                 'test_id' => $test_id
             )),
-            'test_state' => $testStatusJsonObject->state,
-            'test_website' => $testStatusJsonObject->website
+            'test' => $testStatusJsonObject,
+            'completion_percent' => $this->getTestStatusService()->getCompletionPercent(),
+            'url_total' => $testStatusJsonObject->url_total,
+            'task_total' => $this->getTestStatusService()->getTaskTotal(),
+            'task_state_total' => array(
+                'queued' => $this->getTestStatusService()->getTaskTotalByState('queued'),
+                'completed' => $this->getTestStatusService()->getTaskTotalByState('completed'),
+                'in_progress' => $this->getTestStatusService()->getTaskTotalByState('in-progress'),
+            )
         ));
     }
     
@@ -73,11 +83,6 @@ class AppController extends BaseViewController
         
         return $this->render('SimplyTestableWebClientBundle:App:results.html.twig', array(
             'test_id' => $test_id,
-//            'test_input_action_url' => $this->generateUrl('test_start', array(
-//                'website' => $website,
-//                'test_id' => $test_id
-//            )),
-//            'test_state' => $testStatusJsonObject->state,
             'test_website' => $testStatusJsonObject->website
         ));
     }
@@ -116,5 +121,14 @@ class AppController extends BaseViewController
      */
     private function getCoreApplicationService() {
         return $this->container->get('simplytestable.services.coreapplicationservice');
-    }    
+    } 
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TestStatusService
+     */
+    private function getTestStatusService() {
+        return $this->container->get('simplytestable.services.teststatusservice');
+    }     
 }
