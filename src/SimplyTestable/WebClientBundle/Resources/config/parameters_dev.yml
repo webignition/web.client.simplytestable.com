@@ -1,3 +1,7 @@
 parameters:
-  core-app-base-url: http://ci.app.simplytestable.com
-  test-start-url: /tests/{canonical-homepage-url}/start/
+  core_application:
+    urls:
+      base: http://ci.app.simplytestable.com
+      test_start: /tests/{canonical-url}/start/
+      test_status: /tests/{canonical-url}/{test_id}/status/
+      test_cancel: /tests/{canonical-url}/{test_id}/cancel/

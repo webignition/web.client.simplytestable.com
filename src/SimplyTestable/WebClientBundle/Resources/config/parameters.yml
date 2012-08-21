@@ -1,4 +1,10 @@
 parameters:
+  core_application:
+    urls:
+      base: http://ci.app.simplytestable.com
+      test_start: /tests/{canonical-url}/start/
+      test_status: /tests/{canonical-url}/{test_id}/status/
+      test_cancel: /tests/{canonical-url}/{test_id}/cancel/      
   content_type_web_resource_map:
     default: webignition\WebResource\WebResource
-    application/json: webignition\WebResource\JsonDocument\JsonDocument  
+    application/json: webignition\WebResource\JsonDocument\JsonDocument

@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Services;
 
+use SimplyTestable\WebClientBundle\Exception\WebResourceServiceException;
 use webignition\WebResource\WebResource;
 use webignition\InternetMediaType\Parser\Parser as InternetMediaTypeParser;
 
@@ -32,7 +33,8 @@ class WebResourceService {
             $contentTypeWebResourceMap)
     {
         $this->httpClient = $httpClient;
-        $this->httpClient->redirectHandler()->enable();        
+        $this->httpClient->redirectHandler()->enable();
+        $this->httpClient->sender()->setRetryLimit(10);
         
         $this->contentTypeWebResourceMap = $contentTypeWebResourceMap;        
     }
@@ -42,9 +44,16 @@ class WebResourceService {
      *
      * @param \HttpRequest $request
      * @return \webignition\WebResource\WebResource 
+     * @throws \webignition\Http\Client\CurlException
+     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceServiceException
      */
-    public function get($request) {        
+    public function get($request) {
         $response = $this->httpClient->getResponse($request);
+        $responseCodeClass = substr($response->getResponseCode(), 0, 1);
+        
+        if ($responseCodeClass == 4 || $responseCodeClass == 5) {
+            throw new WebResourceServiceException($response->getResponseCode());
+        }
         
         $mediaTypeParser = new InternetMediaTypeParser();
         $contentType = $mediaTypeParser->parse($response->getHeader('content-type'));

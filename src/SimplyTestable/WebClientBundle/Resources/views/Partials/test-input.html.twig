@@ -1,0 +1,39 @@
+<div id="input">            
+    <form class="well" method="post" action="{{ test_input_action_url }}">                
+        <h1 class="{{ test_state }}">
+            <label for="input-website">
+                {% if test_state == 'start'  %}
+                <i class="icon-off"></i> Start new website test
+                {% elseif test_state == 'new' %}
+                <i class="icon-cog"></i> Testing {{ test_website }}
+                {% elseif test_state == 'cancelled' %}
+                cancelled                
+                {% endif %}
+                    
+            </label>
+        </h1>
+            
+        {% if test_start_error is defined and test_start_error != 0 %}
+        <div class="alert alert-error for:input-website">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>Slow down!</strong> You're going to have to enter a website URL if we're going to get anything done here.
+        </div>
+        {% endif %} 
+          
+        {% if test_cancel_success is defined and test_cancel_success != 0 %}
+        <div class="alert alert-success for:input-website">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            Test for <strong>{{ test_website }}</strong> cancelled.
+        </div>
+        {% endif %}            
+            
+        <div class="fields input-append">                    
+            <input name="website" id="input-website" type="text" placeholder="Enter website homepage URL &hellip;" {% if test_state != 'start' %} disabled value="{{ test_website }}" {% endif %}>            
+            {% if test_state == 'start' %}
+            <button type="submit" class="btn btn-primary btn-large">Start new test <i class="icon-off icon-large"></i></button>
+            {% else %}
+            <button type="submit" class="btn btn-primary btn-large btn-danger">Cancel test <i class="icon-warning-sign icon-large"></i></button>
+            {% endif %}
+        </div>
+    </form>
+</div>

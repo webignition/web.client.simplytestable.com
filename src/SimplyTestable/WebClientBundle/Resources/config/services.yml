@@ -11,4 +11,5 @@ services:
   simplytestable.services.coreapplicationservice:
     class:   SimplyTestable\WebClientBundle\Services\CoreApplicationService
     arguments:
+        parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"

@@ -6,6 +6,24 @@ app:
     pattern:  /app/
     defaults: { _controller: SimplyTestableWebClientBundle:App:index }
 
+app_progress:
+    pattern:  /app/{website}/{test_id}/progress/
+    defaults: { _controller: SimplyTestableWebClientBundle:App:progress }  
+    requirements:
+        website: ".+"
+        
+app_results:
+    pattern:  /app/{website}/{test_id}/results/
+    defaults: { _controller: SimplyTestableWebClientBundle:App:results }  
+    requirements:
+        website: ".+"
+
 test_start:
     pattern:  /test/start/
     defaults: { _controller: SimplyTestableWebClientBundle:Test:start }
+    
+test_cancel:
+    pattern:  /test/{website}/{test_id}/cancel/
+    defaults: { _controller: SimplyTestableWebClientBundle:Test:cancel }  
+    requirements:
+        website: ".+"    

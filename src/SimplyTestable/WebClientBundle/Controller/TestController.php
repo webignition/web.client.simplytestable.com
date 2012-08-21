@@ -16,6 +16,36 @@ class TestController extends Controller
             $this->get('session')->setFlash('test_start_error', 'non-blank string');
             return $this->redirect($this->generateUrl('app', array(), true));
         }
+        
+        $jsonResponseObject = $this->getCoreApplicationService()->testStart($this->getWebsite())->getContentObject();        
+        return $this->redirect($this->generateUrl(
+            'app_progress',
+            array(
+                'website' => $jsonResponseObject->website,
+                'test_id' => $jsonResponseObject->id
+            ),
+            true
+        ));
+    }
+    
+    
+    public function cancelAction()
+    {
+        if (!$this->hasWebsite()) {
+            $this->get('session')->setFlash('test_start_error', '');
+            return $this->redirect($this->generateUrl('app', array(), true));
+        }
+        
+        if ($this->getCoreApplicationService()->testCancel($this->getWebsite(), $this->getTestId())) {
+            return $this->redirect($this->generateUrl(
+                'app_results',
+                array(
+                    'website' => $this->getWebsite(),
+                    'test_id' => $this->getTestId()
+                ),
+                true
+            ));       
+        }
     }
     
     
@@ -32,9 +62,9 @@ class TestController extends Controller
      *
      * @return string
      */
-    private function getWebsite() {        
-        $website = trim($this->get('request')->request->get('website'));
-        if ($website == '') {
+    private function getWebsite() {
+        $website = $this->getRequestValue('website');
+        if (is_null($website)) {
             return $website;
         }
         
@@ -44,5 +74,29 @@ class TestController extends Controller
         }
         
         return (string)$url;
+    }
+    
+    
+    /**
+     *
+     * @return int 
+     */
+    private function getTestId() {
+        return $this->getRequestValue('test_id', 0);
+    }
+    
+    
+    private function getRequestValue($name, $default = null) {
+        $value = trim($this->get('request')->get($name));        
+        return ($value == '') ? $default : $value;
+    }
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\CoreApplicationService 
+     */
+    private function getCoreApplicationService() {
+        return $this->container->get('simplytestable.services.coreapplicationservice');
     }
 }

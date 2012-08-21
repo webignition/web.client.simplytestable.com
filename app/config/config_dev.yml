@@ -1,5 +1,6 @@
 imports:
     - { resource: config.yml }
+    - { resource: "@SimplyTestableWebClientBundle/Resources/config/parameters.yml" } 
     - { resource: "@SimplyTestableWebClientBundle/Resources/config/parameters_dev.yml" }    
     - { resource: "@SimplyTestableWebClientBundle/Resources/config/services_dev.yml" }        
 

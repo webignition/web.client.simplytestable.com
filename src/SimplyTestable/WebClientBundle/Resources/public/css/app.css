@@ -27,16 +27,27 @@
     right:0;
 }
 
-#main #input input {
-    margin:0;
-}
-
 #main #input .fields input {
     font-size: 15px;
-    padding: 9px;
+    padding: 9px 9px 8px 9px;
     width: 78%;
 }
 
 #main #input .fields button i {
+    margin-left:4px;
+}
 
+#main #input h1 label {
+    font-size: 28px;
+    line-height: 32px;    
+}
+
+#main #input h1 i {
+    width:auto;
+    height:auto;
+    line-height: 32px;
+}
+
+#main #input .alert {
+    width:75%;
 }
