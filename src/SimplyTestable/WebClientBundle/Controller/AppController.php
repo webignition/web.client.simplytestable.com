@@ -18,7 +18,7 @@ class AppController extends BaseViewController
     
     public function indexAction()
     {   
-        return $this->render('SimplyTestableWebClientBundle:App:index.html.twig', array(
+        return $this->render('SimplyTestableWebClientBundle:App:index.html.twig', array(            
             'test_input_action_url' => $this->generateUrl('test_start'),
             'test_start_error' => $this->hasFlash('test_start_error'),
             'test_state' => 'start'
@@ -72,12 +72,13 @@ class AppController extends BaseViewController
         }         
         
         return $this->render('SimplyTestableWebClientBundle:App:results.html.twig', array(
+            'test_id' => $test_id,
 //            'test_input_action_url' => $this->generateUrl('test_start', array(
 //                'website' => $website,
 //                'test_id' => $test_id
 //            )),
 //            'test_state' => $testStatusJsonObject->state,
-//            'test_website' => $testStatusJsonObject->website
+            'test_website' => $testStatusJsonObject->website
         ));
     }
     

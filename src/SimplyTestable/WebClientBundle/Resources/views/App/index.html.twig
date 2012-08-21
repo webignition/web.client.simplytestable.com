@@ -1,35 +1,7 @@
 {% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
 
-{% block body_content %}
-<div id="outer">
-    <div id="latest">
-        latest
-    </div>
-    <div id="main">
-        <div id="input">           
-            {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %}
-        </div>
+{% block title %}Start a new website test - {{ parent() }}{% endblock %}
 
-        <div id="lipsum">
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur cursus odio pretium dui interdum non molestie lorem mattis. Aenean pulvinar pulvinar eros, non porta elit laoreet ac. Vivamus ac quam dui, at rhoncus est. Nunc neque libero, consectetur non pharetra eu, aliquet ut nibh. Morbi erat quam, lobortis et tincidunt eget, auctor vitae metus. Morbi at vulputate sem. Quisque eget nulla justo, vitae tempor nibh. Aliquam fringilla, mi sit amet rhoncus congue, diam enim tristique est, ac tempor erat dui quis mauris. Vivamus sem metus, condimentum vel tincidunt quis, elementum sit amet lectus. Duis mollis fringilla elit, et convallis diam euismod et. Fusce eu velit ac nibh pretium iaculis quis sed lectus. Duis ut ipsum nisl, ut aliquet lacus. Nunc eget quam libero, ut accumsan nisl. Maecenas nibh mauris, aliquet eu venenatis in, feugiat et massa. Nullam enim dui, laoreet eget hendrerit at, bibendum at lorem.
-            </p>
-            <p>
-                Fusce quis rutrum nisi. Vivamus sodales est et orci facilisis sit amet viverra elit sodales. Quisque tincidunt nunc tincidunt purus adipiscing dictum. Donec id elit non velit bibendum pellentesque fermentum vel urna. Ut consectetur, dui at bibendum pulvinar, magna nulla mollis sem, in sodales turpis sapien a orci. Vestibulum nulla mauris, auctor ac euismod at, fermentum quis purus. Sed gravida condimentum pharetra. Cras sit amet imperdiet nulla.
-            </p>
-            <p>
-                In eget dolor in mauris adipiscing tempor imperdiet nec lectus. Quisque erat urna, pretium a pretium in, laoreet at tellus. Duis molestie enim quis lorem faucibus varius. In fringilla tortor a lacus suscipit dignissim viverra tellus luctus. Vestibulum vel ipsum nec justo accumsan varius eu quis felis. In odio velit, molestie ut congue non, dictum id lacus. Nulla commodo dolor vitae lacus eleifend congue. Pellentesque sed nisl sit amet justo lacinia tincidunt.
-            </p>
-            <p>
-                Donec ac augue ut risus pulvinar rutrum. Cras vestibulum iaculis tellus et imperdiet. Aliquam congue tincidunt ipsum, ut dictum orci sagittis nec. Pellentesque lobortis felis vitae neque auctor eu hendrerit libero gravida. Donec eget risus est, eget convallis nisi. Ut et velit quis purus semper eleifend. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
-            </p>
-            <p>
-                Morbi in ante in est accumsan dapibus tempus et quam. Nam ut orci nec lorem accumsan aliquam. Maecenas feugiat mi sit amet velit imperdiet sit amet aliquet tortor dictum. Cras eleifend ipsum vel diam dignissim tincidunt vitae quis velit. Mauris nec nibh sed velit laoreet sagittis. Vivamus ultrices imperdiet sapien, vel porttitor felis aliquam luctus. Duis in tellus ac magna dictum lacinia. Proin tincidunt tortor in purus ullamcorper ac pulvinar nunc fringilla.
-            </p>
-        </div>
-    </div>
-    <div id="supplemental">
-        supplemental
-    </div>             
-</div>
+{% block main %}         
+    {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %}        
 {% endblock %}
