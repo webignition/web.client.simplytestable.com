@@ -80,6 +80,30 @@ class CoreApplicationService {
     }
     
     
+    public function getTestUrls($canonicalUrl, $testId) {
+        $httpRequest = $this->getAuthorisedHttpRequest(
+            $this->getUrl('test_list_urls', array(
+            'canonical-url' => $canonicalUrl,
+            'test_id' => $testId
+        )));
+        
+        $testUrls = null;
+        
+        /* @var $response \webignition\WebResource\JsonDocument\JsonDocument */
+        try {
+            $testUrls = $this->webResourceService->get($httpRequest);
+        } catch (\webignition\Http\Client\CurlException $curlException) {
+            
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
+            if ($webResourceServiceException->getCode() == 403) {
+                $testUrls = false;
+            }
+        }
+        
+        return $testUrls;
+    }
+    
+    
     private function retrieveTestStatus($canonicalUrl, $testId) {
         if (!isset($this->testStatus[$canonicalUrl])) {
             $this->testStatus[$canonicalUrl] = array();
@@ -109,7 +133,8 @@ class CoreApplicationService {
         }
         
         $this->testStatus[$canonicalUrl][$testId] = $testStatus;        
-    }    
+    }   
+    
     
     
     /**

@@ -5,3 +5,4 @@ parameters:
       test_start: /tests/{canonical-url}/start/
       test_status: /tests/{canonical-url}/{test_id}/status/
       test_cancel: /tests/{canonical-url}/{test_id}/cancel/
+      test_list_urls: /tests/{canonical-url}/{test_id}/urls/      

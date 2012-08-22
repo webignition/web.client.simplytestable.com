@@ -65,9 +65,9 @@ section .info i {
     opacity:0.4;
 }
 
-.app-results #main .leader h1 i {
+/*.app-results #main .leader h1 i {
     font-size:24px;
-}
+}*/
 
 section.top {
     height:110px;
@@ -143,4 +143,15 @@ section.top {
 
 #latest section p.listed {
     margin-bottom:0;
+}
+
+#progress #url_list ul {
+    list-style:none;
+    margin: 20px 0 0 0;
+}
+
+#progress #url_list ul li {
+    list-style-type: none;
+    margin:0;
+    padding:0;
 }

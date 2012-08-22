@@ -5,12 +5,16 @@
 {% block main %}         
     {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %}
 <div id="progress">
-    <section>
-        <p class="info"><i class="icon-info-sign"></i> <strong></strong> URLs</p>
+    {% if url_total > 0 %}
+    <section id="url_list">
+        <p class="info"><i class="icon-info-sign"></i> <strong></strong> URLs ({{ url_total }})</p>
+        <ul>
+        {% for url in urls %}
+            <li>{{ url }}</li>
+        {% endfor %}              
+        </ul>      
     </section>
-    <section>
-        <p class="info"><i class="icon-info-sign"></i> <strong></strong> URLs</p>
-    </section>
+    {% endif %}
 </div>
 
 {% endblock %}
@@ -37,13 +41,6 @@
         </p>
         -->
     </div>        
-</section>
-
-<section>
-    <div class="info">
-        <h2>URLs found <i class="icon-info-sign"></i></h2>
-        <p class="total">{{ url_total }}</p>
-    </div>    
 </section>
 
 <section>

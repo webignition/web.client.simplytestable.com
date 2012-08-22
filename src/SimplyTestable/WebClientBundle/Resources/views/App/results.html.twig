@@ -1,11 +1,7 @@
 {% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
 
-{% block title %}Results {{ test_website }} (#{{test_id}}) - {{ parent() }}{% endblock %}
+{% block title %}Testing {{test.website}} (#{{test.id}}) - {{ parent() }}{% endblock %}
 
 {% block main %}         
-<div class="leader">                           
-        <h1>
-            <i class="icon-bar-chart"></i> Results for {{ test_website }} (#{{test_id}})
-        </h1>
-</div>  
+    {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %}  
 {% endblock %}
