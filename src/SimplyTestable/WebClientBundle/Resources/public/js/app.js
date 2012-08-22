@@ -1,6 +1,26 @@
 var application = {};
 
 application.testProgressController = function () {
+    var latestData = {};
+    
+    var setCompletionPercentValue = function () {
+        var completionPercentValue = $('#completion-percent-value');
+        if (completionPercentValue.text() != latestData.completion_percent) {
+            completionPercentValue.text(latestData.completion_percent);
+
+            $('#completion-percent-bar').css({
+                'width':latestData.completion_percent + '%'
+            });
+        }        
+    };
+    
+    var setCompletionPercentStateLabel = function () {
+        var completionPercentStateLabel = $('#completion-percent-state-label');
+        if (completionPercentStateLabel.text() != latestData.state_label) {
+            completionPercentStateLabel.text(latestData.state_label);
+        }         
+    };
+    
     var refresh = function () {
         jQuery.ajax({
             complete:function (request, textStatus) {
@@ -24,19 +44,10 @@ application.testProgressController = function () {
                     return;
                 }
                 
-                var completionPercentValue = $('#completion-percent-value');
-                if (completionPercentValue.text() != data.completion_percent) {
-                    completionPercentValue.text(data.completion_percent);
-                    
-                    $('#completion-percent-bar').css({
-                        'width':data.completion_percent + '%'
-                    });
-                }
+                latestData = data;
                 
-                var completionPercentStateLabel = $('#completion-percent-state-label');
-                if (completionPercentStateLabel.text() != data.state_label) {
-                    completionPercentStateLabel.text(data.state_label);
-                } 
+                setCompletionPercentValue();
+                setCompletionPercentStateLabel();
                 
                 window.setTimeout(function () {
                     refresh();
