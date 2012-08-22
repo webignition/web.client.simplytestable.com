@@ -9,9 +9,9 @@
                     {% elseif test.state == 'queued'  %}
                     <i class="icon-cog"></i> Testing {{ test.website }} ({{ test.id }})
                     {% elseif test.state == 'preparing' or test.state == 'in-progress' %}
-                    <i class="icon-cog"></i> Testing {{ test.website }} ({{ test.id }})
+                    <i class="icon-cogs"></i> Testing {{ test.website }} ({{ test.id }})
                     {% elseif test.state == 'completed' %}
-                    <i class="icon-cog"></i> Results for {{ test.website }} ({{ test.id }})
+                    <i class="icon-bar-chart"></i> Results for {{ test.website }} ({{ test.id }})
                     {% endif %}  
                 {% else %}
                     <i class="icon-off"></i> Start new website test

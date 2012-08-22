@@ -6,11 +6,55 @@
     {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %}
 <div id="progress">
     {% if url_total > 0 %}
+    <section id="completion">    
+        ppp
+    </section>
+        
     <section id="url_list">
-        <p class="info"><i class="icon-info-sign"></i> <strong></strong> URLs ({{ url_total }})</p>
-        <ul>
-        {% for url in urls %}
-            <li>{{ url }}</li>
+        <h2 class="info"><i class="icon-info-sign"></i> <strong></strong> Tests ({{ url_total }} urls, {{ task_total}} tests)</h2>
+        
+        <table class="test-states">
+            <tbody>
+                <tr class="queued">
+                    <th><span class="label label-warning">Queued</span></th>
+                    <td class="bar"><span class="label label-warning" style="width:{% if task_state_total.queued == 0 %} 1{% else %} {{ (task_state_total.queued / task_total) * 100}}{% endif %}%;">{{ task_state_total.queued }}</span></td>
+                </tr>
+                <tr class="in-progress">
+                    <th><span class="label label-info">In Progress</span></th>
+                    <td class="bar"><span class="label label-info" style="width:{% if task_state_total.in_progress == 0 %} 1{% else %} {{ (task_state_total.in_progress / task_total) * 100}}{% endif %}%;">{{ task_state_total.in_progress }}</span></td>
+                </tr>
+                <tr class="completed">                
+                    <th><span class="label label-success">Completed</span></th>
+                    <td class="bar"><span class="label label-success" style="width:{% if task_state_total.completed == 0 %} 1{% else %} {{ (task_state_total.completed / task_total) * 100}}{% endif %}%;">{{ task_state_total.completed }}</span></td>
+                </tr>            
+            </tbody>
+        </table>
+        
+        <ul class="urls">
+        {% for url in urls %}             
+            <li class="url">               
+                <span class="url">{{ url }}</span>
+                <span class="tasks">
+                    <ul class="tasks">
+                    {% for task in test.tasks %}
+                        {% if task.url == url %}
+                            <li class="task {{task.state}}">
+                                <span class="state">
+                                    {% if task.state == 'queued' %}
+                                        <i class="icon-cog"></i>
+                                    {% elseif task.state == 'in-progress' %}
+                                        <i class="icon-cogs"></i>
+                                    {% else %}
+                                        <i class="icon-bar-chart"></i>
+                                    {% endif %}
+                                </span>                                
+                                <span class="type">{{ task.type}}</span>
+                            </li>                            
+                        {% endif %}
+                    {% endfor %} 
+                    </ul>
+                </span>                    
+            </li>
         {% endfor %}              
         </ul>      
     </section>
@@ -27,33 +71,7 @@
         <p>
             <span class="total">{{ completion_percent}}%</span> <span class="complete">complete</span>
         </p>
-        <!--
-        <p class="state">
-            {% if test.state == 'new' %}
-                New, waiting to be processeed
-            {% elseif test.state == 'preparing' %}
-                Preparing tests
-            {% elseif test.state == 'queued' %}                
-                Queued, waiting for tests to run
-            {% elseif test.state == 'in-progress' %}                
-                In progress
-            {% endif %}
-        </p>
-        -->
     </div>        
-</section>
-
-<section>
-    <div class="info">
-        <h2>Tests prepared <i class="icon-info-sign"></i></h2>
-        <p class="total">{{ task_total }}</p>
-        
-        {% if test.state == 'in-progress' or test.state == 'preparing' %}
-            <p class="listed"><strong>{{ task_state_total.queued }}</strong> queued</p>
-            <p class="listed"><strong>{{ task_state_total.in_progress }}</strong> in progress</p>
-            <p class="listed"><strong>{{ task_state_total.completed }}</strong> completed</p>        
-        {% endif %}
-    </div>    
 </section>
 
 {% endblock %}

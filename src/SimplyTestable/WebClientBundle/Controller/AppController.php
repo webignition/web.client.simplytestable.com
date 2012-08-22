@@ -46,6 +46,9 @@ class AppController extends BaseViewController
         
         $this->getTestStatusService()->setTestData($testStatusJsonObject);
         
+//        var_dump($testStatusJsonObject);
+//        exit();
+        
         return $this->render('SimplyTestableWebClientBundle:App:progress.html.twig', array(
             'test_input_action_url' => $this->generateUrl('test_cancel', array(
                 'website' => $website,
