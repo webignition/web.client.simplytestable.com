@@ -19,7 +19,7 @@ class AppController extends BaseViewController
     );
     
     public function indexAction()
-    {   
+    {
         return $this->render('SimplyTestableWebClientBundle:App:index.html.twig', array(            
             'test_input_action_url' => $this->generateUrl('test_start'),
             'test_start_error' => $this->hasFlash('test_start_error')
@@ -46,10 +46,7 @@ class AppController extends BaseViewController
         
         $this->getTestStatusService()->setTestData($testStatusJsonObject);
         
-//        var_dump($testStatusJsonObject);
-//        exit();
-        
-        return $this->render('SimplyTestableWebClientBundle:App:progress.html.twig', array(
+        $viewData = array(
             'test_input_action_url' => $this->generateUrl('test_cancel', array(
                 'website' => $website,
                 'test_id' => $test_id
@@ -64,7 +61,10 @@ class AppController extends BaseViewController
                 'completed' => $this->getTestStatusService()->getTaskTotalByState('completed'),
                 'in_progress' => $this->getTestStatusService()->getTaskTotalByState('in-progress'),
             )
-        ));
+        );
+        
+        $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
+        return $this->sendResponse($viewData);
     }
     
     
