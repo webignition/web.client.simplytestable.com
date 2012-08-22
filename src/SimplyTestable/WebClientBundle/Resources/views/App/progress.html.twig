@@ -6,12 +6,22 @@
     {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %}
 <div id="progress">
     {% if url_total > 0 %}
-    <section id="completion">    
-        ppp
+    <section id="completion-percent">    
+        <h2 class="info"><i class="icon-info-sign"></i>
+            {% if test.state == 'queued' %}
+                Queued, waiting to start
+            {% elseif test.state == 'preparing' or test.state == 'in-progress' %}
+                Running now, {{ completion_percent }}% done
+            {% endif %}
+                
+            <div class="progress progress-striped active">
+                <div class="bar" style="width:{{ completion_percent }}%;"></div>
+            </div>                
+        </h2>
     </section>
         
     <section id="url_list">
-        <h2 class="info"><i class="icon-info-sign"></i> <strong></strong> Tests ({{ url_total }} urls, {{ task_total}} tests)</h2>
+        <h2 class="info"><i class="icon-info-sign"></i> Tests ({{ url_total }} urls, {{ task_total}} tests)</h2>
         
         <table class="test-states">
             <tbody>
@@ -64,14 +74,5 @@
 {% endblock %}
 
 {% block latest %}
-
-<section class="top">
-    <div id="completion" class="info">
-        <h2>Current status <i class="icon-info-sign"></i></h2>
-        <p>
-            <span class="total">{{ completion_percent}}%</span> <span class="complete">complete</span>
-        </p>
-    </div>        
-</section>
 
 {% endblock %}
