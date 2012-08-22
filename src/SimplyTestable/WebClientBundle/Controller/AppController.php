@@ -34,19 +34,13 @@ class AppController extends BaseViewController
         
         $testStatusJsonObject = $this->getCoreApplicationService()->getTestStatus($website, $test_id)->getContentObject();        
         if (in_array($testStatusJsonObject->state, $this->completedStates)) {
-            return $this->redirect($this->generateUrl(
-                'app_results',
-                array(
-                    'website' => $website,
-                    'test_id' => $test_id
-                ),
-                true
-            ));
+            return $this->redirect($this->getResultsUrl($website, $test_id));
         }
         
         $this->getTestStatusService()->setTestData($testStatusJsonObject);
         
         $viewData = array(
+            'this_url' => $this->getProgressUrl($website, $test_id),
             'test_input_action_url' => $this->generateUrl('test_cancel', array(
                 'website' => $website,
                 'test_id' => $test_id
@@ -98,20 +92,54 @@ class AppController extends BaseViewController
         
         $testStatusJsonObject = $this->getCoreApplicationService()->getTestStatus($website, $test_id)->getContentObject();
         if (in_array($testStatusJsonObject->state, $this->progressStates)) {
-            return $this->redirect($this->generateUrl(
-                'app_progress',
-                array(
-                    'website' => $website,
-                    'test_id' => $test_id
-                ),
-                true
-            ));
-        }         
+            return $this->redirect($this->getProgressUrl($website, $test_id));
+        }  
         
-        return $this->render('SimplyTestableWebClientBundle:App:results.html.twig', array(            
+        $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');
+        $viewData = array(
+            'this_url' => $this->getResultsUrl($website, $test_id),
             'test_input_action_url' => $this->generateUrl('test_start'),            
             'test' => $testStatusJsonObject
-        ));
+        );
+        
+        return $this->sendResponse($viewData);
+    }
+    
+    /**
+     * Get the progress page URL for a given site and test ID
+     * 
+     * @param string $website
+     * @param string $test_id
+     * @return string
+     */
+    private function getProgressUrl($website, $test_id) {
+        return $this->generateUrl(
+            'app_progress',
+            array(
+                'website' => $website,
+                'test_id' => $test_id
+            ),
+            true
+        );
+    }
+    
+    
+    /**
+     * Get the results page URL for a given site and test ID
+     * 
+     * @param string $website
+     * @param string $test_id
+     * @return string
+     */    
+    private function getResultsUrl($website, $test_id) {
+        return $this->generateUrl(
+            'app_results',
+            array(
+                'website' => $website,
+                'test_id' => $test_id
+            ),
+            true
+        );
     }
     
     
