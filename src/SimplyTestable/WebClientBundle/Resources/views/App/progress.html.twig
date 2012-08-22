@@ -8,13 +8,7 @@
     
     <section id="completion-percent">    
         <h2 class="info"><i class="icon-info-sign"></i>
-            {% if test.state == 'queued' %}
-                Queued, waiting to start
-            {% elseif test.state == 'new' %}
-                New, waiting to be started
-            {% elseif test.state == 'preparing' or test.state == 'in-progress' %}
-                Running now
-            {% endif %}
+            <span id="completion-percent-state-label">{{ state_label }}</span>
                 
             <span id="completion-percent-value">{{ completion_percent }}</span>% done
                 

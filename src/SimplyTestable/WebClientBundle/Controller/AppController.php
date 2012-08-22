@@ -18,6 +18,13 @@ class AppController extends BaseViewController
         'completed'
     );
     
+    private $testStateLabelMap = array(
+        'new' => 'New, waiting to be noticed',
+        'queued' => 'Queued, ready to start',
+        'preparing' => 'Running now',
+        'in-progress' => 'Running now'        
+    );
+    
     public function indexAction()
     {
         return $this->render('SimplyTestableWebClientBundle:App:index.html.twig', array(            
@@ -54,7 +61,8 @@ class AppController extends BaseViewController
                 'queued' => $this->getTestStatusService()->getTaskTotalByState('queued'),
                 'completed' => $this->getTestStatusService()->getTaskTotalByState('completed'),
                 'in_progress' => $this->getTestStatusService()->getTaskTotalByState('in-progress'),
-            )
+            ),
+            'state_label' => $this->testStateLabelMap[$testStatusJsonObject->state]
         );
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');

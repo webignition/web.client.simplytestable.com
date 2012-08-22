@@ -33,6 +33,11 @@ application.testProgressController = function () {
                     });
                 }
                 
+                var completionPercentStateLabel = $('#completion-percent-state-label');
+                if (completionPercentStateLabel.text() != data.state_label) {
+                    completionPercentStateLabel.text(data.state_label);
+                } 
+                
                 window.setTimeout(function () {
                     refresh();
                 }, 1000);
