@@ -21,6 +21,32 @@ application.testProgressController = function () {
         }         
     };
     
+    var getTestQueueWidth = function (queueName) {
+        if (latestData.task_state_total[queueName] == 0) {
+            return 1;
+        }
+        
+        return (latestData.task_state_total[queueName] / latestData.task_total) * 100;
+    };
+    
+    var setTestQueues = function () { 
+        var queues = ['queued', 'in_progress', 'completed'];
+        
+        for (var queueNameIndex = 0; queueNameIndex < queues.length; queueNameIndex++) {
+            var queueName = queues[queueNameIndex];
+
+            $('#url_list .test-states .' + queueName).each(function () {
+                var queueDetail = $(this);
+                var bar = $('.bar .label', queueDetail)
+                bar.animate({
+                    'width': getTestQueueWidth(queueName) + '%'
+                });
+                
+                bar.text(latestData.task_state_total[queueName]);
+            });               
+        }
+    };
+    
     var refresh = function () {
         jQuery.ajax({
             complete:function (request, textStatus) {
@@ -28,7 +54,7 @@ application.testProgressController = function () {
             },
             dataType:'json',
             error:function (request, textStatus, errorThrown) {
-                console.log('error', request, textStatus, errorThrown);
+                console.log('error', request, textStatus, request.getAllResponseHeaders());
             },
             statusCode: {
                 403: function () {
@@ -48,6 +74,7 @@ application.testProgressController = function () {
                 
                 setCompletionPercentValue();
                 setCompletionPercentStateLabel();
+                setTestQueues();
                 
                 window.setTimeout(function () {
                     refresh();

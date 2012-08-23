@@ -27,7 +27,7 @@
                     <th><span class="label label-warning">Queued</span></th>
                     <td class="bar"><span class="label label-warning" style="width:{% if task_state_total.queued == 0 %} 1{% else %} {{ (task_state_total.queued / task_total) * 100}}{% endif %}%;">{{ task_state_total.queued }}</span></td>
                 </tr>
-                <tr class="in-progress">
+                <tr class="in_progress">
                     <th><span class="label label-info">In Progress</span></th>
                     <td class="bar"><span class="label label-info" style="width:{% if task_state_total.in_progress == 0 %} 1{% else %} {{ (task_state_total.in_progress / task_total) * 100}}{% endif %}%;">{{ task_state_total.in_progress }}</span></td>
                 </tr>

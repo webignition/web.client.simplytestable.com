@@ -32,7 +32,7 @@ class TestStatusService {
             return 100;
         }
         
-        return (ceil($this->getTaskTotalByState('completed') / $this->getTaskTotal() * 100));
+        return (floor($this->getTaskTotalByState('completed') / $this->getTaskTotal() * 100));
     }
     
     
