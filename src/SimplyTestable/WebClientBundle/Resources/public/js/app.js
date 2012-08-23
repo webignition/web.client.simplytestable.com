@@ -47,6 +47,116 @@ application.testProgressController = function () {
         }
     };
     
+    var setUrlTotal = function () {
+        $('#url_list_url_total').text(latestData.url_total);
+    };
+    
+    var setTaskTotal = function () {
+        $('#url_list_task_total').text(latestData.task_total);
+    };   
+    
+    var updateUrls = function () { 
+        var getUrlList = function () {
+            if ($('#url_list .urls').length === 0) {
+                $('#url_list').append('<ul class="urls" />');
+            }
+            
+            return $('#url_list .urls');
+        };
+        
+        var inPageUrls = $('li', getUrlList());
+        
+        var findInPageUrl = function (url) {
+            var inPageUrl = false;
+            
+            inPageUrls.each(function () {
+                if ($('.url', this).text() == url) {
+                    inPageUrl = this;
+                }
+            });
+            
+            return inPageUrl;
+        };
+        
+        var findLatestDataTasks = function (url) {
+            var latestDataTasks = [];
+            
+            for (var taskIndex = 0; taskIndex < latestData.test.tasks.length; taskIndex++) {
+                var task = latestData.test.tasks[taskIndex];
+                if (task.url == url) {
+                    latestDataTasks.push(task);
+                }
+            }
+            
+            return latestDataTasks;
+        };
+        
+        var findInPageTask = function (latestDataTask, inPageUrl) {
+            var inPageTask = false;
+            
+            $('ul.tasks li', inPageUrl).each(function () {
+                var currentInPageTask = $(this);
+                if ($('.type', currentInPageTask).text() == latestDataTask.type) {
+                    inPageTask = currentInPageTask;
+                }
+                
+                return;
+            });
+            
+            return inPageTask;
+        };
+        
+        var taskStateIconMap = {
+            'queued': 'icon-cog',
+            'in-progress': 'icon-cogs',
+            'completed': 'icon-bar-chart'
+        };
+        
+        var getNewInPageTask = function (latestDataTask, inPageUrl) {
+            return $('<li class="task '+latestDataTask.state+'">\n\
+                        <span class="state">\n\
+                            <i class="'+taskStateIconMap[latestDataTask.state]+'"></i>\n\
+                        </span>\n\
+                        <span class="type">'+latestDataTask.type+'</span>\n\
+                      </li>'
+            );
+        };
+        
+        var getNewInPageUrl = function (url) {
+            return $('<li class="url">\n\
+                        <span class="url">'+url+'</span>\n\
+                        <span class="tasks">\n\
+                            <ul class="tasks"></ul>\n\
+                        </span>\n\
+                      </li>'
+            );
+        };
+        
+        for (var urlIndex = 0; urlIndex < latestData.urls.length; urlIndex++) {
+            var url = latestData.urls[urlIndex];
+            var inPageUrl = findInPageUrl(url);
+            
+            if (inPageUrl === false) {
+                inPageUrl = getNewInPageUrl(url);
+                getUrlList().append(inPageUrl);
+            }
+            
+            var latestDataTasks = findLatestDataTasks(url);
+
+            for (var latestDataTaskIndex = 0; latestDataTaskIndex < latestDataTasks.length; latestDataTaskIndex++) {
+                var latestDataTask = latestDataTasks[latestDataTaskIndex];
+                var inPageTask = findInPageTask(latestDataTask, inPageUrl);
+                
+                if (inPageTask === false) {
+                    $('ul.tasks', inPageUrl).append(getNewInPageTask(latestDataTask, inPageUrl));
+                } else {
+                    inPageTask.removeClass('in-progress').removeClass('queued').removeClass('completed').addClass(latestDataTask.state);
+                    $('.state i', inPageTask).removeClass('icon-cog').removeClass('icon-cogs').removeClass('icon-bar-chart').addClass(taskStateIconMap[latestDataTask.state]);                                        
+                }
+            }
+        }      
+    };
+    
     var refresh = function () {
         jQuery.ajax({
             complete:function (request, textStatus) {
@@ -75,6 +185,9 @@ application.testProgressController = function () {
                 setCompletionPercentValue();
                 setCompletionPercentStateLabel();
                 setTestQueues();
+                setUrlTotal();
+                setTaskTotal();
+                updateUrls();
                 
                 window.setTimeout(function () {
                     refresh();
