@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\Controller;
 
 use SimplyTestable\WebClientBundle\Model\Test\Test;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 class AppController extends BaseViewController
 {
@@ -105,28 +106,16 @@ class AppController extends BaseViewController
         return $this->sendResponse($viewData);
     }
     
+    
+    
     public function taskResultsAction($website, $test_id, $task_id) {        
-        if (!$this->getCoreApplicationService()->hasTask($website, $test_id, $task_id)) {
+        if (!$this->getTaskOutputService()->has($website, $test_id, $task_id)) {
             return $this->sendNotFoundResponse(); 
         }
         
-        $taskStatusJsonObject = $this->getCoreApplicationService()->getTask($website, $test_id, $task_id)->getContentObject();
+        $taskOutput = $this->getTaskOutputService()->get($website, $test_id, $task_id);
         
-        var_dump($taskStatusJsonObject);
-        exit();
-        
-//        if (in_array($taskStatusJsonObject->state, $this->progressStates)) {
-//            return $this->redirect($this->getProgressUrl($website, $test_id));
-//        }  
-//        
-//        $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');
-//        $viewData = array(
-//            'this_url' => $this->getResultsUrl($website, $test_id),
-//            'test_input_action_url' => $this->generateUrl('test_start'),            
-//            'test' => $taskStatusJsonObject
-//        );
-//        
-//        return $this->sendResponse($viewData);
+        return new Response($this->getSerializer()->serialize($taskOutput, 'json'));        
     }
     
     
@@ -202,5 +191,23 @@ class AppController extends BaseViewController
      */
     private function getTestService() {
         return $this->container->get('simplytestable.services.testservice');
-    }     
+    }  
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TaskOutputService 
+     */
+    private function getTaskOutputService() {
+        return $this->container->get('simplytestable.services.taskoutputservice');
+    }   
+    
+    
+    /**
+     *
+     * @return \JMS\SerializerBundle\Serializer\Serializer
+     */
+    protected function getSerializer() {
+        return $this->container->get('serializer');
+    }    
 }

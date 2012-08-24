@@ -10,3 +10,7 @@ parameters:
   content_type_web_resource_map:
     default: webignition\WebResource\WebResource
     application/json: webignition\WebResource\JsonDocument\JsonDocument
+  task-output-deserializers:
+    "HTML validation":
+      application/json:
+        class: SimplyTestable\WebClientBundle\Services\TaskOutputDeserializer\HtmlValidationApplicationJsonOutputDeserializer

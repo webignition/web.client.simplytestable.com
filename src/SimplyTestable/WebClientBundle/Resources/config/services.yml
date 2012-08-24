@@ -7,15 +7,6 @@ services:
     arguments:
         httpClient: "@simplytestable.services.httpClient"
         contentTypeWebResourceMap: %content_type_web_resource_map%
-        
-#  simplytestable.services.coreapplicationservice:
-#    class:   SimplyTestable\WebClientBundle\Services\CoreApplicationService
-#    arguments:
-#        parameters: %core_application%
-#        webResourceService: "@simplytestable.services.webresourceservice"
-        
-  simplytestable.services.testprogressservice:
-    class:   SimplyTestable\WebClientBundle\Services\TestProgressService 
     
   simplytestable.services.testdeserializer:
     class:   SimplyTestable\WebClientBundle\Services\Test\Deserializer
@@ -39,4 +30,16 @@ services:
     arguments:
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"    
-        testDeserializer: "@simplytestable.services.testdeserializer"
+        testDeserializer: "@simplytestable.services.testdeserializer"        
+
+  simplytestable.services.taskoutputservice:
+    class:   SimplyTestable\WebClientBundle\Services\TaskOutputService  
+    arguments:
+        parameters: %core_application%
+        webResourceService: "@simplytestable.services.webresourceservice"         
+        taskOutputDeserializerFactoryService: "@simplytestable.services.taskoutputdeserializerfactoryservice"
+        
+  simplytestable.services.taskoutputdeserializerfactoryservice:
+    class:   SimplyTestable\WebClientBundle\Services\TaskOutputDeserializer\FactoryService
+    arguments:
+        deserlializers: %task-output-deserializers%    

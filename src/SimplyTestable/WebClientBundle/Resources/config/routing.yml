@@ -14,7 +14,7 @@ app_progress:
         
 app_task_results:
     pattern:  /app/{website}/{test_id}/{task_id}/results/
-    defaults: { _controller: SimplyTestableWebClientBundle:App:taskResults }  
+    defaults: { _controller: SimplyTestableWebClientBundle:App:taskResults, _format: json }  
     requirements:
         website: ".+"          
         
@@ -22,8 +22,7 @@ app_results:
     pattern:  /app/{website}/{test_id}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:App:results }  
     requirements:
-        website: ".+"       
-
+        website: ".+"
 
 test_start:
     pattern:  /test/start/
@@ -33,4 +32,4 @@ test_cancel:
     pattern:  /test/{website}/{test_id}/cancel/
     defaults: { _controller: SimplyTestableWebClientBundle:Test:cancel }  
     requirements:
-        website: ".+"    
+        website: ".+"

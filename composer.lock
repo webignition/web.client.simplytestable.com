@@ -1,5 +1,5 @@
 {
-    "hash": "4f0e1025d7400c2da721b747e62b37ed",
+    "hash": "430e1481228480e9ded830ee30a6a616",
     "packages": [
         {
             "package": "doctrine/common",
@@ -60,6 +60,18 @@
             "version": "dev-master",
             "source-reference": "68ff54447d3be168ecb248dedbcd4cb401ec69b2",
             "commit-date": "1345149984"
+        },
+        {
+            "package": "jms/serializer-bundle",
+            "version": "dev-master",
+            "alias-pretty-version": "0.9.x-dev",
+            "alias-version": "0.9.9999999.9999999-dev"
+        },
+        {
+            "package": "jms/serializer-bundle",
+            "version": "dev-master",
+            "source-reference": "1f308a587742246e87e580290f3bae23073d1d70",
+            "commit-date": "1343641450"
         },
         {
             "package": "kriswallsmith/assetic",
@@ -205,6 +217,7 @@
         "symfony/monolog-bundle": 20,
         "sensio/distribution-bundle": 20,
         "sensio/framework-extra-bundle": 20,
-        "sensio/generator-bundle": 20
+        "sensio/generator-bundle": 20,
+        "jms/serializer-bundle": 20
     }
 }
