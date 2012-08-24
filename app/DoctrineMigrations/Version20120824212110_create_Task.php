@@ -8,10 +8,10 @@ use SimplyTestable\BaseMigrationsBundle\Migration\BaseMigration,
 /**
  * Auto-generated Migration: Please modify to your need!
  */
-class Version20120824212108_create_Task extends BaseMigration
+class Version20120824212110_create_Task extends BaseMigration
 {
     public function up(Schema $schema)
-    {
+    {        
         $this->statements['mysql'] = array(
             "CREATE TABLE Task (
                 id INT AUTO_INCREMENT NOT NULL,
@@ -21,12 +21,15 @@ class Version20120824212108_create_Task extends BaseMigration
                 worker VARCHAR(255) DEFAULT NULL,
                 type VARCHAR(255) NOT NULL,
                 timePeriod_id INT DEFAULT NULL,
+                test_id INT NOT NULL,
                 UNIQUE INDEX UNIQ_F24C741BE43FFED1 (timePeriod_id),
                 UNIQUE INDEX UNIQ_F24C741BDE097880 (output_id),
+                INDEX IDX_F24C741B1E5D0459 (test_id),
                 PRIMARY KEY(id))
                 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE = InnoDB",
             "ALTER TABLE Task ADD CONSTRAINT FK_F24C741BE43FFED1 FOREIGN KEY (timePeriod_id) REFERENCES TimePeriod (id)",
-            "ALTER TABLE Task ADD CONSTRAINT FK_F24C741BDE097880 FOREIGN KEY (output_id) REFERENCES TaskOutput (id)"
+            "ALTER TABLE Task ADD CONSTRAINT FK_F24C741BDE097880 FOREIGN KEY (output_id) REFERENCES TaskOutput (id)",
+            "ALTER TABLE Task ADD CONSTRAINT FK_F24C741B1E5D0459 FOREIGN KEY (test_id) REFERENCES Test (id)"            
         );
         
         $this->statements['sqlite'] = array(
@@ -38,10 +41,13 @@ class Version20120824212108_create_Task extends BaseMigration
                 worker VARCHAR(255) DEFAULT NULL COLLATE NOCASE,
                 type VARCHAR(255) NOT NULL COLLATE NOCASE,
                 timePeriod_id INT DEFAULT NULL,
+                test_id INT NOT NULL,
                 FOREIGN KEY (timePeriod_id) REFERENCES TimePeriod (id),
-                FOREIGN KEY (output_id) REFERENCES TaskOutput (id))",
+                FOREIGN KEY (output_id) REFERENCES TaskOutput (id),
+                FOREIGN KEY (test_id) REFERENCES Test (id))",
             "CREATE UNIQUE INDEX UNIQ_F24C741BE43FFED1 ON Task (timePeriod_id)",
-            "CREATE UNIQUE INDEX UNIQ_F24C741BDE097880 ON Task (output_id)"
+            "CREATE UNIQUE INDEX UNIQ_F24C741BDE097880 ON Task (output_id)",
+            "CREATE INDEX IDX_F24C741B1E5D0459 ON Task (test_id)"
         );
         
         parent::up($schema);

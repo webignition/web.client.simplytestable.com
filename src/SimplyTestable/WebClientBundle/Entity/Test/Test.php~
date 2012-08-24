@@ -1,0 +1,170 @@
+<?php
+
+namespace SimplyTestable\WebClientBundle\Entity\Test;
+
+use Doctrine\ORM\Mapping as ORM;
+
+use SimplyTestable\WebClientBundle\Model\TimePeriod;
+use SimplyTestable\WebClientBundle\Model\Task\Task;
+use webignition\NormalisedUrl\NormalisedUrl;
+
+/**
+ * 
+ * @ORM\Entity
+ * @ORM\Table(
+ *     name="Test",
+ *     indexes={
+ *         @ORM\Index(name="user_idx", columns={"user"}),
+ *         @ORM\Index(name="website_idx", columns={"website"}),
+ *         @ORM\Index(name="state_idx", columns={"state"})
+ *     }
+ * )
+ */
+class Test {
+    
+    
+    /**
+     * 
+     * @var integer
+     * 
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+    
+    
+    /**
+     *
+     * @var string
+     * 
+     * @ORM\Column(type="string", nullable=false)
+     */
+    private $user;    
+    
+    
+    /**
+     *
+     * @var NormalisedUrl 
+     * 
+     * @ORM\Column(type="string", nullable=false)
+     */
+    private $website;
+    
+    
+    /**
+     *
+     * @var string
+     * 
+     * @ORM\Column(type="string", nullable=false)
+     */
+    private $state;
+    
+    
+    /**
+     *
+     * @var \Doctrine\Common\Collections\Collection
+     * 
+     * @ORM\OneToMany(targetEntity="SimplyTestable\WebClientBundle\Entity\Task\Task", mappedBy="task", cascade={"persist"})
+     */
+    private $tasks;    
+    
+    
+    /**
+     *
+     * @var \Doctrine\Common\Collections\Collection
+     * 
+     * @ORM\Column(type="array", nullable=false)
+     */
+    private $taskTypes;    
+    
+    
+    /**
+     *
+     * @var SimplyTestable\WebClientBundle\Entity\TimePeriod
+     * 
+     * @ORM\OneToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\TimePeriod", cascade={"persist"})
+     */
+    private $timePeriod;
+    
+    
+    /**
+     *
+     * @var int
+     */
+    private $urlCount;
+    
+
+
+    
+//    /**
+//     *
+//     * @return int
+//     */
+//    public function getCompletionPercent() {       
+//        if ($this->getState() == 'new') {
+//            return 0;
+//        }
+//        
+//        if ($this->getState() == 'completed') {
+//            return 100;
+//        }
+//        
+//        if ($this->getTaskCount() == 0) {
+//            return 100;
+//        }        
+//        
+//        return (floor($this->getTaskCountByState('completed') / $this->getTaskCount() * 100));        
+//    }
+//    
+//    
+//    /**
+//     *
+//     * @return int 
+//     */
+//    public function getTaskCount() {
+//        return count($this->tasks);
+//    }
+//    
+//    
+//    /**
+//     *
+//     * @param string $state
+//     * @return int 
+//     */
+//    public function getTaskCountByState($state) {
+//        if ($this->getTaskCount() == 0) {
+//            return 0;
+//        }
+//        
+//        $total = 0;
+//        foreach ($this->getTasks() as $task) {
+//            if ($task->getState() == $state) {
+//                $total++;
+//            }
+//        }
+//        
+//        return $total;           
+//    }
+//    
+//    
+//    /**
+//     *
+//     * @param int $urlCount
+//     * @return \SimplyTestable\WebClientBundle\Model\Test\Test 
+//     */
+//    public function setUrlCount($urlCount) {
+//        $this->urlCount = $urlCount;
+//        return $this;
+//    }
+//    
+//    
+//    /**
+//     *
+//     * @return int
+//     */
+//    public function getUrlCount() {
+//        return $this->urlCount;
+//    }
+    
+}

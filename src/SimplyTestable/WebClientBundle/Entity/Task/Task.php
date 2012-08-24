@@ -78,7 +78,17 @@ class Task {
      * 
      * @ORM\OneToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\Task\Output", cascade={"persist"})
      */
-    private $output;    
+    private $output;
+    
+    
+    /**
+     *
+     * @var SimplyTestable\WebClientBundle\Entity\Test\Test
+     * 
+     * @ORM\ManyToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\Test\Test", inversedBy="tasks")
+     * @ORM\JoinColumn(name="test_id", referencedColumnName="id", nullable=false)     
+     */
+    protected $test;    
     
     /**
      *
