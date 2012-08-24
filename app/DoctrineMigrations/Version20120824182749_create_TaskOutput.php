@@ -16,9 +16,8 @@ class Version20120824182749_create_TaskOutput extends BaseMigration
         $this->statements['mysql'] = array(
             "CREATE TABLE TaskOutput (
                 id INT AUTO_INCREMENT NOT NULL,
-                remoteId INT NOT NULL,
                 content LONGTEXT DEFAULT NULL,
-                UNIQUE INDEX remote_id_idx (remoteId),
+                type VARCHAR(255) NOT NULL,
                 PRIMARY KEY(id))
                 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE = InnoDB"
         );
@@ -26,9 +25,8 @@ class Version20120824182749_create_TaskOutput extends BaseMigration
         $this->statements['sqlite'] = array(
             "CREATE TABLE TaskOutput (
                 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                remoteId INT NOT NULL,
-                content LONGTEXT DEFAULT NULL COLLATE NOCASE)",
-            "CREATE UNIQUE INDEX remote_id_idx ON TaskOutput (remoteId)"
+                content LONGTEXT DEFAULT NULL COLLATE NOCASE,
+                type VARCHAR(255) NOT NULL COLLATE NOCASE)"
         );
         
         parent::up($schema);
