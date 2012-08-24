@@ -21,7 +21,8 @@
         "webignition/url":">=1.1,<2.0",
         "webignition/http-client":"*",
         "webignition/web-json-model":">=0.1,<2.0",
-        "jms/serializer-bundle": "dev-master"
+        "jms/serializer-bundle": "dev-master",
+        "webignition/simplytestable-base-migrations-bundle":"1.1"
     },
     "repositories": [
         {
