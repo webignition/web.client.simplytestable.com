@@ -1,7 +1,20 @@
 var application = {};
 
+application.taskOutputController = function () {
+    var taskOutput = [];
+    var test = 'thing';
+
+};
+
+application.taskOutputController.update = function () {
+    
+};
+
+
 application.testProgressController = function () {
+    var taskOutputController = new application.taskOutputController();
     var latestData = {};
+
     
     var setCompletionPercentValue = function () {
         var completionPercentValue = $('#completion-percent-value');
@@ -133,6 +146,17 @@ application.testProgressController = function () {
             );
         };
         
+        var getInPageTaskState = function (inPageTask) {
+            var states = ['in-progress', 'queued', 'completed'];
+            for (var stateIndex = 0; stateIndex < states.length; stateIndex++) {
+                if (inPageTask.hasClass(states[stateIndex])) {
+                    return states[stateIndex];
+                }
+            }
+            
+            return false;            
+        };
+        
         for (var urlIndex = 0; urlIndex < latestData.urls.length; urlIndex++) {
             var url = latestData.urls[urlIndex];
             var inPageUrl = findInPageUrl(url);
@@ -147,13 +171,26 @@ application.testProgressController = function () {
             for (var latestDataTaskIndex = 0; latestDataTaskIndex < latestDataTasks.length; latestDataTaskIndex++) {
                 var latestDataTask = latestDataTasks[latestDataTaskIndex];
                 var inPageTask = findInPageTask(latestDataTask, inPageUrl);
-                
+
                 if (inPageTask === false) {
-                    $('ul.tasks', inPageUrl).append(getNewInPageTask(latestDataTask, inPageUrl));
-                } else {
-                    inPageTask.removeClass('in-progress').removeClass('queued').removeClass('completed').addClass(latestDataTask.state);
-                    $('.state i', inPageTask).removeClass('icon-cog').removeClass('icon-cogs').removeClass('icon-bar-chart').addClass(taskStateIconMap[latestDataTask.state]);                                        
+                    inPageTask = getNewInPageTask(latestDataTask, inPageUrl);
+                    $('ul.tasks', inPageUrl).append(inPageTask);
+                }  
+                
+                var previousState = getInPageTaskState(inPageTask);
+
+                inPageTask.removeClass('in-progress').removeClass('queued').removeClass('completed').addClass(latestDataTask.state);
+                $('.state i', inPageTask).removeClass('icon-cog').removeClass('icon-cogs').removeClass('icon-bar-chart').addClass(taskStateIconMap[latestDataTask.state]);
+                
+                if (getInPageTaskState(inPageTask) == 'completed' && previousState != 'completed') {
+//                    taskOutputController.update();
+//                    console.log(inPageTask, latestDataTask.id); 
                 }
+                
+//                if (inPageTask.hasClass('completed')) {
+//                     
+//                }
+                              
             }
         }      
     };
