@@ -11,7 +11,7 @@ class TestController extends Controller
     const DEFAULT_WEBSITE_SCHEME = 'http';
     
     public function startAction()
-    {
+    {        
         if (!$this->hasWebsite()) {
             $this->get('session')->setFlash('test_start_error', 'non-blank string');
             return $this->redirect($this->generateUrl('app', array(), true));
@@ -94,7 +94,7 @@ class TestController extends Controller
     
     /**
      *
-     * @return \SimplyTestable\WebClientBundle\Services\Test
+     * @return \SimplyTestable\WebClientBundle\Services\TestService
      */
     private function getTestService() {
         return $this->container->get('simplytestable.services.testservice');

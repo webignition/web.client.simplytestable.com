@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
-use SimplyTestable\WebClientBundle\Model\Test\Test;
+use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -41,7 +41,7 @@ class AppController extends BaseViewController
             return $this->redirect($this->generateUrl('app', array(), true));
         }
         
-        $test = $this->getTestService()->get($website, $test_id);        
+        $test = $this->getTestService()->get($website, $test_id);
         
         if (in_array($test->getState(), $this->completedStates)) {
             return $this->redirect($this->getResultsUrl($website, $test_id));
@@ -108,7 +108,7 @@ class AppController extends BaseViewController
     
     
     
-    public function taskResultsAction($website, $test_id, $task_id) {        
+    public function taskResultsAction($website, $test_id, $task_id) {
         if (!$this->getTaskOutputService()->has($website, $test_id, $task_id)) {
             return $this->sendNotFoundResponse(); 
         }

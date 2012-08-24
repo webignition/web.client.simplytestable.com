@@ -2,8 +2,8 @@
 
 namespace SimplyTestable\WebClientBundle\Services\Task;
 
-use SimplyTestable\WebClientBundle\Model\Task\Task;
-use SimplyTestable\WebClientBundle\Model\Task\Output;
+use SimplyTestable\WebClientBundle\Entity\Task\Task;
+use SimplyTestable\WebClientBundle\Entity\Task\Output;
 
 class Serializer {
     

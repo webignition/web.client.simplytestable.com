@@ -1,10 +1,31 @@
 <?php
 namespace SimplyTestable\WebClientBundle\Services;
 
-use SimplyTestable\WebClientBundle\Model\Test\Test;
+use Doctrine\ORM\EntityManager;
+use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Entity\Task\Task;
+use SimplyTestable\WebClientBundle\Entity\TimePeriod;
+
+use webignition\NormalisedUrl\NormalisedUrl;
 
 
 class TestService extends CoreApplicationService {    
+    
+    const ENTITY_NAME = 'SimplyTestable\WebClientBundle\Entity\Test\Test';      
+    
+    /**
+     *
+     * @var EntityManager 
+     */
+    private $entityManager;    
+    
+
+    /**
+     *
+     * @var \Doctrine\ORM\EntityRepository
+     */
+    private $entityRepository;    
+    
     
     /**
      * Collection of test statuses retrieved from core application
@@ -21,11 +42,13 @@ class TestService extends CoreApplicationService {
     
     
     public function __construct(
+        EntityManager $entityManager,
         $parameters,
         \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService,
         \SimplyTestable\WebClientBundle\Services\Test\Deserializer $testDeserializer
     ) {
         parent::__construct($parameters, $webResourceService);
+        $this->entityManager = $entityManager;
         $this->testDeserializer = $testDeserializer;     
     }     
     
@@ -64,16 +87,44 @@ class TestService extends CoreApplicationService {
      * @return Test
      */
     public function get($canonicalUrl, $testId) {
-        if (!isset($this->tests[$canonicalUrl])) {
-            $this->retrieve($canonicalUrl, $testId);
+        if ($this->hasEntity($testId)) {
+            $test = $this->fetchEntity($testId);
+            if ($test->getState() == 'completed') {
+                return $test;
+            }
+            
+            $this->update($test);
+        } else {
+            $test = $this->create($canonicalUrl, $testId);          
         }
         
-        if (!isset($this->tests[$canonicalUrl][$testId])) {
-            $this->retrieve($canonicalUrl, $testId);
-        }
+        $this->entityManager->persist($test);
+        $this->entityManager->flush($test);        
         
-        return $this->tests[$canonicalUrl][$testId];
+        return $test;
     }
+    
+    
+    /**
+     *
+     * @param int $testId
+     * @return boolean
+     */
+    private function hasEntity($testId) {
+        return !is_null($this->fetchEntity($testId));
+    }
+    
+    
+    /**
+     *
+     * @param int $testId
+     * @return type 
+     */
+    private function fetchEntity($testId) {
+        return $this->getEntityRepository()->findOneBy(array(
+            'testId' => $testId
+        ));
+    }    
     
     /**
      *
@@ -104,15 +155,62 @@ class TestService extends CoreApplicationService {
     }
     
     
-    private function retrieve($canonicalUrl, $testId) {
-        if (!isset($this->tests[$canonicalUrl])) {
-            $this->tests[$canonicalUrl] = array();
+    /**
+     *
+     * @param string $canonicalUrl
+     * @param int $testId
+     * @return \SimplyTestable\WebClientBundle\Entity\Test\Test|false
+     */
+    private function create($canonicalUrl, $testId) {
+        $testJsonDocument = $this->retrieve($canonicalUrl, $testId);
+        if (!$testJsonDocument instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
+            return false;
         }
         
-        if (isset($this->tests[$canonicalUrl][$testId])) {
-            return;
-        }        
+        return $this->createTestFromJsonObject($testJsonDocument->getContentObject());
+    }
+    
+    
+    /**
+     *
+     * @param Test $test
+     * @return boolean|null 
+     */
+    private function update(Test $test) {
+        $testJsonDocument = $this->retrieve($test->getWebsite(), $test->getTestId());
+        if (!$testJsonDocument instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
+            return false;
+        }
         
+        $jsonObject = $testJsonDocument->getContentObject();
+        
+        $test->setState($jsonObject->state);
+        $test->setUrlCount($jsonObject->url_total);
+        $this->updateTimePeriodFromJsonObject($test->getTimePeriod(), $jsonObject);
+        
+        foreach ($jsonObject->tasks as $taskJsonObject) {
+            $task = $this->createTaskFromJsonObject($taskJsonObject);     
+            
+            if ($test->hasTask($task)) {
+                $task = $test->getTask($task);
+                $task->setTest($test);
+                $this->populateTaskFromJsonObject($task, $taskJsonObject);  
+            } else {
+                $task->setTest($test);
+                $test->addTask($task);
+            }
+        }               
+    }
+    
+    
+    
+    /**
+     *
+     * @param string $canonicalUrl
+     * @param int $testId
+     * @return \webignition\WebResource\JsonDocument\JsonDocument 
+     */
+    private function retrieve($canonicalUrl, $testId) {
         $httpRequest = $this->getAuthorisedHttpRequest(
             $this->getUrl('test_status', array(
             'canonical-url' => $canonicalUrl,
@@ -121,7 +219,7 @@ class TestService extends CoreApplicationService {
         
         $testJsonDocument = null;
         
-        /* @var $response \webignition\WebResource\JsonDocument\JsonDocument */
+        /* @var $testJsonDocument \webignition\WebResource\JsonDocument\JsonDocument */
         try {
             $testJsonDocument =  $this->webResourceService->get($httpRequest);
         } catch (\webignition\Http\Client\CurlException $curlException) {
@@ -132,7 +230,88 @@ class TestService extends CoreApplicationService {
             }
         }
         
-        $this->tests[$canonicalUrl][$testId] = $this->testDeserializer->deserialize($testJsonDocument->getContentObject());      
+        return $testJsonDocument;     
+    }
+    
+    
+    /**
+     *
+     * @param \stdClass $testJsonObject
+     * @return \SimplyTestable\WebClientBundle\Entity\Test\Test 
+     */
+    private function createTestFromJsonObject($testJsonObject) {
+        $test = new Test();        
+        $test->setState($testJsonObject->state);                
+        $test->setUrlCount($testJsonObject->url_total);
+        $test->setUser($testJsonObject->user);
+        $test->setWebsite(new NormalisedUrl($testJsonObject->website));
+        $test->setTestId($testJsonObject->id);
+        
+        foreach ($testJsonObject->tasks as $taskJsonObject) {
+            $task = $this->createTaskFromJsonObject($taskJsonObject);
+            $task->setTest($test);                    
+            $test->addTask($task);
+        }
+        
+        $taskTypes = array();
+        foreach ($testJsonObject->task_types as $taskTypeDetail) {
+            $taskTypes[] = $taskTypeDetail->name;
+        }
+        
+        $test->setTaskTypes($taskTypes);
+        $this->updateTimePeriodFromJsonObject($test->getTimePeriod(), $testJsonObject);        
+        
+        return $test;        
+    }
+    
+    
+    
+    /**
+     *
+     * @param \stdClass $jsonObject
+     * @return \SimplyTestable\WebClientBundle\Entity\Task\Task 
+     */
+    private function createTaskFromJsonObject($jsonObject) {        
+        return $this->populateTaskFromJsonObject(new Task(), $jsonObject);
+    }
+    
+    
+    /**
+     *
+     * @param Task $task
+     * @param \stdClass $jsonObject
+     * @return \SimplyTestable\WebClientBundle\Entity\Task\Task 
+     */
+    private function populateTaskFromJsonObject(Task $task, $jsonObject) {
+        $task->setUrl(new NormalisedUrl($jsonObject->url));
+        $task->setState($jsonObject->state);        
+        $task->setType($jsonObject->type);
+        $this->updateTimePeriodFromJsonObject($task->getTimePeriod(), $jsonObject);       
+        
+        if (isset($jsonObject->worker)) {
+            $task->setWorker($jsonObject->worker);
+        } 
+        
+        return $task;        
+    }
+    
+    
+    /**
+     *
+     * @param TimePeriod $timePeriod
+     * @param type $jsonObject
+     * @return \SimplyTestable\WebClientBundle\Entity\TimePeriod 
+     */
+    private function updateTimePeriodFromJsonObject(TimePeriod $timePeriod, $jsonObject) {
+        if (isset($jsonObject->time_period)) {
+            if (isset($jsonObject->time_period->start_date_time)) {
+                $timePeriod->setStartDateTime(new \DateTime($jsonObject->time_period->start_date_time));
+            }
+
+            if (isset($jsonObject->time_period->end_date_time)) {
+                $timePeriod->setEndDateTime(new \DateTime($jsonObject->time_period->end_date_time));
+            }       
+        }
     }
     
     
@@ -161,5 +340,18 @@ class TestService extends CoreApplicationService {
             }            
         }        
     }
+    
+    
+    /**
+     *
+     * @return \Doctrine\ORM\EntityRepository
+     */
+    public function getEntityRepository() {
+        if (is_null($this->entityRepository)) {
+            $this->entityRepository = $this->entityManager->getRepository(self::ENTITY_NAME);
+        }
+        
+        return $this->entityRepository;
+    }       
     
 }

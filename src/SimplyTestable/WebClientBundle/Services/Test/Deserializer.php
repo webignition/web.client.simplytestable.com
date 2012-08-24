@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Services\Test;
 
-use SimplyTestable\WebClientBundle\Model\Test\Test;
+use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Services\Task\Deserializer as TaskDeserializer;
 use webignition\NormalisedUrl\NormalisedUrl;
 

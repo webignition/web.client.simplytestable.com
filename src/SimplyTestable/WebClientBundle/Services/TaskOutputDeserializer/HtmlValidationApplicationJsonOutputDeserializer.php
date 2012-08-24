@@ -2,8 +2,8 @@
 
 namespace SimplyTestable\WebClientBundle\Services\TaskOutputDeserializer;
 
-use SimplyTestable\WebClientBundle\Model\Task\HtmlValidationOutput\Output as HtmlValidationOutput;
-use SimplyTestable\WebClientBundle\Model\Task\HtmlValidationOutput\Message;
+use SimplyTestable\WebClientBundle\Entity\Task\HtmlValidationOutput\Output as HtmlValidationOutput;
+use SimplyTestable\WebClientBundle\Entity\Task\HtmlValidationOutput\Message;
 
 class HtmlValidationApplicationJsonOutputDeserializer extends TaskOutputDeserializer {
     

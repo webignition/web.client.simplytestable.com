@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Services\TaskOutputDeserializer;
 
-use SimplyTestable\WebClientBundle\Model\Task\Output;
+use SimplyTestable\WebClientBundle\Entity\Task\Output;
 
 abstract class TaskOutputDeserializer {    
     

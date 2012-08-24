@@ -5,8 +5,8 @@ namespace SimplyTestable\WebClientBundle\Entity\Task;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\SerializerBundle\Annotation as SerializerAnnotation;
 
-use SimplyTestable\WebClientBundle\Model\TimePeriod;
-use SimplyTestable\WebClientBundle\Model\Task\Output as TaskOutput;
+use SimplyTestable\WebClientBundle\Entity\TimePeriod;
+use SimplyTestable\WebClientBundle\Entity\Task\Output as TaskOutput;
 use webignition\NormalisedUrl\NormalisedUrl;
 
 
@@ -88,7 +88,13 @@ class Task {
      * @ORM\ManyToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\Test\Test", inversedBy="tasks")
      * @ORM\JoinColumn(name="test_id", referencedColumnName="id", nullable=false)     
      */
-    protected $test;    
+    protected $test;
+    
+    
+    public function __construct() {
+        $this->timePeriod = new TimePeriod();
+    }
+    
     
     /**
      *
@@ -118,13 +124,14 @@ class Task {
         return $this->id;
     }
 
+
     /**
      * Set url
      *
-     * @param string $url
+     * @param NormalisedUrl $url
      * @return Task
      */
-    public function setUrl($url)
+    public function setUrl(NormalisedUrl $url)
     {
         $this->url = $url;
     
@@ -134,7 +141,7 @@ class Task {
     /**
      * Get url
      *
-     * @return string 
+     * @return NormalisedUrl 
      */
     public function getUrl()
     {
@@ -254,5 +261,28 @@ class Task {
     public function getOutput()
     {
         return $this->output;
+    }
+
+    /**
+     * Set test
+     *
+     * @param SimplyTestable\WebClientBundle\Entity\Test\Test $test
+     * @return Task
+     */
+    public function setTest(\SimplyTestable\WebClientBundle\Entity\Test\Test $test)
+    {
+        $this->test = $test;
+    
+        return $this;
+    }
+
+    /**
+     * Get test
+     *
+     * @return SimplyTestable\WebClientBundle\Entity\Test\Test 
+     */
+    public function getTest()
+    {
+        return $this->test;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Services\Test;
 
-use SimplyTestable\WebClientBundle\Model\Test\Test;
+use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Services\Task\Serializer as TaskSerializer;
 
 class Serializer {
@@ -50,7 +50,7 @@ class Serializer {
         $this->serializedTest->website = (string)$test->getWebsite();
         $this->serializedTest->state = $test->getState();
         $this->serializedTest->tasks = $this->getSerializedTasks();
-        $this->serializedTest->taskTypes = $this->getSerializedTaskTypes();
+        $this->serializedTest->taskTypes = $this->test->getTaskTypes();
         $this->serializedTest->timePeriod = $this->getSerializedTimePeriod();
         $this->serializedTest->urlCount = $test->getUrlCount();
         
@@ -73,20 +73,6 @@ class Serializer {
         $serializedTimePeriod->endDateTime = $this->test->getTimePeriod()->getEndDateTime();
         
         return $serializedTimePeriod;
-    }
-    
-    /**
-     *
-     * @return array 
-     */    
-    private function getSerializedTaskTypes() {
-        $serializedTaskTypes = array();
-        
-        foreach ($this->test->getTaskTypes() as $taskType) {
-            $serializedTaskTypes[] = $taskType->name;
-        }
-        
-        return $serializedTaskTypes;
     }
     
     /**

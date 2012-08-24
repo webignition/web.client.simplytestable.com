@@ -4,8 +4,8 @@ namespace SimplyTestable\WebClientBundle\Entity\Test;
 
 use Doctrine\ORM\Mapping as ORM;
 
-use SimplyTestable\WebClientBundle\Model\TimePeriod;
-use SimplyTestable\WebClientBundle\Model\Task\Task;
+use SimplyTestable\WebClientBundle\Entity\TimePeriod;
+use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use webignition\NormalisedUrl\NormalisedUrl;
 
 /**
@@ -74,7 +74,7 @@ class Test {
      *
      * @var \Doctrine\Common\Collections\Collection
      * 
-     * @ORM\OneToMany(targetEntity="SimplyTestable\WebClientBundle\Entity\Task\Task", mappedBy="task", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="SimplyTestable\WebClientBundle\Entity\Task\Task", mappedBy="test", cascade={"persist"})
      */
     private $tasks;    
     
@@ -180,6 +180,7 @@ class Test {
     public function __construct()
     {
         $this->tasks = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->timePeriod = new TimePeriod();
     }
     
     /**
@@ -218,10 +219,10 @@ class Test {
     /**
      * Set website
      *
-     * @param string $website
+     * @param NormalisedUrl $website
      * @return Test
      */
-    public function setWebsite($website)
+    public function setWebsite(NormalisedUrl $website)
     {
         $this->website = $website;
     
@@ -231,7 +232,7 @@ class Test {
     /**
      * Get website
      *
-     * @return string 
+     * @return NormalisedUrl 
      */
     public function getWebsite()
     {
@@ -290,9 +291,9 @@ class Test {
      * @param SimplyTestable\WebClientBundle\Entity\Task\Task $tasks
      * @return Test
      */
-    public function addTask(\SimplyTestable\WebClientBundle\Entity\Task\Task $tasks)
+    public function addTask(\SimplyTestable\WebClientBundle\Entity\Task\Task $task)
     {
-        $this->tasks[] = $tasks;
+        $this->tasks[] = $task;
     
         return $this;
     }
@@ -302,9 +303,9 @@ class Test {
      *
      * @param SimplyTestable\WebClientBundle\Entity\Task\Task $tasks
      */
-    public function removeTask(\SimplyTestable\WebClientBundle\Entity\Task\Task $tasks)
+    public function removeTask(\SimplyTestable\WebClientBundle\Entity\Task\Task $task)
     {
-        $this->tasks->removeElement($tasks);
+        $this->tasks->removeElement($task);
     }
 
     /**
@@ -338,5 +339,55 @@ class Test {
     public function getTimePeriod()
     {
         return $this->timePeriod;
+    }
+
+    /**
+     * Set testId
+     *
+     * @param integer $testId
+     * @return Test
+     */
+    public function setTestId($testId)
+    {
+        $this->testId = $testId;
+    
+        return $this;
+    }
+
+    /**
+     * Get testId
+     *
+     * @return integer 
+     */
+    public function getTestId()
+    {
+        return $this->testId;
+    }
+    
+    
+    /**
+     *
+     * @param Task $task
+     * @return boolean 
+     */
+    public function hasTask(Task $task) {
+        return $this->getTask($task) !== false;
+    }
+    
+    
+    /**
+     *
+     * @param Task $task
+     * @return Task|false 
+     */
+    public function getTask(Task $task) {
+        foreach ($this->getTasks() as $comparatorTask) {
+            /* @var $comparatorTask Task */
+            if ((string)$comparatorTask->getUrl() == (string)$task->getUrl() && $comparatorTask->getType() == $task->getType()) {
+                return $comparatorTask;
+            }
+        }
+        
+        return false;        
     }
 }

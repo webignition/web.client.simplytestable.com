@@ -28,6 +28,7 @@ services:
   simplytestable.services.testservice:
     class:   SimplyTestable\WebClientBundle\Services\TestService  
     arguments:
+        entityManager: "@doctrine.orm.entity_manager"  
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"    
         testDeserializer: "@simplytestable.services.testdeserializer"        
@@ -35,6 +36,7 @@ services:
   simplytestable.services.taskoutputservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskOutputService  
     arguments:
+        entityManager: "@doctrine.orm.entity_manager"      
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"         
         taskOutputDeserializerFactoryService: "@simplytestable.services.taskoutputdeserializerfactoryservice"
