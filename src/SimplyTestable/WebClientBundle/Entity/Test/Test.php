@@ -16,7 +16,8 @@ use webignition\NormalisedUrl\NormalisedUrl;
  *     indexes={
  *         @ORM\Index(name="user_idx", columns={"user"}),
  *         @ORM\Index(name="website_idx", columns={"website"}),
- *         @ORM\Index(name="state_idx", columns={"state"})
+ *         @ORM\Index(name="state_idx", columns={"state"}),
+ *         @ORM\Index(name="testId_idx", columns={"testId"})
  *     }
  * )
  */
@@ -32,6 +33,14 @@ class Test {
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+    
+    
+    /**
+     * @var integer
+     * 
+     * @ORM\Column(type="integer", nullable=false)
+     */
+    private $testId;
     
     
     /**
