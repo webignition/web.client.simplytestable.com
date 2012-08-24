@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+use SimplyTestable\WebClientBundle\Model\Test\Test;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class AppController extends BaseViewController
@@ -35,16 +36,15 @@ class AppController extends BaseViewController
     
     
     public function progressAction($website, $test_id) {        
-        if (!$this->getCoreApplicationService()->hasTestStatus($website, $test_id)) {
+        if (!$this->getTestService()->has($website, $test_id)) {
             return $this->redirect($this->generateUrl('app', array(), true));
         }
         
-        $testStatusJsonObject = $this->getCoreApplicationService()->getTestStatus($website, $test_id)->getContentObject();        
-        if (in_array($testStatusJsonObject->state, $this->completedStates)) {
+        $test = $this->getTestService()->get($website, $test_id);        
+        
+        if (in_array($test->getState(), $this->completedStates)) {
             return $this->redirect($this->getResultsUrl($website, $test_id));
         }
-        
-        $this->getTestStatusService()->setTestData($testStatusJsonObject);
         
         $viewData = array(
             'this_url' => $this->getProgressUrl($website, $test_id),
@@ -52,17 +52,9 @@ class AppController extends BaseViewController
                 'website' => $website,
                 'test_id' => $test_id
             )),
-            'test' => $testStatusJsonObject,
-            'completion_percent' => $this->getTestStatusService()->getCompletionPercent(),
-            'url_total' => $testStatusJsonObject->url_total,
-            'urls' => $this->getTestUrls($website, $test_id),
-            'task_total' => $this->getTestStatusService()->getTaskTotal(),
-            'task_state_total' => array(
-                'queued' => $this->getTestStatusService()->getTaskTotalByState('queued'),
-                'completed' => $this->getTestStatusService()->getTaskTotalByState('completed'),
-                'in_progress' => $this->getTestStatusService()->getTaskTotalByState('in-progress'),
-            ),
-            'state_label' => $this->testStateLabelMap[$testStatusJsonObject->state]
+            'test' => $this->get('simplytestable.services.testserializer')->serialize($test),
+            'urls' => $this->getTestUrls($test),
+            'state_label' => $this->testStateLabelMap[$test->getState()]
         );
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
@@ -72,13 +64,12 @@ class AppController extends BaseViewController
     
     /**
      *
-     * @param string $website
-     * @param int $test_id
+     * @param Test $test
      * @return array 
      */
-    private function getTestUrls($website, $test_id) {
+    private function getTestUrls(Test $test) {
         $urls = array();
-        $urlListResponse = $this->getCoreApplicationService()->getTestUrls($website, $test_id);
+        $urlListResponse = $this->getTestService()->getUrls($test);
         
         if (!$urlListResponse) {
             return $urls;
@@ -94,24 +85,51 @@ class AppController extends BaseViewController
     
     
     public function resultsAction($website, $test_id) {                
-        if (!$this->getCoreApplicationService()->hasTestStatus($website, $test_id)) {
+        if (!$this->getTestService()->has($website, $test_id)) {
             return $this->redirect($this->generateUrl('app', array(), true));
-        }     
+        }
         
-        $testStatusJsonObject = $this->getCoreApplicationService()->getTestStatus($website, $test_id)->getContentObject();
-        if (in_array($testStatusJsonObject->state, $this->progressStates)) {
-            return $this->redirect($this->getProgressUrl($website, $test_id));
-        }  
+        $test = $this->getTestService()->get($website, $test_id);        
         
-        $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');
+        if (in_array($test->getState(), $this->progressStates)) {
+            return $this->redirect($this->getResultsUrl($website, $test_id));
+        }
+        
         $viewData = array(
             'this_url' => $this->getResultsUrl($website, $test_id),
             'test_input_action_url' => $this->generateUrl('test_start'),            
-            'test' => $testStatusJsonObject
+            'test' => $this->get('simplytestable.services.testserializer')->serialize($test),
         );
         
+        $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');
         return $this->sendResponse($viewData);
     }
+    
+    public function taskResultsAction($website, $test_id, $task_id) {        
+        if (!$this->getCoreApplicationService()->hasTask($website, $test_id, $task_id)) {
+            return $this->sendNotFoundResponse(); 
+        }
+        
+        $taskStatusJsonObject = $this->getCoreApplicationService()->getTask($website, $test_id, $task_id)->getContentObject();
+        
+        var_dump($taskStatusJsonObject);
+        exit();
+        
+//        if (in_array($taskStatusJsonObject->state, $this->progressStates)) {
+//            return $this->redirect($this->getProgressUrl($website, $test_id));
+//        }  
+//        
+//        $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');
+//        $viewData = array(
+//            'this_url' => $this->getResultsUrl($website, $test_id),
+//            'test_input_action_url' => $this->generateUrl('test_start'),            
+//            'test' => $taskStatusJsonObject
+//        );
+//        
+//        return $this->sendResponse($viewData);
+    }
+    
+    
     
     /**
      * Get the progress page URL for a given site and test ID
@@ -180,18 +198,9 @@ class AppController extends BaseViewController
     
     /**
      *
-     * @return \SimplyTestable\WebClientBundle\Services\CoreApplicationService 
+     * @return \SimplyTestable\WebClientBundle\Services\TestService 
      */
-    private function getCoreApplicationService() {
-        return $this->container->get('simplytestable.services.coreapplicationservice');
-    } 
-    
-    
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TestStatusService
-     */
-    private function getTestStatusService() {
-        return $this->container->get('simplytestable.services.teststatusservice');
+    private function getTestService() {
+        return $this->container->get('simplytestable.services.testservice');
     }     
 }

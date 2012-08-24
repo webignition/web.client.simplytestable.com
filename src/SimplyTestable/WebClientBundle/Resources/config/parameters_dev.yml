@@ -6,3 +6,4 @@ parameters:
       test_status: /tests/{canonical-url}/{test_id}/status/
       test_cancel: /tests/{canonical-url}/{test_id}/cancel/
       test_list_urls: /tests/{canonical-url}/{test_id}/urls/      
+      task_status: /tasks/{canonical-url}/{test_id}/{task_id}/status/

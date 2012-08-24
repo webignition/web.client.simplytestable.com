@@ -10,30 +10,30 @@
         <h2 class="info"><i class="icon-info-sign"></i>
             <span id="completion-percent-state-label">{{ state_label }}</span>
                 
-            <span id="completion-percent-value">{{ completion_percent }}</span>% done
+            <span id="completion-percent-value">{{ test.completionPercent }}</span>% done
                 
             <div class="progress progress-striped active">
-                <div id="completion-percent-bar" class="bar" style="width:{{ completion_percent }}%;"></div>
+                <div id="completion-percent-bar" class="bar" style="width:{{ test.completionPercent }}%;"></div>
             </div>                
         </h2>
     </section>    
           
     <section id="url_list">
-        <h2 class="info"><i class="icon-info-sign"></i> Tests (<span id="url_list_url_total">{{ url_total }}</span> urls, <span id="url_list_task_total">{{ task_total}}</span> tests)</h2>
+        <h2 class="info"><i class="icon-info-sign"></i> Tests (<span id="url_list_url_count">{{ test.urlCount }}</span> urls, <span id="url_list_task_count">{{ test.taskCount }}</span> tests)</h2>
         
         <table class="test-states">
             <tbody>
                 <tr class="queued">
                     <th><span class="label label-warning">Queued</span></th>
-                    <td class="bar"><span class="label label-warning" style="width:{% if task_state_total.queued == 0 %} 1{% else %} {{ (task_state_total.queued / task_total) * 100}}{% endif %}%;">{{ task_state_total.queued }}</span></td>
+                    <td class="bar"><span class="label label-warning" style="width:{% if test.taskCountByState.queued == 0 %} 1{% else %} {{ (test.taskCountByState.queued / test.taskCount) * 100}}{% endif %}%;">{{ test.taskCountByState.queued }}</span></td>
                 </tr>
                 <tr class="in_progress">
                     <th><span class="label label-info">In Progress</span></th>
-                    <td class="bar"><span class="label label-info" style="width:{% if task_state_total.in_progress == 0 %} 1{% else %} {{ (task_state_total.in_progress / task_total) * 100}}{% endif %}%;">{{ task_state_total.in_progress }}</span></td>
+                    <td class="bar"><span class="label label-info" style="width:{% if test.taskCountByState.in_progress == 0 %} 1{% else %} {{ (test.taskCountByState.in_progress / test.taskCount) * 100}}{% endif %}%;">{{ test.taskCountByState.in_progress }}</span></td>
                 </tr>
                 <tr class="completed">                
                     <th><span class="label label-success">Completed</span></th>
-                    <td class="bar"><span class="label label-success" style="width:{% if task_state_total.completed == 0 %} 1{% else %} {{ (task_state_total.completed / task_total) * 100}}{% endif %}%;">{{ task_state_total.completed }}</span></td>
+                    <td class="bar"><span class="label label-success" style="width:{% if test.taskCountByState.completed == 0 %} 1{% else %} {{ (test.taskCountByState.completed / test.taskCount) * 100}}{% endif %}%;">{{ test.taskCountByState.completed }}</span></td>
                 </tr>            
             </tbody>
         </table>

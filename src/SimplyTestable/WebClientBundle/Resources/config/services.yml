@@ -8,11 +8,35 @@ services:
         httpClient: "@simplytestable.services.httpClient"
         contentTypeWebResourceMap: %content_type_web_resource_map%
         
-  simplytestable.services.coreapplicationservice:
-    class:   SimplyTestable\WebClientBundle\Services\CoreApplicationService
+#  simplytestable.services.coreapplicationservice:
+#    class:   SimplyTestable\WebClientBundle\Services\CoreApplicationService
+#    arguments:
+#        parameters: %core_application%
+#        webResourceService: "@simplytestable.services.webresourceservice"
+        
+  simplytestable.services.testprogressservice:
+    class:   SimplyTestable\WebClientBundle\Services\TestProgressService 
+    
+  simplytestable.services.testdeserializer:
+    class:   SimplyTestable\WebClientBundle\Services\Test\Deserializer
+    arguments:
+        taskDeserializer: "@simplytestable.services.taskdeserializer"    
+        
+  simplytestable.services.testserializer:
+    class:   SimplyTestable\WebClientBundle\Services\Test\Serializer
+    arguments:
+        taskSerializer: "@simplytestable.services.taskserializer"           
+    
+  simplytestable.services.taskdeserializer:
+    class:   SimplyTestable\WebClientBundle\Services\Task\Deserializer    
+    
+  simplytestable.services.taskserializer:
+    class:   SimplyTestable\WebClientBundle\Services\Task\Serializer      
+
+
+  simplytestable.services.testservice:
+    class:   SimplyTestable\WebClientBundle\Services\TestService  
     arguments:
         parameters: %core_application%
-        webResourceService: "@simplytestable.services.webresourceservice"
-        
-  simplytestable.services.teststatusservice:
-    class:   SimplyTestable\WebClientBundle\Services\TestStatusService 
+        webResourceService: "@simplytestable.services.webresourceservice"    
+        testDeserializer: "@simplytestable.services.testdeserializer"

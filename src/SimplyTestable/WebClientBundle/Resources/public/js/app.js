@@ -5,11 +5,12 @@ application.testProgressController = function () {
     
     var setCompletionPercentValue = function () {
         var completionPercentValue = $('#completion-percent-value');
-        if (completionPercentValue.text() != latestData.completion_percent) {
-            completionPercentValue.text(latestData.completion_percent);
+        
+        if (completionPercentValue.text() != latestData.test.completionPercent) {
+            completionPercentValue.text(latestData.test.completionPercent);
 
             $('#completion-percent-bar').css({
-                'width':latestData.completion_percent + '%'
+                'width':latestData.test.completionPercent + '%'
             });
         }        
     };
@@ -22,11 +23,11 @@ application.testProgressController = function () {
     };
     
     var getTestQueueWidth = function (queueName) {
-        if (latestData.task_state_total[queueName] == 0) {
+        if (latestData.test.taskCountByState[queueName] == 0) {
             return 1;
         }
         
-        return (latestData.task_state_total[queueName] / latestData.task_total) * 100;
+        return (latestData.test.taskCountByState[queueName] / latestData.test.taskCount) * 100;
     };
     
     var setTestQueues = function () { 
@@ -42,17 +43,17 @@ application.testProgressController = function () {
                     'width': getTestQueueWidth(queueName) + '%'
                 });
                 
-                bar.text(latestData.task_state_total[queueName]);
+                bar.text(latestData.test.taskCountByState[queueName]);
             });               
         }
     };
     
-    var setUrlTotal = function () {
-        $('#url_list_url_total').text(latestData.url_total);
+    var setUrlCount = function () {
+        $('#url_list_url_count').text(latestData.test.urlCount);
     };
     
-    var setTaskTotal = function () {
-        $('#url_list_task_total').text(latestData.task_total);
+    var setTaskCount = function () {
+        $('#url_list_task_count').text(latestData.test.taskCount);
     };   
     
     var updateUrls = function () { 
@@ -182,11 +183,11 @@ application.testProgressController = function () {
                 
                 latestData = data;
                 
-                setCompletionPercentValue();
+                setCompletionPercentValue();                
                 setCompletionPercentStateLabel();
                 setTestQueues();
-                setUrlTotal();
-                setTaskTotal();
+                setUrlCount();               
+                setTaskCount();                                         
                 updateUrls();
                 
                 window.setTimeout(function () {

@@ -17,7 +17,7 @@ class TestController extends Controller
             return $this->redirect($this->generateUrl('app', array(), true));
         }
         
-        $jsonResponseObject = $this->getCoreApplicationService()->testStart($this->getWebsite())->getContentObject();        
+        $jsonResponseObject = $this->getTestService()->start($this->getWebsite())->getContentObject();        
         return $this->redirect($this->generateUrl(
             'app_progress',
             array(
@@ -94,9 +94,9 @@ class TestController extends Controller
     
     /**
      *
-     * @return \SimplyTestable\WebClientBundle\Services\CoreApplicationService 
+     * @return \SimplyTestable\WebClientBundle\Services\Test
      */
-    private function getCoreApplicationService() {
-        return $this->container->get('simplytestable.services.coreapplicationservice');
+    private function getTestService() {
+        return $this->container->get('simplytestable.services.testservice');
     }
 }

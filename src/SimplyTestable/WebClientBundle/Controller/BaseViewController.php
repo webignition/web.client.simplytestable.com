@@ -28,6 +28,10 @@ abstract class BaseViewController extends Controller
         return $this->render($this->template, $viewData);
     }
     
+    protected function sendNotFoundResponse() {
+        return new Response('', 404);
+    }
+    
     
     /**
      *

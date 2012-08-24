@@ -2,7 +2,7 @@
 namespace SimplyTestable\WebClientBundle\Services;
 
 
-class TestStatusService {
+class TestProgressService {
     
     private $testData;
     

@@ -12,11 +12,18 @@ app_progress:
     requirements:
         website: ".+"
         
+app_task_results:
+    pattern:  /app/{website}/{test_id}/{task_id}/results/
+    defaults: { _controller: SimplyTestableWebClientBundle:App:taskResults }  
+    requirements:
+        website: ".+"          
+        
 app_results:
     pattern:  /app/{website}/{test_id}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:App:results }  
     requirements:
-        website: ".+"
+        website: ".+"       
+
 
 test_start:
     pattern:  /test/start/
