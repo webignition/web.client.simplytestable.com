@@ -188,14 +188,10 @@ application.testProgressController = function () {
                 $('.state i', inPageTask).removeClass('icon-cog').removeClass('icon-cogs').removeClass('icon-bar-chart').addClass(taskStateIconMap[latestDataTask.state]);
                 
                 if (getInPageTaskState(inPageTask) == 'completed' && previousState != 'completed') {
+                    // http://web.client.simplytestable.com/app_dev.php/app/http://webignition.net//27/1/results/
 //                    taskOutputController.update();
-//                    console.log(inPageTask, latestDataTask.id); 
-                }
-                
-//                if (inPageTask.hasClass('completed')) {
-//                     
-//                }
-                              
+                    //console.log(inPageTask, latestDataTask.id); 
+                }                              
             }
         }      
     };
