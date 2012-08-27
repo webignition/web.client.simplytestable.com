@@ -49,7 +49,7 @@ application.testProgressController = function () {
         for (var queueNameIndex = 0; queueNameIndex < queues.length; queueNameIndex++) {
             var queueName = queues[queueNameIndex];
 
-            $('#url_list .test-states .' + queueName).each(function () {
+            $('#url-list .test-states .' + queueName).each(function () {
                 var queueDetail = $(this);
                 var bar = $('.bar .label', queueDetail)
                 bar.animate({
@@ -62,20 +62,20 @@ application.testProgressController = function () {
     };
     
     var setUrlCount = function () {
-        $('#url_list_url_count').text(latestData.test.urlCount);
+        $('#url-list_url_count').text(latestData.test.urlCount);
     };
     
     var setTaskCount = function () {
-        $('#url_list_task_count').text(latestData.test.taskCount);
+        $('#url-list_task_count').text(latestData.test.taskCount);
     };   
     
     var updateUrls = function () { 
         var getUrlList = function () {
-            if ($('#url_list .urls').length === 0) {
-                $('#url_list').append('<ul class="urls" />');
+            if ($('#url-list .urls').length === 0) {
+                $('#url-list').append('<ul class="urls" />');
             }
             
-            return $('#url_list .urls');
+            return $('#url-list .urls');
         };
         
         var inPageUrls = $('li', getUrlList());

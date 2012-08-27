@@ -149,41 +149,41 @@ section.top {
     font-weight: normal;
 }
 
-#progress #url_list ul {
+#progress #url-list ul {
     list-style:none;
 }
 
-#progress #url_list ul.urls {
+#progress #url-list ul.urls {
     margin: 20px 0 0 0;
 }
 
-#progress #url_list ul li {
+#progress #url-list ul li {
     list-style-type: none;
     margin:0;
     padding:0;
 }
 
-#progress #url_list ul.urls {
+#progress #url-list ul.urls {
     clear:both;
 }
 
-#progress #url_list ul.urls li.url {
+#progress #url-list ul.urls li.url {
     margin:8px 0;
 }
 
-#progress #url_list ul.tasks li.queued i {
+#progress #url-list ul.tasks li.queued i {
     color:#F89406;
 }
 
-#progress #url_list ul.tasks li.in-progress i {
+#progress #url-list ul.tasks li.in-progress i {
     color:#08c;
 }
 
-#progress #url_list ul.tasks li.completed i {
+#progress #url-list ul.tasks li.completed i {
     color:#51A351;
 }
 
-#progress #url_list ul.tasks li.task .type {
+#progress #url-list ul.tasks li.task .type {
     opacity:0.6;
 }
 
@@ -218,4 +218,9 @@ section.top {
 
 #progress .test-states .completed .bar span {
     background-color:#468847;
+}
+
+#progress #url-list h2 i {
+    font-size: 38px;
+    line-height: 48px;    
 }

@@ -2,8 +2,12 @@
 
 {% block title %}Start a new website test - {{ parent() }}{% endblock %}
 
-{% block main %}         
-    {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %}        
+{% block main %}
+        <div class="row-fluid">
+            <div class="span12">
+                {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %} 
+            </div>
+        </div>           
 {% endblock %}
 
 

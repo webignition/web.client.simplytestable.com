@@ -21,11 +21,18 @@ class AppController extends BaseViewController
     );
     
     private $testStateLabelMap = array(
-        'new' => 'New, waiting to be noticed',
-        'queued' => 'Queued, ready to start',
-        'preparing' => 'Running now',
-        'in-progress' => 'Running now'        
+        'new' => 'New',
+        'queued' => 'Queued',
+        'preparing' => 'Running',
+        'in-progress' => 'Running'        
     );
+    
+    private $testStateIconMap = array(
+        'new' => 'icon-off',
+        'queued' => 'icon-off',
+        'preparing' => 'icon-play-circle',
+        'in-progress' => 'icon-play-circle'        
+    );    
     
     public function indexAction()
     {
@@ -55,7 +62,8 @@ class AppController extends BaseViewController
             )),
             'test' => $this->get('simplytestable.services.testserializer')->serialize($test),
             'urls' => $this->getTestUrls($test),
-            'state_label' => $this->testStateLabelMap[$test->getState()]
+            'state_label' => $this->testStateLabelMap[$test->getState()].': ',
+            'state_icon' => $this->testStateIconMap[$test->getState()]
         );
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');

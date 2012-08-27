@@ -22,11 +22,9 @@
         {% include 'SimplyTestableWebClientBundle:Partials:navbar.html.twig' %}                                
             
         <div id="outer">
-            <div class="row-fluid">
-                <div class="span12" id="main">
-                    {% block main %}{% endblock %}
-                </div>
-            </div>              
+            <div id="main">
+                {% block main %}{% endblock %} 
+            </div>                       
         </div>
     </body>
 </html>

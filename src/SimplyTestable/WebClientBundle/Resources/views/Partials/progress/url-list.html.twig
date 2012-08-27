@@ -1,0 +1,48 @@
+<section id="url-list">
+    <h2 class="info"><i class="icon-magic"></i> Tests (<span id="url_list_url_count">{{ test.urlCount }}</span> urls, <span id="url_list_task_count">{{ test.taskCount }}</span> tests)</h2>
+
+    <table class="test-states">
+        <tbody>
+            <tr class="queued">
+                <th><span class="label label-warning">Queued</span></th>
+                <td class="bar"><span class="label label-warning" style="width:{% if test.taskCountByState.queued == 0 %} 1{% else %} {{ (test.taskCountByState.queued / test.taskCount) * 100}}{% endif %}%;">{{ test.taskCountByState.queued }}</span></td>
+            </tr>
+            <tr class="in_progress">
+                <th><span class="label label-info">In Progress</span></th>
+                <td class="bar"><span class="label label-info" style="width:{% if test.taskCountByState.in_progress == 0 %} 1{% else %} {{ (test.taskCountByState.in_progress / test.taskCount) * 100}}{% endif %}%;">{{ test.taskCountByState.in_progress }}</span></td>
+            </tr>
+            <tr class="completed">                
+                <th><span class="label label-success">Completed</span></th>
+                <td class="bar"><span class="label label-success" style="width:{% if test.taskCountByState.completed == 0 %} 1{% else %} {{ (test.taskCountByState.completed / test.taskCount) * 100}}{% endif %}%;">{{ test.taskCountByState.completed }}</span></td>
+            </tr>            
+        </tbody>
+    </table>
+
+    <ul class="urls">
+    {% for url in urls %}             
+        <li class="url">               
+            <span class="url">{{ url }}</span>
+            <span class="tasks">
+                <ul class="tasks">
+                {% for task in test.tasks %}
+                    {% if task.url == url %}
+                        <li class="task {{task.state}}">
+                            <span class="state">
+                                {% if task.state == 'queued' %}
+                                    <i class="icon-cog"></i>
+                                {% elseif task.state == 'in-progress' %}
+                                    <i class="icon-cogs"></i>
+                                {% else %}
+                                    <i class="icon-bar-chart"></i>
+                                {% endif %}
+                            </span>                                
+                            <span class="type">{{ task.type}}</span>
+                        </li>                            
+                    {% endif %}
+                {% endfor %} 
+                </ul>
+            </span>                    
+        </li>
+    {% endfor %}              
+    </ul>      
+</section>  
