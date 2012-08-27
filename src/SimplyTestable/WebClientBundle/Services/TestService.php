@@ -191,7 +191,11 @@ class TestService extends CoreApplicationService {
                 $task->setTest($test);
                 $test->addTask($task);
             }
+            
+            $this->entityManager->persist($task);
+            $this->entityManager->flush($task);
         }
+        
     }
     
     

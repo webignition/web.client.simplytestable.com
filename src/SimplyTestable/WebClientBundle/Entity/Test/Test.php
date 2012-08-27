@@ -76,7 +76,7 @@ class Test {
      * 
      * @ORM\OneToMany(targetEntity="SimplyTestable\WebClientBundle\Entity\Task\Task", mappedBy="test", cascade={"persist"})
      */
-    private $tasks;    
+    private $tasks;
     
     
     /**
