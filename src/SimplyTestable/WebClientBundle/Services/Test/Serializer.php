@@ -45,7 +45,7 @@ class Serializer {
         $this->test = $test;
         $this->serializedTest = new \stdClass();
         
-        $this->serializedTest->id = $test->getId();
+        $this->serializedTest->id = $test->getTestId();
         $this->serializedTest->user = $test->getUser();
         $this->serializedTest->website = (string)$test->getWebsite();
         $this->serializedTest->state = $test->getState();

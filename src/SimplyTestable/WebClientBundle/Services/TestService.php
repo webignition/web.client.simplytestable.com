@@ -86,7 +86,7 @@ class TestService extends CoreApplicationService {
      * @param int $testId
      * @return Test
      */
-    public function get($canonicalUrl, $testId) {
+    public function get($canonicalUrl, $testId) {        
         if ($this->hasEntity($testId)) {
             $test = $this->fetchEntity($testId);            
             if ($test->getState() == 'completed') {
@@ -353,6 +353,14 @@ class TestService extends CoreApplicationService {
         }
         
         return $this->entityRepository;
-    }       
+    }
+    
+    
+    public function getTask(Test $test, $task_id) {
+        return $this->entityRepository = $this->entityManager->getRepository('SimplyTestable\WebClientBundle\Entity\Task\Task')->findOneBy(array(
+            'id' => $task_id,
+            'test' => $test
+        ));
+    }
     
 }

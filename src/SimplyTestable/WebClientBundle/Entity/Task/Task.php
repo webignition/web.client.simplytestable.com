@@ -317,4 +317,14 @@ class Task {
     {
         return $this->taskId;
     }
+    
+    
+    /**
+     *
+     * @return boolean
+     */
+    public function hasOutput()
+    {
+        return !is_null($this->getOutput());
+    }
 }

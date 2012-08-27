@@ -43,11 +43,11 @@ class AppController extends BaseViewController
     }
     
     
-    public function progressAction($website, $test_id) {        
+    public function progressAction($website, $test_id) {
         if (!$this->getTestService()->has($website, $test_id)) {
             return $this->redirect($this->generateUrl('app', array(), true));
         }
-        
+
         $test = $this->getTestService()->get($website, $test_id);
         
         if (in_array($test->getState(), $this->completedStates)) {
@@ -117,12 +117,19 @@ class AppController extends BaseViewController
     
     
     public function taskResultsAction($website, $test_id, $task_id) {
-        if (!$this->getTaskOutputService()->has($website, $test_id, $task_id)) {
-            return $this->sendNotFoundResponse(); 
+        if (!$this->getTestService()->has($website, $test_id)) {
+            return $this->redirect($this->generateUrl('app', array(), true));
+        }
+
+        $test = $this->getTestService()->get($website, $test_id);
+        $task = $this->getTestService()->getTask($test, $task_id);
+        
+        if (!$this->getTaskOutputService()->has($test, $task)) {
+            return $this->sendNotFoundResponse();
         }
         
-        $taskOutput = $this->getTaskOutputService()->get($website, $test_id, $task_id);
-        
+        $taskOutput = $this->getTaskOutputService()->get($test, $task);   
+    
         return new Response($this->getSerializer()->serialize($taskOutput, 'json'));        
     }
     

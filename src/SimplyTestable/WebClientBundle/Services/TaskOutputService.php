@@ -2,6 +2,7 @@
 namespace SimplyTestable\WebClientBundle\Services;
 
 use Doctrine\ORM\EntityManager;
+use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 
@@ -54,55 +55,42 @@ class TaskOutputService extends CoreApplicationService {
     
     /**
      *
-     * @param string $canonicalUrl
-     * @param int $testId
-     * @param int $taskId
+     * @param Test $test
+     * @param Task $task
      * @return boolean
      */
-    public function has($canonicalUrl, $testId, $taskId) {
-        return $this->get($canonicalUrl, $testId, $taskId) instanceof Output;
+    public function has(Test $test, Task $task) {
+        return $this->get($test, $task) instanceof Output;
     }    
     
    
     /**
      *
-     * @param string $canonicalUrl
-     * @param int $testId
-     * @param int $taskId
+     * @param Test $test
+     * @param Task $task
      * @return SimplyTestable\WebClientBundle\Entity\Task\Output
      */
-    public function get($canonicalUrl, $testId, $taskId) {
-        if ($this->hasEntity($taskId)) {
-            $taskOutput = $this->fetchEntity($taskId);
+    public function get(Test $test, Task $task) {        
+        if ($task->hasOutput()) {
+            $taskOutput = $this->fetch($task);
         } else {
-            $taskOutput = $this->retrieve($canonicalUrl, $testId, $taskId);
+            $taskOutput = $this->retrieve($test, $task);
             $this->entityManager->persist($taskOutput);
             $this->entityManager->flush($taskOutput);
         }
         
         return $taskOutput;      
-    }
+    }    
     
     
     /**
      *
-     * @param int $taskId
-     * @return boolean
-     */
-    private function hasEntity($taskId) {
-        return !is_null($this->fetchEntity($taskId));
-    }
-    
-    
-    
-    /**
-     *
-     * @param int $taskId
+     * @param Task $task
      * @return type 
      */
-    private function fetchEntity($taskId) {
+    private function fetch(Task $task) {
         return $this->getEntityRepository()->findOneBy(array(
-            'taskId' => $taskId
+            'task' => $task
         ));
     }
     
@@ -110,17 +98,16 @@ class TaskOutputService extends CoreApplicationService {
 
     /**
      *
-     * @param string $canonicalUrl
-     * @param integer $testId
-     * @param integer $taskId
+     * @param Test $test
+     * @param Task $task
      * @return \SimplyTestable\WebClientBundle\Entity\Task\Output
      */
-    private function retrieve($canonicalUrl, $testId, $taskId) {        
+    private function retrieve(Test $test, Task $task) {        
         $httpRequest = $this->getAuthorisedHttpRequest(
             $this->getUrl('task_status', array(
-            'canonical-url' => $canonicalUrl,
-            'test_id' => $testId,
-            'task_id' => $taskId
+            'canonical-url' => (string)$test->getWebsite(),
+            'test_id' => $test->getTestId(),
+            'task_id' => $task->getTaskId()
         )));
         
         $taskOutputResponse = null;
@@ -136,31 +123,14 @@ class TaskOutputService extends CoreApplicationService {
             }
         }
         
-        
-        
-        
-        //$task = new 
-        
-        
-        var_dump($taskOutputResponse->getContentObject()->state);
-        exit();
-        
         $taskOutput = new Output();
         $taskOutput->setContent($taskOutputResponse->getContentObject()->output->output);
-        $taskOutput->setTaskId($taskId);
-        $taskOutput->setType($taskOutputResponse->getContentObject()->type);
+        $taskOutput->setTask($task);
+        $taskOutput->setType($taskOutputResponse->getContentObject()->type);       
         
+        $task->setOutput($taskOutput);
         
         return $taskOutput;
-        
-//        $deserializer = $this->taskOutputDeserializerFactoryService->getDeserializer(
-//            $taskStatus->getContentObject()->type,
-//            $taskStatus->getContentObject()->output->content_type
-//        );
-        
-        
-        
-        //return $deserializer->deserialize($taskStatus->getContentObject()->output->output);       
     }
     
     
