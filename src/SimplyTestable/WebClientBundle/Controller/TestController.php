@@ -36,7 +36,7 @@ class TestController extends Controller
             return $this->redirect($this->generateUrl('app', array(), true));
         }
         
-        if ($this->getCoreApplicationService()->testCancel($this->getWebsite(), $this->getTestId())) {
+        if ($this->getTestService()->cancel($this->getWebsite(), $this->getTestId())) {
             return $this->redirect($this->generateUrl(
                 'app_results',
                 array(

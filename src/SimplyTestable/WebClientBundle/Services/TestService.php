@@ -321,7 +321,7 @@ class TestService extends CoreApplicationService {
      * @param int $testId
      * @return boolean 
      */
-    public function testCancel($canonicalUrl, $testId) {
+    public function cancel($canonicalUrl, $testId) {
         $httpRequest = $this->getAuthorisedHttpRequest(
             $this->getUrl('test_cancel', array(
             'canonical-url' => $canonicalUrl,
