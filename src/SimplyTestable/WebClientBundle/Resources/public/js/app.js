@@ -35,6 +35,11 @@ application.testProgressController = function () {
         }         
     };
     
+    var setCompletionPercentStateIcon = function () {        
+        $('#completion-percent-state-icon').attr('class', '').addClass(latestData.state_icon);
+     
+    };    
+    
     var getTestQueueWidth = function (queueName) {
         if (latestData.test.taskCountByState[queueName] == 0) {
             return 1;
@@ -222,6 +227,7 @@ application.testProgressController = function () {
                 
                 setCompletionPercentValue();                
                 setCompletionPercentStateLabel();
+                setCompletionPercentStateIcon();
                 setTestQueues();
                 setUrlCount();               
                 setTaskCount();                                         
