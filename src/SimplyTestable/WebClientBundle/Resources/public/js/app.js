@@ -19,11 +19,11 @@ application.testProgressController = function () {
     var setCompletionPercentValue = function () {
         var completionPercentValue = $('#completion-percent-value');
         
-        if (completionPercentValue.text() != latestData.test.completionPercent) {
-            completionPercentValue.text(latestData.test.completionPercent);
+        if (completionPercentValue.text() != latestData.completionPercent) {
+            completionPercentValue.text(latestData.completionPercent);
 
             $('#completion-percent-bar').css({
-                'width':latestData.test.completionPercent + '%'
+                'width':latestData.completionPercent + '%'
             });
         }        
     };
@@ -40,38 +40,38 @@ application.testProgressController = function () {
      
     };    
     
-    var getTestQueueWidth = function (queueName) {
-        if (latestData.test.taskCountByState[queueName] == 0) {
+    var getTestQueueWidth = function (queueName) {        
+        if (latestData.taskCountByState[queueName] == 0) {
             return 1;
         }
         
-        return (latestData.test.taskCountByState[queueName] / latestData.test.taskCount) * 100;
+        return (latestData.taskCountByState[queueName] / latestData.test.tasks.length) * 100;
     };
     
     var setTestQueues = function () { 
-        var queues = ['queued', 'in_progress', 'completed'];
+        var queues = ['queued', 'in-progress', 'completed'];
         
         for (var queueNameIndex = 0; queueNameIndex < queues.length; queueNameIndex++) {
             var queueName = queues[queueNameIndex];
 
-            $('#url-list .test-states .' + queueName).each(function () {
+            $('#url-list .test-states .' + queueName).each(function () {                
                 var queueDetail = $(this);
                 var bar = $('.bar .label', queueDetail)
                 bar.animate({
                     'width': getTestQueueWidth(queueName) + '%'
                 });
                 
-                bar.text(latestData.test.taskCountByState[queueName]);
+                bar.text(latestData.taskCountByState[queueName]);
             });               
         }
     };
     
     var setUrlCount = function () {
-        $('#url-list_url_count').text(latestData.test.urlCount);
+        $('#url-list-url-count').text(latestData.urls.length);
     };
     
-    var setTaskCount = function () {
-        $('#url-list_task_count').text(latestData.test.taskCount);
+    var setTaskCount = function () {        
+        $('#url-list-task-count').text(latestData.test.tasks.length);
     };   
     
     var updateUrls = function () { 

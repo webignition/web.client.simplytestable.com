@@ -6,23 +6,7 @@ services:
     class:   SimplyTestable\WebClientBundle\Services\WebResourceService
     arguments:
         httpClient: "@simplytestable.services.httpClient"
-        contentTypeWebResourceMap: %content_type_web_resource_map%
-    
-  simplytestable.services.testdeserializer:
-    class:   SimplyTestable\WebClientBundle\Services\Test\Deserializer
-    arguments:
-        taskDeserializer: "@simplytestable.services.taskdeserializer"    
-        
-  simplytestable.services.testserializer:
-    class:   SimplyTestable\WebClientBundle\Services\Test\Serializer
-    arguments:
-        taskSerializer: "@simplytestable.services.taskserializer"           
-    
-  simplytestable.services.taskdeserializer:
-    class:   SimplyTestable\WebClientBundle\Services\Task\Deserializer    
-    
-  simplytestable.services.taskserializer:
-    class:   SimplyTestable\WebClientBundle\Services\Task\Serializer      
+        contentTypeWebResourceMap: %content_type_web_resource_map%    
 
 
   simplytestable.services.testservice:
@@ -30,16 +14,14 @@ services:
     arguments:
         entityManager: "@doctrine.orm.entity_manager"  
         parameters: %core_application%
-        webResourceService: "@simplytestable.services.webresourceservice"    
-        testDeserializer: "@simplytestable.services.testdeserializer"        
+        webResourceService: "@simplytestable.services.webresourceservice"            
 
   simplytestable.services.taskoutputservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskOutputService  
     arguments:
         entityManager: "@doctrine.orm.entity_manager"      
         parameters: %core_application%
-        webResourceService: "@simplytestable.services.webresourceservice"         
-        taskOutputDeserializerFactoryService: "@simplytestable.services.taskoutputdeserializerfactoryservice"
+        webResourceService: "@simplytestable.services.webresourceservice"
         
   simplytestable.services.taskoutputdeserializerfactoryservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskOutputDeserializer\FactoryService

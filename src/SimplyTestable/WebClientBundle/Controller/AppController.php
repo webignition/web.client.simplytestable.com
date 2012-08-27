@@ -60,14 +60,39 @@ class AppController extends BaseViewController
                 'website' => $website,
                 'test_id' => $test_id
             )),
-            'test' => $this->get('simplytestable.services.testserializer')->serialize($test),
+            'test' => $test,
             'urls' => $this->getTestUrls($test),
             'state_label' => $this->testStateLabelMap[$test->getState()].': ',
-            'state_icon' => $this->testStateIconMap[$test->getState()]
+            'state_icon' => $this->testStateIconMap[$test->getState()],
+            'taskCountByState' => $this->getTaskCountByState($test),
+            'completionPercent' => $test->getCompletionPercent(),
+            'testId' => $test_id
         );
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
         return $this->sendResponse($viewData);
+    }
+    
+    
+    /**
+     *
+     * @param Test $test
+     * @return array 
+     */
+    private function getTaskCountByState(Test $test) {
+        $taskStates = array(
+            'in-progress',
+            'queued',
+            'completed'
+        );
+        
+        $taskCountByState = array();        
+        
+        foreach ($taskStates as $taskState) {
+            $taskCountByState[$taskState] = $test->getTaskCountByState($taskState);
+        }
+        
+        return $taskCountByState;
     }
     
     
@@ -106,8 +131,13 @@ class AppController extends BaseViewController
         
         $viewData = array(
             'this_url' => $this->getResultsUrl($website, $test_id),
-            'test_input_action_url' => $this->generateUrl('test_start'),            
-            'test' => $this->get('simplytestable.services.testserializer')->serialize($test),
+            'test_input_action_url' => $this->generateUrl('test_start', array(
+                'website' => $website,
+                'test_id' => $test_id
+            )),
+            'test' => $test,
+            'urls' => $this->getTestUrls($test),
+            'testId' => $test_id
         );
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');

@@ -19,8 +19,8 @@ abstract class BaseViewController extends Controller
     
     protected function sendResponse($viewData)
     {
-        if ($this->isJsonResponseRequired()) {
-            $response = new Response(json_encode($viewData));
+        if ($this->isJsonResponseRequired()) {            
+            $response = new Response($this->getSerializer()->serialize($viewData, 'json'));
             $response->headers->set('Content-Type', 'application/json');
             return $response;
         }

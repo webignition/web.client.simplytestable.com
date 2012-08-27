@@ -35,21 +35,13 @@ class TestService extends CoreApplicationService {
     private $tests = array();
     
     
-    /**
-     * @var \SimplyTestable\WebClientBundle\Services\Test\Deserializer
-     */
-    private $testDeserializer;
-    
-    
     public function __construct(
         EntityManager $entityManager,
         $parameters,
-        \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService,
-        \SimplyTestable\WebClientBundle\Services\Test\Deserializer $testDeserializer
+        \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService
     ) {
         parent::__construct($parameters, $webResourceService);
-        $this->entityManager = $entityManager;
-        $this->testDeserializer = $testDeserializer;     
+        $this->entityManager = $entityManager;  
     }     
     
     

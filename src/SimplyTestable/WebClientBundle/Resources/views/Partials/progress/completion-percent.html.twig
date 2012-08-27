@@ -3,10 +3,10 @@
         <div class="span12">
             <h2 class="info"><i id="completion-percent-state-icon" class="{{ state_icon }}"></i>
                 <span id="completion-percent-state-label">{{ state_label }}</span>                
-                <span id="completion-percent-value">{{ test.completionPercent }}</span>% done                                
+                <span id="completion-percent-value">{{ completionPercent }}</span>% done                                
             </h2>
             <div class="progress progress-striped active">
-                <div id="completion-percent-bar" class="bar" style="width:{{ test.completionPercent }}%;"></div>
+                <div id="completion-percent-bar" class="bar" style="width:{{ completionPercent }}%;"></div>
             </div>             
         </div> 
         <!--
