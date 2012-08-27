@@ -29,7 +29,7 @@ class Task {
     
     /**
      * 
-     * @var NormalisedUrl 
+     * @var string 
      * 
      * @ORM\Column(type="text", nullable=false)
      */
@@ -128,10 +128,10 @@ class Task {
     /**
      * Set url
      *
-     * @param NormalisedUrl $url
+     * @param string $url
      * @return Task
      */
-    public function setUrl(NormalisedUrl $url)
+    public function setUrl($url)
     {
         $this->url = $url;
     
@@ -141,7 +141,7 @@ class Task {
     /**
      * Get url
      *
-     * @return NormalisedUrl 
+     * @return string 
      */
     public function getUrl()
     {

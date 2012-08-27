@@ -383,7 +383,7 @@ class Test {
     public function getTask(Task $task) {
         foreach ($this->getTasks() as $comparatorTask) {
             /* @var $comparatorTask Task */
-            if ((string)$comparatorTask->getUrl() == (string)$task->getUrl() && $comparatorTask->getType() == $task->getType()) {
+            if ($comparatorTask->getUrl() == $task->getUrl() && $comparatorTask->getType() == $task->getType()) {
                 return $comparatorTask;
             }
         }

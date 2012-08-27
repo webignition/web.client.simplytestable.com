@@ -88,7 +88,7 @@ class TestService extends CoreApplicationService {
      */
     public function get($canonicalUrl, $testId) {
         if ($this->hasEntity($testId)) {
-            $test = $this->fetchEntity($testId);
+            $test = $this->fetchEntity($testId);            
             if ($test->getState() == 'completed') {
                 return $test;
             }
@@ -176,11 +176,11 @@ class TestService extends CoreApplicationService {
      * @param Test $test
      * @return boolean|null 
      */
-    private function update(Test $test) {
+    private function update(Test $test) {  
         $testJsonDocument = $this->retrieve($test->getWebsite(), $test->getTestId());
         if (!$testJsonDocument instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
             return false;
-        }
+        }     
         
         $jsonObject = $testJsonDocument->getContentObject();
         
@@ -199,7 +199,7 @@ class TestService extends CoreApplicationService {
                 $task->setTest($test);
                 $test->addTask($task);
             }
-        }               
+        }
     }
     
     
@@ -283,7 +283,7 @@ class TestService extends CoreApplicationService {
      * @return \SimplyTestable\WebClientBundle\Entity\Task\Task 
      */
     private function populateTaskFromJsonObject(Task $task, $jsonObject) {
-        $task->setUrl(new NormalisedUrl($jsonObject->url));
+        $task->setUrl($jsonObject->url);
         $task->setState($jsonObject->state);        
         $task->setType($jsonObject->type);
         $this->updateTimePeriodFromJsonObject($task->getTimePeriod(), $jsonObject);       
