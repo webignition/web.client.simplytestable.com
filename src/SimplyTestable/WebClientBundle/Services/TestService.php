@@ -282,7 +282,8 @@ class TestService extends CoreApplicationService {
      * @param \stdClass $jsonObject
      * @return \SimplyTestable\WebClientBundle\Entity\Task\Task 
      */
-    private function populateTaskFromJsonObject(Task $task, $jsonObject) {
+    private function populateTaskFromJsonObject(Task $task, $jsonObject) {        
+        $task->setTaskId($jsonObject->id);
         $task->setUrl($jsonObject->url);
         $task->setState($jsonObject->state);        
         $task->setType($jsonObject->type);

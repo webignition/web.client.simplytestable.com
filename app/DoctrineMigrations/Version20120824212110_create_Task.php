@@ -15,6 +15,7 @@ class Version20120824212110_create_Task extends BaseMigration
         $this->statements['mysql'] = array(
             "CREATE TABLE Task (
                 id INT AUTO_INCREMENT NOT NULL,
+                taskId int NOT NULL,
                 output_id INT DEFAULT NULL,
                 url LONGTEXT NOT NULL,
                 state VARCHAR(255) NOT NULL,
@@ -35,6 +36,7 @@ class Version20120824212110_create_Task extends BaseMigration
         $this->statements['sqlite'] = array(
             "CREATE TABLE Task (
                 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                taskId int NOT NULL,
                 output_id INT DEFAULT NULL,
                 url LONGTEXT NOT NULL COLLATE NOCASE,
                 state VARCHAR(255) NOT NULL COLLATE NOCASE,

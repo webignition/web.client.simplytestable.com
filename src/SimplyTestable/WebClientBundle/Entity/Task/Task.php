@@ -31,6 +31,15 @@ class Task {
      * 
      * @var string 
      * 
+     * @ORM\Column(type="integer", nullable=false)
+     */    
+    private $taskId;
+    
+    
+    /**
+     * 
+     * @var string 
+     * 
      * @ORM\Column(type="text", nullable=false)
      */
     private $url;
@@ -284,5 +293,28 @@ class Task {
     public function getTest()
     {
         return $this->test;
+    }
+
+    /**
+     * Set taskId
+     *
+     * @param integer $taskId
+     * @return Task
+     */
+    public function setTaskId($taskId)
+    {
+        $this->taskId = $taskId;
+    
+        return $this;
+    }
+
+    /**
+     * Get taskId
+     *
+     * @return integer 
+     */
+    public function getTaskId()
+    {
+        return $this->taskId;
     }
 }
