@@ -29,7 +29,7 @@ class Task {
     
     /**
      * 
-     * @var string 
+     * @var int 
      * 
      * @ORM\Column(type="integer", nullable=false)
      */    
@@ -85,7 +85,7 @@ class Task {
      *
      * @var TaskOutput
      * 
-     * @ORM\OneToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\Task\Output", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\Task\Output", mappedBy="task", cascade={"persist"})
      */
     private $output;
     

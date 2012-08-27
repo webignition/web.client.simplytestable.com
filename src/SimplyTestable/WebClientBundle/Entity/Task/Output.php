@@ -40,6 +40,16 @@ class Output {
      */
     private $type;
     
+    
+    /**
+     *
+     * @var SimplyTestable\WebClientBundle\Entity\Task\Task
+     * 
+     * @ORM\OneToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\Task\Task", inversedBy="output")
+     * @ORM\JoinColumn(name="task_id", referencedColumnName="id", nullable=false)     
+     */
+    protected $task;
+    
 
     /**
      * Get id
@@ -96,5 +106,28 @@ class Output {
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * Set task
+     *
+     * @param SimplyTestable\WebClientBundle\Entity\Task\Task $task
+     * @return Output
+     */
+    public function setTask(\SimplyTestable\WebClientBundle\Entity\Task\Task $task)
+    {
+        $this->task = $task;
+    
+        return $this;
+    }
+
+    /**
+     * Get task
+     *
+     * @return SimplyTestable\WebClientBundle\Entity\Task\Task 
+     */
+    public function getTask()
+    {
+        return $this->task;
     }
 }
