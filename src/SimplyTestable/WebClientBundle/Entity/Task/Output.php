@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\Entity\Task;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\SerializerBundle\Annotation as SerializerAnnotation;
+use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 
 /**
  * 
@@ -29,6 +30,7 @@ class Output {
      * @var string
      * @ORM\Column(type="text", nullable=true)
      * @SerializerAnnotation\Expose
+     * @SerializerAnnotation\Accessor(getter="getPublicSerialisedContent")
      */
     private $content;
     
@@ -49,6 +51,13 @@ class Output {
      * @ORM\JoinColumn(name="task_id", referencedColumnName="id", nullable=false)     
      */
     protected $task;
+    
+    
+    /**
+     *
+     * @var Result 
+     */
+    private $result;
     
 
     /**
@@ -124,10 +133,41 @@ class Output {
     /**
      * Get task
      *
-     * @return SimplyTestable\WebClientBundle\Entity\Task\Task 
+     * @return \SimplyTestable\WebClientBundle\Entity\Task\Task 
      */
     public function getTask()
     {
         return $this->task;
+    }
+    
+    
+    /**
+     *
+     * @return string
+     */
+    public function getPublicSerialisedContent() {
+        return $this->getResult();
+    }
+    
+    
+    /**
+     *
+     * @param Result $result
+     * @return \SimplyTestable\WebClientBundle\Entity\Task\Output 
+     */
+    public function setResult(Result $result)
+    {
+        $this->result = $result;
+        return $this;
+    }
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Model\TaskOutput\Result
+     */
+    public function getResult()
+    {
+        return $this->result;
     }
 }

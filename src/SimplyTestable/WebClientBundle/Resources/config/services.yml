@@ -15,7 +15,15 @@ services:
         entityManager: "@doctrine.orm.entity_manager"  
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"            
-        taskOutputService: "@simplytestable.services.taskoutputservice"
+        taskOutputService: "@simplytestable.services.taskoutputservice"                 
+
+  simplytestable.services.taskservice:
+    class:   SimplyTestable\WebClientBundle\Services\TaskService  
+    arguments:
+        entityManager: "@doctrine.orm.entity_manager"  
+        parameters: %core_application%
+        webResourceService: "@simplytestable.services.webresourceservice"            
+        taskOutputService: "@simplytestable.services.taskoutputservice"    
 
   simplytestable.services.taskoutputservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskOutputService  
@@ -23,8 +31,9 @@ services:
         entityManager: "@doctrine.orm.entity_manager"      
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
-        
-  simplytestable.services.taskoutputdeserializerfactoryservice:
-    class:   SimplyTestable\WebClientBundle\Services\TaskOutputDeserializer\FactoryService
+        taskOutputResultParserService: "@simplytestable.services.taskoutputresultparserfactoryservice" 
+
+  simplytestable.services.taskoutputresultparserfactoryservice:
+    class:   SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory
     arguments:
-        deserlializers: %task-output-deserializers%    
+      drivers: %task-output-result-parsers%

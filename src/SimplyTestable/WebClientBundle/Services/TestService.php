@@ -38,7 +38,7 @@ class TestService extends CoreApplicationService {
         EntityManager $entityManager,
         $parameters,
         \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService,
-        \SimplyTestable\WebClientBundle\Services\TaskOutputService $taskOutputService
+        \SimplyTestable\WebClientBundle\Services\TaskOutputService $taskOutputService        
     ) {
         parent::__construct($parameters, $webResourceService);
         $this->entityManager = $entityManager; 
@@ -50,7 +50,7 @@ class TestService extends CoreApplicationService {
         $httpRequest = $this->getAuthorisedHttpRequest(
             $this->getUrl('test_start', array(
             'canonical-url' => $canonicalUrl
-        )));
+        )));        
         
         /* @var $response \webignition\WebResource\JsonDocument\JsonDocument */
         try {
@@ -82,25 +82,13 @@ class TestService extends CoreApplicationService {
     public function get($canonicalUrl, $testId) {        
         if ($this->hasEntity($testId)) {
             /* @var $test Test */
-            $test = $this->fetchEntity($testId);            
+            $test = $this->fetchEntity($testId);
             
-            if ($test->getState() == 'completed') {
-                foreach ($test->getTasks() as $task) {                    
-                    /* @var $task Task */
-                    if (!$task->hasOutput()) {                        
-                        $this->taskOutputService->get($test, $task);
-                    }
-                }
-                
-                $this->entityManager->persist($test);
-                $this->entityManager->flush($test);                
-                
-                return $test;
+            if ($test->getState() != 'completed') {
+                $this->update($test);             
             }
-            
-            $this->update($test);
         } else {
-            $test = $this->create($canonicalUrl, $testId);          
+            $test = $this->create($canonicalUrl, $testId);
         }
         
         $this->entityManager->persist($test);
@@ -362,20 +350,6 @@ class TestService extends CoreApplicationService {
         }
         
         return $this->entityRepository;
-    }
-    
-    
-    /**
-     *
-     * @param Test $test
-     * @param int $task_id
-     * @return Task 
-     */
-    public function getTask(Test $test, $task_id) {
-        return $this->entityRepository = $this->entityManager->getRepository('SimplyTestable\WebClientBundle\Entity\Task\Task')->findOneBy(array(
-            'id' => $task_id,
-            'test' => $test
-        ));
     }
     
 }

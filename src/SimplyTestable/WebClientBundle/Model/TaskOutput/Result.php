@@ -1,0 +1,43 @@
+<?php
+
+namespace SimplyTestable\WebClientBundle\Model\TaskOutput;
+
+class Result {
+    
+    /**
+     * Collection of Message objects
+     * 
+     * @var array
+     */
+    private $messages;
+    
+    
+    /**
+     *
+     * @param Message $message
+     * @return \SimplyTestable\WebClientBundle\Model\TaskOutput\Result 
+     */
+    public function addMessage(Message $message) {
+        $this->messages[] = $message;
+        return $this;
+    }
+    
+    
+    /**
+     * Get collection of error messages
+     *  
+     * @return array 
+     */    
+    public function getErrors() {
+        $errors = array();
+        foreach ($messages as $message) {
+            /* @var $message Message */
+            if ($message->getType() == Message::TYPE_ERROR) {
+                $errors[] = $message;
+            }
+        }
+        
+        return $errors;
+    }
+    
+}

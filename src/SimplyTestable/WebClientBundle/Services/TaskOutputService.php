@@ -26,21 +26,21 @@ class TaskOutputService extends CoreApplicationService {
     
     
     /**
-     * Collection of test outputs retrieved from core application
-     *  
-     * @var array
+     * @var \SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory
      */
-    private $output = array();
+    private $taskOutputResultParserService;  
     
     
     
     public function __construct(
         EntityManager $entityManager,
         $parameters,
-        \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService
+        \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService,
+        \SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory $taskOutputResultParserService
     ) {
         parent::__construct($parameters, $webResourceService);  
         $this->entityManager = $entityManager;
+        $this->taskOutputResultParserService = $taskOutputResultParserService;        
     }
     
     
@@ -136,6 +136,23 @@ class TaskOutputService extends CoreApplicationService {
         }
         
         return $this->entityRepository;
-    }      
+    }
+    
+    
+    /**
+     *
+     * @param Task $task 
+     * @return Task
+     */
+    public function setParsedOutput(Task $task) {         
+        if ($task->hasOutput()) {             
+            $parser = $this->taskOutputResultParserService->getParser($task->getOutput());
+            $parser->setOutput($task->getOutput());
+
+            $task->getOutput()->setResult($parser->getResult());
+        } 
+        
+        return $task;
+    }
     
 }

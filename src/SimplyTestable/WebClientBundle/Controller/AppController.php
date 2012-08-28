@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Controller;
 
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -146,23 +147,27 @@ class AppController extends BaseViewController
     }
     
     
-    
-    public function taskResultsAction($website, $test_id, $task_id) {
+    public function taskResultsCollectionAction($website, $test_id, $task_ids) {         
         if (!$this->getTestService()->has($website, $test_id)) {
             return $this->redirect($this->generateUrl('app', array(), true));
-        }
+        } 
 
         $test = $this->getTestService()->get($website, $test_id);
-        $task = $this->getTestService()->getTask($test, $task_id);
+        $tasks = $this->getTaskService()->getCollection($test, explode(',', $task_ids));
+        $output = array();
         
-        if (!$this->getTaskOutputService()->has($test, $task)) {
-            return $this->sendNotFoundResponse();
+        foreach ($tasks as $task) {
+            if ($task->getState() == 'completed') {
+                if ($this->getTaskOutputService()->has($test, $task)) {
+                    $task->setOutput($this->getTaskOutputService()->get($test, $task));
+                    $this->getTaskOutputService()->setParsedOutput($task);                    
+                    $output[$task->getId()] = $task->getOutput();
+                }                
+            }
         }
-        
-        $taskOutput = $this->getTaskOutputService()->get($test, $task);   
     
-        return new Response($this->getSerializer()->serialize($taskOutput, 'json'));        
-    }
+        return new Response($this->getSerializer()->serialize($output, 'json'));        
+    }    
     
     
     
@@ -238,6 +243,15 @@ class AppController extends BaseViewController
     private function getTestService() {
         return $this->container->get('simplytestable.services.testservice');
     }  
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TaskService 
+     */
+    private function getTaskService() {
+        return $this->container->get('simplytestable.services.taskservice');
+    }      
     
     
     /**

@@ -37,7 +37,7 @@ abstract class BaseViewController extends Controller
      *
      * @return boolean 
      */
-    private function isJsonResponseRequired() {
+    protected function isJsonResponseRequired() {
         return $this->get('request')->get('output') == 'json';   
     }
     

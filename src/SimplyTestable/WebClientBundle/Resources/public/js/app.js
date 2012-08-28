@@ -4,17 +4,17 @@ application.taskOutputController = function () {
     this.taskOutput = {};
 };
 
-application.taskOutputController.prototype.get = function (taskId, successCallback) {
+application.taskOutputController.prototype.get = function (taskIds, successCallback) {
     var outputUrl = function () {
-        return document.location.href.replace('/progress/', '') + '/' + taskId + '/results/';
-    }; 
-    
-    var setTaskOutput = function (data) {           
-        this.taskOutput[outputUrl()] = data;
+        return document.location.href.replace('/progress/', '') + '/' + taskIds.join(',') + '/results/collection/';
     };
     
-    var getTaskOutput = function () {
-        return this.taskOutput[outputUrl()];
+    var setTaskOutput = function (taskId, data) {
+        this.taskOutput[taskId] = data;
+    };
+    
+    var getTaskOutput = function (taskId) {
+        return this.taskOutput[taskId];
     };
     
     var scope = this;
@@ -36,8 +36,15 @@ application.taskOutputController.prototype.get = function (taskId, successCallba
             }
         },
         success: function (data, textStatus, request) {
-            setTaskOutput.call(scope, data);            
-            successCallback.call(scope, (getTaskOutput.call(scope)));
+            for (var taskId in data) {
+                if (data.hasOwnProperty(taskId)) {
+                    setTaskOutput.call(scope, taskId, data[taskId]);                   
+                    successCallback.call(scope, {
+                        'taskId':taskId,
+                        'output':getTaskOutput.call(scope, taskId)
+                    });
+                }
+            }
         },
         url:outputUrl()
     });
@@ -127,9 +134,9 @@ application.taskOutputController.prototype.outputResult.prototype.error['HTML va
 
 application.taskOutputController.prototype.outputParser = {
     parsers: {
-        'HTML validation': function (taskOutput) {
-            // lastLine":65,"lastColumn":12,"message":"No p element in scope but a p end tag seen.","messageid":"html5","type":"error"
-            var messages = jQuery.parseJSON(taskOutput.content).messages;
+        'HTML validation': function (taskOutput) {            
+            // line_number":65,"column_number":12,"message":"No p element in scope but a p end tag seen.","messageid":"html5","type":"error"            
+            var messages = taskOutput.content.messages;
             var messageCount = messages.length;             
             var errors;
             
@@ -143,8 +150,8 @@ application.taskOutputController.prototype.outputParser = {
                         if (message.type == 'error') {
                             var error = new this.prototype.outputResult.prototype.error['HTML validation']();
                             error.setMessage(message.message);
-                            error.setLineNumber(message.lastLine);
-                            error.setColumnNumber(message.lastColumn);
+                            error.setLineNumber(message.line_number);
+                            error.setColumnNumber(message.column_number);
                             
                             errors.push(error);                            
                         }
@@ -158,7 +165,7 @@ application.taskOutputController.prototype.outputParser = {
         }
     },
     
-    getResults: function (taskOutput) {
+    getResults: function (taskOutput) {        
         var scope = this;
         
         var results = new this.prototype.outputResult();
@@ -170,11 +177,23 @@ application.taskOutputController.prototype.outputParser = {
     }
 };
 
-application.taskOutputController.prototype.update = function (inPageTask, taskId) {    
-    
-    this.get(taskId, function (taskOutput) {
-        var outputResult = this.outputParser.getResults.call(application.taskOutputController, taskOutput);
+application.taskOutputController.prototype.update = function (tasksToRetrieveOutputFor) {        
+    var getTaskIds = function (tasksToRetrieveOutputFor) {
+        var taskIds = [];
         
+        for (var taskId in tasksToRetrieveOutputFor) {
+            if (tasksToRetrieveOutputFor.hasOwnProperty(taskId)) {
+                taskIds.push(taskId);
+            }
+        }
+        
+        return taskIds;
+    };    
+    
+    this.get(getTaskIds(tasksToRetrieveOutputFor), function (taskOutput) {        
+        var outputResult = this.outputParser.getResults.call(application.taskOutputController, taskOutput.output);
+        var inPageTask = tasksToRetrieveOutputFor[taskOutput.taskId];
+      
         if (outputResult.hasErrors()) {
             var getErrorWording = function (errorCount) {
                 if (errorCount === 1) {
@@ -343,6 +362,9 @@ application.testProgressController = function () {
             return false;            
         };
         
+        var tasksToRetrieveOutputFor = {};
+        var tasksToRetrieveOutputForCount = 0;
+        
         for (var urlIndex = 0; urlIndex < latestData.urls.length; urlIndex++) {
             var url = latestData.urls[urlIndex];
             var inPageUrl = findInPageUrl(url);
@@ -352,7 +374,7 @@ application.testProgressController = function () {
                 getUrlList().append(inPageUrl);
             }
             
-            var latestDataTasks = findLatestDataTasks(url);
+            var latestDataTasks = findLatestDataTasks(url);            
 
             for (var latestDataTaskIndex = 0; latestDataTaskIndex < latestDataTasks.length; latestDataTaskIndex++) {
                 var latestDataTask = latestDataTasks[latestDataTaskIndex];
@@ -368,13 +390,16 @@ application.testProgressController = function () {
                 inPageTask.removeClass('in-progress').removeClass('queued').removeClass('completed').addClass(latestDataTask.state);
                 $('.state i', inPageTask).removeClass('icon-cog').removeClass('icon-cogs').removeClass('icon-bar-chart').addClass(taskStateIconMap[latestDataTask.state]);
                 
-                if (getInPageTaskState(inPageTask) == 'completed' && previousState != 'completed') {                    
-                    //console.log(taskOutputController);
-                    
-                    taskOutputController.update(inPageTask, latestDataTask.id);
+                if (getInPageTaskState(inPageTask) == 'completed' && previousState != 'completed') {                                        
+                    tasksToRetrieveOutputFor[latestDataTask.id] = inPageTask
+                    tasksToRetrieveOutputForCount++;;
                 }                              
             }
-        }      
+        } 
+        
+        if (tasksToRetrieveOutputForCount > 0 && $('#completion-percent-value').text() < 100) {
+            taskOutputController.update(tasksToRetrieveOutputFor);
+        }
     };
     
     var refresh = function () {
