@@ -65,10 +65,6 @@ section .info i {
     opacity:0.4;
 }
 
-/*.app-results #main .leader h1 i {
-    font-size:24px;
-}*/
-
 section.top {
     height:110px;
 }
@@ -145,82 +141,81 @@ section.top {
     margin-bottom:0;
 }
 
-#progress h2 {
+#progress h2,
+#test-list h2 {
     font-weight: normal;
 }
 
-#progress #url-list ul {
+#test-list #url-list ul {
     list-style:none;
 }
 
-#progress #url-list ul.urls {
+#test-list #url-list ul.urls {
     margin: 20px 0 0 0;
 }
 
-#progress #url-list ul li {
+#test-list #url-list ul li {
     list-style-type: none;
     margin:0;
     padding:0;
 }
 
-#progress #url-list ul.urls {
+#test-list #url-list ul.urls {
     clear:both;
 }
 
-#progress #url-list ul.urls li.url {
+#test-list #url-list ul.urls li.url {
     margin:8px 0;
 }
 
-#progress #url-list ul.tasks li.queued i {
+#test-list #url-list ul.tasks li.queued i {
     color:#F89406;
 }
 
-#progress #url-list ul.tasks li.in-progress i {
+#test-list #url-list ul.tasks li.in-progress i {
     color:#08c;
 }
 
-#progress #url-list ul.tasks li.completed i {
+#test-list #url-list ul.tasks li.completed i {
     color:#51A351;
 }
 
-#progress #url-list ul.tasks li.task .type {
+#test-list #url-list ul.tasks li.task .type {
     opacity:0.6;
 }
 
-#progress .test-states {
+#test-list .test-states {
     width:100%;
 }
 
-#progress .test-states th {
+#test-list .test-states th {
     text-align: right;
     width:10%;
 }
 
-#progress .test-states td.bar {
+#test-list .test-states td.bar {
     width:90%;
 }
 
-
-#progress .test-states .bar span {
+#test-list .test-states .bar span {
     width:100%;    
     display: inline-block;
     margin-left: 6px;
 }
 
-
-#progress .test-states .queued .bar span {
+#test-list .test-states .queued .bar span {
     background-color:#F89406;
 }
 
-#progress .test-states .in_progress .bar span {
+#test-list .test-states .in_progress .bar span {
     background-color:#3A87AD;
 }
 
-#progress .test-states .completed .bar span {
+#test-list .test-states .completed .bar span {
     background-color:#468847;
 }
 
-#progress #url-list h2 i {
+#test-list #url-list h2 i {
     font-size: 38px;
     line-height: 48px;    
 }
