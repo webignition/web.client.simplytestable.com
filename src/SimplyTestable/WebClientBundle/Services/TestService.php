@@ -352,6 +352,12 @@ class TestService extends CoreApplicationService {
     }
     
     
+    /**
+     *
+     * @param Test $test
+     * @param int $task_id
+     * @return Task 
+     */
     public function getTask(Test $test, $task_id) {
         return $this->entityRepository = $this->entityManager->getRepository('SimplyTestable\WebClientBundle\Entity\Task\Task')->findOneBy(array(
             'id' => $task_id,
