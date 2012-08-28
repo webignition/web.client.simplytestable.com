@@ -28,20 +28,21 @@ class TestService extends CoreApplicationService {
     
     
     /**
-     * Collection of test statuses retrieved from core application
-     *  
-     * @var array
+     *
+     * @var \SimplyTestable\WebClientBundle\Services\TaskOutputService
      */
-    private $tests = array();
+    private $taskOutputService;
     
     
     public function __construct(
         EntityManager $entityManager,
         $parameters,
-        \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService
+        \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService,
+        \SimplyTestable\WebClientBundle\Services\TaskOutputService $taskOutputService
     ) {
         parent::__construct($parameters, $webResourceService);
-        $this->entityManager = $entityManager;  
+        $this->entityManager = $entityManager; 
+        $this->taskOutputService = $taskOutputService;
     }     
     
     
@@ -80,8 +81,20 @@ class TestService extends CoreApplicationService {
      */
     public function get($canonicalUrl, $testId) {        
         if ($this->hasEntity($testId)) {
+            /* @var $test Test */
             $test = $this->fetchEntity($testId);            
+            
             if ($test->getState() == 'completed') {
+                foreach ($test->getTasks() as $task) {                    
+                    /* @var $task Task */
+                    if (!$task->hasOutput()) {                        
+                        $this->taskOutputService->get($test, $task);
+                    }
+                }
+                
+                $this->entityManager->persist($test);
+                $this->entityManager->flush($test);                
+                
                 return $test;
             }
             
