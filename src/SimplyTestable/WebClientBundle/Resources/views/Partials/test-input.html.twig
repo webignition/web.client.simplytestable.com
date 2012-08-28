@@ -10,7 +10,7 @@
                     <i class="icon-cog"></i> Testing {{ test.website }} 
                     {% elseif test.state == 'preparing' or test.state == 'in-progress' %}
                     <i class="icon-cogs"></i> Testing {{ test.website }}
-                    {% elseif test.state == 'completed' %}
+                    {% elseif test.state == 'completed' or test.state == 'cancelled' %}
                     <i class="icon-bar-chart"></i> Results for {{ test.website }}
                     {% endif %} 
                     <span id="test-id">({{ testId }})</span>

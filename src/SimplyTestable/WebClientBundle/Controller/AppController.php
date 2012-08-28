@@ -84,7 +84,8 @@ class AppController extends BaseViewController
         $taskStates = array(
             'in-progress',
             'queued',
-            'completed'
+            'completed',
+            'cancelled'
         );
         
         $taskCountByState = array();        

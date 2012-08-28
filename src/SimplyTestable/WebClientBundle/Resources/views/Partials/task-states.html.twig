@@ -11,6 +11,12 @@
         <tr class="completed">                
             <th><span class="label label-success">Completed</span></th>
             <td class="bar"><span class="label label-success" style="width:{% if taskCountByState.completed == 0 %} 1{% else %} {{ (taskCountByState.completed / test.taskCount) * 100}}{% endif %}%;">{{ taskCountByState.completed }}</span></td>
-        </tr>            
+        </tr>
+        {% if taskCountByState.cancelled %}
+        <tr class="cancelled">                
+            <th><span class="label label-important">Cancelled</span></th>
+            <td class="bar"><span class="label label-important" style="width:{% if taskCountByState.cancelled == 0 %} 1{% else %} {{ (taskCountByState.cancelled / test.taskCount) * 100}}{% endif %}%;">{{ taskCountByState.cancelled }}</span></td>
+        </tr>        
+        {% endif %}
     </tbody>
 </table>  
