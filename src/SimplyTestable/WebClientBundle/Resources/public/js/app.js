@@ -67,13 +67,13 @@ application.taskOutputController.prototype.outputResult = function () {
     this.getErrorCount = getErrorCount;
     this.setErrors = setErrors;
     this.getErrors = getErrors;
-    this.hasErrors = getErrors;
+    this.hasErrors = hasErrors;
 };
 
 application.taskOutputController.prototype.outputResult.prototype.error = {};
 
 application.taskOutputController.prototype.outputResult.prototype.error['abstract'] = function () {
-    var message = 'test message 2';
+    var message = '';
     
     var setMessage = function (newMessage) {
         message = newMessage;
