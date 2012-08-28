@@ -1,13 +1,194 @@
 var application = {};
 
 application.taskOutputController = function () {
-    var taskOutput = [];
-    var test = 'thing';
-
+    this.taskOutput = {};
 };
 
-application.taskOutputController.update = function () {
+application.taskOutputController.prototype.get = function (taskId, successCallback) {
+    var outputUrl = function () {
+        return document.location.href.replace('/progress/', '') + '/' + taskId + '/results/';
+    }; 
     
+    var setTaskOutput = function (data) {           
+        this.taskOutput[outputUrl()] = data;
+    };
+    
+    var getTaskOutput = function () {
+        return this.taskOutput[outputUrl()];
+    };
+    
+    var scope = this;
+    
+    jQuery.ajax({
+        complete:function (request, textStatus) {
+            //console.log('complete', request, textStatus);
+        },
+        dataType:'json',
+        error:function (request, textStatus, errorThrown) {
+            console.log('error', request, textStatus, request.getAllResponseHeaders());
+        },
+        statusCode: {
+            403: function () {
+                console.log('403');
+            },
+            500: function () {
+                console.log('500');
+            }
+        },
+        success: function (data, textStatus, request) {
+            setTaskOutput.call(scope, data);            
+            successCallback.call(scope, (getTaskOutput.call(scope)));
+        },
+        url:outputUrl()
+    });
+}
+
+application.taskOutputController.prototype.outputResult = function () {
+    var errorCount = 0;
+    var errors = [];
+    
+    var getErrorCount = function () {
+        return errorCount;
+    };
+    
+    var setErrors = function (newErrors) {
+        errors = newErrors;
+        errorCount = errors.length;
+    };   
+    
+    var getErrors = function () {
+        return errors;
+    };  
+    
+    var hasErrors = function () {
+        return getErrorCount() > 0;
+    };
+
+    this.getErrorCount = getErrorCount;
+    this.setErrors = setErrors;
+    this.getErrors = getErrors;
+    this.hasErrors = getErrors;
+};
+
+application.taskOutputController.prototype.outputResult.prototype.error = {};
+
+application.taskOutputController.prototype.outputResult.prototype.error['abstract'] = function () {
+    var message = 'test message 2';
+    
+    var setMessage = function (newMessage) {
+        message = newMessage;
+    }
+    
+    var getMessage = function () {
+        return message;
+    }
+    
+    var toString = function () {
+        return getMessage();
+    }
+    
+    this.setMessage = setMessage;
+    this.getMessage = getMessage;
+    this.toString = toString;
+};
+
+application.taskOutputController.prototype.outputResult.prototype.error['HTML validation'] = function () {
+    var lineNumber = 0;
+    var columnNumber = 0;
+    
+    var setLineNumber = function (newLineNumber) {
+        lineNumber = newLineNumber;
+    };
+    
+    var getLineNumber = function () {
+        return lineNumber;
+    };
+    
+    var setColumnNumber = function (newColumnNumber) {
+        columnNumber = newColumnNumber;
+    };
+    
+    var getColumnNumber = function () {
+        return columnNumber;
+    };  
+    
+    var toString = function () {
+        return this.getMessage() + ' at line ' + getLineNumber() + ', column ' + this.getColumnNumber();
+    }
+    
+    this.setLineNumber = setLineNumber;
+    this.getLineNumber = getLineNumber;
+    this.setColumnNumber = setColumnNumber;
+    this.getColumnNumber = getColumnNumber;
+    this.toString = toString;
+};
+
+application.taskOutputController.prototype.outputResult.prototype.error['HTML validation'].prototype = new application.taskOutputController.prototype.outputResult.prototype.error['abstract']
+
+application.taskOutputController.prototype.outputParser = {
+    parsers: {
+        'HTML validation': function (taskOutput) {
+            // lastLine":65,"lastColumn":12,"message":"No p element in scope but a p end tag seen.","messageid":"html5","type":"error"
+            var messages = jQuery.parseJSON(taskOutput.content).messages;
+            var messageCount = messages.length;             
+            var errors;
+            
+            var getErrors = function () {                
+                if (errors == undefined) {
+                    errors = [];
+                    
+                    for (var messageIndex = 0; messageIndex < messageCount; messageIndex++) {
+                        var message = messages[messageIndex];
+                        
+                        if (message.type == 'error') {
+                            var error = new this.prototype.outputResult.prototype.error['HTML validation']();
+                            error.setMessage(message.message);
+                            error.setLineNumber(message.lastLine);
+                            error.setColumnNumber(message.lastColumn);
+                            
+                            errors.push(error);                            
+                        }
+                    }
+                }
+                
+                return errors;
+            };
+            
+            this.getErrors = getErrors;
+        }
+    },
+    
+    getResults: function (taskOutput) {
+        var scope = this;
+        
+        var results = new this.prototype.outputResult();
+        var parser = new this.prototype.outputParser.parsers[taskOutput.type](taskOutput);
+
+        results.setErrors(parser.getErrors.call(scope));
+        
+        return results;        
+    }
+};
+
+application.taskOutputController.prototype.update = function (inPageTask, taskId) {    
+    
+    this.get(taskId, function (taskOutput) {
+        var outputResult = this.outputParser.getResults.call(application.taskOutputController, taskOutput);
+        
+        if (outputResult.hasErrors()) {
+            var getErrorWording = function (errorCount) {
+                if (errorCount === 1) {
+                    return 'error';
+                }
+                
+                return 'errors'
+            };
+            
+            inPageTask.append($(' <span class="label label-important">' + outputResult.getErrorCount() + ' ' + getErrorWording(outputResult.getErrorCount()) + '</span>'));
+        } else {
+            inPageTask.append($(' <i class="icon-ok"></i>'));
+        }     
+    });
 };
 
 
@@ -187,10 +368,10 @@ application.testProgressController = function () {
                 inPageTask.removeClass('in-progress').removeClass('queued').removeClass('completed').addClass(latestDataTask.state);
                 $('.state i', inPageTask).removeClass('icon-cog').removeClass('icon-cogs').removeClass('icon-bar-chart').addClass(taskStateIconMap[latestDataTask.state]);
                 
-                if (getInPageTaskState(inPageTask) == 'completed' && previousState != 'completed') {
-                    // http://web.client.simplytestable.com/app_dev.php/app/http://webignition.net//27/1/results/
-//                    taskOutputController.update();
-                    //console.log(inPageTask, latestDataTask.id); 
+                if (getInPageTaskState(inPageTask) == 'completed' && previousState != 'completed') {                    
+                    //console.log(taskOutputController);
+                    
+                    taskOutputController.update(inPageTask, latestDataTask.id);
                 }                              
             }
         }      

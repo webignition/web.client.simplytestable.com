@@ -5,14 +5,15 @@
             <label for="input-website">
                 {% if test is defined %}
                     {% if test.state == 'new'  %}
-                    <i class="icon-cog"></i> Testing {{ test.website }} ({{ testId }})
+                    <i class="icon-cog"></i> Testing {{ test.website }}
                     {% elseif test.state == 'queued'  %}
-                    <i class="icon-cog"></i> Testing {{ test.website }} ({{ testId }})
+                    <i class="icon-cog"></i> Testing {{ test.website }} 
                     {% elseif test.state == 'preparing' or test.state == 'in-progress' %}
-                    <i class="icon-cogs"></i> Testing {{ test.website }} ({{ testId }})
+                    <i class="icon-cogs"></i> Testing {{ test.website }}
                     {% elseif test.state == 'completed' %}
-                    <i class="icon-bar-chart"></i> Results for {{ test.website }} ({{ testId }})
-                    {% endif %}  
+                    <i class="icon-bar-chart"></i> Results for {{ test.website }}
+                    {% endif %} 
+                    <span id="test-id">({{ testId }})</span>
                 {% else %}
                     <i class="icon-off"></i> Start new website test
                 {% endif %}               

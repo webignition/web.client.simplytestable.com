@@ -33,22 +33,13 @@ class TaskOutputService extends CoreApplicationService {
     private $output = array();
     
     
-    /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Services\TaskOutputDeserializer\FactoryService 
-     */
-    private $taskOutputDeserializerFactoryService;
-    
-    
     
     public function __construct(
         EntityManager $entityManager,
         $parameters,
-        \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService,
-        \SimplyTestable\WebClientBundle\Services\TaskOutputDeserializer\FactoryService $taskOutputDeserializerFactoryService
+        \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService
     ) {
-        parent::__construct($parameters, $webResourceService);
-        $this->taskOutputDeserializerFactoryService = $taskOutputDeserializerFactoryService;     
+        parent::__construct($parameters, $webResourceService);  
         $this->entityManager = $entityManager;
     }
     
