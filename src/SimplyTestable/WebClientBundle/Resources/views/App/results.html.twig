@@ -3,5 +3,21 @@
 {% block title %}Testing {{test.website}} (#{{test.id}}) - {{ parent() }}{% endblock %}
 
 {% block main %}         
-    {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %}  
+        <div class="row-fluid">
+            <div class="span12">
+                {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %} 
+            </div>
+        </div>
+
+        <div id="test-list">
+            <div class="row-fluid">
+                <div class="span12">
+                    <section id="url-list">
+                        <h2 class="info"><i class="icon-tasks"></i> Tests (<span id="url-list-url-count">{{ urls | length }}</span> urls, <span id="url-list-task-count">{{ test.tasks | length }}</span> tests)</h2>
+                        {% include 'SimplyTestableWebClientBundle:Partials/progress:task-states.html.twig' %}
+                        {% include 'SimplyTestableWebClientBundle:Partials:url-list.html.twig' %}      
+                    </section>  
+                </div>
+            </div>            
+        </div>    
 {% endblock %}

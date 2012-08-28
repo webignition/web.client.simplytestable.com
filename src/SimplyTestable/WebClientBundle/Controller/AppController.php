@@ -137,7 +137,8 @@ class AppController extends BaseViewController
             )),
             'test' => $test,
             'urls' => $this->getTestUrls($test),
-            'testId' => $test_id
+            'testId' => $test_id,
+            'taskCountByState' => $this->getTaskCountByState($test)
         );
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');

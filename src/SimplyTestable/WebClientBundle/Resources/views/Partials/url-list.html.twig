@@ -1,0 +1,27 @@
+<ul class="urls">
+{% for url in urls %}             
+    <li class="url">               
+        <span class="url">{{ url }}</span>
+        <span class="tasks">
+            <ul class="tasks">
+            {% for task in test.tasks %}
+                {% if task.url == url %}
+                    <li class="task {{task.state}}">
+                        <span class="state">
+                            {% if task.state == 'queued' %}
+                                <i class="icon-cog"></i>
+                            {% elseif task.state == 'in-progress' %}
+                                <i class="icon-cogs"></i>
+                            {% else %}
+                                <i class="icon-bar-chart"></i>
+                            {% endif %}
+                        </span>                                
+                        <span class="type">{{ task.type}}</span>
+                    </li>                            
+                {% endif %}
+            {% endfor %} 
+            </ul>
+        </span>                    
+    </li>
+{% endfor %}              
+</ul>      
