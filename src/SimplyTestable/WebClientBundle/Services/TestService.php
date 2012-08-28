@@ -127,7 +127,7 @@ class TestService extends CoreApplicationService {
         $httpRequest = $this->getAuthorisedHttpRequest(
             $this->getUrl('test_list_urls', array(
             'canonical-url' => (string)$test->getWebsite(),
-            'test_id' => $test->getId()
+            'test_id' => $test->getTestId()
         )));
         
         $testUrls = null;
