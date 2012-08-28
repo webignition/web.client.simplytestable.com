@@ -12,6 +12,8 @@
                                 <i class="icon-cog"></i>
                             {% elseif task.state == 'in-progress' %}
                                 <i class="icon-cogs"></i>
+                            {% elseif task.state == 'cancelled' %}
+                                <i class="icon-ban-circle"></i>                                
                             {% else %}
                                 <i class="icon-bar-chart"></i>
                             {% endif %}

@@ -180,6 +180,10 @@ section.top {
     color:#51A351;
 }
 
+#test-list #url-list ul.tasks li.cancelled i {
+    color:#B94A48;
+}
+
 #test-list #url-list ul.tasks li.task .type {
     opacity:0.6;
 }

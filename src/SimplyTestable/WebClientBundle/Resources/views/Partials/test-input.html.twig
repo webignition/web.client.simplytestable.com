@@ -30,7 +30,7 @@
         <div class="fields input-append">                    
             <input name="website" id="input-website" type="text" placeholder="Enter website homepage URL &hellip;" {% if test is defined %} {% if test.state != 'completed' %} disabled {% endif %} value="{{ test.website }}" {% endif %}>            
             {% if test is defined %}
-                {% if test.state == 'completed' %}
+                {% if test.state == 'completed' or test.state == 'cancelled' %}
                 <button type="submit" class="btn btn-primary btn-large">Run test again<i class="icon-off icon-large"></i></button>
                 {% else %}
                 <button type="submit" class="btn btn-primary btn-large btn-danger">Cancel test <i class="icon-warning-sign icon-large"></i></button>
