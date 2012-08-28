@@ -127,6 +127,15 @@ class AppController extends BaseViewController
         
         $test = $this->getTestService()->get($website, $test_id);        
         
+        foreach ($test->getTasks() as $task) {
+            /* @var $task Task */
+            if ($task->getState() == 'completed' && !$task->hasOutput()) {
+                if ($this->getTaskOutputService()->has($test, $task)) {
+                    $this->getTaskOutputService()->get($test, $task);
+                } 
+            }
+        }       
+        
         if (in_array($test->getState(), $this->progressStates)) {
             return $this->redirect($this->getResultsUrl($website, $test_id));
         }
@@ -137,14 +146,35 @@ class AppController extends BaseViewController
                 'website' => $website,
                 'test_id' => $test_id
             )),
-            'test' => $test,
+            'test' => $test,            
             'urls' => $this->getTestUrls($test),
             'testId' => $test_id,
-            'taskCountByState' => $this->getTaskCountByState($test)
+            'taskCountByState' => $this->getTaskCountByState($test),
+            'taskErrorCount' => $this->getTaskErrorCount($test)
         );
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');
         return $this->sendResponse($viewData);
+    }
+    
+    
+    /**
+     *
+     * @param Test $test
+     * @return array
+     */
+    private function getTaskErrorCount(Test $test) {
+        $taskErrorCounts = array();
+        
+        foreach ($test->getTasks() as $task) {
+            /* @var $task Task */
+            if ($task->getState() == 'completed' && $task->hasOutput()) {
+                $this->getTaskOutputService()->setParsedOutput($task);
+                $taskErrorCounts[$task->getId()] = $task->getOutput()->getResult()->getErrorCount();
+            }
+        }
+        
+        return $taskErrorCounts;
     }
     
     

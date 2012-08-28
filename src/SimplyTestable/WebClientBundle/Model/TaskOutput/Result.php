@@ -30,7 +30,7 @@ class Result {
      */    
     public function getErrors() {
         $errors = array();
-        foreach ($messages as $message) {
+        foreach ($this->messages as $message) {
             /* @var $message Message */
             if ($message->getType() == Message::TYPE_ERROR) {
                 $errors[] = $message;
@@ -39,5 +39,15 @@ class Result {
         
         return $errors;
     }
+    
+    
+    /**
+     *
+     * @return int
+     */
+    public function getErrorCount() {
+        return count($this->getErrors());
+    }
+        
     
 }

@@ -19,6 +19,21 @@
                             {% endif %}
                         </span>                                
                         <span class="type">{{ task.type}}</span>
+                        
+                        {% if taskErrorCount is defined and taskErrorCount[task.id] is defined %}
+                            {% if taskErrorCount[task.id] == 0 %}
+                                <i class="icon-ok"></i>
+                            {% else %}
+                                <span class="label label-important">
+                                {{ taskErrorCount[task.id] }}
+                                {% if taskErrorCount[task.id] == 1 %}
+                                    error
+                                {% else %}
+                                    errors
+                                {% endif %}
+                                </span> 
+                            {% endif %}
+                        {% endif %}
                     </li>                            
                 {% endif %}
             {% endfor %} 
@@ -26,4 +41,4 @@
         </span>                    
     </li>
 {% endfor %}              
-</ul>      
+</ul>
