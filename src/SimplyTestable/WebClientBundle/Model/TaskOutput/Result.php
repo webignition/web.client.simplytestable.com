@@ -4,12 +4,22 @@ namespace SimplyTestable\WebClientBundle\Model\TaskOutput;
 
 class Result {
     
+    const OUTCOME_PASSED = 'passed';
+    const OUTCOME_FAILED = 'failed';
+    
     /**
      * Collection of Message objects
      * 
      * @var array
      */
     private $messages;
+    
+    
+    /**
+     *
+     * @var string
+     */
+    private $outcome;
     
     public function __construct() {
         $this->messages = array();
@@ -61,6 +71,19 @@ class Result {
      */
     public function hasErrors() {
         return $this->getErrorCount() > 0;
+    }
+    
+    
+    /**
+     *
+     * @return string
+     */
+    public function getOutcome() {
+        if ($this->hasErrors()) {
+            return self::OUTCOME_FAILED;
+        }
+        
+        return self::OUTCOME_PASSED;
     }
         
     

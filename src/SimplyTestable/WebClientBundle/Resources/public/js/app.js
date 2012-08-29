@@ -210,7 +210,6 @@ application.taskOutputController.prototype.update = function (tasksToRetrieveOut
     });
 };
 
-
 application.testProgressController = function () {
     var taskOutputController = new application.taskOutputController();
     var latestData = {};
@@ -448,6 +447,92 @@ application.testProgressController = function () {
     };
 };
 
+application.testList = {};
+
+application.testList.list = function () {
+    var testList;
+    
+    this.initialise = function (documentTestList) {
+        testList = documentTestList.clone();
+        documentTestList.remove();
+    };   
+    
+    this.get = function (identifier) {
+        var specificTestList = testList.clone();
+        
+        $('li.url', specificTestList).each(function () {
+            var url = $(this);
+            
+            $('.task', url).each(function () {
+                var task = $(this);
+                
+                switch (identifier) {
+                    case '#all':
+                        break;
+                        
+                    case '#tests-without-errors':
+                        if (task.hasClass('failed') || task.hasClass('cancelled')) {
+                            task.remove();
+                        }
+                        break;
+                        
+                    case '#tests-with-errors':
+                        if (!task.hasClass('failed')) {
+                            task.remove();
+                        }
+                        break;                        
+
+                    case '#cancelled-tests':
+                        if (!task.hasClass('cancelled')) {
+                            task.remove();
+                        }
+                        break; 
+                }
+            });
+            
+            if ($('.task', url).length === 0) {
+                url.remove();
+            }
+        });
+        
+        return specificTestList;
+    };
+};
+
+application.testList.controller = function () {   
+    var testList;
+    var getTestList = function () {
+        if (testList == undefined) {
+            testList = new application.testList.list();            
+        }
+        
+        return testList;
+    };
+    
+    this.getTestList = getTestList;
+    
+    this.initialise = function () {
+        getTestList().initialise($('#test-list .urls'));
+    };
+};
+
+application.resultsController = function () {
+    var testListController = new application.testList.controller();
+    testListController.initialise();
+    
+    $('#test-list .nav a').click(function () {
+        var identifier = $(this).attr('href');
+        if ($(identifier).html() == '') {
+            $(identifier).html(testListController.getTestList().get(identifier));
+        }
+        
+    });
+    
+    this.initialise = function () {
+        $('#test-list .nav a[href=#all]').click();
+    };
+};
+
 application.pages = {
     '/*':{
         'initialise':function () {
@@ -455,15 +540,19 @@ application.pages = {
                 testProgressController = new application.testProgressController();
                 testProgressController.initialise();
             }
+            
+            
+            if ($('body.app-results').length > 0) {                
+                resultsController = new application.resultsController();
+                resultsController.initialise();
+            }            
         }         
     },
     '/':{
-        'initialise':function () {            
+        'initialise':function () {
         }
     }    
 };
-
-
 
 var applicationController = function () {
     var getPagePath = function () {
