@@ -23,19 +23,19 @@
             <div class="row-fluid">
                 <div class="span12">
                     <section id="url-list">
-                        <h2 class="info"><i class="icon-tasks"></i> Test Results</h2>
+                        <span class="info"><i class="icon-tasks"></i></span>
                         
                         <ul class="nav nav-tabs">
-                            <li><a href="#all" data-toggle="tab">All</a></li>
-                            <li><a href="#tests-without-errors" data-toggle="tab">Tests without errors</a></li>
-                            <li><a href="#tests-with-errors" data-toggle="tab">Tests with errors</a></li>
-                            <li><a href="#cancelled-tests" data-toggle="tab">Cancelled tests</a></li>
+                            <li><a href="#all" data-toggle="tab">All ({{ test.taskCount }})</a></li>
+                            <li><a href="#tests-with-errors" data-toggle="tab">Tests with errors ({{ erroredTaskCount }})</a></li>
+                            <li><a href="#tests-without-errors" data-toggle="tab">Tests without errors ({{ test.taskCount - taskCountByState.cancelled - erroredTaskCount }})</a></li>                            
+                            <li><a href="#cancelled-tests" data-toggle="tab">Cancelled tests ({{ taskCountByState.cancelled }})</a></li>
                         </ul> 
                             
                         <div class="tab-content">
                             <div class="tab-pane active" id="all"></div>
-                            <div class="tab-pane" id="tests-without-errors"></div>
                             <div class="tab-pane" id="tests-with-errors"></div>
+                            <div class="tab-pane" id="tests-without-errors"></div>                            
                             <div class="tab-pane" id="cancelled-tests"></div>
                         </div>
                         

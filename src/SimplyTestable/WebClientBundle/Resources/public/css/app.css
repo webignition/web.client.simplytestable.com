@@ -222,3 +222,13 @@ section h2 {
     font-size: 38px;
     line-height: 48px;    
 }
+
+#test-list span.info i {
+    font-size: 38px;
+    line-height: 48px;    
+}
+
+body.app-results #main h1 i {
+    font-size: 38px;
+    line-height: 48px;        
+}

@@ -529,7 +529,7 @@ application.resultsController = function () {
     });
     
     this.initialise = function () {
-        $('#test-list .nav a[href=#all]').click();
+        $('#test-list .nav a[href=#tests-with-errors]').click();
     };
 };
 
