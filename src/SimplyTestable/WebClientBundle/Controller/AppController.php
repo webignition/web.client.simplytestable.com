@@ -142,10 +142,7 @@ class AppController extends BaseViewController
         
         $viewData = array(
             'this_url' => $this->getResultsUrl($website, $test_id),
-            'test_input_action_url' => $this->generateUrl('test_start', array(
-                'website' => $website,
-                'test_id' => $test_id
-            )),
+            'test_input_action_url' => $this->generateUrl('test_start'),
             'test' => $test,            
             'urls' => $this->getTestUrls($test),
             'testId' => $test_id,
