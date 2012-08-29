@@ -150,11 +150,27 @@ class AppController extends BaseViewController
             'urls' => $this->getTestUrls($test),
             'testId' => $test_id,
             'taskCountByState' => $this->getTaskCountByState($test),
-            'taskErrorCount' => $this->getTaskErrorCount($test)
+            'taskErrorCount' => $this->getTaskErrorCount($test),
+            'erroredTaskCount' => $this->getErroredTaskCount($test)
         );
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');
         return $this->sendResponse($viewData);
+    }
+    
+    
+    private function getErroredTaskCount(Test $test) {
+        $totalTaskErrorCount = 0;
+        
+        foreach ($test->getTasks() as $task) {
+            /* @var $task Task */
+            if ($task->getState() == 'completed' && $task->hasOutput()) {
+                $this->getTaskOutputService()->setParsedOutput($task);
+                $totalTaskErrorCount += 1;
+            }
+        }
+        
+        return $totalTaskErrorCount;        
     }
     
     
