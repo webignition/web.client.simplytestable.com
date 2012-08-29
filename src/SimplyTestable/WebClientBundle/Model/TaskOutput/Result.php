@@ -53,6 +53,15 @@ class Result {
     public function getErrorCount() {
         return count($this->getErrors());
     }
+    
+    
+    /**
+     *
+     * @return boolean
+     */
+    public function hasErrors() {
+        return $this->getErrorCount() > 0;
+    }
         
     
 }

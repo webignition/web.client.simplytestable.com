@@ -166,7 +166,9 @@ class AppController extends BaseViewController
             /* @var $task Task */
             if ($task->getState() == 'completed' && $task->hasOutput()) {
                 $this->getTaskOutputService()->setParsedOutput($task);
-                $totalTaskErrorCount += 1;
+                if ($task->getOutput()->getResult()->hasErrors()) {
+                    $totalTaskErrorCount += 1;
+                }
             }
         }
         
