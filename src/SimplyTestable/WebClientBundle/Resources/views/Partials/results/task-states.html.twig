@@ -1,0 +1,16 @@
+<table class="test-states">
+    <tbody>
+        <tr class="without-errors">                
+            <th><span class="label label-success">Tests without errors</span></th>
+            <td class="bar"><span class="label label-success" style="width:{% if test.taskCount - taskCountByState.cancelled - erroredTaskCount == 0 %} 1{% else %} {{ ((test.taskCount - taskCountByState.cancelled - erroredTaskCount) / test.taskCount) * 100}}{% endif %}%;">{{ test.taskCount - erroredTaskCount - taskCountByState.cancelled }}</span></td>
+        </tr>
+        <tr class="with-errrors">                
+            <th><span class="label label-important">Tests with errors</span></th>
+            <td class="bar"><span class="label label-important" style="width:{% if erroredTaskCount == 0 %} 1{% else %} {{ (erroredTaskCount / test.taskCount) * 100}}{% endif %}%;">{{ erroredTaskCount }}</span></td>
+        </tr>          
+        <tr class="cancelled">                
+            <th><span class="label">Cancelled</span></th>
+            <td class="bar"><span class="label" style="width:{% if taskCountByState.cancelled == 0 %} 1{% else %} {{ (taskCountByState.cancelled / test.taskCount) * 100}}{% endif %}%;">{{ taskCountByState.cancelled }}</span></td>
+        </tr>      
+    </tbody>
+</table>  
