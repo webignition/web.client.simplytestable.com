@@ -11,6 +11,10 @@ class Result {
      */
     private $messages;
     
+    public function __construct() {
+        $this->messages = array();
+    }
+    
     
     /**
      *
@@ -30,6 +34,7 @@ class Result {
      */    
     public function getErrors() {
         $errors = array();
+
         foreach ($this->messages as $message) {
             /* @var $message Message */
             if ($message->getType() == Message::TYPE_ERROR) {
