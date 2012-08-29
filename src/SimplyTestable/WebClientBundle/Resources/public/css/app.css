@@ -141,8 +141,7 @@ section.top {
     margin-bottom:0;
 }
 
-#progress h2,
-#test-list h2 {
+section h2 {
     font-weight: normal;
 }
 
@@ -188,34 +187,34 @@ section.top {
     opacity:0.6;
 }
 
-#test-list .test-states {
+#test-summary .test-states {
     width:100%;
 }
 
-#test-list .test-states th {
+#test-summary .test-states th {
     text-align: right;
     width:10%;
 }
 
-#test-list .test-states td.bar {
+#test-summary .test-states td.bar {
     width:90%;
 }
 
-#test-list .test-states .bar span {
+#test-summary .test-states .bar span {
     width:100%;    
     display: inline-block;
     margin-left: 6px;
 }
 
-#test-list .test-states .queued .bar span {
+#test-summary .test-states .queued .bar span {
     background-color:#F89406;
 }
 
-#test-list .test-states .in_progress .bar span {
+#test-summary .test-states .in_progress .bar span {
     background-color:#3A87AD;
 }
 
-#test-list .test-states .completed .bar span {
+#test-summary .test-states .completed .bar span {
     background-color:#468847;
 }
 

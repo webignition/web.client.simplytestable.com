@@ -254,7 +254,7 @@ application.testProgressController = function () {
         for (var queueNameIndex = 0; queueNameIndex < queues.length; queueNameIndex++) {
             var queueName = queues[queueNameIndex];
 
-            $('#url-list .test-states .' + queueName).each(function () {                
+            $('#test-summary .test-states .' + queueName).each(function () {                
                 var queueDetail = $(this);
                 var bar = $('.bar .label', queueDetail)
                 bar.animate({

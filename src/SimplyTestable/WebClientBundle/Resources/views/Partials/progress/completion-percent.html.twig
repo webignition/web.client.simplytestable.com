@@ -1,19 +1,9 @@
-<section id="completion-percent">
-    <div class="fluid-row">
-        <div class="span12">
-            <h2 class="info"><i id="completion-percent-state-icon" class="{{ state_icon }}"></i>
-                <span id="completion-percent-state-label">{{ state_label }}</span>                
-                <span id="completion-percent-value">{{ completionPercent }}</span>% done                                
-            </h2>
-            <div class="progress progress-striped active">
-                <div id="completion-percent-bar" class="bar" style="width:{{ completionPercent }}%;"></div>
-            </div>             
-        </div> 
-        <!--
-        <div class="span6">
-            <h2>Hello</h2>
-        </div>
-        -->
-        <div class="clearfix"></div>
+<div id="completion-percent">
+    <h2 class="info"><i id="completion-percent-state-icon" class="{{ state_icon }}"></i>
+        <span id="completion-percent-state-label">{{ state_label }}</span>                
+        <span id="completion-percent-value">{{ completionPercent }}</span>% done                                
+    </h2>
+    <div class="progress progress-striped active">
+        <div id="completion-percent-bar" class="bar" style="width:{{ completionPercent }}%;"></div>
     </div>            
-</section> 
+</div> 
