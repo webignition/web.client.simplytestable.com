@@ -47,13 +47,16 @@ class TaskController extends BaseViewController
             }                
         }        
         
-        $viewData = array(
+        $response =  $this->render('SimplyTestableWebClientBundle:App:task/results.html.twig', array(
             'test' => $test,            
             'task' => $task
-        );
+        ));
         
-        $this->setTemplate('SimplyTestableWebClientBundle:App:task/results.html.twig');
-        return $this->sendResponse($viewData);     
+        $response->setETag(md5($response->getContent()));        
+        $response->setPublic();        
+        $response->isNotModified($this->getRequest());      
+        
+        return $response;        
     }
     
     
