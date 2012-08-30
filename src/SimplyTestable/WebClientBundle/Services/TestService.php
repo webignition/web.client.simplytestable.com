@@ -88,7 +88,7 @@ class TestService extends CoreApplicationService {
             /* @var $test Test */
             $test = $this->fetchEntity($testId);
             
-            if ($test->getState() != 'completed') {
+            if ($test->getState() != 'completed' && $test->getState() != 'cancelled') {
                 $this->update($test);             
             }
 
