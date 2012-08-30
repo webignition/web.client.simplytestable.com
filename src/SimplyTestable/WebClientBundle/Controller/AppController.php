@@ -126,12 +126,12 @@ class AppController extends BaseViewController
     }
     
     
-    public function resultsAction($website, $test_id) {                
+    public function resultsAction($website, $test_id) {
         if (!$this->getTestService()->has($website, $test_id)) {
             return $this->redirect($this->generateUrl('app', array(), true));
         }
         
-        $test = $this->getTestService()->get($website, $test_id);        
+        $test = $this->getTestService()->get($website, $test_id);      
         
         foreach ($test->getTasks() as $task) {
             /* @var $task Task */
@@ -140,27 +140,39 @@ class AppController extends BaseViewController
                     $this->getTaskOutputService()->get($test, $task);
                 } 
             }
-        }       
+        }         
         
         if (in_array($test->getState(), $this->progressStates)) {
             return $this->redirect($this->getResultsUrl($website, $test_id));
         }
         
+        $response = new Response();
+        $response->setEtag(md5($test->getId()));
+        $response->setPublic();
+        
+        if ($response->isNotModified($this->getRequest())) {
+            return $response;
+        }
+        
         $viewData = array(
             'this_url' => $this->getResultsUrl($website, $test_id),
             'test_input_action_url' => $this->generateUrl('test_start'),
-            'test' => $test,            
+            'test' => $test,          
             'urls' => $this->getTestUrls($test),
             'testId' => $test_id,
             'taskCountByState' => $this->getTaskCountByState($test),
             'taskErrorCount' => $this->getTaskErrorCount($test),
             'erroredTaskCount' => $this->getErroredTaskCount($test)
         );
-        
-        $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');
-        return $this->sendResponse($viewData);
-    }
     
+        $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');      
+        
+        $response = $this->sendResponse($viewData);         
+        $response->setEtag(md5($test->getId()));      
+        $response->setPublic(); 
+        
+        return $response;
+    }
     
     private function getErroredTaskCount(Test $test) {
         $totalTaskErrorCount = 0;
