@@ -7,8 +7,12 @@
             <div class="span12">
                 <section>
                         <h1 class="info">
-                            <i class="icon-bar-chart"></i> Results for {{ test.website }}
-                            <span id="test-id">({{ test.testId }})</span>
+                            <i class="icon-bar-chart"></i>
+                            Results for 
+                            <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}">
+                                {{ test.website }}
+                                <span id="test-id">(#{{ test.testId }})</span>
+                            </a>                            
                             task
                             <span id="task-id">#{{task.id}}</span>
                         </h1>
