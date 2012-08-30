@@ -104,24 +104,6 @@ class Task {
         $this->timePeriod = new TimePeriod();
     }
     
-    
-    /**
-     *
-     * @param Task $task
-     * @return boolean 
-     */
-    public function equals(Task $task) {
-        if ((string)$this->getUrl() != (string)$task->getUrl()) {
-            return false;
-        }
-        
-        if ($this->getType() != $task->getType()) {
-            return false;
-        }
-        
-        return true;
-    }
-    
 
     /**
      * Get id

@@ -69,6 +69,10 @@ class TestService extends CoreApplicationService {
      * @return boolean
      */
     public function has($canonicalUrl, $testId) {
+        if ($this->hasEntity($testId)) {
+            return true;
+        }
+        
         return $this->get($canonicalUrl, $testId) instanceof Test;
     }
     
@@ -87,12 +91,13 @@ class TestService extends CoreApplicationService {
             if ($test->getState() != 'completed') {
                 $this->update($test);             
             }
+
         } else {
             $test = $this->create($canonicalUrl, $testId);
         }
         
         $this->entityManager->persist($test);
-        $this->entityManager->flush($test);        
+        $this->entityManager->flush();        
         
         return $test;
     }
@@ -169,11 +174,11 @@ class TestService extends CoreApplicationService {
      * @param Test $test
      * @return boolean|null 
      */
-    private function update(Test $test) {  
+    private function update(Test $test) {        
         $testJsonDocument = $this->retrieve($test->getWebsite(), $test->getTestId());
         if (!$testJsonDocument instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
             return false;
-        }     
+        }
         
         $jsonObject = $testJsonDocument->getContentObject();
         
@@ -182,21 +187,20 @@ class TestService extends CoreApplicationService {
         $this->updateTimePeriodFromJsonObject($test->getTimePeriod(), $jsonObject);
         
         foreach ($jsonObject->tasks as $taskJsonObject) {
-            $task = $this->createTaskFromJsonObject($taskJsonObject);     
+            $retrievedTask = $this->createTaskFromJsonObject($taskJsonObject);
             
-            if ($test->hasTask($task)) {
-                $task = $test->getTask($task);
-                $task->setTest($test);
-                $this->populateTaskFromJsonObject($task, $taskJsonObject);  
+            if ($test->hasTask($retrievedTask)) {
+                $currentTask = $test->getTask($retrievedTask);
+                if ($currentTask->getState() != $retrievedTask->getState()) {                    
+                    $this->populateTaskFromJsonObject($currentTask, $taskJsonObject);
+                    $this->entityManager->persist($currentTask);
+                }
             } else {
-                $task->setTest($test);
-                $test->addTask($task);
+                $retrievedTask->setTest($test);
+                $test->addTask($retrievedTask);
+                $this->entityManager->persist($retrievedTask);
             }
-            
-            $this->entityManager->persist($task);
-            $this->entityManager->flush($task);
-        }
-        
+        }        
     }
     
     
