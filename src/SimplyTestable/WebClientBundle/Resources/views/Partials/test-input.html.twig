@@ -1,4 +1,4 @@
-<section class="top">
+<section>
 <div id="input" class="leader">            
     <form method="post" action="{{ test_input_action_url }}">                
         <h1 class="info">
@@ -13,7 +13,7 @@
                     {% elseif test.state == 'completed' or test.state == 'cancelled' %}
                     <i class="icon-bar-chart"></i> Results for {{ test.website }}
                     {% endif %} 
-                    <span id="test-id">({{ testId }})</span>
+                    <span id="test-id">(#{{ testId }})</span>
                 {% else %}
                     <i class="icon-off"></i> Start new website test
                 {% endif %}               

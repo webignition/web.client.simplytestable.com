@@ -24,14 +24,15 @@
                             {% if taskErrorCount[task.id] == 0 %}
                                 <i class="icon-ok"></i>
                             {% else %}
-                                <span class="label label-important">
+                                <a href="{{ path('app_task_results', { 'website': test.website, 'test_id': test.testId, 'task_id':task.id }) }}" class="label label-important">
                                 {{ taskErrorCount[task.id] }}
                                 {% if taskErrorCount[task.id] == 1 %}
                                     error
                                 {% else %}
                                     errors
                                 {% endif %}
-                                </span> 
+                                 <i class="icon-caret-down"></i>    
+                                </a> 
                             {% endif %}
                         {% endif %}
                     </li>                            

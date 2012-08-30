@@ -228,7 +228,43 @@ section h2 {
     line-height: 48px;    
 }
 
+body.app-task-results #main h1 i,
 body.app-results #main h1 i {
     font-size: 38px;
     line-height: 48px;        
+}
+
+#test-list #url-list li.task a.label i {
+    color:#fff;
+}
+
+body.app-task-results #task-summary th {
+    text-align: right;
+    padding-right: 10px;
+}
+
+body.app-task-results .errors {
+    list-style: none;
+    margin-left: 0;
+}
+
+body.app-task-results .errors li {
+    list-style-type: none;
+    margin-bottom:16px;
+    position:relative;
+    height: 40px;
+}
+
+body.app-task-results .errors span {
+    position:absolute;
+}
+
+body.app-task-results .errors .meta {
+    left:0px;
+    font-style: italic;
+}
+
+body.app-task-results .errors .message {
+    left:145px;
+    font-weight: bold;
 }

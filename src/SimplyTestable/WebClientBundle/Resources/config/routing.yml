@@ -10,11 +10,17 @@ app_progress:
     pattern:  /app/{website}/{test_id}/progress/
     defaults: { _controller: SimplyTestableWebClientBundle:App:progress }  
     requirements:
+        website: ".+" 
+        
+app_task_results:
+    pattern:  /app/{website}/{test_id}/{task_id}/results/
+    defaults: { _controller: SimplyTestableWebClientBundle:Task:results }  
+    requirements:
         website: ".+"          
         
 app_task_results_collection:
     pattern:  /app/{website}/{test_id}/{task_ids}/results/collection/
-    defaults: { _controller: SimplyTestableWebClientBundle:App:taskResultsCollection, _format: json }  
+    defaults: { _controller: SimplyTestableWebClientBundle:Task:resultsCollection, _format: json }  
     requirements:
         website: ".+"          
         
@@ -22,7 +28,7 @@ app_results:
     pattern:  /app/{website}/{test_id}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:App:results }  
     requirements:
-        website: ".+"
+        website: ".+"      
 
 test_start:
     pattern:  /test/start/

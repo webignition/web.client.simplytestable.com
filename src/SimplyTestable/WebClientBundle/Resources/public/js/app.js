@@ -120,7 +120,7 @@ application.taskOutputController.prototype.outputResult.prototype.error['HTML va
     };  
     
     var toString = function () {
-        return this.getMessage() + ' at line ' + getLineNumber() + ', column ' + this.getColumnNumber();
+        return this.getMessage() + ' at line ' + getLineNumber() + ', column ' + getColumnNumber();
     }
     
     this.setLineNumber = setLineNumber;

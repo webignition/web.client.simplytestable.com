@@ -54,7 +54,6 @@ class TextFileMessage extends Message {
      */
     public function getColumnNumber() {
         return $this->columnNumber;
-    }
-        
+    }        
     
 }

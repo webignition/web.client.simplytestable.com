@@ -190,31 +190,7 @@ class AppController extends BaseViewController
         }
         
         return $taskErrorCounts;
-    }
-    
-    
-    public function taskResultsCollectionAction($website, $test_id, $task_ids) {         
-        if (!$this->getTestService()->has($website, $test_id)) {
-            return $this->redirect($this->generateUrl('app', array(), true));
-        } 
-
-        $test = $this->getTestService()->get($website, $test_id);
-        $tasks = $this->getTaskService()->getCollection($test, explode(',', $task_ids));
-        $output = array();
-        
-        foreach ($tasks as $task) {
-            if ($task->getState() == 'completed') {
-                if ($this->getTaskOutputService()->has($test, $task)) {
-                    $task->setOutput($this->getTaskOutputService()->get($test, $task));
-                    $this->getTaskOutputService()->setParsedOutput($task);                    
-                    $output[$task->getId()] = $task->getOutput();
-                }                
-            }
-        }
-    
-        return new Response($this->getSerializer()->serialize($output, 'json'));        
     }    
-    
     
     
     /**

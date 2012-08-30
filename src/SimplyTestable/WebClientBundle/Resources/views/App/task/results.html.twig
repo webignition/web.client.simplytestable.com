@@ -1,0 +1,92 @@
+{% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
+
+{% block title %}Results {{test.website}} (#{{test.testId}}) - {{ parent() }}{% endblock %}
+
+{% block main %}         
+        <div class="row-fluid">
+            <div class="span12">
+                <section>
+                        <h1 class="info">
+                            <i class="icon-bar-chart"></i> Results for {{ test.website }}
+                            <span id="test-id">({{ test.testId }})</span>
+                            task
+                            <span id="task-id">#{{task.id}}</span>
+                        </h1>
+                </section>
+            </div>
+        </div>
+
+        <div class="row-fluid">
+            <section>                
+                <div class="span12" id="task-summary">
+                    <h2 class="info"><i class="icon-certificate"></i> Summary </h2>
+                    
+                    <table>
+                        <tbody>
+                            <tr>                
+                                <th>Test type</th>
+                                <td>{{ task.type }}</td>
+                            </tr>         
+                            <tr>                
+                                <th>URL</th>
+                                <td>{{ task.url }}</td>
+                            </tr> 
+                            <tr>                
+                                <th>State</th>
+                                <td>
+                                    {% if task.state == 'queued' %}
+                                        <span class="label label-warning">Queued</span>
+                                    {% elseif task.state == 'in-progress' %}
+                                        <span class="label label-info">In Progresss</span>
+                                    {% elseif task.state == 'cancelled' %}
+                                        <span class="label">Cancelled</span>
+                                    {% else %}
+                                        <span class="label label-success">Completed</span>
+                                    {% endif %}
+                                </td>
+                            </tr> 
+                            {% if task.state == 'completed' %}
+                            <tr>                
+                                <th>Outcome</th>
+                                <td>
+                                    {% if task.output.result.hasErrors %}
+                                        <span class="label label-important">Failed</span>
+                                        <span class="label label-important">
+                                          {{ task.output.result.getErrorCount }} error{% if task.output.result.getErrorCount != 1 %}s{% endif %}</span>
+                                    {% else %}
+                                        <span class="label label-success">Passed</span>
+                                    {% endif %}
+                                </td>
+                            </tr>                            
+                            {% endif %}
+                        </tbody>
+                    </table>                      
+                    
+                </div>
+                <div class="clearfix"></div>
+            </section>
+        </div>
+
+        {% if task.state == 'completed' and task.output.result.hasErrors %}
+        <div class="row-fluid">
+            <section>                
+                <div class="span12" id="task-summary">
+                    <h2 class="info"><i class="icon-ban-circle"></i> Errors </h2>                    
+                    <ul class="errors">
+                        {% for error in task.output.result.getErrors %}
+                            <li>
+                                {% if task.type == 'HTML validation' %}
+                                    {% include 'SimplyTestableWebClientBundle:Partials:task/html-validation-result.html.twig' %}
+                                {% else %}
+                                    <p class="message">{{ error }}</p>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+            </section>
+        </div>
+        {% endif %}
+   
+{% endblock %}  
