@@ -37,10 +37,16 @@ class AppController extends BaseViewController
     
     public function indexAction()
     {
-        return $this->render('SimplyTestableWebClientBundle:App:index.html.twig', array(            
+        $response =  $this->render('SimplyTestableWebClientBundle:App:index.html.twig', array(            
             'test_input_action_url' => $this->generateUrl('test_start'),
             'test_start_error' => $this->hasFlash('test_start_error')
         ));
+        
+        $response->setETag(md5($response->getContent()));        
+        $response->setPublic();        
+        $response->isNotModified($this->getRequest());      
+        
+        return $response;
     }
     
     
