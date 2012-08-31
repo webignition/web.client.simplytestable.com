@@ -4,6 +4,8 @@ namespace SimplyTestable\WebClientBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use SimplyTestable\WebClientBundle\Model\CacheValidatorIdentifier;
+use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
 
 use webignition\NormalisedUrl\NormalisedUrl;
 
@@ -63,5 +65,64 @@ abstract class BaseViewController extends Controller
         
         return parent::redirect($url, $status);
     }
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService 
+     */
+    protected function getCacheValidatorHeadersService() {
+        return $this->container->get('simplytestable.services.cachevalidatorheadersservice');
+    }   
+    
+    
+    /**
+     *
+     * @param Response $response
+     * @param CacheValidatorHeaders $cacheValidatorHeaders
+     * @return \Symfony\Component\HttpFoundation\Response 
+     */
+    protected function getCachableResponse(Response $response, CacheValidatorHeaders $cacheValidatorHeaders) {
+        $response->setPublic();
+        $response->setEtag($cacheValidatorHeaders->getETag());
+        $response->setLastModified($cacheValidatorHeaders->getLastModifiedDate());        
+        
+        return $response;
+    }
+    
+    
+    /**
+     *
+     * @param string $templateName
+     * @return \DateTime 
+     */
+    protected function getTemplateLastModifiedDate($templateName) {
+        return new \DateTime(date('c', filemtime($this->getTemplatePath($templateName))));
+    }
+    
+    
+    /**
+     *
+     * @param string $templateName
+     * @return string
+     */
+    private function getTemplatePath($templateName) {
+        $parser = $this->container->get('templating.name_parser');
+        $locator = $this->container->get('templating.locator');
+
+        return $locator->locate($parser->parse($templateName));         
+    } 
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Model\CacheValidatorIdentifier 
+     */
+    protected function getCacheValidatorIdentifier() {
+        $identifier = new CacheValidatorIdentifier();
+        $identifier->setParameter('route', $this->container->get('request')->get('_route'));
+        
+        return $identifier;
+    }    
     
 }
