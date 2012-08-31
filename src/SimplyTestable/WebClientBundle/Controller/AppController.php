@@ -6,6 +6,8 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use SimplyTestable\WebClientBundle\Model\CacheValidatorIdentifier;
+use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
 
 class AppController extends BaseViewController
 {
@@ -36,18 +38,33 @@ class AppController extends BaseViewController
     );    
     
     public function indexAction()
-    {
-        $response =  $this->render('SimplyTestableWebClientBundle:App:index.html.twig', array(            
+    {        
+        $templateName = 'SimplyTestableWebClientBundle:App:index.html.twig';
+        $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);        
+        
+        $hasTestStartError = $this->hasFlash('test_start_error');
+        
+        $identifier = new CacheValidatorIdentifier();
+        $identifier->setParameter('route', $this->container->get('request')->get('_route'));
+        $identifier->setParameter('test_start_error', ($hasTestStartError) ? 'true' : 'false');
+        
+        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($identifier);
+        
+        if ($cacheValidatorHeaders->getLastModifiedDate() == $templateLastModifiedDate) {            
+            $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
+            if ($response->isNotModified($this->getRequest())) {
+                return $response;
+            }
+        }
+        
+        $cacheValidatorHeaders->setLastModifiedDate($templateLastModifiedDate);
+        $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);
+        
+        return $this->getCachableResponse($this->render($templateName, array(            
             'test_input_action_url' => $this->generateUrl('test_start'),
-            'test_start_error' => $this->hasFlash('test_start_error')
-        ));
-        
-        $response->setETag(md5($response->getContent()));        
-        $response->setPublic();        
-        $response->isNotModified($this->getRequest());      
-        
-        return $response;
-    }
+            'test_start_error' => $hasTestStartError
+        )), $cacheValidatorHeaders);
+    }   
     
     
     public function progressAction($website, $test_id) {
@@ -149,6 +166,7 @@ class AppController extends BaseViewController
         $response = new Response();
         $response->setEtag(md5($test->getId()));
         $response->setPublic();
+        $response->setLastModified(new \DateTime('2012-01-01'));
         
         if ($response->isNotModified($this->getRequest())) {
             return $response;
@@ -169,7 +187,8 @@ class AppController extends BaseViewController
         
         $response = $this->sendResponse($viewData);         
         $response->setEtag(md5($test->getId()));      
-        $response->setPublic(); 
+        $response->setPublic();
+        $response->setLastModified(new \DateTime('2012-01-01'));
         
         return $response;
     }
@@ -309,5 +328,53 @@ class AppController extends BaseViewController
      */
     protected function getSerializer() {
         return $this->container->get('serializer');
+    } 
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService 
+     */
+    private function getCacheValidatorHeadersService() {
+        return $this->container->get('simplytestable.services.cachevalidatorheadersservice');
+    }   
+    
+    
+    
+    /**
+     *
+     * @param Response $response
+     * @param CacheValidatorHeaders $cacheValidatorHeaders
+     * @return \Symfony\Component\HttpFoundation\Response 
+     */
+    private function getCachableResponse(Response $response, CacheValidatorHeaders $cacheValidatorHeaders) {
+        $response->setPublic();
+        $response->setEtag($cacheValidatorHeaders->getETag());
+        $response->setLastModified($cacheValidatorHeaders->getLastModifiedDate());        
+        
+        return $response;
+    }
+    
+    
+    /**
+     *
+     * @param string $templateName
+     * @return \DateTime 
+     */
+    private function getTemplateLastModifiedDate($templateName) {
+        return new \DateTime(date('c', filemtime($this->getTemplatePath($templateName))));
+    }
+    
+    
+    /**
+     *
+     * @param string $templateName
+     * @return string
+     */
+    private function getTemplatePath($templateName) {
+        $parser = $this->container->get('templating.name_parser');
+        $locator = $this->container->get('templating.locator');
+
+        return $locator->locate($parser->parse($templateName));         
     }    
 }

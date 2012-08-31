@@ -8,7 +8,6 @@ services:
         httpClient: "@simplytestable.services.httpClient"
         contentTypeWebResourceMap: %content_type_web_resource_map%    
 
-
   simplytestable.services.testservice:
     class:   SimplyTestable\WebClientBundle\Services\TestService  
     arguments:
@@ -37,3 +36,8 @@ services:
     class:   SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory
     arguments:
       drivers: %task-output-result-parsers%
+      
+  simplytestable.services.cachevalidatorheadersservice:
+    class:   SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService  
+    arguments:
+        entityManager: "@doctrine.orm.entity_manager"      

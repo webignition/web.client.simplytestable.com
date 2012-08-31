@@ -41,12 +41,6 @@ class CacheValidatorHeaders
      */
     private $lastModifiedDate;
     
-    
-    /**
-     *
-     * @var string
-     */
-    private $eTag;
 
     /**
      * Get id
@@ -105,25 +99,12 @@ class CacheValidatorHeaders
     }
 
     /**
-     * Set eTag
-     *
-     * @param string $eTag
-     * @return CacheValidatorHeaders
-     */
-    public function setETag($eTag)
-    {
-        $this->eTag = $eTag;
-    
-        return $this;
-    }
-
-    /**
      * Get eTag
      *
      * @return string 
      */
     public function getETag()
     {
-        return $this->eTag;
+        return md5($this->getIdentifier());
     }
 }
