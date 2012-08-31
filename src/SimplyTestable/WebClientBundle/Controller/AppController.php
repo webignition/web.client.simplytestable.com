@@ -16,7 +16,7 @@ class AppController extends BaseViewController
         'in-progress'        
     );
     
-    private $completedStates = array(
+    private $finishedStates = array(
         'cancelled',
         'completed'
     );
@@ -71,7 +71,7 @@ class AppController extends BaseViewController
 
         $test = $this->getTestService()->get($website, $test_id);
         
-        if (in_array($test->getState(), $this->completedStates)) {
+        if (in_array($test->getState(), $this->finishedStates)) {
             return $this->redirect($this->getResultsUrl($website, $test_id));
         }
         
@@ -179,10 +179,12 @@ class AppController extends BaseViewController
             'taskCountByState' => $this->getTaskCountByState($test),
             'taskErrorCount' => $this->getTaskErrorCount($test),
             'erroredTaskCount' => $this->getErroredTaskCount($test)
-        );        
+        );
+        
+        $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');     
         
         return $this->getCachableResponse(
-                $this->render('SimplyTestableWebClientBundle:App:results.html.twig', $viewData),
+                $this->sendResponse($viewData),
                 $cacheValidatorHeaders
         ); 
     }
