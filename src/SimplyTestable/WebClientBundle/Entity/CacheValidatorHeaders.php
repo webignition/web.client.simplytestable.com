@@ -45,7 +45,6 @@ class CacheValidatorHeaders
     /**
      *
      * @var string
-     * @ORM\Column(type="string", nullable=false)
      */
     private $eTag;
 

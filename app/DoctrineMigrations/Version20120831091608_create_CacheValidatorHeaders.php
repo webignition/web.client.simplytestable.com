@@ -18,7 +18,6 @@ class Version20120831091608_create_CacheValidatorHeaders extends BaseMigration
                 id INT AUTO_INCREMENT NOT NULL,
                 identifier VARCHAR(255) NOT NULL,
                 lastModifiedDate DATETIME NOT NULL,
-                eTag VARCHAR(255) NOT NULL,
                 PRIMARY KEY(id),
                 UNIQUE INDEX identifier_idx (identifier))
                 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE = InnoDB"
@@ -28,8 +27,7 @@ class Version20120831091608_create_CacheValidatorHeaders extends BaseMigration
             "CREATE TABLE CacheValidatorHeaders (
                 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 identifier VARCHAR(255) NOT NULL COLLATE NOCASE,
-                lastModifiedDate DATETIME NOT NULL,
-                eTag VARCHAR(255) NOT NULL COLLATE NOCASE)",
+                lastModifiedDate DATETIME NOT NULL)",
             "CREATE UNIQUE INDEX identifier_idx ON CacheValidatorHeaders (identifier)"
         );
         
