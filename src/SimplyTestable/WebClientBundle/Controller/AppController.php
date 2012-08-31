@@ -44,11 +44,10 @@ class AppController extends BaseViewController
         
         $hasTestStartError = $this->hasFlash('test_start_error');
         
-        $identifier = new CacheValidatorIdentifier();
-        $identifier->setParameter('route', $this->container->get('request')->get('_route'));
-        $identifier->setParameter('test_start_error', ($hasTestStartError) ? 'true' : 'false');
+        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
+        $cacheValidatorIdentifier->setParameter('test_start_error', ($hasTestStartError) ? 'true' : 'false');
         
-        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($identifier);
+        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
         if ($cacheValidatorHeaders->getLastModifiedDate() == $templateLastModifiedDate) {            
             $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
@@ -146,9 +145,23 @@ class AppController extends BaseViewController
     public function resultsAction($website, $test_id) {
         if (!$this->getTestService()->has($website, $test_id)) {
             return $this->redirect($this->generateUrl('app', array(), true));
+        }        
+        
+        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
+        $cacheValidatorIdentifier->setParameter('website', $website);
+        $cacheValidatorIdentifier->setParameter('test_id', $test_id);
+        
+        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
+        
+        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
+        if ($response->isNotModified($this->getRequest())) {
+            return $response;
         }
         
         $test = $this->getTestService()->get($website, $test_id);      
+        if (in_array($test->getState(), $this->progressStates)) {
+            return $this->redirect($this->getProgressUrl($website, $test_id));
+        }
         
         foreach ($test->getTasks() as $task) {
             /* @var $task Task */
@@ -157,19 +170,6 @@ class AppController extends BaseViewController
                     $this->getTaskOutputService()->get($test, $task);
                 } 
             }
-        }         
-        
-        if (in_array($test->getState(), $this->progressStates)) {
-            return $this->redirect($this->getResultsUrl($website, $test_id));
-        }
-        
-        $response = new Response();
-        $response->setEtag(md5($test->getId()));
-        $response->setPublic();
-        $response->setLastModified(new \DateTime('2012-01-01'));
-        
-        if ($response->isNotModified($this->getRequest())) {
-            return $response;
         }
         
         $viewData = array(
@@ -181,16 +181,12 @@ class AppController extends BaseViewController
             'taskCountByState' => $this->getTaskCountByState($test),
             'taskErrorCount' => $this->getTaskErrorCount($test),
             'erroredTaskCount' => $this->getErroredTaskCount($test)
-        );
-    
-        $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');      
+        );        
         
-        $response = $this->sendResponse($viewData);         
-        $response->setEtag(md5($test->getId()));      
-        $response->setPublic();
-        $response->setLastModified(new \DateTime('2012-01-01'));
-        
-        return $response;
+        return $this->getCachableResponse(
+                $this->render('SimplyTestableWebClientBundle:App:results.html.twig', $viewData),
+                $cacheValidatorHeaders
+        ); 
     }
     
     private function getErroredTaskCount(Test $test) {
@@ -376,5 +372,17 @@ class AppController extends BaseViewController
         $locator = $this->container->get('templating.locator');
 
         return $locator->locate($parser->parse($templateName));         
-    }    
+    } 
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Model\CacheValidatorIdentifier 
+     */
+    private function getCacheValidatorIdentifier() {
+        $identifier = new CacheValidatorIdentifier();
+        $identifier->setParameter('route', $this->container->get('request')->get('_route'));
+        
+        return $identifier;
+    }
 }
