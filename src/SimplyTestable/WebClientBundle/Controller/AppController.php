@@ -102,16 +102,17 @@ class AppController extends BaseViewController
      */
     private function getTaskCountByState(Test $test) {
         $taskStates = array(
-            'in-progress',
-            'queued',
-            'completed',
-            'cancelled'
+            'in-progress' => 'in-progress',
+            'queued' => 'queued',
+            'completed' => 'completed',
+            'cancelled' => 'cancelled',
+            'awaiting-cancellation' => 'cancelled'
         );
         
         $taskCountByState = array();        
         
-        foreach ($taskStates as $taskState) {
-            $taskCountByState[$taskState] = $test->getTaskCountByState($taskState);
+        foreach ($taskStates as $taskState => $translatedState) {
+            $taskCountByState[$translatedState] = $test->getTaskCountByState($taskState);
         }
         
         return $taskCountByState;
