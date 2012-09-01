@@ -275,21 +275,24 @@ application.testProgressController = function () {
     
     var updateUrls = function () { 
         var getUrlList = function () {
-            if ($('#url-list .urls').length === 0) {
+            if ($('#url-list ul.urls').length === 0) {
                 $('#url-list').append('<ul class="urls" />');
             }
             
-            return $('#url-list .urls');
+            return $('#url-list ul.urls');
         };
         
-        var inPageUrls = $('li', getUrlList());
+        var inPageUrls = $('span.url', getUrlList());
         
         var findInPageUrl = function (url) {
             var inPageUrl = false;
             
             inPageUrls.each(function () {
-                if ($('.url', this).text() == url) {
-                    inPageUrl = this;
+                var urlElement = $(this);
+                
+                if (urlElement.text() == url) {
+                    inPageUrl = urlElement.parent();
+                    return;
                 }
             });
             
@@ -362,7 +365,7 @@ application.testProgressController = function () {
         };
         
         var tasksToRetrieveOutputFor = {};
-        var tasksToRetrieveOutputForCount = 0;
+        var tasksToRetrieveOutputForCount = 0;   
         
         for (var urlIndex = 0; urlIndex < latestData.urls.length; urlIndex++) {
             var url = latestData.urls[urlIndex];
@@ -394,7 +397,7 @@ application.testProgressController = function () {
                     tasksToRetrieveOutputForCount++;;
                 }                              
             }
-        } 
+        }         
         
         if (tasksToRetrieveOutputForCount > 0 && $('#completion-percent-value').text() < 100) {
             taskOutputController.update(tasksToRetrieveOutputFor);
@@ -431,7 +434,7 @@ application.testProgressController = function () {
                 setCompletionPercentStateIcon();
                 setTestQueues();
                 setUrlCount();               
-                setTaskCount();                                         
+                setTaskCount();
                 updateUrls();
                 
                 window.setTimeout(function () {
