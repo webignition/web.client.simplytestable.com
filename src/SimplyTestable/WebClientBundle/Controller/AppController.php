@@ -100,7 +100,7 @@ class AppController extends BaseViewController
      * @param Test $test
      * @return array 
      */
-    private function getTaskCountByState(Test $test) {
+    private function getTaskCountByState(Test $test) {        
         $taskStates = array(
             'in-progress' => 'in-progress',
             'queued' => 'queued',
@@ -112,7 +112,11 @@ class AppController extends BaseViewController
         $taskCountByState = array();        
         
         foreach ($taskStates as $taskState => $translatedState) {
-            $taskCountByState[$translatedState] = $test->getTaskCountByState($taskState);
+            if (!isset($taskCountByState[$translatedState])) {
+                $taskCountByState[$translatedState] = 0;
+            }
+            
+            $taskCountByState[$translatedState] += $test->getTaskCountByState($taskState);
         }
         
         return $taskCountByState;

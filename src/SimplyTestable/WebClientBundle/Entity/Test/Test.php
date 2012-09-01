@@ -139,13 +139,13 @@ class Test {
      * @param string $state
      * @return int 
      */
-    public function getTaskCountByState($state) {
+    public function getTaskCountByState($state) {        
         if ($this->getTaskCount() == 0) {
             return 0;
         }
         
         $total = 0;
-        foreach ($this->getTasks() as $task) {
+        foreach ($this->getTasks() as $task) {            
             if ($task->getState() == $state) {
                 $total++;
             }
