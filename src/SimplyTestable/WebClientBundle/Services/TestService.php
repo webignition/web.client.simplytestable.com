@@ -93,7 +93,10 @@ class TestService extends CoreApplicationService {
             }
 
         } else {
-            $test = $this->create($canonicalUrl, $testId);
+            $test = new Test();
+            $test->setTestId($testId);
+            $test->setWebsite(new NormalisedUrl($canonicalUrl));            
+            $test = $this->create($test);
         }
         
         $this->entityManager->persist($test);
@@ -155,12 +158,11 @@ class TestService extends CoreApplicationService {
     
     /**
      *
-     * @param string $canonicalUrl
-     * @param int $testId
+     * @param Test $test
      * @return \SimplyTestable\WebClientBundle\Entity\Test\Test|false
      */
-    private function create($canonicalUrl, $testId) {
-        $testJsonDocument = $this->retrieve($canonicalUrl, $testId);
+    private function create(Test $test) {
+        $testJsonDocument = $this->retrieve($test);
         if (!$testJsonDocument instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
             return false;
         }
@@ -175,7 +177,7 @@ class TestService extends CoreApplicationService {
      * @return boolean|null 
      */
     private function update(Test $test) {        
-        $testJsonDocument = $this->retrieve($test->getWebsite(), $test->getTestId());
+        $testJsonDocument = $this->retrieve($test);
         if (!$testJsonDocument instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
             return false;
         }
@@ -207,15 +209,14 @@ class TestService extends CoreApplicationService {
     
     /**
      *
-     * @param string $canonicalUrl
-     * @param int $testId
+     * @param Test $test
      * @return \webignition\WebResource\JsonDocument\JsonDocument 
      */
-    private function retrieve($canonicalUrl, $testId) {
+    private function retrieve(Test $test) {
         $httpRequest = $this->getAuthorisedHttpRequest(
             $this->getUrl('test_status', array(
-            'canonical-url' => $canonicalUrl,
-            'test_id' => $testId
+            'canonical-url' => $test->getWebsite(),
+            'test_id' => $test->getTestId()
         )));
         
         $testJsonDocument = null;
