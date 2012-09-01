@@ -14,7 +14,8 @@ services:
         entityManager: "@doctrine.orm.entity_manager"  
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"            
-        taskOutputService: "@simplytestable.services.taskoutputservice"                 
+        taskOutputService: "@simplytestable.services.taskoutputservice"
+        logger: "@logger"
 
   simplytestable.services.taskservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskService  

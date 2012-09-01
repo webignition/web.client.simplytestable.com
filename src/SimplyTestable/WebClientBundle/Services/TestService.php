@@ -5,13 +5,20 @@ use Doctrine\ORM\EntityManager;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\TimePeriod;
+use Symfony\Component\HttpKernel\Log\LoggerInterface as Logger;
 
 use webignition\NormalisedUrl\NormalisedUrl;
 
 
-class TestService extends CoreApplicationService {    
+class TestService extends CoreApplicationService {        
     
     const ENTITY_NAME = 'SimplyTestable\WebClientBundle\Entity\Test\Test';      
+    
+    /**
+     *
+     * @var Logger
+     */
+    private $logger;     
     
     /**
      *
@@ -38,11 +45,13 @@ class TestService extends CoreApplicationService {
         EntityManager $entityManager,
         $parameters,
         \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService,
-        \SimplyTestable\WebClientBundle\Services\TaskOutputService $taskOutputService        
+        \SimplyTestable\WebClientBundle\Services\TaskOutputService $taskOutputService,
+        Logger $logger
     ) {
         parent::__construct($parameters, $webResourceService);
         $this->entityManager = $entityManager; 
         $this->taskOutputService = $taskOutputService;
+        $this->logger = $logger;
     }     
     
     
@@ -336,8 +345,9 @@ class TestService extends CoreApplicationService {
             $this->webResourceService->get($httpRequest);
             return true;
         } catch (\webignition\Http\Client\CurlException $curlException) {
-            
+            $this->logger->warn('TestService::cancel:curlException: ['.$curlException->getCode().'] ['.$curlException->getMessage().']');
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
+            $this->logger->warn('TestService::cancel:WebResourceServiceException: ['.$webResourceServiceException->getCode().'] ['.$webResourceServiceException->getMessage().']');
             if ($webResourceServiceException->getCode() == 403) {
                 return false;
             }            
