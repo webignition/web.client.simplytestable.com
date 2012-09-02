@@ -94,4 +94,18 @@ class TaskService extends CoreApplicationService {
         return $tasks;
     }
     
+    
+    /**
+     *
+     * @param Task $task
+     * @return \SimplyTestable\WebClientBundle\Entity\Task\Task 
+     */
+    public function markCancelled(Task $task) {
+        $task->setState('cancelled');
+        $this->entityManager->persist($task);
+        $this->entityManager->flush(); 
+        
+        return $task;
+    }
+    
 }

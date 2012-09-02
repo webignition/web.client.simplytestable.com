@@ -172,6 +172,8 @@ class AppController extends BaseViewController
                 if ($this->getTaskOutputService()->has($test, $task)) {
                     $this->getTaskOutputService()->get($test, $task);
                 } 
+            } elseif ($test->getState() == 'completed' && ($task->getState() == 'queued' || $task->getState() == 'in-progress')) {
+                $this->getTaskService()->markCancelled($task);
             }
         }
         
