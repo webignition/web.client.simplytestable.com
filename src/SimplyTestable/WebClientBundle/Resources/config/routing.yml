@@ -1,31 +1,27 @@
-homepage:
-    pattern:  /hello/{name}
-    defaults: { _controller: SimplyTestableWebClientBundle:Default:index }
-
 app:
-    pattern:  /app/
+    pattern:  /
     defaults: { _controller: SimplyTestableWebClientBundle:App:index }
 
 app_progress:
-    pattern:  /app/{website}/{test_id}/progress/
+    pattern:  /{website}/{test_id}/progress/
     defaults: { _controller: SimplyTestableWebClientBundle:App:progress }  
     requirements:
         website: ".+" 
         
 app_task_results:
-    pattern:  /app/{website}/{test_id}/{task_id}/results/
+    pattern:  /{website}/{test_id}/{task_id}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:Task:results }  
     requirements:
         website: ".+"          
         
 app_task_results_collection:
-    pattern:  /app/{website}/{test_id}/{task_ids}/results/collection/
+    pattern:  /{website}/{test_id}/{task_ids}/results/collection/
     defaults: { _controller: SimplyTestableWebClientBundle:Task:resultsCollection, _format: json }  
     requirements:
         website: ".+"          
         
 app_results:
-    pattern:  /app/{website}/{test_id}/results/
+    pattern:  /{website}/{test_id}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:App:results }  
     requirements:
         website: ".+"      
