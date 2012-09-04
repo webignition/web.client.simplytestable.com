@@ -268,3 +268,19 @@ body.app-task-results .errors .message {
     left:145px;
     font-weight: bold;
 }
+
+#main .notification-panel {
+    
+}
+
+#main .notification-panel p.intro {
+    font-size: 18px;
+    line-height: 26px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #DDD;
+    padding-bottom: 30px;
+}
+
+#main .notification-panel h3 {
+    font-weight: normal;
+}

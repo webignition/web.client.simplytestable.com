@@ -18,7 +18,8 @@ class AppController extends BaseViewController
     
     private $finishedStates = array(
         'cancelled',
-        'completed'
+        'completed',
+        'no-sitemap'
     );
     
     private $testStateLabelMap = array(
@@ -156,10 +157,10 @@ class AppController extends BaseViewController
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
-        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
-        if ($response->isNotModified($this->getRequest())) {
-            return $response;
-        }
+  //      $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
+//        if ($response->isNotModified($this->getRequest())) {
+//            return $response;
+//        }
         
         $test = $this->getTestService()->get($website, $test_id);      
         if (in_array($test->getState(), $this->progressStates)) {
