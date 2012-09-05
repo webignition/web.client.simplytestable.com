@@ -105,6 +105,7 @@ class AppController extends BaseViewController
         $taskStates = array(
             'in-progress' => 'in-progress',
             'queued' => 'queued',
+            'queued-for-assignment' => 'queued',
             'completed' => 'completed',
             'cancelled' => 'cancelled',
             'awaiting-cancellation' => 'cancelled'
