@@ -24,7 +24,7 @@
 }
 
 body {
-    margin-top:60px;
+    margin-top:80px;
 }
 
 .hero-unit {
@@ -47,8 +47,8 @@ body {
 }
 
 .outer {
-    width:70%;
-    margin:0 15%;
+    width:80%;
+    margin:0 10%;
 }
 
 #main section {
