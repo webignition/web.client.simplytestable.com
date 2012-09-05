@@ -1,3 +1,28 @@
+.navbar .brand {
+    background: url('/bundles/simplytestablewebclient/images/st30.png') transparent no-repeat 5px 4px;
+    color: #08C;
+    padding-left: 40px;
+}
+
+.navbar-inverse .brand:hover {
+    color:#0ae;
+}
+
+.navbar .nav > li {
+    padding-top:2px;
+    position:relative;
+}
+
+.navbar .nav > li i.icon {
+    position: absolute;
+    top: 14px;
+    left: -4px;    
+}
+
+.navbar .nav > li:hover i.icon {
+    color:#eee;
+}
+
 body {
     margin-top:60px;
 }
@@ -21,7 +46,7 @@ body {
     left: -50px;    
 }
 
-#outer {
+.outer {
     width:70%;
     margin:0 15%;
 }
