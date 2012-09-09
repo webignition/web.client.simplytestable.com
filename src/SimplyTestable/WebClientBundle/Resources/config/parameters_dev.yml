@@ -1,0 +1,4 @@
+parameters:
+  public_site:
+    urls:
+      home: http://local.simplytestable.com

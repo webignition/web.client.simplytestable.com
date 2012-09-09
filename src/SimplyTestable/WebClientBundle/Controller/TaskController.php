@@ -64,7 +64,8 @@ class TaskController extends BaseViewController
                     'SimplyTestableWebClientBundle:App:task/results.html.twig',
                     array(
                         'test' => $test,
-                        'task' => $task
+                        'task' => $task,
+                        'public_site' => $this->container->getParameter('public_site')
                     )),
             $cacheValidatorHeaders
         );        
