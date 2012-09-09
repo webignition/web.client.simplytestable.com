@@ -61,12 +61,14 @@ class AppController extends BaseViewController
         
         return $this->render($templateName, array(            
             'test_input_action_url' => $this->generateUrl('test_start'),
-            'test_start_error' => $hasTestStartError
+            'test_start_error' => $hasTestStartError,
+            'public_site' => $this->container->getParameter('public_site')
         ));
         
         return $this->getCachableResponse($this->render($templateName, array(            
             'test_input_action_url' => $this->generateUrl('test_start'),
-            'test_start_error' => $hasTestStartError
+            'test_start_error' => $hasTestStartError,
+            'public_site' => $this->container->getParameter('public_site')
         )), $cacheValidatorHeaders);
     }   
     
@@ -94,7 +96,8 @@ class AppController extends BaseViewController
             'state_icon' => $this->testStateIconMap[$test->getState()],
             'taskCountByState' => $this->getTaskCountByState($test),
             'completionPercent' => $test->getCompletionPercent(),
-            'testId' => $test_id
+            'testId' => $test_id,
+            'public_site' => $this->container->getParameter('public_site')
         );
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
@@ -193,7 +196,8 @@ class AppController extends BaseViewController
             'testId' => $test_id,
             'taskCountByState' => $this->getTaskCountByState($test),
             'taskErrorCount' => $this->getTaskErrorCount($test),
-            'erroredTaskCount' => $this->getErroredTaskCount($test)
+            'erroredTaskCount' => $this->getErroredTaskCount($test),
+            'public_site' => $this->container->getParameter('public_site')
         );
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');     

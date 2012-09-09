@@ -9,3 +9,4 @@ bin
 composer.phar
 /nbproject
 /src/SimplyTestable/WebClientBundle/Resources/public/vendor/
+src/SimplyTestable/WebClientBundle/Resources/config/parameters.yml
