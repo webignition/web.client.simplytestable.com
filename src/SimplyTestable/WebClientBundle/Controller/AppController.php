@@ -32,6 +32,7 @@ class AppController extends BaseViewController
     private $testStateIconMap = array(
         'new' => 'icon-off',
         'queued' => 'icon-off',
+        'queued-for-assignment' => 'icon-off',
         'preparing' => 'icon-play-circle',
         'in-progress' => 'icon-play-circle'        
     );    
