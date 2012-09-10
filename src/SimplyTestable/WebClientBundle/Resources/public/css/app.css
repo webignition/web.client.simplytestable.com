@@ -225,10 +225,21 @@ section h2 {
     width:90%;
 }
 
+#test-summary .test-states .label {
+    display:inline-block;  
+    padding: 3px 5px;
+}
+
+#test-summary .test-states th .label {
+    padding: 2px 5px;
+}
+
 #test-summary .test-states .bar span {
     width:100%;    
-    display: inline-block;
     margin-left: 6px;
+    margin-top:1px;
+    padding-top:1px;
+    display:block;
 }
 
 #test-summary .test-states .queued .bar span {
