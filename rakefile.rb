@@ -8,7 +8,7 @@ task :default do
     "git pull",
     "export SYMFONY_ENV=prod && ./composer.phar install"
   ])   
-  fetch_dependencies
+  #fetch_dependencies
   run_commands([
     "rm -Rf app/cache/prod/*",    
     "export SYMFONY_ENV=prod && php app/console cache:warmup"
@@ -16,8 +16,8 @@ task :default do
 end
 
 task :rebuild do
-  remove_dependencies
-  fetch_dependencies
+  #remove_dependencies
+  #fetch_dependencies
 end
 
 def remove_dependencies  
@@ -69,7 +69,7 @@ def fetch_dependencies
             system("cd " + dependency_directory + " && rm -Rf " + get_filename_from_url(url))            
           end
 
-          if vendor_is_github_master(url)
+          if vendor_is_github_zipball(url)
             system("cd " + dependency_directory + " && unzip -q " + get_filename_from_url(url))
             system("cd " + dependency_directory + " && rm -Rf " + get_filename_from_url(url))
             system("cd " + dependency_directory + " && mv *-* latest ")
@@ -89,8 +89,8 @@ def get_extension_from_filename_from_url(url)
   url.split(".").last
 end
 
-def vendor_is_github_master(url)
-  return get_filename_from_url(url) == "master"
+def vendor_is_github_zipball(url)
+  return url.include?("/zipball/")
 end
 
 def vendor_is_repository(url)
@@ -114,7 +114,7 @@ def vendor_is_archive(url)
     return true
   end  
   
-  return vendor_is_github_master(url)
+  return vendor_is_github_zipball(url)
 end
 
 def get_composer
