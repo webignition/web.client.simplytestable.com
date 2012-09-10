@@ -405,6 +405,8 @@ application.testProgressController = function () {
     };
     
     var refresh = function () {
+        var now = new Date();
+        
         jQuery.ajax({
             complete:function (request, textStatus) {
                 //console.log('complete', request, textStatus);
@@ -441,7 +443,7 @@ application.testProgressController = function () {
                     refresh();
                 }, 1000);
             },
-            url:window.location.href + '?output=json'
+            url:window.location.href + '?output=json&timestamp=' + now.getTime() 
         });
     };
     
