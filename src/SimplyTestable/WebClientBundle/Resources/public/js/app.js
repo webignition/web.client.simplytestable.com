@@ -221,7 +221,7 @@ application.testProgressController = function () {
         if (completionPercentValue.text() != latestData.completionPercent) {
             completionPercentValue.text(latestData.completionPercent);
 
-            $('#completion-percent-bar').css({
+            $('#completion-percent-bar').animate({
                 'width':latestData.completionPercent + '%'
             });
         }        
