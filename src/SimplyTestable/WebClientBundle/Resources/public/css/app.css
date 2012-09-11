@@ -102,12 +102,13 @@ section.top {
 
 #main #input .fields input {
     font-size: 15px;
-    padding: 9px 9px 8px 9px;
+    padding: 13px 9px 11px 9px;
     width:65%;
 }
 
 #main #input .fields button {
     width:30%;
+    padding-top:12px;
 }
 
 #main #input .fields button i {
