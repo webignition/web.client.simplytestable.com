@@ -22,6 +22,7 @@ class AppKernel extends Kernel
             new SimplyTestable\WebClientBundle\SimplyTestableWebClientBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle($this),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
+            new Jbi\BrowscapBundle\JbiBrowscapBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
