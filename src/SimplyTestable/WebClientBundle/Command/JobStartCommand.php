@@ -86,7 +86,7 @@ class JobStartCommand extends BaseCommand
         
         if ($this->getResqueQueueService()->isEmpty('job-start')) {
             $this->getResqueQueueService()->add(
-                'SimplyTestable\ApiBundle\Resque\Job\StartNewTestJob',
+                'SimplyTestable\WebClientBundle\Resque\Job\StartNewTestJob',
                 'job-start'
             );             
         }
