@@ -23,24 +23,13 @@
         "webignition/web-json-model":">=0.1,<2.0",
         "jms/serializer-bundle": "dev-master",
         "webignition/simplytestable-base-migrations-bundle":"1.1",
-        "jbi/browscap-bundle":"*"        
+        "jbi/browscap-bundle":"*",
+        "webignition/resque-bundle":"*"
     },
     "repositories": [
         {
-            "type": "package",
-            "package": {
-                "version": "master",
-                "name": "twitter/bootstrap",
-                "source": {
-                    "url": "https://github.com/twitter/bootstrap.git",
-                    "type": "git",
-                    "reference": "master"
-                },
-                "dist": {
-                    "url": "https://github.com/twitter/bootstrap/zipball/master",
-                    "type": "zip"
-                }
-            }
+            "type": "vcs",
+            "url": "https://github.com/webignition/ResqueBundle"
         }
     ],    
     "scripts": {
