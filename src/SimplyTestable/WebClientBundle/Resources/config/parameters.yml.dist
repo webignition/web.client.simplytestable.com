@@ -11,6 +11,7 @@ parameters:
       test_cancel: /tests/{canonical-url}/{test_id}/cancel/
       test_list_urls: /tests/{canonical-url}/{test_id}/urls/
       task_status: /tasks/{canonical-url}/{test_id}/{task_id}/status/
+      tests_list: /tests/list/{limit}/
   public_site:
     urls:
       home: http://simplytestable.com
