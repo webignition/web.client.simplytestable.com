@@ -75,14 +75,14 @@ class JobStartCommand extends BaseCommand
             }
         }
         
-        if ($hasIncompleteRecentTests) {
-            return true;
-        }
-        
-        $testCanonicalUrlIndex = rand(0, count($this->knownGoodTests) - 1);
-        $testCanonicalUrl = $this->knownGoodTests[$testCanonicalUrlIndex];
-        
-        $this->getTestService()->start($testCanonicalUrl);         
+        if (!$hasIncompleteRecentTests) {
+            $testCanonicalUrlIndex = rand(0, count($this->knownGoodTests) - 1);
+            $testCanonicalUrl = $this->knownGoodTests[$testCanonicalUrlIndex];
+
+            $this->getTestService()->start($testCanonicalUrl);  
+            
+            $this->getLogger()->info("simplytestable:job:start: started job for [".$testCanonicalUrl."]");
+        }       
         
         if ($this->getResqueQueueService()->isEmpty('job-start')) {
             $this->getResqueQueueService()->add(
@@ -90,8 +90,6 @@ class JobStartCommand extends BaseCommand
                 'job-start'
             );             
         }
-        
-        $this->getLogger()->info("simplytestable:job:start: started job for [".$testCanonicalUrl."]");
     }
     
 
