@@ -35,3 +35,7 @@ test_cancel:
     defaults: { _controller: SimplyTestableWebClientBundle:Test:cancel }  
     requirements:
         website: ".+"
+        
+outdated_browser:
+    pattern:  /outdated-browser/
+    defaults: { _controller: SimplyTestableWebClientBundle:App:outdatedBrowser }            

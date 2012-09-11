@@ -39,6 +39,10 @@ class AppController extends BaseViewController
     
     public function indexAction()
     {        
+        if ($this->isUsingOldIE()) {
+            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
+        }        
+        
         $templateName = 'SimplyTestableWebClientBundle:App:index.html.twig';
         $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);        
         
@@ -74,6 +78,10 @@ class AppController extends BaseViewController
     
     
     public function progressAction($website, $test_id) {
+        if ($this->isUsingOldIE()) {
+            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
+        }        
+        
         if (!$this->getTestService()->has($website, $test_id)) {
             return $this->redirect($this->generateUrl('app', array(), true));
         }
@@ -157,6 +165,10 @@ class AppController extends BaseViewController
     
     
     public function resultsAction($website, $test_id) {
+        if ($this->isUsingOldIE()) {
+            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
+        }        
+        
         if (!$this->getTestService()->has($website, $test_id)) {
             return $this->redirect($this->generateUrl('app', array(), true));
         }        
@@ -345,5 +357,15 @@ class AppController extends BaseViewController
         return $this->container->get('serializer');
     }   
     
+    
+    public function outdatedBrowserAction() {
+        $publicSiteParameters = $this->container->getParameter('public_site');        
+        return $this->redirect($publicSiteParameters['urls']['home']);
+    }
+    
+    public function isUsingOldIE() {        
+        $browserInfo =  $this->container->get('jbi_browscap.browscap')->getBrowser($this->getRequest()->server->get('HTTP_USER_AGENT'));                
+        return ($browserInfo->Browser == 'IE' && $browserInfo->MajorVer < 8);     
+    }    
 
 }
