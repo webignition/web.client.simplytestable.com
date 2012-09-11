@@ -23,6 +23,7 @@ class AppKernel extends Kernel
             new JMS\SerializerBundle\JMSSerializerBundle($this),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             new Jbi\BrowscapBundle\JbiBrowscapBundle(),
+            new Glit\ResqueBundle\GlitResqueBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

@@ -1,4 +1,8 @@
+glit_resque:
+  prefix: "SimplyTestable\WebClientBundle"
+
 parameters:
+  resque_pid: "simplytestable_webclientbundle" 
   core_application:
     urls:
       base: http://app.simplytestable.com
