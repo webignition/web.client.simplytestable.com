@@ -220,10 +220,16 @@ application.testProgressController = function () {
         
         if (completionPercentValue.text() != latestData.completionPercent) {
             completionPercentValue.text(latestData.completionPercent);
-
-            $('#completion-percent-bar').animate({
-                'width':latestData.completionPercent + '%'
-            });
+            
+            if ($('html.csstransitions').length > 0) {
+                $('#completion-percent-bar').css({
+                    'width':latestData.completionPercent + '%'
+                });                
+            } else {
+                $('#completion-percent-bar').animate({
+                    'width':latestData.completionPercent + '%'
+                });                
+            }
         }        
     };
     
