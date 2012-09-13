@@ -106,6 +106,13 @@ class Test {
     
     /**
      *
+     * @var array
+     */
+    private $taskIdIndex;
+    
+    
+    /**
+     *
      * @return int
      */
     public function getCompletionPercent() {       
@@ -371,7 +378,7 @@ class Test {
      * @return boolean 
      */
     public function hasTask(Task $task) {
-        return $this->getTask($task) !== false;
+        return array_key_exists($task->getTaskId(), $this->getTaskIdIndex());
     }
     
     
@@ -389,5 +396,16 @@ class Test {
         }
         
         return false;        
+    }
+    
+    private function getTaskIdIndex() {
+        if (is_null($this->taskIdIndex)) {
+            $this->taskIdIndex = array();
+            foreach ($this->getTasks() as $task) {
+                $this->taskIdIndex[$task->getTaskId()] = true;
+            }
+        }
+        
+        return $this->taskIdIndex;
     }
 }
