@@ -91,7 +91,7 @@ class AppController extends BaseViewController
         if (in_array($test->getState(), $this->finishedStates)) {
             return $this->redirect($this->getResultsUrl($website, $test_id));
         }
-        
+
         $viewData = array(
             'this_url' => $this->getProgressUrl($website, $test_id),
             'test_input_action_url' => $this->generateUrl('test_cancel', array(
@@ -99,7 +99,7 @@ class AppController extends BaseViewController
                 'test_id' => $test_id
             )),
             'test' => $test,
-            'urls' => $this->getTestUrls($test),
+            'tasksByUrl' => $this->getTasksByUrl($this->getTestUrls($test), $test->getTasks()),
             'state_label' => $this->testStateLabelMap[$test->getState()].': ',
             'state_icon' => $this->testStateIconMap[$test->getState()],
             'taskCountByState' => $this->getTaskCountByState($test),
@@ -110,6 +110,20 @@ class AppController extends BaseViewController
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
         return $this->sendResponse($viewData);
+    }
+    
+    
+    private function getTasksByUrl($urls, $tasks) {
+        $tasksByUrl = array();
+        foreach ($urls as $url) {
+            $tasksByUrl[$url] = array();
+        }
+        
+        foreach ($tasks as $task) {
+            $tasksByUrl[$task->getUrl()][] = $task;
+        }
+        
+        return $tasksByUrl;
     }
     
     
@@ -179,10 +193,10 @@ class AppController extends BaseViewController
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
-  //      $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
-//        if ($response->isNotModified($this->getRequest())) {
-//            return $response;
-//        }
+        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
+        if ($response->isNotModified($this->getRequest())) {
+            return $response;
+        }
         
         $test = $this->getTestService()->get($website, $test_id);      
         if (in_array($test->getState(), $this->progressStates)) {
@@ -204,7 +218,7 @@ class AppController extends BaseViewController
             'this_url' => $this->getResultsUrl($website, $test_id),
             'test_input_action_url' => $this->generateUrl('test_start'),
             'test' => $test,          
-            'urls' => $this->getTestUrls($test),
+            'tasksByUrl' => $this->getTasksByUrl($this->getTestUrls($test), $test->getTasks()),
             'testId' => $test_id,
             'taskCountByState' => $this->getTaskCountByState($test),
             'taskErrorCount' => $this->getTaskErrorCount($test),
