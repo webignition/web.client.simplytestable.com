@@ -86,17 +86,20 @@ class AppController extends BaseViewController
             return $this->redirect($this->generateUrl('app', array(), true));
         }
 
-        $test = $this->getTestService()->get($website, $test_id);
+        $requestTaskIds = $this->getRequestTaskIds();        
+        
+        $test = $this->getTestService()->get($website, $test_id, $requestTaskIds);
         
         if (in_array($test->getState(), $this->finishedStates)) {
             return $this->redirect($this->getResultsUrl($website, $test_id));
         }
         
-        $tasksByUrl = $this->getTasksByUrl($this->getTestUrls($test), $test->getTasks());
+        $tasksByUrl = $this->getTasksByUrl($this->getTestUrls($test), $test->getTasks(), $requestTaskIds);
         $taskCount = $test->getTasks()->count();
         $taskCountByState = $this->getTaskCountByState($test);
         $completionPercent = $test->getCompletionPercent();
-        $test->clearTasks();
+        
+        $test->clearTasks();        
 
         $viewData = array(
             'this_url' => $this->getProgressUrl($website, $test_id),
@@ -113,26 +116,60 @@ class AppController extends BaseViewController
             'completionPercent' => $completionPercent,
             'testId' => $test_id,
             'public_site' => $this->container->getParameter('public_site'),
-            'urlCount' => count($tasksByUrl)
-        );
-          
+            'urlCount' => $test->getUrlCount()
+        );          
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
         return $this->sendResponse($viewData);
     }
     
-    
-    private function getTasksByUrl($urls, $tasks) {
-        $tasksByUrl = array();
-        foreach ($urls as $url) {
-            $tasksByUrl[$url] = array();
+    private function getRequestTaskIds() {
+        if (!$this->getRequest()->query->has('taskIds')) {
+            return null;
         }
         
+        $rawRequestTaskIds = explode(',', $this->getRequest()->query->get('taskIds'));
+        $requestTaskIds = array();
+        
+        foreach ($rawRequestTaskIds as $requestTaskId) {
+            if (ctype_digit($requestTaskId)) {
+                $requestTaskIds[] = (int)$requestTaskId;
+            }
+        }
+        
+        return (count($requestTaskIds) > 0) ? $requestTaskIds : null;
+    }    
+    
+    
+    /**
+     *
+     * @param array $urls
+     * @param array $tasks
+     * @param array $taskIds limit output to specified tasks
+     * @return type 
+     */
+    private function getTasksByUrl($urls, $tasks, $taskIds = null) {
+        $tasksByUrl = array();
+        
         foreach ($tasks as $task) {
-            $tasksByUrl[$task->getUrl()][] = $task;
+            if ($this->isTaskToBeIncludedInOutput($task, $taskIds)) {
+                if (!isset($tasksByUrl[$task->getUrl()])) {
+                    $tasksByUrl[$task->getUrl()] = array();
+                }
+                
+                $tasksByUrl[$task->getUrl()][] = $task;
+            }
         }
         
         return $tasksByUrl;
+    }
+    
+    private function isTaskToBeIncludedInOutput(Task $task, $inclduedTaskIds = null) {
+        if (!is_array($inclduedTaskIds)) {
+            return true;
+        }
+        
+        return in_array($task->getId(), $inclduedTaskIds);
     }
     
     
