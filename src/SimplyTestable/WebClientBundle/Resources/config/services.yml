@@ -16,6 +16,7 @@ services:
         webResourceService: "@simplytestable.services.webresourceservice"            
         taskOutputService: "@simplytestable.services.taskoutputservice"
         logger: "@logger"
+        taskService: "@simplytestable.services.taskservice" 
 
   simplytestable.services.taskservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskService  

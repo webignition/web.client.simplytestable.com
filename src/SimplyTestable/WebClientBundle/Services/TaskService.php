@@ -108,4 +108,25 @@ class TaskService extends CoreApplicationService {
         return $task;
     }
     
+    
+    /**
+     * 
+     * @param array $taskIds
+     * @return array 
+     */
+    public function getRemoteTaskIds($taskIds) {
+            $queryBuilder = $this->getEntityRepository()->createQueryBuilder('Task');
+            $queryBuilder->select('Task.taskId');
+            $queryBuilder->where('Task.id IN ('.  implode(',', $taskIds).')');
+            
+            $result = $queryBuilder->getQuery()->getResult();        
+            
+            $remoteTaskIds = array();
+            foreach ($result as $resultItem) {
+                $remoteTaskIds[] = (int)$resultItem['taskId'];
+            }
+            
+            return $remoteTaskIds;
+    }
+    
 }

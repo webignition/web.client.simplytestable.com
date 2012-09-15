@@ -40,18 +40,26 @@ class TestService extends CoreApplicationService {
      */
     private $taskOutputService;
     
+    /**
+     *
+     * @var \SimplyTestable\WebClientBundle\Services\TaskService
+     */
+    private $taskService;    
+    
     
     public function __construct(
         EntityManager $entityManager,
         $parameters,
         \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService,
         \SimplyTestable\WebClientBundle\Services\TaskOutputService $taskOutputService,
-        Logger $logger
+        Logger $logger,
+        \SimplyTestable\WebClientBundle\Services\TaskService $taskService
     ) {
         parent::__construct($parameters, $webResourceService);
         $this->entityManager = $entityManager; 
         $this->taskOutputService = $taskOutputService;
         $this->logger = $logger;
+        $this->taskService = $taskService;
     }     
     
     
@@ -108,17 +116,17 @@ class TestService extends CoreApplicationService {
      *
      * @param string $canonicalUrl
      * @param int $testId
+     * @param array $taskIds get updated only for specified tasks
      * @return Test
      */
-    public function get($canonicalUrl, $testId) {        
+    public function get($canonicalUrl, $testId, $taskIds = null) {        
         if ($this->hasEntity($testId)) {
             /* @var $test Test */
             $test = $this->fetchEntity($testId);
             
             if ($test->getState() != 'completed' && $test->getState() != 'cancelled') {
-                $this->update($test);             
+                $this->update($test, $taskIds);             
             }
-
         } else {
             $test = new Test();
             $test->setTestId($testId);
@@ -127,7 +135,7 @@ class TestService extends CoreApplicationService {
         }
         
         $this->entityManager->persist($test);
-        $this->entityManager->flush();        
+        $this->entityManager->flush();
         
         return $test;
     }
@@ -201,10 +209,11 @@ class TestService extends CoreApplicationService {
     /**
      *
      * @param Test $test
+     * @param array $taskIds limit update to specified tasks only
      * @return boolean|null 
      */
-    private function update(Test $test) {        
-        $testJsonDocument = $this->retrieve($test);
+    private function update(Test $test, $taskIds = null) {        
+        $testJsonDocument = $this->retrieve($test, $taskIds);
         if (!$testJsonDocument instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
             return false;
         }
@@ -237,14 +246,20 @@ class TestService extends CoreApplicationService {
     /**
      *
      * @param Test $test
+     * @param array $taskIds limit update to specified tasks only
      * @return \webignition\WebResource\JsonDocument\JsonDocument 
      */
-    private function retrieve(Test $test) {
-        $httpRequest = $this->getAuthorisedHttpRequest(
-            $this->getUrl('test_status', array(
+    private function retrieve(Test $test, $taskIds = null) {        
+        $retrievalUrl = $this->getUrl('test_status', array(
             'canonical-url' => $test->getWebsite(),
             'test_id' => $test->getTestId()
-        )));
+        ));
+        
+        if (is_array($taskIds)) {
+            $retrievalUrl .= '?taskIds='.  implode(',', $this->taskService->getRemoteTaskIds($taskIds));            
+        }
+        
+        $httpRequest = $this->getAuthorisedHttpRequest($retrievalUrl);
         
         $testJsonDocument = null;
         
