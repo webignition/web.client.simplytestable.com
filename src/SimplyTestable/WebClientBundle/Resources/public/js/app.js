@@ -250,7 +250,7 @@ application.testProgressController = function () {
             return 1;
         }
         
-        return (latestData.taskCountByState[queueName] / latestData.test.tasks.length) * 100;
+        return (latestData.taskCountByState[queueName] / latestData.taskCount) * 100;
     };
     
     var setTestQueues = function () { 
@@ -271,12 +271,12 @@ application.testProgressController = function () {
         }
     };
     
-    var setUrlCount = function () {
-        $('#url-list-url-count').text(latestData.urls.length);
+    var setUrlCount = function () {        
+        $('#url-list-url-count').text(latestData.urlCount);
     };
     
     var setTaskCount = function () {        
-        $('#url-list-task-count').text(latestData.test.tasks.length);
+        $('#url-list-task-count').text(latestData.taskCount);
     };   
     
     var updateUrls = function () { 
@@ -303,19 +303,6 @@ application.testProgressController = function () {
             });
             
             return inPageUrl;
-        };
-        
-        var findLatestDataTasks = function (url) {
-            var latestDataTasks = [];
-            
-            for (var taskIndex = 0; taskIndex < latestData.test.tasks.length; taskIndex++) {
-                var task = latestData.test.tasks[taskIndex];
-                if (task.url == url) {
-                    latestDataTasks.push(task);
-                }
-            }
-            
-            return latestDataTasks;
         };
         
         var findInPageTask = function (latestDataTask, inPageUrl) {
@@ -371,18 +358,17 @@ application.testProgressController = function () {
         };
         
         var tasksToRetrieveOutputFor = {};
-        var tasksToRetrieveOutputForCount = 0;   
+        var tasksToRetrieveOutputForCount = 0;  
         
-        for (var urlIndex = 0; urlIndex < latestData.urls.length; urlIndex++) {
-            var url = latestData.urls[urlIndex];
-            var inPageUrl = findInPageUrl(url);
+        for (var url in latestData.tasksByUrl) {
+            var inPageUrl = findInPageUrl(url);            
             
             if (inPageUrl === false) {
                 inPageUrl = getNewInPageUrl(url);
                 getUrlList().append(inPageUrl);
             }
             
-            var latestDataTasks = findLatestDataTasks(url);            
+            var latestDataTasks = latestData.tasksByUrl[url];           
 
             for (var latestDataTaskIndex = 0; latestDataTaskIndex < latestDataTasks.length; latestDataTaskIndex++) {
                 var latestDataTask = latestDataTasks[latestDataTaskIndex];
@@ -402,8 +388,8 @@ application.testProgressController = function () {
                     tasksToRetrieveOutputFor[latestDataTask.id] = inPageTask
                     tasksToRetrieveOutputForCount++;;
                 }                              
-            }
-        }         
+            }            
+        }        
         
         if (tasksToRetrieveOutputForCount > 0 && $('#completion-percent-value').text() < 100) {
             taskOutputController.update(tasksToRetrieveOutputFor);
@@ -412,6 +398,31 @@ application.testProgressController = function () {
     
     var refresh = function () {
         var now = new Date();
+        
+        var getProgressUrl = function () {            
+            var taskIdsToGetProgressFor = [];
+            var hasLatestData = latestData.hasOwnProperty('tasksByUrl');
+            
+            for (var url in latestData.tasksByUrl) {
+                var tasks = latestData.tasksByUrl[url];
+                var taskCount = tasks.length;
+                
+                for (var taskIndex = 0; taskIndex < taskCount; taskIndex++) {
+                    var task = tasks[taskIndex];
+                    
+                    if (task.state != 'completed') {
+                        taskIdsToGetProgressFor.push(task.id);
+                    }                    
+                }
+            }
+            
+            if (!hasLatestData || taskIdsToGetProgressFor.length == 0) {
+                return window.location.href + '?output=json&timestamp=' + now.getTime();
+            }
+            
+            return window.location.href + '?output=json&timestamp=' + now.getTime() + '&taskIds=' + taskIdsToGetProgressFor.join(',');
+            
+        };
         
         jQuery.ajax({
             complete:function (request, textStatus) {
@@ -449,7 +460,7 @@ application.testProgressController = function () {
                     refresh();
                 }, 1000);
             },
-            url:window.location.href + '?output=json&timestamp=' + now.getTime() 
+            url:getProgressUrl()
         });
     };
     

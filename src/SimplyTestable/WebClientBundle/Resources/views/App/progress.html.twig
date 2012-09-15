@@ -22,7 +22,7 @@
         <div class="row-fluid">
             <section>                
                 <div class="span12" id="test-summary">
-                    <h2 class="info"><i class="icon-certificate"></i> Summary (<span id="url-list-url-count">{{ tasksByUrl | length }}</span> urls, <span id="url-list-task-count">{{ test.tasks | length }}</span> tests)</h2>
+                    <h2 class="info"><i class="icon-certificate"></i> Summary (<span id="url-list-url-count">{{ tasksByUrl | length }}</span> urls, <span id="url-list-task-count">{{ taskCount }}</span> tests)</h2>
                     {% include 'SimplyTestableWebClientBundle:Partials:progress/task-states.html.twig' %}
                 </div>
                 <div class="clearfix"></div>

@@ -77,7 +77,7 @@ class AppController extends BaseViewController
     }   
     
     
-    public function progressAction($website, $test_id) {
+    public function progressAction($website, $test_id) {        
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }        
@@ -91,6 +91,12 @@ class AppController extends BaseViewController
         if (in_array($test->getState(), $this->finishedStates)) {
             return $this->redirect($this->getResultsUrl($website, $test_id));
         }
+        
+        $tasksByUrl = $this->getTasksByUrl($this->getTestUrls($test), $test->getTasks());
+        $taskCount = $test->getTasks()->count();
+        $taskCountByState = $this->getTaskCountByState($test);
+        $completionPercent = $test->getCompletionPercent();
+        $test->clearTasks();
 
         $viewData = array(
             'this_url' => $this->getProgressUrl($website, $test_id),
@@ -99,14 +105,17 @@ class AppController extends BaseViewController
                 'test_id' => $test_id
             )),
             'test' => $test,
-            'tasksByUrl' => $this->getTasksByUrl($this->getTestUrls($test), $test->getTasks()),
+            'tasksByUrl' => $tasksByUrl,
             'state_label' => $this->testStateLabelMap[$test->getState()].': ',
             'state_icon' => $this->testStateIconMap[$test->getState()],
-            'taskCountByState' => $this->getTaskCountByState($test),
-            'completionPercent' => $test->getCompletionPercent(),
+            'taskCount' => $taskCount,
+            'taskCountByState' => $taskCountByState,
+            'completionPercent' => $completionPercent,
             'testId' => $test_id,
-            'public_site' => $this->container->getParameter('public_site')
+            'public_site' => $this->container->getParameter('public_site'),
+            'urlCount' => count($tasksByUrl)
         );
+          
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
         return $this->sendResponse($viewData);
@@ -193,10 +202,10 @@ class AppController extends BaseViewController
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
-        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
-        if ($response->isNotModified($this->getRequest())) {
-            return $response;
-        }
+//        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
+//        if ($response->isNotModified($this->getRequest())) {
+//            return $response;
+//        }
         
         $test = $this->getTestService()->get($website, $test_id);      
         if (in_array($test->getState(), $this->progressStates)) {

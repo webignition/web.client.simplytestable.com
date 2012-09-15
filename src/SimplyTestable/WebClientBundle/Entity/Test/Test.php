@@ -408,4 +408,10 @@ class Test {
         
         return $this->taskIdIndex;
     }
+    
+    
+    public function clearTasks()
+    {
+        $this->tasks = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 }
