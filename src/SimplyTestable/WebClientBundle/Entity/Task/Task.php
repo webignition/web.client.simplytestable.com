@@ -13,6 +13,7 @@ use webignition\NormalisedUrl\NormalisedUrl;
 /**
  * 
  * @ORM\Entity
+ * @SerializerAnnotation\ExclusionPolicy("all")
  */
 class Task {
     
@@ -23,6 +24,7 @@ class Task {
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @SerializerAnnotation\Expose
      */
     private $id;
     
@@ -32,6 +34,7 @@ class Task {
      * @var int 
      * 
      * @ORM\Column(type="integer", nullable=false)
+     * @SerializerAnnotation\Expose
      */    
     private $taskId;
     
@@ -41,6 +44,7 @@ class Task {
      * @var string 
      * 
      * @ORM\Column(type="text", nullable=false)
+     * @SerializerAnnotation\Expose
      */
     private $url;
     
@@ -50,6 +54,7 @@ class Task {
      * @var string
      * 
      * @ORM\Column(type="string", nullable=false)
+     * @SerializerAnnotation\Expose
      */
     private $state;
     
@@ -59,6 +64,7 @@ class Task {
      * @var string
      * 
      * @ORM\Column(type="string", nullable=true)
+     * @SerializerAnnotation\Expose
      */
     private $worker;
     
@@ -68,6 +74,7 @@ class Task {
      * @var string
      * 
      * @ORM\Column(type="string", nullable=false)
+     * @SerializerAnnotation\Expose
      */
     private $type;
     
@@ -77,6 +84,7 @@ class Task {
      * @var SimplyTestable\WebClientBundle\Entity\TimePeriod
      * 
      * @ORM\OneToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\TimePeriod", cascade={"persist"})
+     * @SerializerAnnotation\Expose
      */
     private $timePeriod;
     
@@ -86,6 +94,7 @@ class Task {
      * @var TaskOutput
      * 
      * @ORM\OneToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\Task\Output", mappedBy="task", cascade={"persist"})
+     * @SerializerAnnotation\Expose
      */
     private $output;
     
