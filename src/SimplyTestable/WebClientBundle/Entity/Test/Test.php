@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Entity\Test;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\SerializerBundle\Annotation as SerializerAnnotation;
 
 use SimplyTestable\WebClientBundle\Entity\TimePeriod;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
@@ -20,6 +21,7 @@ use webignition\NormalisedUrl\NormalisedUrl;
  *         @ORM\Index(name="testId_idx", columns={"testId"})
  *     }
  * )
+ * @SerializerAnnotation\ExclusionPolicy("all")
  */
 class Test {
     
@@ -31,6 +33,7 @@ class Test {
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @SerializerAnnotation\Expose
      */
     private $id;
     
@@ -39,6 +42,7 @@ class Test {
      * @var integer
      * 
      * @ORM\Column(type="integer", nullable=false)
+     * @SerializerAnnotation\Expose
      */
     private $testId;
     
@@ -48,6 +52,7 @@ class Test {
      * @var string
      * 
      * @ORM\Column(type="string", nullable=false)
+     * @SerializerAnnotation\Expose
      */
     private $user;    
     
@@ -57,6 +62,7 @@ class Test {
      * @var NormalisedUrl 
      * 
      * @ORM\Column(type="string", nullable=false)
+     * @SerializerAnnotation\Expose
      */
     private $website;
     
@@ -66,6 +72,7 @@ class Test {
      * @var string
      * 
      * @ORM\Column(type="string", nullable=false)
+     * @SerializerAnnotation\Expose
      */
     private $state;
     
@@ -84,6 +91,7 @@ class Test {
      * @var \Doctrine\Common\Collections\Collection
      * 
      * @ORM\Column(type="array", nullable=false)
+     * @SerializerAnnotation\Expose
      */
     private $taskTypes;    
     
@@ -93,6 +101,7 @@ class Test {
      * @var SimplyTestable\WebClientBundle\Entity\TimePeriod
      * 
      * @ORM\OneToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\TimePeriod", cascade={"persist"})
+     * @SerializerAnnotation\Expose
      */
     private $timePeriod;
     
