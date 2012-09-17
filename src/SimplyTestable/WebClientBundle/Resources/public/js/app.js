@@ -492,18 +492,18 @@ application.testList.list = function () {
                 switch (identifier) {
                     case '#all':
                         break;
-                        
-                    case '#tests-without-errors':
-                        if (task.hasClass('failed') || task.hasClass('cancelled')) {
-                            task.remove();
-                        }
-                        break;
-                        
+
                     case '#tests-with-errors':
                         if (!task.hasClass('failed')) {
                             task.remove();
                         }
-                        break;                        
+                        break; 
+
+                    case '#tests-without-errors':
+                        if (!task.hasClass('passed') || (task.hasClass('cancelled') || task.hasClass('awaiting-cancellation'))) {
+                            task.remove();
+                        }
+                        break;
 
                     case '#cancelled-tests':
                         if (!task.hasClass('cancelled')) {

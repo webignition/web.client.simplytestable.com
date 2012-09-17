@@ -110,6 +110,20 @@ class TaskService extends CoreApplicationService {
     
     
     /**
+     *
+     * @param Task $task
+     * @return \SimplyTestable\WebClientBundle\Entity\Task\Task 
+     */
+    public function markFailed(Task $task) {
+        $task->setState('failed');
+        $this->entityManager->persist($task);
+        $this->entityManager->flush(); 
+        
+        return $task;
+    }    
+    
+    
+    /**
      * 
      * @param array $taskIds
      * @return array 

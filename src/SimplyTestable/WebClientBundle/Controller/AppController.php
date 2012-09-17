@@ -253,13 +253,17 @@ class AppController extends BaseViewController
         
         foreach ($test->getTasks() as $task) {            
             /* @var $task Task */
-            if (($task->getState() == 'completed' || substr($task->getState(), 0, strlen('failed')) == 'failed') && !$task->hasOutput()) {
+            if (substr($task->getState(), 0, strlen('failed')) == 'failed' && $task->getState() != 'failed') {
+                $this->getTaskService()->markFailed($task);
+            }
+            
+            if (($task->getState() == 'completed' || $task->getState() == 'failed') && !$task->hasOutput()) {
                 $tasksRequiringOutput[] = $task;
             }
             
             if ($task->getState() == 'queued' || $task->getState() == 'in-progress') {
                 $this->getTaskService()->markCancelled($task);
-            }            
+            }
         }
         
         if (count($tasksRequiringOutput)) {
