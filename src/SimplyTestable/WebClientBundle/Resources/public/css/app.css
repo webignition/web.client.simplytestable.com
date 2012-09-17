@@ -297,7 +297,8 @@ body.app-task-results .errors li {
     height: 40px;
 }
 
-body.app-task-results .errors span {
+body.app-task-results .errors span,
+body.app-task-results .errors div.message {
     position:absolute;
 }
 
@@ -309,6 +310,11 @@ body.app-task-results .errors .meta {
 body.app-task-results .errors .message {
     left:145px;
     font-weight: bold;
+}
+
+body.app-task-results .errors div.message {
+    left:145px;
+    font-weight: normal;
 }
 
 #main .notification-panel {

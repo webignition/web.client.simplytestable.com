@@ -20,6 +20,13 @@ abstract class Message {
      */
     private $type = '';
     
+    
+    /**
+     *
+     * @var string
+     */
+    private $class = '';
+    
 
     /**
      *
@@ -58,7 +65,27 @@ abstract class Message {
      */
     public function getType() {
         return $this->type;
+    }   
+    
+    
+    /**
+     *
+     * @param string $class
+     * @return \SimplyTestable\WebClientBundle\Model\TaskOutput\Message 
+     */
+    public function setClass($class) {
+        $this->class = $class;
+        return $this;
     }    
+    
+    
+    /**
+     * 
+     * @return string
+     */
+    public function getClass() {
+        return $this->class;
+    }      
     
     
     /**

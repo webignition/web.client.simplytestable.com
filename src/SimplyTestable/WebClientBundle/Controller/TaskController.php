@@ -52,12 +52,12 @@ class TaskController extends BaseViewController
         $test = $this->getTestService()->get($website, $test_id);
         $task = $this->getTaskService()->get($test, $task_id);
         
-        if ($task->getState() == 'completed') {
+        if ($task->getState() == 'completed' || $task->getState() == 'failed') {
             if ($this->getTaskOutputService()->has($test, $task)) {
                 $task->setOutput($this->getTaskOutputService()->get($test, $task));
                 $this->getTaskOutputService()->setParsedOutput($task);
             }                
-        }       
+        }
         
         return $this->getCachableResponse(
             $this->render(

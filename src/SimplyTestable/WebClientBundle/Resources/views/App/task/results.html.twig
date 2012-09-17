@@ -44,6 +44,8 @@
                                         <span class="label label-info">In Progresss</span>
                                     {% elseif task.state == 'cancelled' %}
                                         <span class="label">Cancelled</span>
+                                    {% elseif task.state == 'failed' %}
+                                        <span class="label label-important">Failed</span>
                                     {% else %}
                                         <span class="label label-success">Completed</span>
                                     {% endif %}
@@ -71,7 +73,7 @@
             </section>
         </div>
 
-        {% if task.state == 'completed' and task.output.result.hasErrors %}
+        {% if (task.state == 'completed' or task.state == 'failed') and task.output.result.hasErrors %}
         <div class="row-fluid">
             <section>                
                 <div class="span12" id="task-summary">

@@ -1,8 +1,41 @@
 <div class="html-validation-result">
-    <p>
-        <span class="meta">Line {{ error.getLineNumber }}, Column {{ error.getColumnNumber }}:</span>
-        <span class="message">{{ error }}</a>
-    </p>
+    {% if error.getClass == 'character-encoding' %}
+        <p>
+            <span class="meta">            
+                {% if error.getLineNumber > -1 and error.getColumnNumber == -1 %}
+                    Line {{ error.getLineNumber }}:
+                {% endif %}              
+
+                {% if error.getLineNumber == -1 and error.getColumnNumber > -1 %}
+                    Column {{ error.getColumnNumber }}:
+                {% endif %}            
+
+                {% if error.getLineNumber > -1 and error.getColumnNumber > -1 %}
+                    Line {{ error.getLineNumber }}, Column {{ error.getColumnNumber }}:
+                {% endif %}            
+            </span>            
+        </p>        
+        
+        <div class="message">{{ error|raw }}</div>
+    {% else %}
+        <p>
+            <span class="meta">            
+                {% if error.getLineNumber > -1 and error.getColumnNumber == -1 %}
+                    Line {{ error.getLineNumber }}:
+                {% endif %}              
+
+                {% if error.getLineNumber == -1 and error.getColumnNumber > -1 %}
+                    Column {{ error.getColumnNumber }}:
+                {% endif %}            
+
+                {% if error.getLineNumber > -1 and error.getColumnNumber > -1 %}
+                    Line {{ error.getLineNumber }}, Column {{ error.getColumnNumber }}:
+                {% endif %}            
+            </span>
+            <span class="message">{{ error }}</span>                 
+        </p>
+    {% endif %}
+
 </div>
 
 

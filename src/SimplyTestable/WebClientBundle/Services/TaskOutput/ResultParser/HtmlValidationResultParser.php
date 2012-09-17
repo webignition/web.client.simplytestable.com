@@ -37,7 +37,8 @@ class HtmlValidationResultParser extends ResultParser {
         $propertyToMethodMap = array(
             'lastColumn' => 'setColumnNumber',
             'lastLine' => 'setLineNumber',
-            'message' => 'setMessage'
+            'message' => 'setMessage',
+            'messageId' => 'setClass'
         );
         
         $message = new TextFileMessage();
@@ -47,7 +48,7 @@ class HtmlValidationResultParser extends ResultParser {
             if (isset($rawMessageObject->$property)) {
                 $message->$methodName($rawMessageObject->$property);
             }
-        }    
+        }
         
         return $message;
     }
