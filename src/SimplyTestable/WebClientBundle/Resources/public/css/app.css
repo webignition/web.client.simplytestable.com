@@ -193,7 +193,8 @@ section h2 {
     margin:8px 0;
 }
 
-#test-list #url-list ul.tasks li.queued i {
+#test-list #url-list ul.tasks li.queued i,
+#test-list #url-list ul.tasks li.queued-for-assignment i {
     color:#F89406;
 }
 

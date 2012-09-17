@@ -321,6 +321,7 @@ application.testProgressController = function () {
         };
         
         var taskStateIconMap = {
+            'queued-for-assignment':'icon-cog',
             'queued': 'icon-cog',
             'in-progress': 'icon-cogs',
             'completed': 'icon-bar-chart'
