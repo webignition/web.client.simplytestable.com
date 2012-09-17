@@ -239,25 +239,29 @@ class AppController extends BaseViewController
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
-//        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
-//        if ($response->isNotModified($this->getRequest())) {
-//            return $response;
-//        }
+        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
+        if ($response->isNotModified($this->getRequest())) {
+            return $response;
+        }
         
         $test = $this->getTestService()->get($website, $test_id);      
         if (in_array($test->getState(), $this->progressStates)) {
             return $this->redirect($this->getProgressUrl($website, $test_id));
         }
         
+        $tasksRequiringOutput = array();
+        
         foreach ($test->getTasks() as $task) {
             /* @var $task Task */
             if ($task->getState() == 'completed' && !$task->hasOutput()) {
-                if ($this->getTaskOutputService()->has($test, $task)) {
-                    $this->getTaskOutputService()->get($test, $task);
-                } 
+                $tasksRequiringOutput[] = $task;
             } elseif ($test->getState() == 'completed' && ($task->getState() == 'queued' || $task->getState() == 'in-progress')) {
                 $this->getTaskService()->markCancelled($task);
             }
+        }
+        
+        if (count($tasksRequiringOutput)) {
+            $this->getTaskOutputService()->getCollection($test, $tasksRequiringOutput);
         }
         
         $viewData = array(

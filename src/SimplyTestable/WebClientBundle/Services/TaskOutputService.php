@@ -51,8 +51,21 @@ class TaskOutputService extends CoreApplicationService {
      * @return boolean
      */
     public function has(Test $test, Task $task) {
+        if ($this->hasEntity($task)) {
+            return true;
+        }
+        
         return $this->get($test, $task) instanceof Output;
-    }    
+    } 
+    
+    
+    /**
+     *
+     * @return boolean
+     */
+    private function hasEntity(Task $task) {
+        return !is_null($this->fetch($task));
+    }
     
    
     /**
@@ -71,7 +84,27 @@ class TaskOutputService extends CoreApplicationService {
         }
         
         return $taskOutput;      
-    }    
+    } 
+    
+    
+    /**
+     *
+     * @param Test $test
+     * @param array $tasks
+     * @return array 
+     */
+    public function getCollection(Test $test, $tasks) {         
+        $taskOutputCollection = $this->retrieveCollection($test, $tasks);
+        
+        foreach ($tasks as $task) {
+            /* @var $task Task */            
+            $this->entityManager->persist($taskOutputCollection[$task->getTaskId()]);
+            
+        }
+        
+        $this->entityManager->flush();
+        return $taskOutputCollection;        
+    }
     
     
     /**
@@ -124,6 +157,51 @@ class TaskOutputService extends CoreApplicationService {
         return $taskOutput;
     }
     
+    
+    private function retrieveCollection(Test $test, $tasks) {
+        $tasksById = array();
+
+        foreach ($tasks as $task) {
+            /* @var $task Task */
+            if ($task->getTest()->getId() == $test->getId() && !$task->hasOutput()) {
+                $tasksById[$task->getTaskId()] = $task;
+            }
+        }
+        
+        $httpRequest = $this->getAuthorisedHttpRequest(
+            $this->getUrl('task_collection_status', array(
+            'canonical-url' => (string)$test->getWebsite(),
+            'test_id' => $test->getTestId(),
+            'task_ids' => implode(',', array_keys($tasksById))
+        )));
+        
+        $taskOutputCollectionResponse = null;
+        
+        /* @var $response \webignition\WebResource\JsonDocument\JsonDocument */
+        try {
+            $taskOutputCollectionResponse =  $this->webResourceService->get($httpRequest);
+        } catch (\webignition\Http\Client\CurlException $curlException) {
+            
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
+            if ($webResourceServiceException->getCode() == 403) {
+                $taskOutputCollectionResponse = false;
+            }
+        }
+        
+        $responseContentObject = $taskOutputCollectionResponse->getContentObject();
+        $taskOutputCollection = array();
+        
+        foreach ($responseContentObject as $taskOutputResponseObject) {
+            $taskOutput = new Output();
+            $taskOutput->setContent($taskOutputResponseObject->output->output);
+            $taskOutput->setTask($tasksById[$taskOutputResponseObject->id]);
+            $taskOutput->setType($taskOutputResponseObject->type);             
+            $taskOutputCollection[$taskOutputResponseObject->id] = $taskOutput;
+            $tasksById[$taskOutputResponseObject->id]->setOutput($taskOutput);
+        }
+        
+        return $taskOutputCollection;        
+    }
     
     
     /**
