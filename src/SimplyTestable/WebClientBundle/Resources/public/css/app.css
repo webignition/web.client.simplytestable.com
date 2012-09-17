@@ -206,6 +206,11 @@ section h2 {
     color:#51A351;
 }
 
+#test-list #url-list ul.tasks li.failed-retry-limit-reached i,
+#test-list #url-list ul.tasks li.failed-no-retry-available i {
+    color:#953B39;
+}
+
 #test-list #url-list ul.tasks li.cancelled i {
     color:#999;
 }

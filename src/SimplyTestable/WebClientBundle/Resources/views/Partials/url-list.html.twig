@@ -11,7 +11,7 @@
                             <i class="icon-cog"></i>
                         {% elseif task.state == 'in-progress' %}
                             <i class="icon-cogs"></i>
-                        {% elseif task.state == 'cancelled' %}
+                        {% elseif task.state == 'cancelled' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-limit-reached' %}
                             <i class="icon-ban-circle"></i>                                
                         {% else %}
                             <i class="icon-bar-chart"></i>
