@@ -7,7 +7,7 @@
             {% for task in tasks %}
                 <li class="task {{task.state}} {% if taskErrorCount is defined and taskErrorCount[task.id] is defined and taskErrorCount[task.id] > 0 %} failed {% else %} passed {% endif %}">
                     <span class="state">
-                        {% if task.state == 'queued' %}
+                        {% if task.state == 'queued' or task.state == 'queued-for-assignment' %}
                             <i class="icon-cog"></i>
                         {% elseif task.state == 'in-progress' %}
                             <i class="icon-cogs"></i>
