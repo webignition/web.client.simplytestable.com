@@ -289,7 +289,7 @@ class AppController extends BaseViewController
         
         foreach ($test->getTasks() as $task) {
             /* @var $task Task */
-            if ($task->getState() == 'completed' && $task->hasOutput()) {
+            if (($task->getState() == 'completed' || substr($task->getState(), 0, strlen('failed')) == 'failed') && $task->hasOutput()) {
                 $this->getTaskOutputService()->setParsedOutput($task);
                 if ($task->getOutput()->getResult()->hasErrors()) {
                     $totalTaskErrorCount += 1;
