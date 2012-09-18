@@ -210,9 +210,38 @@ application.taskOutputController.prototype.update = function (tasksToRetrieveOut
     });
 };
 
-application.testProgressController = function () {
+application.testProgressController = function () {    
+    var possibleTaskStates = [
+        'in-progress',
+        'queued',
+        'completed',
+        'failed-no-retry-available',
+        'failed-retry-available',
+        'failed-retry-limit-reached'            
+    ];
+
+    var finishedStates = [
+        'completed',
+        'failed-no-retry-available',
+        'failed-retry-available',
+        'failed-retry-limit-reached',
+        'failed'
+    ];    
+    
     var taskOutputController = new application.taskOutputController();
     var latestData = {};
+    
+    var isFinishedState = function (state) {
+        var finishedStateLength = finishedStates.length;
+
+        for (var stateIndex = 0; stateIndex < finishedStateLength; stateIndex++) {
+            if (state == finishedStates[stateIndex]) {
+                return true;
+            }
+        }
+
+        return false;
+    };    
 
     
     var setCompletionPercentValue = function () {
@@ -279,16 +308,7 @@ application.testProgressController = function () {
         $('#url-list-task-count').text(latestData.taskCount);
     };   
     
-    var updateUrls = function () {
-        var possibleTaskStates = [
-            'in-progress',
-            'queued',
-            'completed',
-            'failed-no-retry-available',
-            'failed-retry-available',
-            'failed-retry-limit-reached'            
-        ];
-        
+    var updateUrls = function () {        
         var getUrlList = function () {
             if ($('#url-list ul.urls').length === 0) {
                 $('#url-list').append('<ul class="urls" />');
@@ -371,16 +391,9 @@ application.testProgressController = function () {
             return false;            
         };
         
-        var shouldGetOutputForTask = function (currentState, previousState) {            
-            var statesToGetOutputFor = [
-                'completed',
-                'failed-no-retry-available',
-                'failed-retry-available',
-                'failed-retry-limit-reached'
-            ];
-            
-            for (var stateIndex = 0; stateIndex < statesToGetOutputFor.length; stateIndex++) {
-                if (currentState == statesToGetOutputFor[stateIndex] && previousState != statesToGetOutputFor[stateIndex]) {
+        var shouldGetOutputForTask = function (currentState, previousState) {                        
+            for (var stateIndex = 0; stateIndex < finishedStates.length; stateIndex++) {
+                if (currentState == finishedStates[stateIndex] && previousState != finishedStates[stateIndex]) {
                     return true;
                 }
             }
@@ -429,9 +442,9 @@ application.testProgressController = function () {
         if (tasksToRetrieveOutputForCount > 0 && $('#completion-percent-value').text() < 100) {
             taskOutputController.update(tasksToRetrieveOutputFor);
         }
-    };
+   };
     
-    var refresh = function () {
+    var refresh = function (limit) {
         var now = new Date();
         
         var getProgressUrl = function () {            
@@ -445,7 +458,7 @@ application.testProgressController = function () {
                 for (var taskIndex = 0; taskIndex < taskCount; taskIndex++) {
                     var task = tasks[taskIndex];
                     
-                    if (task.state != 'completed') {
+                    if (!isFinishedState(task.state) && taskIdsToGetProgressFor.length <= limit) {
                         taskIdsToGetProgressFor.push(task.id);
                     }                    
                 }
@@ -492,7 +505,7 @@ application.testProgressController = function () {
                 updateUrls();
                 
                 window.setTimeout(function () {
-                    refresh();
+                    refresh(10);
                 }, 1000);
             },
             url:getProgressUrl()
