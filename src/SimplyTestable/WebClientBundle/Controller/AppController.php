@@ -185,7 +185,11 @@ class AppController extends BaseViewController
             'queued-for-assignment' => 'queued',
             'completed' => 'completed',
             'cancelled' => 'cancelled',
-            'awaiting-cancellation' => 'cancelled'
+            'awaiting-cancellation' => 'cancelled',
+            'failed' => 'failed',
+            'failed-no-retry-available' => 'failed',
+            'failed-retry-available' => 'failed',
+            'failed-retry-limit-reached' => 'failed'
         );
         
         $taskCountByState = array();        

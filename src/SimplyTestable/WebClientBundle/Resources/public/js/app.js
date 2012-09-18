@@ -254,7 +254,7 @@ application.testProgressController = function () {
     };
     
     var setTestQueues = function () { 
-        var queues = ['queued', 'in-progress', 'completed'];
+        var queues = ['queued', 'in-progress', 'completed', 'failed'];
         
         for (var queueNameIndex = 0; queueNameIndex < queues.length; queueNameIndex++) {
             var queueName = queues[queueNameIndex];
@@ -279,7 +279,16 @@ application.testProgressController = function () {
         $('#url-list-task-count').text(latestData.taskCount);
     };   
     
-    var updateUrls = function () { 
+    var updateUrls = function () {
+        var possibleTaskStates = [
+            'in-progress',
+            'queued',
+            'completed',
+            'failed-no-retry-available',
+            'failed-retry-available',
+            'failed-retry-limit-reached'            
+        ];
+        
         var getUrlList = function () {
             if ($('#url-list ul.urls').length === 0) {
                 $('#url-list').append('<ul class="urls" />');
@@ -324,7 +333,11 @@ application.testProgressController = function () {
             'queued-for-assignment':'icon-cog',
             'queued': 'icon-cog',
             'in-progress': 'icon-cogs',
-            'completed': 'icon-bar-chart'
+            'completed': 'icon-bar-chart',
+            'failed': 'icon-ban-circle',
+            'failed-no-retry-available': 'icon-ban-circle',
+            'failed-retry-available': 'icon-ban-circle',
+            'failed-retry-limit-reached': 'icon-ban-circle'
         };
         
         var getNewInPageTask = function (latestDataTask, inPageUrl) {
@@ -348,7 +361,7 @@ application.testProgressController = function () {
         };
         
         var getInPageTaskState = function (inPageTask) {
-            var states = ['in-progress', 'queued', 'completed'];
+            var states = ['in-progress', 'queued', 'completed', 'failed-no-retry-available', 'failed-retry-available', 'failed-retry-limit-reached'];
             for (var stateIndex = 0; stateIndex < states.length; stateIndex++) {
                 if (inPageTask.hasClass(states[stateIndex])) {
                     return states[stateIndex];
@@ -356,6 +369,23 @@ application.testProgressController = function () {
             }
             
             return false;            
+        };
+        
+        var shouldGetOutputForTask = function (currentState, previousState) {            
+            var statesToGetOutputFor = [
+                'completed',
+                'failed-no-retry-available',
+                'failed-retry-available',
+                'failed-retry-limit-reached'
+            ];
+            
+            for (var stateIndex = 0; stateIndex < statesToGetOutputFor.length; stateIndex++) {
+                if (currentState == statesToGetOutputFor[stateIndex] && previousState != statesToGetOutputFor[stateIndex]) {
+                    return true;
+                }
+            }
+            
+            return false;
         };
         
         var tasksToRetrieveOutputFor = {};
@@ -381,11 +411,15 @@ application.testProgressController = function () {
                 }  
                 
                 var previousState = getInPageTaskState(inPageTask);
-
-                inPageTask.removeClass('in-progress').removeClass('queued').removeClass('completed').addClass(latestDataTask.state);
-                $('.state i', inPageTask).removeClass('icon-cog').removeClass('icon-cogs').removeClass('icon-bar-chart').addClass(taskStateIconMap[latestDataTask.state]);
                 
-                if (getInPageTaskState(inPageTask) == 'completed' && previousState != 'completed') {                                        
+                for (var stateIndex = 0; stateIndex < possibleTaskStates.length; stateIndex++) {
+                    inPageTask.removeClass(possibleTaskStates[stateIndex]);
+                }
+
+                inPageTask.addClass(latestDataTask.state);
+                $('.state i', inPageTask).removeClass('icon-cog').removeClass('icon-cogs').removeClass('icon-bar-chart').removeClass('icon-ban-circle').addClass(taskStateIconMap[latestDataTask.state]);
+                
+                if (shouldGetOutputForTask(getInPageTaskState(inPageTask), previousState)) {
                     tasksToRetrieveOutputFor[latestDataTask.id] = inPageTask
                     tasksToRetrieveOutputForCount++;;
                 }                              

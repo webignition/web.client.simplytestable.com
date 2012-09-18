@@ -135,9 +135,28 @@ class Test {
         
         if ($this->getTaskCount() == 0) {
             return 100;
-        }        
+        }
         
-        return (floor($this->getTaskCountByState('completed') / $this->getTaskCount() * 100));        
+        return (floor($this->getFinishedTaskCount() / $this->getTaskCount() * 100));        
+    }
+    
+    
+    private function getFinishedTaskCount() {
+        $finishedTaskStates = array(
+            'completed',
+            'failed',
+            'failed-no-retry-available',
+            'failed-retry-available',
+            'failed-retry-limit-reached'
+        );
+        
+        $finishedTaskCount = 0;
+        
+        foreach ($finishedTaskStates as $finishedTaskState) {
+            $finishedTaskCount += $this->getTaskCountByState($finishedTaskState);
+        }
+        
+        return $finishedTaskCount;
     }
     
     

@@ -9,6 +9,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TaskController extends BaseViewController
 {
+    private $finishedStates = array(
+        'completed',
+        'failed-no-retry-available',
+        'failed-retry-available',
+        'failed-retry-limit-reached'
+    );
+    
+    
     public function resultsCollectionAction($website, $test_id, $task_ids) {         
         if (!$this->getTestService()->has($website, $test_id)) {
             return $this->redirect($this->generateUrl('app', array(), true));
@@ -19,7 +27,7 @@ class TaskController extends BaseViewController
         $output = array();
         
         foreach ($tasks as $task) {
-            if ($task->getState() == 'completed') {
+            if (in_array($task->getState(), $this->finishedStates)) {
                 if ($this->getTaskOutputService()->has($test, $task)) {
                     $task->setOutput($this->getTaskOutputService()->get($test, $task));
                     $this->getTaskOutputService()->setParsedOutput($task);                    
