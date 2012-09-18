@@ -171,9 +171,14 @@ class TaskOutputService extends CoreApplicationService {
         $httpRequest = $this->getAuthorisedHttpRequest(
             $this->getUrl('task_collection_status', array(
             'canonical-url' => (string)$test->getWebsite(),
-            'test_id' => $test->getTestId(),
-            'task_ids' => implode(',', array_keys($tasksById))
+            'test_id' => $test->getTestId()            
         )));
+        
+        $httpRequest->setMethod(HTTP_METH_POST);
+        
+        $httpRequest->setPostFields(array(
+            'task_ids' => implode(',', array_keys($tasksById))            
+        ));
         
         $taskOutputCollectionResponse = null;
         
