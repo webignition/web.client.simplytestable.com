@@ -43,7 +43,22 @@ class JobStartCommand extends BaseCommand
                 'http://www.phpmysqlfreelancer.com/',
                 'http://www.digital-dd.com/',
                 'http://www.benrady.com/',
-                'http://lethain.com/'
+                'http://lethain.com/',
+                'http://tympanus.net/',
+                'http://ukpersonaltrainers.com/',
+                'http://scottlocklin.wordpress.com/',
+                'http://gowers.wordpress.com/',
+                'http://terrytao.wordpress.com/',
+                'http://orwelldiaries.wordpress.com/',
+                'http://marg09.wordpress.com/',
+                'http://stevemccurry.wordpress.com/',
+                'http://www.somersetwebservices.co.uk/',
+                'http://bosker.wordpress.com/',
+                'http://bhorowitz.com/',
+                'http://www.jacquesmattheij.com/',
+                'http://ceronman.com',
+                'http://yourhamper.com/',
+                'http://codinghorror.com/blog/'
             );
     
     
