@@ -335,3 +335,13 @@ body.app-task-results .errors div.message {
 #main .notification-panel h3 {
     font-weight: normal;
 }
+
+body.app-task-results section .notification p {
+    font-size: 22px;
+    line-height: 32px;
+    margin-bottom: 14px;
+}
+
+body.app-task-results section .notification blockquote {
+    border-left-color: #ccc;
+}

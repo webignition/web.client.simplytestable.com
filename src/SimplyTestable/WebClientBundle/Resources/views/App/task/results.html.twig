@@ -51,10 +51,19 @@
                                     {% endif %}
                                 </td>
                             </tr> 
-                            {% if task.state == 'completed' %}
+                            
                             <tr>                
                                 <th>Outcome</th>
-                                <td>
+                                <td>                                
+                                {% if task.state == 'failed' %}
+                                    {% if task.output.result.isHttpRedirectLoopFailure %}
+                                        Redirect loop detected; unable to retrieve URL
+                                    {% elseif task.output.result.isHttpRedirectLimitFailure %}
+                                        Redirect limit reached; unable to retrieve URL
+                                    {% elseif task.output.result.isCharacterEncodingFailure %}
+                                        Character encoding confusion
+                                    {% endif %}
+                                {% elseif task.state == 'completed' %}
                                     {% if task.output.result.hasErrors %}
                                         <span class="label label-important">Failed</span>
                                         <span class="label label-important">
@@ -62,9 +71,9 @@
                                     {% else %}
                                         <span class="label label-success">Passed</span>
                                     {% endif %}
-                                </td>
+                                {% endif %}
+                                </td>                                        
                             </tr>                            
-                            {% endif %}
                         </tbody>
                     </table>                      
                     
@@ -75,6 +84,63 @@
 
         {% if (task.state == 'completed' or task.state == 'failed') and task.output.result.hasErrors %}
         <div class="row-fluid">
+            {% if task.state == 'failed' %}
+            <section>                
+                <div class="span12 notification" id="task-summary">                    
+                    {% if task.output.result.isHttpRedirectLoopFailure %}                                               
+                        <h2 class="info"><i class="icon-refresh"></i> Redirect loop detected!</h2>                        
+                        <p>
+                            <a href="{{ task.url }}">{{ task.url }}</a> redirects to another URL which ultimately
+                            redirects back to itself. Indefinitely. Forever.
+                        </p>                        
+
+                        <p>
+                            It's impossible to retrieve the content for this URL.
+                        </p>                        
+                        
+                        <p>
+                             We can't  run any tests for it. No-one can view the content at this URL.
+                        </p>
+                    {% elseif task.output.result.isHttpRedirectLimitFailure %}
+                        <h2 class="info"><i class="icon-refresh"></i> Redirect limit reached!</h2>
+                        
+                        <p>
+                            <a href="{{ task.url }}">{{ task.url }}</a> redirects to another URL which
+                            redirects to another URL which redirects to another URL &hellip; and so on.
+                        </p>                        
+
+                        <p>
+                            10 redirects were followed at which point we gave up.
+                        </p>                        
+                        
+                        <p>
+                            There's a very good chance this indicates a problem that you need to look into.
+                        </p>                        
+                    {% elseif task.output.result.isCharacterEncodingFailure %}
+                        <h2 class="info"><i class="icon-strikethrough"></i> Character encoding confusion!</h2>
+                        
+                        <p>
+                            The character encoding used for the page at <a href="{{ task.url }}">{{ task.url }}</a>
+                            is not quite right.
+                        </p>                  
+                        
+                        <p>
+                            Either the provided character encoding is wrong or there are one or more 
+                            characters in the page that are wrongly encoded.
+                        </p>
+                        
+                        {% if task.type == 'HTML validation' %}
+                        <p>
+                            On this subject, the HTML validator said:
+                        </p>
+                        
+                        <blockquote>{{ task.output.result.getFirstError|raw }}</blockquote>
+                        {% endif %}                        
+                    {% endif %}
+                </div>
+                <div class="clearfix"></div>
+            </section>                 
+            {% else %}
             <section>                
                 <div class="span12" id="task-summary">
                     <h2 class="info"><i class="icon-ban-circle"></i> Errors </h2>                    
@@ -91,7 +157,8 @@
                     </ul>
                 </div>
                 <div class="clearfix"></div>
-            </section>
+            </section>                
+            {% endif %}
         </div>
         {% endif %}
    

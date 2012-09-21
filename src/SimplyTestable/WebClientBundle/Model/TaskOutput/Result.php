@@ -56,6 +56,12 @@ class Result {
     }
     
     
+    public function getFirstError() {        
+        $errors = $this->getErrors();
+        return $errors[0];
+    }
+    
+    
     /**
      *
      * @return int
@@ -85,6 +91,51 @@ class Result {
         
         return self::OUTCOME_PASSED;
     }
+    
+    
+    /**
+     *
+     * @return boolean 
+     */
+    public function isHttpRedirectLoopFailure() {
+        foreach ($this->getErrors() as $error) {
+            if ($error->getClass() == 'http-retrieval-redirect-loop') {
+                return true;
+            }
+        }
+        
+        return false;
+    } 
+    
+    
+    /**
+     *
+     * @return boolean 
+     */
+    public function isHttpRedirectLimitFailure() {
+        foreach ($this->getErrors() as $error) {
+            if ($error->getClass() == 'http-retrieval-redirect-limit-reached') {
+                return true;
+            }
+        }
+        
+        return false;
+    }     
+    
+    
+    /**
+     *
+     * @return boolean 
+     */
+    public function isCharacterEncodingFailure() {
+        foreach ($this->getErrors() as $error) {
+            if ($error->getClass() == 'character-encoding') {
+                return true;
+            }
+        }
+        
+        return false;
+    }     
         
     
 }
