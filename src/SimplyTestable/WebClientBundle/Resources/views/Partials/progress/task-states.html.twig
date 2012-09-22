@@ -2,19 +2,19 @@
     <tbody>
         <tr class="queued">
             <th><span class="label label-warning">Queued</span></th>
-            <td class="bar"><span class="label label-warning" style="width:{% if task_count_by_state.queued == 0 %} 1{% else %} {{ (task_count_by_state.queued / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.queued }}</span></td>
+            <td class="bar"><span class="label label-warning" style="width:{% if task_count_by_state.queued == 0 %} 2{% else %} {{ (task_count_by_state.queued / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.queued }}</span></td>
         </tr>
-        <tr class="in-progress">
+        <tr class="in_progress">
             <th><span class="label label-info">In Progress</span></th>
-            <td class="bar"><span class="label label-info" style="width:{% if task_count_by_state.in_progress == 0 %} 1{% else %} {{ (task_count_by_state.in_progress / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.in_progress }}</span></td>
+            <td class="bar"><span class="label label-info" style="width:{% if task_count_by_state.in_progress == 0 %} 2{% else %} {{ (task_count_by_state.in_progress / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.in_progress }}</span></td>
         </tr>              
         <tr class="completed">                
             <th><span class="label label-success">Completed</span></th>
-            <td class="bar"><span class="label label-success" style="width:{% if task_count_by_state.completed == 0 %} 1{% else %} {{ (task_count_by_state.completed / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.completed }}</span></td>
+            <td class="bar"><span class="label label-success" style="width:{% if task_count_by_state.completed == 0 %} 2{% else %} {{ (task_count_by_state.completed / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.completed }}</span></td>
         </tr>
         <tr class="failed">                
             <th><span class="label label-important">Failed</span></th>
-            <td class="bar"><span class="label label-important" style="width:{% if task_count_by_state.failed == 0 %} 1{% else %} {{ (task_count_by_state.failed / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.failed }}</span></td>
+            <td class="bar"><span class="label label-important" style="width:{% if task_count_by_state.failed == 0 %} 2{% else %} {{ (task_count_by_state.failed / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.failed }}</span></td>
         </tr>        
     </tbody>
 </table>  

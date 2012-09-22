@@ -394,7 +394,7 @@ class TestService extends CoreApplicationService {
             return true;
         } catch (\webignition\Http\Client\CurlException $curlException) {
             $this->logger->warn('TestService::cancel:curlException: ['.$curlException->getCode().'] ['.$curlException->getMessage().']');
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {                      
             $this->logger->warn('TestService::cancel:WebResourceServiceException: ['.$webResourceServiceException->getCode().'] ['.$webResourceServiceException->getMessage().']');
             if ($webResourceServiceException->getCode() == 403) {
                 return false;

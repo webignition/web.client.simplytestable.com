@@ -247,16 +247,16 @@ application.testProgressController = function () {
     var setCompletionPercentValue = function () {
         var completionPercentValue = $('#completion-percent-value');
         
-        if (completionPercentValue.text() != latestData.completionPercent) {
-            completionPercentValue.text(latestData.completionPercent);
+        if (completionPercentValue.text() != latestData.completion_percent) {
+            completionPercentValue.text(latestData.completion_percent);
             
             if ($('html.csstransitions').length > 0) {
                 $('#completion-percent-bar').css({
-                    'width':latestData.completionPercent + '%'
+                    'width':latestData.completion_percent + '%'
                 });                
             } else {
                 $('#completion-percent-bar').animate({
-                    'width':latestData.completionPercent + '%'
+                    'width':latestData.completion_percent + '%'
                 });                
             }
         }        
@@ -275,15 +275,19 @@ application.testProgressController = function () {
     };    
     
     var getTestQueueWidth = function (queueName) {        
-        if (latestData.taskCountByState[queueName] == 0) {
-            return 1;
+        var minimumQueueWidth = 2; 
+        
+        if (latestData.task_count_by_state[queueName] == 0) {
+            return minimumQueueWidth;
         }
         
-        return (latestData.taskCountByState[queueName] / latestData.taskCount) * 100;
+        var queueWidth = (latestData.task_count_by_state[queueName] / latestData.remote_test_summary.task_count) * 100;
+        
+        return (queueWidth < minimumQueueWidth) ? minimumQueueWidth : queueWidth;
     };
     
     var setTestQueues = function () { 
-        var queues = ['queued', 'in-progress', 'completed', 'failed'];
+        var queues = ['queued', 'in_progress', 'completed', 'failed'];
         
         for (var queueNameIndex = 0; queueNameIndex < queues.length; queueNameIndex++) {
             var queueName = queues[queueNameIndex];
@@ -295,17 +299,17 @@ application.testProgressController = function () {
                     'width': getTestQueueWidth(queueName) + '%'
                 });
                 
-                bar.text(latestData.taskCountByState[queueName]);
+                bar.text(latestData.task_count_by_state[queueName]);
             });               
         }
     };
     
     var setUrlCount = function () {        
-        $('#url-list-url-count').text(latestData.urlCount);
+        $('#url-list-url-count').text(latestData.remote_test_summary.url_count);
     };
     
     var setTaskCount = function () {        
-        $('#url-list-task-count').text(latestData.taskCount);
+        $('#url-list-task-count').text(latestData.remote_test_summary.task_count);
     };   
     
     var updateUrls = function () {        
@@ -496,13 +500,17 @@ application.testProgressController = function () {
                 
                 latestData = data;
                 
+                //console.log(latestData);
+                
+                
+                
                 setCompletionPercentValue();                
                 setCompletionPercentStateLabel();
                 setCompletionPercentStateIcon();
                 setTestQueues();
                 setUrlCount();               
                 setTaskCount();
-                updateUrls();
+                //updateUrls();
                 
                 window.setTimeout(function () {
                     refresh(10);
@@ -695,5 +703,5 @@ var applicationController = function () {
 
 $(document).ready(function() {
     var app = new applicationController();
-    //app.initialise();
+    app.initialise();
 });

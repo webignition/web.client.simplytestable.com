@@ -31,6 +31,7 @@ class TestController extends Controller
     
     public function cancelAction()
     {
+        
         if (!$this->hasWebsite()) {
             $this->get('session')->setFlash('test_start_error', '');
             return $this->redirect($this->generateUrl('app', array(), true));

@@ -109,18 +109,28 @@ class AppController extends BaseViewController
                 'test_id' => $test_id
             )),
             'test' => $test,
-            'remote_test_summary' => $remoteTestSummary,
+            'remote_test_summary' => $this->getRemoteTestSummaryArray($remoteTestSummary),
             'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
             'state_label' => $this->testStateLabelMap[$test->getState()].': ',
             'state_icon' => $this->testStateIconMap[$test->getState()],
-            //'taskCount' => $remoteTestSummary->task_count,
-            //'taskCountByState' => $taskCountByState,
             'completion_percent' => $this->getCompletionPercent($remoteTestSummary),
             'public_site' => $this->container->getParameter('public_site')
         );          
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
         return $this->sendResponse($viewData);
+    }
+    
+    private function getRemoteTestSummaryArray($remoteTestSummary) {        
+        $remoteTestSummaryArray = (array)$remoteTestSummary;
+        
+        foreach ($remoteTestSummaryArray as $key => $value) {
+            if ($value instanceof \stdClass){
+                $remoteTestSummaryArray[$key] = (array)$value;
+            }
+        }
+        
+        return $remoteTestSummaryArray;
     }
     
     
