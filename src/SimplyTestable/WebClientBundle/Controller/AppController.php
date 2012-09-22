@@ -85,7 +85,7 @@ class AppController extends BaseViewController
     }   
     
     
-    public function progressAction($website, $test_id) {                
+    public function progressAction($website, $test_id) {
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }        
@@ -153,9 +153,15 @@ class AppController extends BaseViewController
         
         if ($finishedCount ==  $remoteTestSummary->task_count) {
             return 100;
-        }
+        }   
         
-        return floor(($finishedCount / $remoteTestSummary->task_count) * 100);
+        $requiredPrecision = floor(log10($remoteTestSummary->task_count)) - 1;
+        
+        if ($requiredPrecision == 0) {
+            return floor(($finishedCount / $remoteTestSummary->task_count) * 100);
+        }        
+        
+        return round(($finishedCount / $remoteTestSummary->task_count) * 100, $requiredPrecision);
     }
     
     private function getRequestTaskIds() {
