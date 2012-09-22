@@ -695,5 +695,5 @@ var applicationController = function () {
 
 $(document).ready(function() {
     var app = new applicationController();
-    app.initialise();
+    //app.initialise();
 });

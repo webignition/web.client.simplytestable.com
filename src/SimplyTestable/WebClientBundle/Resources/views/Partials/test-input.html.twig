@@ -13,7 +13,7 @@
                     {% elseif test.state == 'completed' or test.state == 'cancelled' or test.state == 'no-sitemap' %}
                     <i class="icon-bar-chart"></i> Results for {{ test.website }}
                     {% endif %} 
-                    <span id="test-id">(#{{ testId }})</span>
+                    <span id="test-id">(#{{ test.testId }})</span>
                 {% else %}
                     <i class="icon-play-circle"></i> Start new website test
                 {% endif %}               

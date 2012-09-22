@@ -16,11 +16,19 @@ class AppController extends BaseViewController
         'in-progress'        
     );
     
-    private $finishedStates = array(
+    private $testFinishedStates = array(
         'cancelled',
         'completed',
-        'no-sitemap'
+        'no-sitemap',
     );
+    
+    private $taskFinishedStates = array(
+        'cancelled',
+        'completed',
+        'failed-no-retry-available',
+        'failed-retry-available',
+        'failed-retry-limit-reached'      
+    );    
     
     private $testStateLabelMap = array(
         'new' => 'New',
@@ -77,30 +85,23 @@ class AppController extends BaseViewController
     }   
     
     
-    public function progressAction($website, $test_id) {        
+    public function progressAction($website, $test_id) {                
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }        
         
         if (!$this->getTestService()->has($website, $test_id)) {
             return $this->redirect($this->generateUrl('app', array(), true));
-        }
-
-        $requestTaskIds = $this->getRequestTaskIds();        
+        }    
         
-        $test = $this->getTestService()->get($website, $test_id, $requestTaskIds);
+        $test = $this->getTestService()->get($website, $test_id);
         
-        if (in_array($test->getState(), $this->finishedStates)) {
+        if (in_array($test->getState(), $this->testFinishedStates)) {
             return $this->redirect($this->getResultsUrl($website, $test_id));
         }
         
-        $tasksByUrl = $this->getTasksByUrl($this->getTestUrls($test), $test->getTasks(), $requestTaskIds);
-        $taskCount = $test->getTasks()->count();
-        $taskCountByState = $this->getTaskCountByState($test);
-        $completionPercent = $test->getCompletionPercent();
+        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
         
-        $test->clearTasks();        
-
         $viewData = array(
             'this_url' => $this->getProgressUrl($website, $test_id),
             'test_input_action_url' => $this->generateUrl('test_cancel', array(
@@ -108,19 +109,43 @@ class AppController extends BaseViewController
                 'test_id' => $test_id
             )),
             'test' => $test,
-            'tasksByUrl' => $tasksByUrl,
+            'remote_test_summary' => $remoteTestSummary,
+            'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
             'state_label' => $this->testStateLabelMap[$test->getState()].': ',
             'state_icon' => $this->testStateIconMap[$test->getState()],
-            'taskCount' => $taskCount,
-            'taskCountByState' => $taskCountByState,
-            'completionPercent' => $completionPercent,
-            'testId' => $test_id,
-            'public_site' => $this->container->getParameter('public_site'),
-            'urlCount' => $test->getUrlCount()
+            //'taskCount' => $remoteTestSummary->task_count,
+            //'taskCountByState' => $taskCountByState,
+            'completion_percent' => $this->getCompletionPercent($remoteTestSummary),
+            'public_site' => $this->container->getParameter('public_site')
         );          
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
         return $this->sendResponse($viewData);
+    }
+    
+    
+    /**
+     *
+     * @param \stdClass $remoteTestSummary
+     * @return int 
+     */
+    private function getCompletionPercent($remoteTestSummary) {
+        if ($remoteTestSummary->task_count === 0) {
+            return 0;
+        }
+        
+        $finishedCount = 0;
+        foreach ($remoteTestSummary->task_count_by_state as $stateName => $taskCount) {
+            if (in_array($stateName, $this->taskFinishedStates)) {
+                $finishedCount += $taskCount;
+            }
+        }
+        
+        if ($finishedCount ==  $remoteTestSummary->task_count) {
+            return 100;
+        }
+        
+        return floor(($finishedCount / $remoteTestSummary->task_count) * 100);
     }
     
     private function getRequestTaskIds() {
@@ -175,12 +200,12 @@ class AppController extends BaseViewController
     
     /**
      *
-     * @param Test $test
+     * @param \stdClass $remoteTestSummary
      * @return array 
      */
-    private function getTaskCountByState(Test $test) {        
+    private function getTaskCountByState(\stdClass $remoteTestSummary) {        
         $taskStates = array(
-            'in-progress' => 'in-progress',
+            'in-progress' => 'in_progress',
             'queued' => 'queued',
             'queued-for-assignment' => 'queued',
             'completed' => 'completed',
@@ -199,7 +224,9 @@ class AppController extends BaseViewController
                 $taskCountByState[$translatedState] = 0;
             }
             
-            $taskCountByState[$translatedState] += $test->getTaskCountByState($taskState);
+            if (isset($remoteTestSummary->task_count_by_state->$taskState)) {
+                $taskCountByState[$translatedState] += $remoteTestSummary->task_count_by_state->$taskState;
+            }            
         }
         
         return $taskCountByState;

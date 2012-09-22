@@ -44,7 +44,21 @@ class TestService extends CoreApplicationService {
      *
      * @var \SimplyTestable\WebClientBundle\Services\TaskService
      */
-    private $taskService;    
+    private $taskService;
+    
+    
+    /**
+     *
+     * @var \stdClass
+     */
+    private $remoteTestSummary = null;
+    
+    
+    /**
+     *
+     * @var Test
+     */
+    private $currentTest = null;
     
     
     public function __construct(
@@ -116,28 +130,27 @@ class TestService extends CoreApplicationService {
      *
      * @param string $canonicalUrl
      * @param int $testId
-     * @param array $taskIds get updated only for specified tasks
      * @return Test
      */
-    public function get($canonicalUrl, $testId, $taskIds = null) {        
-        if ($this->hasEntity($testId)) {
+    public function get($canonicalUrl, $testId) {        
+        if ($this->hasEntity($testId)) {           
             /* @var $test Test */
-            $test = $this->fetchEntity($testId);
+            $this->currentTest = $this->fetchEntity($testId);
             
-            if ($test->getState() != 'completed' && $test->getState() != 'cancelled') {
-                $this->update($test, $taskIds);             
+            if ($this->currentTest->getState() != 'completed' && $this->currentTest->getState() != 'cancelled') {
+                $this->update();             
             }
-        } else {
-            $test = new Test();
-            $test->setTestId($testId);
-            $test->setWebsite(new NormalisedUrl($canonicalUrl));            
-            $test = $this->create($test);
+        } else {            
+            $this->currentTest = new Test();
+            $this->currentTest->setTestId($testId);
+            $this->currentTest->setWebsite(new NormalisedUrl($canonicalUrl));            
+            $this->create();
         }
         
-        $this->entityManager->persist($test);
+        $this->entityManager->persist($this->currentTest);
         $this->entityManager->flush();
         
-        return $test;
+        return $this->currentTest;
     }
     
     
@@ -193,71 +206,79 @@ class TestService extends CoreApplicationService {
     
     /**
      *
-     * @param Test $test
-     * @return \SimplyTestable\WebClientBundle\Entity\Test\Test|false
+     * @return boolean
      */
-    private function create(Test $test) {
-        $testJsonDocument = $this->retrieve($test);
-        if (!$testJsonDocument instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
+    private function create() {
+        $remoteTestSummary = $this->getRemoteTestSummary();      
+        if (!$remoteTestSummary) {
             return false;
         }
         
-        return $this->createTestFromJsonObject($testJsonDocument->getContentObject());
+        return $this->createTestFromRemoteTestSummary();
     }
     
     
     /**
      *
-     * @param Test $test
-     * @param array $taskIds limit update to specified tasks only
-     * @return boolean|null 
+     * @return boolean
      */
-    private function update(Test $test, $taskIds = null) {        
-        $testJsonDocument = $this->retrieve($test, $taskIds);
-        if (!$testJsonDocument instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
+    private function update() {        
+        $remoteTestSummary = $this->getRemoteTestSummary();      
+        if (!$remoteTestSummary) {
             return false;
         }
         
-        $jsonObject = $testJsonDocument->getContentObject();
+        $this->currentTest->setState($remoteTestSummary->state);
+        $this->currentTest->setUrlCount($remoteTestSummary->url_count); 
         
-        $test->setState($jsonObject->state);
-        $test->setUrlCount($jsonObject->url_total);
-        $this->updateTimePeriodFromJsonObject($test->getTimePeriod(), $jsonObject);
+        $this->updateTimePeriodFromJsonObject($this->currentTest->getTimePeriod(), $remoteTestSummary);
         
-        foreach ($jsonObject->tasks as $taskJsonObject) {
-            $retrievedTask = $this->createTaskFromJsonObject($taskJsonObject);
-            
-            if ($test->hasTask($retrievedTask)) {
-                $currentTask = $test->getTask($retrievedTask);
-                if ($currentTask->getState() != $retrievedTask->getState()) {                    
-                    $this->populateTaskFromJsonObject($currentTask, $taskJsonObject);
-                    $this->entityManager->persist($currentTask);
-                }
+//        foreach ($jsonObject->tasks as $taskJsonObject) {
+//            $retrievedTask = $this->createTaskFromJsonObject($taskJsonObject);
+//            
+//            if ($test->hasTask($retrievedTask)) {
+//                $currentTask = $test->getTask($retrievedTask);
+//                if ($currentTask->getState() != $retrievedTask->getState()) {                    
+//                    $this->populateTaskFromJsonObject($currentTask, $taskJsonObject);
+//                    $this->entityManager->persist($currentTask);
+//                }
+//            } else {
+//                $retrievedTask->setTest($test);
+//                $test->addTask($retrievedTask);
+//                $this->entityManager->persist($retrievedTask);
+//            }
+//        }        
+    }
+    
+    
+    /**
+     *
+     * @return \stdClass|boolean 
+     */
+    public function getRemoteTestSummary() {
+        if (is_null($this->remoteTestSummary)) {
+            $remoteTestSummaryJsonDocument = $this->retrieveRemoteTestSummary();
+            if ($remoteTestSummaryJsonDocument instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
+                $this->remoteTestSummary = $remoteTestSummaryJsonDocument->getContentObject();
             } else {
-                $retrievedTask->setTest($test);
-                $test->addTask($retrievedTask);
-                $this->entityManager->persist($retrievedTask);
+                $this->remoteTestSummary = false;
             }
-        }        
+        }
+        
+        return $this->remoteTestSummary;
     }
     
     
     
     /**
      *
-     * @param Test $test
-     * @param array $taskIds limit update to specified tasks only
      * @return \webignition\WebResource\JsonDocument\JsonDocument 
      */
-    private function retrieve(Test $test, $taskIds = null) {        
+    private function retrieveRemoteTestSummary() {        
         $retrievalUrl = $this->getUrl('test_status', array(
-            'canonical-url' => $test->getWebsite(),
-            'test_id' => $test->getTestId()
+            'canonical-url' => $this->currentTest->getWebsite(),
+            'test_id' => $this->currentTest->getTestId()
         ));
-        
-        if (is_array($taskIds)) {
-            $retrievalUrl .= '?taskIds='.  implode(',', $this->taskService->getRemoteTaskIds($taskIds));            
-        }
         
         $httpRequest = $this->getAuthorisedHttpRequest($retrievalUrl);
         
@@ -280,32 +301,26 @@ class TestService extends CoreApplicationService {
     
     /**
      *
-     * @param \stdClass $testJsonObject
      * @return \SimplyTestable\WebClientBundle\Entity\Test\Test 
      */
-    private function createTestFromJsonObject($testJsonObject) {
-        $test = new Test();        
-        $test->setState($testJsonObject->state);                
-        $test->setUrlCount($testJsonObject->url_total);
-        $test->setUser($testJsonObject->user);
-        $test->setWebsite(new NormalisedUrl($testJsonObject->website));
-        $test->setTestId($testJsonObject->id);
-        
-        foreach ($testJsonObject->tasks as $taskJsonObject) {
-            $task = $this->createTaskFromJsonObject($taskJsonObject);
-            $task->setTest($test);                    
-            $test->addTask($task);
-        }
+    private function createTestFromRemoteTestSummary() {        
+        $remoteTestSummary = $this->getRemoteTestSummary();        
+
+        $this->currentTest->setState($remoteTestSummary->state);
+        $this->currentTest->setUser($remoteTestSummary->user);
+        $this->currentTest->setWebsite(new NormalisedUrl($remoteTestSummary->website));
+        $this->currentTest->setTestId($remoteTestSummary->id);
+        $this->currentTest->setUrlCount($remoteTestSummary->url_count);        
         
         $taskTypes = array();
-        foreach ($testJsonObject->task_types as $taskTypeDetail) {
+        foreach ($remoteTestSummary->task_types as $taskTypeDetail) {
             $taskTypes[] = $taskTypeDetail->name;
-        }
+        }  
         
-        $test->setTaskTypes($taskTypes);
-        $this->updateTimePeriodFromJsonObject($test->getTimePeriod(), $testJsonObject);        
+        $this->currentTest->setTaskTypes($taskTypes);
+        $this->updateTimePeriodFromJsonObject($this->currentTest->getTimePeriod(), $remoteTestSummary);             
         
-        return $test;        
+        return true;
     }
     
     
