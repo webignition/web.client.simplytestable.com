@@ -365,16 +365,43 @@ application.progress.taskController = function () {
         return urlListContainer;
     };
     
+    var getTabCount = function () {
+        return Math.ceil(getTaskCount() / pageLength);
+    };
+    
+    var getTabLabel = function (tabIndex) {
+        var start = (pageLength * tabIndex) + 1;
+        var end = start + pageLength - 1;
+        
+        if (end > getTaskCount()) {
+            end = getTaskCount();
+        }
+        
+        return start + ' &hellip; ' + end;
+    };
+    
     var buildTabList = function () {
-        console.log("cp02:buildTabList");
+        tabList = $('<ul id="tab-list" class="nav nav-tabs" />');
+        getTaskListContainer().append(tabList);
+        
+        var tabCount = getTabCount();
+        var tab;
+        
+        for (var tabIndex = 0; tabIndex < tabCount; tabIndex++) {
+            (function (tabIndex) {
+                tab = $('<li><a href="#tab'+tabIndex+'" data-toggle="tab">'+getTabLabel(tabIndex)+'</a></li>').click(function () {
+                    //console.log(tabIndex);
+                });
+
+                tabList.append(tab);                
+            })(tabIndex);
+        }
     };
     
     var getTabList = function () {
         if (tabList === null) {
-            buildTabList();
-            
-            //tabList = $('#tab-list')
-        }
+            buildTabList();             
+       }
     };
     
     var getTaskCollection = function (offset) {               
@@ -488,12 +515,15 @@ application.progress.taskController = function () {
             refreshTaskList();
             window.setInterval(function () {
                 refreshTaskList();
-            }, 2000)            
+            }, 2000);
+
+            return;
         }
         
-        //getTabList();
-        
         //console.log(getTaskIds());
+            
+        
+        getTabList();
     };        
 
     
