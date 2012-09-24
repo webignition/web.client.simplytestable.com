@@ -9,8 +9,7 @@ use JMS\SerializerBundle\Annotation as SerializerAnnotation;
  * 
  * @ORM\Entity
  * @ORM\Table(
- *     name="TestTaskId",
- *     uniqueConstraints={@ORM\UniqueConstraint(name="test_idx", columns={"test_id"})}
+ *     name="TestTaskId"
  * )
  * @ORM\Entity(repositoryClass="SimplyTestable\WebClientBundle\Repository\TaskRepository")
  * 

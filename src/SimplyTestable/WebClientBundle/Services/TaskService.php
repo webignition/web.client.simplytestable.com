@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\TimePeriod;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
+use SimplyTestable\WebClientBundle\Entity\Test\TaskId;
 
 class TaskService extends CoreApplicationService {    
     
@@ -66,7 +67,7 @@ class TaskService extends CoreApplicationService {
     
     
     public function getCollection(Test $test, $taskIds = array()) {                
-        $remoteTaskIds = (is_null($taskIds)) ? $this->retrieveRemoteTaskIds($test) : $this->getRemoteTaskIds($taskIds);        
+        $remoteTaskIds = (is_null($taskIds)) ? $this->getRemoteTaskIds($test) : $this->getRemoteTaskIds($taskIds);        
         $existenceResult = $this->getEntityRepository()->getCollectionExistsByTestAndRemoteId($test, $remoteTaskIds);
         
         $tasksToRetrieve = array();
@@ -244,24 +245,56 @@ class TaskService extends CoreApplicationService {
     }  
     
     
-    public function retrieveRemoteTaskIds(Test $test) {        
+    /**
+     *
+     * @param Test $test
+     * @return array 
+     */
+    public function getRemoteTaskIds(Test $test) {        
+        if (!($test->getState() == 'queued' || $test->getState() == 'in-progress')) {
+            return array();
+        }
+        
+        if (!$test->hasTaskIds()) {
+            $taskIds = $this->retrieveRemoteTaskIds($test);
+            
+            foreach ($taskIds as $taskIdValue) {
+                $taskId = new TaskId();
+                $taskId->setTaskId($taskIdValue);
+                $taskId->setTest($test);
+                $test->addTaskId($taskId);
+                
+                $this->entityManager->persist($taskId);
+            }
+            
+            $this->entityManager->flush();              
+        }
+        
+        return $test->getTaskIds();
+    }
+    
+    
+    /**
+     *
+     * @param Test $test
+     * @return array 
+     */
+    private function retrieveRemoteTaskIds(Test $test) {
         $httpRequest = $this->getAuthorisedHttpRequest(
             $this->getUrl('test_task_ids', array(
                 'canonical-url' => (string)$test->getWebsite(),
                 'test_id' => $test->getTestId()
         )));
-        
-        $remoteTaskIdsDocument = null;
 
         try {
-            return $this->webResourceService->get($httpRequest)->getContentObject();
+            return $this->webResourceService->get($httpRequest)->getContentObject();          
         } catch (\webignition\Http\Client\CurlException $curlException) {
             
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
             if ($webResourceServiceException->getCode() == 403) {
                 return false;
             }
-        }   
+        }          
     }
     
     
@@ -342,28 +375,28 @@ class TaskService extends CoreApplicationService {
 //    }    
 //    
 //    
-    /**
-     * 
-     * @param array $taskIds
-     * @return array 
-     */
-    public function getRemoteTaskIds($taskIds = null) {
-        $queryBuilder = $this->getEntityRepository()->createQueryBuilder('Task');
-        $queryBuilder->select('Task.taskId');
-        
-        if (is_array($taskIds)) {
-            $queryBuilder->where('Task.id IN ('.  implode(',', $taskIds).')');
-        }        
-
-        $result = $queryBuilder->getQuery()->getResult();        
-
-        $remoteTaskIds = array();
-        foreach ($result as $resultItem) {
-            $remoteTaskIds[] = (int)$resultItem['taskId'];
-        }
-
-        return $remoteTaskIds;
-    }
+//    /**
+//     * 
+//     * @param array $taskIds
+//     * @return array 
+//     */
+//    public function getRemoteTaskIds($taskIds = null) {
+//        $queryBuilder = $this->getEntityRepository()->createQueryBuilder('Task');
+//        $queryBuilder->select('Task.taskId');
+//        
+//        if (is_array($taskIds)) {
+//            $queryBuilder->where('Task.id IN ('.  implode(',', $taskIds).')');
+//        }        
+//
+//        $result = $queryBuilder->getQuery()->getResult();        
+//
+//        $remoteTaskIds = array();
+//        foreach ($result as $resultItem) {
+//            $remoteTaskIds[] = (int)$resultItem['taskId'];
+//        }
+//
+//        return $remoteTaskIds;
+//    }
     
     
     /**

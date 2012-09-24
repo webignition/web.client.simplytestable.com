@@ -456,10 +456,10 @@ class Test {
     /**
      * Add tasks
      *
-     * @param SimplyTestable\WebClientBundle\Entity\Task\TaskId $taskId
+     * @param \SimplyTestable\WebClientBundle\Entity\Test\TaskId $taskId
      * @return Test
      */
-    public function addTaskId(\SimplyTestable\WebClientBundle\Entity\Task\TaskId $taskId)
+    public function addTaskId(\SimplyTestable\WebClientBundle\Entity\Test\TaskId $taskId)
     {
         $this->taskIds[] = $taskId;
     
@@ -469,9 +469,9 @@ class Test {
     /**
      * Remove tasks
      *
-     * @param \SimplyTestable\WebClientBundle\Entity\Task\TaskId $taskId
+     * @param \SimplyTestable\WebClientBundle\Entity\Test\TaskId $taskId
      */
-    public function removeTaskId(\SimplyTestable\WebClientBundle\Entity\Task\TaskId $taskId)
+    public function removeTaskId(\SimplyTestable\WebClientBundle\Entity\Test\TaskId $taskId)
     {
         $this->taskIds->removeElement($taskId);
     }
@@ -485,4 +485,13 @@ class Test {
     {
         return $this->taskIds;
     }    
+    
+    
+    /**
+     *
+     * @return boolean
+     */
+    public function hasTaskIds() {
+        return $this->getTaskIds()->count() > 0;
+    }
 }

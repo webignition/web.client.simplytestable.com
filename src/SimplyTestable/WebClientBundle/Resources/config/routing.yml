@@ -14,6 +14,12 @@ app_tasks:
     requirements:
         website: ".+"   
         
+app_task_ids:
+    pattern:  /{website}/{test_id}/tasks/ids/
+    defaults: { _controller: SimplyTestableWebClientBundle:Task:idCollection, _format: json }  
+    requirements:
+        website: ".+"           
+        
 app_task_results:
     pattern:  /{website}/{test_id}/{task_id}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:Task:results }  
