@@ -85,7 +85,7 @@ class AppController extends BaseViewController
     }   
     
     
-    public function progressAction($website, $test_id) {
+    public function progressAction($website, $test_id) {        
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }        
@@ -271,65 +271,67 @@ class AppController extends BaseViewController
     }
     
     
-    public function resultsAction($website, $test_id) {
-        if ($this->isUsingOldIE()) {
-            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        }        
-        
-        if (!$this->getTestService()->has($website, $test_id)) {
-            return $this->redirect($this->generateUrl('app', array(), true));
-        }        
-        
-        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
-        $cacheValidatorIdentifier->setParameter('website', $website);
-        $cacheValidatorIdentifier->setParameter('test_id', $test_id);
-        
-        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
-        
-        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
-        if ($response->isNotModified($this->getRequest())) {
-            return $response;
-        }
-        
-        $test = $this->getTestService()->get($website, $test_id);      
-        if (in_array($test->getState(), $this->progressStates)) {
-            return $this->redirect($this->getProgressUrl($website, $test_id));
-        }
-        
-        $tasksRequiringOutput = array();
-        
-        foreach ($test->getTasks() as $task) {            
-            /* @var $task Task */
-            if (substr($task->getState(), 0, strlen('failed')) == 'failed' && $task->getState() != 'failed') {
-                $this->getTaskService()->markFailed($task);
-            }
-            
-            if (($task->getState() == 'completed' || $task->getState() == 'failed') && !$task->hasOutput()) {
-                $tasksRequiringOutput[] = $task;
-            }
-            
-            if ($task->getState() == 'queued' || $task->getState() == 'in-progress') {
-                $this->getTaskService()->markCancelled($task);
-            }
-        }
-        
-        if (count($tasksRequiringOutput)) {
-            $this->getTaskOutputService()->getCollection($test, $tasksRequiringOutput);
-        }
+    public function resultsAction($website, $test_id) {        
+//        if ($this->isUsingOldIE()) {
+//            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
+//        }        
+//        
+//        if (!$this->getTestService()->has($website, $test_id)) {
+//            return $this->redirect($this->generateUrl('app', array(), true));
+//        }        
+//        
+//        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
+//        $cacheValidatorIdentifier->setParameter('website', $website);
+//        $cacheValidatorIdentifier->setParameter('test_id', $test_id);
+//        
+//        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
+//        
+//        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
+//        if ($response->isNotModified($this->getRequest())) {
+//            return $response;
+//        }
+//        
+//        $test = $this->getTestService()->get($website, $test_id);      
+//        if (in_array($test->getState(), $this->progressStates)) {
+//            return $this->redirect($this->getProgressUrl($website, $test_id));
+//        }
+//        
+//        $tasksRequiringOutput = array();
+//        
+//        foreach ($test->getTasks() as $task) {            
+//            /* @var $task Task */
+//            if (substr($task->getState(), 0, strlen('failed')) == 'failed' && $task->getState() != 'failed') {
+//                $this->getTaskService()->markFailed($task);
+//            }
+//            
+//            if (($task->getState() == 'completed' || $task->getState() == 'failed') && !$task->hasOutput()) {
+//                $tasksRequiringOutput[] = $task;
+//            }
+//            
+//            if ($task->getState() == 'queued' || $task->getState() == 'in-progress') {
+//                $this->getTaskService()->markCancelled($task);
+//            }
+//        }
+//        
+//        if (count($tasksRequiringOutput)) {
+//            $this->getTaskOutputService()->getCollection($test, $tasksRequiringOutput);
+//        }
         
         $viewData = array(
             'this_url' => $this->getResultsUrl($website, $test_id),
-            'test_input_action_url' => $this->generateUrl('test_start'),
-            'test' => $test,          
-            'tasksByUrl' => $this->getTasksByUrl($this->getTestUrls($test), $test->getTasks()),
-            'testId' => $test_id,
-            'taskCountByState' => $this->getTaskCountByState($test),
-            'taskErrorCount' => $this->getTaskErrorCount($test),
-            'erroredTaskCount' => $this->getErroredTaskCount($test),
-            'public_site' => $this->container->getParameter('public_site')
+            'test_input_action_url' => $this->generateUrl('test_start')//,
+//            'test' => $test,          
+//            'tasksByUrl' => $this->getTasksByUrl($this->getTestUrls($test), $test->getTasks()),
+//            'testId' => $test_id,
+//            'taskCountByState' => $this->getTaskCountByState($test),
+//            'taskErrorCount' => $this->getTaskErrorCount($test),
+//            'erroredTaskCount' => $this->getErroredTaskCount($test),
+//            'public_site' => $this->container->getParameter('public_site')
         );
         
-        $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');     
+        
+        $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');
+        return $this->sendResponse($viewData);             
         
         return $this->getCachableResponse(
                 $this->sendResponse($viewData),

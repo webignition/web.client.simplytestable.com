@@ -3,16 +3,16 @@
 {% block title %}Testing {{test.website}} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
 {% block main %}         
+<div class="row-fluid">
+    <div class="span12">
+                {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %} 
+        </div>
+    </div>
+
+
+    <section>
         <div class="row-fluid">
             <div class="span12">
-                {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %} 
-            </div>
-        </div>
-
-
-        <section>
-            <div class="row-fluid">
-                <div class="span12">
                     {% include 'SimplyTestableWebClientBundle:Partials/progress:completion-percent.html.twig' %}
                 </div>                
             </div>          
@@ -22,26 +22,59 @@
         <div class="row-fluid">
             <section>                
                 <div class="span12" id="test-summary">
-                    <h2 class="info"><i class="icon-certificate"></i> Summary (<span id="url-list-url-count">{{ remote_test_summary.url_count }}</span> urls, <span id="url-list-task-count">{{ remote_test_summary.task_count }}</span> tests)</h2>
+                    <h2 class="info"><i class="icon-certificate"></i> Summary (<span id="test-summary-url-count">{{ remote_test_summary.url_count }}</span> urls, <span id="test-summary-task-count">{{ remote_test_summary.task_count }}</span> tests)</h2>
                     {% include 'SimplyTestableWebClientBundle:Partials:progress/task-states.html.twig' %}
                 </div>
                 <div class="clearfix"></div>
             </section>
         </div>
 
-<!--
+
         <div id="test-list">
             <div class="row-fluid">
                 <div class="span12">
-                    <section id="url-list">
+                    <section id="task-list-container">
                         <h2 class="info"><i class="icon-tasks"></i> Progress</h2>
-                        {# include 'SimplyTestableWebClientBundle:Partials:url-list.html.twig' #}      
+<!--
+                        <ul class="urls">
+                            <li class="url">               
+                                <span class="url">http://blog.simplytestable.com/illustrations/private-alpha/</span>
+                                <span class="tasks">
+                                    <ul class="tasks">
+                                        <li class="task  passed queued">
+                                            <span class="state">
+                                                <i class="icon-cog"></i>
+                                            </span>                                
+                                            <span class="type">HTML validation</span>
+
+                                        </li>
+
+                                    </ul>
+                                </span>                    
+                            </li>
+                        </ul> 
+-->
+                        <!--                        
+                                                <ul class="nav nav-tabs">
+                                                    <li><a href="#tab1" data-toggle="tab">one</a></li>
+                                                    <li><a href="#tab2" data-toggle="tab">two</a></li>
+                                                    <li><a href="#tab3" data-toggle="tab">three</a></li>                            
+                                                    <li><a href="#tab4" data-toggle="tab">four</a></li>
+                                                </ul> 
+                                                    
+                                                <div class="tab-content">
+                                                    <div class="tab-pane active" id="tab1">tab one</div>
+                                                    <div class="tab-pane" id="tab2">tab two</div>
+                                                    <div class="tab-pane" id="tab3">tab three</div>                            
+                                                    <div class="tab-pane" id="tab4">tab four</div>
+                                                </div>
+                        -->  
                     </section>  
                 </div>
             </div>            
         </div>
--->
-   
+
+
 {% endblock %}
 
 {% block latest %}

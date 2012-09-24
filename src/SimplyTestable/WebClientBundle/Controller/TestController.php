@@ -50,52 +50,6 @@ class TestController extends BaseController
     }
     
     
-    public function urlCollectionAction($website, $test_id) {        
-//        if (!$this->getTestService()->has($website, $test_id)) {
-//            return $this->sendNotFoundResponse();
-//        }    
-//        
-//        $test = $this->getTestService()->get($website, $test_id);
-//        
-//        //$offset = 
-//        
-//        $offset = $this->getRequestValue('offset', 0);
-//        $limit = $this->getRequestValue('limit', 100);
-//        
-//        
-//        
-//        var_dump($offset, $limit);
-//        
-//        //$this->getR
-//        
-//        exit();
-        
-//        if (in_array($test->getState(), $this->testFinishedStates)) {
-//            return $this->redirect($this->getResultsUrl($website, $test_id));
-//        }
-//        
-//        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
-//        
-//        $viewData = array(
-//            'this_url' => $this->getProgressUrl($website, $test_id),
-//            'test_input_action_url' => $this->generateUrl('test_cancel', array(
-//                'website' => $website,
-//                'test_id' => $test_id
-//            )),
-//            'test' => $test,
-//            'remote_test_summary' => $this->getRemoteTestSummaryArray($remoteTestSummary),
-//            'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
-//            'state_label' => $this->testStateLabelMap[$test->getState()].': ',
-//            'state_icon' => $this->testStateIconMap[$test->getState()],
-//            'completion_percent' => $this->getCompletionPercent($remoteTestSummary),
-//            'public_site' => $this->container->getParameter('public_site')
-//        );          
-//        
-//        $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
-//        return $this->sendResponse($viewData);
-    } 
-    
-    
     /**
      *
      * @return boolean

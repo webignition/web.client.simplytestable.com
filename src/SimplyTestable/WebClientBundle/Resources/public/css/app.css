@@ -171,53 +171,50 @@ section h2 {
     font-weight: normal;
 }
 
-#test-list #url-list ul {
+#test-list #task-list-container .tasks {
     list-style:none;
-}
-
-#test-list #url-list ul.urls {
     margin: 20px 0 0 0;
 }
 
-#test-list #url-list ul li {
+#test-list #task-list-container .task {
     list-style-type: none;
-    margin:0;
+    margin:0 0 10px 0;
     padding:0;
 }
 
-#test-list #url-list ul.urls {
-    clear:both;
+#test-list #task-list-container .task .url {
+    display:block;
 }
 
-#test-list #url-list ul.urls li.url {
-    margin:8px 0;
+#test-list #task-list-container .task .meta {
+    margin: 0 0 0 20px;
 }
 
-#test-list #url-list ul.tasks li.queued i,
-#test-list #url-list ul.tasks li.queued-for-assignment i {
+#test-list #task-list-container .tasks .queued i,
+#test-list #task-list-container .tasks .queued-for-assignment i {
     color:#F89406;
 }
 
-#test-list #url-list ul.tasks li.in-progress i {
+#test-list #task-list-container ul.tasks li.in-progress i {
     color:#08c;
 }
 
-#test-list #url-list ul.tasks li.failed-no-retry-available i,
-#test-list #url-list ul.tasks li.failed-retry-available i,
-#test-list #url-list ul.tasks li.failed-retry-limit-reached i,
-#test-list #url-list ul.tasks li.failed i {
+#test-list #task-list-container ul.tasks li.failed-no-retry-available i,
+#test-list #task-list-container ul.tasks li.failed-retry-available i,
+#test-list #task-list-container ul.tasks li.failed-retry-limit-reached i,
+#test-list #task-list-container ul.tasks li.failed i {
     color:#953B39;
 }
 
-#test-list #url-list ul.tasks li.completed i {
+#test-list #task-list-container ul.tasks li.completed i {
     color:#51A351;
 }
 
-#test-list #url-list ul.tasks li.cancelled i {
+#test-list #task-list-container ul.tasks li.cancelled i {
     color:#999;
 }
 
-#test-list #url-list ul.tasks li.task .type {
+#test-list #task-list-container ul.tasks li.task .type {
     opacity:0.6;
 }
 
@@ -263,7 +260,7 @@ section h2 {
     background-color:#468847;
 }
 
-#test-list #url-list h2 i {
+#test-list #task-list-container h2 i {
     font-size: 38px;
     line-height: 48px;    
 }
@@ -279,7 +276,7 @@ body.app-results #main h1 i {
     line-height: 48px;        
 }
 
-#test-list #url-list li.task a.label i {
+#test-list #task-list-container li.task a.label i {
     color:#fff;
 }
 
