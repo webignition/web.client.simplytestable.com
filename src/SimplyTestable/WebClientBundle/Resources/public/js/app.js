@@ -1,225 +1,7 @@
 var application = {};
 
-application.taskOutputController = function () {
-    this.taskOutput = {};
-};
-
-application.taskOutputController.prototype.get = function (taskIds, successCallback) {
-    var outputUrl = function () {
-        return document.location.href.replace('/progress/', '') + '/' + taskIds.join(',') + '/results/collection/';
-    };
-    
-    var setTaskOutput = function (taskId, data) {
-        this.taskOutput[taskId] = data;
-    };
-    
-    var getTaskOutput = function (taskId) {
-        return this.taskOutput[taskId];
-    };
-    
-    var scope = this;
-    
-    jQuery.ajax({
-        complete:function (request, textStatus) {
-            //console.log('complete', request, textStatus);
-        },
-        dataType:'json',
-        error:function (request, textStatus, errorThrown) {
-            console.log('error', request, textStatus, request.getAllResponseHeaders());
-        },
-        statusCode: {
-            403: function () {
-                console.log('403');
-            },
-            500: function () {
-                console.log('500');
-            }
-        },
-        success: function (data, textStatus, request) {
-            for (var taskId in data) {
-                if (data.hasOwnProperty(taskId)) {
-                    setTaskOutput.call(scope, taskId, data[taskId]);                   
-                    successCallback.call(scope, {
-                        'taskId':taskId,
-                        'output':getTaskOutput.call(scope, taskId)
-                    });
-                }
-            }
-        },
-        url:outputUrl()
-    });
-}
-
-application.taskOutputController.prototype.outputResult = function () {
-    var errorCount = 0;
-    var errors = [];
-    
-    var getErrorCount = function () {
-        return errorCount;
-    };
-    
-    var setErrors = function (newErrors) {
-        errors = newErrors;
-        errorCount = errors.length;
-    };   
-    
-    var getErrors = function () {
-        return errors;
-    };  
-    
-    var hasErrors = function () {
-        return getErrorCount() > 0;
-    };
-
-    this.getErrorCount = getErrorCount;
-    this.setErrors = setErrors;
-    this.getErrors = getErrors;
-    this.hasErrors = hasErrors;
-};
-
-application.taskOutputController.prototype.outputResult.prototype.error = {};
-
-application.taskOutputController.prototype.outputResult.prototype.error['abstract'] = function () {
-    var message = '';
-    
-    var setMessage = function (newMessage) {
-        message = newMessage;
-    }
-    
-    var getMessage = function () {
-        return message;
-    }
-    
-    var toString = function () {
-        return getMessage();
-    }
-    
-    this.setMessage = setMessage;
-    this.getMessage = getMessage;
-    this.toString = toString;
-};
-
-application.taskOutputController.prototype.outputResult.prototype.error['HTML validation'] = function () {
-    var lineNumber = 0;
-    var columnNumber = 0;
-    
-    var setLineNumber = function (newLineNumber) {
-        lineNumber = newLineNumber;
-    };
-    
-    var getLineNumber = function () {
-        return lineNumber;
-    };
-    
-    var setColumnNumber = function (newColumnNumber) {
-        columnNumber = newColumnNumber;
-    };
-    
-    var getColumnNumber = function () {
-        return columnNumber;
-    };  
-    
-    var toString = function () {
-        return this.getMessage() + ' at line ' + getLineNumber() + ', column ' + getColumnNumber();
-    }
-    
-    this.setLineNumber = setLineNumber;
-    this.getLineNumber = getLineNumber;
-    this.setColumnNumber = setColumnNumber;
-    this.getColumnNumber = getColumnNumber;
-    this.toString = toString;
-};
-
-application.taskOutputController.prototype.outputResult.prototype.error['HTML validation'].prototype = new application.taskOutputController.prototype.outputResult.prototype.error['abstract']
-
-application.taskOutputController.prototype.outputParser = {
-    parsers: {
-        'HTML validation': function (taskOutput) {            
-            // line_number":65,"column_number":12,"message":"No p element in scope but a p end tag seen.","messageid":"html5","type":"error"            
-            var messages = taskOutput.content.messages;
-            var messageCount = messages.length;             
-            var errors;
-            
-            var getErrors = function () {                
-                if (errors == undefined) {
-                    errors = [];
-                    
-                    for (var messageIndex = 0; messageIndex < messageCount; messageIndex++) {
-                        var message = messages[messageIndex];
-                        
-                        if (message.type == 'error') {
-                            var error = new this.prototype.outputResult.prototype.error['HTML validation']();
-                            error.setMessage(message.message);
-                            error.setLineNumber(message.line_number);
-                            error.setColumnNumber(message.column_number);
-                            
-                            errors.push(error);                            
-                        }
-                    }
-                }
-                
-                return errors;
-            };
-            
-            this.getErrors = getErrors;
-        }
-    },
-    
-    getResults: function (taskOutput) {        
-        var scope = this;
-        
-        var results = new this.prototype.outputResult();
-        var parser = new this.prototype.outputParser.parsers[taskOutput.type](taskOutput);
-
-        results.setErrors(parser.getErrors.call(scope));
-        
-        return results;        
-    }
-};
-
-application.taskOutputController.prototype.update = function (tasksToRetrieveOutputFor) {        
-    var getTaskIds = function (tasksToRetrieveOutputFor) {
-        var taskIds = [];
-        
-        for (var taskId in tasksToRetrieveOutputFor) {
-            if (tasksToRetrieveOutputFor.hasOwnProperty(taskId)) {
-                taskIds.push(taskId);
-            }
-        }
-        
-        return taskIds;
-    };    
-    
-    this.get(getTaskIds(tasksToRetrieveOutputFor), function (taskOutput) {        
-        var outputResult = this.outputParser.getResults.call(application.taskOutputController, taskOutput.output);
-        var inPageTask = tasksToRetrieveOutputFor[taskOutput.taskId];
-      
-        if (outputResult.hasErrors()) {
-            var getErrorWording = function (errorCount) {
-                if (errorCount === 1) {
-                    return 'error';
-                }
-                
-                return 'errors'
-            };
-            
-            inPageTask.append($(' <span class="label label-important">' + outputResult.getErrorCount() + ' ' + getErrorWording(outputResult.getErrorCount()) + '</span>'));
-        } else {
-            inPageTask.append($(' <i class="icon-ok"></i>'));
-        }     
-    });
-};
-
-application.testProgressController = function () {    
-    var possibleTaskStates = [
-        'in-progress',
-        'queued',
-        'completed',
-        'failed-no-retry-available',
-        'failed-retry-available',
-        'failed-retry-limit-reached'            
-    ];
-
+application.progress = {};
+application.progress.testController = function () {
     var finishedStates = [
         'completed',
         'failed-no-retry-available',
@@ -228,8 +10,7 @@ application.testProgressController = function () {
         'failed'
     ];    
     
-    var taskOutputController = new application.taskOutputController();
-    var latestData = {};
+    var latestTestData = {};
     
     var isFinishedState = function (state) {
         var finishedStateLength = finishedStates.length;
@@ -241,22 +22,21 @@ application.testProgressController = function () {
         }
 
         return false;
-    };    
-
+    };
     
     var setCompletionPercentValue = function () {
         var completionPercentValue = $('#completion-percent-value');
         
-        if (completionPercentValue.text() != latestData.completion_percent) {
-            completionPercentValue.text(latestData.completion_percent);
+        if (completionPercentValue.text() != latestTestData.completion_percent) {
+            completionPercentValue.text(latestTestData.completion_percent);
             
             if ($('html.csstransitions').length > 0) {
                 $('#completion-percent-bar').css({
-                    'width':latestData.completion_percent + '%'
+                    'width':latestTestData.completion_percent + '%'
                 });                
             } else {
                 $('#completion-percent-bar').animate({
-                    'width':latestData.completion_percent + '%'
+                    'width':latestTestData.completion_percent + '%'
                 });                
             }
         }        
@@ -264,24 +44,24 @@ application.testProgressController = function () {
     
     var setCompletionPercentStateLabel = function () {
         var completionPercentStateLabel = $('#completion-percent-state-label');
-        if (completionPercentStateLabel.text() != latestData.state_label) {
-            completionPercentStateLabel.text(latestData.state_label);
+        if (completionPercentStateLabel.text() != latestTestData.state_label) {
+            completionPercentStateLabel.text(latestTestData.state_label);
         }         
     };
     
     var setCompletionPercentStateIcon = function () {        
-        $('#completion-percent-state-icon').attr('class', '').addClass(latestData.state_icon);
+        $('#completion-percent-state-icon').attr('class', '').addClass(latestTestData.state_icon);
      
     };    
     
     var getTestQueueWidth = function (queueName) {        
         var minimumQueueWidth = 2; 
         
-        if (latestData.task_count_by_state[queueName] == 0) {
+        if (latestTestData.task_count_by_state[queueName] == 0) {
             return minimumQueueWidth;
         }
         
-        var queueWidth = (latestData.task_count_by_state[queueName] / latestData.remote_test_summary.task_count) * 100;
+        var queueWidth = (latestTestData.task_count_by_state[queueName] / latestTestData.remote_test_summary.task_count) * 100;
         
         return (queueWidth < minimumQueueWidth) ? minimumQueueWidth : queueWidth;
     };
@@ -299,164 +79,28 @@ application.testProgressController = function () {
                     'width': getTestQueueWidth(queueName) + '%'
                 });
                 
-                bar.text(latestData.task_count_by_state[queueName]);
+                bar.text(latestTestData.task_count_by_state[queueName]);
             });               
         }
     };
     
     var setUrlCount = function () {        
-        $('#url-list-url-count').text(latestData.remote_test_summary.url_count);
+        $('#test-summary-url-count').text(latestTestData.remote_test_summary.url_count);
     };
     
     var setTaskCount = function () {        
-        $('#url-list-task-count').text(latestData.remote_test_summary.task_count);
-    };   
+        $('#test-summary-task-count').text(latestTestData.remote_test_summary.task_count);
+    };
     
-    var updateUrls = function () {        
-        var getUrlList = function () {
-            if ($('#url-list ul.urls').length === 0) {
-                $('#url-list').append('<ul class="urls" />');
-            }
-            
-            return $('#url-list ul.urls');
-        };
-        
-        var inPageUrls = $('span.url', getUrlList());
-        
-        var findInPageUrl = function (url) {
-            var inPageUrl = false;
-            
-            inPageUrls.each(function () {
-                var urlElement = $(this);
-                
-                if (urlElement.text() == url) {
-                    inPageUrl = urlElement.parent();
-                    return;
-                }
-            });
-            
-            return inPageUrl;
-        };
-        
-        var findInPageTask = function (latestDataTask, inPageUrl) {
-            var inPageTask = false;
-            
-            $('ul.tasks li', inPageUrl).each(function () {
-                var currentInPageTask = $(this);
-                if ($('.type', currentInPageTask).text() == latestDataTask.type) {
-                    inPageTask = currentInPageTask;
-                }
-                
-                return;
-            });
-            
-            return inPageTask;
-        };
-        
-        var taskStateIconMap = {
-            'queued-for-assignment':'icon-cog',
-            'queued': 'icon-cog',
-            'in-progress': 'icon-cogs',
-            'completed': 'icon-bar-chart',
-            'failed': 'icon-ban-circle',
-            'failed-no-retry-available': 'icon-ban-circle',
-            'failed-retry-available': 'icon-ban-circle',
-            'failed-retry-limit-reached': 'icon-ban-circle'
-        };
-        
-        var getNewInPageTask = function (latestDataTask, inPageUrl) {
-            return $('<li class="task '+latestDataTask.state+'">\n\
-                        <span class="state">\n\
-                            <i class="'+taskStateIconMap[latestDataTask.state]+'"></i>\n\
-                        </span>\n\
-                        <span class="type">'+latestDataTask.type+'</span>\n\
-                      </li>'
-            );
-        };
-        
-        var getNewInPageUrl = function (url) {
-            return $('<li class="url">\n\
-                        <span class="url">'+url+'</span>\n\
-                        <span class="tasks">\n\
-                            <ul class="tasks"></ul>\n\
-                        </span>\n\
-                      </li>'
-            );
-        };
-        
-        var getInPageTaskState = function (inPageTask) {
-            var states = ['in-progress', 'queued', 'completed', 'failed-no-retry-available', 'failed-retry-available', 'failed-retry-limit-reached'];
-            for (var stateIndex = 0; stateIndex < states.length; stateIndex++) {
-                if (inPageTask.hasClass(states[stateIndex])) {
-                    return states[stateIndex];
-                }
-            }
-            
-            return false;            
-        };
-        
-        var shouldGetOutputForTask = function (currentState, previousState) {                        
-            for (var stateIndex = 0; stateIndex < finishedStates.length; stateIndex++) {
-                if (currentState == finishedStates[stateIndex] && previousState != finishedStates[stateIndex]) {
-                    return true;
-                }
-            }
-            
-            return false;
-        };
-        
-        var tasksToRetrieveOutputFor = {};
-        var tasksToRetrieveOutputForCount = 0;  
-        
-        for (var url in latestData.tasksByUrl) {
-            var inPageUrl = findInPageUrl(url);            
-            
-            if (inPageUrl === false) {
-                inPageUrl = getNewInPageUrl(url);
-                getUrlList().append(inPageUrl);
-            }
-            
-            var latestDataTasks = latestData.tasksByUrl[url];           
-
-            for (var latestDataTaskIndex = 0; latestDataTaskIndex < latestDataTasks.length; latestDataTaskIndex++) {
-                var latestDataTask = latestDataTasks[latestDataTaskIndex];
-                var inPageTask = findInPageTask(latestDataTask, inPageUrl);
-
-                if (inPageTask === false) {
-                    inPageTask = getNewInPageTask(latestDataTask, inPageUrl);
-                    $('ul.tasks', inPageUrl).append(inPageTask);
-                }  
-                
-                var previousState = getInPageTaskState(inPageTask);
-                
-                for (var stateIndex = 0; stateIndex < possibleTaskStates.length; stateIndex++) {
-                    inPageTask.removeClass(possibleTaskStates[stateIndex]);
-                }
-
-                inPageTask.addClass(latestDataTask.state);
-                $('.state i', inPageTask).removeClass('icon-cog').removeClass('icon-cogs').removeClass('icon-bar-chart').removeClass('icon-ban-circle').addClass(taskStateIconMap[latestDataTask.state]);
-                
-                if (shouldGetOutputForTask(getInPageTaskState(inPageTask), previousState)) {
-                    tasksToRetrieveOutputFor[latestDataTask.id] = inPageTask
-                    tasksToRetrieveOutputForCount++;;
-                }                              
-            }            
-        }        
-        
-        if (tasksToRetrieveOutputForCount > 0 && $('#completion-percent-value').text() < 100) {
-            taskOutputController.update(tasksToRetrieveOutputFor);
-        }
-   };
-    
-    var refresh = function (limit) {
+    var refreshTestSummary = function () {
         var now = new Date();
         
         var getProgressUrl = function () {            
             var taskIdsToGetProgressFor = [];
-            var hasLatestData = latestData.hasOwnProperty('tasksByUrl');
+            var haslatestTestData = latestTestData.hasOwnProperty('tasksByUrl');
             
-            for (var url in latestData.tasksByUrl) {
-                var tasks = latestData.tasksByUrl[url];
+            for (var url in latestTestData.tasksByUrl) {
+                var tasks = latestTestData.tasksByUrl[url];
                 var taskCount = tasks.length;
                 
                 for (var taskIndex = 0; taskIndex < taskCount; taskIndex++) {
@@ -468,7 +112,7 @@ application.testProgressController = function () {
                 }
             }
             
-            if (!hasLatestData || taskIdsToGetProgressFor.length == 0) {
+            if (!haslatestTestData || taskIdsToGetProgressFor.length == 0) {
                 return window.location.href + '?output=json&timestamp=' + now.getTime();
             }
             
@@ -498,11 +142,7 @@ application.testProgressController = function () {
                     return;
                 }
                 
-                latestData = data;
-                
-                //console.log(latestData);
-                
-                
+                latestTestData = data;
                 
                 setCompletionPercentValue();                
                 setCompletionPercentStateLabel();
@@ -510,10 +150,9 @@ application.testProgressController = function () {
                 setTestQueues();
                 setUrlCount();               
                 setTaskCount();
-                //updateUrls();
                 
                 window.setTimeout(function () {
-                    refresh(10);
+                    refreshTestSummary(10);
                 }, 1000);
             },
             url:getProgressUrl()
@@ -521,9 +160,53 @@ application.testProgressController = function () {
     };
     
     this.initialise = function () {
-        refresh();
+        refreshTestSummary();
     };
 };
+
+application.progress.taskController = function () {    
+    
+    var pageLength = 100;
+    
+    var urlListContainer = null;
+    var tabList = null;
+    
+    var getUrlCount = function () {
+        return $('#test-summary-url-count').text();
+    };
+    
+    var getUrlListContainer = function () {
+        if (urlListContainer === null) {
+            urlListContainer = $('#url-list-container');
+        }
+        
+        return urlListContainer;
+    };
+    
+    var buildTabList = function () {
+        console.log("cp02");
+    };
+    
+    var getTabList = function () {
+        if (tabList === null) {
+            buildTabList();
+            
+            //tabList = $('#tab-list')
+        }
+    };
+    
+    this.initialise = function () {
+        if (getUrlCount() <= pageLength) {
+            console.log("cp03");
+        }
+        
+        //getTabList();
+        
+        //console.log("cp01");
+    };    
+    
+};
+
 
 application.testList = {};
 
@@ -615,8 +298,11 @@ application.pages = {
     '/*':{
         'initialise':function () {
             if ($('body.app-progress').length > 0) {                
-                testProgressController = new application.testProgressController();
+                testProgressController = new application.progress.testController();
                 testProgressController.initialise();
+                
+                taskProgressController = new application.progress.taskController();
+                taskProgressController.initialise();
             }
             
             
