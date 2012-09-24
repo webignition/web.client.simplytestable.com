@@ -66,10 +66,12 @@ class TaskService extends CoreApplicationService {
     }
     
     
-    public function getCollection(Test $test, $taskIds = array()) {                
-        $remoteTaskIds = (is_null($taskIds)) ? $this->getRemoteTaskIds($test) : $this->getRemoteTaskIds($taskIds);        
-        $existenceResult = $this->getEntityRepository()->getCollectionExistsByTestAndRemoteId($test, $remoteTaskIds);
+    public function getCollection(Test $test, $remoteTaskIds = array()) {        
+        if (is_null($remoteTaskIds)) {
+            $remoteTaskIds = $this->getRemoteTaskIds($test);
+        }
         
+        $existenceResult = $this->getEntityRepository()->getCollectionExistsByTestAndRemoteId($test, $remoteTaskIds);        
         $tasksToRetrieve = array();
         $localTasksToUpdate = array();
         
@@ -270,7 +272,12 @@ class TaskService extends CoreApplicationService {
             $this->entityManager->flush();              
         }
         
-        return $test->getTaskIds();
+        $taskIds = array();
+        foreach ($test->getTaskIds() as $taskId) {
+            $taskIds[] = $taskId->getTaskId();
+        }
+        
+        return $taskIds;
     }
     
     

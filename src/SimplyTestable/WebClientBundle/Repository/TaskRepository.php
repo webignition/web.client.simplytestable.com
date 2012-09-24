@@ -17,8 +17,8 @@ class TaskRepository extends EntityRepository
     public function getCollectionExistsByTestAndRemoteId(Test $test, $taskIds = array()) {
         $result = array();
         
-        foreach ($taskIds as $taskId) {
-            $result[$taskId] = $this->getExistsByTestAndRemoteId($test, $taskId);
+        foreach ($taskIds as $taskId) {            
+            $result[$taskId] = $this->getExistsByTestAndRemoteId($test, $taskId);            
         }
         
         return $result;
