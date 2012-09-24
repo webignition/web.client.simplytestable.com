@@ -218,6 +218,22 @@ section h2 {
     opacity:0.6;
 }
 
+#test-list .tab-content .tab-pane {
+    padding-top:20px;
+}
+
+#test-list #task-list-container #tab-list {
+    margin-bottom:0;
+}
+
+#test-list #task-list-container .tab-content .tab-pane .tasks {
+    margin-top:0;
+}
+
+#test-list .tab-content .pane-empty {
+    height:400px;
+}
+
 #test-summary .test-states {
     width:100%;
 }
