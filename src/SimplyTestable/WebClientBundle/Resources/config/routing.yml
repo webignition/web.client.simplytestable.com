@@ -8,6 +8,12 @@ app_progress:
     requirements:
         website: ".+" 
         
+app_tasks:
+    pattern:  /{website}/{test_id}/tasks/
+    defaults: { _controller: SimplyTestableWebClientBundle:Task:collection, _format: json }  
+    requirements:
+        website: ".+"   
+        
 app_task_results:
     pattern:  /{website}/{test_id}/{task_id}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:Task:results }  

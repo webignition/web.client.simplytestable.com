@@ -14,6 +14,7 @@ use webignition\NormalisedUrl\NormalisedUrl;
  * 
  * @ORM\Entity
  * @SerializerAnnotation\ExclusionPolicy("all")
+ * @ORM\Entity(repositoryClass="SimplyTestable\WebClientBundle\Repository\TaskRepository")
  */
 class Task {
     
