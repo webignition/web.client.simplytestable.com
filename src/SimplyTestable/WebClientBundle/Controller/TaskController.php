@@ -30,14 +30,9 @@ class TaskController extends BaseViewController
         
         $test = $this->getTestService()->get($website, $test_id);        
         $taskIds = $this->getTaskService()->getRemoteTaskIds($test);
-        
-        $taskIdValues = array();
-        foreach ($taskIds as $taskId) {
-            $taskIdValues[] = $taskId->getTaskId();
-        }
 
-        return new Response($this->getSerializer()->serialize($taskIdValues, 'json'));
-    }    
+        return new Response($this->getSerializer()->serialize($taskIds, 'json'));
+    }   
     
     
     /**
@@ -67,44 +62,7 @@ class TaskController extends BaseViewController
         return (count($taskIds) > 0) ? $taskIds : null;
     }    
     
-    private function getRequestValue($key, $httpMethod = null) {
-        $availableHttpMethods = array(
-            HTTP_METH_GET,
-            HTTP_METH_POST
-        );
-        
-        $defaultHttpMethod = HTTP_METH_GET;
-        $requestedHttpMethods = array();
-        
-        if (is_null($httpMethod)) {
-            $requestedHttpMethods = $availableHttpMethods;
-        } else {
-            if (in_array($httpMethod, $availableHttpMethods)) {
-                $requestedHttpMethods[] = $httpMethod;
-            } else {
-                $requestedHttpMethods[] = $defaultHttpMethod;
-            }
-        }
-        
-        foreach ($requestedHttpMethods as $requestedHttpMethod) {
-            $requestValues = $this->getRequestValues($requestedHttpMethod);
-            if ($requestValues->has($key)) {
-                return $requestValues->get($key);
-            }
-        }
-        
-        return null;       
-    }
-    
-    
-    /**
-     *
-     * @param int $httpMethod
-     * @return type 
-     */
-    private function getRequestValues($httpMethod = HTTP_METH_GET) {
-        return ($httpMethod == HTTP_METH_POST) ? $this->getRequest()->request : $this->getRequest()->query;            
-    }    
+   
     
     
 //    public function resultsCollectionAction($website, $test_id, $task_ids) {         

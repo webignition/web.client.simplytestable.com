@@ -9,7 +9,7 @@ use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
 
 use webignition\NormalisedUrl\NormalisedUrl;
 
-abstract class BaseViewController extends Controller
+abstract class BaseViewController extends BaseController
 {    
     private $template;
     
