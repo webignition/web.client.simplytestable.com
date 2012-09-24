@@ -90,10 +90,19 @@ class Test {
      *
      * @var \Doctrine\Common\Collections\Collection
      * 
+     * @ORM\OneToMany(targetEntity="SimplyTestable\WebClientBundle\Entity\Test\TaskId", mappedBy="test", cascade={"persist"})
+     */
+    private $taskIds;
+    
+    
+    /**
+     *
+     * @var \Doctrine\Common\Collections\Collection
+     * 
      * @ORM\Column(type="array", nullable=false)
      * @SerializerAnnotation\Expose
      */
-    private $taskTypes;    
+    private $taskTypes;
     
     
     /**
@@ -442,4 +451,38 @@ class Test {
     {
         $this->tasks = new \Doctrine\Common\Collections\ArrayCollection();
     }
+    
+    
+    /**
+     * Add tasks
+     *
+     * @param SimplyTestable\WebClientBundle\Entity\Task\TaskId $taskId
+     * @return Test
+     */
+    public function addTaskId(\SimplyTestable\WebClientBundle\Entity\Task\TaskId $taskId)
+    {
+        $this->taskIds[] = $taskId;
+    
+        return $this;
+    }
+
+    /**
+     * Remove tasks
+     *
+     * @param \SimplyTestable\WebClientBundle\Entity\Task\TaskId $taskId
+     */
+    public function removeTaskId(\SimplyTestable\WebClientBundle\Entity\Task\TaskId $taskId)
+    {
+        $this->taskIds->removeElement($taskId);
+    }
+
+    /**
+     * Get tasks
+     *
+     * @return Doctrine\Common\Collections\Collection 
+     */
+    public function getTaskIds()
+    {
+        return $this->taskIds;
+    }    
 }
