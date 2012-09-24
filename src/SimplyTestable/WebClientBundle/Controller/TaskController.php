@@ -30,8 +30,13 @@ class TaskController extends BaseViewController
         
         $test = $this->getTestService()->get($website, $test_id);        
         $taskIds = $this->getTaskService()->getRemoteTaskIds($test);
+        
+        $taskIdValues = array();
+        foreach ($taskIds as $taskId) {
+            $taskIdValues[] = $taskId->getTaskId();
+        }
 
-        return new Response($this->getSerializer()->serialize($taskIds, 'json'));
+        return new Response($this->getSerializer()->serialize($taskIdValues, 'json'));
     }    
     
     
