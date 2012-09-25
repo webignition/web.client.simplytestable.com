@@ -190,6 +190,10 @@ section h2 {
     margin: 0 0 0 20px;
 }
 
+#test-list #task-list-container .task .meta .output-indicator {
+    margin-left:8px;
+}
+
 #test-list #task-list-container .tasks .queued i,
 #test-list #task-list-container .tasks .queued-for-assignment i {
     color:#F89406;

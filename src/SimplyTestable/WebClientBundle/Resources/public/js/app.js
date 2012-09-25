@@ -199,6 +199,8 @@ application.progress.taskController = function () {
     var taskListContainer = null;
     var tabList = null;
     
+    var taskOutputController = null;
+    
     var getUrlCount = function () {
         return $('#test-summary-url-count').text();
     };
@@ -567,12 +569,24 @@ application.progress.taskController = function () {
     
     
     var buildTaskListItem = function (taskListItem, task) {
+        if ((taskListItem.is('.completed') || taskListItem.is('.failed')) && isFinished(task)) {
+            return;
+        }
+        
         taskListItem.html('');
         
         setTaskListItemState(taskListItem, task);
 
         taskListItem.append('<span class="url">'+task.url+'</span>');
         taskListItem.append('<div class="meta"><span class="state"><i class="'+stateIconMap[task.state]+'"></i></span><span class="type">'+task.type+'</span></div>');       
+        
+        if (isFinished(task)) {
+            var outputParser = new taskOutputController.outputParser();
+            var outputResult = outputParser.getResults(task.output);
+
+            var errorIndicator = $('<span class="output-indicator label label-important">'+outputResult.getErrorCount()+' error'+(outputResult.getErrorCount() == 1 ? '' : 's') +'</span>');
+            $('.meta', taskListItem).append(errorIndicator);
+        }
     };       
 
     
@@ -601,13 +615,15 @@ application.progress.taskController = function () {
     };
     
     var initialise = function () {        
+        taskOutputController = new application.progress.taskOutputController();
+        
         if (getUrlCount() === 0 || getTaskCount() === 0 || getTaskIds() === null) {
             window.setTimeout(function () {
                 initialise();
             }, 1000);
             
             return;
-        }        
+        }
         
         if (getTaskCount() <= pageLength) {
             var parent = getTaskListContainer();
@@ -621,14 +637,149 @@ application.progress.taskController = function () {
             
             getTaskList(0, parent, getTaskListCallback);
             return;
-        } 
+        }
         
-        $('.tab', getTabList()).first().click().addClass('active');        
+        $('.tab', getTabList()).first().click().addClass('active');
     };        
 
     
     this.initialise = initialise;    
 };
+
+application.progress.taskOutputController = function () {
+    
+    var error = {
+        'abstract': function () {
+            var message = '';
+
+            var setMessage = function (newMessage) {
+                message = newMessage;
+            }
+
+            var getMessage = function () {
+                return message;
+            }
+
+            var toString = function () {
+                return getMessage();
+            }
+
+            this.setMessage = setMessage;
+            this.getMessage = getMessage;
+            this.toString = toString;            
+        },
+        'HTML validation': function () {
+            var lineNumber = 0;
+            var columnNumber = 0;
+
+            var setLineNumber = function (newLineNumber) {
+                lineNumber = newLineNumber;
+            };
+
+            var getLineNumber = function () {
+                return lineNumber;
+            };
+
+            var setColumnNumber = function (newColumnNumber) {
+                columnNumber = newColumnNumber;
+            };
+
+            var getColumnNumber = function () {
+                return columnNumber;
+            };  
+
+            var toString = function () {
+                return this.getMessage() + ' at line ' + getLineNumber() + ', column ' + getColumnNumber();
+            }
+
+            this.setLineNumber = setLineNumber;
+            this.getLineNumber = getLineNumber;
+            this.setColumnNumber = setColumnNumber;
+            this.getColumnNumber = getColumnNumber;
+            this.toString = toString;            
+        }
+    };
+    
+    error['HTML validation'].prototype = new error['abstract'];
+    
+    var outputResult = function () {
+        var errorCount = 0;
+        var errors = [];
+
+        var getErrorCount = function () {
+            return errorCount;
+        };
+
+        var setErrors = function (newErrors) {
+            errors = newErrors;
+            errorCount = errors.length;
+        };   
+
+        var getErrors = function () {
+            return errors;
+        };  
+
+        var hasErrors = function () {
+            return getErrorCount() > 0;
+        };
+
+        this.getErrorCount = getErrorCount;
+        this.setErrors = setErrors;
+        this.getErrors = getErrors;
+        this.hasErrors = hasErrors;
+    };
+    
+    var outputParser = function () {
+        
+        var parsers = {
+            'HTML validation': function (taskOutput) {            
+                // line_number":65,"column_number":12,"message":"No p element in scope but a p end tag seen.","messageid":"html5","type":"error"            
+                var messages = taskOutput.content.messages;
+                var messageCount = messages.length;             
+                var errors;
+
+                var getErrors = function () {                
+                    if (errors == undefined) {
+                        errors = [];
+
+                        for (var messageIndex = 0; messageIndex < messageCount; messageIndex++) {
+                            var message = messages[messageIndex];
+
+                            if (message.type == 'error') {
+                                var currentError = new error['HTML validation'];
+                                
+                                currentError.setMessage(message.message);
+                                currentError.setLineNumber(message.line_number);
+                                currentError.setColumnNumber(message.column_number);
+
+                                errors.push(currentError);                            
+                            }
+                        }
+                    }
+
+                    return errors;
+                };
+
+                this.getErrors = getErrors;
+            }
+        };
+        
+        var getResults = function (taskOutput) {
+            var results = new outputResult();
+            var parser = new parsers[taskOutput.type](taskOutput);
+            
+            results.setErrors(parser.getErrors());
+            
+            return results;       
+        } 
+        
+        this.getResults = getResults;
+        
+    };
+    
+    this.outputParser = outputParser;    
+};
+
 
 
 application.testList = {};
