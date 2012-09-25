@@ -17,7 +17,7 @@ class TaskController extends BaseViewController
         
         $test = $this->getTestService()->get($website, $test_id);        
         $taskIds = $this->getRequestTaskIds();               
-        $tasks = $this->getTaskService()->getCollection($test, $taskIds);        
+        $tasks = $this->getTaskService()->getCollection($test, $taskIds);
         
         foreach ($tasks as $task) {
             if ($task->getState() == 'completed') {
@@ -99,44 +99,44 @@ class TaskController extends BaseViewController
 //    }
 //    
 //    
-//    public function resultsAction($website, $test_id, $task_id) {        
-//        if (!$this->getTestService()->has($website, $test_id)) {
-//            return $this->redirect($this->generateUrl('app', array(), true));
-//        }
-//        
-//        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
-//        $cacheValidatorIdentifier->setParameter('website', $website);
-//        $cacheValidatorIdentifier->setParameter('test_id', $test_id);
-//        $cacheValidatorIdentifier->setParameter('task_id', $task_id);
-//        
-//        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
-//        
-//        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
-//        if ($response->isNotModified($this->getRequest())) {
-//            return $response;
-//        }
-//
-//        $test = $this->getTestService()->get($website, $test_id);
-//        $task = $this->getTaskService()->get($test, $task_id);
-//        
-//        if ($task->getState() == 'completed' || $task->getState() == 'failed') {
-//            if ($this->getTaskOutputService()->has($test, $task)) {
-//                $task->setOutput($this->getTaskOutputService()->get($test, $task));
-//                $this->getTaskOutputService()->setParsedOutput($task);
-//            }                
-//        }
-//        
-//        return $this->getCachableResponse(
-//            $this->render(
-//                    'SimplyTestableWebClientBundle:App:task/results.html.twig',
-//                    array(
-//                        'test' => $test,
-//                        'task' => $task,
-//                        'public_site' => $this->container->getParameter('public_site')
-//                    )),
-//            $cacheValidatorHeaders
-//        );        
-//    }
+    public function resultsAction($website, $test_id, $task_id) {        
+        if (!$this->getTestService()->has($website, $test_id)) {
+            return $this->redirect($this->generateUrl('app', array(), true));
+        }
+        
+        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
+        $cacheValidatorIdentifier->setParameter('website', $website);
+        $cacheValidatorIdentifier->setParameter('test_id', $test_id);
+        $cacheValidatorIdentifier->setParameter('task_id', $task_id);
+        
+        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
+        
+        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
+        if ($response->isNotModified($this->getRequest())) {
+            return $response;
+        }
+
+        $test = $this->getTestService()->get($website, $test_id);
+        $task = $this->getTaskService()->get($test, $task_id);
+        
+        if ($task->getState() == 'completed' || $task->getState() == 'failed') {
+            if ($this->getTaskOutputService()->has($test, $task)) {
+                $task->setOutput($this->getTaskOutputService()->get($test, $task));
+                $this->getTaskOutputService()->setParsedOutput($task);
+            }                
+        }
+        
+        return $this->getCachableResponse(
+            $this->render(
+                    'SimplyTestableWebClientBundle:App:task/results.html.twig',
+                    array(
+                        'test' => $test,
+                        'task' => $task,
+                        'public_site' => $this->container->getParameter('public_site')
+                    )),
+            $cacheValidatorHeaders
+        );        
+    }
     
     
     /**

@@ -366,24 +366,28 @@ class TaskService extends CoreApplicationService {
 //    }
     
     
-//    /**
-//     *
-//     * @param Test $test
-//     * @param int $task_id
-//     * @return Task 
-//     */
-//    public function get(Test $test, $task_id) {
-//        $task = $this->getEntityRepository()->findOneBy(array(
-//            'id' => $task_id,
-//            'test' => $test
-//        ));
-//        
-//        if ($task == null) {
-//            return $task;
-//        }
-//        
-//        return $this->taskOutputService->setParsedOutput($task);        
-//    }
+    /**
+     *
+     * @param Test $test
+     * @param int $task_id
+     * @return Task 
+     */
+    public function get(Test $test, $task_id) {
+        $task = $this->getEntityRepository()->findOneBy(array(
+            'id' => $task_id,
+            'test' => $test
+        ));
+        
+        if ($task == null) {
+            return $task;
+        }
+        
+        if ($test->getState() == 'completed' || $test->getState() == 'cancelled') {
+            $this->normaliseEndingState($task);           
+        }        
+        
+        return $this->taskOutputService->setParsedOutput($task);        
+    }
 //    
 //    
 //    /**
