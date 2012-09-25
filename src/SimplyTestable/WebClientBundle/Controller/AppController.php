@@ -9,6 +9,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AppController extends BaseViewController
 {
+    const RESULTS_PAGE_LENGTH = 100;
+    
+    
     private $progressStates = array(
         'new',
         'preparing',
@@ -272,10 +275,58 @@ class AppController extends BaseViewController
     
     
     public function resultsAction($website, $test_id) {        
-//        if ($this->isUsingOldIE()) {
-//            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-//        }        
-//        
+        if ($this->isUsingOldIE()) {
+            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
+        }        
+        
+        if (!$this->getTestService()->has($website, $test_id)) {
+            return $this->redirect($this->generateUrl('app', array(), true));
+        }    
+        
+        $test = $this->getTestService()->get($website, $test_id);
+        
+        if (!in_array($test->getState(), $this->testFinishedStates)) {
+            return $this->redirect($this->getProgressUrl($website, $test_id));
+        }
+        
+        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
+        
+        $viewData = array(
+            'this_url' => $this->getResultsUrl($website, $test_id),
+            'test_input_action_url' => $this->generateUrl('test_start'),
+            'test' => $test,
+            'remote_test_summary' => $this->getRemoteTestSummaryArray($remoteTestSummary),
+            'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
+            'public_site' => $this->container->getParameter('public_site')
+        );
+        
+        if ($remoteTestSummary->task_count <= self::RESULTS_PAGE_LENGTH) {                  
+            $tasks = $this->getTaskService()->getCollection($test);
+            foreach ($tasks as $task) {                               
+                if ($task->getState() == 'completed') {
+                    if ($task->hasOutput()) {             
+                        $parser = $this->getTaskOutputResultParserService()->getParser($task->getOutput());
+                        $parser->setOutput($task->getOutput());
+
+                        $task->getOutput()->setResult($parser->getResult());
+                    }
+                }
+            } 
+            
+            $viewData['tasks'] = $tasks;
+        }
+        
+        
+        
+//        var_dump($remoteTestSummary);
+//        exit();
+        
+        $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');
+        return $this->sendResponse($viewData);         
+        
+        var_dump("cp01");
+        exit();
+        
 //        if (!$this->getTestService()->has($website, $test_id)) {
 //            return $this->redirect($this->generateUrl('app', array(), true));
 //        }        
@@ -485,6 +536,14 @@ class AppController extends BaseViewController
     public function isUsingOldIE() {        
         $browserInfo =  $this->container->get('jbi_browscap.browscap')->getBrowser($this->getRequest()->server->get('HTTP_USER_AGENT'));                
         return ($browserInfo->Browser == 'IE' && $browserInfo->MajorVer < 8);     
+    }    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory
+     */
+    private function getTaskOutputResultParserService() {
+        return $this->container->get('simplytestable.services.taskoutputresultparserfactoryservice');
     }    
 
 }

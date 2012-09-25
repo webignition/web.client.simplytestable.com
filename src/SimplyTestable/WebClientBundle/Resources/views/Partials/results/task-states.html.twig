@@ -2,15 +2,15 @@
     <tbody>
         <tr class="with-errrors">                
             <th><span class="label label-important">Tests with errors</span></th>
-            <td class="bar"><span class="label label-important" style="width:{% if erroredTaskCount == 0 %} 1{% else %} {{ (erroredTaskCount / test.taskCount) * 100}}{% endif %}%;">{{ erroredTaskCount }}</span></td>
+            <td class="bar"><span class="label label-important" style="width:{% if remote_test_summary.errored_task_count == 0 %} 2{% else %} {{ (remote_test_summary.errored_task_count / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ remote_test_summary.task_count }}</span></td>
         </tr>         
         <tr class="without-errors">                
             <th><span class="label label-success">Tests without errors</span></th>
-            <td class="bar"><span class="label label-success" style="width:{% if test.taskCount - taskCountByState.cancelled - erroredTaskCount == 0 %} 1{% else %} {{ ((test.taskCount - taskCountByState.cancelled - erroredTaskCount) / test.taskCount) * 100}}{% endif %}%;">{{ test.taskCount - erroredTaskCount - taskCountByState.cancelled }}</span></td>
+            <td class="bar"><span class="label label-success" style="width:{% if remote_test_summary.task_count - remote_test_summary.errored_task_count - remote_test_summary.cancelled_task_count == 0 %} 2{% else %} {{ ((remote_test_summary.task_count - remote_test_summary.errored_task_count - remote_test_summary.cancelled_task_count) / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ remote_test_summary.task_count - remote_test_summary.errored_task_count - remote_test_summary.cancelled_task_count }}</span></td>
         </tr>         
         <tr class="cancelled">                
             <th><span class="label">Cancelled tests</span></th>
-            <td class="bar"><span class="label" style="width:{% if taskCountByState.cancelled == 0 %} 1{% else %} {{ (taskCountByState.cancelled / test.taskCount) * 100}}{% endif %}%;">{{ taskCountByState.cancelled }}</span></td>
+            <td class="bar"><span class="label" style="width:{% if remote_test_summary.cancelled_task_count == 0 %} 2{% else %} {{ (remote_test_summary.cancelled_task_count / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ remote_test_summary.cancelled_task_count }}</span></td>
         </tr>      
     </tbody>
 </table>  

@@ -66,8 +66,14 @@ class TaskService extends CoreApplicationService {
     }
     
     
-    public function getCollection(Test $test, $remoteTaskIds = array()) {        
-        if (is_null($remoteTaskIds)) {
+    /**
+     *
+     * @param Test $test
+     * @param array $remoteTaskIds
+     * @return array 
+     */
+    public function getCollection(Test $test, $remoteTaskIds = null) {      
+        if (!is_array($remoteTaskIds)) {
             $remoteTaskIds = $this->getRemoteTaskIds($test);
         }
         
@@ -183,15 +189,16 @@ class TaskService extends CoreApplicationService {
         
         if (isset($remoteTaskObject->output)) {
             $this->populateOutputfromRemoteOutputObject($task, $remoteTaskObject->output);
-        }
+        }        
     }
     
     
-    private function populateOutputfromRemoteOutputObject(Task $task, $remoteOutputObject) {
+    private function populateOutputfromRemoteOutputObject(Task $task, $remoteOutputObject) {        
         $taskOutput = new Output();
         $taskOutput->setContent($remoteOutputObject->output);
         $taskOutput->setType($task->getType());
-        $taskOutput->setTask($task);
+        $taskOutput->setErrorCount($remoteOutputObject->error_count);
+        $taskOutput->setTask($task);        
         
         $task->setOutput($taskOutput);
     }
@@ -252,8 +259,8 @@ class TaskService extends CoreApplicationService {
      * @param Test $test
      * @return array 
      */
-    public function getRemoteTaskIds(Test $test) {        
-        if (!($test->getState() == 'queued' || $test->getState() == 'in-progress')) {
+    public function getRemoteTaskIds(Test $test) {
+        if (($test->getState() == 'new' || $test->getState() == 'preparing')) {
             return array();
         }
         

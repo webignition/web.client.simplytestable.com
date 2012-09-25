@@ -59,6 +59,15 @@ class Output {
      */
     private $result;
     
+    
+    /**
+     *
+     * @var integer
+     * @ORM\Column(type="integer", nullable=false)
+     * @SerializerAnnotation\Expose
+     */    
+    private $errorCount;
+    
 
     /**
      * Get id
@@ -170,4 +179,37 @@ class Output {
     {
         return $this->result;
     }
+    
+    /**
+     * Set error count
+     *
+     * @param int $errorCount
+     * @return Output
+     */
+    public function setErrorCount($errorCount)
+    {
+        $this->errorCount = $errorCount;
+    
+        return $this;
+    }
+
+    /**
+     * Get error count
+     *
+     * @return int 
+     */
+    public function getErrorCount()
+    {
+        return $this->errorCount;
+    }
+    
+    
+    /**
+     *
+     * @return boolean
+     */
+    public function hasErrors() {
+        return $this->getErrorCount() > 0;
+    }
+    
 }
