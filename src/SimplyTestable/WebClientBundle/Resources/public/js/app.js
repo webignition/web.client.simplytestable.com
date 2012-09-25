@@ -583,9 +583,16 @@ application.progress.taskController = function () {
         if (isFinished(task)) {
             var outputParser = new taskOutputController.outputParser();
             var outputResult = outputParser.getResults(task.output);
-
-            var errorIndicator = $('<span class="output-indicator label label-important">'+outputResult.getErrorCount()+' error'+(outputResult.getErrorCount() == 1 ? '' : 's') +'</span>');
-            $('.meta', taskListItem).append(errorIndicator);
+            
+            var outputIndicator;
+            
+            if (outputResult.hasErrors()) {
+                outputIndicator = '<span class="output-indicator label label-important">'+outputResult.getErrorCount()+' error'+(outputResult.getErrorCount() == 1 ? '' : 's') +'</span>';
+            } else {
+                outputIndicator = '<span class="output-indicator"><i class="icon-ok"></i></span>';
+            }
+             
+            $('.meta', taskListItem).append(outputIndicator);
         }
     };       
 
