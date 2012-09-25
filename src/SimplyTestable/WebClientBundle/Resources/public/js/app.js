@@ -115,7 +115,7 @@ application.progress.testController = function () {
                     console.log('500');
                 }
             },
-            success: function (data, textStatus, request) {
+            success: function (data, textStatus, request) {                
                 if (data.this_url != window.location.href) {
                     window.location.href = data.this_url;
                     return;
@@ -565,8 +565,8 @@ application.progress.taskController = function () {
             
             var outputIndicator;
             
-            if (outputResult.hasErrors()) {
-                outputIndicator = '<span class="output-indicator label label-important">'+outputResult.getErrorCount()+' error'+(outputResult.getErrorCount() == 1 ? '' : 's') +'</span>';
+            if (outputResult.hasErrors()) {                
+                outputIndicator = '<a href="'+(window.location.href.replace('/progress/', '/'+task.task_id+'/results/'))+'" class="output-indicator label label-important">'+outputResult.getErrorCount()+' error'+(outputResult.getErrorCount() == 1 ? '' : 's') +' <i class="icon-caret-down"></i></a>';
             } else {
                 outputIndicator = '<span class="output-indicator"><i class="icon-ok"></i></span>';
             }
