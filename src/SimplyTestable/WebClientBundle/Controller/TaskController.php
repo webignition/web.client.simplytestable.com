@@ -18,6 +18,17 @@ class TaskController extends BaseViewController
         $test = $this->getTestService()->get($website, $test_id);        
         $taskIds = $this->getRequestTaskIds();               
         $tasks = $this->getTaskService()->getCollection($test, $taskIds);        
+        
+        foreach ($tasks as $task) {
+            if ($task->getState() == 'completed') {
+                if ($task->hasOutput()) {             
+                    $parser = $this->getTaskOutputResultParserService()->getParser($task->getOutput());
+                    $parser->setOutput($task->getOutput());
+
+                    $task->getOutput()->setResult($parser->getResult());
+                }
+            }
+        }
 
         return new Response($this->getSerializer()->serialize($tasks, 'json'));
     }
@@ -162,4 +173,12 @@ class TaskController extends BaseViewController
     protected function getSerializer() {
         return $this->container->get('serializer');
     }    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory
+     */
+    private function getTaskOutputResultParserService() {
+        return $this->container->get('simplytestable.services.taskoutputresultparserfactoryservice');
+    }
 }
