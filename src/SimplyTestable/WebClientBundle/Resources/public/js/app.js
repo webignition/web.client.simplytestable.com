@@ -96,28 +96,7 @@ application.progress.testController = function () {
         var now = new Date();
         
         var getProgressUrl = function () {            
-            var taskIdsToGetProgressFor = [];
-            var haslatestTestData = latestTestData.hasOwnProperty('tasksByUrl');
-            
-            for (var url in latestTestData.tasksByUrl) {
-                var tasks = latestTestData.tasksByUrl[url];
-                var taskCount = tasks.length;
-                
-                for (var taskIndex = 0; taskIndex < taskCount; taskIndex++) {
-                    var task = tasks[taskIndex];
-                    
-                    if (!isFinishedState(task.state) && taskIdsToGetProgressFor.length <= limit) {
-                        taskIdsToGetProgressFor.push(task.id);
-                    }                    
-                }
-            }
-            
-            if (!haslatestTestData || taskIdsToGetProgressFor.length == 0) {
-                return window.location.href + '?output=json&timestamp=' + now.getTime();
-            }
-            
-            return window.location.href + '?output=json&timestamp=' + now.getTime() + '&taskIds=' + taskIdsToGetProgressFor.join(',');
-            
+            return window.location.href + '?output=json&timestamp=' + now.getTime();            
         };
         
         jQuery.ajax({
