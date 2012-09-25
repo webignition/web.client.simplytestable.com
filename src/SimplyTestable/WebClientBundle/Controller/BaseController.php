@@ -12,6 +12,11 @@ use webignition\NormalisedUrl\NormalisedUrl;
 abstract class BaseController extends Controller
 {    
     protected function getRequestValue($name, $default = null, $httpMethod = null) {
+        $value = trim($this->get('request')->get($name));        
+        if ($value != '') {
+            return $value;
+        }
+        
         $availableHttpMethods = array(
             HTTP_METH_GET,
             HTTP_METH_POST
