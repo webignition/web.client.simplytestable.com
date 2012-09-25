@@ -14,10 +14,30 @@ class TaskService extends CoreApplicationService {
     
     private $finishedStates = array(
         'completed',
+        'cancelled',
+        'awaiting-cancellation',
         'failed-no-retry-available',
         'failed-retry-available',
         'failed-retry-limit-reached'
-    );    
+    );
+    
+    private $cancelledStates = array(
+        'cancelled',
+        'awaiting-cancellation'        
+    );
+    
+    
+    private $failedStates = array(
+        'failed-no-retry-available',
+        'failed-retry-available',
+        'failed-retry-limit-reached'        
+    );
+    
+    private $incompleteStates = array(
+        'queued',
+        'queued-for-assignment',
+        'in-progress'
+    );
     
     
     /**
@@ -72,14 +92,14 @@ class TaskService extends CoreApplicationService {
      * @param array $remoteTaskIds
      * @return array 
      */
-    public function getCollection(Test $test, $remoteTaskIds = null) {      
+    public function getCollection(Test $test, $remoteTaskIds = null) {              
         if (!is_array($remoteTaskIds)) {
             $remoteTaskIds = $this->getRemoteTaskIds($test);
-        }
+        }       
         
         $existenceResult = $this->getEntityRepository()->getCollectionExistsByTestAndRemoteId($test, $remoteTaskIds);        
         $tasksToRetrieve = array();
-        $localTasksToUpdate = array();
+        $localTasksToUpdate = array();        
         
         foreach ($existenceResult as $remoteTaskId => $exists) {
             if ($exists) {
@@ -102,10 +122,10 @@ class TaskService extends CoreApplicationService {
                     $tasksToRetrieve[] = $task->getTaskId();
                 }
             }                        
-        }
+        }       
         
         if (count($tasksToRetrieve)) {
-            $remoteTasksObject = $this->retrieveRemoteCollection($test, $tasksToRetrieve);
+            $remoteTasksObject = $this->retrieveRemoteCollection($test, $tasksToRetrieve);                       
             
             foreach ($remoteTasksObject as $remoteTaskObject) {                
                 $task = (isset($tasks[$remoteTaskObject->id])) ? $tasks[$remoteTaskObject->id] : new Task();
@@ -113,7 +133,7 @@ class TaskService extends CoreApplicationService {
                 $this->populateFromRemoteTaskObject($task, $remoteTaskObject);                
                 $tasks[$task->getTaskId()] = $task;                
             }
-        }
+        }           
         
         foreach ($tasks as $remoteTaskId => $task) {            
             if ($this->hasTaskStateChanged($task, $previousTaskStates)) {
@@ -121,17 +141,40 @@ class TaskService extends CoreApplicationService {
             }
         }
         
-        foreach ($tasksToPersist as $task) {
+        foreach ($tasksToPersist as $task) {            
             $this->entityManager->persist($task);            
-            if ($task->hasOutput() && $this->hasTaskStateChanged($task, $previousTaskStates)) {
+            if ($task->hasOutput() && $this->hasTaskStateChanged($task, $previousTaskStates)) {                
                 $this->entityManager->persist($task->getOutput());
             }
         }
         
-        $this->entityManager->flush();
+        if (count($tasksToPersist)) {
+           $this->entityManager->flush(); 
+        }
+        
+        if ($test->getState() == 'completed' || $test->getState() == 'cancelled') {
+            foreach ($tasks as $task) {
+                $this->normaliseEndingState($task);
+            }            
+        }
         
         return $tasks;
     }  
+    
+    
+    private function normaliseEndingState(Task $task) {
+        if ($this->isCancelled($task)) {
+            return $task->setState('cancelled');
+        }
+
+        if ($this->isFailed($task)) {
+            return $task->setState('failed');
+        }
+        
+        if ($this->isIncomplete($task)) {
+            return $task->setState('cancelled');
+        }     
+    }
     
     
     /**
@@ -188,12 +231,14 @@ class TaskService extends CoreApplicationService {
         }        
         
         if (isset($remoteTaskObject->output)) {
-            $this->populateOutputfromRemoteOutputObject($task, $remoteTaskObject->output);
+            if (!$task->hasOutput()) {
+                $this->populateOutputfromRemoteOutputObject($task, $remoteTaskObject->output);
+            }            
         }        
     }
     
     
-    private function populateOutputfromRemoteOutputObject(Task $task, $remoteOutputObject) {        
+    private function populateOutputfromRemoteOutputObject(Task $task, $remoteOutputObject) {                
         $taskOutput = new Output();
         $taskOutput->setContent($remoteOutputObject->output);
         $taskOutput->setType($task->getType());
@@ -415,11 +460,39 @@ class TaskService extends CoreApplicationService {
     
     /**
      *
-     * @param Task $Task
+     * @param Task $task
      * @return boolean
      */
-    private function isFinished(Task $Task) {
-        return in_array($Task->getState(), $this->finishedStates);
+    private function isFinished(Task $task) {
+        return in_array($task->getState(), $this->finishedStates);
     }
     
+    
+    /**
+     *
+     * @param Task $task
+     * @return boolean
+     */
+    private function isCancelled(Task $task) {
+        return in_array($task->getState(), $this->cancelledStates);
+    }    
+    
+    
+    /**
+     *
+     * @param Task $task
+     * @return boolean
+     */
+    private function isFailed(Task $task) {
+        return in_array($task->getState(), $this->failedStates);
+    }     
+    
+    /**
+     *
+     * @param Task $task
+     * @return boolean
+     */
+    private function isIncomplete(Task $task) {
+        return in_array($task->getState(), $this->incompleteStates);
+    }        
 }

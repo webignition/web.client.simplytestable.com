@@ -768,91 +768,91 @@ application.progress.taskOutputController = function () {
 
 
 
-application.testList = {};
-
-application.testList.list = function () {
-    var testList;
-    
-    this.initialise = function (documentTestList) {
-        testList = documentTestList.clone();
-        documentTestList.remove();
-    };   
-    
-    this.get = function (identifier) {
-        var specificTestList = testList.clone();
-        
-        $('li.url', specificTestList).each(function () {
-            var url = $(this);
-            
-            $('.task', url).each(function () {
-                var task = $(this);
-                
-                switch (identifier) {
-                    case '#all':
-                        break;
-
-                    case '#tests-with-errors':
-                        if (!task.hasClass('failed')) {
-                            task.remove();
-                        }
-                        break; 
-
-                    case '#tests-without-errors':
-                        if (!task.hasClass('passed') || (task.hasClass('cancelled') || task.hasClass('awaiting-cancellation'))) {
-                            task.remove();
-                        }
-                        break;
-
-                    case '#cancelled-tests':
-                        if (!task.hasClass('cancelled')) {
-                            task.remove();
-                        }
-                        break; 
-                }
-            });
-            
-            if ($('.task', url).length === 0) {
-                url.remove();
-            }
-        });
-        
-        return specificTestList;
-    };
-};
-
-application.testList.controller = function () {   
-    var testList;
-    var getTestList = function () {
-        if (testList == undefined) {
-            testList = new application.testList.list();            
-        }
-        
-        return testList;
-    };
-    
-    this.getTestList = getTestList;
-    
-    this.initialise = function () {
-        getTestList().initialise($('#test-list .urls'));
-    };
-};
-
-application.resultsController = function () {
-    var testListController = new application.testList.controller();
-    testListController.initialise();
-    
-    $('#test-list .nav a').click(function () {
-        var identifier = $(this).attr('href');
-        if ($(identifier).html() == '') {
-            $(identifier).html(testListController.getTestList().get(identifier));
-        }
-        
-    });
-    
-    this.initialise = function () {
-        $('#test-list .nav a[href=#tests-with-errors]').click();
-    };
-};
+//application.testList = {};
+//
+//application.testList.list = function () {
+//    var testList;
+//    
+//    this.initialise = function (documentTestList) {
+//        testList = documentTestList.clone();
+//        documentTestList.remove();
+//    };   
+//    
+//    this.get = function (identifier) {
+//        var specificTestList = testList.clone();
+//        
+//        $('li.url', specificTestList).each(function () {
+//            var url = $(this);
+//            
+//            $('.task', url).each(function () {
+//                var task = $(this);
+//                
+//                switch (identifier) {
+//                    case '#all':
+//                        break;
+//
+//                    case '#tests-with-errors':
+//                        if (!task.hasClass('failed')) {
+//                            task.remove();
+//                        }
+//                        break; 
+//
+//                    case '#tests-without-errors':
+//                        if (!task.hasClass('passed') || (task.hasClass('cancelled') || task.hasClass('awaiting-cancellation'))) {
+//                            task.remove();
+//                        }
+//                        break;
+//
+//                    case '#cancelled-tests':
+//                        if (!task.hasClass('cancelled')) {
+//                            task.remove();
+//                        }
+//                        break; 
+//                }
+//            });
+//            
+//            if ($('.task', url).length === 0) {
+//                url.remove();
+//            }
+//        });
+//        
+//        return specificTestList;
+//    };
+//};
+//
+//application.testList.controller = function () {   
+//    var testList;
+//    var getTestList = function () {
+//        if (testList == undefined) {
+//            testList = new application.testList.list();            
+//        }
+//        
+//        return testList;
+//    };
+//    
+//    this.getTestList = getTestList;
+//    
+//    this.initialise = function () {
+//        getTestList().initialise($('#test-list .urls'));
+//    };
+//};
+//
+//application.resultsController = function () {
+//    var testListController = new application.testList.controller();
+//    testListController.initialise();
+//    
+//    $('#test-list .nav a').click(function () {
+//        var identifier = $(this).attr('href');
+//        if ($(identifier).html() == '') {
+//            $(identifier).html(testListController.getTestList().get(identifier));
+//        }
+//        
+//    });
+//    
+//    this.initialise = function () {
+//        $('#test-list .nav a[href=#tests-with-errors]').click();
+//    };
+//};
 
 application.pages = {
     '/*':{
@@ -867,8 +867,8 @@ application.pages = {
             
             
             if ($('body.app-results').length > 0) {                
-                resultsController = new application.resultsController();
-                resultsController.initialise();
+                //resultsController = new application.resultsController();
+                //resultsController.initialise();
             }            
         }         
     },

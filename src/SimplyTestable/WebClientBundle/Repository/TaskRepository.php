@@ -14,7 +14,7 @@ class TaskRepository extends EntityRepository
     }
     
     
-    public function getCollectionExistsByTestAndRemoteId(Test $test, $taskIds = array()) {
+    public function getCollectionExistsByTestAndRemoteId(Test $test, $taskIds = array()) {        
         $result = array();
         
         foreach ($taskIds as $taskId) {            
@@ -46,4 +46,112 @@ class TaskRepository extends EntityRepository
         
         return $tasks;
     }
+    
+    public function getCountByTestAndState(Test $test, $states) {
+        $queryBuilder = $this->createQueryBuilder('Task');
+        $queryBuilder->select('count(Task.id)');
+
+        $stateConditions = array();
+
+        foreach ($states as $stateIndex => $state) {
+            $stateConditions[] = '(Task.state = :State'.$stateIndex.') ';
+            $queryBuilder->setParameter('State'.$stateIndex, $state);
+        }        
+        
+        $queryBuilder->where('(Task.test = :Test AND ('.implode('OR', $stateConditions).'))');
+        $queryBuilder->setParameter('Test', $test);
+        
+        $result = $queryBuilder->getQuery()->getResult();
+        
+        return (int)$result[0][1];        
+    }
+    
+    
+    public function getRemoteIdByTestAndState(Test $test, $states) {
+        $queryBuilder = $this->createQueryBuilder('Task');
+        $queryBuilder->select('Task.taskId');
+
+        $stateConditions = array();
+
+        foreach ($states as $stateIndex => $state) {
+            $stateConditions[] = '(Task.state = :State'.$stateIndex.') ';
+            $queryBuilder->setParameter('State'.$stateIndex, $state);
+        }        
+        
+        $queryBuilder->where('(Task.test = :Test AND ('.implode('OR', $stateConditions).'))');
+        $queryBuilder->setParameter('Test', $test);
+        
+        return $this->getTaskIdsFromQueryResult($queryBuilder->getQuery()->getResult());    
+    } 
+    
+    
+    public function getErrorFreeCountByTest(Test $test) {
+        $queryBuilder = $this->createQueryBuilder('Task');
+        $queryBuilder->join('Task.output', 'TaskOutput');
+        $queryBuilder->select('count(Task.id)');
+        $queryBuilder->where('Task.test = :Test');
+        $queryBuilder->andWhere('TaskOutput.errorCount = :ErrorCount');
+
+        $queryBuilder->setParameter('Test', $test);        
+        $queryBuilder->setParameter('ErrorCount', 0);  
+        
+        $result = $queryBuilder->getQuery()->getResult();
+        
+        return (int)$result[0][1];        
+    }
+    
+    
+    public function getErrorFreeRemoteIdByTest(Test $test) {
+        $queryBuilder = $this->createQueryBuilder('Task');
+        $queryBuilder->join('Task.output', 'TaskOutput');
+        $queryBuilder->select('Task.taskId');
+        $queryBuilder->where('Task.test = :Test');
+        $queryBuilder->andWhere('TaskOutput.errorCount = :ErrorCount');
+
+        $queryBuilder->setParameter('Test', $test);        
+        $queryBuilder->setParameter('ErrorCount', 0);  
+        
+        return $this->getTaskIdsFromQueryResult($queryBuilder->getQuery()->getResult());
+    }
+    
+    
+    private function getTaskIdsFromQueryResult($resultSet) {
+        $taskIds = array();
+        
+        foreach ($resultSet as $result) {
+            $taskIds[] = $result['taskId'];
+        }
+        
+        return $taskIds;
+    }
+    
+    
+    public function getErroredCountByTest(Test $test) {
+        $queryBuilder = $this->createQueryBuilder('Task');
+        $queryBuilder->join('Task.output', 'TaskOutput');
+        $queryBuilder->select('count(Task.id)');
+        $queryBuilder->where('Task.test = :Test');
+        $queryBuilder->andWhere('TaskOutput.errorCount > :ErrorCount');
+
+        $queryBuilder->setParameter('Test', $test);        
+        $queryBuilder->setParameter('ErrorCount', 0);  
+        
+        $result = $queryBuilder->getQuery()->getResult();
+        
+        return (int)$result[0][1];        
+    }
+    
+    
+    public function getErroredRemoteIdByTest(Test $test) {
+        $queryBuilder = $this->createQueryBuilder('Task');
+        $queryBuilder->join('Task.output', 'TaskOutput');
+        $queryBuilder->select('Task.taskId');
+        $queryBuilder->where('Task.test = :Test');
+        $queryBuilder->andWhere('TaskOutput.errorCount > :ErrorCount');
+
+        $queryBuilder->setParameter('Test', $test);        
+        $queryBuilder->setParameter('ErrorCount', 0);  
+        
+        return $this->getTaskIdsFromQueryResult($queryBuilder->getQuery()->getResult());    
+    }     
 }

@@ -2,7 +2,7 @@
     <tbody>
         <tr class="with-errrors">                
             <th><span class="label label-important">Tests with errors</span></th>
-            <td class="bar"><span class="label label-important" style="width:{% if remote_test_summary.errored_task_count == 0 %} 2{% else %} {{ (remote_test_summary.errored_task_count / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ remote_test_summary.task_count }}</span></td>
+            <td class="bar"><span class="label label-important" style="width:{% if remote_test_summary.errored_task_count == 0 %} 2{% else %} {{ (remote_test_summary.errored_task_count / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ remote_test_summary.errored_task_count }}</span></td>
         </tr>         
         <tr class="without-errors">                
             <th><span class="label label-success">Tests without errors</span></th>

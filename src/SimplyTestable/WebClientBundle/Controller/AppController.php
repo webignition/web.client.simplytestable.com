@@ -281,7 +281,21 @@ class AppController extends BaseViewController
         
         if (!$this->getTestService()->has($website, $test_id)) {
             return $this->redirect($this->generateUrl('app', array(), true));
-        }    
+        }
+        
+        $taskListFilter = $this->getRequestValue('filter', 'all');
+        
+        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
+        $cacheValidatorIdentifier->setParameter('website', $website);
+        $cacheValidatorIdentifier->setParameter('test_id', $test_id);
+        $cacheValidatorIdentifier->setParameter('filter', $taskListFilter);
+        
+        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
+        
+        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
+        if ($response->isNotModified($this->getRequest())) {
+            return $response;
+        }        
         
         $test = $this->getTestService()->get($website, $test_id);
         
@@ -289,7 +303,7 @@ class AppController extends BaseViewController
             return $this->redirect($this->getProgressUrl($website, $test_id));
         }
         
-        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
+        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();        
         
         $viewData = array(
             'this_url' => $this->getResultsUrl($website, $test_id),
@@ -297,97 +311,77 @@ class AppController extends BaseViewController
             'test' => $test,
             'remote_test_summary' => $this->getRemoteTestSummaryArray($remoteTestSummary),
             'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
-            'public_site' => $this->container->getParameter('public_site')
+            'public_site' => $this->container->getParameter('public_site'),
+            'filter' => $taskListFilter          
         );
+                       
+        //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTestSummary->task_count : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));
         
-        if ($remoteTestSummary->task_count <= self::RESULTS_PAGE_LENGTH) {                  
-            $tasks = $this->getTaskService()->getCollection($test);
-            foreach ($tasks as $task) {                               
-                if ($task->getState() == 'completed') {
-                    if ($task->hasOutput()) {             
-                        $parser = $this->getTaskOutputResultParserService()->getParser($task->getOutput());
-                        $parser->setOutput($task->getOutput());
+        //if ($taskCollectionLength > 0 && $taskCollectionLength <= self::RESULTS_PAGE_LENGTH) {
+            $remoteTaskIds = ($taskListFilter == 'all') ? null : $this->getFilteredTaskCollectionRemoteIds($test, $this->getRequestValue('filter', 'all'));            
+            $tasks = $this->getTaskService()->getCollection($test, $remoteTaskIds); 
+            
+            foreach ($tasks as $taskIndex => $task) {                
+                if (($task->getState() == 'completed' || $task->getState() == 'failed') && $task->hasOutput()) {           
+                    $parser = $this->getTaskOutputResultParserService()->getParser($task->getOutput());
+                    $parser->setOutput($task->getOutput());
 
-                        $task->getOutput()->setResult($parser->getResult());
-                    }
+                    $task->getOutput()->setResult($parser->getResult());
                 }
             } 
             
             $viewData['tasks'] = $tasks;
-        }
-        
-        
-        
-//        var_dump($remoteTestSummary);
-//        exit();
+        //} else {
+        //    $viewData['tasks'] = array();
+        //}
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');
-        return $this->sendResponse($viewData);         
-        
-        var_dump("cp01");
-        exit();
-        
-//        if (!$this->getTestService()->has($website, $test_id)) {
-//            return $this->redirect($this->generateUrl('app', array(), true));
-//        }        
-//        
-//        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
-//        $cacheValidatorIdentifier->setParameter('website', $website);
-//        $cacheValidatorIdentifier->setParameter('test_id', $test_id);
-//        
-//        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
-//        
-//        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
-//        if ($response->isNotModified($this->getRequest())) {
-//            return $response;
-//        }
-//        
-//        $test = $this->getTestService()->get($website, $test_id);      
-//        if (in_array($test->getState(), $this->progressStates)) {
-//            return $this->redirect($this->getProgressUrl($website, $test_id));
-//        }
-//        
-//        $tasksRequiringOutput = array();
-//        
-//        foreach ($test->getTasks() as $task) {            
-//            /* @var $task Task */
-//            if (substr($task->getState(), 0, strlen('failed')) == 'failed' && $task->getState() != 'failed') {
-//                $this->getTaskService()->markFailed($task);
-//            }
-//            
-//            if (($task->getState() == 'completed' || $task->getState() == 'failed') && !$task->hasOutput()) {
-//                $tasksRequiringOutput[] = $task;
-//            }
-//            
-//            if ($task->getState() == 'queued' || $task->getState() == 'in-progress') {
-//                $this->getTaskService()->markCancelled($task);
-//            }
-//        }
-//        
-//        if (count($tasksRequiringOutput)) {
-//            $this->getTaskOutputService()->getCollection($test, $tasksRequiringOutput);
-//        }
-        
-        $viewData = array(
-            'this_url' => $this->getResultsUrl($website, $test_id),
-            'test_input_action_url' => $this->generateUrl('test_start')//,
-//            'test' => $test,          
-//            'tasksByUrl' => $this->getTasksByUrl($this->getTestUrls($test), $test->getTasks()),
-//            'testId' => $test_id,
-//            'taskCountByState' => $this->getTaskCountByState($test),
-//            'taskErrorCount' => $this->getTaskErrorCount($test),
-//            'erroredTaskCount' => $this->getErroredTaskCount($test),
-//            'public_site' => $this->container->getParameter('public_site')
-        );
-        
-        
-        $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');
-        return $this->sendResponse($viewData);             
-        
         return $this->getCachableResponse(
                 $this->sendResponse($viewData),
                 $cacheValidatorHeaders
         ); 
+    }
+    
+    
+    private function getFilteredTaskCollectionLength(Test $test, $filter) {
+        if ($filter == 'cancelled') {
+            return $this->getTaskService()->getEntityRepository()->getCountByTestAndState($test, array('cancelled'));
+        }
+        
+        if ($filter == 'without-errors') {
+            return $this->getTaskService()->getEntityRepository()->getErrorFreeCountByTest($test);
+        }
+        
+        
+        if ($filter == 'with-errors') {
+            return $this->getTaskService()->getEntityRepository()->getErroredCountByTest($test);
+        }        
+        
+        return null;
+    }
+    
+    
+    private function getFilteredTaskCollectionRemoteIds(Test $test, $filter) {
+        if ($filter == 'cancelled') {
+            return $this->getTaskService()->getEntityRepository()->getRemoteIdByTestAndState($test, array('cancelled'));
+        }
+        
+        if ($filter == 'without-errors') {
+            return $this->getTaskService()->getEntityRepository()->getErrorFreeRemoteIdByTest($test);
+        }  
+        
+        if ($filter == 'with-errors') {
+            return $this->getTaskService()->getEntityRepository()->getErroredRemoteIdByTest($test);
+        }  
+        
+        return null;
+        
+        // count task Ids for job where state = cancelled
+        
+        
+        
+        var_dump($filter);
+        exit();        
     }
     
     private function getErroredTaskCount(Test $test) {

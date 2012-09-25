@@ -97,7 +97,24 @@
                 <div class="span12">                    
                     <section id="task-list-container">
                         <span class="info"><i class="icon-tasks"></i></span>
+                        
                         {% if tasks is defined %}
+                        <ul class="nav nav-tabs">
+                            <li class="{% if (filter == 'all') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=all">All ({{ remote_test_summary.task_count }})</a></li>
+                            <li class="{% if (filter == 'with-errors') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=with-errors">Tests with errors ({{ remote_test_summary.errored_task_count }})</a></li>
+                            <li class="{% if (filter == 'without-errors') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=without-errors">Tests without errors ({{ remote_test_summary.task_count - remote_test_summary.errored_task_count - remote_test_summary.cancelled_task_count }})</a></li>                            
+                            <li class="{% if (filter == 'cancelled') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=cancelled">Cancelled tests ({{ remote_test_summary.cancelled_task_count }})</a></li>
+                        </ul> 
+
+                        <!--
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="all">all</div>
+                            <div class="tab-pane" id="tests-with-errors">tests with errors</div>
+                            <div class="tab-pane" id="tests-without-errors">tests without errors</div>                            
+                            <div class="tab-pane" id="cancelled-tests">cancelled tests</div>
+                        </div>                        
+                        -->
+                        
                         <ul class="tasks">
                             {% for task in tasks %}
                                 <li class="task {{ task.state }}">
@@ -115,19 +132,21 @@
                                             {% endif %}
                                         </span>
                                         <span class="type">{{ task.type }}</span>
-                                        
-                                        {%if task.output.hasErrors %}
-                                            <a href="{{ path('app_task_results', { 'website': test.website, 'test_id': test.testId, 'task_id':task.id }) }}" class="label label-important">
-                                            {{ task.output.errorCount }}
-                                            {% if task.output.errorCount == 1 %}
-                                                error
+
+                                        {%if task.hasOutput %}
+                                            {%if task.output.hasErrors %}
+                                                <a href="{{ path('app_task_results', { 'website': test.website, 'test_id': test.testId, 'task_id':task.id }) }}" class="label label-important">
+                                                {{ task.output.errorCount }}
+                                                {% if task.output.errorCount == 1 %}
+                                                    error
+                                                {% else %}
+                                                    errors
+                                                {% endif %}
+                                                    <i class="icon-caret-down"></i>    
+                                                </a>
                                             {% else %}
-                                                errors
+                                                <i class="icon-ok"></i>
                                             {% endif %}
-                                                <i class="icon-caret-down"></i>    
-                                            </a>
-                                        {% else %}
-                                            <i class="icon-ok"></i>
                                         {% endif %}
                                     </div>
                                 </li>
