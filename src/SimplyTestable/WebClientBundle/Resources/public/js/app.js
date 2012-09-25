@@ -191,7 +191,7 @@ application.progress.taskController = function () {
     };
     
     var pageLength = 100;
-    var tabLimit = 8;
+    var tabLimit = 9;
     
     var taskIds = null;
     var tasks = null;
@@ -373,6 +373,26 @@ application.progress.taskController = function () {
         return start + ' &hellip; ' + end;
     };
     
+    var getNextVisibleTabIndex = function (direction) {
+        var nextVisibleTabIndex = 0;
+        
+        if (direction == 'right') {
+            $('.tab', tabList).each(function (index) {
+                if ($(this).hasClass('tab-visible')) {
+                    nextVisibleTabIndex = index + 1;
+                }
+            });            
+        } else {
+            $($('.tab', tabList).get().reverse()).each(function(index) {                
+                if ($(this).hasClass('tab-visible')) {
+                    nextVisibleTabIndex = index + 1;
+                }
+            }); 
+        }   
+        
+        return nextVisibleTabIndex;
+    };
+    
     var buildTabList = function () {
         tabList = $('<ul id="tab-list" class="nav nav-tabs pull-left" />');
         getTaskListContainer().append(tabList);
@@ -382,7 +402,7 @@ application.progress.taskController = function () {
             (function (tabIndex) {
                 tabList.append($('<li class="tab"><a href="#pane'+tabIndex+'" data-toggle="tab">'+getTabLabel(tabIndex)+'</a></li>').click(function () {                    
                     var parent = $('#pane'+tabIndex);
-                    var getTaskListCallback = function (taskList) {
+                    var getTaskListCallback = function (taskList) {                        
                         updateTaskList(taskList.list, taskList.tasks, function () {                            
                             if (parent.is('.active')) {
                                 window.setTimeout(function () {
@@ -390,6 +410,7 @@ application.progress.taskController = function () {
                                 }, 1000);                                   
                             }                            
 
+                            $('.spinner', parent).remove();
                             parent.removeClass('pane-empty');
                         });                        
                     };
@@ -403,14 +424,66 @@ application.progress.taskController = function () {
             tabList.addClass('constrained');
             
             $('.tab', tabList).each(function (index) {
-                if (index > tabLimit) {
-                    $(this).css('display', 'none');
+                if (index >= tabLimit) {
+                    $(this).addClass('tab-hidden');
+                } else {
+                    $(this).addClass('tab-visible');
                 }
-            });
-            
-            tabList.before('<span class="tab-list-control tab-list-previous pull-left">previous</span>');            
-            tabList.after(
-                $('<span class="tab-list-control tab-list-previous pull-left">next</span>')
+            });            
+           
+            tabList.before(
+                $('<span class="tab-list-control tab-list-previous pull-left">&lsaquo;</span>').click(function () {
+                    var nextVisibleTabIndex = getNextVisibleTabIndex('left');                    
+                    if ((getTabCount() - nextVisibleTabIndex) < tabLimit) {
+                        nextVisibleTabIndex = getTabCount() - tabLimit;
+                    }
+
+                    $($('.tab', tabList).get().reverse()).each(function(index) {
+                        var tab = $(this);                        
+                        tab.removeClass('tab-visible').removeClass('tab-hidden');
+                        
+                        if (index >= nextVisibleTabIndex && index < nextVisibleTabIndex + tabLimit) {
+                            tab.addClass('tab-visible');
+                        } else {
+                            tab.addClass('tab-hidden');
+                        }
+                        
+                        if (index == nextVisibleTabIndex) {
+                            tab.click().addClass('active');
+                            $('#pane' + index).addClass('active');
+                        } else {
+                            tab.removeClass('active');
+                            $('#pane' + index).removeClass('active');
+                        }   
+                    }); 
+                })
+            ).after(
+                $('<span class="tab-list-control tab-list-previous pull-left">&rsaquo;</span>').click(function () {
+                    var nextVisibleTabIndex = getNextVisibleTabIndex('right');
+                    if ((getTabCount() - nextVisibleTabIndex) < tabLimit) {
+                        nextVisibleTabIndex = getTabCount() - tabLimit;
+                    }
+                    
+                    $('.tab', tabList).each(function (index) {
+                        var tab = $(this);                     
+                        
+                        tab.removeClass('tab-visible').removeClass('tab-hidden');
+                        
+                        if (index >= nextVisibleTabIndex && index < nextVisibleTabIndex + tabLimit) {
+                            tab.addClass('tab-visible');
+                        } else {
+                            tab.addClass('tab-hidden');
+                        }
+                        
+                        if (index == nextVisibleTabIndex) {
+                            tab.click().addClass('active');
+                            $('#pane' + index).addClass('active');
+                        } else {
+                            tab.removeClass('active');
+                            $('#pane' + index).removeClass('active');
+                        }                        
+                    });                    
+                })
             );
         }
     };
@@ -422,7 +495,7 @@ application.progress.taskController = function () {
         var tabCount = getTabCount();        
         for (var tabIndex = 0; tabIndex < tabCount; tabIndex++) {
             (function (tabIndex) {
-                var pane = $('<div class="tab-pane pane-empty" id="pane'+tabIndex+'"></div>');
+                var pane = $('<div class="tab-pane pane-empty" id="pane'+tabIndex+'"><img class="spinner" src="/bundles/simplytestablewebclient/images/spinner.gif" /></div>');
                 if (tabIndex === 0) {
                     pane.addClass('active');
                 }
@@ -534,9 +607,9 @@ application.progress.taskController = function () {
             }, 1000);
             
             return;
-        }
+        }        
         
-        if (getUrlCount() <= pageLength) {
+        if (getTaskCount() <= pageLength) {
             var parent = getTaskListContainer();
             var getTaskListCallback = function (taskList) {                
                 updateTaskList(taskList.list, taskList.tasks, function () {

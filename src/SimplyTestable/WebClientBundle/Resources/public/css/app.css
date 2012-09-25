@@ -226,6 +226,27 @@ section h2 {
     margin-bottom:0;
 }
 
+#test-list #task-list-container #tab-list .tab-hidden {
+    display:none;
+}
+
+#test-list #task-list-container #tab-list .tab-visible {
+    display:block;
+}
+
+#test-list .tab-list-control {
+    color: #08c;
+    display: block; 
+    font-size: 20px;  
+    padding:8px 12px;
+}
+
+#test-list .tab-list-control:hover {
+    color: #005580;
+    cursor:pointer;
+    background-color:#e0e0e0;
+}
+
 #test-list #task-list-container .tab-content .tab-pane .tasks {
     margin-top:0;
 }
