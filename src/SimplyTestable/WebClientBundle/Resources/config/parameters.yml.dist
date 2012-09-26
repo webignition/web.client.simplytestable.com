@@ -14,7 +14,7 @@ parameters:
       test_list_urls: /tests/{canonical-url}/{test_id}/urls/
       task_status: /tasks/{canonical-url}/{test_id}/{task_id}/status/
       task_collection_status: /tasks/{canonical-url}/{test_id}/status/collection/
-      tests_list: /tests/list/{limit}/
+      tests_list: /jobs/list/{limit}/
   public_site:
     urls:
       home: http://simplytestable.com

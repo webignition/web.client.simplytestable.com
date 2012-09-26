@@ -147,6 +147,7 @@ application.progress.taskController = function () {
     
     var finishedStates = [
         'completed',
+        'failed',
         'failed-no-retry-available',
         'failed-retry-available',
         'failed-retry-limit-reached'        
@@ -547,18 +548,18 @@ application.progress.taskController = function () {
     };
     
     
-    var buildTaskListItem = function (taskListItem, task) {
+    var buildTaskListItem = function (taskListItem, task) {        
         if ((taskListItem.is('.completed') || taskListItem.is('.failed')) && isFinished(task)) {
             return;
-        }
+        }       
         
         taskListItem.html('');
         
         setTaskListItemState(taskListItem, task);
 
         taskListItem.append('<span class="url">'+task.url+'</span>');
-        taskListItem.append('<div class="meta"><span class="state"><i class="'+stateIconMap[task.state]+'"></i></span><span class="type">'+task.type+'</span></div>');       
-        
+        taskListItem.append('<div class="meta"><span class="state"><i class="'+stateIconMap[task.state]+'"></i></span><span class="type">'+task.type+'</span></div>');
+
         if (isFinished(task)) {
             var outputParser = new taskOutputController.outputParser();
             var outputResult = outputParser.getResults(task.output);
@@ -718,8 +719,8 @@ application.progress.taskOutputController = function () {
     var outputParser = function () {
         
         var parsers = {
-            'HTML validation': function (taskOutput) {            
-                // line_number":65,"column_number":12,"message":"No p element in scope but a p end tag seen.","messageid":"html5","type":"error"            
+            'HTML validation': function (taskOutput) {                            
+                // line_number":65,"column_number":12,"message":"No p element in scope but a p end tag seen.","messageid":"html5","type":"error"                            
                 var messages = taskOutput.content.messages;
                 var messageCount = messages.length;             
                 var errors;

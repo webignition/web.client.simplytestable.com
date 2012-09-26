@@ -8,7 +8,21 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 class TaskController extends BaseViewController
-{   
+{  
+    private $finishedStates = array(
+        'cancelled',
+        'completed',
+        'failed-no-retry-available',
+        'failed-retry-available',
+        'failed-retry-limit-reached'      
+    );     
+    
+    private $failedStates = array(
+        'failed-no-retry-available',
+        'failed-retry-available',
+        'failed-retry-limit-reached'      
+    );       
+    
    
     public function collectionAction($website, $test_id) {
         if (!$this->getTestService()->has($website, $test_id)) {
@@ -20,13 +34,17 @@ class TaskController extends BaseViewController
         $tasks = $this->getTaskService()->getCollection($test, $taskIds);
         
         foreach ($tasks as $task) {
-            if ($task->getState() == 'completed') {
+            if (in_array($task->getState(), $this->finishedStates)) {
                 if ($task->hasOutput()) {             
                     $parser = $this->getTaskOutputResultParserService()->getParser($task->getOutput());
                     $parser->setOutput($task->getOutput());
 
                     $task->getOutput()->setResult($parser->getResult());
                 }
+            }
+            
+             if (in_array($task->getState(), $this->failedStates)) {
+                $task->setState('failed');
             }
         }
 
