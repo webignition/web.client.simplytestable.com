@@ -374,7 +374,7 @@ class TaskService extends CoreApplicationService {
      */
     public function get(Test $test, $task_id) {
         $task = $this->getEntityRepository()->findOneBy(array(
-            'id' => $task_id,
+            'taskId' => $task_id,
             'test' => $test
         ));
         
