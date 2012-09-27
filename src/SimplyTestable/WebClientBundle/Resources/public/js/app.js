@@ -167,7 +167,8 @@ application.progress.taskController = function () {
         'failed': 'icon-ban-circle',
         'failed-no-retry-available': 'icon-ban-circle',
         'failed-retry-available': 'icon-ban-circle',
-        'failed-retry-limit-reached': 'icon-ban-circle'
+        'failed-retry-limit-reached': 'icon-ban-circle',
+        'skipped': 'icon-random'
     };
     
     var pageLength = 100;

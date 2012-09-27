@@ -214,6 +214,7 @@ section h2 {
     color:#51A351;
 }
 
+#test-list #task-list-container ul.tasks li.skipped i,
 #test-list #task-list-container ul.tasks li.cancelled i {
     color:#999;
 }
