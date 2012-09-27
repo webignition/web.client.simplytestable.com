@@ -67,7 +67,7 @@ application.progress.testController = function () {
     };
     
     var setTestQueues = function () { 
-        var queues = ['queued', 'in_progress', 'completed', 'failed'];
+        var queues = ['queued', 'in_progress', 'completed', 'failed', 'skipped'];
         
         for (var queueNameIndex = 0; queueNameIndex < queues.length; queueNameIndex++) {
             var queueName = queues[queueNameIndex];

@@ -12,6 +12,10 @@
             <th><span class="label label-success">Completed</span></th>
             <td class="bar"><span class="label label-success" style="width:{% if task_count_by_state.completed == 0 %} 2{% else %} {{ (task_count_by_state.completed / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.completed }}</span></td>
         </tr>
+        <tr class="skipped">                
+            <th><span class="label">Skipped</span></th>
+            <td class="bar"><span class="label" style="width:{% if task_count_by_state.skipped == 0 %} 2{% else %} {{ (task_count_by_state.skipped / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.skipped }}</span></td>
+        </tr>        
         <tr class="failed">                
             <th><span class="label label-important">Failed</span></th>
             <td class="bar"><span class="label label-important" style="width:{% if task_count_by_state.failed == 0 %} 2{% else %} {{ (task_count_by_state.failed / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.failed }}</span></td>

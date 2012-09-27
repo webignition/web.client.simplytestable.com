@@ -30,7 +30,8 @@ class AppController extends BaseViewController
         'completed',
         'failed-no-retry-available',
         'failed-retry-available',
-        'failed-retry-limit-reached'      
+        'failed-retry-limit-reached',
+        'skipped'
     );    
     
     private $testStateLabelMap = array(
@@ -233,7 +234,8 @@ class AppController extends BaseViewController
             'failed' => 'failed',
             'failed-no-retry-available' => 'failed',
             'failed-retry-available' => 'failed',
-            'failed-retry-limit-reached' => 'failed'
+            'failed-retry-limit-reached' => 'failed',
+            'skipped' => 'skipped'
         );
         
         $taskCountByState = array();        
@@ -292,10 +294,10 @@ class AppController extends BaseViewController
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
-        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
-        if ($response->isNotModified($this->getRequest())) {
-            return $response;
-        }        
+//        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
+//        if ($response->isNotModified($this->getRequest())) {
+//            return $response;
+//        }        
         
         $test = $this->getTestService()->get($website, $test_id);
         
@@ -334,7 +336,7 @@ class AppController extends BaseViewController
         //} else {
         //    $viewData['tasks'] = array();
         //}
-        
+            
         $this->setTemplate('SimplyTestableWebClientBundle:App:results.html.twig');
         return $this->getCachableResponse(
                 $this->sendResponse($viewData),
