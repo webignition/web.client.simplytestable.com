@@ -135,7 +135,7 @@
 
                                         {%if task.hasOutput %}
                                             {%if task.output.hasErrors %}
-                                                <a href="{{ path('app_task_results', { 'website': test.website, 'test_id': test.testId, 'task_id':task.id }) }}" class="label label-important">
+                                                <a href="{{ path('app_task_results', { 'website': test.website, 'test_id': test.testId, 'task_id':task.task_id }) }}" class="label label-important">
                                                 {{ task.output.errorCount }}
                                                 {% if task.output.errorCount == 1 %}
                                                     error
