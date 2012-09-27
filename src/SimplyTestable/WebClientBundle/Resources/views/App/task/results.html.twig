@@ -44,7 +44,7 @@
                                         <span class="label label-info">In Progresss</span>
                                     {% elseif task.state == 'cancelled' %}
                                         <span class="label">Cancelled</span>
-                                    {% elseif task.state == 'failed' %}
+                                    {% elseif task.state == 'failed' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-limit-reached' %}
                                         <span class="label label-important">Failed</span>
                                     {% else %}
                                         <span class="label label-success">Completed</span>
@@ -55,7 +55,7 @@
                             <tr>                
                                 <th>Outcome</th>
                                 <td>                                
-                                {% if task.state == 'failed' %}
+                                {% if task.state == 'failed' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-limit-reached' %}
                                     {% if task.output.result.isHttpRedirectLoopFailure %}
                                         Redirect loop detected; unable to retrieve URL
                                     {% elseif task.output.result.isHttpRedirectLimitFailure %}
@@ -82,9 +82,9 @@
             </section>
         </div>
 
-        {% if (task.state == 'completed' or task.state == 'failed') and task.output.result.hasErrors %}
+        {% if (task.state == 'completed' or task.state == 'failed' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-limit-reached') and task.output.result.hasErrors %}
         <div class="row-fluid">
-            {% if task.state == 'failed' %}
+            {% if task.state == 'failed' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-limit-reached' %}
             <section>                
                 <div class="span12 notification" id="task-summary">                    
                     {% if task.output.result.isHttpRedirectLoopFailure %}                                               

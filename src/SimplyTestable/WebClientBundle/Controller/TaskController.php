@@ -43,9 +43,9 @@ class TaskController extends BaseViewController
                 }
             }
             
-             if (in_array($task->getState(), $this->failedStates)) {
-                $task->setState('failed');
-            }
+//            if (in_array($task->getState(), $this->failedStates)) {
+//                $task->setState('failed');
+//            }
         }
 
         return new Response($this->getSerializer()->serialize($tasks, 'json'));

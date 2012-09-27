@@ -153,6 +153,13 @@ application.progress.taskController = function () {
         'failed-retry-limit-reached'        
     ];
     
+    var failedStates = [
+        'failed',
+        'failed-no-retry-available',
+        'failed-retry-available',
+        'failed-retry-limit-reached'        
+    ];    
+    
     var incompleteStates = [
         'queued',
         'queued-for-assignment',
@@ -165,6 +172,7 @@ application.progress.taskController = function () {
         'in-progress': 'icon-cogs',
         'completed': 'icon-bar-chart',
         'failed': 'icon-ban-circle',
+        'failed-http-retrieval-redirect-loop': 'icon-refresh',
         'failed-no-retry-available': 'icon-ban-circle',
         'failed-retry-available': 'icon-ban-circle',
         'failed-retry-limit-reached': 'icon-ban-circle',
@@ -548,18 +556,51 @@ application.progress.taskController = function () {
         taskListItem.addClass(task.state);
     };
     
+    var isTaskListItemFailed = function (taskListItem) {
+        for (var stateIndex = 0; stateIndex < failedStates.length; stateIndex++) {
+            if (taskListItem.is('.' + failedStates[stateIndex])) {
+                return true;
+            }
+        }
+        
+        return false;
+    };
+    
+    
+    var isFailedDueToRedirectLoop = function (task) {
+        var outputParser = new taskOutputController.outputParser();
+        var outputResult = outputParser.getResults(task.output);
+
+        if (outputResult.hasErrors() === false) {
+            return false;
+        }
+
+        var errors = outputResult.getErrors();
+        for (var errorIndex = 0; errorIndex < errors.length; errorIndex++) {
+            if (errors[errorIndex].getClass() == 'http-retrieval-redirect-loop') {
+                return true;
+            }
+        }
+
+        return false;
+    };
+    
     
     var buildTaskListItem = function (taskListItem, task) {        
-        if ((taskListItem.is('.completed') || taskListItem.is('.failed')) && isFinished(task)) {
+        if ((taskListItem.is('.completed') || isTaskListItemFailed(taskListItem)) && isFinished(task)) {
             return;
-        }       
+        }
         
-        taskListItem.html('');
-        
+        taskListItem.html('');        
         setTaskListItemState(taskListItem, task);
+        
+        var stateIconIndex = task.state;
+        if (isFailedDueToRedirectLoop(task)) {
+            stateIconIndex = 'failed-http-retrieval-redirect-loop';
+        }
 
         taskListItem.append('<span class="url">'+task.url+'</span>');
-        taskListItem.append('<div class="meta"><span class="state"><i class="'+stateIconMap[task.state]+'"></i></span><span class="type">'+task.type+'</span></div>');
+        taskListItem.append('<div class="meta"><span class="state"><i class="'+stateIconMap[stateIconIndex]+'"></i></span><span class="type">'+task.type+'</span></div>');
 
         if (isFinished(task)) {
             var outputParser = new taskOutputController.outputParser();
@@ -639,21 +680,32 @@ application.progress.taskOutputController = function () {
     var error = {
         'abstract': function () {
             var message = '';
+            var errorClass = '';
 
             var setMessage = function (newMessage) {
                 message = newMessage;
-            }
+            };
 
             var getMessage = function () {
                 return message;
-            }
+            };
+            
+            var setClass = function (newClass) {
+                errorClass = newClass;
+            };
+            
+            var getClass = function () {
+                return errorClass;
+            };
 
             var toString = function () {
                 return getMessage();
-            }
+            } ;           
 
             this.setMessage = setMessage;
             this.getMessage = getMessage;
+            this.setClass = setClass;
+            this.getClass = getClass;
             this.toString = toString;            
         },
         'HTML validation': function () {
@@ -739,6 +791,7 @@ application.progress.taskOutputController = function () {
                                 currentError.setMessage(message.message);
                                 currentError.setLineNumber(message.line_number);
                                 currentError.setColumnNumber(message.column_number);
+                                currentError.setClass(message['class']);
 
                                 errors.push(currentError);                            
                             }
