@@ -568,6 +568,14 @@ application.progress.taskController = function () {
     
     
     var isFailedDueToRedirectLoop = function (task) {
+        if (task.output == undefined) {
+            return false;
+        }
+        
+        if (task.output.content == undefined) {
+            return false;
+        }        
+        
         var outputParser = new taskOutputController.outputParser();
         var outputResult = outputParser.getResults(task.output);
 
