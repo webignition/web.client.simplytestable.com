@@ -102,7 +102,8 @@
                         <ul class="nav nav-tabs">
                             <li class="{% if (filter == 'all') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=all">All ({{ remote_test_summary.task_count }})</a></li>
                             <li class="{% if (filter == 'with-errors') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=with-errors">Tests with errors ({{ remote_test_summary.errored_task_count }})</a></li>
-                            <li class="{% if (filter == 'without-errors') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=without-errors">Tests without errors ({{ remote_test_summary.task_count - remote_test_summary.errored_task_count - remote_test_summary.cancelled_task_count }})</a></li>                            
+                            <li class="{% if (filter == 'without-errors') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=without-errors">Tests without errors ({{ remote_test_summary.task_count - remote_test_summary.errored_task_count - remote_test_summary.cancelled_task_count - remote_test_summary.skipped_task_count }})</a></li>                            
+                            <li class="{% if (filter == 'skipped') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=skipped">Skipped tests ({{ remote_test_summary.skipped_task_count }})</a></li>
                             <li class="{% if (filter == 'cancelled') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=cancelled">Cancelled tests ({{ remote_test_summary.cancelled_task_count }})</a></li>
                         </ul> 
 
@@ -124,7 +125,9 @@
                                             {% if task.state == 'queued' or task.state == 'queued-for-assignment' %}
                                                 <i class="icon-cog"></i>
                                             {% elseif task.state == 'in-progress' %}
-                                                <i class="icon-cogs"></i>
+                                                <i class="icon-cogs"></i>                                                
+                                            {% elseif task.state == 'skipped' %}
+                                                <i class="icon-random"></i>
                                             {% elseif task.state == 'cancelled' or task.state == 'failed' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-available' or task.state == 'failed-retry-limit-reached' %}
                                                 <i class="icon-ban-circle"></i>                                
                                             {% else %}
@@ -134,18 +137,21 @@
                                         <span class="type">{{ task.type }}</span>
 
                                         {%if task.hasOutput %}
-                                            {%if task.output.hasErrors %}
-                                                <a href="{{ path('app_task_results', { 'website': test.website, 'test_id': test.testId, 'task_id':task.taskId }) }}" class="label label-important">
-                                                {{ task.output.errorCount }}
-                                                {% if task.output.errorCount == 1 %}
-                                                    error
-                                                {% else %}
-                                                    errors
-                                                {% endif %}
-                                                    <i class="icon-caret-down"></i>    
-                                                </a>
+                                            {% if task.state == 'skipped' %}                                        
                                             {% else %}
-                                                <i class="icon-ok"></i>
+                                                {%if task.output.hasErrors %}
+                                                    <a href="{{ path('app_task_results', { 'website': test.website, 'test_id': test.testId, 'task_id':task.taskId }) }}" class="label label-important">
+                                                    {{ task.output.errorCount }}
+                                                    {% if task.output.errorCount == 1 %}
+                                                        error
+                                                    {% else %}
+                                                        errors
+                                                    {% endif %}
+                                                        <i class="icon-caret-down"></i>    
+                                                    </a>
+                                                {% else %}
+                                                    <i class="icon-ok"></i>
+                                                {% endif %}                                        
                                             {% endif %}
                                         {% endif %}
                                     </div>

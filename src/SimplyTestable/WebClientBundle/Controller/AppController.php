@@ -352,12 +352,15 @@ class AppController extends BaseViewController
         
         if ($filter == 'without-errors') {
             return $this->getTaskService()->getEntityRepository()->getErrorFreeCountByTest($test);
-        }
-        
+        }        
         
         if ($filter == 'with-errors') {
             return $this->getTaskService()->getEntityRepository()->getErroredCountByTest($test);
         }        
+        
+        if ($filter == 'skipped') {
+            return $this->getTaskService()->getEntityRepository()->getCountByTestAndState($test, array('skipped'));
+        }          
         
         return null;
     }
@@ -375,6 +378,10 @@ class AppController extends BaseViewController
         if ($filter == 'with-errors') {
             return $this->getTaskService()->getEntityRepository()->getErroredRemoteIdByTest($test);
         }  
+        
+        if ($filter == 'skipped') {
+            return $this->getTaskService()->getEntityRepository()->getRemoteIdByTestAndState($test, array('skipped'));
+        }         
         
         return null;
         
