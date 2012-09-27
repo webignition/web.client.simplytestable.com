@@ -137,7 +137,7 @@
                                         <span class="type">{{ task.type }}</span>
 
                                         {%if task.hasOutput %}
-                                            {% if task.state == 'skipped' %}                                        
+                                            {% if task.state == 'skipped' or task.state == 'cancelled' %}                                        
                                             {% else %}
                                                 {%if task.output.hasErrors %}
                                                     <a href="{{ path('app_task_results', { 'website': test.website, 'test_id': test.testId, 'task_id':task.taskId }) }}" class="label label-important">

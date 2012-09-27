@@ -285,7 +285,7 @@ class AppController extends BaseViewController
             return $this->redirect($this->generateUrl('app', array(), true));
         }
         
-        $taskListFilter = $this->getRequestValue('filter', 'all');
+        $taskListFilter = $this->getRequestValue('filter', 'with-errors');
         
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
         $cacheValidatorIdentifier->setParameter('website', $website);
@@ -294,10 +294,10 @@ class AppController extends BaseViewController
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
-//        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
-//        if ($response->isNotModified($this->getRequest())) {
-//            return $response;
-//        }        
+        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
+        if ($response->isNotModified($this->getRequest())) {
+            return $response;
+        }        
         
         $test = $this->getTestService()->get($website, $test_id);
         
@@ -320,7 +320,7 @@ class AppController extends BaseViewController
         //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTestSummary->task_count : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));
         
         //if ($taskCollectionLength > 0 && $taskCollectionLength <= self::RESULTS_PAGE_LENGTH) {
-            $remoteTaskIds = ($taskListFilter == 'all') ? null : $this->getFilteredTaskCollectionRemoteIds($test, $this->getRequestValue('filter', 'all'));            
+            $remoteTaskIds = ($taskListFilter == 'all') ? null : $this->getFilteredTaskCollectionRemoteIds($test, $this->getRequestValue('filter', 'all'));
             $tasks = $this->getTaskService()->getCollection($test, $remoteTaskIds); 
             
             foreach ($tasks as $taskIndex => $task) {                
@@ -372,7 +372,7 @@ class AppController extends BaseViewController
         }
         
         if ($filter == 'without-errors') {
-            return $this->getTaskService()->getEntityRepository()->getErrorFreeRemoteIdByTest($test);
+            return $this->getTaskService()->getEntityRepository()->getErrorFreeRemoteIdByTest($test, array('skipped', 'cancelled', 'in-progress', 'awaiting-cancellation'));
         }  
         
         if ($filter == 'with-errors') {
@@ -383,14 +383,7 @@ class AppController extends BaseViewController
             return $this->getTaskService()->getEntityRepository()->getRemoteIdByTestAndState($test, array('skipped'));
         }         
         
-        return null;
-        
-        // count task Ids for job where state = cancelled
-        
-        
-        
-        var_dump($filter);
-        exit();        
+        return null;      
     }
     
     private function getErroredTaskCount(Test $test) {

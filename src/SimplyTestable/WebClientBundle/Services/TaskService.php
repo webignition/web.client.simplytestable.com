@@ -163,6 +163,10 @@ class TaskService extends CoreApplicationService {
     
     
     private function normaliseEndingState(Task $task) {
+        if ($this->isIncomplete($task)) {
+            return $task->setState('cancelled');
+        }        
+        
         if ($this->isCancelled($task)) {
             return $task->setState('cancelled');
         }
