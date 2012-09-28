@@ -155,16 +155,28 @@ class TaskRepository extends EntityRepository
     }
     
     
-    public function getErroredRemoteIdByTest(Test $test) {
+    public function getErroredRemoteIdByTest(Test $test, $excludeStates = null) {
         $queryBuilder = $this->createQueryBuilder('Task');
         $queryBuilder->join('Task.output', 'TaskOutput');
         $queryBuilder->select('Task.taskId');
-        $queryBuilder->where('Task.test = :Test');
-        $queryBuilder->andWhere('TaskOutput.errorCount > :ErrorCount');
+        
+        $where = 'Task.test = :Test AND TaskOutput.errorCount > :ErrorCount';
+        
+        if (is_array(($excludeStates))) {
+            $stateConditions = array();
 
+            foreach ($excludeStates as $stateIndex => $state) {
+                $stateConditions[] = '(Task.state != :State'.$stateIndex.') ';
+                $queryBuilder->setParameter('State'.$stateIndex, $state);
+            } 
+            
+            $where .= ' AND ('.implode('AND', $stateConditions).')';
+        }
+        
+        $queryBuilder->where($where);
         $queryBuilder->setParameter('Test', $test);        
         $queryBuilder->setParameter('ErrorCount', 0);  
         
         return $this->getTaskIdsFromQueryResult($queryBuilder->getQuery()->getResult());    
-    }     
+    }      
 }

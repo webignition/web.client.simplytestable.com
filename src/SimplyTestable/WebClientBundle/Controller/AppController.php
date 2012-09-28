@@ -318,7 +318,7 @@ class AppController extends BaseViewController
         );
                        
         //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTestSummary->task_count : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));
-        
+
         //if ($taskCollectionLength > 0 && $taskCollectionLength <= self::RESULTS_PAGE_LENGTH) {
             $remoteTaskIds = ($taskListFilter == 'all') ? null : $this->getFilteredTaskCollectionRemoteIds($test, $this->getRequestValue('filter', 'all'));
             $tasks = $this->getTaskService()->getCollection($test, $remoteTaskIds); 
@@ -376,7 +376,7 @@ class AppController extends BaseViewController
         }  
         
         if ($filter == 'with-errors') {
-            return $this->getTaskService()->getEntityRepository()->getErroredRemoteIdByTest($test);
+            return $this->getTaskService()->getEntityRepository()->getErroredRemoteIdByTest($test, array('skipped', 'cancelled', 'in-progress', 'awaiting-cancellation'));
         }  
         
         if ($filter == 'skipped') {
