@@ -10,75 +10,18 @@ use webignition\Http\Client\Client as HttpClient;
 
 class JobStartCommand extends BaseCommand
 {
-    private $knownGoodTests = array(       
-                'http://corte.si/',
-                'https://tindie.com/',
-                'http://codeinthehole.com/',
-                'http://themactivist.com/',
-                'http://blog.simplytestable.com/',
-                'http://webignition.net/',
-                'http://www.sebastianmarshall.com/',
-                'http://4chan.org/',
-                'http://paulstamatiou.com/',
-                'http://threesixty360.wordpress.com/',
-                'http://blog.evanweaver.com/',
-                'http://www.theatlantic.com/',
-                'http://www.quirky.com/',
-                'http://code.jonwagner.com/',
-                'http://www.datomic.com/',
-                'http://skytoaster.com/',
-                'http://nikosbaxevanis.com/',
-                'http://www.matchalabs.com/',
-                'http://cardiffdevils.com/',
-                'http://www.737challenge.com/',
-                'http://voltrexfx.com/',
-                'http://thestandpeople.co.uk/',
-                'http://energypr.co.uk/',
-                'http://budgetvets.co.uk/',
-                'http://www.cavc.ac.uk/',
-                'http://blog.notdot.net/',
-                'http://www.eia.gov/',
-                'http://theothereight.wordpress.com/',
-                'http://blog.davor.se/',
-                'http://www.phpmysqlfreelancer.com/',
-                'http://www.digital-dd.com/',
-                'http://www.benrady.com/',
-                'http://lethain.com/',
-                'http://tympanus.net/',
-                'http://ukpersonaltrainers.com/',
-                'http://scottlocklin.wordpress.com/',
-                'http://gowers.wordpress.com/',
-                'http://terrytao.wordpress.com/',
-                'http://orwelldiaries.wordpress.com/',
-                'http://marg09.wordpress.com/',
-                'http://stevemccurry.wordpress.com/',
-                'http://www.somersetwebservices.co.uk/',
-                'http://bosker.wordpress.com/',
-                'http://bhorowitz.com/',
-                'http://www.jacquesmattheij.com/',
-                'http://ceronman.com',
-                'http://yourhamper.com/',
-                'http://codinghorror.com/blog/'
-            );
-    
-    
-    /**
-     *
-     * @var string
-     */
-    private $httpFixturePath;    
+    private $knownGoodTests = null;   
     
     protected function configure()
     {
         $this
             ->setName('simplytestable:job:start')
             ->setDescription('Start a new job from a list of known-good jobs if there are no recent running jobs')
-            ->addArgument('http-fixture-path', InputArgument::OPTIONAL, 'path to HTTP fixture data when testing')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
-    {
+    {        
         $recentTests = $this->getTestService()->getList(3)->getContentObject();
         $hasIncompleteRecentTests = false;
         
@@ -91,8 +34,19 @@ class JobStartCommand extends BaseCommand
         }
         
         if (!$hasIncompleteRecentTests) {
-            $testCanonicalUrlIndex = rand(0, count($this->knownGoodTests) - 1);
-            $testCanonicalUrl = $this->knownGoodTests[$testCanonicalUrlIndex];
+            $recentTestUrls = array();
+            foreach ($recentTests as $recentTest) {
+                $recentTestUrls[] = $recentTest->website;
+            }
+            
+            $knownGoodTests = $this->getKnownGoodTests();
+            
+            $testCanonicalUrl = $recentTestUrls[0];
+            
+            while (in_array($testCanonicalUrl, $recentTestUrls)) {
+                $testCanonicalUrlIndex = rand(0, count($knownGoodTests) - 1);
+                $testCanonicalUrl = $knownGoodTests[$testCanonicalUrlIndex];                
+            }
 
             $this->getTestService()->start($testCanonicalUrl);  
             
@@ -105,15 +59,6 @@ class JobStartCommand extends BaseCommand
                 'job-start'
             );             
         }
-    }
-    
-
-    /**
-     *
-     * @return HttpClient
-     */     
-    private function getHttpClient() {
-        return $this->getContainer()->get('simplytestable.services.httpClient');
     }
 
     
@@ -131,5 +76,26 @@ class JobStartCommand extends BaseCommand
      */        
     private function getTestService() {
         return $this->getContainer()->get('simplytestable.services.testService');
-    }      
+    } 
+    
+    
+    /**
+     * 
+     * @return array
+     */
+    private function getKnownGoodTests() {
+        if (is_null($this->knownGoodTests)) {
+            $this->knownGoodTests = array();
+            
+            $rawKnownGoodTests = file($this->getContainer()->get('kernel')->locateResource('@SimplyTestableWebClientBundle/Resources/config/knownGoodTests.txt'));
+            foreach ($rawKnownGoodTests as $rawKnownGoodTest) {
+                if (!in_array($rawKnownGoodTest, $this->knownGoodTests)) {
+                    $this->knownGoodTests[] = trim($rawKnownGoodTest);
+                }
+            }
+            
+        }
+        
+        return $this->knownGoodTests;
+    }
 }
