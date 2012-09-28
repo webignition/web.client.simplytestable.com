@@ -320,7 +320,7 @@ class AppController extends BaseViewController
         //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTestSummary->task_count : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));
 
         //if ($taskCollectionLength > 0 && $taskCollectionLength <= self::RESULTS_PAGE_LENGTH) {
-            $remoteTaskIds = ($taskListFilter == 'all') ? null : $this->getFilteredTaskCollectionRemoteIds($test, $this->getRequestValue('filter', 'all'));
+            $remoteTaskIds = ($taskListFilter == 'all') ? null : $this->getFilteredTaskCollectionRemoteIds($test, $this->getRequestValue('filter', $taskListFilter));           
             $tasks = $this->getTaskService()->getCollection($test, $remoteTaskIds); 
             
             foreach ($tasks as $taskIndex => $task) {                
@@ -366,7 +366,7 @@ class AppController extends BaseViewController
     }
     
     
-    private function getFilteredTaskCollectionRemoteIds(Test $test, $filter) {
+    private function getFilteredTaskCollectionRemoteIds(Test $test, $filter) {        
         if ($filter == 'cancelled') {
             return $this->getTaskService()->getEntityRepository()->getRemoteIdByTestAndState($test, array('cancelled'));
         }
