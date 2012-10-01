@@ -86,7 +86,22 @@ class AppController extends BaseViewController
             'test_start_error' => $hasTestStartError,
             'public_site' => $this->container->getParameter('public_site')
         )), $cacheValidatorHeaders);
-    }   
+    }
+    
+    
+    public function testCurrentAction($website, $test_id) {        
+        if (!$this->getTestService()->has($website, $test_id)) {
+            return $this->redirect($this->generateUrl('app', array(), true));
+        }    
+        
+        $test = $this->getTestService()->get($website, $test_id);
+        
+        if (in_array($test->getState(), $this->testFinishedStates)) {
+            return $this->redirect($this->getResultsUrl($website, $test_id));
+        } else {
+            return $this->redirect($this->getProgressUrl($website, $test_id));
+        }        
+    }
     
     
     public function progressAction($website, $test_id) {        

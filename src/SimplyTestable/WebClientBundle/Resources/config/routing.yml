@@ -48,6 +48,12 @@ test_cancel:
     requirements:
         website: ".+"
         
+app_test:
+    pattern:  /{website}/{test_id}/
+    defaults: { _controller: SimplyTestableWebClientBundle:App:testCurrent }  
+    requirements:
+        website: ".+"        
+        
 outdated_browser:
     pattern:  /outdated-browser/
     defaults: { _controller: SimplyTestableWebClientBundle:App:outdatedBrowser }            
