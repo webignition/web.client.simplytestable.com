@@ -108,4 +108,25 @@ abstract class BaseController extends Controller
             true
         );
     }    
+    
+    
+    /**
+     * Get the results page URL for a given site, test ID and task ID
+     * 
+     * @param string $website
+     * @param string $test_id
+     * @param string $task_id
+     * @return string
+     */    
+    protected function getTaskResultsUrl($website, $test_id, $task_id) {
+        return $this->generateUrl(
+            'app_task_results',
+            array(
+                'website' => $website,
+                'test_id' => $test_id,
+                'task_id' => $task_id
+            ),
+            true
+        );
+    }    
 }

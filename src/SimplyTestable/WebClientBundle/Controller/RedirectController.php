@@ -23,7 +23,7 @@ class RedirectController extends BaseController
         'no-sitemap',
     );
     
-    public function indexAction($website, $test_id = null) {                        
+    public function testAction($website, $test_id = null) {        
         $this->prepareNormalisedWebsiteAndTestId($website, $test_id);   
         
         if ($this->hasWebsite() && !$this->hasTestId()) {
@@ -49,6 +49,10 @@ class RedirectController extends BaseController
                 return $this->redirect($this->getProgressUrl($this->website, $this->test_id));
             }              
         }      
+    }
+    
+    public function taskAction($website, $test_id = null, $task_id = null) {
+        return $this->redirect($this->getTaskResultsUrl($website, $test_id, $task_id));
     }
     
     
