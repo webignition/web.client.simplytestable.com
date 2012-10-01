@@ -3,10 +3,6 @@
 namespace SimplyTestable\WebClientBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Response;
-use SimplyTestable\WebClientBundle\Model\CacheValidatorIdentifier;
-use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
-
 use webignition\NormalisedUrl\NormalisedUrl;
 
 abstract class BaseController extends Controller
@@ -111,6 +107,5 @@ abstract class BaseController extends Controller
             ),
             true
         );
-    }     
-    
+    }    
 }

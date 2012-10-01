@@ -1,12 +1,26 @@
 app:
     pattern:  /
     defaults: { _controller: SimplyTestableWebClientBundle:App:index }
+    
+app_task_results:
+    pattern:  /{website}/{test_id}/{task_id}/results/
+    defaults: { _controller: SimplyTestableWebClientBundle:Task:results }  
+    requirements:
+        website: ".+"
+        test_id: "\d+"
+        task_id: "\d+"
 
 app_progress:
     pattern:  /{website}/{test_id}/progress/
     defaults: { _controller: SimplyTestableWebClientBundle:App:progress }  
     requirements:
         website: ".+" 
+        
+app_results:
+    pattern:  /{website}/{test_id}/results/
+    defaults: { _controller: SimplyTestableWebClientBundle:App:results }  
+    requirements:
+       website: ".+"            
         
 app_tasks:
     pattern:  /{website}/{test_id}/tasks/
@@ -18,25 +32,7 @@ app_task_ids:
     pattern:  /{website}/{test_id}/tasks/ids/
     defaults: { _controller: SimplyTestableWebClientBundle:Task:idCollection, _format: json }  
     requirements:
-        website: ".+"           
-        
-app_task_results:
-    pattern:  /{website}/{test_id}/{task_id}/results/
-    defaults: { _controller: SimplyTestableWebClientBundle:Task:results }  
-    requirements:
-        website: ".+"          
-        
-app_task_results_collection:
-    pattern:  /{website}/{test_id}/{task_ids}/results/collection/
-    defaults: { _controller: SimplyTestableWebClientBundle:Task:resultsCollection, _format: json }  
-    requirements:
-        website: ".+"          
-        
-app_results:
-    pattern:  /{website}/{test_id}/results/
-    defaults: { _controller: SimplyTestableWebClientBundle:App:results }  
-    requirements:
-        website: ".+"      
+        website: ".+"
 
 test_start:
     pattern:  /test/start/
@@ -53,12 +49,18 @@ app_test_redirector:
     defaults: { _controller: SimplyTestableWebClientBundle:Redirect:index }  
     requirements:
         website: ".+"      
+        
+#app_task_redirector:
+#    pattern:  /{website}/{test_id}/task/{task_id}/
+#    defaults: { _controller: SimplyTestableWebClientBundle:Redirect:index }  
+#    requirements:
+#        website: ".+"           
 
 app_website:
     pattern:  /{website}/
     defaults: { _controller: SimplyTestableWebClientBundle:Redirect:index }  
     requirements:
-        website: ".+"        
+        website: ".+"         
         
 outdated_browser:
     pattern:  /outdated-browser/

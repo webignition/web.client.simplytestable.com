@@ -92,8 +92,8 @@ class AppController extends BaseViewController
     public function progressAction($website, $test_id) {        
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        }        
-        
+        } 
+
         if (!$this->getTestService()->has($website, $test_id)) {
             return $this->redirect($this->generateUrl('app_test_redirector', array(
                 'website' => $website,
@@ -106,6 +106,13 @@ class AppController extends BaseViewController
         if (in_array($test->getState(), $this->testFinishedStates)) {
             return $this->redirect($this->getResultsUrl($website, $test_id));
         }
+        
+        if ($test->getWebsite() != $website) {
+            return $this->redirect($this->generateUrl('app_test_redirector', array(
+                'website' => $test->getWebsite(),
+                'test_id' => $test_id
+            ), true));            
+        }        
         
         $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
         
@@ -279,7 +286,7 @@ class AppController extends BaseViewController
     }
     
     
-    public function resultsAction($website, $test_id) {
+    public function resultsAction($website, $test_id) {                
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }        
@@ -289,7 +296,7 @@ class AppController extends BaseViewController
                 'website' => $website,
                 'test_id' => $test_id
             ), true));
-        }
+        }      
         
         $taskListFilter = $this->getRequestValue('filter', 'with-errors');
         
@@ -306,6 +313,13 @@ class AppController extends BaseViewController
         }        
         
         $test = $this->getTestService()->get($website, $test_id);
+        
+        if ($test->getWebsite() != $website) {
+            return $this->redirect($this->generateUrl('app_test_redirector', array(
+                'website' => $test->getWebsite(),
+                'test_id' => $test_id
+            ), true));            
+        }
         
         if (!in_array($test->getState(), $this->testFinishedStates)) {
             return $this->redirect($this->getProgressUrl($website, $test_id));

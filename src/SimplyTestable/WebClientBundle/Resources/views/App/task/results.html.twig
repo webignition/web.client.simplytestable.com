@@ -1,6 +1,6 @@
 {% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
 
-{% block title %}Results {{test.website}} (#{{test.testId}}) - {{ parent() }}{% endblock %}
+{% block title %}Results {{test.website}} (Test#{{test.testId}} Task#{{task.taskId}}) - {{ parent() }}{% endblock %}
 
 {% block main %}         
         <div class="row-fluid">
@@ -14,7 +14,7 @@
                                 <span id="test-id">(#{{ test.testId }})</span>
                             </a>                            
                             task
-                            <span id="task-id">#{{task.id}}</span>
+                            <span id="task-id">#{{task.taskId}}</span>
                         </h1>
                 </section>
             </div>

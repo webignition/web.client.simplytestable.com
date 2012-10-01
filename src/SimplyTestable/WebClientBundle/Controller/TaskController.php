@@ -90,33 +90,7 @@ class TaskController extends BaseViewController
         
         return (count($taskIds) > 0) ? $taskIds : null;
     }    
-    
-   
-    
-    
-//    public function resultsCollectionAction($website, $test_id, $task_ids) {         
-//        if (!$this->getTestService()->has($website, $test_id)) {
-//            return $this->redirect($this->generateUrl('app', array(), true));
-//        } 
-//
-//        $test = $this->getTestService()->get($website, $test_id);
-//        $tasks = $this->getTaskService()->getCollection($test, explode(',', $task_ids));
-//        $output = array();
-//        
-//        foreach ($tasks as $task) {
-//            if (in_array($task->getState(), $this->finishedStates)) {
-//                if ($this->getTaskOutputService()->has($test, $task)) {
-//                    $task->setOutput($this->getTaskOutputService()->get($test, $task));
-//                    $this->getTaskOutputService()->setParsedOutput($task);                    
-//                    $output[$task->getId()] = $task->getOutput();
-//                }                
-//            }
-//        }
-//    
-//        return new Response($this->getSerializer()->serialize($output, 'json'));        
-//    }
-//    
-//    
+  
     public function resultsAction($website, $test_id, $task_id) {        
         if (!$this->getTestService()->has($website, $test_id)) {
             return $this->redirect($this->generateUrl('app', array(), true));
