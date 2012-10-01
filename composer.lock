@@ -1194,12 +1194,12 @@
             "source": {
                 "type": "git",
                 "url": "git://github.com/symfony/symfony.git",
-                "reference": "7b22da693cc7f65fd4a9089dd6efe109d92a8c53"
+                "reference": "2f5a4d7dbca5e586ddf3ae409528ae456f45b0b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/symfony/zipball/7b22da693cc7f65fd4a9089dd6efe109d92a8c53",
-                "reference": "7b22da693cc7f65fd4a9089dd6efe109d92a8c53",
+                "url": "https://github.com/symfony/symfony/zipball/2f5a4d7dbca5e586ddf3ae409528ae456f45b0b4",
+                "reference": "2f5a4d7dbca5e586ddf3ae409528ae456f45b0b4",
                 "shasum": ""
             },
             "require": {
@@ -1248,7 +1248,7 @@
                 "propel/propel1": "dev-master",
                 "monolog/monolog": "dev-master"
             },
-            "time": "1349091756",
+            "time": "1349116845",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -1794,22 +1794,22 @@
         },
         {
             "name": "webignition/url",
-            "version": "1.2.1",
+            "version": "1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/url",
-                "reference": "1.2.1"
+                "reference": "1.2.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/webignition/url/zipball/1.2.1",
-                "reference": "1.2.1",
+                "url": "https://github.com/webignition/url/zipball/1.2.2",
+                "reference": "1.2.2",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
-            "time": "2012-10-01 17:07:41",
+            "time": "2012-10-01 21:30:59",
             "type": "library",
             "installation-source": "dist",
             "autoload": {

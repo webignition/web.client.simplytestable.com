@@ -80,14 +80,14 @@ abstract class BaseController extends Controller
      * @return string
      */
     protected function getProgressUrl($website, $test_id) {
-        return $this->generateUrl(
+        return $this->appendQueryParametersToRedirectUrl($this->generateUrl(
             'app_progress',
             array(
                 'website' => $website,
                 'test_id' => $test_id
             ),
             true
-        );
+        ));
     }
     
     
@@ -98,15 +98,15 @@ abstract class BaseController extends Controller
      * @param string $test_id
      * @return string
      */    
-    protected function getResultsUrl($website, $test_id) {
-        return $this->generateUrl(
+    protected function getResultsUrl($website, $test_id) {        
+        return $this->appendQueryParametersToRedirectUrl($this->generateUrl(
             'app_results',
             array(
                 'website' => $website,
                 'test_id' => $test_id
             ),
             true
-        );
+        ));
     }    
     
     
@@ -119,7 +119,7 @@ abstract class BaseController extends Controller
      * @return string
      */    
     protected function getTaskResultsUrl($website, $test_id, $task_id) {
-        return $this->generateUrl(
+        return $this->appendQueryParametersToRedirectUrl($this->generateUrl(
             'app_task_results',
             array(
                 'website' => $website,
@@ -127,6 +127,20 @@ abstract class BaseController extends Controller
                 'task_id' => $task_id
             ),
             true
-        );
-    }    
+        ));
+    } 
+    
+    /**
+     * 
+     * @param string $url
+     * @return string
+     */
+    private function appendQueryParametersToRedirectUrl($url) {
+        $parameters = $this->getRequest()->query->all();   
+        if (count($parameters) == 0) {
+            return $url;
+        }
+        
+        return $url . '?' . http_build_query($parameters);
+    }
 }
