@@ -7,9 +7,7 @@ use webignition\NormalisedUrl\NormalisedUrl;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class TestController extends BaseController
-{
-    const DEFAULT_WEBSITE_SCHEME = 'http';
-    
+{    
     public function startAction()
     {        
         if (!$this->hasWebsite()) {
@@ -64,17 +62,12 @@ class TestController extends BaseController
      * @return string
      */
     private function getWebsite() {
-        $website = $this->getRequestValue('website');
-        if (is_null($website)) {
-            return $website;
+        $websiteUrl = $this->getNormalisedRequestUrl();
+        if (!$websiteUrl) {
+            return null;
         }
         
-        $url = new NormalisedUrl($website);
-        if (!$url->hasScheme()) {            
-            $url->setScheme(self::DEFAULT_WEBSITE_SCHEME);
-        }
-        
-        return (string)$url;
+        return (string)$websiteUrl; 
     }
     
     

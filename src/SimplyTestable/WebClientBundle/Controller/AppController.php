@@ -89,29 +89,17 @@ class AppController extends BaseViewController
     }
     
     
-    public function testCurrentAction($website, $test_id) {        
-        if (!$this->getTestService()->has($website, $test_id)) {
-            return $this->redirect($this->generateUrl('app', array(), true));
-        }    
-        
-        $test = $this->getTestService()->get($website, $test_id);
-        
-        if (in_array($test->getState(), $this->testFinishedStates)) {
-            return $this->redirect($this->getResultsUrl($website, $test_id));
-        } else {
-            return $this->redirect($this->getProgressUrl($website, $test_id));
-        }        
-    }
-    
-    
     public function progressAction($website, $test_id) {        
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }        
         
         if (!$this->getTestService()->has($website, $test_id)) {
-            return $this->redirect($this->generateUrl('app', array(), true));
-        }    
+            return $this->redirect($this->generateUrl('app_test_redirector', array(
+                'website' => $website,
+                'test_id' => $test_id
+            ), true));
+        } 
         
         $test = $this->getTestService()->get($website, $test_id);
         
@@ -291,13 +279,16 @@ class AppController extends BaseViewController
     }
     
     
-    public function resultsAction($website, $test_id) {        
+    public function resultsAction($website, $test_id) {
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }        
         
         if (!$this->getTestService()->has($website, $test_id)) {
-            return $this->redirect($this->generateUrl('app', array(), true));
+            return $this->redirect($this->generateUrl('app_test_redirector', array(
+                'website' => $website,
+                'test_id' => $test_id
+            ), true));
         }
         
         $taskListFilter = $this->getRequestValue('filter', 'with-errors');
@@ -436,45 +427,6 @@ class AppController extends BaseViewController
         
         return $taskErrorCounts;
     }    
-    
-    
-    /**
-     * Get the progress page URL for a given site and test ID
-     * 
-     * @param string $website
-     * @param string $test_id
-     * @return string
-     */
-    private function getProgressUrl($website, $test_id) {
-        return $this->generateUrl(
-            'app_progress',
-            array(
-                'website' => $website,
-                'test_id' => $test_id
-            ),
-            true
-        );
-    }
-    
-    
-    /**
-     * Get the results page URL for a given site and test ID
-     * 
-     * @param string $website
-     * @param string $test_id
-     * @return string
-     */    
-    private function getResultsUrl($website, $test_id) {
-        return $this->generateUrl(
-            'app_results',
-            array(
-                'website' => $website,
-                'test_id' => $test_id
-            ),
-            true
-        );
-    }
-    
     
     /**
      *

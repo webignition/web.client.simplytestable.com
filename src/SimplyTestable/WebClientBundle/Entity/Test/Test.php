@@ -21,6 +21,7 @@ use webignition\NormalisedUrl\NormalisedUrl;
  *         @ORM\Index(name="testId_idx", columns={"testId"})
  *     }
  * )
+ * @ORM\Entity(repositoryClass="SimplyTestable\WebClientBundle\Repository\TestRepository")
  * @SerializerAnnotation\ExclusionPolicy("all")
  */
 class Test {

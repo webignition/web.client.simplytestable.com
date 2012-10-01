@@ -48,9 +48,15 @@ test_cancel:
     requirements:
         website: ".+"
         
-app_test:
+app_test_redirector:
     pattern:  /{website}/{test_id}/
-    defaults: { _controller: SimplyTestableWebClientBundle:App:testCurrent }  
+    defaults: { _controller: SimplyTestableWebClientBundle:Redirect:index }  
+    requirements:
+        website: ".+"      
+
+app_website:
+    pattern:  /{website}/
+    defaults: { _controller: SimplyTestableWebClientBundle:Redirect:index }  
     requirements:
         website: ".+"        
         

@@ -117,7 +117,7 @@ class TestService extends CoreApplicationService {
      * @param int $testId
      * @return boolean
      */
-    public function has($canonicalUrl, $testId) {
+    public function has($canonicalUrl, $testId) {        
         if ($this->hasEntity($testId)) {
             return true;
         }
@@ -144,7 +144,10 @@ class TestService extends CoreApplicationService {
             $this->currentTest = new Test();
             $this->currentTest->setTestId($testId);
             $this->currentTest->setWebsite(new NormalisedUrl($canonicalUrl));            
-            $this->create();
+            
+            if (!$this->create()) {
+                return false;
+            }
         }
         
         $this->entityManager->persist($this->currentTest);
@@ -209,7 +212,7 @@ class TestService extends CoreApplicationService {
      * @return boolean
      */
     private function create() {
-        $remoteTestSummary = $this->getRemoteTestSummary();      
+        $remoteTestSummary = $this->getRemoteTestSummary();              
         if (!$remoteTestSummary) {
             return false;
         }
@@ -413,6 +416,7 @@ class TestService extends CoreApplicationService {
         }
         
         return $this->entityRepository;
-    }
+    }   
+    
     
 }
