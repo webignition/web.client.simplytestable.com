@@ -8,7 +8,7 @@ class TestRepository extends EntityRepository
 {  
     public function hasForWebsite($website) {            
         $queryBuilder = $this->createQueryBuilder('Test');
-        $queryBuilder->select('count(Test.id)');
+        $queryBuilder->select('count(Test.testId)');
         $queryBuilder->where('Test.website = :Website');
         $queryBuilder->setParameter('Website', $website);        
         $queryBuilder->orderBy('Test.id', 'DESC');
@@ -21,7 +21,7 @@ class TestRepository extends EntityRepository
     
     public function getLatestId($website) {        
         $queryBuilder = $this->createQueryBuilder('Test');
-        $queryBuilder->select('Test.id');
+        $queryBuilder->select('Test.testId');
         $queryBuilder->where('Test.website = :Website');
         $queryBuilder->setParameter('Website', $website);
         $queryBuilder->orderBy('Test.id', 'DESC');
@@ -33,6 +33,6 @@ class TestRepository extends EntityRepository
             return null;
         }        
         
-        return (int)$result[0]['id'];      
+        return (int)$result[0]['testId'];      
     }
 }
