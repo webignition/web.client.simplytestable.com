@@ -91,8 +91,8 @@ class ExceptionController extends Controller
             $name = 'exception_full';
         }
         
-        $name = 'error';
-        $debug = false;
+//        $name = 'error';
+//        $debug = false;
 
         // when not in debug, try to find a template for the specific HTTP status code and format
         if (!$debug) {
