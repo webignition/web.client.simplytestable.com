@@ -27,13 +27,10 @@ class ExceptionController extends Controller
      * @throws \InvalidArgumentException When the exception template does not exist
      */
     public function showAction(FlattenException $exception, DebugLoggerInterface $logger = null, $format = 'html')
-    { 
-//        var_dump("cp01");
-//        exit();
-        
-//        if (!$this->container->get('kernel')->isDebug()) {
-//            $this->sendDeveloperEmail($exception);
-//        }       
+    {        
+        if (!$this->container->get('kernel')->isDebug()) {
+            $this->sendDeveloperEmail($exception);
+        }       
         
         $this->container->get('request')->setRequestFormat($format);
 
@@ -120,13 +117,13 @@ class ExceptionController extends Controller
      * 
      * @param \Symfony\Component\HttpKernel\Exception\FlattenException $exception
      */
-    private function sendDeveloperEmail(FlattenException $exception) {
+    private function sendDeveloperEmail(FlattenException $exception) {        
         $message = \Swift_Message::newInstance();
         
         $message->setSubject($this->getDeveloperEmailSubject($exception));
         $message->setFrom('exceptions@simplytestable.com');
         $message->setTo('jon@simplytestable.com');
-        $message->setBody($this->renderView('SimplyTestableWebsiteBundle:Email:exception.txt.twig', array(
+        $message->setBody($this->renderView('SimplyTestableWebClientBundle:Email:exception.txt.twig', array(
             'status_code' => $exception->getStatusCode(),
             'status_text' => '"status text"',
             'exception' => $exception

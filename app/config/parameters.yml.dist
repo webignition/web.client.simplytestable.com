@@ -5,6 +5,7 @@ parameters:
     database_name: web_client_simplytestable_com
     database_user: dbuser
     database_password: dbpassword
+    mailer_auth_mode: login
     mailer_transport: smtp
     mailer_host: localhost
     mailer_user: null
