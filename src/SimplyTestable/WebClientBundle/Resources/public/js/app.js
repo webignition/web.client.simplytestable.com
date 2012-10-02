@@ -932,7 +932,24 @@ application.pages = {
             if ($('body.app-results').length > 0) {                
                 //resultsController = new application.resultsController();
                 //resultsController.initialise();
-            }            
+            } 
+            
+            if ($('body.content').length > 0) {                
+                getTwitters('footer-tweet', { 
+                    id: 'simplytestable', 
+                    count: 1, 
+                    enableLinks: true, 
+                    ignoreReplies: true, 
+                    clearContents: true,
+                    template: '%text% <a class="time" href="http://twitter.com/%user_screen_name%/statuses/%id_str%/">%time%</a>',
+                    callback: function () {                       
+                        $('.tweet-container .tweet').html($('#footer-tweet').html()).animate({
+                            'opacity':1
+                        });
+                    }
+                });
+            }                         
+
         }         
     },
     '/':{

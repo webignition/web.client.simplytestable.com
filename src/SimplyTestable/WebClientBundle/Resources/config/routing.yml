@@ -57,12 +57,12 @@ app_test_redirector:
     defaults: { _controller: SimplyTestableWebClientBundle:Redirect:test }  
     requirements:
         website: ".+"   
-
-app_website:
-    pattern:  /{website}/
-    defaults: { _controller: SimplyTestableWebClientBundle:Redirect:index }  
-    requirements:
-        website: ".+"         
+#
+#app_website:
+#    pattern:  /{website}/
+#    defaults: { _controller: SimplyTestableWebClientBundle:Redirect:index }  
+#    requirements:
+#        website: ".+"         
         
 outdated_browser:
     pattern:  /outdated-browser/

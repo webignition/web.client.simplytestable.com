@@ -1,34 +1,11 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8" />
-        <title>{% block title %}Simply Testable{% endblock %}</title>
-        
-        {% block stylesheets %}
-        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap.no-icons.min.css" rel="stylesheet">          
-        <link href="//netdna.bootstrapcdn.com/font-awesome/2.0/css/font-awesome.css" rel="stylesheet">
-        <link rel="stylesheet" href="/bundles/simplytestablewebclient/css/main.css" />        
-        <link rel="stylesheet" href="/bundles/simplytestablewebclient/css/app.css" />
-        {% endblock %}
-        
-        {% block javascripts %}        
-        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
-        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.1/modernizr.min.js"></script>              
-        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js"></script>      
-        <script type="text/javascript" src="/bundles/simplytestablewebclient/js/app.js"></script>
-        {% endblock %}         
-        
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-    </head>
-    <body  class="{% block body_class %}{{ app.request.get('_route') | replace({'_' : '-'}) }}{% endblock %}">
-        {% block body %}{% endblock %}
+{% extends 'SimplyTestableWebClientBundle::base.html.twig' %}
 
-        {% include 'SimplyTestableWebClientBundle:Partials:navbar.html.twig' %}                                
-            
-        <div class="container">
-            <div id="main">
-                {% block main %}{% endblock %} 
-            </div>                       
-        </div>
-    </body>
-</html>
+{% block body %}
+
+<div class="container">
+    <div id="main">
+        {% block main %}{% endblock %} 
+    </div>                       
+</div>
+
+{% endblock %}
