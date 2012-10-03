@@ -62,6 +62,12 @@
                                         Redirect limit reached; unable to retrieve URL
                                     {% elseif task.output.result.isCharacterEncodingFailure %}
                                         Character encoding confusion
+                                    {% elseif task.output.result.isCurlTimeoutFailure %}
+                                        Timeout retrieving the page to be tested
+                                    {% elseif task.output.result.isCurlDnsResolutionFailulre %}
+                                        DNS timeout resolving the domain for the URL
+                                    {% elseif task.output.result.isCurlUrlFormatFailure %}
+                                        Bad URL format       
                                     {% endif %}
                                 {% elseif task.state == 'completed' %}
                                     {% if task.output.result.hasErrors %}
@@ -135,7 +141,44 @@
                         </p>
                         
                         <blockquote>{{ task.output.result.getFirstError|raw }}</blockquote>
-                        {% endif %}                        
+                        {% endif %}  
+                    {% elseif task.output.result.isCurlTimeoutFailure %}
+                        <h2 class="info"><i class="icon-time"></i> Timeout!</h2>
+                        
+                        <p>
+                            We tried to retrieve the page at <a href="{{ task.url }}">{{ task.url }}</a>
+                            to test it.
+                        </p>                  
+
+                        <p>
+                            We waited.
+                        </p>
+                        
+                        <p>
+                            After 30 seconds we gave up waiting.
+                        </p>   
+                    {% elseif task.output.result.isCurlDnsResolutionFailulre %}
+                        <h2 class="info"><i class="icon-time"></i> Timeout!</h2>
+                        
+                        <p>
+                            We tried to retrieve the page at <a href="{{ task.url }}">{{ task.url }}</a>
+                            to test it.
+                        </p>                  
+
+                        <p>
+                            Resolving the domain name to an IP address took too long.
+                        </p>
+                    {% elseif task.output.result.isCurlUrlFormatFailure %}
+                        <h2 class="info"><i class="icon-exclamation-sign"></i> Bad URL!</h2>
+                        
+                        <p>
+                            We tried to retrieve the page at <a href="{{ task.url }}">{{ task.url }}</a>
+                            to test it.
+                        </p>                  
+
+                        <p>
+                            There's something funny about that URL. It's not made right, it can't be used.
+                        </p>                        
                     {% endif %}
                 </div>
                 <div class="clearfix"></div>

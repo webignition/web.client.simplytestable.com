@@ -98,13 +98,7 @@ class Result {
      * @return boolean 
      */
     public function isHttpRedirectLoopFailure() {
-        foreach ($this->getErrors() as $error) {
-            if ($error->getClass() == 'http-retrieval-redirect-loop') {
-                return true;
-            }
-        }
-        
-        return false;
+        return $this->isOfErrorClass('http-retrieval-redirect-loop');        
     } 
     
     
@@ -113,13 +107,7 @@ class Result {
      * @return boolean 
      */
     public function isHttpRedirectLimitFailure() {
-        foreach ($this->getErrors() as $error) {
-            if ($error->getClass() == 'http-retrieval-redirect-limit-reached') {
-                return true;
-            }
-        }
-        
-        return false;
+        return $this->isOfErrorClass('http-retrieval-redirect-limit-reached');       
     }     
     
     
@@ -128,14 +116,48 @@ class Result {
      * @return boolean 
      */
     public function isCharacterEncodingFailure() {
+        return $this->isOfErrorClass('character-encoding');
+    }  
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function isCurlTimeoutFailure() {
+        return $this->isOfErrorClass('http-retrieval-curl-code-28');      
+    }
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function isCurlDnsResolutionFailulre() {
+        return $this->isOfErrorClass('http-retrieval-curl-code-6');      
+    }
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function isCurlUrlFormatFailure() {
+        return $this->isOfErrorClass('http-retrieval-curl-code-3');      
+    }    
+    
+    
+    /**
+     * 
+     * @param string $errorClass
+     * @return boolean
+     */
+    private function isOfErrorClass($errorClass) {
         foreach ($this->getErrors() as $error) {
-            if ($error->getClass() == 'character-encoding') {
+            if ($error->getClass() == $errorClass) {
                 return true;
             }
         }
         
-        return false;
-    }     
+        return false;          
+    }
         
     
 }
