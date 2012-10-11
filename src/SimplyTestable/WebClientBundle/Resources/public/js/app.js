@@ -1,28 +1,8 @@
 var application = {};
 
 application.progress = {};
-application.progress.testController = function () {
-    var finishedStates = [
-        'completed',
-        'failed-no-retry-available',
-        'failed-retry-available',
-        'failed-retry-limit-reached',
-        'failed'
-    ];    
-    
+application.progress.testController = function () {    
     var latestTestData = {};
-    
-    var isFinishedState = function (state) {
-        var finishedStateLength = finishedStates.length;
-
-        for (var stateIndex = 0; stateIndex < finishedStateLength; stateIndex++) {
-            if (state == finishedStates[stateIndex]) {
-                return true;
-            }
-        }
-
-        return false;
-    };
     
     var setCompletionPercentValue = function () {
         var completionPercentValue = $('#completion-percent-value');
@@ -150,7 +130,8 @@ application.progress.taskController = function () {
         'failed',
         'failed-no-retry-available',
         'failed-retry-available',
-        'failed-retry-limit-reached'        
+        'failed-retry-limit-reached',
+        'skipped'
     ];
     
     var failedStates = [

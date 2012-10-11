@@ -37,7 +37,7 @@ class AppController extends BaseViewController
     private $testStateLabelMap = array(
         'new' => 'New',
         'queued' => 'Queued',
-        'preparing' => 'Running',
+        'preparing' => 'Discovering URLs to test',
         'in-progress' => 'Running'        
     );
     
@@ -45,7 +45,7 @@ class AppController extends BaseViewController
         'new' => 'icon-off',
         'queued' => 'icon-off',
         'queued-for-assignment' => 'icon-off',
-        'preparing' => 'icon-play-circle',
+        'preparing' => 'icon-search',
         'in-progress' => 'icon-play-circle'        
     );    
     
