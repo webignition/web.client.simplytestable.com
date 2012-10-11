@@ -597,11 +597,17 @@ application.progress.taskController = function () {
             
             var outputIndicator;
             
-            if (outputResult.hasErrors()) {                
-                outputIndicator = '<a href="'+(window.location.href.replace('/progress/', '/'+task.task_id+'/results/'))+'" class="output-indicator label label-important">'+outputResult.getErrorCount()+' error'+(outputResult.getErrorCount() == 1 ? '' : 's') +' <i class="icon-caret-down"></i></a>';
+            if (task.state == 'skipped') {
+                
             } else {
-                outputIndicator = '<span class="output-indicator"><i class="icon-ok"></i></span>';
+                if (outputResult.hasErrors()) {                
+                    outputIndicator = '<a href="'+(window.location.href.replace('/progress/', '/'+task.task_id+'/results/'))+'" class="output-indicator label label-important">'+outputResult.getErrorCount()+' error'+(outputResult.getErrorCount() == 1 ? '' : 's') +' <i class="icon-caret-down"></i></a>';
+                } else {
+                    outputIndicator = '<span class="output-indicator"><i class="icon-ok"></i></span>';
+                }                
             }
+            
+
              
             $('.meta', taskListItem).append(outputIndicator);
         }
@@ -761,9 +767,21 @@ application.progress.taskOutputController = function () {
     var outputParser = function () {
         
         var parsers = {
-            'HTML validation': function (taskOutput) {                            
+            'HTML validation': function (taskOutput) {
+                var getMessages = function () {
+                    if (taskOutput.content == undefined) {
+                        return [];
+                    }
+                    
+                    if (taskOutput.content.messages == undefined) {
+                        return [];
+                    }                    
+                    
+                    return taskOutput.content.messages;
+                };
+
                 // line_number":65,"column_number":12,"message":"No p element in scope but a p end tag seen.","messageid":"html5","type":"error"                            
-                var messages = taskOutput.content.messages;
+                var messages = getMessages();
                 var messageCount = messages.length;             
                 var errors;
 
@@ -795,6 +813,8 @@ application.progress.taskOutputController = function () {
         };
         
         var getResults = function (taskOutput) {
+            
+            
             var results = new outputResult();
             var parser = new parsers[taskOutput.type](taskOutput);
             
