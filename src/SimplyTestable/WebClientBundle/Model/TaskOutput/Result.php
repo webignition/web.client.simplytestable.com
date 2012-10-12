@@ -98,7 +98,7 @@ class Result {
      * @return boolean 
      */
     public function isHttpRedirectLoopFailure() {
-        return $this->isOfErrorClass('http-retrieval-redirect-loop');        
+        return $this->isOfErrorClass('/http-retrieval-redirect-loop/');        
     } 
     
     
@@ -107,7 +107,7 @@ class Result {
      * @return boolean 
      */
     public function isHttpRedirectLimitFailure() {
-        return $this->isOfErrorClass('http-retrieval-redirect-limit-reached');       
+        return $this->isOfErrorClass('/http-retrieval-redirect-limit-reached/');       
     }     
     
     
@@ -116,7 +116,7 @@ class Result {
      * @return boolean 
      */
     public function isCharacterEncodingFailure() {
-        return $this->isOfErrorClass('character-encoding');
+        return $this->isOfErrorClass('/character-encoding/');
     }  
     
     /**
@@ -124,7 +124,7 @@ class Result {
      * @return boolean
      */
     public function isCurlTimeoutFailure() {
-        return $this->isOfErrorClass('http-retrieval-curl-code-28');      
+        return $this->isOfErrorClass('/http-retrieval-curl-code-28/');      
     }
     
     /**
@@ -132,7 +132,7 @@ class Result {
      * @return boolean
      */
     public function isCurlDnsResolutionFailulre() {
-        return $this->isOfErrorClass('http-retrieval-curl-code-6');      
+        return $this->isOfErrorClass('/http-retrieval-curl-code-6/');      
     }
     
     /**
@@ -140,18 +140,28 @@ class Result {
      * @return boolean
      */
     public function isCurlUrlFormatFailure() {
-        return $this->isOfErrorClass('http-retrieval-curl-code-3');      
-    }    
+        return $this->isOfErrorClass('/http-retrieval-curl-code-3/');      
+    }  
     
     
     /**
      * 
-     * @param string $errorClass
      * @return boolean
      */
-    private function isOfErrorClass($errorClass) {
+    public function isHttpClientErrorFailure() {
+        return $this->isOfErrorClass('/http-retrieval-4\d\d/');
+    }
+    
+    
+    
+    /**
+     * 
+     * @param string $errorClassPattern
+     * @return boolean
+     */
+    private function isOfErrorClass($errorClassPattern) {
         foreach ($this->getErrors() as $error) {
-            if ($error->getClass() == $errorClass) {
+            if (preg_match($errorClassPattern, $error->getClass()) > 0) {
                 return true;
             }
         }

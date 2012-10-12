@@ -371,8 +371,15 @@ body.app-task-results .errors div.message {
     padding-bottom: 30px;
 }
 
+body.app-task-results section .notification h3,
 #main .notification-panel h3 {
     font-weight: normal;
+}
+
+body.app-task-results section .notification p code {
+    font-size: 22px;
+    line-height: 22px;
+    padding: 6px 6px 2px 6px;    
 }
 
 body.app-task-results section .notification p {

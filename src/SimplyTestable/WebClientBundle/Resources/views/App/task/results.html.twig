@@ -56,7 +56,10 @@
                                 <th>Outcome</th>
                                 <td>                                
                                 {% if task.state == 'failed' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-limit-reached' %}
-                                    {% if task.output.result.isHttpRedirectLoopFailure %}
+                                    {% if task.output.result.isHttpClientErrorFailure %}
+                                        {{ task.output.result.firstError.class|replace({'http-retrieval-': ''}) }}
+                                        {{ task.output.result.firstError }}
+                                    {% elseif task.output.result.isHttpRedirectLoopFailure %}
                                         Redirect loop detected; unable to retrieve URL
                                     {% elseif task.output.result.isHttpRedirectLimitFailure %}
                                         Redirect limit reached; unable to retrieve URL
@@ -93,7 +96,55 @@
             {% if task.state == 'failed' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-limit-reached' %}
             <section>                
                 <div class="span12 notification" id="task-summary">                    
-                    {% if task.output.result.isHttpRedirectLoopFailure %}                                               
+                    {% if task.output.result.isHttpClientErrorFailure %} 
+                        <h2 class="info"><i class="icon-exclamation-sign"></i>
+                            {{ task.output.result.firstError.class|replace({'http-retrieval-': ''}) }}
+                            {{ task.output.result.firstError }}                            
+                        </h2>
+                        
+                        {% set statusCode = task.output.result.firstError.class|replace({'http-retrieval-': ''}) %}
+                        
+                        {% if statusCode == '401' %}
+                        <p>
+                            The page at <a href="{{task.url}}">{{task.url}}</a> requires authorisation.
+                        </p>
+                        
+                        <p>
+                            We can't yet test pages that are not publicly available.
+                        </p>   
+                        {% elseif statusCode == '403' %}
+                        <p>
+                            Looks like we're not allowed to access <a href="{{task.url}}">{{task.url}}</a>.
+                        </p>                         
+                        {% elseif statusCode == '404' %}
+                        <p>
+                            We can't test <a href="{{task.url}}">{{task.url}}</a> because it doesn't exist.
+                        </p>
+                        <p>
+                            Is the URL right? We collected it from your sitemap or news feed as shown.
+                            You might want to check that your sitemaps and news feeds have correct URLs listed in them.
+                        </p>
+                        {% elseif statusCode == '405' %}
+                        <p>
+                            We tried to retrieve <a href="{{task.url}}">{{task.url}}</a> using
+                            a HTTP GET request.
+                        </p>                         
+                        <p>
+                            The web server for the URL did not like that. It told us that 'GET'
+                            is not the right type of HTTP request method for that URL.
+                        </p>                        
+                        <p>
+                            If GET requests are wrong I don't want to be right.
+                        </p>
+                        {% else %}
+                        <p>
+                            That's a pretty uncommon HTTP response error there.
+                        </p>                                
+                        {% endif %}
+
+                        
+                        
+                    {% elseif task.output.result.isHttpRedirectLoopFailure %}                                               
                         <h2 class="info"><i class="icon-refresh"></i> Redirect loop detected!</h2>                        
                         <p>
                             <a href="{{ task.url }}">{{ task.url }}</a> redirects to another URL which ultimately
