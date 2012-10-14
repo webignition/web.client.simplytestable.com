@@ -8,3 +8,6 @@ grabcad
 shuffler
 educatorpages
 agoda
+tweakers
+yahoo
+lastfm
