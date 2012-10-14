@@ -3,3 +3,8 @@ bing
 allrecipes
 news\.bbc
 bbc
+allrecipes
+grabcad
+shuffler
+educatorpages
+agoda
