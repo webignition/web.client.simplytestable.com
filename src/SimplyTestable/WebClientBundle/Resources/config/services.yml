@@ -49,4 +49,8 @@ services:
     arguments:
       queueManager: "@glit_resque.queue_manager"
       logger: "@logger"
-      resquePrefix: "%glit_resque.prefix%"        
+      resquePrefix: "%glit_resque.prefix%"             
+      
+        
+  simplytestable.services.websiteblocklistservice:
+    class:  SimplyTestable\WebClientBundle\Services\WebsiteBlockListService      

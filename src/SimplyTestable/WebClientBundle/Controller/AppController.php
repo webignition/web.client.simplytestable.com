@@ -59,9 +59,11 @@ class AppController extends BaseViewController
         $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);        
         
         $hasTestStartError = $this->hasFlash('test_start_error');
+        $hasTestStartBlockedWebsiteError = $this->hasFlash('test_start_error_blocked_website');
         
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
         $cacheValidatorIdentifier->setParameter('test_start_error', ($hasTestStartError) ? 'true' : 'false');
+        $cacheValidatorIdentifier->setParameter('test_start_error_blocked_website', ($hasTestStartBlockedWebsiteError) ? 'true' : 'false');
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
@@ -78,12 +80,15 @@ class AppController extends BaseViewController
         return $this->render($templateName, array(            
             'test_input_action_url' => $this->generateUrl('test_start'),
             'test_start_error' => $hasTestStartError,
+            'test_start_error_blocked_website' => $hasTestStartBlockedWebsiteError,
+            'website' => $this->getFlash('website'),
             'public_site' => $this->container->getParameter('public_site')
         ));
         
         return $this->getCachableResponse($this->render($templateName, array(            
             'test_input_action_url' => $this->generateUrl('test_start'),
             'test_start_error' => $hasTestStartError,
+            'test_start_error_blocked_website' => $hasTestStartBlockedWebsiteError,
             'public_site' => $this->container->getParameter('public_site')
         )), $cacheValidatorHeaders);
     }

@@ -13,6 +13,12 @@ class TestController extends BaseController
         if (!$this->hasWebsite()) {
             $this->get('session')->setFlash('test_start_error', 'non-blank string');
             return $this->redirect($this->generateUrl('app', array(), true));
+        }        
+        
+        if ($this->getWebsiteBlockListService()->contains($this->getWebsite())) {
+            $this->get('session')->setFlash('test_start_error_blocked_website', 'non-blank string');
+            $this->get('session')->setFlash('website', $this->getWebsite());
+            return $this->redirect($this->generateUrl('app', array(), true));            
         }
         
         $jsonResponseObject = $this->getTestService()->start($this->getWebsite())->getContentObject();        
@@ -87,4 +93,15 @@ class TestController extends BaseController
     private function getTestService() {
         return $this->container->get('simplytestable.services.testservice');
     }
+    
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Services\WebsiteBlockListService
+     */
+    private function getWebsiteBlockListService() {
+        $websiteBlockListService = $this->get('simplytestable.services.websiteblocklistservice');
+        $websiteBlockListService->setBlockListResourcePath($this->container->get('kernel')->locateResource('@SimplyTestableWebClientBundle/Resources/config/WebsiteBlockList.txt'));
+        
+        return $websiteBlockListService;
+    }    
 }
