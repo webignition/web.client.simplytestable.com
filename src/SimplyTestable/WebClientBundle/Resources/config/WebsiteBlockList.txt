@@ -37,3 +37,4 @@ ziarpiatraneamt
 saturn
 amazon
 microsoft
+ixigo
