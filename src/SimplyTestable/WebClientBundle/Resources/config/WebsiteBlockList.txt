@@ -36,3 +36,4 @@ elleuk
 ziarpiatraneamt
 saturn
 amazon
+microsoft
