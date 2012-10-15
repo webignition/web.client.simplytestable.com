@@ -26,3 +26,5 @@ heise
 anko\.com
 noemiconcept
 minsk\.gov
+tcz
+izlesene
