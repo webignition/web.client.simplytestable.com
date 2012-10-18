@@ -20,6 +20,8 @@
         
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
         
+{% if app.environment == 'prod' %}        
+        
 <script type="text/javascript">
   var GoSquared = {};
   GoSquared.acct = "GSN-258432-Q";
@@ -36,7 +38,9 @@
       w.addEventListener("load", gs, false) :
       w.attachEvent("onload", gs);
   })(window);
-</script>        
+</script> 
+
+{% endif %}
     </head>
     <body  class="{% block body_class %}{{ app.request.get('_route') | replace({'_' : '-'}) }}{% endblock %}">
         {% include 'SimplyTestableWebClientBundle:Partials:navbar.html.twig' %}
