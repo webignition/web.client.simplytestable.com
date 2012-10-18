@@ -363,12 +363,16 @@ body.app-task-results .errors div.message {
     
 }
 
-#main .notification-panel p.intro {
-    font-size: 18px;
-    line-height: 26px;
+#main .notification-panel .intro {
     margin-bottom: 30px;
     border-bottom: 1px solid #DDD;
-    padding-bottom: 30px;
+    padding-bottom:30px;
+    margin-bottom:30px;
+}
+
+#main .notification-panel .intro p {
+    font-size: 18px;
+    line-height: 26px;
 }
 
 body.app-task-results section .notification h3,

@@ -13,13 +13,18 @@
         <section>                
             <div class="span12 {% if test.state == 'no-sitemap' %} notification-panel {% endif %}" id="test-summary">
                     {% if test.state == 'no-sitemap' %}
-                    <h2 class="info"><i class="icon-exclamation-sign"></i>No sitemap found or news feed found, unable to run tests</h2>
+                    <h2 class="info"><i class="icon-exclamation-sign"></i>Couldn't find any URLs to test!</h2>
 
-                    <p class="intro">
-                        URLs for a site-wide test are collected from your <a href="http://en.wikipedia.org/wiki/Sitemaps">sitemap</a>,
-                        your RSS news feed or your ATOM news feed.                                
-                        We looked hard but couldn't find any URLs listed in any sitemaps or news feeds and so no tests can be run.
-                    </p>                          
+                    <div class="intro">
+                        <p>
+                            URLs for a site-wide test are collected from your <a href="http://en.wikipedia.org/wiki/Sitemaps">sitemap</a>,
+                            your RSS news feed or your ATOM news feed.
+                        </p>                   
+
+                        <p>
+                            We looked hard but couldn't find any URLs for {{test.website}} listed in any sitemaps or news feeds and so no tests can be run.
+                        </p>                          
+                    </div>
 
                     <div class="row-fluid">
                         <div class="span6">
@@ -83,6 +88,13 @@
                                 <li>
                                     <p>
                                         ensure any RSS or ATOM news feed is valid
+                                    </p>
+                                </li>                                   
+                                <li>
+                                    <p>
+                                        ensure links in any sitemap or news feed
+                                        are for {{test.website}} specifically
+                                        and not any other domain
                                     </p>
                                 </li>                                
                             </ul>
