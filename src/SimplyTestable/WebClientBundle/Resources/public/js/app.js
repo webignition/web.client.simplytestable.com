@@ -112,7 +112,7 @@ application.progress.testController = function () {
                 
                 window.setTimeout(function () {
                     refreshTestSummary(10);
-                }, 1000);
+                }, 3000);
             },
             url:getProgressUrl()
         });
@@ -379,7 +379,7 @@ application.progress.taskController = function () {
                             if (parent.is('.active')) {
                                 window.setTimeout(function () {
                                     getTaskList(tabIndex * 100, parent, getTaskListCallback);
-                                }, 1000);                                   
+                                }, 3000);                                   
                             }                            
 
                             $('.spinner', parent).remove();
