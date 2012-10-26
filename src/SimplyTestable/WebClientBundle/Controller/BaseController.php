@@ -12,6 +12,15 @@ abstract class BaseController extends Controller
     
     /**
      * 
+     * @return boolean
+     */
+    protected function isProduction() {
+        return $this->container->get('kernel')->getEnvironment() == 'prod';
+    }
+    
+    
+    /**
+     * 
      * @return \SimplyTestable\WebClientBundle\Model\User
      */
     public function getUser() {

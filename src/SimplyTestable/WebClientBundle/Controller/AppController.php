@@ -59,23 +59,15 @@ class AppController extends BaseViewController
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
-//        if ($cacheValidatorHeaders->getLastModifiedDate() == $templateLastModifiedDate) {            
-//            $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
-//            if ($response->isNotModified($this->getRequest())) {
-//                return $response;
-//            }
-//        }
+        if ($this->isProduction() && $cacheValidatorHeaders->getLastModifiedDate() == $templateLastModifiedDate) {            
+            $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
+            if ($response->isNotModified($this->getRequest())) {
+                return $response;
+            }
+        }
         
         $cacheValidatorHeaders->setLastModifiedDate($templateLastModifiedDate);
         $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);
-        
-        return $this->render($templateName, array(            
-            'test_input_action_url' => $this->generateUrl('test_start'),
-            'test_start_error' => $hasTestStartError,
-            'test_start_error_blocked_website' => $hasTestStartBlockedWebsiteError,
-            'website' => $this->getFlash('website'),
-            'public_site' => $this->container->getParameter('public_site')
-        ));
         
         return $this->getCachableResponse($this->render($templateName, array(            
             'test_input_action_url' => $this->generateUrl('test_start'),
