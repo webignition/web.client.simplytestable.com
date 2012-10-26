@@ -176,34 +176,6 @@ class TestService extends CoreApplicationService {
         return $this->getEntityRepository()->findOneBy(array(
             'testId' => $testId
         ));
-    }    
-    
-    /**
-     *
-     * @param Test $test
-     * @return array|false 
-     */
-    public function getUrls(Test $test) {
-        $httpRequest = $this->getAuthorisedHttpRequest(
-            $this->getUrl('test_list_urls', array(
-            'canonical-url' => (string)$test->getWebsite(),
-            'test_id' => $test->getTestId()
-        )));
-        
-        $testUrls = null;
-        
-        /* @var $response \webignition\WebResource\JsonDocument\JsonDocument */
-        try {
-            $testUrls = $this->webResourceService->get($httpRequest);
-        } catch (\webignition\Http\Client\CurlException $curlException) {
-            
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-            if ($webResourceServiceException->getCode() == 403) {
-                $testUrls = false;
-            }
-        }
-        
-        return $testUrls;
     }
     
     

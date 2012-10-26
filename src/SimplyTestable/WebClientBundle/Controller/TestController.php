@@ -2,14 +2,12 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
-use webignition\NormalisedUrl\NormalisedUrl;
-
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-
 class TestController extends BaseController
 {    
     public function startAction()
-    {        
+    {
+        $this->getTestService()->setUser($this->getUser());
+        
         if (!$this->hasWebsite()) {
             $this->get('session')->setFlash('test_start_error', 'non-blank string');
             return $this->redirect($this->generateUrl('app', array(), true));
@@ -19,7 +17,7 @@ class TestController extends BaseController
             $this->get('session')->setFlash('test_start_error_blocked_website', 'non-blank string');
             $this->get('session')->setFlash('website', $this->getWebsite());
             return $this->redirect($this->generateUrl('app', array(), true));            
-        }
+        }        
         
         $jsonResponseObject = $this->getTestService()->start($this->getWebsite())->getContentObject();        
         return $this->redirect($this->generateUrl(
@@ -35,6 +33,7 @@ class TestController extends BaseController
     
     public function cancelAction()
     {
+        $this->getTestService()->setUser($this->getUser());
         
         if (!$this->hasWebsite()) {
             $this->get('session')->setFlash('test_start_error', '');

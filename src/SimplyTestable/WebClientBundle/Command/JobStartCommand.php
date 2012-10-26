@@ -22,6 +22,7 @@ class JobStartCommand extends BaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {        
+        $this->getTestService()->setUser($this->getUserService()->getPublicUser());
         $recentTests = $this->getTestService()->getList(3)->getContentObject();
         $hasIncompleteRecentTests = false;
         
@@ -68,15 +69,25 @@ class JobStartCommand extends BaseCommand
      */        
     private function getResqueQueueService() {
         return $this->getContainer()->get('simplytestable.services.resqueQueueService');
-    }   
+    }  
+    
     
     /**
      *
-     * @return SimplyTestable\WebClientBundle\Services\TestService
+     * @return \SimplyTestable\WebClientBundle\Services\TestService
      */        
     private function getTestService() {
         return $this->getContainer()->get('simplytestable.services.testService');
     } 
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\UserService
+     */        
+    private function getUserService() {
+        return $this->getContainer()->get('simplytestable.services.userservice');
+    }     
     
     
     /**

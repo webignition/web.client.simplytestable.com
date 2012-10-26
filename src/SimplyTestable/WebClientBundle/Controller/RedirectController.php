@@ -23,7 +23,9 @@ class RedirectController extends BaseController
         'no-sitemap',
     );
     
-    public function testAction($website, $test_id = null) {        
+    public function testAction($website, $test_id = null) {
+        $this->getTestService()->setUser($this->getUser());
+        
         $this->prepareNormalisedWebsiteAndTestId($website, $test_id);   
         
         if ($this->hasWebsite() && !$this->hasTestId()) {
@@ -52,6 +54,7 @@ class RedirectController extends BaseController
     }
     
     public function taskAction($website, $test_id = null, $task_id = null) {
+        $this->getTestService()->setUser($this->getUser());
         return $this->redirect($this->getTaskResultsUrl($website, $test_id, $task_id));
     }
     

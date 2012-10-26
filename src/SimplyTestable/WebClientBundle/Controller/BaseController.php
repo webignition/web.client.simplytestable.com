@@ -9,6 +9,15 @@ abstract class BaseController extends Controller
 {    
     const DEFAULT_WEBSITE_SCHEME = 'http';    
     
+    
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Model\User
+     */
+    public function getUser() {
+        return $this->getUserService()->getPublicUser();
+    }
+    
     protected function getRequestValue($name, $default = null, $httpMethod = null) {
         $value = trim($this->get('request')->get($name));        
         if ($value != '') {
@@ -128,5 +137,14 @@ abstract class BaseController extends Controller
             ),
             true
         );
+    }
+    
+    
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Services\UserService
+     */
+    protected function getUserService() {
+        return $this->get('simplytestable.services.userservice');
     }
 }

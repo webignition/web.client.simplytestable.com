@@ -25,6 +25,8 @@ class TaskController extends BaseViewController
     
    
     public function collectionAction($website, $test_id) {
+        $this->getTestService()->setUser($this->getUser());
+        
         if (!$this->getTestService()->has($website, $test_id)) {
             return $this->sendNotFoundResponse();
         }
@@ -53,6 +55,8 @@ class TaskController extends BaseViewController
     
     
     public function idCollectionAction($website, $test_id) {        
+        $this->getTestService()->setUser($this->getUser());
+        
         if (!$this->getTestService()->has($website, $test_id)) {
             return $this->sendNotFoundResponse();
         }
@@ -92,6 +96,8 @@ class TaskController extends BaseViewController
     }    
   
     public function resultsAction($website, $test_id, $task_id) {        
+        $this->getTestService()->setUser($this->getUser());
+        
         if (!$this->getTestService()->has($website, $test_id)) {
             return $this->redirect($this->generateUrl('app', array(), true));
         }

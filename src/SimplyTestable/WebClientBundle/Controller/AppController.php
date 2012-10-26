@@ -95,6 +95,8 @@ class AppController extends BaseViewController
     
     
     public function progressAction($website, $test_id) {        
+        $this->getTestService()->setUser($this->getUser());
+        
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         } 
@@ -292,6 +294,8 @@ class AppController extends BaseViewController
     
     
     public function resultsAction($website, $test_id) {                
+        $this->getTestService()->setUser($this->getUser());
+        
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }        
