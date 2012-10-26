@@ -11,14 +11,6 @@ class AppController extends BaseViewController
 {
     const RESULTS_PAGE_LENGTH = 100;
     
-    
-    private $progressStates = array(
-        'new',
-        'preparing',
-        'queued',        
-        'in-progress'        
-    );
-    
     private $testFinishedStates = array(
         'cancelled',
         'completed',
@@ -183,56 +175,7 @@ class AppController extends BaseViewController
         }        
         
         return round(($finishedCount / $remoteTestSummary->task_count) * 100, $requiredPrecision);
-    }
-    
-    private function getRequestTaskIds() {
-        if (!$this->getRequest()->query->has('taskIds')) {
-            return null;
-        }
-        
-        $rawRequestTaskIds = explode(',', $this->getRequest()->query->get('taskIds'));
-        $requestTaskIds = array();
-        
-        foreach ($rawRequestTaskIds as $requestTaskId) {
-            if (ctype_digit($requestTaskId)) {
-                $requestTaskIds[] = (int)$requestTaskId;
-            }
-        }
-        
-        return (count($requestTaskIds) > 0) ? $requestTaskIds : null;
-    }    
-    
-    
-    /**
-     *
-     * @param array $urls
-     * @param array $tasks
-     * @param array $taskIds limit output to specified tasks
-     * @return type 
-     */
-    private function getTasksByUrl($urls, $tasks, $taskIds = null) {
-        $tasksByUrl = array();
-        
-        foreach ($tasks as $task) {
-            if ($this->isTaskToBeIncludedInOutput($task, $taskIds)) {
-                if (!isset($tasksByUrl[$task->getUrl()])) {
-                    $tasksByUrl[$task->getUrl()] = array();
-                }
-                
-                $tasksByUrl[$task->getUrl()][] = $task;
-            }
-        }
-        
-        return $tasksByUrl;
-    }
-    
-    private function isTaskToBeIncludedInOutput(Task $task, $inclduedTaskIds = null) {
-        if (!is_array($inclduedTaskIds)) {
-            return true;
-        }
-        
-        return in_array($task->getId(), $inclduedTaskIds);
-    }
+    } 
     
     
     /**
@@ -268,30 +211,7 @@ class AppController extends BaseViewController
         }
         
         return $taskCountByState;
-    }
-    
-    
-    /**
-     *
-     * @param Test $test
-     * @return array 
-     */
-    private function getTestUrls(Test $test) {
-        $urls = array();
-        $urlListResponse = $this->getTestService()->getUrls($test);
-        
-        if (!$urlListResponse) {
-            return $urls;
-        }
-        
-        $urlListContentObject = $urlListResponse->getContentObject();
-        foreach ($urlListContentObject as $urlObject) {
-            $urls[] = $urlObject->url;
-        }
-        
-        return $urls;           
-    }
-    
+    }    
     
     public function resultsAction($website, $test_id) {                
         $this->getTestService()->setUser($this->getUser());
@@ -414,42 +334,7 @@ class AppController extends BaseViewController
         
         return null;      
     }
-    
-    private function getErroredTaskCount(Test $test) {
-        $totalTaskErrorCount = 0;
-        
-        foreach ($test->getTasks() as $task) {
-            /* @var $task Task */
-            if (($task->getState() == 'completed' || substr($task->getState(), 0, strlen('failed')) == 'failed') && $task->hasOutput()) {
-                $this->getTaskOutputService()->setParsedOutput($task);
-                if ($task->getOutput()->getResult()->hasErrors()) {
-                    $totalTaskErrorCount += 1;
-                }
-            }
-        }
-        
-        return $totalTaskErrorCount;        
-    }
-    
-    
-    /**
-     *
-     * @param Test $test
-     * @return array
-     */
-    private function getTaskErrorCount(Test $test) {
-        $taskErrorCounts = array();
-        
-        foreach ($test->getTasks() as $task) {
-            /* @var $task Task */            
-            if (($task->getState() == 'completed' || substr($task->getState(), 0, strlen('failed')) == 'failed') && $task->hasOutput()) {
-                $this->getTaskOutputService()->setParsedOutput($task);                
-                $taskErrorCounts[$task->getId()] = $task->getOutput()->getResult()->getErrorCount();
-            }
-        }
-        
-        return $taskErrorCounts;
-    }    
+   
     
     /**
      *
@@ -493,16 +378,7 @@ class AppController extends BaseViewController
      */
     private function getTaskService() {
         return $this->container->get('simplytestable.services.taskservice');
-    }      
-    
-    
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TaskOutputService 
-     */
-    private function getTaskOutputService() {
-        return $this->container->get('simplytestable.services.taskoutputservice');
-    }   
+    } 
     
     
     /**
