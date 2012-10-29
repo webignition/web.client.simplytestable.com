@@ -1,0 +1,40 @@
+{% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
+
+{% block title %}Start a new website test - {{ parent() }}{% endblock %}
+
+
+{% block main %}
+<div class="row-fluid">
+    <div class="span3">
+
+    </div>            
+    <div class="span6">
+        <section>
+        <form class="bs-docs-example form-horizontal">
+            
+            <div class="logo"></div>
+            <div class="control-group larger">
+                <label class="control-label" for="inputEmail">Email</label>
+                <div class="controls">
+                    <input class="input-xlarge" type="text" id="inputEmail" placeholder="Email">
+                </div>
+            </div>
+            <div class="control-group larger">
+                <label class="control-label" for="inputPassword">Password</label>
+                <div class="controls">
+                    <input class="input-xlarge" type="password" id="inputPassword" placeholder="Password">
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <button type="submit" class="btn btn-large btn-primary">Sign in</button>
+                </div>
+            </div>
+        </form>
+                </section>
+    </div>
+    <div class="span3">
+
+    </div>                
+</div>           
+{% endblock %}

@@ -1,3 +1,7 @@
+sign_in:
+    pattern:  /signin/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signIn }  
+
 app:
     pattern:  /
     defaults: { _controller: SimplyTestableWebClientBundle:App:index }
@@ -66,4 +70,4 @@ app_website:
         
 outdated_browser:
     pattern:  /outdated-browser/
-    defaults: { _controller: SimplyTestableWebClientBundle:App:outdatedBrowser }            
+    defaults: { _controller: SimplyTestableWebClientBundle:App:outdatedBrowser }               

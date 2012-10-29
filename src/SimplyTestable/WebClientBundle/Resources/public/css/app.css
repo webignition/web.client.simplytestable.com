@@ -101,8 +101,6 @@ section.top {
 }
 
 #main #input .fields input {
-    font-size: 15px;
-    padding: 13px 9px 11px 9px;
     width:65%;
 }
 
@@ -394,4 +392,33 @@ body.app-task-results section .notification p {
 
 body.app-task-results section .notification blockquote {
     border-left-color: #ccc;
+}
+
+body.sign-in #main section {
+    position: absolute;
+    top: 50%;
+    margin-top: -25%;    
+}
+
+body.sign-in form {
+    margin: 20px 0;
+}
+
+form .larger input {
+    font-size: 15px;
+    padding: 13px 9px 11px 9px;    
+}
+
+form .larger .control-label,
+form .larger label {
+    font-size: 15px;    
+    padding-top:13px;
+}
+
+div.logo {
+    position: absolute;
+    background: url('/bundles/simplytestablewebclient/images/logo100-bold-bordered.png') transparent no-repeat top left;
+    width: 100px;
+    height: 100px;
+    left: -50px;
 }

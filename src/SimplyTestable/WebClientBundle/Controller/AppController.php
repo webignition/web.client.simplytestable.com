@@ -68,13 +68,15 @@ class AppController extends BaseViewController
         
         $cacheValidatorHeaders->setLastModifiedDate($templateLastModifiedDate);
         $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);
-        
+
         return $this->getCachableResponse($this->render($templateName, array(            
             'test_input_action_url' => $this->generateUrl('test_start'),
             'test_start_error' => $hasTestStartError,
             'test_start_error_blocked_website' => $hasTestStartBlockedWebsiteError,
-            'public_site' => $this->container->getParameter('public_site')
-        )), $cacheValidatorHeaders);
+            'public_site' => $this->container->getParameter('public_site'),
+            'user' => $this->getUser(),
+            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser())
+        )), $cacheValidatorHeaders);        
     }
     
     
@@ -385,12 +387,8 @@ class AppController extends BaseViewController
     public function outdatedBrowserAction() {
         $publicSiteParameters = $this->container->getParameter('public_site');        
         return $this->redirect($publicSiteParameters['urls']['home']);
-    }
-    
-    public function isUsingOldIE() {        
-        $browserInfo =  $this->container->get('jbi_browscap.browscap')->getBrowser($this->getRequest()->server->get('HTTP_USER_AGENT'));                
-        return ($browserInfo->Browser == 'IE' && $browserInfo->MajorVer < 8);     
-    }    
+    }   
+ 
     
     /**
      *

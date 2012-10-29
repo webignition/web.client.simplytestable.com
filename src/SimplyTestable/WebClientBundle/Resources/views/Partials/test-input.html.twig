@@ -35,7 +35,7 @@
         </div>
         {% endif %}             
 
-        <div class="fields input-append">                    
+        <div class="fields input-append larger">                    
             <input name="website" id="input-website" type="text" placeholder="Enter website homepage URL &hellip;" {% if test is defined %} {% if test.state != 'completed' and test.state != 'cancelled' and test.state != 'no-sitemap' %} disabled {% endif %} value="{{ test.website }}" {% endif %}>            
             {% if test is defined %}
                 {% if test.state == 'completed' or test.state == 'cancelled' %}

@@ -123,6 +123,16 @@ abstract class BaseViewController extends BaseController
         $identifier->setParameter('route', $this->container->get('request')->get('_route'));
         
         return $identifier;
-    }    
+    }   
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    protected function isUsingOldIE() {        
+        $browserInfo =  $this->container->get('jbi_browscap.browscap')->getBrowser($this->getRequest()->server->get('HTTP_USER_AGENT'));                
+        return ($browserInfo->Browser == 'IE' && $browserInfo->MajorVer < 8);     
+    }       
     
 }
