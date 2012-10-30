@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="/bundles/simplytestablewebclient/css/errorpage.css" />
 {% endblock %}
 
-{% block body_class %} error error404 {{ parent() }}{% endblock %}
+{% block body_class %} error error500 {{ parent() }}{% endblock %}
                                 
 {% block leader_heading %}
     500: Simply Broken    
@@ -15,6 +15,21 @@
 {% endblock %}
 
 {% block inner_content %}
+    
+    {% if exception.class == 'SimplyTestable\\WebClientBundle\\Exception\\CoreApplicationAdminRequestException' %}
+<section>
+<i class="icon icon-exclamation-sign"></i>    
+<h2>
+    Something has gone wrong.
+</h2>
+<p>
+    My makers haven't configured me correctly. I've sent an email off to let them know. 
+</p>
+<p>
+    Give them a minute or two to push the right levers and try again.
+</p>
+</section>     
+    {% else %}
 <section>
 <i class="icon icon-exclamation-sign"></i>    
 <h2>
@@ -24,7 +39,8 @@
     I've sent an email off to my makers to let them know. If anyone can fix this, they
     can.
 </p>
-</section>
+</section>    
+    {% endif %}
 
 
 <div class="clearfix"></div>
