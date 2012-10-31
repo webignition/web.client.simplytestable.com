@@ -343,22 +343,6 @@ class AppController extends BaseViewController
     
     /**
      *
-     * @param type $flashKey
-     * @param type $messageIndex
-     * @return string|null 
-     */
-    private function getFlash($flashKey, $messageIndex = 0) {        
-        $flashMessages = $this->get('session')->getFlashBag()->get($flashKey);         
-        if (!isset($flashMessages[$messageIndex])) {
-            return false;
-        }
-        
-        return $flashMessages[$messageIndex];
-    }
-    
-    
-    /**
-     *
      * @return \SimplyTestable\WebClientBundle\Services\TestService 
      */
     private function getTestService() {

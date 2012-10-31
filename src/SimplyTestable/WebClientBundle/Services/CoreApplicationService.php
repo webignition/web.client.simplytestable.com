@@ -27,12 +27,20 @@ abstract class CoreApplicationService {
     private $parameters;
     
     
+    /**
+     *
+     * @var \webignition\Http\Client\Client
+     */
+    private $httpClient;
+    
+    
     public function __construct(
         $parameters,
         \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService
     ) {
         $this->parameters = $parameters;
         $this->webResourceService = $webResourceService;
+        $this->httpClient = $webResourceService->getHttpClient();
     } 
     
     
@@ -54,7 +62,16 @@ abstract class CoreApplicationService {
     }
     
     
-    protected function getUrl($name, $parameters) {
+    /**
+     * 
+     * @return boolean
+     */
+    public function hasUser() {
+        return !is_null($this->getUser());
+    }
+    
+    
+    protected function getUrl($name, $parameters = null) {
         $url =  $this->parameters['urls']['base'] . $this->parameters['urls'][$name];
         
         if (is_array($parameters)) {
@@ -74,6 +91,15 @@ abstract class CoreApplicationService {
         ));
         
         return $httpRequest;
+    }
+    
+    
+    /**
+     * 
+     * @return \webignition\Http\Client\Client
+     */
+    protected function getHttpClient() {
+        return $this->httpClient;
     }
     
 }

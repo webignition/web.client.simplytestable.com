@@ -56,3 +56,8 @@ services:
     
   simplytestable.services.userservice:
     class:  SimplyTestable\WebClientBundle\Services\UserService        
+    arguments:
+        parameters: %core_application%
+        webResourceService: "@simplytestable.services.webresourceservice"   
+        adminUserUsername: %admin_user_username%
+        adminUserPassword: %admin_user_password%

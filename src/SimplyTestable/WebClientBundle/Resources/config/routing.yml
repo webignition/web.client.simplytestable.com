@@ -1,6 +1,26 @@
 sign_in:
     pattern:  /signin/
     defaults: { _controller: SimplyTestableWebClientBundle:User:signIn }  
+    
+sign_up:
+    pattern:  /signup/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signUp }      
+    
+sign_up_submit:
+    pattern:  /signup/submit/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signUpSubmit }   
+    
+sign_up_confirm:
+    pattern:  /signup/confirm/{email}/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signUpConfirm }       
+    
+sign_up_confirm_submit:
+    pattern:  /signup/confirm/{email}/submit/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signUpConfirmSubmit }     
+    
+sign_up_confirm_resend:
+    pattern:  /signup/confirm/{email}/resend/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signUpConfirmResend }         
 
 app:
     pattern:  /

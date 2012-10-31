@@ -1,0 +1,66 @@
+{% extends 'SimplyTestableWebClientBundle::App/single-page-dialog.html.twig' %}
+
+{% block title %}Confirm sign up for {{ app.request.get('email') }} - {{ parent() }}{% endblock %}
+
+{% block body_class %} single-page-dialog {{ parent() }} {% endblock %}
+
+{% block content %}
+<h1>Confirm sign up for {{ app.request.get('email') }}</h1>
+
+<form class="form-horizontal" method="post" action="{{ path('sign_up_confirm_submit', { 'email': app.request.get('email')}) }}">
+    
+    {% if token_resend_confirmation is defined and token_resend_confirmation != '' %}
+        <div class="alert alert-success for:input-email">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>Done!</strong> Activation code sent to <strong> {{ app.request.get('email') }}</strong>.
+        </div>                      
+    {% endif %}    
+    
+    {% if user_create_confirmation is defined and user_create_confirmation != '' %}
+    {% if user_create_confirmation == 'user-created' %}
+        <div class="alert alert-success for:input-email">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p>
+                <strong>Nearly there</strong>.
+            </p>
+            <p>
+                We've emailed an activation code to <strong> {{ app.request.get('email') }}</strong>.
+            </p>
+            <p>
+                Enter it below or click the activation link in the email.
+            </p>            
+        </div>                      
+    {% endif %}    
+    {% endif %}  
+    
+    {% if user_token_error is defined and user_token_error != '' %}
+        {% if user_token_error == 'blank-token' %}
+        <div class="alert alert-error for:input-email">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>Slow down!</strong> You're going to have to enter your activation code below.
+        </div>                
+        {% endif %}                                                   
+    
+        {% if user_token_error == 'invalid-token' %}
+        <div class="alert alert-error for:input-email">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p><strong>Hmmm.</strong> I'm not sure that's the right activation code.</p>
+            <p>There's a button below to have your activation code re-sent. Maybe try that?</p>
+        </div>                
+        {% endif %}    
+    {% endif %}    
+    
+    <div class="larger">
+        <div class="input-append">                    
+            <input class="input-xlarge" type="text" id="token" name="token" placeholder="Enter your activation code" value="{{ token }}" />
+            <button class="btn btn-large btn-primary" type="submit">Activate!</button>
+        </div>       
+    </div>      
+</form> 
+
+<form class="form-horizontal" method="post" action="{{ path('sign_up_confirm_resend', { 'email': app.request.get('email')}) }}">
+    <div class="input-secondary">                
+        <button class="btn" type="submit">I can't find it, email it again!</button>
+    </div>      
+</form> 
+{% endblock %}

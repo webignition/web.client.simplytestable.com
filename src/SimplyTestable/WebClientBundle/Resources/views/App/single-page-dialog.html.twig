@@ -1,0 +1,28 @@
+{% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
+
+{% block body_class %} single-page-dialog {{ parent() }} {% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <div id="main">
+        {% block main %}
+<div class="row-fluid">
+    <div class="span3">
+    </div>            
+    <div class="span6 main">
+        <section>
+            <div class="logo"></div>
+            <div class="content">
+                {% block content %}{% endblock %}
+            </div>
+        </section>
+    </div>
+    <div class="span3">
+    </div>                
+</div>            
+        {% endblock %} 
+    </div>                       
+</div>
+
+{% endblock %}

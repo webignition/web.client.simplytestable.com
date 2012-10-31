@@ -15,6 +15,9 @@ parameters:
       task_status: /tasks/{canonical-url}/{test_id}/{task_id}/status/
       task_collection_status: /tasks/{canonical-url}/{test_id}/status/collection/
       tests_list: /jobs/list/{limit}/
+      user_create: /user/create/
+      user_get_token: /user/{email}/token/
+      user_activate: /user/activate/{token}/
   public_site:
     urls:
       home: http://simplytestable.com
@@ -24,3 +27,7 @@ parameters:
   task-output-result-parsers:
     "HTML validation":
         class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser
+  user_creation_confirmation_email:
+    sender_email: robot@simplytestable.com
+    sender_name: Simply Testable Robot
+    subject: Activate your Simply Testable Account

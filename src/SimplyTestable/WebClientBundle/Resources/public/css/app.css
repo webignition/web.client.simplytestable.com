@@ -106,7 +106,6 @@ section.top {
 
 #main #input .fields button {
     width:30%;
-    padding-top:12px;
 }
 
 #main #input .fields button i {
@@ -394,19 +393,38 @@ body.app-task-results section .notification blockquote {
     border-left-color: #ccc;
 }
 
-body.sign-in #main section {
-    position: absolute;
-    top: 50%;
-    margin-top: -25%;    
+body.single-page-dialog .input-append {
+    width:100%;
 }
 
-body.sign-in form {
-    margin: 20px 0;
+body.single-page-dialog .intro p {
+    font-size:15px;
+}
+
+body.single-page-dialog #main section {
+    margin-top:80px;  
+}
+
+body.single-page-dialog section .content {
+    margin-left:30px;
+}
+
+body.single-page-dialog form {
+    margin:20px 0;
+}
+
+body.single-page-dialog input {
+    width:70%;
 }
 
 form .larger input {
     font-size: 15px;
     padding: 13px 9px 11px 9px;    
+}
+
+form .larger button {
+    padding-top: 12px;    
+    padding-bottom:13px;
 }
 
 form .larger .control-label,
@@ -421,4 +439,20 @@ div.logo {
     width: 100px;
     height: 100px;
     left: -50px;
+}
+
+div.input-secondary {
+    margin-top:30px;
+    border-top: 1px solid #ddd;
+    padding-top:20px;
+}
+
+/*body.sign-up div.logo {
+    top:13px;
+}*/
+
+@media (min-width: 1200px) {
+    body.single-page-dialog input {
+        width:78%;
+    }    
 }

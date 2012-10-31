@@ -133,6 +133,22 @@ abstract class BaseViewController extends BaseController
     protected function isUsingOldIE() {        
         $browserInfo =  $this->container->get('jbi_browscap.browscap')->getBrowser($this->getRequest()->server->get('HTTP_USER_AGENT'));                
         return ($browserInfo->Browser == 'IE' && $browserInfo->MajorVer < 8);     
-    }       
+    }   
+    
+    
+    /**
+     *
+     * @param type $flashKey
+     * @param type $messageIndex
+     * @return string|null 
+     */
+    protected function getFlash($flashKey, $messageIndex = 0) {        
+        $flashMessages = $this->get('session')->getFlashBag()->get($flashKey);         
+        if (!isset($flashMessages[$messageIndex])) {
+            return '';
+        }
+        
+        return $flashMessages[$messageIndex];
+    }    
     
 }

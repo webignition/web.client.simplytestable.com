@@ -17,3 +17,9 @@ margin-top: -1px;
 .btn [class^="icon-"] {
     display:inline-block;
 }
+
+@media (max-width:979px) {
+    body {
+        margin-top:0;
+    }
+}

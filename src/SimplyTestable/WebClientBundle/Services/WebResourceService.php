@@ -79,4 +79,13 @@ class WebResourceService {
         return (isset($this->contentTypeWebResourceMap[$contentType])) ? $this->contentTypeWebResourceMap[$contentType] : $this->contentTypeWebResourceMap['default'];
     }
     
+    
+    /**
+     * 
+     * @return \webignition\Http\Client\Client
+     */
+    public function getHttpClient() {
+        return $this->httpClient;
+    }
+    
 }

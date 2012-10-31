@@ -13,3 +13,5 @@ parameters:
     locale: en
     secret: Secret!
     database_path: null
+    admin_user_username: SetThis!
+    admin_user_password: SetThis!
