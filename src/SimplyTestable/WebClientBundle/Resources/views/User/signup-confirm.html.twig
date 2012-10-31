@@ -7,6 +7,28 @@
 {% block content %}
 <h1>Confirm sign up for {{ app.request.get('email') }}</h1>
 
+    {% if token_resend_error is defined and token_resend_error != '' %}    
+        {% if token_resend_error == 'invalid-user' %}
+        <div class="alert alert-info for:input-email">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p>
+                <strong>Hello!</strong>
+            </p>
+            <p>
+                There's no account for <strong>{{ app.request.get('email') }}</strong>.
+                Good news - we can do that for you if you like.
+            </p>
+            <form class="form-horizontal" method="post" action="{{ path('sign_up_submit') }}">
+                <div> 
+                    <input type="hidden" name="email" value="{{ app.request.get('email') }}" />
+                    <button class="btn btn-success" type="submit">Yes, sign me up please!</button>
+                </div>      
+            </form>            
+            
+        </div>                
+        {% endif %}
+    {% endif %}
+
 <form class="form-horizontal" method="post" action="{{ path('sign_up_confirm_submit', { 'email': app.request.get('email')}) }}">
     
     {% if token_resend_confirmation is defined and token_resend_confirmation != '' %}
@@ -47,8 +69,8 @@
             <p><strong>Hmmm.</strong> I'm not sure that's the right activation code.</p>
             <p>There's a button below to have your activation code re-sent. Maybe try that?</p>
         </div>                
-        {% endif %}    
-    {% endif %}    
+        {% endif %}       
+    {% endif %}     
     
     <div class="larger">
         <div class="input-append">                    

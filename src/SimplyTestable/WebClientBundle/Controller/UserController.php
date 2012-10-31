@@ -75,7 +75,7 @@ class UserController extends BaseViewController
             $this->get('session')->setFlash('user_create_error', 'invalid-email');
             $this->get('session')->setFlash('user_create_prefil', $email);
             return $this->redirect($this->generateUrl('sign_up', array(), true));              
-        }        
+        }       
         
         $this->getUserService()->setUser($this->getUserService()->getPublicUser());
         $createResponse = $this->getUserService()->create($email);
@@ -115,19 +115,19 @@ class UserController extends BaseViewController
             'token_resend_confirmation' => $this->getFlash('token_resend_confirmation'),
             'user_create_confirmation' => $this->getFlash('user_create_confirmation'),
             'user_token_error' => $this->getFlash('user_token_error'),
+            'token_resend_error' => $this->getFlash('token_resend_error'),
             'token' => $this->get('request')->query->get('token')
         ));
     }
     
     
     public function signupConfirmResendAction($email) {        
-
+        if ($this->getUserService()->exists($email) === false) {
+            $this->get('session')->setFlash('token_resend_error', 'invalid-user');
+            return $this->redirect($this->generateUrl('sign_up_confirm', array('email' => $email), true));          
+        }             
         
         $token = $this->getUserService()->getConfirmationToken($email);        
-        
-        var_dump($token);
-        exit();        
-        
         $this->sendConfirmationToken($email, $token);        
         $this->get('session')->setFlash('token_resend_confirmation', 'sent');      
         
@@ -158,6 +158,11 @@ class UserController extends BaseViewController
     
     
     public function signupConfirmSubmitAction($email) {
+        if ($this->getUserService()->exists($email) === false) {
+            $this->get('session')->setFlash('token_resend_error', 'invalid-user');
+            return $this->redirect($this->generateUrl('sign_up_confirm', array('email' => $email), true));          
+        }
+        
         $token = trim($this->get('request')->get('token'));
         if ($token == '') {
             $this->get('session')->setFlash('user_token_error', 'blank-token');
@@ -170,6 +175,8 @@ class UserController extends BaseViewController
             $this->get('session')->setFlash('user_token_error', 'invalid-token');
             return $this->redirect($this->generateUrl('sign_up_confirm', array('email' => $email), true));            
         }
+        
+        
         
         // redirect to ???
         

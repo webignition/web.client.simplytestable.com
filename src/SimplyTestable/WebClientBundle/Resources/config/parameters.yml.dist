@@ -18,6 +18,7 @@ parameters:
       user_create: /user/create/
       user_get_token: /user/{email}/token/
       user_activate: /user/activate/{token}/
+      user_exists: /user/{email}/exists/  
   public_site:
     urls:
       home: http://simplytestable.com

@@ -120,6 +120,36 @@ class UserService extends CoreApplicationService {
 
         return true;      
     }
+    
+    
+    
+    /**
+     * 
+     * @param string $email
+     * @return boolean
+     * @throws CoreApplicationAdminRequestException
+     */
+    public function exists($email) {
+        $currentUser = ($this->hasUser()) ? $this->getUser() : null;
+   
+        $this->setUser($this->getAdminUser());
+        
+        $request = $this->getAuthorisedHttpRequest($this->getUrl('user_exists', array(
+            'email' => $email
+        )), HTTP_METH_POST);
+        
+        $response = $this->getHttpClient()->getResponse($request);
+        
+        if (!is_null($currentUser)) {
+            $this->setUser($currentUser);
+        }        
+        
+        if ($response->getResponseCode() == 401) {
+            throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
+        } 
+        
+        return $response->getResponseCode() == 200;         
+    }
 
     
     /**
