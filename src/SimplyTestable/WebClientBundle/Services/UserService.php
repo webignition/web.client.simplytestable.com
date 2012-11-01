@@ -67,10 +67,11 @@ class UserService extends CoreApplicationService {
         return $this->getPublicUser()->equals($user);
     }   
     
-    public function create($email) {
+    public function create($email, $password) {
         $request = $this->getAuthorisedHttpRequest($this->getUrl('user_create'), HTTP_METH_POST);
         $request->addPostFields(array(
-            'email' => $email
+            'email' => $email,
+            'password' => $password
         ));
         
         $userExistsResponseCode = 302;

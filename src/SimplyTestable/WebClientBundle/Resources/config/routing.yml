@@ -2,6 +2,22 @@ sign_in:
     pattern:  /signin/
     defaults: { _controller: SimplyTestableWebClientBundle:User:signIn }  
     
+sign_in_submit:
+    pattern:  /signin/submit/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signInSubmit }     
+    
+reset_password:
+    pattern:  /reset-password/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:resetPassword }       
+    
+reset_password_submit:
+    pattern:  /reset-password/submit/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:resetPasswordSubmit }     
+    
+reset_password_confirm:
+    pattern:  /reset-password/{email}/{token}/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:resetPasswordConfirm }     
+    
 sign_up:
     pattern:  /signup/
     defaults: { _controller: SimplyTestableWebClientBundle:User:signUp }      
@@ -20,7 +36,7 @@ sign_up_confirm_submit:
     
 sign_up_confirm_resend:
     pattern:  /signup/confirm/{email}/resend/
-    defaults: { _controller: SimplyTestableWebClientBundle:User:signUpConfirmResend }         
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signUpConfirmResend }
 
 app:
     pattern:  /

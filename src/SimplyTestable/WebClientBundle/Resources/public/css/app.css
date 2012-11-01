@@ -414,7 +414,15 @@ body.single-page-dialog form {
 }
 
 body.single-page-dialog input {
+    width:94%;
+}
+
+body.single-page-dialog .input-append input {
     width:70%;
+}
+
+body.single-page-dialog button.submit {
+    margin-top:20px;
 }
 
 form .larger input {
@@ -453,6 +461,10 @@ div.input-secondary {
 
 @media (min-width: 1200px) {
     body.single-page-dialog input {
-        width:78%;
+        width:96%;
+    }    
+    
+    body.single-page-dialog .input-append input {
+        width:76%;
     }    
 }
