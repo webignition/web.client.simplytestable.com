@@ -6,12 +6,13 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 
 class UserController extends BaseViewController
 { 
     
     public function signInAction()
-    {        
+    {                
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }        
@@ -45,7 +46,7 @@ class UserController extends BaseViewController
     
     
     public function resetPasswordAction()
-    {               
+    {        
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }
@@ -85,8 +86,54 @@ class UserController extends BaseViewController
         )), $cacheValidatorHeaders);        
     }  
     
+    
+    public function resetPasswordChooseAction($email, $token)
+    {        
+        if ($this->isUsingOldIE()) {
+            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
+        }        
+        
+        //$userResetPasswordError = $this->getFlash('user_reset_password_error');
+        //$userResetPasswordConfirmation = $this->getFlash('user_reset_password_confirmation');
+        
+        $templateName = 'SimplyTestableWebClientBundle:User:reset-password-choose.html.twig';
+        $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);        
+        
+        $userResetPasswordError = $this->getFlash('user_reset_password_error');
+       
+        
+        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
+            'email' => $email,
+            'user_password_reset_error' => $userResetPasswordError
+            //'user_reset_password_confirmation' => $userResetPasswordConfirmation
+        ));      
+        
+        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
+        
+//        if ($this->isProduction() && $cacheValidatorHeaders->getLastModifiedDate() == $templateLastModifiedDate) {            
+//            $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
+//            if ($response->isNotModified($this->getRequest())) {
+//                return $response;
+//            }
+//        }
+        
+        $cacheValidatorHeaders->setLastModifiedDate($templateLastModifiedDate);
+        $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);
 
-    public function resetPasswordSubmitAction() {
+        return $this->getCachableResponse($this->render($templateName, array(            
+            'public_site' => $this->container->getParameter('public_site'),
+            'user' => $this->getUser(),
+            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+            'email' => $email,
+            'token' => $token,
+            'user_reset_password_error' => $userResetPasswordError
+            //'user_reset_password_confirmation' => $userResetPasswordConfirmation
+
+        )), $cacheValidatorHeaders);        
+    }     
+    
+
+    public function resetPasswordSubmitAction() {        
         $email = trim($this->get('request')->request->get('email'));        
 
         if ($email == '') {
@@ -111,7 +158,65 @@ class UserController extends BaseViewController
         
         $this->get('session')->setFlash('user_reset_password_confirmation', 'token-sent');
         return $this->redirect($this->generateUrl('reset_password', array('email' => $email), true));
-    }    
+    }  
+    
+    
+    public function resetPasswordChooseSubmitAction() {
+        $email = trim($this->get('request')->request->get('email'));        
+        $inputToken = trim($this->get('request')->request->get('token'));
+
+        if (!$this->isEmailValid($email) || $inputToken == '' || $this->getUserService()->exists($email) === false) {
+            return $this->redirect($this->generateUrl('reset_password', array(), true));             
+        }                
+
+        $token = $this->getUserService()->getConfirmationToken($email);             
+        
+        if ($token != $inputToken) {
+            $this->get('session')->setFlash('user_reset_password_error', 'invalid-token');
+            return $this->redirect($this->generateUrl('reset_password_choose', array(
+                'email' => $email,
+                'token' => $inputToken
+            ), true));            
+        }
+        
+        $password = trim($this->get('request')->request->get('password'));
+        
+        if ($password == '') {
+            $this->get('session')->setFlash('user_reset_password_error', 'blank-password');
+            return $this->redirect($this->generateUrl('reset_password_choose', array(
+                'email' => $email,
+                'token' => $inputToken
+            ), true));               
+        }
+        
+        $passwordResetResponse = $this->getUserService()->resetPassword($token, $password);
+            
+        if (is_null($passwordResetResponse)) {
+            $this->get('session')->setFlash('user_reset_password_error', 'unknown-error');
+            return $this->redirect($this->generateUrl('reset_password_choose', array(
+                'email' => $email,
+                'token' => $inputToken
+            ), true));            
+        }
+        
+        if ($passwordResetResponse === false) {
+            $this->get('session')->setFlash('user_reset_password_error', 'invalid-token');
+            return $this->redirect($this->generateUrl('reset_password_choose', array(
+                'email' => $email,
+                'token' => $inputToken
+            ), true));            
+        }
+
+        // log user in and all that stuff
+        
+        var_dump("log user in, redirect to ???");        
+        exit();        
+//        
+//        $this->sendPasswordResetConfirmationToken($email, $token);               
+//        
+//        $this->get('session')->setFlash('user_reset_password_confirmation', 'token-sent');
+//        return $this->redirect($this->generateUrl('reset_password', array('email' => $email), true));
+    }     
     
 
     public function signUpAction()
@@ -265,7 +370,7 @@ class UserController extends BaseViewController
     private function sendPasswordResetConfirmationToken($email, $token) {
         $userPasswordResetEmailSettings = $this->container->getParameter('user_reset_password_email');        
 
-        $confirmationUrl = $this->generateUrl('reset_password_confirm', array(
+        $confirmationUrl = $this->generateUrl('reset_password_choose', array(
                 'email' => $email,
                 'token' => $token
             ), true);

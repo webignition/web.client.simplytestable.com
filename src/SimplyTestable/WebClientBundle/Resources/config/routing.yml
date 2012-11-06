@@ -13,10 +13,14 @@ reset_password:
 reset_password_submit:
     pattern:  /reset-password/submit/
     defaults: { _controller: SimplyTestableWebClientBundle:User:resetPasswordSubmit }     
+
+reset_password_choose_submit:
+    pattern:  /reset-password/choose/submit/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:resetPasswordChooseSubmit }       
     
-reset_password_confirm:
+reset_password_choose:
     pattern:  /reset-password/{email}/{token}/
-    defaults: { _controller: SimplyTestableWebClientBundle:User:resetPasswordConfirm }     
+    defaults: { _controller: SimplyTestableWebClientBundle:User:resetPasswordChoose }           
     
 sign_up:
     pattern:  /signup/

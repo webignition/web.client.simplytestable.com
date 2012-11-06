@@ -3,6 +3,7 @@ namespace SimplyTestable\WebClientBundle\Services;
 
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 
 class UserService extends CoreApplicationService {    
     
@@ -65,7 +66,34 @@ class UserService extends CoreApplicationService {
      */
     public function isPublicUser(User $user) {
         return $this->getPublicUser()->equals($user);
-    }   
+    } 
+    
+    
+    
+    /**
+     * 
+     * @param string $token
+     * @param string $password
+     * @return null|boolean
+     * @throws UserServiceException
+     */
+    public function resetPassword($token, $password) {
+        $request = $this->getAuthorisedHttpRequest($this->getUrl('user_reset_password', array('token' => $token)), HTTP_METH_POST);
+        $request->addPostFields(array(
+            'password' => $password
+        ));
+        
+        try {
+            $response = $this->getHttpClient()->getResponse($request);
+            
+            return $response->getResponseCode() == 200;
+        } catch (\webignition\Http\Client\CurlException $curlException) {     
+            return null;
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
+            return null;
+        }
+    }
+    
     
     public function create($email, $password) {
         $request = $this->getAuthorisedHttpRequest($this->getUrl('user_create'), HTTP_METH_POST);
