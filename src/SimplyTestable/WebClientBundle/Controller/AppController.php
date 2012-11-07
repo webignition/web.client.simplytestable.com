@@ -53,9 +53,14 @@ class AppController extends BaseViewController
         $hasTestStartError = $this->hasFlash('test_start_error');
         $hasTestStartBlockedWebsiteError = $this->hasFlash('test_start_error_blocked_website');
         
-        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
-        $cacheValidatorIdentifier->setParameter('test_start_error', ($hasTestStartError) ? 'true' : 'false');
-        $cacheValidatorIdentifier->setParameter('test_start_error_blocked_website', ($hasTestStartBlockedWebsiteError) ? 'true' : 'false');
+        $recentTests = $this->getRecentTests();
+        $recentTestsHash = md5(json_encode($recentTests));        
+        
+        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
+            'test_start_error' => ($hasTestStartError) ? 'true' : 'false',
+            'test_start_error_blocked_website' => ($hasTestStartBlockedWebsiteError) ? 'true' : 'false',
+            'recent_tests_hash' => $recentTestsHash
+        ));
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
@@ -75,8 +80,18 @@ class AppController extends BaseViewController
             'test_start_error_blocked_website' => $hasTestStartBlockedWebsiteError,
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser())
+            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+            'recent_tests' => $recentTestsHash
         )), $cacheValidatorHeaders);        
+    }
+    
+    
+    private function getRecentTests() {
+        if (!$this->isLoggedIn()) {
+            return null;
+        }
+        
+        return $this->getTestService()->getList(3);
     }
     
     

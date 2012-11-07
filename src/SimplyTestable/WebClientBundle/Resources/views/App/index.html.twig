@@ -4,9 +4,31 @@
 
 
 {% block main %}
-        <div class="row-fluid">
+<div class="row-fluid">
+    <div class="span12">
+{% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %} 
+        </div>            
+
+{% if is_logged_in %}
+        <div class="row-fluid" id="recent-site-tests">
             <div class="span12">
-                {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %} 
-            </div>
-        </div>           
+                <section>
+                    <div>            
+                        <h1 class="info">
+                            <i class="icon-cog"></i> Recent tests
+                        </h1>
+                            
+<div class="inner" id="recent-site-tests-list"><div class="site span4"><div class="wrapper"><a class="url" href="http://clay.cc/">clay.cc</a><div class="results"><a href="http://gears.simplytestable.com/http://clay.cc//13254/results/"><span class="badge badge-undefined"> <i class="icon state-icon undefined"></i> #13254 <i class="icon action-icon icon-caret-right"></i> </span></a></div><div class="row-fluid meta"><div class="span4 total"><span class="test-count">0</span><span class="subtext">tests overall</span></div><div class="span4 total"><span class="test-count">100<span class="percent">%</span></span><span class="subtext">finished</span></div><div class="span4 detail"><div><span class="queued-count figure">0</span> <span class="caption">queued</span></div><div><span class="in-progress-count figure">0</span> <span class="caption">in progress</span></div><div><span class="finished-count figure">0</span> <span class="caption">finished</span></div></div></div></div></div><div class="site span4"><div class="wrapper"><a class="url" href="http://webignition.net/">webignition.net</a><div class="results"><a href="http://gears.simplytestable.com/http://webignition.net//13253/results/"><span class="badge badge-success"> <i class="icon state-icon icon-bar-chart"></i> #13253 <i class="icon action-icon icon-caret-right"></i> </span></a></div><div class="row-fluid meta"><div class="span4 total"><span class="test-count">10</span><span class="subtext">tests overall</span></div><div class="span4 total"><span class="test-count">100<span class="percent">%</span></span><span class="subtext">finished</span></div><div class="span4 detail"><div><span class="queued-count figure">0</span> <span class="caption">queued</span></div><div><span class="in-progress-count figure">0</span> <span class="caption">in progress</span></div><div><span class="finished-count figure">10</span> <span class="caption">finished</span></div></div></div></div></div><div class="site span4"><div class="wrapper"><a class="url" href="http://euroweb.de/">euroweb.de</a><div class="results"><a href="http://gears.simplytestable.com/http://euroweb.de//13252/results/"><span class="badge badge-success"> <i class="icon state-icon icon-bar-chart"></i> #13252 <i class="icon action-icon icon-caret-right"></i> </span></a></div><div class="row-fluid meta"><div class="span4 total"><span class="test-count">674</span><span class="subtext">tests overall</span></div><div class="span4 total"><span class="test-count">100<span class="percent">%</span></span><span class="subtext">finished</span></div><div class="span4 detail"><div><span class="queued-count figure">0</span> <span class="caption">queued</span></div><div><span class="in-progress-count figure">0</span> <span class="caption">in progress</span></div><div><span class="finished-count figure">674</span> <span class="caption">finished</span></div></div></div></div></div></div>                            
+<div class="clearfix"></div>
+                            
+                    </div>
+                </section> 
+            </div>           
+            
+
+
+
+        </div>        
+{% endif %}            
+    </div>
 {% endblock %}

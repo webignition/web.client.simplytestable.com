@@ -28,6 +28,15 @@ abstract class BaseController extends Controller
         return $this->getUserService()->getUser();
     }
     
+    /**
+     * 
+     * @return boolean
+     */
+    public function isLoggedIn() {
+        return !$this->getUserService()->isPublicUser($this->getUser());
+    }
+    
+    
     protected function getRequestValue($name, $default = null, $httpMethod = null) {
         $value = trim($this->get('request')->get($name));        
         if ($value != '') {
@@ -166,4 +175,13 @@ abstract class BaseController extends Controller
     protected function getSession() {
         return $this->get('session');
     }
+    
+    
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Services\CoreApplicationProxyService
+     */
+    protected function getCoreApplicationProxyService() {
+        return $this->get('simplytestable.services.coreapplicationproxyservice');
+    }    
 }
