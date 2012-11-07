@@ -16,7 +16,7 @@
                     </ul> 
                     {% if is_logged_in %}
                     <p class="navbar-text pull-right">
-                        Logged in as <a href="#" class="navbar-link">Username</a>
+                        Logged in as <a href="#" class="navbar-link">{{ user.username }}</a>
                     </p>                        
                     {% else %}
                     <p class="navbar-text pull-right">
