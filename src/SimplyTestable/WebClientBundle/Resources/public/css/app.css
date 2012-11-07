@@ -409,19 +409,19 @@ body.single-page-dialog section .content {
     margin-left:30px;
 }
 
-body.single-page-dialog form {
+body.single-page-dialog #main form {
     margin:20px 0;
 }
 
-body.single-page-dialog input {
+body.single-page-dialog #main input {
     width:94%;
 }
 
-body.single-page-dialog .input-append input {
+body.single-page-dialog #main .input-append input {
     width:70%;
 }
 
-body.single-page-dialog button.submit {
+body.single-page-dialog #main button.submit {
     margin-top:20px;
 }
 
@@ -455,16 +455,23 @@ div.input-secondary {
     padding-top:20px;
 }
 
-/*body.sign-up div.logo {
-    top:13px;
-}*/
+.navbar .sign-out-form form {
+    margin:0;
+    padding:0;
+}
+
+.navbar .sign-out-form form button {
+    margin:0 0 0 6px;
+}
 
 @media (min-width: 1200px) {
-    body.single-page-dialog input {
+    body.single-page-dialog #main input {
         width:96%;
     }    
     
-    body.single-page-dialog .input-append input {
+    body.single-page-dialog #main .input-append input {
         width:76%;
-    }    
+    }
+    
+    
 }

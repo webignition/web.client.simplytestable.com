@@ -1,3 +1,11 @@
+user:
+  pattern: /user/{email}/
+  defaults: { _controller: SimplyTestableWebClientBundle:User:index }  
+  
+sign_out_submit:
+    pattern:  /signout/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signOutSubmit }   
+
 sign_in:
     pattern:  /signin/
     defaults: { _controller: SimplyTestableWebClientBundle:User:signIn }  
@@ -110,4 +118,4 @@ app_website:
         
 outdated_browser:
     pattern:  /outdated-browser/
-    defaults: { _controller: SimplyTestableWebClientBundle:App:outdatedBrowser }               
+    defaults: { _controller: SimplyTestableWebClientBundle:App:outdatedBrowser }
