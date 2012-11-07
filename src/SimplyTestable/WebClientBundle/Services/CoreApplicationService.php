@@ -71,8 +71,12 @@ abstract class CoreApplicationService {
     }
     
     
-    protected function getUrl($name, $parameters = null) {
-        $url =  $this->parameters['urls']['base'] . $this->parameters['urls'][$name];
+    protected function getUrl($name = null, $parameters = null) {
+        $url = $this->parameters['urls']['base'];
+        
+        if (!is_null($name)) {
+            $url .= $this->parameters['urls'][$name];
+        }
         
         if (is_array($parameters)) {
             foreach ($parameters as $parameterName => $parameterValue) {
