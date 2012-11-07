@@ -1,7 +1,3 @@
-user:
-  pattern: /user/{email}/
-  defaults: { _controller: SimplyTestableWebClientBundle:User:index }  
-  
 sign_out_submit:
     pattern:  /signout/
     defaults: { _controller: SimplyTestableWebClientBundle:User:signOutSubmit }   

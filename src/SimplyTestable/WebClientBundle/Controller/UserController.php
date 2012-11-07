@@ -10,47 +10,7 @@ use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 use SimplyTestable\WebClientBundle\Model\User;
 
 class UserController extends BaseViewController
-{ 
-    public function indexAction() {
-        if ($this->isUsingOldIE()) {
-            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        }        
-        
-        $templateName = 'SimplyTestableWebClientBundle:User:signin.html.twig';
-        $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);        
-        
-        $userSignInError = $this->getFlash('user_signin_error');
-        $userSignInConfirmation = $this->getFlash('user_signin_confirmation');
-        
-        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
-            'email' => $this->getPersistentValue('email'),
-            'user_signin_error' => $userSignInError,
-            'user_signin_confirmation' => $userSignInConfirmation
-        ));
-        
-        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
-        
-//        if ($this->isProduction() && $cacheValidatorHeaders->getLastModifiedDate() == $templateLastModifiedDate) {            
-//            $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
-//            if ($response->isNotModified($this->getRequest())) {
-//                return $response;
-//            }
-//        }
-        
-        $cacheValidatorHeaders->setLastModifiedDate($templateLastModifiedDate);
-        $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);
-
-        return $this->getCachableResponse($this->render($templateName, array(            
-            'public_site' => $this->container->getParameter('public_site'),
-            'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'email' => $this->getPersistentValue('email'),
-            'user_signin_error' => $userSignInError,
-            'user_signin_confirmation' => $userSignInConfirmation
-        )), $cacheValidatorHeaders);
-    }
-    
-    
+{     
     public function signOutSubmitAction() {
         $this->getUserService()->clearUser();
         return $this->redirect($this->generateUrl('app', array(), true));        
