@@ -118,7 +118,7 @@ abstract class BaseViewController extends BaseController
      *
      * @return \SimplyTestable\WebClientBundle\Model\CacheValidatorIdentifier 
      */
-    protected function getCacheValidatorIdentifier(array $parameters = array()) {
+    protected function getCacheValidatorIdentifier(array $parameters = array()) {        
         $identifier = new CacheValidatorIdentifier();
         $identifier->setParameter('route', $this->container->get('request')->get('_route'));
         $identifier->setParameter('user', $this->getUser()->getUsername());

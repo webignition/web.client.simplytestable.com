@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use webignition\NormalisedUrl\NormalisedUrl;
+use SimplyTestable\WebClientBundle\Model\User;
 
 abstract class BaseController extends Controller
 {    
@@ -24,7 +25,7 @@ abstract class BaseController extends Controller
      * @return \SimplyTestable\WebClientBundle\Model\User
      */
     public function getUser() {
-        return $this->getUserService()->getPublicUser();
+        return $this->getUserService()->getUser();
     }
     
     protected function getRequestValue($name, $default = null, $httpMethod = null) {
@@ -155,5 +156,14 @@ abstract class BaseController extends Controller
      */
     protected function getUserService() {
         return $this->get('simplytestable.services.userservice');
+    }
+    
+    
+    /**
+     * 
+     * @return \Symfony\Component\HttpFoundation\Session\Session
+     */
+    protected function getSession() {
+        return $this->get('session');
     }
 }

@@ -23,15 +23,33 @@ class UserService extends CoreApplicationService {
     private $adminUserPassword;
     
     
+    /**
+     *
+     * @var \Symfony\Component\HttpFoundation\Session\Session
+     */
+    private $session;
+    
+    
+    /**
+     *
+     * @var \SimplyTestable\WebClientBundle\Services\UserSerializerService
+     */
+    private $userSerializerService;
+    
+    
     public function __construct(
         $parameters,
         \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService,
         $adminUserUsername,
-        $adminUserPassword
+        $adminUserPassword,
+        \Symfony\Component\HttpFoundation\Session\Session $session,
+        \SimplyTestable\WebClientBundle\Services\UserSerializerService $userSerializerService
     ) {
         parent::__construct($parameters, $webResourceService);
         $this->adminUserUsername = $adminUserUsername;
         $this->adminUserPassword = $adminUserPassword;
+        $this->session = $session;
+        $this->userSerializerService = $userSerializerService;
     }     
 
     
@@ -65,7 +83,10 @@ class UserService extends CoreApplicationService {
      * @return boolean
      */
     public function isPublicUser(User $user) {
-        return $this->getPublicUser()->equals($user);
+        $comparatorUser = new User();
+        $comparatorUser->setUsername(strtolower($user->getUsername()));
+        
+        return $this->getPublicUser()->equals($comparatorUser);
     } 
     
     
@@ -92,6 +113,23 @@ class UserService extends CoreApplicationService {
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
             return null;
         }
+    }
+    
+    
+    /**
+     * 
+     * @param string $email
+     * @param string $password
+     * @return boolean
+     */
+    public function authenticate() {
+        $request = $this->getAuthorisedHttpRequest($this->getUrl('user', array(
+            'email' => $this->getUser()->getUsername(),
+            'password' => $this->getUser()->getPassword()
+        )), HTTP_METH_POST);
+        
+        $response = $this->getHttpClient()->getResponse($request);
+        return $response->getResponseCode() == 200;
     }
     
     
@@ -148,8 +186,7 @@ class UserService extends CoreApplicationService {
         }
 
         return true;      
-    }
-    
+    }    
     
     
     /**
@@ -217,6 +254,31 @@ class UserService extends CoreApplicationService {
         }
 
         return json_decode($response->getBody());
+    }
+    
+    
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Model\User $user
+     */
+    public function setUser(User $user) {
+        $this->session->set('user', $this->userSerializerService->serialize($user));
+        parent::setUser($user);
+    }
+    
+    
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Model\User
+     */
+    public function getUser() {
+        if (is_null($this->session->get('user'))) {
+            $this->setUser($this->getPublicUser());
+        }
+        
+        parent::setUser($this->userSerializerService->unserialize($this->session->get('user')));
+        
+        return parent::getUser();
     }
     
 }
