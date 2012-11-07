@@ -17,28 +17,17 @@
                     {% if is_logged_in %}
                     <div class="pull-right sign-out-form">
                         <form class="form-inline" method="post" action="{{ path('sign_out_submit') }}">
-                        <p class="navbar-text">
-                            Logged in as <a href="{{ path('user', {'email':user.username}) }}" class="navbar-link">{{ user.username }}</a>
-                            <button class="btn btn-small btn-primary" type="submit">
-                                Sign out
-                                <i class="icon icon-caret-right"></i>
-                            </button>
-                        </p>
-<!--                        
-<form class="form-inline">
-  <input type="text" class="input-small" placeholder="Email">
-  <input type="password" class="input-small" placeholder="Password">
-  <label class="checkbox">
-    <input type="checkbox"> Remember me
-  </label>
-  <button type="submit" class="btn">Sign in</button>
-</form> 
--->
-                      
-                    
-                        
-                    </form>  
-
+                            <p class="navbar-text">                                
+                                <a href="{{ path('user', {'email':user.username}) }}" class="navbar-link">
+                                    <i class="icon icon-user"></i>
+                                    {{ user.username }}
+                                </a>
+                                <button class="btn btn-small btn-primary" type="submit">
+                                    Sign out
+                                    <i class="icon icon-caret-right"></i>
+                                </button>
+                            </p>                        
+                        </form>  
                     </div> 
 
                     {% else %}
