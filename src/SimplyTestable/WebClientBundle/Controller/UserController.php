@@ -264,16 +264,14 @@ class UserController extends BaseViewController
                 'token' => $inputToken
             ), true));            
         }
-
-        // log user in and all that stuff
         
-        var_dump("log user in, redirect to ???");        
-        exit();        
-//        
-//        $this->sendPasswordResetConfirmationToken($email, $token);               
-//        
-//        $this->get('session')->setFlash('user_reset_password_confirmation', 'token-sent');
-//        return $this->redirect($this->generateUrl('reset_password', array('email' => $email), true));
+        $user = new User();
+        $user->setUsername($email);
+        $user->setPassword($password);
+        
+        $this->getUserService()->setUser($user);
+        
+        return $this->redirect($this->generateUrl('app', array(), true));
     }     
     
 
