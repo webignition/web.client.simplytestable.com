@@ -19,6 +19,14 @@
                         </h1>
 
                         <div class="inner" id="recent-site-tests-list">
+                            
+                            {% if recent_tests|length == 0 %}
+                            <p>
+                                You haven't started any tests yet. When you have, you'll see a summary of 
+                                your recent tests here.
+                            </p>
+                                
+                            {% endif %}
 
                             {% for test in recent_tests %}
                             
