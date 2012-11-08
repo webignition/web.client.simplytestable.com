@@ -7,16 +7,9 @@
                     <a class="brand" href="{{ public_site['urls']['home'] }}">
                         SimplyTestable
                     </a>
-                    <ul class="nav">
-                        <li class="active"><i class="icon icon-play-circle"></i> <a href="{{ path('app') }}">Start a new website test</a></li>
-                        <!--
-                        <li><a href="#">Link</a></li>
-                        <li><a href="#">Link</a></li>
-                        -->
-                    </ul> 
                     {% if is_logged_in %}
-                    <div class="pull-right sign-out-form">
-                        <form class="form-inline" method="post" action="{{ path('sign_out_submit') }}">
+                    <div class="pull-right">                        
+                        <form class="form-inline sign-out-form" method="post" action="{{ path('sign_out_submit') }}">
                             <p class="navbar-text">                                
                                 <!--<a href="{# path('user', {'email':user.username}) #}" class="navbar-link">-->
                                     <i class="icon icon-user"></i>
@@ -27,14 +20,23 @@
                                     <i class="icon icon-caret-right"></i>
                                 </button>
                             </p>                        
-                        </form>  
+                        </form>                              
                     </div> 
+                    <ul class="nav pull-right">
+                        <li class=""><i class="icon icon-play-circle"></i> <a href="{{ path('app') }}">Start a new website test</a></li>
+                        <li class=""><i class="icon icon-cog"></i> <a href="{{ path('app') }}#recent-site-tests">Recent tests</a></li>
+                    </ul>                        
 
-                    {% else %}
-                    <p class="navbar-text pull-right">
-                        <a href="{{ path('sign_in') }}" class="navbar-link"><i class="icon icon-user"></i> Sign in</a>
-                    </p>                    
+                    {% else %}                        
+                    <p class="navbar-text pull-right">                        
+                        <a href="{{ path('sign_in') }}" class="navbar-link user-link"><i class="icon icon-user"></i> Sign in</a>
+                    </p>  
+                    <ul class="nav pull-right">
+                        <li class=""><i class="icon icon-play-circle"></i> <a href="{{ path('app') }}">Start a new website test</a></li>
+                    </ul>                    
                     {% endif %}                       
+                    
+                     
                 </div>
             </div>
         </div>
