@@ -427,7 +427,12 @@ body.single-page-dialog #main button.submit {
 
 form .larger input {
     font-size: 15px;
-    padding: 13px 9px 11px 9px;    
+    padding: 13px 9px 11px 9px;      
+}
+
+body.app form .larger input {
+    font-size: 15px;
+    padding: 14px 9px 13px 9px;      
 }
 
 form .larger button {
