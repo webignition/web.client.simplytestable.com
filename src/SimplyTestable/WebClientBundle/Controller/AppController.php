@@ -520,16 +520,8 @@ class AppController extends BaseViewController
     public function outdatedBrowserAction() {
         $publicSiteParameters = $this->container->getParameter('public_site');        
         return $this->redirect($publicSiteParameters['urls']['home']);
-    }   
-    
-    public function isUsingOldIE() {        
-        try {
-            $browserInfo =  $this->container->get('jbi_browscap.browscap')->getBrowser($this->getRequest()->server->get('HTTP_USER_AGENT'));                
-            return ($browserInfo->Browser == 'IE' && $browserInfo->MajorVer < 8);                 
-        } catch (\Exception $e) {
-            return false;
-        }    
     }
+
     
     /**
      *
