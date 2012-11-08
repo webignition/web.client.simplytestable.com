@@ -184,7 +184,7 @@ class AppController extends BaseViewController
         }        
     }
     
-    public function progressAction($website, $test_id) {        
+    public function progressAction($website, $test_id) {
         $this->getTestService()->setUser($this->getUser());
         
         if ($this->isUsingOldIE()) {
@@ -225,7 +225,9 @@ class AppController extends BaseViewController
             'state_label' => $this->testStateLabelMap[$test->getState()].': ',
             'state_icon' => $this->testStateIconMap[$test->getState()],
             'completion_percent' => $this->getCompletionPercent($remoteTestSummary),
-            'public_site' => $this->container->getParameter('public_site')
+            'public_site' => $this->container->getParameter('public_site'),
+            'user' => $this->getUser(),
+            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),            
         );          
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
@@ -402,7 +404,9 @@ class AppController extends BaseViewController
             'remote_test_summary' => $this->getRemoteTestSummaryArray($remoteTestSummary),
             'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
             'public_site' => $this->container->getParameter('public_site'),
-            'filter' => $taskListFilter          
+            'filter' => $taskListFilter,
+            'user' => $this->getUser(),
+            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),            
         );
                        
         //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTestSummary->task_count : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));
