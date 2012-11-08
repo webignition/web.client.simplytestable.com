@@ -497,8 +497,8 @@ class UserController extends BaseViewController
      * @param string $email
      * @return boolean
      */
-    private function isEmailValid($email) {
-        return strpos($email, '@') > 1;
+    private function isEmailValid($email) {        
+        return strpos($email, '@') > 0;
     }
     
     
