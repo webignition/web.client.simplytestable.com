@@ -85,6 +85,8 @@ class UserController extends BaseViewController
         $this->getUserService()->setUser($user);
         
         if (!$this->getUserService()->authenticate()) {
+            $this->getUserService()->clearUser();
+            
             if ($this->getUserService()->exists($email)) {
                 $token = $this->getUserService()->getConfirmationToken($email);        
                 $this->sendConfirmationToken($email, $token);                  
