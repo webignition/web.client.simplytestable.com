@@ -49,6 +49,13 @@
 
 <form class="form-horizontal" method="post" action="{{ path('sign_in_submit') }}">
         {% if user_signin_error is defined and user_signin_error != '' %}
+            {% if user_signin_error == 'invalid-email' %}
+        <div class="alert alert-error for:input-email">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>Hmmm.</strong> I'm not convinced that <strong>{{ email }}</strong> is a valid email address.
+        </div>                
+            {% endif %}        
+        
             {% if user_signin_error == 'blank-email' %}
         <div class="alert alert-error for:input-email">
             <button type="button" class="close" data-dismiss="alert">×</button>

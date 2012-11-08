@@ -66,6 +66,13 @@ class UserController extends BaseViewController
             return $this->redirect($this->generateUrl('sign_in', array(), true));             
         } 
         
+        if (!$this->isEmailValid($email)) {
+            $this->get('session')->setFlash('user_signin_error', 'invalid-email');
+            return $this->redirect($this->generateUrl('sign_in', array(
+                'email' => $email
+            ), true));              
+        }        
+        
         $password = trim($this->get('request')->request->get('password'));        
 
         if ($password == '') {
