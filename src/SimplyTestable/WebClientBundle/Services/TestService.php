@@ -94,6 +94,11 @@ class TestService extends CoreApplicationService {
     }
     
     
+    /**
+     * 
+     * @param int $limit
+     * @return \webignition\WebResource\JsonDocument\JsonDocument
+     */
     public function getList($limit) {
         $httpRequest = $this->getAuthorisedHttpRequest(
             $this->getUrl('tests_list', array(

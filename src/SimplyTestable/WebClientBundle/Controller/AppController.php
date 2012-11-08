@@ -53,7 +53,7 @@ class AppController extends BaseViewController
         $hasTestStartError = $this->hasFlash('test_start_error');
         $hasTestStartBlockedWebsiteError = $this->hasFlash('test_start_error_blocked_website');
         
-        $recentTests = $this->getRecentTests();
+        $recentTests = $this->getRecentTests(6);
         $recentTestsHash = md5(json_encode($recentTests));        
         
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
@@ -81,19 +81,108 @@ class AppController extends BaseViewController
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'recent_tests' => $recentTestsHash
+            'recent_tests' => $recentTests
         )), $cacheValidatorHeaders);        
     }
     
     
-    private function getRecentTests() {
+    /**
+     * 
+     * @return array
+     */
+    private function getRecentTests($limit = 3) {
         if (!$this->isLoggedIn()) {
-            return null;
+            return array();
         }
         
-        return $this->getTestService()->getList(3);
+        $jsonResource = $this->getTestService()->getList($limit);
+        
+        if (!$jsonResource instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
+            return array();
+        }
+        
+        $recentTests = json_decode($jsonResource->getContent(), true);
+        
+        foreach ($recentTests as $testIndex => $test) {            
+            $recentTests[$testIndex]['website_label'] = $this->getWebsiteLabel($recentTests[$testIndex]['website']);
+            $recentTests[$testIndex]['state_icon'] = $this->getTestStateIcon($recentTests[$testIndex]['state']);
+            $recentTests[$testIndex]['state_label_class'] = $this->getTestStateLabelClass($recentTests[$testIndex]['state']);
+            $recentTests[$testIndex]['completion_percent'] = $this->getCompletionPercent($test);
+        }
+        
+        return $recentTests;
     }
     
+    
+    /**
+     * Get presentation label for a website - canonical url minus scheme minus trailing slash
+     * 
+     * @param string $website
+     * @return string
+     */
+    private function getWebsiteLabel($website) {
+        $websiteUrl = new \webignition\Url\Url($website);
+        
+        $websiteLabel = preg_replace('/^'.$websiteUrl->getScheme().':\/\//', '', $website);
+        $websiteLabel = preg_replace('/\/$/', '', $websiteLabel);
+        
+        return $websiteLabel;
+    }
+    
+    
+    /**
+     * 
+     * @param string $state
+     * @return string
+     */
+    private function getTestStateIcon($state) {
+        switch ($state) {
+            case 'new':
+                return 'icon-off';
+            
+            case 'queued':
+                return 'icon-off';
+            
+            case 'preparing':
+                return 'icon-cog';
+            
+            case 'in-progress':
+                return 'icon-play-circle';
+            
+            case 'completed':
+                return 'icon-bar-chart';
+            
+            case 'cancelled':
+                return 'icon-bar-chart';
+        }       
+    }
+    
+     /**
+     * 
+     * @param string $state
+     * @return string
+     */
+    private function getTestStateLabelClass($state) {        
+        switch ($state) {
+            case 'new':
+                return '';
+            
+            case 'queued':
+                return 'info';
+            
+            case 'preparing':
+                return 'warning';
+            
+            case 'in-progress':
+                return 'warning';
+            
+            case 'completed':
+                return 'success';
+            
+            case 'cancelled':
+                return 'success';
+        }        
+    }
     
     public function progressAction($website, $test_id) {        
         $this->getTestService()->setUser($this->getUser());
@@ -158,10 +247,20 @@ class AppController extends BaseViewController
     
     /**
      *
-     * @param \stdClass $remoteTestSummary
+     * @param \stdClass|array $remoteTestSummary
      * @return int 
      */
-    private function getCompletionPercent($remoteTestSummary) {
+    private function getCompletionPercent($remoteTestSummary) {        
+        return ($remoteTestSummary instanceof \stdClass) ? $this->getCompletionPercentFromStdClass($remoteTestSummary) : $this->getCompletionPercentFromArray($remoteTestSummary);
+    } 
+    
+    
+    /**
+     * 
+     * @param \stdClass $remoteTestSummary
+     * @return int
+     */
+    private function getCompletionPercentFromStdClass($remoteTestSummary) {
         if ($remoteTestSummary->task_count === 0) {
             return 0;
         }
@@ -183,8 +282,39 @@ class AppController extends BaseViewController
             return floor(($finishedCount / $remoteTestSummary->task_count) * 100);
         }        
         
-        return round(($finishedCount / $remoteTestSummary->task_count) * 100, $requiredPrecision);
-    } 
+        return round(($finishedCount / $remoteTestSummary->task_count) * 100, $requiredPrecision);        
+    }
+    
+    
+    /**
+     * 
+     * @param array $remoteTestSummary
+     * @return int
+     */
+    private function getCompletionPercentFromArray($remoteTestSummary) {
+        if ($remoteTestSummary['task_count'] === 0) {
+            return 0;
+        }
+        
+        $finishedCount = 0;
+        foreach ($remoteTestSummary['task_count_by_state'] as $stateName => $taskCount) {
+            if (in_array($stateName, $this->taskFinishedStates)) {
+                $finishedCount += $taskCount;
+            }
+        }
+        
+        if ($finishedCount ==  $remoteTestSummary['task_count']) {
+            return 100;
+        }   
+        
+        $requiredPrecision = floor(log10($remoteTestSummary['task_count'])) - 1;
+        
+        if ($requiredPrecision == 0) {
+            return floor(($finishedCount / $remoteTestSummary['task_count']) * 100);
+        }        
+        
+        return round(($finishedCount / $remoteTestSummary['task_count']) * 100, $requiredPrecision);        
+    }
     
     
     /**

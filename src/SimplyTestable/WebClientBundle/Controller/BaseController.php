@@ -174,14 +174,5 @@ abstract class BaseController extends Controller
      */
     protected function getSession() {
         return $this->get('session');
-    }
-    
-    
-    /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Services\CoreApplicationProxyService
-     */
-    protected function getCoreApplicationProxyService() {
-        return $this->get('simplytestable.services.coreapplicationproxyservice');
-    }    
+    }   
 }
