@@ -271,12 +271,18 @@ class UserService extends CoreApplicationService {
      * 
      * @return \SimplyTestable\WebClientBundle\Model\User
      */
-    public function getUser() {
+    public function getUser() {        
         if (is_null($this->session->get('user'))) {
             $this->setUser($this->getPublicUser());
         }
         
-        parent::setUser($this->userSerializerService->unserialize($this->session->get('user')));
+        $user = $this->userSerializerService->unserialize($this->session->get('user'));
+        
+        if ($this->isPublicUser($user)) {
+            $user = $this->getPublicUser();
+        }
+        
+        parent::setUser($user);
         
         return parent::getUser();
     }
