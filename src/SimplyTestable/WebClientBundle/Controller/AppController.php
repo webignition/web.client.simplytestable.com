@@ -64,15 +64,25 @@ class AppController extends BaseViewController
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
-        if ($this->isProduction() && $cacheValidatorHeaders->getLastModifiedDate() == $templateLastModifiedDate) {            
-            $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
-            if ($response->isNotModified($this->getRequest())) {
-                return $response;
-            }
-        }
+//        if ($this->isProduction() && $cacheValidatorHeaders->getLastModifiedDate() == $templateLastModifiedDate) {            
+//            $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
+//            if ($response->isNotModified($this->getRequest())) {
+//                return $response;
+//            }
+//        }
         
         $cacheValidatorHeaders->setLastModifiedDate($templateLastModifiedDate);
         $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);
+        
+        return $this->render($templateName, array(            
+            'test_input_action_url' => $this->generateUrl('test_start'),
+            'test_start_error' => $hasTestStartError,
+            'test_start_error_blocked_website' => $hasTestStartBlockedWebsiteError,
+            'public_site' => $this->container->getParameter('public_site'),
+            'user' => $this->getUser(),
+            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+            'recent_tests' => $recentTests
+        ));         
 
         return $this->getCachableResponse($this->render($templateName, array(            
             'test_input_action_url' => $this->generateUrl('test_start'),
