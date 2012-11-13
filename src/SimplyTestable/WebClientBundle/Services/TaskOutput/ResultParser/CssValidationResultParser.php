@@ -3,10 +3,10 @@
 namespace SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser;
 
 use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
-use SimplyTestable\WebClientBundle\Model\TaskOutput\HtmlTextFileMessage;
+use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 
-class HtmlValidationResultParser extends ResultParser {    
+class CssValidationResultParser extends ResultParser {    
     
     /**
      * @return Result
@@ -14,13 +14,13 @@ class HtmlValidationResultParser extends ResultParser {
     public function getResult() {        
         $result = new Result();
         
-        $rawOutputObject = json_decode($this->getOutput()->getContent());
+        $rawOutputArray = json_decode($this->getOutput()->getContent());
         
-        if (!isset($rawOutputObject->messages)) {
+        if (count($rawOutputArray) === 0) {
             return $result;
-        }      
-        
-        foreach ($rawOutputObject->messages as $rawMessageObject) {
+        }       
+   
+        foreach ($rawOutputArray as $rawMessageObject) {            
             $result->addMessage($this->getMessageFromOutput($rawMessageObject));
         }
         
@@ -31,18 +31,18 @@ class HtmlValidationResultParser extends ResultParser {
     /**
      *
      * @param \stdClass $rawMessageObject
-     * @return \SimplyTestable\WebClientBundle\Model\TaskOutput\TextFileMessage 
+     * @return \SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage 
      */
-    private function getMessageFromOutput(\stdClass $rawMessageObject) {
+    private function getMessageFromOutput(\stdClass $rawMessageObject) {        
         $propertyToMethodMap = array(
-            'lastColumn' => 'setColumnNumber',
-            'lastLine' => 'setLineNumber',
+            'context' => 'setContext',
+            'lineNumber' => 'setLineNumber',
             'message' => 'setMessage',
-            'messageId' => 'setClass'
+            'ref' => 'setRef'
         );
         
-        $message = new HtmlTextFileMessage();
-        $message->setType($rawMessageObject->type);
+        $message = new CssTextFileMessage();
+        $message->setType('error');
         
         foreach ($propertyToMethodMap as $property => $methodName) {
             if (isset($rawMessageObject->$property)) {

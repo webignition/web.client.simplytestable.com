@@ -8,15 +8,7 @@ class TextFileMessage extends Message {
      *
      * @var int
      */
-    private $lineNumber;
-    
-    
-    /**
-     *
-     * @var int
-     */
-    private $columnNumber;
-    
+    private $lineNumber;    
     
     /**
      *
@@ -26,17 +18,7 @@ class TextFileMessage extends Message {
     public function setLineNumber($lineNumber) {
         $this->lineNumber = $lineNumber;
         return $this;
-    }
-    
-    /**
-     *
-     * @param int $columnNumber
-     * @return \SimplyTestable\WebClientBundle\Model\TaskOutput\TextFileError 
-     */
-    public function setColumnNumber($columnNumber) {
-        $this->columnNumber = $columnNumber;
-        return $this;
-    }   
+    }  
     
     
     /**
@@ -45,15 +27,6 @@ class TextFileMessage extends Message {
      */    
     public function getLineNumber() {
         return $this->lineNumber;
-    }
-    
-    
-    /**
-     *
-     * @return int 
-     */
-    public function getColumnNumber() {
-        return $this->columnNumber;
-    }        
+    }       
     
 }
