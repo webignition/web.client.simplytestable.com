@@ -58,7 +58,7 @@ class TestController extends BaseController
      * @return boolean
      */
     private function hasWebsite() {
-        return $this->getWebsite() != '';
+        return trim($this->getRequestValue('website')) != '';
     }
     
     
