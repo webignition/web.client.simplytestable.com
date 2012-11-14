@@ -102,10 +102,16 @@ class TaskController extends BaseViewController
             return $this->redirect($this->generateUrl('app', array(), true));
         }
         
-        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
-        $cacheValidatorIdentifier->setParameter('website', $website);
-        $cacheValidatorIdentifier->setParameter('test_id', $test_id);
-        $cacheValidatorIdentifier->setParameter('task_id', $task_id);
+        /**
+            'user' => $this->getUser(),
+            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+         */
+        
+        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
+            'website' => $website,
+            'test_id' => $test_id,
+            'task_id' => $task_id
+        ));
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
@@ -124,16 +130,15 @@ class TaskController extends BaseViewController
             }                
         }
         
-        return $this->getCachableResponse(
-            $this->render(
-                    'SimplyTestableWebClientBundle:App:task/results.html.twig',
-                    array(
-                        'test' => $test,
-                        'task' => $task,
-                        'public_site' => $this->container->getParameter('public_site')
-                    )),
-            $cacheValidatorHeaders
-        );        
+        return $this->getCachableResponse($this->render('SimplyTestableWebClientBundle:App:task/results.html.twig',
+            array(
+                'test' => $test,
+                'task' => $task,
+                'public_site' => $this->container->getParameter('public_site'),
+                'user' => $this->getUser(),
+                'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),                        
+            )
+        ), $cacheValidatorHeaders);        
     }
     
     
