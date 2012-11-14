@@ -573,9 +573,84 @@ application.progress.taskController = function () {
 
         return false;
     };
+        
+    
+    var buildTaskSetListItem = function (taskSetListItem, tasks) {
+        if ($('.url', taskSetListItem).length === 0) {
+            taskSetListItem.append('<span class="url" />');
+        }
+        
+        $('.url', taskSetListItem).html(tasks[0]['url']);
+
+        for (var taskIndex = 0; taskIndex < tasks.length; taskIndex++) {
+            updateTaskListItem(getTaskListItem(taskSetListItem, tasks[taskIndex]), tasks[taskIndex]);
+        }
+        
+        //console.log(tasks);
+        
+        //var taskThings = $('.task', taskSetListItem);
+        //console.log(taskSetListItem, taskThings.length);
+        
+//        if ((taskListItem.is('.completed') || isTaskListItemFailed(taskListItem)) && isFinished(task)) {
+//            return;
+//        }
+
+        
+        
+        //taskListItem.html('');        
+        
+//        setTaskListItemState(taskListItem, task);
+        
+//        var stateIconIndex = task.state;
+//        if (isFailedDueToRedirectLoop(task)) {
+//            stateIconIndex = 'failed-http-retrieval-redirect-loop';
+//        }
+//
+//        taskListItem.append('<span class="url">'+task.url+'</span>');
+//        taskListItem.append('<div class="meta"><span class="state"><i class="'+stateIconMap[stateIconIndex]+'"></i></span><span class="type">'+task.type+'</span></div>');
+//
+//        if (isFinished(task)) {
+//            var outputParser = new taskOutputController.outputParser();
+//            var outputResult = outputParser.getResults(task.output);
+//            
+//            var outputIndicator;
+//            
+//            if (task.state == 'skipped') {
+//                
+//            } else {
+//                if (outputResult.hasErrors()) {                
+//                    outputIndicator = '<a href="'+(window.location.href.replace('/progress/', '/'+task.task_id+'/results/'))+'" class="output-indicator label label-important">'+outputResult.getErrorCount()+' error'+(outputResult.getErrorCount() == 1 ? '' : 's') +' <i class="icon-caret-down"></i></a>';
+//                } else {
+//                    outputIndicator = '<span class="output-indicator"><i class="icon-ok"></i></span>';
+//                }                
+//            }
+//            
+//
+//             
+//            $('.meta', taskListItem).append(outputIndicator);
+//        }        
+        
+        //console.log(taskSetListItem);
+    };
     
     
-    var buildTaskListItem = function (taskListItem, task) {        
+    /* NOT obsoleted by buildTaskSetListItem */
+    var buildTaskListItem = function (taskListItem, task) {   
+/**
+<li class="task in-progress" id="task8552304">
+    <span class="url">http://www.onebestway.com/2012/10/positioning.html</span>
+    <div class="meta">
+        <span class="state"><i class="icon-cogs"></i></span>
+        <span class="type">HTML validation</span>
+    </div>
+</li>
+ */        
+        
+        
+//        console.log("cp01", taskListItem, task);
+//        return;
+        
+        
         if ((taskListItem.is('.completed') || isTaskListItemFailed(taskListItem)) && isFinished(task)) {
             return;
         }
@@ -587,10 +662,11 @@ application.progress.taskController = function () {
         if (isFailedDueToRedirectLoop(task)) {
             stateIconIndex = 'failed-http-retrieval-redirect-loop';
         }
-
-        taskListItem.append('<span class="url">'+task.url+'</span>');
-        taskListItem.append('<div class="meta"><span class="state"><i class="'+stateIconMap[stateIconIndex]+'"></i></span><span class="type">'+task.type+'</span></div>');
-
+//
+//        taskListItem.append('<span class="url">'+task.url+'</span>');
+//        taskListItem.append('<div class="meta"><span class="state"><i class="'+stateIconMap[stateIconIndex]+'"></i></span><span class="type">'+task.type+'</span></div>');
+        taskListItem.append('<span class="meta"><span class="state"><i class="'+stateIconMap[stateIconIndex]+'"></i></span><span class="type">'+task.type+'</span></span>');//        
+//
         if (isFinished(task)) {
             var outputParser = new taskOutputController.outputParser();
             var outputResult = outputParser.getResults(task.output);
@@ -601,39 +677,94 @@ application.progress.taskController = function () {
                 
             } else {
                 if (outputResult.hasErrors()) {                
-                    outputIndicator = '<a href="'+(window.location.href.replace('/progress/', '/'+task.task_id+'/results/'))+'" class="output-indicator label label-important">'+outputResult.getErrorCount()+' error'+(outputResult.getErrorCount() == 1 ? '' : 's') +' <i class="icon-caret-down"></i></a>';
+                    outputIndicator = '<a href="'+(window.location.href.replace('/progress/', '/'+task.task_id+'/results/'))+'" class="output-indicator label label-important">'+outputResult.getErrorCount()+' error'+(outputResult.getErrorCount() == 1 ? '' : 's') +' <i class="icon-caret-right"></i></a>';
                 } else {
                     outputIndicator = '<span class="output-indicator"><i class="icon-ok"></i></span>';
                 }                
             }
             
-
-             
             $('.meta', taskListItem).append(outputIndicator);
         }
     };       
 
     
-    var updateTaskListItem = function (taskListItem, task) {
+    var updateTaskSetListItem = function (taskSetListItem, tasks) {        
+        buildTaskSetListItem(taskSetListItem, tasks);
+    };
+
+    
+    /* NOT obsoleted by updateTaskSetListItem */
+    var updateTaskListItem = function (taskListItem, task) {        
         buildTaskListItem(taskListItem, task);        
     };
     
-    var getTaskListItem = function (taskList, task) {        
-        var taskIdentifier = 'task' + task.task_id;
-        
-        if ($('#' + taskIdentifier, taskList).length === 0) {
-            taskList.append('<li class="task" id="'+taskIdentifier+'" />');
+    
+    var getTaskSetListItem = function (taskList, taskSet) {        
+        var taskSetIdentifier = 'taskSet';
+        for (var taskSetIndex = 0; taskSetIndex < taskSet.length; taskSetIndex++) {
+            taskSetIdentifier += '-' + taskSet[taskSetIndex]['id'];
+        }
+
+        if ($('#' + taskSetIdentifier, taskList).length === 0) {
+            taskList.append('<li class="taskSet" id="'+taskSetIdentifier+'" />');
         }   
         
-        return $('#' + taskIdentifier, taskList);
+        return $('#' + taskSetIdentifier, taskList);
+    };    
+    
+    var getTaskListItem = function (taskSetListItem, task) {                
+        var taskIdentifier = 'task' + task.task_id;
+        
+        if ($('#' + taskIdentifier, taskSetListItem).length === 0) {
+            taskSetListItem.append('<div class="task" id="'+taskIdentifier+'" />');
+        }   
+       
+        return $('#' + taskIdentifier, taskSetListItem);
     };
     
-    var updateTaskList = function (taskList, tasks, callback) {        
+    var getTasksGroupedByUrl = function (tasks) {
+        var tasksGroupedByUrl = {};
+        
         for (var taskId in tasks) {
             if (tasks.hasOwnProperty(taskId)) {    
-                updateTaskListItem(getTaskListItem(taskList, tasks[taskId]), tasks[taskId]);
-            }
+                if (tasksGroupedByUrl[tasks[taskId]['url']] === undefined) {
+                    tasksGroupedByUrl[tasks[taskId]['url']] = [];
+                }
+
+                tasksGroupedByUrl[tasks[taskId]['url']].push(tasks[taskId]);
+            }            
         }
+        
+        return tasksGroupedByUrl;
+    };
+    
+    var updateTaskList = function (taskList, tasks, callback) {
+        var tasksGroupedByUrl = getTasksGroupedByUrl(tasks);
+
+        for (var url in tasksGroupedByUrl) {
+            //var thing = getTaskSetListItem(taskList, tasksGroupedByUrl[url]);
+            updateTaskSetListItem(getTaskSetListItem(taskList, tasksGroupedByUrl[url]), tasksGroupedByUrl[url]);
+            
+//            
+//            
+            //updateTaskListItem(getTaskListItem(taskList, tasks[taskId]), tasks[taskId]);
+//            
+//            //console.log(url);
+////            if (tasks.hasOwnProperty(taskId)) {    
+////                updateTaskListItem(getTaskListItem(taskList, tasks[taskId]), tasks[taskId]);
+////            }
+        }
+
+        //console.log(tasks, getTasksGroupedByUrl(tasks));
+        //return;
+        
+//        for (var taskId in tasks) {
+//            if (tasks.hasOwnProperty(taskId)) {    
+//                updateTaskListItem(getTaskListItem(taskList, tasks[taskId]), tasks[taskId]);
+//            }
+//        }
+        
+        //return;
                 
         callback();
     };
@@ -649,7 +780,7 @@ application.progress.taskController = function () {
             return;
         }
         
-        if (getTaskCount() <= pageLength) {
+        if (getTaskCount() <= pageLength) {            
             var parent = getTaskListContainer();
             var getTaskListCallback = function (taskList) {                
                 updateTaskList(taskList.list, taskList.tasks, function () {
@@ -732,10 +863,53 @@ application.progress.taskOutputController = function () {
             this.setColumnNumber = setColumnNumber;
             this.getColumnNumber = getColumnNumber;
             this.toString = toString;            
-        }
+        },
+        'CSS validation': function () {
+            var lineNumber = 0;
+            var context = '';
+            var ref = '';
+
+            var setLineNumber = function (newLineNumber) {
+                lineNumber = newLineNumber;
+            };
+
+            var getLineNumber = function () {
+                return lineNumber;
+            };
+            
+            var setRef = function (newRef) {
+                ref = newRef;
+            };
+            
+            var getRef = function () {
+                return ref;
+            };
+            
+            var setContext = function (newContext) {
+                context = newContext;
+            };
+            
+            var getContext = function () {
+                return context;
+            };            
+
+            var toString = function () {
+                return 'Css validation error as a string';
+                //return this.getMessage() + ' at line ' + getLineNumber() + ', column ' + getColumnNumber();
+            }
+
+            this.setLineNumber = setLineNumber;
+            this.getLineNumber = getLineNumber;
+            this.setContext = setContext;
+            this.getContext = getContext;
+            this.setRef = setRef;
+            this.getRef = getRef;
+            this.toString = toString;            
+        }        
     };
     
     error['HTML validation'].prototype = new error['abstract'];
+    error['CSS validation'].prototype = new error['abstract'];
     
     var outputResult = function () {
         var errorCount = 0;
@@ -809,7 +983,50 @@ application.progress.taskOutputController = function () {
                 };
 
                 this.getErrors = getErrors;
-            }
+            },
+            'CSS validation': function (taskOutput) {
+                var getMessages = function () {
+                    if (taskOutput.content == undefined) {
+                        return [];
+                    }
+                    
+                    if (taskOutput.content.messages == undefined) {
+                        return [];
+                    }                    
+                    
+                    return taskOutput.content.messages;
+                };
+
+                // line_number":65,"column_number":12,"message":"No p element in scope but a p end tag seen.","messageid":"html5","type":"error"                            
+                var messages = getMessages();
+                var messageCount = messages.length;             
+                var errors;
+
+                var getErrors = function () {                
+                    if (errors == undefined) {
+                        errors = [];
+
+                        for (var messageIndex = 0; messageIndex < messageCount; messageIndex++) {
+                            var message = messages[messageIndex];
+
+                            if (message.type == 'error') {
+                                var currentError = new error['CSS validation'];
+                                
+                               currentError.setMessage(message.message);
+                               currentError.setLineNumber(message.line_number);
+                               currentError.setContext(message.context);
+                               currentError.setRef(message.ref);
+
+                                errors.push(currentError);                            
+                            }
+                        }
+                    }
+
+                    return errors;
+                };
+
+                this.getErrors = getErrors;
+            }            
         };
         
         var getResults = function (taskOutput) {

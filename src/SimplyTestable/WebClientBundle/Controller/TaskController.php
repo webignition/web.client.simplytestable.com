@@ -123,6 +123,8 @@ class TaskController extends BaseViewController
         $test = $this->getTestService()->get($website, $test_id);
         $task = $this->getTaskService()->get($test, $task_id);
         
+        $this->getCssValidationErrorsGroupedByRef($task);
+        
         if ($task->getState() == 'completed' || $task->getState() == 'failed') {
             if ($this->getTaskOutputService()->has($test, $task)) {
                 $task->setOutput($this->getTaskOutputService()->get($test, $task));
@@ -130,15 +132,43 @@ class TaskController extends BaseViewController
             }                
         }
         
-        return $this->getCachableResponse($this->render('SimplyTestableWebClientBundle:App:task/results.html.twig',
-            array(
+        $viewData = array(
                 'test' => $test,
                 'task' => $task,
                 'public_site' => $this->container->getParameter('public_site'),
                 'user' => $this->getUser(),
                 'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),                        
-            )
+        );
+        
+        if ($task->getType() == 'CSS validation') {
+            $viewData['errors_by_ref'] = $this->getCssValidationErrorsGroupedByRef($task);
+        }
+        
+        return $this->getCachableResponse($this->render(
+            'SimplyTestableWebClientBundle:App:task/results.html.twig',
+            $viewData
         ), $cacheValidatorHeaders);        
+    }
+    
+    
+    private function getCssValidationErrorsGroupedByRef(Task $task) {
+        if ($task->getType() != 'CSS validation') {
+            return array();
+        }
+        
+        $errorsGroupedByRef = array();
+        $errors = $task->getOutput()->getResult()->getErrors();
+        
+        foreach ($errors as $error) {
+            /* @var $error \SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage */
+            if (!isset($errorsGroupedByRef[$error->getRef()])) {
+                $errorsGroupedByRef[$error->getRef()] = array();
+            }
+            
+            $errorsGroupedByRef[$error->getRef()][] = $error;
+        }
+        
+        return $errorsGroupedByRef;
     }
     
     

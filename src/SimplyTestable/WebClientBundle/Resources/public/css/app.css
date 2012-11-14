@@ -175,7 +175,7 @@ section h2 {
 
 #test-list #task-list-container .task {
     list-style-type: none;
-    margin:0 0 10px 0;
+    margin:0 0 0 0;
     padding:0;
 }
 
@@ -188,7 +188,7 @@ section h2 {
 }
 
 #test-list #task-list-container .task .meta .output-indicator {
-    margin-left:8px;
+/*    margin-left:8px;*/
 }
 
 #test-list #task-list-container .tasks .queued i,
@@ -196,28 +196,34 @@ section h2 {
     color:#F89406;
 }
 
-#test-list #task-list-container ul.tasks li.in-progress i {
+#test-list #task-list-container ul.tasks .in-progress i {
     color:#08c;
 }
 
-#test-list #task-list-container ul.tasks li.failed-no-retry-available i,
-#test-list #task-list-container ul.tasks li.failed-retry-available i,
-#test-list #task-list-container ul.tasks li.failed-retry-limit-reached i,
-#test-list #task-list-container ul.tasks li.failed i {
+#test-list #task-list-container ul.tasks .failed-no-retry-available i,
+#test-list #task-list-container ul.tasks .failed-retry-available i,
+#test-list #task-list-container ul.tasks .failed-retry-limit-reached i,
+#test-list #task-list-container ul.tasks .failed i {
     color:#953B39;
 }
 
-#test-list #task-list-container ul.tasks li.completed i {
+#test-list #task-list-container ul.tasks .completed i {
     color:#51A351;
 }
 
-#test-list #task-list-container ul.tasks li.skipped i,
-#test-list #task-list-container ul.tasks li.cancelled i {
+#test-list #task-list-container ul.tasks .skipped i,
+#test-list #task-list-container ul.tasks .cancelled i {
     color:#999;
 }
 
-#test-list #task-list-container ul.tasks li.task .type {
+#test-list #task-list-container ul.tasks i.icon-caret-right {
+    color:#fff;
+}
+
+#test-list #task-list-container ul.tasks .task .type {
     opacity:0.6;
+    display:inline-block;
+    width:110px;
 }
 
 #test-list .tab-content .tab-pane {
@@ -313,6 +319,10 @@ body.app-task-results #main h1 i,
 body.app-results #main h1 i {
     font-size: 38px;
     line-height: 48px;        
+}
+
+#test-list #task-list-container .taskSet {
+    margin-bottom:10px;
 }
 
 #test-list #task-list-container li.task a.label i {
@@ -555,6 +565,12 @@ div.input-secondary {
     display:inline-block;
     width:30px;
     text-align: right;
+}
+
+body.app-task-results #task-summary h3 {
+    font-size: 16px;
+    font-weight: normal;    
+    opacity:0.9;
 }
 
 @media (min-width: 1200px) {

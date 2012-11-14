@@ -434,7 +434,7 @@ class AppController extends BaseViewController
                 }
             } 
             
-            $viewData['tasks'] = $tasks;
+            $viewData['tasks'] = $this->getTasksGroupedByUrl($tasks);
         //} else {
         //    $viewData['tasks'] = array();
         //}
@@ -444,6 +444,26 @@ class AppController extends BaseViewController
                 $this->sendResponse($viewData),
                 $cacheValidatorHeaders
         ); 
+    }
+    
+    
+    /**
+     * 
+     * @param array $tasks
+     * @return array
+     */
+    private function getTasksGroupedByUrl($tasks = array()) {
+        $tasksGroupedByUrl = array();
+        foreach ($tasks as $task) {
+            /* @var $task Task */
+            if (!isset($tasksGroupedByUrl[$task->getUrl()])) {
+                $tasksGroupedByUrl[$task->getUrl()] = array();
+            }
+            
+            $tasksGroupedByUrl[$task->getUrl()][] = $task;
+        }
+        
+        return $tasksGroupedByUrl;
     }
     
     

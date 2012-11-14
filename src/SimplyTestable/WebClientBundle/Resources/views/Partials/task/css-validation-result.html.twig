@@ -1,0 +1,13 @@
+<div class="css-validation-result">
+    <p>
+        <span class="meta">Line {{ error.getLineNumber }}:</span>
+        <span class="message">
+            <code>{{ error.context }}</code>
+{% autoescape false %}            
+{{ error }}
+{% endautoescape %}                
+        </span>                 
+    </p>
+</div>
+
+

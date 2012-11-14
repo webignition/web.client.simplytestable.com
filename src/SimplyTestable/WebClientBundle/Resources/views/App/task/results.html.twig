@@ -238,17 +238,31 @@
             <section>                
                 <div class="span12" id="task-summary">
                     <h2 class="info"><i class="icon-ban-circle"></i> Errors </h2>                    
+                    {% if task.type == 'CSS validation' %}
+                        {% for ref,errors in errors_by_ref %}
+                        <div>
+                            <h3><i class="icon icon-file"></i> {% if ref == '' %}Inline in your HTML{% else %}{{ ref }}{% endif %}:</h3>                            
+                            <ul class="errors">
+                                {% for error in errors %}
+                                    <li>
+                                        {% include 'SimplyTestableWebClientBundle:Partials:task/css-validation-result.html.twig' %}                                    
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endfor %}
+                    {% else %}
                     <ul class="errors">
                         {% for error in task.output.result.getErrors %}
                             <li>
                                 {% if task.type == 'HTML validation' %}
                                     {% include 'SimplyTestableWebClientBundle:Partials:task/html-validation-result.html.twig' %}
-                                {% else %}
                                     <p class="message">{{ error }}</p>
                                 {% endif %}
                             </li>
                         {% endfor %}
-                    </ul>
+                    </ul>                           
+                    {% endif %}
                 </div>
                 <div class="clearfix"></div>
             </section>                
