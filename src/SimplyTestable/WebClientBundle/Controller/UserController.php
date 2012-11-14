@@ -423,7 +423,7 @@ class UserController extends BaseViewController
         )));
         
         $this->get('mailer')->send($message);        
-    }
+    }    
     
     
     private function sendPasswordResetConfirmationToken($email, $token) {
@@ -498,7 +498,17 @@ class UserController extends BaseViewController
      * @return boolean
      */
     private function isEmailValid($email) {        
-        return strpos($email, '@') > 0;
+        if (strpos($email, '@') <= 0) {
+            return false;
+        }
+        
+        try {
+            $message = \Swift_Message::newInstance();
+            $message->setTo($email);            
+            return true;
+        } catch (\Exception $exception) {
+            return false;
+        }
     }
     
     
