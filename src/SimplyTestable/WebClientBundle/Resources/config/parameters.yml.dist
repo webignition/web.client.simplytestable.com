@@ -21,6 +21,7 @@ parameters:
       user_exists: /user/{email}/exists/  
       user_reset_password: /user/reset-password/{token}/
       user: /user/{email}/
+      user_is_enabled: /user/{email}/enabled/
   public_site:
     urls:
       home: http://simplytestable.com
