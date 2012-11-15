@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 
 class AppController extends BaseViewController
 {
@@ -199,16 +200,47 @@ class AppController extends BaseViewController
         
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        } 
-
-        if (!$this->getTestService()->has($website, $test_id)) {
+        }
+        
+        if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
             return $this->redirect($this->generateUrl('app_test_redirector', array(
                 'website' => $website,
                 'test_id' => $test_id
             ), true));
         } 
         
-        $test = $this->getTestService()->get($website, $test_id);
+        try {
+            $test = $this->getTestService()->get($website, $test_id, $this->getUser());            
+        } catch (UserServiceException $e) {
+            if (!$this->isLoggedIn()) {                
+                $redirectParameters = json_encode(array(
+                    'route' => 'app_progress',
+                    'parameters' => array(
+                    'website' => $website,
+                    'test_id' => $test_id                        
+                    )
+                ));
+                
+                $this->get('session')->setFlash('user_signin_error', 'test-not-logged-in');
+                return $this->redirect($this->generateUrl('sign_in', array(
+                    'redirect' => base64_encode($redirectParameters)
+                ), true));                
+            }
+            
+            $this->setTemplate('SimplyTestableWebClientBundle:App:test-not-authorised.html.twig');
+            return $this->sendResponse(array(
+                'this_url' => $this->getProgressUrl($website, $test_id),
+                'test_input_action_url' => $this->generateUrl('test_cancel', array(
+                    'website' => $website,
+                    'test_id' => $test_id
+                )),
+                'website' => $website,
+                'test_id' => $test_id,
+                'public_site' => $this->container->getParameter('public_site'),
+                'user' => $this->getUser(),
+                'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),                
+            ));            
+        }
         
         if (in_array($test->getState(), $this->testFinishedStates)) {
             return $this->redirect($this->getResultsUrl($website, $test_id));
@@ -371,7 +403,7 @@ class AppController extends BaseViewController
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }        
         
-        if (!$this->getTestService()->has($website, $test_id)) {
+        if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
             return $this->redirect($this->generateUrl('app_test_redirector', array(
                 'website' => $website,
                 'test_id' => $test_id
@@ -392,7 +424,38 @@ class AppController extends BaseViewController
             return $response;
         }        
         
-        $test = $this->getTestService()->get($website, $test_id);
+        try {
+            $test = $this->getTestService()->get($website, $test_id, $this->getUser());            
+        } catch (UserServiceException $e) {
+            if (!$this->isLoggedIn()) {                
+                $redirectParameters = json_encode(array(
+                    'route' => 'app_progress',
+                    'parameters' => array(
+                    'website' => $website,
+                    'test_id' => $test_id                        
+                    )
+                ));
+                
+                $this->get('session')->setFlash('user_signin_error', 'test-not-logged-in');
+                return $this->redirect($this->generateUrl('sign_in', array(
+                    'redirect' => base64_encode($redirectParameters)
+                ), true));                
+            }
+            
+            $this->setTemplate('SimplyTestableWebClientBundle:App:test-not-authorised.html.twig');
+            return $this->sendResponse(array(
+                'this_url' => $this->getProgressUrl($website, $test_id),
+                'test_input_action_url' => $this->generateUrl('test_cancel', array(
+                    'website' => $website,
+                    'test_id' => $test_id
+                )),
+                'website' => $website,
+                'test_id' => $test_id,
+                'public_site' => $this->container->getParameter('public_site'),
+                'user' => $this->getUser(),
+                'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),                
+            ));            
+        }
         
         if ($test->getWebsite() != $website) {
             return $this->redirect($this->generateUrl('app_test_redirector', array(

@@ -39,11 +39,11 @@ class RedirectController extends BaseController
         }        
 
         if ($this->hasWebsite() && $this->hasTestId()) {            
-            if (!$this->getTestService()->has($this->website, $this->test_id)) {
+            if (!$this->getTestService()->has($this->website, $this->test_id, $this->getUser())) {
                 return $this->redirect($this->getWebsiteUrl($website));
             } 
 
-            $test = $this->getTestService()->get($this->website, $this->test_id);
+            $test = $this->getTestService()->get($this->website, $this->test_id, $this->getUser());
 
             if (in_array($test->getState(), $this->testFinishedStates)) {
                 return $this->redirect($this->getResultsUrl($this->website, $this->test_id));

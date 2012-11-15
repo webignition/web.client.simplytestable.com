@@ -68,6 +68,30 @@
             <button type="button" class="close" data-dismiss="alert">×</button>
             <strong>Slow down!</strong> You're going to have to enter in your password to sign in.
         </div>                
+            {% endif %}   
+        
+            {% if user_signin_error == 'test-not-logged-in' %}
+        <div class="alert alert-info">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p>
+                <strong>Hello!</strong>
+            </p>
+            <p>
+                You need to sign in to access this test.
+            </p>
+        </div>                
+            {% endif %}           
+
+            {% if user_signin_error == 'authentication-failure' %}
+        <div class="alert alert-error for:input-email">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p>
+                <strong>Hmmm.</strong>
+            </p>
+            <p>
+                That's not the right password. Try again.
+            </p>
+        </div>                
             {% endif %}         
         
             {% if user_signin_error == 'public-user' %}
@@ -116,13 +140,14 @@
     </div>
     <div>
         <button class="submit btn btn-large btn-primary" type="submit">Sign in!</button>
+        <input type="hidden" name="redirect" value="{{ redirect }}" />
     </div>
 </form>   
 
 <form class="form-horizontal" method="get" action="{{ path('reset_password') }}">
     <div class="input-secondary">                
         <button class="btn" type="submit">I need to reset my password</button>
-        <input type="hidden" name="email" value="{{ email }}" />
+        <input type="hidden" name="email" value="{{ email }}" />        
     </div>      
 </form>
 

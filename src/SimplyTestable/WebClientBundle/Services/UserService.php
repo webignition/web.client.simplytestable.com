@@ -191,17 +191,20 @@ class UserService extends CoreApplicationService {
     
     /**
      * 
-     * @param string $email
      * @return boolean
      * @throws CoreApplicationAdminRequestException
      */
-    public function exists($email) {
+    public function exists() {
+        /* @var $currentUser User */
         $currentUser = ($this->hasUser()) ? $this->getUser() : null;
+        if (is_null($currentUser)) {
+            return false;
+        }
    
         $this->setUser($this->getAdminUser());
         
         $request = $this->getAuthorisedHttpRequest($this->getUrl('user_exists', array(
-            'email' => $email
+            'email' => $currentUser->getUsername()
         )), HTTP_METH_POST);
         
         $response = $this->getHttpClient()->getResponse($request);
@@ -215,6 +218,39 @@ class UserService extends CoreApplicationService {
         } 
         
         return $response->getResponseCode() == 200;         
+    }
+    
+    
+    /**
+     * 
+     * @return boolean
+     * @throws CoreApplicationAdminRequestException
+     */
+    public function isEnabled() {
+        if (!$this->exists()) {
+            return false;
+        }
+        
+        /* @var $currentUser User */
+        $currentUser = ($this->hasUser()) ? $this->getUser() : null;        
+   
+        $this->setUser($this->getAdminUser());
+        
+        $request = $this->getAuthorisedHttpRequest($this->getUrl('user_is_enabled', array(
+            'email' => $currentUser->getUsername()
+        )), HTTP_METH_POST);
+        
+        $response = $this->getHttpClient()->getResponse($request);
+        
+        if (!is_null($currentUser)) {
+            $this->setUser($currentUser);
+        }
+        
+        if ($response->getResponseCode() == 401) {
+            throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
+        } 
+        
+        return $response->getResponseCode() == 200;           
     }
 
     
@@ -271,7 +307,7 @@ class UserService extends CoreApplicationService {
      * 
      * @return \SimplyTestable\WebClientBundle\Model\User
      */
-    public function getUser() {        
+    public function getUser() {                
         if (is_null($this->session->get('user'))) {
             $this->setUser($this->getPublicUser());
         }
