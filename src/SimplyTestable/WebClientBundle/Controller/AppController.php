@@ -396,7 +396,7 @@ class AppController extends BaseViewController
         return $taskCountByState;
     }    
     
-    public function resultsAction($website, $test_id) {                
+    public function resultsAction($website, $test_id) {                        
         $this->getTestService()->setUser($this->getUser());
         
         if ($this->isUsingOldIE()) {
@@ -422,10 +422,10 @@ class AppController extends BaseViewController
         $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
         if ($response->isNotModified($this->getRequest())) {
             return $response;
-        }        
+        }
         
         try {
-            $test = $this->getTestService()->get($website, $test_id, $this->getUser());            
+            $test = $this->getTestService()->get($website, $test_id, $this->getUser());
         } catch (UserServiceException $e) {
             if (!$this->isLoggedIn()) {                
                 $redirectParameters = json_encode(array(
@@ -470,6 +470,14 @@ class AppController extends BaseViewController
         
         $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();        
         
+        if ($remoteTestSummary->task_count > $test->getTaskCount()) {
+            $tasks = $this->getTaskService()->getCollection($test);
+            
+            foreach ($tasks as $task) {
+                $test->addTask($task);
+            }         
+        }
+        
         $viewData = array(
             'this_url' => $this->getResultsUrl($website, $test_id),
             'test_input_action_url' => $this->generateUrl('test_start'),
@@ -496,7 +504,7 @@ class AppController extends BaseViewController
                     $task->getOutput()->setResult($parser->getResult());
                 }
             } 
-            
+       
             $viewData['tasks'] = $this->getTasksGroupedByUrl($tasks);
         //} else {
         //    $viewData['tasks'] = array();
