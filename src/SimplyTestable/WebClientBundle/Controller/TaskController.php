@@ -27,11 +27,11 @@ class TaskController extends BaseViewController
     public function collectionAction($website, $test_id) {
         $this->getTestService()->setUser($this->getUser());
         
-        if (!$this->getTestService()->has($website, $test_id)) {
+        if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
             return $this->sendNotFoundResponse();
         }
         
-        $test = $this->getTestService()->get($website, $test_id);        
+        $test = $this->getTestService()->get($website, $test_id, $this->getUser());        
         $taskIds = $this->getRequestTaskIds();               
         $tasks = $this->getTaskService()->getCollection($test, $taskIds);
         
