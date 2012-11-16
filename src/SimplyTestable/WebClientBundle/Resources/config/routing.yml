@@ -96,7 +96,7 @@ app_task_ids:
 
 test_start:
     pattern:  /test/start/
-    defaults: { _controller: SimplyTestableWebClientBundle:Test:start }
+    defaults: { _controller: SimplyTestableWebClientBundle:TestStart:start }
     
 test_cancel:
     pattern:  /test/{website}/{test_id}/cancel/

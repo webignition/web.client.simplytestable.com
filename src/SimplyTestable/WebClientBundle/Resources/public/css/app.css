@@ -573,6 +573,10 @@ body.app-task-results #task-summary h3 {
     opacity:0.9;
 }
 
+#test-options {
+    margin-top:20px;
+}
+
 @media (min-width: 1200px) {
     body.single-page-dialog #main input {
         width:96%;

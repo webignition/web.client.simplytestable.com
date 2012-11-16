@@ -49,17 +49,18 @@ class AppController extends BaseViewController
         }        
         
         $templateName = 'SimplyTestableWebClientBundle:App:index.html.twig';
-        $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);        
+        $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);
         
-        $hasTestStartError = $this->hasFlash('test_start_error');
-        $hasTestStartBlockedWebsiteError = $this->hasFlash('test_start_error_blocked_website');
+        $htmlValidationSelected = $this->getPersistentValue('html-validation', '1');
+        $cssValidationSelected = $this->getPersistentValue('css-validation', '1');
+        
+        $testStartError = $this->getFlash('test_start_error');        
         
         $recentTests = $this->getRecentTests(6);
         $recentTestsHash = md5(json_encode($recentTests));        
         
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
-            'test_start_error' => ($hasTestStartError) ? 'true' : 'false',
-            'test_start_error_blocked_website' => ($hasTestStartBlockedWebsiteError) ? 'true' : 'false',
+            'test_start_error' => $testStartError,
             'recent_tests_hash' => $recentTestsHash
         ));
         
@@ -77,12 +78,14 @@ class AppController extends BaseViewController
         
         return $this->render($templateName, array(            
             'test_input_action_url' => $this->generateUrl('test_start'),
-            'test_start_error' => $hasTestStartError,
-            'test_start_error_blocked_website' => $hasTestStartBlockedWebsiteError,
+            'test_start_error' => $testStartError,
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'recent_tests' => $recentTests
+            'recent_tests' => $recentTests,
+            'website' => $this->getPersistentValue('website'),
+            'html_validation_selected' => $htmlValidationSelected,
+            'css_validation_selected' => $cssValidationSelected,
         ));         
 
         return $this->getCachableResponse($this->render($templateName, array(            

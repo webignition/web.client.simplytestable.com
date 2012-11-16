@@ -162,13 +162,14 @@ abstract class BaseViewController extends BaseController
     }
     
     
-    protected function getPersistentValue($key) {
+    protected function getPersistentValue($key, $default = null) {
         $flashValue = $this->getFlash($key);
         if ($flashValue != '') {
             return $flashValue;
         }
         
-        return $this->get('request')->query->get($key);
+        $requestValue = $this->get('request')->query->get($key);
+        return is_null($requestValue) ? $default : $requestValue;
     }
     
 }

@@ -20,23 +20,35 @@
             </label>
         </h1>
             
-        {% if test_start_error is defined and test_start_error != 0 %}
+        {% if test_start_error is defined and test_start_error != '' %}
+            {% if test_start_error == 'website-blank' %}
         <div class="alert alert-error for:input-website">
             <button type="button" class="close" data-dismiss="alert">×</button>
             <strong>Slow down!</strong> You're going to have to enter a website URL if we're going to get anything done here.
-        </div>
-        {% endif %} 
+        </div>            
+            {% endif %}            
             
-        {% if test_start_error_blocked_website is defined and test_start_error_blocked_website != 0 %}
+            {% if test_start_error == 'website-blocked' %}
         <div class="alert alert-error for:input-website">
             <button type="button" class="close" data-dismiss="alert">×</button>
             <p><strong>Ouch!</strong></p>
             <p><strong>{{ website }}</strong>  is too large for me to test just yet. I'm still new. Do you have a website you made that you'd like to test?</p>
-        </div>
+        </div>            
+            {% endif %}
+            
+            {% if test_start_error == 'no-test-types-selected' %}
+        <div class="alert alert-error for:input-website">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p><strong>Slow down!</strong></p>
+            <p>
+                You'll need to choose something to test - tick <strong>HTML validation</strong> and <strong>CSS validation</strong> as required.
+            </p>
+        </div>            
+            {% endif %}            
         {% endif %}             
 
         <div class="fields input-append larger">                    
-            <input name="website" id="input-website" type="text" placeholder="Enter website homepage URL &hellip;" {% if test is defined %} {% if test.state != 'completed' and test.state != 'cancelled' and test.state != 'no-sitemap' %} disabled {% endif %} value="{{ test.website }}" {% endif %}>            
+            <input name="website" id="input-website" type="text" placeholder="Enter website homepage URL &hellip;" {% if test is defined %} {% if test.state != 'completed' and test.state != 'cancelled' and test.state != 'no-sitemap' %} disabled {% endif %} value="{{ test.website }}" {% endif %} {% if website is defined %} value="{{ website }}" {% endif %}>            
             {% if test is defined %}
                 {% if test.state == 'completed' or test.state == 'cancelled' %}
                 <button type="submit" class="btn btn-primary btn-large">Run test again<i class="icon-repeat icon-large"></i></button>
@@ -46,9 +58,25 @@
                 <button type="submit" class="btn btn-primary btn-large btn-danger">Cancel test <i class="icon-warning-sign icon-large"></i></button>
                 {% endif %}            
             {% else %}
-            <button type="submit" class="btn btn-primary btn-large">Start new test <i class="icon-play icon-large"></i></button>            
+            <button type="submit" class="btn btn-primary btn-large">Start new test <i class="icon-play icon-large"></i></button>                        
             {% endif %}
         </div>
+            
+        {% if test is not defined %}
+        <div id="test-options">
+            <div id="html-validation-options">
+                <label class="checkbox">
+                  <input type="checkbox" value="1" name="html-validation" checked /> HTML validation
+                </label>                
+            </div>
+                
+            <div id="css-validation-options">
+                <label class="checkbox">
+                  <input type="checkbox" value="1" name="css-validation" checked /> CSS validation
+                </label>
+            </div>                
+        </div>
+        {% endif %}
             
     </form>
 </div>
