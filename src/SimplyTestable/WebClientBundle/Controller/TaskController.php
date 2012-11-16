@@ -57,11 +57,11 @@ class TaskController extends BaseViewController
     public function idCollectionAction($website, $test_id) {        
         $this->getTestService()->setUser($this->getUser());
         
-        if (!$this->getTestService()->has($website, $test_id)) {
+        if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
             return $this->sendNotFoundResponse();
         }
         
-        $test = $this->getTestService()->get($website, $test_id);        
+        $test = $this->getTestService()->get($website, $test_id, $this->getUser());        
         $taskIds = $this->getTaskService()->getRemoteTaskIds($test);
 
         return new Response($this->getSerializer()->serialize($taskIds, 'json'));
