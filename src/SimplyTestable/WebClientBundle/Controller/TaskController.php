@@ -98,7 +98,7 @@ class TaskController extends BaseViewController
     public function resultsAction($website, $test_id, $task_id) {        
         $this->getTestService()->setUser($this->getUser());
         
-        if (!$this->getTestService()->has($website, $test_id)) {
+        if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
             return $this->redirect($this->generateUrl('app', array(), true));
         }
         
