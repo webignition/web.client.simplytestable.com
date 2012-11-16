@@ -120,7 +120,7 @@ class TaskController extends BaseViewController
             return $response;
         }
 
-        $test = $this->getTestService()->get($website, $test_id);
+        $test = $this->getTestService()->get($website, $test_id, $this->getUser());
         $task = $this->getTaskService()->get($test, $task_id);
         
         $this->getCssValidationErrorsGroupedByRef($task);
