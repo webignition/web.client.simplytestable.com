@@ -27,11 +27,11 @@ class TaskController extends BaseViewController
     public function collectionAction($website, $test_id) {
         $this->getTestService()->setUser($this->getUser());
         
-        if (!$this->getTestService()->has($website, $test_id)) {
+        if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
             return $this->sendNotFoundResponse();
         }
         
-        $test = $this->getTestService()->get($website, $test_id);        
+        $test = $this->getTestService()->get($website, $test_id, $this->getUser());        
         $taskIds = $this->getRequestTaskIds();               
         $tasks = $this->getTaskService()->getCollection($test, $taskIds);
         
@@ -57,11 +57,11 @@ class TaskController extends BaseViewController
     public function idCollectionAction($website, $test_id) {        
         $this->getTestService()->setUser($this->getUser());
         
-        if (!$this->getTestService()->has($website, $test_id)) {
+        if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
             return $this->sendNotFoundResponse();
         }
         
-        $test = $this->getTestService()->get($website, $test_id);        
+        $test = $this->getTestService()->get($website, $test_id, $this->getUser());        
         $taskIds = $this->getTaskService()->getRemoteTaskIds($test);
 
         return new Response($this->getSerializer()->serialize($taskIds, 'json'));
@@ -98,7 +98,7 @@ class TaskController extends BaseViewController
     public function resultsAction($website, $test_id, $task_id) {        
         $this->getTestService()->setUser($this->getUser());
         
-        if (!$this->getTestService()->has($website, $test_id)) {
+        if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
             return $this->redirect($this->generateUrl('app', array(), true));
         }
         
@@ -120,7 +120,7 @@ class TaskController extends BaseViewController
             return $response;
         }
 
-        $test = $this->getTestService()->get($website, $test_id);
+        $test = $this->getTestService()->get($website, $test_id, $this->getUser());
         $task = $this->getTaskService()->get($test, $task_id);
         
         $this->getCssValidationErrorsGroupedByRef($task);

@@ -137,13 +137,38 @@ abstract class BaseViewController extends BaseController
      * @return boolean
      */
     public function isUsingOldIE() {        
-        try {
-            $browserInfo =  $this->container->get('jbi_browscap.browscap')->getBrowser($this->getRequest()->server->get('HTTP_USER_AGENT'));                
-            return ($browserInfo->Browser == 'IE' && $browserInfo->MajorVer < 8);                 
-        } catch (\Exception $e) {
-            return false;
-        }    
+        return $this->isUsingIE6() || $this->isUsingIE7();           
     }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    private function isUsingIE6() {        
+        if (!preg_match('/msie 6\.[0-9]+/i', $_SERVER['HTTP_USER_AGENT'])) {
+            return false;
+        }
+        
+        if (preg_match('/opera/i', $_SERVER['HTTP_USER_AGENT'])) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    private function isUsingIE7() {        
+        if (!preg_match('/msie 7\.[0-9]+/i', $_SERVER['HTTP_USER_AGENT'])) {
+            return false;
+        }
+        
+        return true;
+    }    
     
     
     /**

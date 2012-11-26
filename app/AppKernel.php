@@ -22,7 +22,6 @@ class AppKernel extends Kernel
             new SimplyTestable\WebClientBundle\SimplyTestableWebClientBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle($this),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
-            new Jbi\BrowscapBundle\JbiBrowscapBundle(),
             new Glit\ResqueBundle\GlitResqueBundle(),
         );
 
