@@ -495,15 +495,6 @@ class AppController extends BaseViewController
         //if ($taskCollectionLength > 0 && $taskCollectionLength <= self::RESULTS_PAGE_LENGTH) {
             $remoteTaskIds = ($taskListFilter == 'all') ? null : $this->getFilteredTaskCollectionRemoteIds($test, $this->getRequestValue('filter', $taskListFilter));           
             $tasks = $this->getTaskService()->getCollection($test, $remoteTaskIds); 
-            
-            foreach ($tasks as $taskIndex => $task) {                
-                if (($task->getState() == 'completed' || $task->getState() == 'failed') && $task->hasOutput()) {           
-                    $parser = $this->getTaskOutputResultParserService()->getParser($task->getOutput());
-                    $parser->setOutput($task->getOutput());
-
-                    $task->getOutput()->setResult($parser->getResult());
-                }
-            } 
        
             $viewData['tasks'] = $this->getTasksGroupedByUrl($tasks);
         //} else {
