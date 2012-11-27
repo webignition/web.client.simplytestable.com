@@ -2,6 +2,8 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+use SimplyTestable\WebClientBundle\Model\TestOptions;
+
 class TestStartController extends BaseController
 {    
     private $allowedTestTypeMap = array(
@@ -14,25 +16,25 @@ class TestStartController extends BaseController
     {        
         $this->getTestService()->setUser($this->getUser());
         
+        $this->getTestOptionsRequestParserService()->setRequestData($this->getRequestValues(HTTP_METH_POST));
+        $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
+        
         if (!$this->hasWebsite()) {
             $this->get('session')->setFlash('test_start_error', 'website-blank');
-            return $this->redirect($this->generateUrl('app', $this->getRedirectValues(), true));
+            return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));
         }
         
         if ($this->getWebsiteBlockListService()->contains($this->getWebsite())) {
             $this->get('session')->setFlash('test_start_error', 'website-blocked');
-            return $this->redirect($this->generateUrl('app', array('website' => trim($this->getRequestValue('website'))), true));            
+            return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));            
         }
         
-        $testOptions = $this->getTestOptions();
-        if ($testOptions === false) {
+        if ($testOptions->hasTestTypes() === false) {
             $this->get('session')->setFlash('test_start_error', 'no-test-types-selected');
-            return $this->redirect($this->generateUrl('app', array('website' => trim($this->getRequestValue('website'))), true));                
+            return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));                
         }
         
-        exit();
-        
-        $jsonResponseObject = $this->getTestService()->start($this->getWebsite())->getContentObject();        
+        $jsonResponseObject = $this->getTestService()->start($this->getWebsite(), $testOptions)->getContentObject();        
         return $this->redirect($this->generateUrl(
             'app_progress',
             array(
@@ -44,15 +46,16 @@ class TestStartController extends BaseController
     }
     
     
-    private function getRedirectValues() {
+    private function getRedirectValues(TestOptions $testOptions) {
         $redirectValues = array();
         
         if ($this->hasWebsite()) {
-            $redirectValues['website'] = $this->getRequestValue('website');
+            $redirectValues['website'] = trim($this->getRequestValue('website'));
         }
         
-        foreach ($this->getTestTypes() as $testTypeKey => $testTypeName) {
-            $redirectValues[$testTypeKey] = 1;
+        $absoluteTestTypes = $testOptions->getAbsoluteTestTypes();        
+        foreach ($absoluteTestTypes as $testTypeKey => $selectedValue) {
+            $redirectValues[$testTypeKey] = $selectedValue;
         } 
         
         return $redirectValues;
@@ -89,17 +92,23 @@ class TestStartController extends BaseController
      * 
      * @return array
      */
-    private function getTestTypes() {        
+    private function getTestTypes() {
+        var_dump($this->getRequestValues(HTTP_METH_POST));
+        exit();
+        
         $testTypes = array();
         
         foreach ($this->allowedTestTypeMap as $testTypeKey => $testTypeName) {
             if ($this->getRequestValue($testTypeKey) === "1") {
                 $testTypes[$testTypeKey] = $testTypeName;
-            }             
+            }
         }              
         
         return $testTypes;
     }
+    
+    
+    
     
     
     public function cancelAction()
@@ -173,5 +182,13 @@ class TestStartController extends BaseController
         $websiteBlockListService->setBlockListResourcePath($this->container->get('kernel')->locateResource('@SimplyTestableWebClientBundle/Resources/config/WebsiteBlockList.txt'));
         
         return $websiteBlockListService;
+    }    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\RequestParserService
+     */
+    private function getTestOptionsRequestParserService() {
+        return $this->container->get('simplytestable.services.testoptions.requestparserservice');
     }    
 }

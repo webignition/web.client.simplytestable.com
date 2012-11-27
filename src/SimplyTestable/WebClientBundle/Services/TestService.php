@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Entity\TimePeriod;
 use Symfony\Component\HttpKernel\Log\LoggerInterface as Logger;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
+use SimplyTestable\WebClientBundle\Model\TestOptions;
 
 use webignition\NormalisedUrl\NormalisedUrl;
 
@@ -79,11 +80,21 @@ class TestService extends CoreApplicationService {
     }     
     
     
-    public function start($canonicalUrl) {
+    public function start($canonicalUrl, TestOptions $testOptions) {
         $httpRequest = $this->getAuthorisedHttpRequest(
             $this->getUrl('test_start', array(
             'canonical-url' => $canonicalUrl
-        )));        
+        ))); 
+        
+        $queryData = array();
+        
+        if ($testOptions->hasTestTypes()) {
+            $queryData['test-types'] = $testOptions->getTestTypes();
+        }
+        
+        if (count($queryData)) {
+            $httpRequest->setQueryData($queryData);
+        }
         
         /* @var $response \webignition\WebResource\JsonDocument\JsonDocument */
         try {

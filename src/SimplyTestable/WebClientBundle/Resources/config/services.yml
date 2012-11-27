@@ -68,3 +68,6 @@ services:
     class:  SimplyTestable\WebClientBundle\Services\UserSerializerService        
     arguments:
         key: %secret%       
+        
+  simplytestable.services.testoptions.requestparserservice:
+    class:  SimplyTestable\WebClientBundle\Services\TestOptions\RequestParserService      

@@ -66,13 +66,13 @@
         <div id="test-options">
             <div id="html-validation-options">
                 <label class="checkbox">
-                  <input type="checkbox" value="1" name="html-validation" checked /> HTML validation
+                  <input type="checkbox" value="1" name="html-validation" {% if (html_validation_selected == 1) %} checked {% endif %} /> HTML validation
                 </label>                
             </div>
                 
             <div id="css-validation-options">
                 <label class="checkbox">
-                  <input type="checkbox" value="1" name="css-validation" checked /> CSS validation
+                  <input type="checkbox" value="1" name="css-validation" {% if (css_validation_selected == 1) %} checked {% endif %} /> CSS validation
                 </label>
             </div>                
         </div>
