@@ -176,7 +176,7 @@ application.progress.taskController = function () {
     };
     
     var getTaskCount = function () {
-        return $('#test-summary-task-count').text();
+        return parseInt($('#test-summary-task-count').text(), 10);
     };    
     
     var getTaskIdsUrl = function () {
