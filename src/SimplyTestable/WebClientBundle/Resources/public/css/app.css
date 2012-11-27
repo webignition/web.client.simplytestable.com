@@ -577,6 +577,12 @@ body.app-task-results #task-summary h3 {
     margin-top:30px;
 }
 
+#test-options h2 {
+    font-size: 28px;
+    line-height: 32px;
+    font-weight: normal;    
+}
+
 @media (min-width: 1200px) {
     body.single-page-dialog #main input {
         width:96%;
