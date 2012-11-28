@@ -56,7 +56,7 @@ class AppController extends BaseViewController
         
         $testStartError = $this->getFlash('test_start_error');        
         
-        $recentTests = $this->getRecentTests(6);
+        $recentTests = $this->getRecentTests(9);
         $recentTestsHash = md5(json_encode($recentTests));        
         
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
