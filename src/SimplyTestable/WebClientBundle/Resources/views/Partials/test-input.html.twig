@@ -64,15 +64,15 @@
             
         {% if test is not defined %}
         <div id="test-options">
-            <h2 class="info"><i class="icon-wrench"></i> Test options</h2>
-            <div id="html-validation-options">
+            <p class="info"><i class="icon-wrench"></i> What do you want to check?</p>
+            <div class="test-options-set" id="html-validation-options">
                 <label class="checkbox">
                   <input type="checkbox" value="1" name="html-validation" {% if (html_validation_selected == 1) %} checked {% endif %} /> HTML validation
                   <span class="help-block">Examine whether the HTML markup for all your pages is valid</span>
                 </label>                
             </div>
                 
-            <div id="css-validation-options">
+            <div class="test-options-set" id="css-validation-options">
                 <label class="checkbox">
                   <input type="checkbox" value="1" name="css-validation" {% if (css_validation_selected == 1) %} checked {% endif %} /> CSS validation
                   <span class="help-block">Check CSS rules defined in linked stylesheets and inline</span>
