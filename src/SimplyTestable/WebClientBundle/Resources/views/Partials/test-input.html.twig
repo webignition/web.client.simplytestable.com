@@ -62,7 +62,7 @@
             {% endif %}
         </div>
             
-        {% if test is not defined %}
+        {% if app.request.attributes.get('_route') == 'app' %}
         <div id="test-options">
             <p class="info"><i class="icon-wrench"></i> What do you want to check?</p>
             <div class="test-options-set" id="html-validation-options">
@@ -79,6 +79,34 @@
                 </label>
             </div>                
         </div>
+        {% elseif app.request.attributes.get('_route') == 'app_progress' %}
+        <div id="test-options">
+            <p>
+                <i class="icon-caret-right"></i>
+                Checking          
+            {% if 'HTML validation' in task_types and 'CSS validation' in task_types %}
+                <span class="test-type">HTML validation</span> and <span class="test-type">CSS validation</span>
+            {% elseif 'HTML validation' in task_types %}
+                <span class="test-type">HTML validation</span>
+            {% elseif 'CSS validation' in task_types %}
+                <span class="test-type">CSS validation</span>
+            {% endif %}                
+            </p>
+        </div>
+        {% elseif app.request.attributes.get('_route') == 'app_results' %}
+        <div id="test-options">
+            <p>
+                <i class="icon-caret-right"></i>
+                Re-check        
+            {% if 'HTML validation' in task_types and 'CSS validation' in task_types %}
+                <label class="test-type"><input type="checkbox" value="1" name="html-validation" checked /> HTML validation</label> and <label class="test-type"><input type="checkbox" value="1" name="css-validation" checked /> CSS validation</label>
+            {% elseif 'HTML validation' in task_types %}
+                <label class="test-type"><input type="checkbox" value="1" name="html-validation" checked /> HTML validation</label> and <label class="test-type"><input type="checkbox" value="1" name="css-validation" /> CSS validation</label>
+            {% elseif 'CSS validation' in task_types %}
+                <label class="test-type"><input type="checkbox" value="1" name="html-validation" /> HTML validation</label> and <label class="test-type"><input type="checkbox" value="1" name="css-validation" checked /> CSS validation</label>
+            {% endif %}                
+            </p>
+        </div>            
         {% endif %}
             
     </form>

@@ -258,6 +258,11 @@ class AppController extends BaseViewController
         
         $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
         
+        $taskTypes = array();
+        foreach ($remoteTestSummary->task_types as $taskTypeObject) {
+            $taskTypes[] = $taskTypeObject->name;
+        }
+        
         $viewData = array(
             'this_url' => $this->getProgressUrl($website, $test_id),
             'test_input_action_url' => $this->generateUrl('test_cancel', array(
@@ -272,7 +277,8 @@ class AppController extends BaseViewController
             'completion_percent' => $this->getCompletionPercent($remoteTestSummary),
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),            
+            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+            'task_types' => $taskTypes
         );          
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
@@ -473,6 +479,11 @@ class AppController extends BaseViewController
         
         $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();        
         
+        $taskTypes = array();
+        foreach ($remoteTestSummary->task_types as $taskTypeObject) {
+            $taskTypes[] = $taskTypeObject->name;
+        }        
+        
         if ($remoteTestSummary->task_count > $test->getTaskCount()) {
             $tasks = $this->getTaskService()->getCollection($test);
             
@@ -490,7 +501,8 @@ class AppController extends BaseViewController
             'public_site' => $this->container->getParameter('public_site'),
             'filter' => $taskListFilter,
             'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),            
+            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),    
+            'task_types' => $taskTypes
         );
                        
         //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTestSummary->task_count : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));

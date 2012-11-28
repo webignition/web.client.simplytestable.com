@@ -437,7 +437,7 @@ body.single-page-dialog #main button.submit {
 
 form .larger input {
     font-size: 15px;
-    padding: 13px 9px 11px 9px;      
+    padding: 14px 9px 13px 9px;      
 }
 
 body.app form .larger input {
@@ -574,6 +574,10 @@ body.app-task-results #task-summary h3 {
 }
 
 #test-options {
+    margin-top:20px;
+}
+
+body.app #test-options {
     margin-top:30px;
 }
 
@@ -588,6 +592,23 @@ body.app-task-results #task-summary h3 {
 
 #test-options .test-options-set:hover {
     background-color:#e7e7e7;
+}
+
+#test-options .test-type {
+    font-weight: bold;
+    opacity: 0.9;
+}
+
+#input form {
+    margin-bottom: 0;
+}
+
+body.app-results #test-options label {
+    display:inline;
+}
+
+body.app-results #test-options label input {
+    margin-top:0;
 }
 
 @media (min-width: 1200px) {
