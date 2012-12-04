@@ -53,6 +53,7 @@ class AppController extends BaseViewController
         
         $htmlValidationSelected = $this->getPersistentValue('html-validation', '1');
         $cssValidationSelected = $this->getPersistentValue('css-validation', '1');
+        $jsStaticAnalysisSelected = $this->getPersistentValue('js-static-analysis', '1');
         
         $testStartError = $this->getFlash('test_start_error');        
         
@@ -86,6 +87,7 @@ class AppController extends BaseViewController
             'website' => $this->getPersistentValue('website'),
             'html_validation_selected' => $htmlValidationSelected,
             'css_validation_selected' => $cssValidationSelected,
+            'js_static_analysis_selected' => $jsStaticAnalysisSelected
         ));         
 
         return $this->getCachableResponse($this->render($templateName, array(            

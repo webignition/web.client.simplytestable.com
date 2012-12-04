@@ -78,6 +78,13 @@
                   <span class="help-block">Check CSS rules defined in linked stylesheets and inline</span>
                 </label>
             </div>                
+            
+            <div class="test-options-set" id="js-static-analysis-validation-options">
+                <label class="checkbox">
+                  <input type="checkbox" value="1" name="js-static-analysis" {% if (js_static_analysis_selected == 1) %} checked {% endif %} /> JavaScript static analysis
+                  <span class="help-block">Analyse the quality of your JavaScript with <a href="http://www.jslint.com/lint.html">JSLint</a></span>
+                </label>
+            </div>             
         </div>
         {% elseif app.request.attributes.get('_route') == 'app_progress' %}
         <div id="test-options">
