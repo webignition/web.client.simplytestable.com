@@ -8,7 +8,8 @@ class TestOptions {
     
     private $testTypeMap = array(
         'html-validation' => 'HTML validation',
-        'css-validation' => 'CSS validation'
+        'css-validation' => 'CSS validation',
+        'js-static-analysis' => 'JS static analysis'
     );
     
     
