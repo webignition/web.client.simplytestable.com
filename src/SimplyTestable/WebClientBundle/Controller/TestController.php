@@ -4,33 +4,6 @@ namespace SimplyTestable\WebClientBundle\Controller;
 
 class TestController extends BaseController
 {    
-    public function startAction()
-    {
-        $this->getTestService()->setUser($this->getUser());
-        
-        if (!$this->hasWebsite()) {
-            $this->get('session')->setFlash('test_start_error', 'non-blank string');
-            return $this->redirect($this->generateUrl('app', array(), true));
-        }        
-        
-        if ($this->getWebsiteBlockListService()->contains($this->getWebsite())) {
-            $this->get('session')->setFlash('test_start_error_blocked_website', 'non-blank string');
-            $this->get('session')->setFlash('website', $this->getWebsite());
-            return $this->redirect($this->generateUrl('app', array(), true));            
-        }        
-        
-        $jsonResponseObject = $this->getTestService()->start($this->getWebsite())->getContentObject();        
-        return $this->redirect($this->generateUrl(
-            'app_progress',
-            array(
-                'website' => $jsonResponseObject->website,
-                'test_id' => $jsonResponseObject->id
-            ),
-            true
-        ));
-    }
-    
-    
     public function cancelAction()
     {
         $this->getTestService()->setUser($this->getUser());
@@ -91,16 +64,5 @@ class TestController extends BaseController
      */
     private function getTestService() {
         return $this->container->get('simplytestable.services.testservice');
-    }
-    
-    /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Services\WebsiteBlockListService
-     */
-    private function getWebsiteBlockListService() {
-        $websiteBlockListService = $this->get('simplytestable.services.websiteblocklistservice');
-        $websiteBlockListService->setBlockListResourcePath($this->container->get('kernel')->locateResource('@SimplyTestableWebClientBundle/Resources/config/WebsiteBlockList.txt'));
-        
-        return $websiteBlockListService;
-    }    
+    }  
 }
