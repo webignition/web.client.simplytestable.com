@@ -88,18 +88,15 @@
                 </label>
             </div>             
         </div>
-        {% elseif app.request.attributes.get('_route') == 'app_progress' %}
+        {% elseif app.request.attributes.get('_route') == 'app_progress' %}          
+            
         <div id="test-options">
             <p>
                 <i class="icon-caret-right"></i>
-                Checking          
-            {% if 'HTML validation' in task_types and 'CSS validation' in task_types %}
-                <span class="test-type">HTML validation</span> and <span class="test-type">CSS validation</span>
-            {% elseif 'HTML validation' in task_types %}
-                <span class="test-type">HTML validation</span>
-            {% elseif 'CSS validation' in task_types %}
-                <span class="test-type">CSS validation</span>
-            {% endif %}                
+                Checking                 
+                {% for task_type in task_types %}
+                    <span class="test-type">{{ task_type }}</span>{% if loop.length > 1 %}{% if loop.index == loop.length - 1 %} and {% else %}{% if loop.index != loop.length %},{% endif %}{% endif %}{% endif %}
+                {% endfor %}
             </p>
         </div>
         {% elseif app.request.attributes.get('_route') == 'app_results' %}
