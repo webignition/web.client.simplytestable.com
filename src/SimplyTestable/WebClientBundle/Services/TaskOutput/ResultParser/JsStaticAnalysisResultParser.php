@@ -20,8 +20,8 @@ class JsStaticAnalysisResultParser extends ResultParser {
             return $result;
         }           
         
-        foreach ($rawOutputObject as $jsSourceReference => $entriesObject) {
-            $context = ($this->isInlineJsOutputKey($jsSourceReference)) ? $jsSourceReference : 'inline';
+        foreach ($rawOutputObject as $jsSourceReference => $entriesObject) {            
+            $context = ($this->isInlineJsOutputKey($jsSourceReference)) ? 'inline' : $jsSourceReference;
             
             foreach ($entriesObject->entries as $entryObject) {                
                 $result->addMessage($this->getMessageFromEntryObject($entryObject, $context));
