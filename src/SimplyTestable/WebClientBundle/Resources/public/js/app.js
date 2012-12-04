@@ -905,11 +905,65 @@ application.progress.taskOutputController = function () {
             this.setRef = setRef;
             this.getRef = getRef;
             this.toString = toString;            
+        },
+        'JS static analysis': function () {
+            var lineNumber = 0;
+            var columnNumber = 0;
+            var context = '';
+            var fragment = '';
+
+            var setLineNumber = function (newLineNumber) {
+                lineNumber = newLineNumber;
+            };
+
+            var getLineNumber = function () {
+                return lineNumber;
+            };
+            
+            var setColumnNumber = function (newColumnNumber) {
+                columnNumber = newColumnNumber;
+            };
+
+            var getColumnNumber = function () {
+                return columnNumber;
+            };            
+            
+            var setFragment = function (newFragment) {
+                fragment = newFragment;
+            };
+            
+            var getFragment = function () {
+                return fragment;
+            };
+            
+            var setContext = function (newContext) {
+                context = newContext;
+            };
+            
+            var getContext = function () {
+                return context;
+            };            
+
+            var toString = function () {
+                return 'JS static analysis error as a string';
+                //return this.getMessage() + ' at line ' + getLineNumber() + ', column ' + getColumnNumber();
+            }
+
+            this.setLineNumber = setLineNumber;
+            this.getLineNumber = getLineNumber;
+            this.setColumnNumber = setColumnNumber;
+            this.getColumnNumber = getColumnNumber;            
+            this.setContext = setContext;
+            this.getContext = getContext;
+            this.setFragment = setFragment;
+            this.getFragment = getFragment;            
+            this.toString = toString;            
         }        
     };
     
     error['HTML validation'].prototype = new error['abstract'];
     error['CSS validation'].prototype = new error['abstract'];
+    error['JS static analysis'].prototype = new error['abstract'];
     
     var outputResult = function () {
         var errorCount = 0;
@@ -997,7 +1051,6 @@ application.progress.taskOutputController = function () {
                     return taskOutput.content.messages;
                 };
 
-                // line_number":65,"column_number":12,"message":"No p element in scope but a p end tag seen.","messageid":"html5","type":"error"                            
                 var messages = getMessages();
                 var messageCount = messages.length;             
                 var errors;
@@ -1016,6 +1069,49 @@ application.progress.taskOutputController = function () {
                                currentError.setLineNumber(message.line_number);
                                currentError.setContext(message.context);
                                currentError.setRef(message.ref);
+
+                                errors.push(currentError);                            
+                            }
+                        }
+                    }
+
+                    return errors;
+                };
+
+                this.getErrors = getErrors;
+            },
+            'JS static analysis': function (taskOutput) {
+                var getMessages = function () {
+                    if (taskOutput.content == undefined) {
+                        return [];
+                    }
+                    
+                    if (taskOutput.content.messages == undefined) {
+                        return [];
+                    }                    
+                    
+                    return taskOutput.content.messages;
+                };
+
+                var messages = getMessages();
+                var messageCount = messages.length;             
+                var errors;
+
+                var getErrors = function () {                    
+                    if (errors == undefined) {
+                        errors = [];
+
+                        for (var messageIndex = 0; messageIndex < messageCount; messageIndex++) {
+                            var message = messages[messageIndex];
+
+                            if (message.type == 'error') {
+                                var currentError = new error['JS static analysis'];
+                                
+                                currentError.setMessage(message.message);
+                                currentError.setLineNumber(message.line_number);
+                                currentError.setColumnNumber(message.column_number);
+                                currentError.setContext(message.context);
+                                currentError.setFragment(message.fragment);
 
                                 errors.push(currentError);                            
                             }
