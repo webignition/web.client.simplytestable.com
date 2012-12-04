@@ -103,14 +103,18 @@
         <div id="test-options">
             <p>
                 <i class="icon-caret-right"></i>
-                Re-check        
-            {% if 'HTML validation' in task_types and 'CSS validation' in task_types %}
-                <label class="test-type"><input type="checkbox" value="1" name="html-validation" checked /> HTML validation</label> and <label class="test-type"><input type="checkbox" value="1" name="css-validation" checked /> CSS validation</label>
-            {% elseif 'HTML validation' in task_types %}
-                <label class="test-type"><input type="checkbox" value="1" name="html-validation" checked /> HTML validation</label> and <label class="test-type"><input type="checkbox" value="1" name="css-validation" /> CSS validation</label>
-            {% elseif 'CSS validation' in task_types %}
-                <label class="test-type"><input type="checkbox" value="1" name="html-validation" /> HTML validation</label> and <label class="test-type"><input type="checkbox" value="1" name="css-validation" checked /> CSS validation</label>
-            {% endif %}                
+                Re-check:<br />
+                
+                {% set available_task_types = {'html-validation':'HTML validation', 'css-validation':'CSS validation', 'js-static-analysis':'JS static analysis'} %}
+                
+                {% for task_type_key, available_task_type in available_task_types %}
+                {% if available_task_type in task_types %}
+                <label class="test-type"><input type="checkbox" value="1" name="{{ task_type_key }}" checked /> {{ available_task_type }}</label>
+                {% else %}
+                <label class="test-type"><input type="checkbox" value="1" name="{{ task_type_key }}" /> {{ available_task_type }}</label>
+                {% endif %}
+                <br />    
+                {% endfor %}                
             </p>
         </div>            
         {% endif %}

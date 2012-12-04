@@ -611,6 +611,10 @@ body.app-results #test-options label input {
     margin-top:0;
 }
 
+body.app-results #test-options label {
+    margin-left:10px;
+}
+
 @media (min-width: 1200px) {
     body.single-page-dialog #main input {
         width:96%;
