@@ -111,6 +111,7 @@
         </div>
 
         {% if remote_test_summary.task_count > 0 %}
+
         <div id="test-list">
             <div class="row-fluid">
                 <div class="span12">                    
@@ -125,6 +126,8 @@
                             <li class="{% if (filter == 'skipped') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=skipped">Skipped tests ({{ remote_test_summary.skipped_task_count }})</a></li>
                             <li class="{% if (filter == 'cancelled') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=cancelled">Cancelled tests ({{ remote_test_summary.cancelled_task_count }})</a></li>
                         </ul>
+                        
+                        {% if tasks|length > 0 %}
 
                         <ul class="tasks">                           
                             {% for url,taskSet in tasks %}
@@ -174,11 +177,25 @@
                                         </li>
                                         {% endfor %}
                                     </ul>
+                            {% else %}                        
+                                {% if filter == 'with-errors' %} 
+                        <div id="no-errors">
+                            <div id="trophy">
+                                <!--<i class="icon icon-certificate"></i>-->
+                                <i class="icon icon-ok"></i>
+                            </div>
+                            <p>
+                                Congratulations,<br /> no errors!
+                            </p>
+                        </div>
+                                {% endif %}
+                            {% endif %}
                                     {% endif %}                       
 
                                 </section>  
                             </div>
                         </div>            
-                    </div>
+                    </div>        
+
         {% endif %}
 {% endblock %}

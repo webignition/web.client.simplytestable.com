@@ -642,6 +642,36 @@ body.app-task-results .errors .content .fragment {
     display:block;
 }
 
+body.app-results #no-errors {
+    position: relative;
+}
+
+/*body.app-results #no-errors #trophy .icon-certificate {
+    font-size:380px;
+    line-height: 400px;
+    color: #faa732;
+}*/
+
+body.app-results #no-errors #trophy .icon-ok {
+    font-size:200px;
+    line-height: 240px;
+    color: #51A351;
+    margin-left:30px;
+/*    position:absolute;
+    left:100px;
+    top:100px;*/
+    
+}
+
+body.app-results #no-errors p {
+position: absolute;
+left: 260px;
+font-size: 66px;
+line-height: 76px;
+opacity: 0.8;
+top: 40px;    
+}
+
 @media (min-width: 1200px) {
     body.single-page-dialog #main input {
         width:96%;
