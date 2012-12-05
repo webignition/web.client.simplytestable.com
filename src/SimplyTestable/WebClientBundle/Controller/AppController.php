@@ -500,7 +500,11 @@ class AppController extends BaseViewController
         
         $taskTypes = array();
         foreach ($remoteTestSummary->task_types as $taskTypeObject) {
-            $taskTypes[] = $taskTypeObject->name;
+            if ($taskTypeObject->name == 'JS static analysis') {
+                $taskTypes[] = 'JavaScript static analysis';
+            } else {
+                $taskTypes[] = $taskTypeObject->name;
+            }                      
         }        
         
         if ($remoteTestSummary->task_count > $test->getTaskCount()) {
