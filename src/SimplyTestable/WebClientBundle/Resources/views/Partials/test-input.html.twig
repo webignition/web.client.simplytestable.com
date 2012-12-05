@@ -37,6 +37,7 @@
             {% endif %}
             
             {% if test_start_error == 'no-test-types-selected' %}
+            {% if 'js-static-analysis' in available_task_types|keys %}
         <div class="alert alert-error for:input-website">
             <button type="button" class="close" data-dismiss="alert">×</button>
             <p><strong>Slow down!</strong></p>
@@ -45,7 +46,19 @@
                 <strong>CSS validation</strong> or <strong>JavaScript static analysis</strong>
                 as required.
             </p>            
+        </div>             
+            {% else %}
+        <div class="alert alert-error for:input-website">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p><strong>Slow down!</strong></p>
+            <p>
+                You'll need to choose something to test. Tick <strong>HTML validation</strong>
+                or <strong>CSS validation</strong> as required.
+            </p>            
         </div>            
+            {% endif %}
+            
+            
             {% endif %}            
         {% endif %}             
 
