@@ -3,6 +3,14 @@ glit_resque:
 
 parameters:
   resque_pid: "simplytestable_webclientbundle" 
+  early_access_users:
+    - "user@example.com"
+  available_task_types:
+    default:
+      html-validation: "HTML validation"
+      css-validation: "CSS validation"
+    early_access:
+      js-static-analysis: "JavaScript static analysis"
   core_application:
     urls:
       base: http://app.simplytestable.com

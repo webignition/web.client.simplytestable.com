@@ -67,26 +67,39 @@
         {% if app.request.attributes.get('_route') == 'app' %}
         <div id="test-options">
             <p class="info"><i class="icon-wrench"></i> What do you want to check?</p>
+            
+            {% if 'html-validation' in available_task_types|keys %}
+            
             <div class="test-options-set" id="html-validation-options">
                 <label class="checkbox">
                   <input type="checkbox" value="1" name="html-validation" {% if (html_validation_selected == 1) %} checked {% endif %} /> HTML validation
                   <span class="help-block">Examine whether the HTML markup for all your pages is valid</span>
                 </label>                
             </div>
+            
+            {% endif %}
+            
+            {% if 'css-validation' in available_task_types|keys %}
                 
             <div class="test-options-set" id="css-validation-options">
                 <label class="checkbox">
                   <input type="checkbox" value="1" name="css-validation" {% if (css_validation_selected == 1) %} checked {% endif %} /> CSS validation
                   <span class="help-block">Check CSS rules defined in linked stylesheets and inline</span>
                 </label>
-            </div>                
+            </div>
+            
+            {% endif %}
+            
+            {% if 'js-static-analysis' in available_task_types|keys %}
             
             <div class="test-options-set" id="js-static-analysis-validation-options">
                 <label class="checkbox">
                   <input type="checkbox" value="1" name="js-static-analysis" {% if (js_static_analysis_selected == 1) %} checked {% endif %} /> JavaScript static analysis
                   <span class="help-block">Analyse the quality of your JavaScript with <a href="http://www.jslint.com/lint.html">JSLint</a></span>
                 </label>
-            </div>             
+            </div>
+            
+            {% endif %}
         </div>
         {% elseif app.request.attributes.get('_route') == 'app_progress' %}          
             
@@ -105,8 +118,6 @@
                 <i class="icon-caret-right"></i>
                 Re-check:<br />
                 
-                {% set available_task_types = {'html-validation':'HTML validation', 'css-validation':'CSS validation', 'js-static-analysis':'JS static analysis'} %}
-                
                 {% for task_type_key, available_task_type in available_task_types %}
                 {% if available_task_type in task_types %}
                 <label class="test-type"><input type="checkbox" value="1" name="{{ task_type_key }}" checked /> {{ available_task_type }}</label>
@@ -114,7 +125,8 @@
                 <label class="test-type"><input type="checkbox" value="1" name="{{ task_type_key }}" /> {{ available_task_type }}</label>
                 {% endif %}
                 <br />    
-                {% endfor %}                
+                {% endfor %}
+              
             </p>
         </div>            
         {% endif %}

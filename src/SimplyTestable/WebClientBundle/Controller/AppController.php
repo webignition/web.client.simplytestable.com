@@ -43,7 +43,7 @@ class AppController extends BaseViewController
     );    
     
     public function indexAction()
-    {        
+    {       
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }        
@@ -87,7 +87,8 @@ class AppController extends BaseViewController
             'website' => $this->getPersistentValue('website'),
             'html_validation_selected' => $htmlValidationSelected,
             'css_validation_selected' => $cssValidationSelected,
-            'js_static_analysis_selected' => $jsStaticAnalysisSelected
+            'js_static_analysis_selected' => $jsStaticAnalysisSelected,
+            'available_task_types' => $this->getAvailableTaskTypes()
         ));         
 
         return $this->getCachableResponse($this->render($templateName, array(            
@@ -99,6 +100,22 @@ class AppController extends BaseViewController
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
             'recent_tests' => $recentTests
         )), $cacheValidatorHeaders);        
+    }
+    
+    
+    /**
+     * 
+     * @return array
+     */
+    private function getAvailableTaskTypes() {
+        $allAvailableTaskTypes = $this->container->getParameter('available_task_types');
+        $availableTaskTypes = $allAvailableTaskTypes['default'];
+        
+        if ($this->isEarlyAccessUser()) {
+            $availableTaskTypes = array_merge($availableTaskTypes, $allAvailableTaskTypes['early_access']);
+        }
+        
+        return $availableTaskTypes;
     }
     
     
@@ -504,7 +521,8 @@ class AppController extends BaseViewController
             'filter' => $taskListFilter,
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),    
-            'task_types' => $taskTypes
+            'task_types' => $taskTypes,
+            'available_task_types' => $this->getAvailableTaskTypes()
         );
                        
         //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTestSummary->task_count : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));

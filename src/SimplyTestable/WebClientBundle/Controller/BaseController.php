@@ -32,6 +32,20 @@ abstract class BaseController extends Controller
      * 
      * @return boolean
      */
+    public function isEarlyAccessUser() {
+        $earlyAccessUserCollection = $this->container->getParameter('early_access_users');
+        if (!is_array($earlyAccessUserCollection)) {
+            return false;
+        }
+        
+        return in_array($this->getUser()->getUsername(), $earlyAccessUserCollection);
+    }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
     public function isLoggedIn() {
         return !$this->getUserService()->isPublicUser($this->getUser());
     }
