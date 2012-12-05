@@ -251,6 +251,19 @@
                             </ul>
                         </div>
                         {% endfor %}
+                    {% elseif task.type == 'JS static analysis' %}
+                        {% for context,errors in errors_by_js_context %}
+                        <div>
+                            <h3><i class="icon icon-file"></i> {% if context == 'inline' %}Inline in your HTML{% else %}{{ context }}{% endif %}:</h3>                            
+                            <ul class="errors">
+                                {% for error in errors %}
+                                    <li>
+                                        {% include 'SimplyTestableWebClientBundle:Partials:task/js-static-analysis-result.html.twig' %}                               
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endfor %}
                     {% else %}
                     <ul class="errors">
                         {% for error in task.output.result.getErrors %}

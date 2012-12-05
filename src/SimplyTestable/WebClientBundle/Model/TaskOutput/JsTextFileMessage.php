@@ -4,6 +4,8 @@ namespace SimplyTestable\WebClientBundle\Model\TaskOutput;
 
 class JsTextFileMessage extends TextFileMessage {
     
+    const FRAGMENT_TRUNCATION_LENGTH = 120;    
+    
     /**
      *
      * @var string
@@ -82,6 +84,20 @@ class JsTextFileMessage extends TextFileMessage {
      */    
     public function getFragment() {
         return $this->fragment;
-    }     
+    }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function canFragmentBeTruncated() {
+        return strlen(($this->getFragment())) >= self::FRAGMENT_TRUNCATION_LENGTH;
+    }
+    
+    
+    public function getTruncatedFragment() {
+        return substr($this->getFragment(), 0, self::FRAGMENT_TRUNCATION_LENGTH);
+    }
     
 }

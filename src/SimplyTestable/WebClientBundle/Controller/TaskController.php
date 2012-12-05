@@ -144,6 +144,10 @@ class TaskController extends BaseViewController
             $viewData['errors_by_ref'] = $this->getCssValidationErrorsGroupedByRef($task);
         }
         
+        if ($task->getType() == 'JS static analysis') {
+            $viewData['errors_by_js_context'] = $this->getJsStaticAnalysisErrorsGroupedByContext($task);
+        }
+        
         return $this->getCachableResponse($this->render(
             'SimplyTestableWebClientBundle:App:task/results.html.twig',
             $viewData
@@ -170,6 +174,27 @@ class TaskController extends BaseViewController
         
         return $errorsGroupedByRef;
     }
+    
+    
+    private function getJsStaticAnalysisErrorsGroupedByContext(Task $task) {
+        if ($task->getType() != 'JS static analysis') {
+            return array();
+        }
+        
+        $errorsGroupedByContext = array();
+        $errors = $task->getOutput()->getResult()->getErrors();
+        
+        foreach ($errors as $error) {
+            /* @var $error \SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage */
+            if (!isset($errorsGroupedByContext[$error->getContext()])) {
+                $errorsGroupedByContext[$error->getContext()] = array();
+            }
+            
+            $errorsGroupedByContext[$error->getContext()][] = $error;
+        }
+        
+        return $errorsGroupedByContext;
+    }    
     
     
     /**

@@ -1,4 +1,4 @@
-<div class="html-validation-result">
+<div class="js-static-analysis-result">
     <div class="meta">     
         <p>
             {% if error.getLineNumber > -1 and error.getColumnNumber == -1 %}
@@ -11,11 +11,12 @@
 
             {% if error.getLineNumber > -1 and error.getColumnNumber > -1 %}
                 Line {{ error.getLineNumber }}, Column {{ error.getColumnNumber }}:
-            {% endif %} 
+            {% endif %}
         </p>
     </div>
     <div class="content">
-        <span class="message">{{ error }}</span>        
+        <span class="message">{{ error }}</span>
+        <pre class="fragment">{% if error.canFragmentBeTruncated %}{{ error.truncatedFragment }}&hellip;{% else %}{{ error.fragment }}{% endif %}</pre>            
     </div>
     <div class="clearfix"></div>
 </div>

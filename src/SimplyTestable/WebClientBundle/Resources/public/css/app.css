@@ -342,11 +342,19 @@ body.app-task-results .errors {
 body.app-task-results .errors li {
     list-style-type: none;
     margin-bottom:16px;
-    position:relative;
-    height: 40px;
+/*    position:relative;*/
+/*    height: 40px;*/
 }
 
-body.app-task-results .errors span,
+body.app-task-results .errors li pre {
+    background-color: transparent;
+    border: none;    
+    margin-left:0;
+    padding-left:0;
+    opacity: 0.8;
+}
+
+/*body.app-task-results .errors span,
 body.app-task-results .errors div.message {
     position:absolute;
 }
@@ -359,7 +367,7 @@ body.app-task-results .errors .meta {
 body.app-task-results .errors .message {
     left:145px;
     font-weight: bold;
-}
+}*/
 
 body.app-task-results .errors div.message {
     left:145px;
@@ -615,6 +623,25 @@ body.app-results #test-options label {
     margin-left:10px;
 }
 
+body.app-task-results .errors .meta,
+body.app-task-results .errors .content {
+    float:left;
+}
+
+body.app-task-results .errors .meta {
+    width:20%
+}
+
+body.app-task-results .errors .content {
+    margin-left:10px;
+    width:78%;
+}
+
+body.app-task-results .errors .content .message,
+body.app-task-results .errors .content .fragment {
+    display:block;
+}
+
 @media (min-width: 1200px) {
     body.single-page-dialog #main input {
         width:96%;
@@ -624,5 +651,11 @@ body.app-results #test-options label {
         width:76%;
     }
     
-    
+    body.app-task-results .errors .meta {
+        width:14%
+    }
+
+    body.app-task-results .errors .content {        
+        width:82%;
+    }    
 }
