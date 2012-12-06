@@ -51,9 +51,15 @@ class AppController extends BaseViewController
         $templateName = 'SimplyTestableWebClientBundle:App:index.html.twig';
         $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);
         
-        $htmlValidationSelected = $this->getPersistentValue('html-validation', '1');
-        $cssValidationSelected = $this->getPersistentValue('css-validation', '1');
-        $jsStaticAnalysisSelected = $this->getPersistentValue('js-static-analysis', '1');
+        $validationOptions = $this->getPersistentValues(array(
+            'html-validation' => 1,
+            'css-validation' => 1,
+            'css-validation-ignore-warnings' => 1,
+            'css-validation-ignore-common-cdns' => 1,
+            'css-validation-vendor-extensions' => "error",
+            'css-validation-domains-to-ignore' => "",
+            'js-static-analysis' => 1
+        ));
         
         $testStartError = $this->getFlash('test_start_error');        
         
@@ -85,10 +91,9 @@ class AppController extends BaseViewController
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
             'recent_tests' => $recentTests,
             'website' => $this->getPersistentValue('website'),
-            'html_validation_selected' => $htmlValidationSelected,
-            'css_validation_selected' => $cssValidationSelected,
-            'js_static_analysis_selected' => $jsStaticAnalysisSelected,
-            'available_task_types' => $this->getAvailableTaskTypes()
+            'available_task_types' => $this->getAvailableTaskTypes(),
+            'validation_options' => $validationOptions,
+            'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore()
         ));         
 
         return $this->getCachableResponse($this->render($templateName, array(            
@@ -100,6 +105,19 @@ class AppController extends BaseViewController
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
             'recent_tests' => $recentTests
         )), $cacheValidatorHeaders);        
+    }
+    
+    
+    /**
+     * 
+     * @return array
+     */
+    private function getCssValidationCommonCdnsToIgnore() {
+        if (!$this->container->hasParameter('css-validation-ignore-common-cdns')) {
+            return array();
+        }
+        
+        return $this->container->getParameter('css-validation-ignore-common-cdns');
     }
     
     

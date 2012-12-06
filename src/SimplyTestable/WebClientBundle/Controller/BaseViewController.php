@@ -197,4 +197,20 @@ abstract class BaseViewController extends BaseController
         return is_null($requestValue) ? $default : $requestValue;
     }
     
+    
+    /**
+     * 
+     * @param array $definition
+     * @return array
+     */
+    protected function getPersistentValues($definition) {
+        $values = array();
+        
+        foreach ($definition as $key => $default) {
+            $values[$key] = $this->getPersistentValue($key, $default);
+        }
+        
+        return $values;
+    }
+    
 }

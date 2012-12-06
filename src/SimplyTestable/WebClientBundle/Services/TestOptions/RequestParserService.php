@@ -51,11 +51,11 @@ class RequestParserService {
     private function populateTestOptionsFromRequestData() {
         $this->testOptions = new TestOptions();
        
-        $testTypes = $this->parseTestTypes();
+        $testTypes = $this->parseTestTypes();        
         foreach ($testTypes as $testTypeKey => $testTypeName) {
             $this->testOptions->addTestType($testTypeName);
-        }
-        
+            $this->testOptions->addTestTypeOptions($testTypeKey, $this->parseTestTypeOptions($testTypeKey));
+        }      
     }    
     
     
@@ -73,6 +73,24 @@ class RequestParserService {
         }              
         
         return $testTypes;
-    }    
+    } 
+    
+    
+    /**
+     * 
+     * @param string $testTypeKey
+     * @return array
+     */
+    private function parseTestTypeOptions($testTypeKey) {
+        $testTypeOptions = array();
+        
+        foreach ($this->requestData as $key => $value) {            
+            if(substr($key, 0, strlen($testTypeKey)) == $testTypeKey && $key != $testTypeKey) {
+                $testTypeOptions[$key] = $value;
+            }
+        }
+        
+        return $testTypeOptions;
+    }
         
 }

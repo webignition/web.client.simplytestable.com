@@ -90,6 +90,17 @@ class TestService extends CoreApplicationService {
         
         if ($testOptions->hasTestTypes()) {
             $queryData['test-types'] = $testOptions->getTestTypes();
+            $testTypeKeys = $testOptions->getTestTypeKeys();
+            
+            foreach ($testTypeKeys as $testTypeKey) {
+                $testType = $testOptions->getNameFromKey($testTypeKey);                
+                
+                if (!isset($queryData['test-type-options'])) {
+                    $queryData['test-type-options'] = array();
+                }
+                
+                $queryData['test-type-options'][$testType] = $testOptions->getAbsoluteTestTypeOptions($testTypeKey, false);
+            }
         }
         
         if (count($queryData)) {

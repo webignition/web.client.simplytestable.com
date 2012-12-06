@@ -672,6 +672,34 @@ opacity: 0.8;
 top: 40px;    
 }
 
+body.app .css-ignore-common-cdn-domains ul {
+margin: 0;
+padding: 0;    
+}
+
+body.app .css-ignore-common-cdn-domains ul li {
+    list-style-type: none;
+    opacity:0.8;
+}
+
+body.app .css-domains-to-ignore textarea {
+    width:50%;
+}
+
+body.app .test-options-advanced {
+    margin-left: 18px;
+}
+
+body.app .validator-option-set {
+    
+}
+
+body.app .validator-option-set p {
+    font-weight: bold;
+    opacity: 0.8;
+    margin: 6px 0;
+}
+
 @media (min-width: 1200px) {
     body.single-page-dialog #main input {
         width:96%;

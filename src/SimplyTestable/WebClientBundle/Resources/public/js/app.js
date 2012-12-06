@@ -1231,6 +1231,38 @@ application.progress.taskOutputController = function () {
 //    };
 //};
 
+application.expandableArea = function (expandableAreaElement) {    
+    var initialise = function (expandableAreaElement) {                
+        var controlElement = $('.control', expandableAreaElement);
+        var expandingElement = $('.expanding', expandableAreaElement);
+        
+        var controlLink = $('<a href="#">'+controlElement.text()+' <i class="icon icon-caret-down"></i></a>');        
+        controlLink.click(function (event) {
+            if (expandingElement.is('.closed')) {
+                expandingElement.slideDown(function () {
+                    expandingElement.removeClass('closed').addClass('open');
+                    $('.icon-caret-down', controlLink).replaceWith('<i class="icon icon-caret-up" />');
+                });
+            } else {
+                expandingElement.slideUp(function () {
+                    expandingElement.removeClass('open').addClass('closed');
+                    $('.icon-caret-up', controlLink).replaceWith('<i class="icon icon-caret-down" />');
+                });                
+            }
+            
+            event.preventDefault();
+        });
+        
+        controlElement.html(controlLink); 
+        
+        expandingElement.css({'display':'none'});
+        expandingElement.addClass('closed');
+    };
+    
+    initialise(expandableAreaElement);
+    
+};
+
 application.pages = {
     '/*':{
         'initialise':function () {
@@ -1262,7 +1294,12 @@ application.pages = {
                         });
                     }
                 });
-            }                         
+            }
+            
+            var expandableAreas = [];
+            $('.expandable').each(function () { 
+                expandableAreas.push(new application.expandableArea(this));
+            });
 
         }         
     },

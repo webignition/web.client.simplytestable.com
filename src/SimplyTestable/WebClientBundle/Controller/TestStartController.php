@@ -19,7 +19,7 @@ class TestStartController extends BaseController
         $this->getTestOptionsRequestParserService()->setRequestData($this->getRequestValues(HTTP_METH_POST));
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
         
-        if (!$this->hasWebsite()) {
+        if (!$this->hasWebsite()) {            
             $this->get('session')->setFlash('test_start_error', 'website-blank');
             return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));
         }
@@ -46,6 +46,11 @@ class TestStartController extends BaseController
     }
     
     
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Model\TestOptions $testOptions
+     * @return array
+     */
     private function getRedirectValues(TestOptions $testOptions) {
         $redirectValues = array();
         
@@ -56,7 +61,8 @@ class TestStartController extends BaseController
         $absoluteTestTypes = $testOptions->getAbsoluteTestTypes();        
         foreach ($absoluteTestTypes as $testTypeKey => $selectedValue) {
             $redirectValues[$testTypeKey] = $selectedValue;
-        } 
+            $redirectValues = array_merge($redirectValues, $testOptions->getAbsoluteTestTypeOptions($testTypeKey));
+        }
         
         return $redirectValues;
     }

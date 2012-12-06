@@ -85,7 +85,7 @@
             
             <div class="test-options-set" id="html-validation-options">
                 <label class="checkbox">
-                  <input type="checkbox" value="1" name="html-validation" {% if (html_validation_selected == 1) %} checked {% endif %} /> HTML validation
+                  <input type="checkbox" value="1" name="html-validation" {% if (validation_options['html-validation'] == 1) %} checked {% endif %} /> HTML validation
                   <span class="help-block">Examine whether the HTML markup for all your pages is valid</span>
                 </label>                
             </div>
@@ -96,9 +96,69 @@
                 
             <div class="test-options-set" id="css-validation-options">
                 <label class="checkbox">
-                  <input type="checkbox" value="1" name="css-validation" {% if (css_validation_selected == 1) %} checked {% endif %} /> CSS validation
+                  <input type="checkbox" value="1" name="css-validation" {% if (validation_options['css-validation'] == 1) %} checked {% endif %} /> CSS validation
                   <span class="help-block">Check CSS rules defined in linked stylesheets and inline</span>
                 </label>
+                    
+                <div class="expandable test-options-advanced">
+                    <div class="control">Advanced CSS validation options</div>
+                    <div class="expanding">
+                        <div class="row-fluid">                            
+                            <div class="span3 css-validator-option-set validator-option-set css-general">
+                                <p>General:</p>
+                                <label class="checkbox">
+                                    <input type="checkbox" value="1" name="css-validation-ignore-warnings" {% if (validation_options['css-validation-ignore-warnings'] == 1) %} checked {% endif %}> Ignore warnings (report errors only)
+                                </label>
+                                
+                                <label class="checkbox css-ignore-common-cdn-domains">
+                                    <input type="checkbox" value="1" name="css-validation-ignore-common-cdns"  {% if (validation_options['css-validation-ignore-common-cdns'] == 1) %} checked {% endif %}> Ignore CSS from common CDNs:
+                                    
+                                    {% if css_validation_ignore_common_cdns|length > 0 %}
+                                    <ul>
+                                        {% for cdn_domain_to_ignore in css_validation_ignore_common_cdns %}                                        
+                                            <li>&ndash; {{ cdn_domain_to_ignore }}</li>                                        
+                                        {% endfor %}
+                                    </ul>                                        
+                                    {% endif %}                                    
+                                </label> 
+                            </div>
+                            <div class="span3 css-validator-option-set validator-option-set css-vendor-extensions">                                
+                                <p>Vendor extensions:</p>
+                                <label class="radio">
+                                    <input type="radio" name="css-validation-vendor-extensions" value="ignore" {% if validation_options['css-validation-vendor-extensions'] == 'ignore' %} checked {% endif %}>
+                                    Ignore
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="css-validation-vendor-extensions" value="warn" {% if validation_options['css-validation-vendor-extensions'] == 'warn' %} checked {% endif %}>
+                                    Report as warnings
+                                </label>                         
+                                <label class="radio">
+                                    <input type="radio" name="css-validation-vendor-extensions" value="error" {% if validation_options['css-validation-vendor-extensions'] == 'error' %} checked {% endif %}>
+                                    Report as errors
+                                </label> 
+                            </div>                                
+                            <div class="span6 css-validator-option-set validator-option-set css-domains-to-ignore">
+                                <p>Linked CSS domains to ignore:</p>
+                                
+                                <span class="help-block">
+                                    You might be linking to third-party CSS resources that you don't control and that you
+                                    want the validator to ignore.
+                                </span>
+                                <textarea name="css-validation-domains-to-ignore" rows="5" placeholder="example.mycdn.com                                 one-per-line.example.com">{% if validation_options['css-validation-domains-to-ignore'] != '' %}{{validation_options['css-validation-domains-to-ignore']}}{% endif %}</textarea>
+                            </div>                             
+                        </div>                          
+                            
+                        <!--
+vendor extensions:
+    ignore
+    warnings
+    errors
+warnings
+    ignore (errors only, no warnings)
+cdns to ignore
+                        -->
+                    </div>
+                </div>
             </div>
             
             {% endif %}

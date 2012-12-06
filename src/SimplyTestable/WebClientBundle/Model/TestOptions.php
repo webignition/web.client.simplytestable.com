@@ -5,11 +5,24 @@ class TestOptions {
     
     private $testTypes = array();
     
+    private $testTypeOptions = array();
+    
     
     private $testTypeMap = array(
         'html-validation' => 'HTML validation',
         'css-validation' => 'CSS validation',
         'js-static-analysis' => 'JS static analysis'
+    );
+    
+    private $testTypeOptionsMap = array(
+        'html-validation' => array(),
+        'css-validation' => array(
+            'css-validation-ignore-warnings',
+            'css-validation-ignore-common-cdns',
+            'css-validation-vendor-extensions',
+            'css-validation-domains-to-ignore'
+        ),
+        'js-static-analysis' => array(),
     );
     
     
@@ -21,6 +34,16 @@ class TestOptions {
         if (!$this->hasTestType($testType)) {
             $this->testTypes[] = $testType;
         }
+    }
+    
+    
+    /**
+     * 
+     * @param string $testType
+     * @param array $testTypeOptions
+     */
+    public function addTestTypeOptions($testType, $testTypeOptions) {
+        $this->testTypeOptions[$testType] = $testTypeOptions;
     }
     
     
@@ -50,6 +73,94 @@ class TestOptions {
     public function getTestTypes() {
         return $this->testTypes;
     }
+    
+    
+    /**
+     * 
+     * @return array
+     */
+    public function getTestTypeKeys() {
+        $testTypeKeys = array();
+        $testTypes = $this->getTestTypes();
+        
+        foreach ($testTypes as $testTypeName) {
+            foreach ($this->testTypeMap as $testTypeKey => $testTypeNameValue) {
+                if ($testTypeName == $testTypeNameValue) {
+                    $testTypeKeys[] = $testTypeKey;
+                }
+            }
+        }
+        
+        return $testTypeKeys;
+    }
+    
+    
+    /**
+     * 
+     * @param string $testType
+     * @return boolean
+     */
+    public function hasTestTypeOptions($testType) {
+        if (!isset($this->testTypeOptions[$testType])) {
+            return false;
+        }
+        
+        if (!is_array($this->testTypeOptions[$testType])) {
+            return false;
+        }
+        
+        return count($this->testTypeOptions[$testType]) > 0;
+    }    
+    
+    
+    /**
+     * 
+     * @param string $testType
+     * @return array
+     */
+    public function getTestTypeOptions($testType) {
+        if ($this->hasTestTypeOptions($testType)) {
+            return $this->testTypeOptions[$testType];
+        }
+        
+        return array();
+    }
+    
+    
+    /**
+     * 
+     * @param string $testType
+     * @return array
+     */
+    public function getAbsoluteTestTypeOptions($testType, $useFullOptionKey = true) {
+        $absoluteTestTypeOptions = array();
+        $testTypeOptions = $this->getTestTypeOptions($testType);
+        
+        foreach ($this->testTypeOptionsMap[$testType] as $optionKey) {
+            $key = ($useFullOptionKey) ? $optionKey : str_replace($testType.'-', '', $optionKey);
+            
+            $absoluteTestTypeOptions[$key] = (isset($testTypeOptions[$optionKey])) ? $testTypeOptions[$optionKey] : 0;
+        }
+        
+        return $absoluteTestTypeOptions;
+    } 
+    
+    
+    /**
+     * 
+     * @param string $testTypeKey
+     * @return string
+     */
+    public function getNameFromKey($testTypeKey) {        
+        foreach ($this->testTypeMap as $key => $value) {            
+            if ($testTypeKey == $key) {
+                return $value;
+            }
+        }
+        
+        return '';
+    }
+    
     
     
     /**
