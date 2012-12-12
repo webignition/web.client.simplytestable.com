@@ -585,72 +585,10 @@ application.progress.taskController = function () {
         for (var taskIndex = 0; taskIndex < tasks.length; taskIndex++) {
             updateTaskListItem(getTaskListItem(taskSetListItem, tasks[taskIndex]), tasks[taskIndex]);
         }
-        
-        //console.log(tasks);
-        
-        //var taskThings = $('.task', taskSetListItem);
-        //console.log(taskSetListItem, taskThings.length);
-        
-//        if ((taskListItem.is('.completed') || isTaskListItemFailed(taskListItem)) && isFinished(task)) {
-//            return;
-//        }
-
-        
-        
-        //taskListItem.html('');        
-        
-//        setTaskListItemState(taskListItem, task);
-        
-//        var stateIconIndex = task.state;
-//        if (isFailedDueToRedirectLoop(task)) {
-//            stateIconIndex = 'failed-http-retrieval-redirect-loop';
-//        }
-//
-//        taskListItem.append('<span class="url">'+task.url+'</span>');
-//        taskListItem.append('<div class="meta"><span class="state"><i class="'+stateIconMap[stateIconIndex]+'"></i></span><span class="type">'+task.type+'</span></div>');
-//
-//        if (isFinished(task)) {
-//            var outputParser = new taskOutputController.outputParser();
-//            var outputResult = outputParser.getResults(task.output);
-//            
-//            var outputIndicator;
-//            
-//            if (task.state == 'skipped') {
-//                
-//            } else {
-//                if (outputResult.hasErrors()) {                
-//                    outputIndicator = '<a href="'+(window.location.href.replace('/progress/', '/'+task.task_id+'/results/'))+'" class="output-indicator label label-important">'+outputResult.getErrorCount()+' error'+(outputResult.getErrorCount() == 1 ? '' : 's') +' <i class="icon-caret-down"></i></a>';
-//                } else {
-//                    outputIndicator = '<span class="output-indicator"><i class="icon-ok"></i></span>';
-//                }                
-//            }
-//            
-//
-//             
-//            $('.meta', taskListItem).append(outputIndicator);
-//        }        
-        
-        //console.log(taskSetListItem);
     };
     
     
-    /* NOT obsoleted by buildTaskSetListItem */
-    var buildTaskListItem = function (taskListItem, task) {   
-/**
-<li class="task in-progress" id="task8552304">
-    <span class="url">http://www.onebestway.com/2012/10/positioning.html</span>
-    <div class="meta">
-        <span class="state"><i class="icon-cogs"></i></span>
-        <span class="type">HTML validation</span>
-    </div>
-</li>
- */        
-        
-        
-//        console.log("cp01", taskListItem, task);
-//        return;
-        
-        
+    var buildTaskListItem = function (taskListItem, task) {        
         if ((taskListItem.is('.completed') || isTaskListItemFailed(taskListItem)) && isFinished(task)) {
             return;
         }
@@ -662,25 +600,27 @@ application.progress.taskController = function () {
         if (isFailedDueToRedirectLoop(task)) {
             stateIconIndex = 'failed-http-retrieval-redirect-loop';
         }
-//
-//        taskListItem.append('<span class="url">'+task.url+'</span>');
-//        taskListItem.append('<div class="meta"><span class="state"><i class="'+stateIconMap[stateIconIndex]+'"></i></span><span class="type">'+task.type+'</span></div>');
+
         taskListItem.append('<span class="meta"><span class="state"><i class="'+stateIconMap[stateIconIndex]+'"></i></span><span class="type">'+task.type+'</span></span>');//        
-//
-        if (isFinished(task)) {
+        
+        if (isFinished(task)) { 
             var outputParser = new taskOutputController.outputParser();
             var outputResult = outputParser.getResults(task.output);
-            
+           
             var outputIndicator;
             
             if (task.state == 'skipped') {
                 
             } else {
-                if (outputResult.hasErrors()) {                
+                if (outputResult.hasErrors() && outputResult.hasWarnings()) {
+                    outputIndicator = '<a href="'+(window.location.href.replace('/progress/', '/'+task.task_id+'/results/'))+'" class="output-indicator label label-important">'+outputResult.getErrorCount()+' error'+(outputResult.getErrorCount() == 1 ? '' : 's') +' and '+outputResult.getWarningCount()+' warning'+(outputResult.getWarningCount() == 1 ? '' : 's')+'<i class="icon-caret-right"></i></a>';
+                } else if (!outputResult.hasErrors() && outputResult.hasWarnings()) {
+                    outputIndicator = '<a href="'+(window.location.href.replace('/progress/', '/'+task.task_id+'/results/'))+'" class="output-indicator label label-info">'+outputResult.getWarningCount()+' warning'+(outputResult.getWarningCount() == 1 ? '' : 's') +' <i class="icon-caret-right"></i></a>';
+                } else if (outputResult.hasErrors() && !outputResult.hasWarnings()) {
                     outputIndicator = '<a href="'+(window.location.href.replace('/progress/', '/'+task.task_id+'/results/'))+'" class="output-indicator label label-important">'+outputResult.getErrorCount()+' error'+(outputResult.getErrorCount() == 1 ? '' : 's') +' <i class="icon-caret-right"></i></a>';
                 } else {
                     outputIndicator = '<span class="output-indicator"><i class="icon-ok"></i></span>';
-                }                
+                }               
             }
             
             $('.meta', taskListItem).append(outputIndicator);
@@ -693,7 +633,6 @@ application.progress.taskController = function () {
     };
 
     
-    /* NOT obsoleted by updateTaskSetListItem */
     var updateTaskListItem = function (taskListItem, task) {        
         buildTaskListItem(taskListItem, task);        
     };
@@ -742,29 +681,8 @@ application.progress.taskController = function () {
         var tasksGroupedByUrl = getTasksGroupedByUrl(tasks);
 
         for (var url in tasksGroupedByUrl) {
-            //var thing = getTaskSetListItem(taskList, tasksGroupedByUrl[url]);
             updateTaskSetListItem(getTaskSetListItem(taskList, tasksGroupedByUrl[url]), tasksGroupedByUrl[url]);
-            
-//            
-//            
-            //updateTaskListItem(getTaskListItem(taskList, tasks[taskId]), tasks[taskId]);
-//            
-//            //console.log(url);
-////            if (tasks.hasOwnProperty(taskId)) {    
-////                updateTaskListItem(getTaskListItem(taskList, tasks[taskId]), tasks[taskId]);
-////            }
         }
-
-        //console.log(tasks, getTasksGroupedByUrl(tasks));
-        //return;
-        
-//        for (var taskId in tasks) {
-//            if (tasks.hasOwnProperty(taskId)) {    
-//                updateTaskListItem(getTaskListItem(taskList, tasks[taskId]), tasks[taskId]);
-//            }
-//        }
-        
-        //return;
                 
         callback();
     };
@@ -803,18 +721,11 @@ application.progress.taskController = function () {
 
 application.progress.taskOutputController = function () {
     
-    var error = {
+    var outputMessage = {
         'abstract': function () {
-            var message = '';
+            var type = '';
+            var message = '';            
             var errorClass = '';
-
-            var setMessage = function (newMessage) {
-                message = newMessage;
-            };
-
-            var getMessage = function () {
-                return message;
-            };
             
             var setClass = function (newClass) {
                 errorClass = newClass;
@@ -822,19 +733,43 @@ application.progress.taskOutputController = function () {
             
             var getClass = function () {
                 return errorClass;
+            };            
+            
+            var setMessage = function (newMessage) {
+                message = newMessage;
             };
 
+            var getMessage = function () {
+                return message;
+            };            
+            
+            var setType = function (newType) {
+                type = newType;
+            };
+            
+            var getType = function () {
+                return type;
+            };
+            
+            var isType = function (queriedType) {
+                return getType() == queriedType;
+            };  
+            
             var toString = function () {
                 return getMessage();
-            } ;           
+            };
 
-            this.setMessage = setMessage;
-            this.getMessage = getMessage;
+            this.toString = toString;
+            
             this.setClass = setClass;
-            this.getClass = getClass;
-            this.toString = toString;            
+            this.getClass = getClass;              
+            this.setType = setType;
+            this.getType = getType;
+            this.isType = isType;
+            this.setMessage = setMessage;
+            this.getMessage = getMessage;            
         },
-        'HTML validation': function () {
+        'HTML validation': function () {            
             var lineNumber = 0;
             var columnNumber = 0;
 
@@ -856,13 +791,13 @@ application.progress.taskOutputController = function () {
 
             var toString = function () {
                 return this.getMessage() + ' at line ' + getLineNumber() + ', column ' + getColumnNumber();
-            }
+            };           
 
             this.setLineNumber = setLineNumber;
             this.getLineNumber = getLineNumber;
             this.setColumnNumber = setColumnNumber;
             this.getColumnNumber = getColumnNumber;
-            this.toString = toString;            
+            this.toString = toString;             
         },
         'CSS validation': function () {
             var lineNumber = 0;
@@ -904,7 +839,7 @@ application.progress.taskOutputController = function () {
             this.getContext = getContext;
             this.setRef = setRef;
             this.getRef = getRef;
-            this.toString = toString;            
+            this.toString = toString;             
         },
         'JS static analysis': function () {
             var lineNumber = 0;
@@ -957,20 +892,27 @@ application.progress.taskOutputController = function () {
             this.getContext = getContext;
             this.setFragment = setFragment;
             this.getFragment = getFragment;            
-            this.toString = toString;            
+            this.toString = toString;             
         }        
     };
     
-    error['HTML validation'].prototype = new error['abstract'];
-    error['CSS validation'].prototype = new error['abstract'];
-    error['JS static analysis'].prototype = new error['abstract'];
+    outputMessage['abstract'].prototype = new outputMessage['abstract'];
+    outputMessage['HTML validation'].prototype = new outputMessage['abstract'];
+    outputMessage['CSS validation'].prototype = new outputMessage['abstract'];
+    outputMessage['JS static analysis'].prototype = new outputMessage['abstract'];
     
     var outputResult = function () {
         var errorCount = 0;
+        var warningCount = 0;
         var errors = [];
+        var warnings = [];
 
         var getErrorCount = function () {
             return errorCount;
+        };
+        
+        var getWarningCount = function () {
+            return warningCount;
         };
 
         var setErrors = function (newErrors) {
@@ -980,16 +922,38 @@ application.progress.taskOutputController = function () {
 
         var getErrors = function () {
             return errors;
-        };  
+        }; 
+        
+        var setWarnings = function (newWarnings) {
+            warnings = newWarnings;
+            warningCount = warnings.length;
+        }
+        
+        var getWarnings = function () {
+            return warnings;
+        };
 
         var hasErrors = function () {
             return getErrorCount() > 0;
         };
+        
+        var hasWarnings = function () {
+            return getWarningCount() > 0;
+        };
+        
+        var hasMessages = function () {
+            return hasErrors() || hasWarnings();
+        }
 
         this.getErrorCount = getErrorCount;
         this.setErrors = setErrors;
         this.getErrors = getErrors;
         this.hasErrors = hasErrors;
+        this.getWarningCount = getWarningCount;
+        this.setWarnings = setWarnings;
+        this.getWarnings = getWarnings;
+        this.hasWarnings = hasWarnings;
+        this.hasMessages = hasMessages;
     };
     
     var outputParser = function () {
@@ -1021,13 +985,14 @@ application.progress.taskOutputController = function () {
                             var message = messages[messageIndex];
 
                             if (message.type == 'error') {
-                                var currentError = new error['HTML validation'];
+                                var currentError = new outputMessage['HTML validation'];
                                 
                                 currentError.setMessage(message.message);
                                 currentError.setLineNumber(message.line_number);
                                 currentError.setColumnNumber(message.column_number);
                                 currentError.setClass(message['class']);
-
+                                
+                                currentError.setType('error');
                                 errors.push(currentError);                            
                             }
                         }
@@ -1035,8 +1000,13 @@ application.progress.taskOutputController = function () {
 
                     return errors;
                 };
+                
+                var getWarnings = function () {
+                    return [];
+                };
 
                 this.getErrors = getErrors;
+                this.getWarnings = getWarnings;
             },
             'CSS validation': function (taskOutput) {
                 var getMessages = function () {
@@ -1052,33 +1022,45 @@ application.progress.taskOutputController = function () {
                 };
 
                 var messages = getMessages();
-                var messageCount = messages.length;             
-                var errors;
-
-                var getErrors = function () {                
-                    if (errors == undefined) {
-                        errors = [];
+                var messageCount = messages.length;
+                var outputMessages = {};
+                
+                var getOutputMessagesOfType = function (type) {
+                    if (outputMessages[type] == undefined) {
+                        outputMessages[type] = [];                        
 
                         for (var messageIndex = 0; messageIndex < messageCount; messageIndex++) {
                             var message = messages[messageIndex];
 
-                            if (message.type == 'error') {
-                                var currentError = new error['CSS validation'];
+                            if (message.type == type) {
+                                var currentOutputMessage = new outputMessage['CSS validation'];
+                                currentOutputMessage.setType(type);
                                 
-                               currentError.setMessage(message.message);
-                               currentError.setLineNumber(message.line_number);
-                               currentError.setContext(message.context);
-                               currentError.setRef(message.ref);
+                                currentOutputMessage.setMessage(message.message);
+                                currentOutputMessage.setMessage(message.line_number);
+                                currentOutputMessage.setContext(message.context);
+                                currentOutputMessage.setRef(message.ref);
 
-                                errors.push(currentError);                            
+                                outputMessages[type].push(currentOutputMessage);                            
                             }
                         }
                     }
+                    
+                   
 
-                    return errors;
+                    return outputMessages[type];                    
+                };
+
+                var getErrors = function () {                
+                    return getOutputMessagesOfType('error');
+                };
+                
+                var getWarnings = function () {
+                    return getOutputMessagesOfType('warning');
                 };
 
                 this.getErrors = getErrors;
+                this.getWarnings = getWarnings;
             },
             'JS static analysis': function (taskOutput) {
                 var getMessages = function () {
@@ -1105,7 +1087,8 @@ application.progress.taskOutputController = function () {
                             var message = messages[messageIndex];
 
                             if (message.type == 'error') {
-                                var currentError = new error['JS static analysis'];
+                                var currentError = new outputMessage['JS static analysis'];
+                                currentError.setType('error');
                                 
                                 currentError.setMessage(message.message);
                                 currentError.setLineNumber(message.line_number);
@@ -1120,18 +1103,22 @@ application.progress.taskOutputController = function () {
 
                     return errors;
                 };
+                
+                var getWarnings = function () {                    
+                    return [];                   
+                };
 
                 this.getErrors = getErrors;
+                this.getWarnings = getWarnings;
             }            
         };
         
-        var getResults = function (taskOutput) {
-            
-            
+        var getResults = function (taskOutput) {            
             var results = new outputResult();
             var parser = new parsers[taskOutput.type](taskOutput);
             
             results.setErrors(parser.getErrors());
+            results.setWarnings(parser.getWarnings());
             
             return results;       
         } 
@@ -1145,91 +1132,9 @@ application.progress.taskOutputController = function () {
 
 
 
-//application.testList = {};
-//
-//application.testList.list = function () {
-//    var testList;
-//    
-//    this.initialise = function (documentTestList) {
-//        testList = documentTestList.clone();
-//        documentTestList.remove();
-//    };   
-//    
-//    this.get = function (identifier) {
-//        var specificTestList = testList.clone();
-//        
-//        $('li.url', specificTestList).each(function () {
-//            var url = $(this);
-//            
-//            $('.task', url).each(function () {
-//                var task = $(this);
-//                
-//                switch (identifier) {
-//                    case '#all':
-//                        break;
-//
-//                    case '#tests-with-errors':
-//                        if (!task.hasClass('failed')) {
-//                            task.remove();
-//                        }
-//                        break; 
-//
-//                    case '#tests-without-errors':
-//                        if (!task.hasClass('passed') || (task.hasClass('cancelled') || task.hasClass('awaiting-cancellation'))) {
-//                            task.remove();
-//                        }
-//                        break;
-//
-//                    case '#cancelled-tests':
-//                        if (!task.hasClass('cancelled')) {
-//                            task.remove();
-//                        }
-//                        break; 
-//                }
-//            });
-//            
-//            if ($('.task', url).length === 0) {
-//                url.remove();
-//            }
-//        });
-//        
-//        return specificTestList;
-//    };
-//};
-//
-//application.testList.controller = function () {   
-//    var testList;
-//    var getTestList = function () {
-//        if (testList == undefined) {
-//            testList = new application.testList.list();            
-//        }
-//        
-//        return testList;
-//    };
-//    
-//    this.getTestList = getTestList;
-//    
-//    this.initialise = function () {
-//        getTestList().initialise($('#test-list .urls'));
-//    };
-//};
-//
-//application.resultsController = function () {
-//    var testListController = new application.testList.controller();
-//    testListController.initialise();
-//    
-//    $('#test-list .nav a').click(function () {
-//        var identifier = $(this).attr('href');
-//        if ($(identifier).html() == '') {
-//            $(identifier).html(testListController.getTestList().get(identifier));
-//        }
-//        
-//    });
-//    
-//    this.initialise = function () {
-//        $('#test-list .nav a[href=#tests-with-errors]').click();
-//    };
-//};
+
+
+
 
 application.expandableArea = function (expandableAreaElement) {    
     var initialise = function (expandableAreaElement) {                
@@ -1273,12 +1178,6 @@ application.pages = {
                 taskProgressController = new application.progress.taskController();
                 taskProgressController.initialise();
             }
-            
-            
-            if ($('body.app-results').length > 0) {                
-                //resultsController = new application.resultsController();
-                //resultsController.initialise();
-            } 
             
             if ($('body.content').length > 0) {                
                 getTwitters('footer-tweet', { 

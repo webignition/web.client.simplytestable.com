@@ -104,25 +104,13 @@
                     <div class="control">Advanced CSS validation options</div>
                     <div class="expanding">
                         <div class="row-fluid">                            
-                            <div class="span3 css-validator-option-set validator-option-set css-general">
-                                <p>General:</p>
+                            <div class="span2 css-validator-option-set validator-option-set css-general">
+                                <p>Handling warnings:</p>
                                 <label class="checkbox">
-                                    <input type="checkbox" value="1" name="css-validation-ignore-warnings" {% if (validation_options['css-validation-ignore-warnings'] == 1) %} checked {% endif %}> Ignore warnings (report errors only)
+                                    <input type="checkbox" value="1" name="css-validation-warnings" {% if (validation_options['css-validation-ignore-warnings'] == 1) %} checked {% endif %}> Ignore warnings (report errors only)
                                 </label>
-                                
-                                <label class="checkbox css-ignore-common-cdn-domains">
-                                    <input type="checkbox" value="1" name="css-validation-ignore-common-cdns"  {% if (validation_options['css-validation-ignore-common-cdns'] == 1) %} checked {% endif %}> Ignore CSS from common CDNs:
-                                    
-                                    {% if css_validation_ignore_common_cdns|length > 0 %}
-                                    <ul>
-                                        {% for cdn_domain_to_ignore in css_validation_ignore_common_cdns %}                                        
-                                            <li>&ndash; {{ cdn_domain_to_ignore }}</li>                                        
-                                        {% endfor %}
-                                    </ul>                                        
-                                    {% endif %}                                    
-                                </label> 
                             </div>
-                            <div class="span3 css-validator-option-set validator-option-set css-vendor-extensions">                                
+                            <div class="span2 css-validator-option-set validator-option-set css-vendor-extensions">                                
                                 <p>Vendor extensions:</p>
                                 <label class="radio">
                                     <input type="radio" name="css-validation-vendor-extensions" value="ignore" {% if validation_options['css-validation-vendor-extensions'] == 'ignore' %} checked {% endif %}>
@@ -137,7 +125,22 @@
                                     Report as errors
                                 </label> 
                             </div>                                
-                            <div class="span6 css-validator-option-set validator-option-set css-domains-to-ignore">
+                            <div class="span3 css-validator-option-set validator-option-set css-common-cdn-domains">
+                                <p>Common CDN domains:</p>
+                                
+                                <label class="checkbox css-ignore-common-cdn-domains">
+                                    <input type="checkbox" value="1" name="css-validation-ignore-common-cdns"  {% if (validation_options['css-validation-ignore-common-cdns'] == 1) %} checked {% endif %}> Ignore CSS from common CDNs:
+                                    
+                                    {% if css_validation_ignore_common_cdns|length > 0 %}
+                                    <ul>
+                                        {% for cdn_domain_to_ignore in css_validation_ignore_common_cdns %}                                        
+                                            <li>&ndash; {{ cdn_domain_to_ignore }}</li>                                        
+                                        {% endfor %}
+                                    </ul>                                        
+                                    {% endif %}                                    
+                                </label> 
+                            </div>                                 
+                            <div class="span5 css-validator-option-set validator-option-set css-domains-to-ignore">
                                 <p>Linked CSS domains to ignore:</p>
                                 
                                 <span class="help-block">
