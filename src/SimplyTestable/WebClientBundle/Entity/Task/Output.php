@@ -245,4 +245,13 @@ class Output {
         return $this->warningCount;
     }    
     
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function hasWarnings() {
+        return $this->getWarningCount() > 0;
+    }
+    
 }

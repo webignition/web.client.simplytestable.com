@@ -154,7 +154,34 @@
                                                 {%if task.hasOutput %}
                                                     {% if task.state == 'skipped' or task.state == 'cancelled' %}                                        
                                                     {% else %}
-                                                        {%if task.output.hasErrors %}
+                                                        {% if task.output.hasErrors and task.output.hasWarnings %}
+                                                        <a href="{{ path('app_task_results', { 'website': test.website, 'test_id': test.testId, 'task_id':task.taskId }) }}" class="label label-important">
+                                                            {{ task.output.errorCount }}
+                                                            {% if task.output.errorCount == 1 %}
+                                                                error,
+                                                            {% else %}
+                                                                errors,
+                                                            {% endif %}                                                                  
+                                                            {{ task.output.warningCount }}
+                                                            {% if task.output.warningCount == 1 %}
+                                                                warning
+                                                            {% else %}
+                                                                warnings
+                                                            {% endif %}                                                                
+                                                                <i class="icon-caret-right"></i>    
+                                                            </a>                                                            
+                                                
+                                                        {% elseif not task.output.hasErrors and task.output.hasWarnings %}
+                                                        <a href="{{ path('app_task_results', { 'website': test.website, 'test_id': test.testId, 'task_id':task.taskId }) }}" class="label label-info">                                                            
+                                                            No errors, {{ task.output.warningCount }}
+                                                            {% if task.output.warningCount == 1 %}
+                                                                warning
+                                                            {% else %}
+                                                                warnings
+                                                            {% endif %}
+                                                                <i class="icon-caret-right"></i>    
+                                                            </a>                                                            
+                                                        {% elseif task.output.hasErrors and not task.output.hasWarnings %}
                                                         <a href="{{ path('app_task_results', { 'website': test.website, 'test_id': test.testId, 'task_id':task.taskId }) }}" class="label label-important">
                                                             {{ task.output.errorCount }}
                                                             {% if task.output.errorCount == 1 %}
@@ -163,10 +190,10 @@
                                                                 errors
                                                             {% endif %}
                                                                 <i class="icon-caret-right"></i>    
-                                                            </a>
+                                                            </a>                                                            
                                                         {% else %}
                                                             <i class="icon-ok"></i>
-                                                        {% endif %}                                        
+                                                        {% endif %}                                      
                                                     {% endif %}
                                                 {% endif %}            
 
