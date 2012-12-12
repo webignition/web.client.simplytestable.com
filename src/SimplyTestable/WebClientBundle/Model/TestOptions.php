@@ -17,10 +17,10 @@ class TestOptions {
     private $testTypeOptionsMap = array(
         'html-validation' => array(),
         'css-validation' => array(
-            'css-validation-ignore-warnings',
-            'css-validation-ignore-common-cdns',
-            'css-validation-vendor-extensions',
-            'css-validation-domains-to-ignore'
+            'css-validation-ignore-warnings' => 'string',
+            'css-validation-ignore-common-cdns' => 'string',
+            'css-validation-vendor-extensions' => 'string',
+            'css-validation-domains-to-ignore' => 'array'
         ),
         'js-static-analysis' => array(),
     );
@@ -136,10 +136,26 @@ class TestOptions {
         $absoluteTestTypeOptions = array();
         $testTypeOptions = $this->getTestTypeOptions($testType);
         
-        foreach ($this->testTypeOptionsMap[$testType] as $optionKey) {
+        foreach ($this->testTypeOptionsMap[$testType] as $optionKey => $optionType) {
             $key = ($useFullOptionKey) ? $optionKey : str_replace($testType.'-', '', $optionKey);
             
-            $absoluteTestTypeOptions[$key] = (isset($testTypeOptions[$optionKey])) ? $testTypeOptions[$optionKey] : 0;
+            $optionValue = 0;
+            if (isset($testTypeOptions[$optionKey])) {
+                switch ($optionType) {
+                    case 'array':
+                        $optionValue = explode("\n", $testTypeOptions[$optionKey]);
+                        foreach ($optionValue as $index => $value) {
+                            $optionValue[$index] = trim($value);
+                        }
+                        break;
+
+                    default:
+                        $optionValue = $testTypeOptions[$optionKey];
+                        break;
+                }                
+            }
+            
+            $absoluteTestTypeOptions[$key] = $optionValue;
         }
         
         return $absoluteTestTypeOptions;
