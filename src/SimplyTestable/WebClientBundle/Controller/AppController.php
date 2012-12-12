@@ -56,7 +56,7 @@ class AppController extends BaseViewController
             'css-validation' => 1,
             'css-validation-ignore-warnings' => 1,
             'css-validation-ignore-common-cdns' => 1,
-            'css-validation-vendor-extensions' => "error",
+            'css-validation-vendor-extensions' => "warn",
             'css-validation-domains-to-ignore' => "",
             'js-static-analysis' => 1
         ));
