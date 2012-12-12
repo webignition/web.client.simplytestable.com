@@ -235,7 +235,7 @@ class TaskService extends CoreApplicationService {
         }        
         
         if (isset($remoteTaskObject->output)) {
-            if (!$task->hasOutput()) {
+            if (!$task->hasOutput()) {                
                 $this->populateOutputfromRemoteOutputObject($task, $remoteTaskObject->output);
             }            
         }        
@@ -247,6 +247,7 @@ class TaskService extends CoreApplicationService {
         $taskOutput->setContent($remoteOutputObject->output);
         $taskOutput->setType($task->getType());
         $taskOutput->setErrorCount($remoteOutputObject->error_count);
+        $taskOutput->setWarningCount($remoteOutputObject->warning_count);
         $taskOutput->setTask($task);        
         
         $task->setOutput($taskOutput);
