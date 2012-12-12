@@ -42,7 +42,7 @@ class CssValidationResultParser extends ResultParser {
         );
         
         $message = new CssTextFileMessage();
-        $message->setType('error');
+        $message->setType($rawMessageObject->type);
         
         foreach ($propertyToMethodMap as $property => $methodName) {
             if (isset($rawMessageObject->$property)) {
