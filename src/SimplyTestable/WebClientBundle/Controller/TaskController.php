@@ -142,6 +142,7 @@ class TaskController extends BaseViewController
         
         if ($task->getType() == 'CSS validation') {
             $viewData['errors_by_ref'] = $this->getCssValidationErrorsGroupedByRef($task);
+            $viewData['warnings_by_ref'] = $this->getCssValidationWarningsGroupedByRef($task);
         }
         
         if ($task->getType() == 'JS static analysis') {
@@ -173,6 +174,27 @@ class TaskController extends BaseViewController
         }
         
         return $errorsGroupedByRef;
+    }
+    
+    
+    private function getCssValidationWarningsGroupedByRef(Task $task) {
+        if ($task->getType() != 'CSS validation') {
+            return array();
+        }
+        
+        $errorsGroupedByRef = array();
+        $errors = $task->getOutput()->getResult()->getWarnings();
+        
+        foreach ($errors as $error) {
+            /* @var $error \SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage */
+            if (!isset($errorsGroupedByRef[$error->getRef()])) {
+                $errorsGroupedByRef[$error->getRef()] = array();
+            }
+            
+            $errorsGroupedByRef[$error->getRef()][] = $error;
+        }
+        
+        return $errorsGroupedByRef;        
     }
     
     

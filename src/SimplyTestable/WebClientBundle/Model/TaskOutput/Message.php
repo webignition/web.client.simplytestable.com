@@ -6,6 +6,7 @@ abstract class Message {
     
     const TYPE_ERROR = 'error';
     const TYPE_NOTICE = 'notice';    
+    const TYPE_WARNING = 'warning'; 
     
     /**
      *

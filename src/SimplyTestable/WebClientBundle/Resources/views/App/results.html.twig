@@ -172,8 +172,9 @@
                                                             </a>                                                            
                                                 
                                                         {% elseif not task.output.hasErrors and task.output.hasWarnings %}
+                                                <span class="label label-success"><i class="icon icon-ok"></i> No errors</span>
                                                         <a href="{{ path('app_task_results', { 'website': test.website, 'test_id': test.testId, 'task_id':task.taskId }) }}" class="label label-info">                                                            
-                                                            No errors, {{ task.output.warningCount }}
+                                                            {{ task.output.warningCount }}
                                                             {% if task.output.warningCount == 1 %}
                                                                 warning
                                                             {% else %}

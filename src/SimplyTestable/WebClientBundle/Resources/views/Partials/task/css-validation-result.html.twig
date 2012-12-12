@@ -1,14 +1,16 @@
 <div class="css-validation-result">
     <div class="meta">     
         <p>
-Line {{ error.getLineNumber }}:
+Line {{ message.getLineNumber }}:
         </p>
     </div>
     <div class="content">
         <span class="message">
-            <code>{{ error.context }}</code><br />          
+            {% if not message.context == ''%}                          
+            <code>{{ message.context }}</code><br />        
+            {% endif %}
 {% autoescape false %}            
-{{ error }}
+{{ message }}
 {% endautoescape %}         
         </span>        
     </div>

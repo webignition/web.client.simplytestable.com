@@ -700,6 +700,29 @@ body.app .validator-option-set p {
     margin: 6px 0;
 }
 
+body.app-task-results .outcome {
+    white-space: nowrap;
+}
+
+body.app-task-results .section-marker {
+    padding-top:60px;
+    display:block;
+    margin-top:-60px;
+}
+
+body.app-task-results .outcome a {
+    color: #fff;
+}
+
+body.app-task-results .outcome .label {
+    margin-right:4px;
+}
+
+body.app-results #test-list #task-list-container .label-success i.icon-ok {
+    color:#fff;
+    opacity:0.8;
+}
+
 @media (min-width: 1200px) {
     body.single-page-dialog #main input {
         width:96%;

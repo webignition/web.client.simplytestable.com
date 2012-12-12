@@ -43,18 +43,32 @@ class Result {
      * @return array 
      */    
     public function getErrors() {
-        $errors = array();
+        return $this->getMessagesOfType(Message::TYPE_ERROR);
+    }
+    
+    
+    /**
+     * Get collection of warning messages
+     * 
+     * @return array
+     */
+    public function getWarnings() {
+        return $this->getMessagesOfType(Message::TYPE_WARNING);
+    }
+    
+    
+    private function getMessagesOfType($type) {
+        $messages = array();
 
         foreach ($this->messages as $message) {
             /* @var $message Message */
-            if ($message->getType() == Message::TYPE_ERROR) {
-                $errors[] = $message;
+            if ($message->getType() == $type) {
+                $messages[] = $message;
             }
         }
         
-        return $errors;
+        return $messages;          
     }
-    
     
     public function getFirstError() {        
         $errors = $this->getErrors();
@@ -72,11 +86,29 @@ class Result {
     
     
     /**
+     * 
+     * @return int
+     */
+    public function getWarningCount() {
+        return count($this->getWarnings());
+    }
+    
+    
+    /**
      *
      * @return boolean
      */
     public function hasErrors() {
         return $this->getErrorCount() > 0;
+    }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function hasWarnings() {
+        return $this->getWarningCount() > 0;
     }
     
     
