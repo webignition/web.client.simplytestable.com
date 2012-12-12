@@ -85,12 +85,27 @@ class RequestParserService {
         $testTypeOptions = array();
         
         foreach ($this->requestData as $key => $value) {            
-            if(substr($key, 0, strlen($testTypeKey)) == $testTypeKey && $key != $testTypeKey) {
+            if ($this->requestKeyMatchesTestTypeKey($key, $testTypeKey)) {                
                 $testTypeOptions[$key] = $value;
             }
         }
         
         return $testTypeOptions;
+    }
+    
+    
+    /**
+     * 
+     * @param string $requestKey
+     * @param string $testTypeKey
+     * @return boolean
+     */
+    private function requestKeyMatchesTestTypeKey($requestKey, $testTypeKey) {
+        if ($requestKey == $testTypeKey) {
+            return false;
+        }
+        
+        return substr($requestKey, 0, strlen($testTypeKey)) == $testTypeKey;
     }
         
 }
