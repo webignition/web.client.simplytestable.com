@@ -1131,43 +1131,6 @@ application.progress.taskOutputController = function () {
 };
 
 
-
-
-
-
-
-application.expandableArea = function (expandableAreaElement) {    
-    var initialise = function (expandableAreaElement) {                
-        var controlElement = $('.control', expandableAreaElement);
-        var expandingElement = $('.expanding', expandableAreaElement);
-        
-        var controlLink = $('<a href="#">'+controlElement.text()+' <i class="icon icon-caret-down"></i></a>');        
-        controlLink.click(function (event) {
-            if (expandingElement.is('.closed')) {
-                expandingElement.slideDown(function () {
-                    expandingElement.removeClass('closed').addClass('open');
-                    $('.icon-caret-down', controlLink).replaceWith('<i class="icon icon-caret-up" />');
-                });
-            } else {
-                expandingElement.slideUp(function () {
-                    expandingElement.removeClass('open').addClass('closed');
-                    $('.icon-caret-up', controlLink).replaceWith('<i class="icon icon-caret-down" />');
-                });                
-            }
-            
-            event.preventDefault();
-        });
-        
-        controlElement.html(controlLink); 
-        
-        expandingElement.css({'display':'none'});
-        expandingElement.addClass('closed');
-    };
-    
-    initialise(expandableAreaElement);
-    
-};
-
 application.pages = {
     '/*':{
         'initialise':function () {
@@ -1195,9 +1158,56 @@ application.pages = {
                 });
             }
             
-            var expandableAreas = [];
-            $('.expandable').each(function () { 
-                expandableAreas.push(new application.expandableArea(this));
+            $('.expandable-control').each(function () {
+                var getExpandableArea = function (expandableControlClass) {
+                    var classes = expandableControlClass.split(' ');
+                    for (var classIndex = 0; classIndex < classes.length; classIndex++) {
+                        if (classes[classIndex].match(/for\-.+/)) {
+                            var expandableAreaId = classes[classIndex].replace('for-', '');
+                            var expandableArea = $('#'+expandableAreaId);
+                            
+                            if (expandableArea.length === 1) {
+                                return expandableArea;
+                            }
+                        }
+                    }
+                    
+                    return false;
+                };
+                
+                var expandableControl = $(this);                
+                var expandableArea = getExpandableArea(expandableControl.attr('class'));
+                
+                if (expandableArea === false) {
+                    return;
+                }
+                
+                var defaultState = (expandableControl.is('.expandable-control-default-closed ')) ? 'closed' : 'open';
+                var controlLinkIconName = (defaultState == 'closed') ? 'icon-caret-down' : 'icon-caret-up';
+                
+                var controlLink = $('<a href="#">'+expandableControl.text()+' <i class="icon '+controlLinkIconName+'"></i></a>');
+                expandableControl.replaceWith(controlLink);
+                
+                if (defaultState == 'closed') {
+                    expandableArea.css({'display':'none'});
+                    expandableArea.addClass('closed');                    
+                }
+                
+                controlLink.click(function (event) {
+                    if (expandableArea.is('.closed')) {
+                        expandableArea.slideDown(function () {
+                            expandableArea.removeClass('closed').addClass('open');
+                            $('.icon-caret-down', controlLink).replaceWith('<i class="icon icon-caret-up" />');
+                        });
+                    } else {
+                        expandableArea.slideUp(function () {
+                            expandableArea.removeClass('open').addClass('closed');
+                            $('.icon-caret-up', controlLink).replaceWith('<i class="icon icon-caret-down" />');
+                        });                
+                    }                    
+                    
+                    event.preventDefault();
+                });
             });
 
         }         
