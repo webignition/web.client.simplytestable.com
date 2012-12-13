@@ -1185,7 +1185,7 @@ application.pages = {
                 var defaultState = (expandableControl.is('.expandable-control-default-closed ')) ? 'closed' : 'open';
                 var controlLinkIconName = (defaultState == 'closed') ? 'icon-caret-down' : 'icon-caret-up';
                 
-                var controlLink = $('<a href="#">'+expandableControl.text()+' <i class="icon '+controlLinkIconName+'"></i></a>');
+                var controlLink = $('<a href="#">'+expandableControl.html()+' <i class="icon '+controlLinkIconName+'"></i></a>');
                 expandableControl.replaceWith(controlLink);
                 
                 if (defaultState == 'closed') {
