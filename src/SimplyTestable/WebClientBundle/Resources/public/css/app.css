@@ -581,11 +581,9 @@ body.app-task-results #task-summary h3 {
     opacity:0.9;
 }
 
-#test-options {
-    margin-top:20px;
-}
 
-body.app #test-options {
+
+#test-options {
     margin-top:30px;
 }
 
@@ -607,21 +605,12 @@ body.app #test-options {
     opacity: 0.9;
 }
 
+
+
 #input form {
     margin-bottom: 0;
 }
 
-body.app-results #test-options label {
-    display:inline;
-}
-
-body.app-results #test-options label input {
-    margin-top:0;
-}
-
-body.app-results #test-options label {
-    margin-left:10px;
-}
 
 body.app-task-results .errors .meta,
 body.app-task-results .errors .content {
@@ -672,29 +661,26 @@ opacity: 0.8;
 top: 40px;    
 }
 
-body.app .css-ignore-common-cdn-domains ul {
+#test-options .css-ignore-common-cdn-domains ul {
 margin: 0;
 padding: 0;    
 }
 
-body.app .css-ignore-common-cdn-domains ul li {
+#test-options .css-ignore-common-cdn-domains ul li {
     list-style-type: none;
     opacity:0.8;
 }
 
 body.app .css-domains-to-ignore textarea {
-    width:50%;
+    width:100%;
 }
 
-body.app .test-options-advanced {
+#test-options .test-options-advanced {
     margin-left: 18px;
 }
 
-body.app .validator-option-set {
-    
-}
 
-body.app .validator-option-set p {
+#test-options  .validator-option-set p {
     font-weight: bold;
     opacity: 0.8;
     margin: 6px 0;
@@ -721,6 +707,18 @@ body.app-task-results .outcome .label {
 body.app-results #test-list #task-list-container .label-success i.icon-ok {
     color:#fff;
     opacity:0.8;
+}
+
+body.app-progress .test-options-advanced .title {
+    margin-top: 8px;
+}
+
+body.app-progress .test-options-advanced ul {
+    margin-top: 8px;
+}
+
+body.app-progress .test-options-advanced ul li {
+   margin-bottom: 4px;
 }
 
 @media (min-width: 1200px) {

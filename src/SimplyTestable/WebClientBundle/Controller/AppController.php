@@ -40,6 +40,16 @@ class AppController extends BaseViewController
         'queued-for-assignment' => 'icon-off',
         'preparing' => 'icon-search',
         'in-progress' => 'icon-play-circle'        
+    );
+    
+    private $testOptionNamesAndDefaultValues = array(
+        'html-validation' => 1,
+        'css-validation' => 1,
+        'css-validation-ignore-warnings' => 1,
+        'css-validation-ignore-common-cdns' => 1,
+        'css-validation-vendor-extensions' => "warn",
+        'css-validation-domains-to-ignore' => "",
+        'js-static-analysis' => 1        
     );    
     
     public function indexAction()
@@ -51,15 +61,7 @@ class AppController extends BaseViewController
         $templateName = 'SimplyTestableWebClientBundle:App:index.html.twig';
         $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);
         
-        $validationOptions = $this->getPersistentValues(array(
-            'html-validation' => 1,
-            'css-validation' => 1,
-            'css-validation-ignore-warnings' => 1,
-            'css-validation-ignore-common-cdns' => 1,
-            'css-validation-vendor-extensions' => "warn",
-            'css-validation-domains-to-ignore' => "",
-            'js-static-analysis' => 1
-        ));
+        $testOptions = $this->getPersistentValues($this->testOptionNamesAndDefaultValues);
         
         $testStartError = $this->getFlash('test_start_error');        
         
@@ -73,12 +75,12 @@ class AppController extends BaseViewController
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
-//        if ($this->isProduction() && $cacheValidatorHeaders->getLastModifiedDate() == $templateLastModifiedDate) {            
-//            $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
-//            if ($response->isNotModified($this->getRequest())) {
-//                return $response;
-//            }
-//        }
+        if ($this->isProduction() && $cacheValidatorHeaders->getLastModifiedDate() == $templateLastModifiedDate) {            
+            $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
+            if ($response->isNotModified($this->getRequest())) {
+                return $response;
+            }
+        }
         
         $cacheValidatorHeaders->setLastModifiedDate($templateLastModifiedDate);
         $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);
@@ -92,8 +94,9 @@ class AppController extends BaseViewController
             'recent_tests' => $recentTests,
             'website' => $this->getPersistentValue('website'),
             'available_task_types' => $this->getAvailableTaskTypes(),
-            'validation_options' => $validationOptions,
-            'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore()
+            'test_options' => $testOptions,
+            'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
+            'test_options_title' => 'What do you want to check?'
         ));         
 
         return $this->getCachableResponse($this->render($templateName, array(            
@@ -293,7 +296,7 @@ class AppController extends BaseViewController
             ), true));            
         }        
         
-        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
+        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();       
         
         $taskTypes = array();
         foreach ($remoteTestSummary->task_types as $taskTypeObject) {
@@ -466,9 +469,9 @@ class AppController extends BaseViewController
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
         $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
-        if ($response->isNotModified($this->getRequest())) {
-            return $response;
-        }
+//        if ($response->isNotModified($this->getRequest())) {
+//            return $response;
+//        }
         
         try {
             $test = $this->getTestService()->get($website, $test_id, $this->getUser());
@@ -544,7 +547,10 @@ class AppController extends BaseViewController
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),    
             'task_types' => $taskTypes,
-            'available_task_types' => $this->getAvailableTaskTypes()
+            'available_task_types' => $this->getAvailableTaskTypes(),
+            'test_options' => $this->getTestOptionsFromRemoteTestSummary($remoteTestSummary),
+            'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
+            'test_options_title' => 'Re-check:'
         );
                        
         //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTestSummary->task_count : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));
@@ -563,6 +569,34 @@ class AppController extends BaseViewController
                 $this->sendResponse($viewData),
                 $cacheValidatorHeaders
         ); 
+    }
+    
+    
+    private function getTestOptionsFromRemoteTestSummary($remoteTestSummary) {
+        $testOptions = array();
+        
+        foreach ($remoteTestSummary->task_types as $taskType) {
+            $taskTypeName = $taskType->name;
+            $taskTypeKey = strtolower(str_replace(' ', '-', $taskTypeName));
+            
+            $testOptions[$taskTypeKey] = 1;
+        }
+        
+        foreach($remoteTestSummary->task_type_options as $taskTypeName => $taskTypeOptionsSet) {
+            $taskTypeKey = strtolower(str_replace(' ', '-', $taskTypeName));            
+            
+            foreach ($taskTypeOptionsSet as $taskTypeOptionKey => $taskTypeOptionValue) {
+                $testOptions[$taskTypeKey.'-'.$taskTypeOptionKey] = $taskTypeOptionValue;
+            }
+        }
+        
+        foreach ($this->testOptionNamesAndDefaultValues as $testOptionName => $defaultValue) {
+            if (!isset($testOptions[$testOptionName])) {
+                $testOptions[$testOptionName] = '';
+            }
+        }
+        
+        return $testOptions;
     }
     
     

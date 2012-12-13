@@ -78,133 +78,67 @@
         </div>
             
         {% if app.request.attributes.get('_route') == 'app' %}
-        <div id="test-options">
-            <p class="info"><i class="icon-wrench"></i> What do you want to check?</p>
-            
-            {% if 'html-validation' in available_task_types|keys %}
-            
-            <div class="test-options-set" id="html-validation-options">
-                <label class="checkbox">
-                  <input type="checkbox" value="1" name="html-validation" {% if (validation_options['html-validation'] == 1) %} checked {% endif %} /> HTML validation
-                  <span class="help-block">Examine whether the HTML markup for all your pages is valid</span>
-                </label>                
-            </div>
-            
-            {% endif %}
-            
-            {% if 'css-validation' in available_task_types|keys %}
-                
-            <div class="test-options-set" id="css-validation-options">
-                <label class="checkbox">
-                  <input type="checkbox" value="1" name="css-validation" {% if (validation_options['css-validation'] == 1) %} checked {% endif %} /> CSS validation
-                  <span class="help-block">Check CSS rules defined in linked stylesheets and inline</span>
-                </label>
-                    
-                <div class="expandable test-options-advanced">
-                    <div class="control">Advanced CSS validation options</div>
-                    <div class="expanding">
-                        <div class="row-fluid">                            
-                            <div class="span2 css-validator-option-set validator-option-set css-general">
-                                <p>Handling warnings:</p>
-                                <label class="checkbox">
-                                    <input type="checkbox" value="1" name="css-validation-ignore-warnings" {% if (validation_options['css-validation-ignore-warnings'] == 1) %} checked {% endif %}> Ignore warnings (report errors only)
-                                </label>
-                            </div>
-                            <div class="span2 css-validator-option-set validator-option-set css-vendor-extensions">                                
-                                <p>Vendor extensions:</p>
-                                <label class="radio">
-                                    <input type="radio" name="css-validation-vendor-extensions" value="ignore" {% if validation_options['css-validation-vendor-extensions'] == 'ignore' %} checked {% endif %}>
-                                    Ignore
-                                </label>
-                                <label class="radio">
-                                    <input type="radio" name="css-validation-vendor-extensions" value="warn" {% if validation_options['css-validation-vendor-extensions'] == 'warn' %} checked {% endif %}>
-                                    Report as warnings
-                                </label>                         
-                                <label class="radio">
-                                    <input type="radio" name="css-validation-vendor-extensions" value="error" {% if validation_options['css-validation-vendor-extensions'] == 'error' %} checked {% endif %}>
-                                    Report as errors
-                                </label> 
-                            </div>                                
-                            <div class="span3 css-validator-option-set validator-option-set css-common-cdn-domains">
-                                <p>Common CDN domains:</p>
-                                
-                                <label class="checkbox css-ignore-common-cdn-domains">
-                                    <input type="checkbox" value="1" name="css-validation-ignore-common-cdns"  {% if (validation_options['css-validation-ignore-common-cdns'] == 1) %} checked {% endif %}> Ignore CSS from common CDNs:
-                                    
-                                    {% if css_validation_ignore_common_cdns|length > 0 %}
-                                    <ul>
-                                        {% for cdn_domain_to_ignore in css_validation_ignore_common_cdns %}                                        
-                                            <li>&ndash; {{ cdn_domain_to_ignore }}</li>                                        
-                                        {% endfor %}
-                                    </ul>                                        
-                                    {% endif %}                                    
-                                </label> 
-                            </div>                                 
-                            <div class="span5 css-validator-option-set validator-option-set css-domains-to-ignore">
-                                <p>Linked CSS domains to ignore:</p>
-                                
-                                <span class="help-block">
-                                    You might be linking to third-party CSS resources that you don't control and that you
-                                    want the validator to ignore.
-                                </span>
-                                <textarea name="css-validation-domains-to-ignore" rows="5" placeholder="example.mycdn.com                                 one-per-line.example.com">{% if validation_options['css-validation-domains-to-ignore'] != '' %}{{validation_options['css-validation-domains-to-ignore']}}{% endif %}</textarea>
-                            </div>                             
-                        </div>                          
-                            
-                        <!--
-vendor extensions:
-    ignore
-    warnings
-    errors
-warnings
-    ignore (errors only, no warnings)
-cdns to ignore
-                        -->
-                    </div>
-                </div>
-            </div>
-            
-            {% endif %}
-            
-            {% if 'js-static-analysis' in available_task_types|keys %}
-            
-            <div class="test-options-set" id="js-static-analysis-validation-options">
-                <label class="checkbox">
-                  <input type="checkbox" value="1" name="js-static-analysis" {% if (js_static_analysis_selected == 1) %} checked {% endif %} /> JavaScript static analysis
-                  <span class="help-block">Analyse the quality of your JavaScript with <a href="http://www.jslint.com/lint.html">JSLint</a></span>
-                </label>
-            </div>
-            
-            {% endif %}
-        </div>
+        {% include 'SimplyTestableWebClientBundle:Partials:test-input-task-type-options.html.twig' %} 
         {% elseif app.request.attributes.get('_route') == 'app_progress' %}          
             
         <div id="test-options">
-            <p>
-                <i class="icon-caret-right"></i>
+            <p class="expandable-control for-css-validation-options-expandable expandable-control-default-closed">
                 Checking                 
                 {% for task_type in task_types %}
                     <span class="test-type">{{ task_type }}</span>{% if loop.length > 1 %}{% if loop.index == loop.length - 1 %} and {% else %}{% if loop.index != loop.length %},{% endif %}{% endif %}{% endif %}
                 {% endfor %}
             </p>
+            <div id="css-validation-options-expandable">
+                {% for task_type,task_type_options in remote_test_summary.task_type_options %}                    
+                    <div class="test-options-advanced">
+                        <div class="title">Selected <span class="test-type">{{ task_type }}</span> options:</div>
+                                        
+                    
+                        <ul>
+                            {% if ((task_type_options['ignore-warnings'] is defined) and (task_type_options['ignore-warnings'] == 1)) %}
+                                <li>
+                                    <strong>Warnings</strong> are being <strong>ignored</strong>
+                                </li>
+                            {% endif %}
+                            {% if ((task_type_options['vendor-extensions'] is defined) and (task_type_options['vendor-extensions'] == 'ignore')) %}
+                                <li>
+                                    <strong>Vendor extension messages</strong> are being <strong>ignored</strong>
+                                </li>
+                            {% endif %}                            
+                            {% if ((task_type_options['vendor-extensions'] is defined) and (task_type_options['vendor-extensions'] == 'error')) %}
+                                <li>                                
+                                    <strong>Vendor extension issues</strong> are being treated as <strong>errors</strong>
+                                </li>
+                            {% endif %}                             
+                            {% if ((task_type_options['vendor-extensions'] is defined) and (task_type_options['vendor-extensions'] == 'warn')) %}
+                                <li>                                
+                                    <strong>Vendor extension issues</strong> are being treated as <strong>warnings</strong>
+                                    {% if ((task_type_options['ignore-warnings'] is defined) and (task_type_options['ignore-warnings'] == 1)) %}
+                                    and subsequently <strong>ignored</strong>
+                                    {% endif %}
+                                </li>
+                            {% endif %}                               
+                            {% if ((task_type_options['ignore-common-cdns'] is defined) and (task_type_options['ignore-common-cdns'] == 1)) %}
+                                <li>
+                                    CSS served from <strong>common CDN domains</strong> is being <strong>ignored</strong>
+                                </li>
+                            {% endif %}
+                            {% if ((task_type_options['domains-to-ignore'] is defined) and (task_type_options['domains-to-ignore']|length > 0)) %}
+                                <li>
+                                    CSS served from <strong>these chose domains</strong> is being ignored:
+                                    {% for domain in task_type_options['domains-to-ignore'] %}
+                                    <strong>{{domain}}</strong>{% if ((loop.index == loop.length - 1) and loop.length > 1) %} and {% endif %}{% if ((loop.index != loop.length - 1) and (not loop.last)) %}, {% endif %}
+                                    {% endfor %}
+                                </li>
+                            {% endif %}                            
+                        </ul>
+                    </div>
+                    
+                {% endfor %}                
+            </div>
         </div>
         {% elseif app.request.attributes.get('_route') == 'app_results' %}
-        <div id="test-options">
-            <p>
-                <i class="icon-caret-right"></i>
-                Re-check:<br />
-                
-                {% for task_type_key, available_task_type in available_task_types %}
-                {% if available_task_type in task_types %}
-                <label class="test-type"><input type="checkbox" value="1" name="{{ task_type_key }}" checked /> {{ available_task_type }}</label>
-                {% else %}
-                <label class="test-type"><input type="checkbox" value="1" name="{{ task_type_key }}" /> {{ available_task_type }}</label>
-                {% endif %}
-                <br />    
-                {% endfor %}
-              
-            </p>
-        </div>            
+        {% include 'SimplyTestableWebClientBundle:Partials:test-input-task-type-options.html.twig' %}             
         {% endif %}
             
     </form>
