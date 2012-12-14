@@ -24,13 +24,13 @@
             <div class="expandable-control expandable-control-default-closed for-css-validation-options-expandable">Advanced CSS validation options</div>
             <div id="css-validation-options-expandable">
                 <div class="row-fluid">                            
-                    <div class="span3 css-validator-option-set validator-option-set css-general">
+                    <div class="span2 css-validator-option-set validator-option-set css-general">
                         <p>Handling warnings:</p>
                         <label class="checkbox">
                             <input type="checkbox" value="1" name="css-validation-ignore-warnings" {% if (test_options['css-validation-ignore-warnings'] == 1) %} checked {% endif %}> Ignore warnings (report errors only)
                         </label>
                     </div>
-                    <div class="span3 css-validator-option-set validator-option-set css-vendor-extensions">                                
+                    <div class="span2 css-validator-option-set validator-option-set css-vendor-extensions">                                
                         <p>Vendor extension issues:</p>
                         <label class="radio">
                             <input type="radio" name="css-validation-vendor-extensions" value="ignore" {% if test_options['css-validation-vendor-extensions'] == 'ignore' %} checked {% endif %}>
@@ -60,7 +60,7 @@
                                     {% endif %}                                    
                             </label> 
                         </div>                                 
-                        <div class="span3 css-validator-option-set validator-option-set css-domains-to-ignore">
+                        <div class="span5 css-validator-option-set validator-option-set css-domains-to-ignore">
                             <p>Linked CSS domains to ignore:</p>
 
                             <span class="help-block">
