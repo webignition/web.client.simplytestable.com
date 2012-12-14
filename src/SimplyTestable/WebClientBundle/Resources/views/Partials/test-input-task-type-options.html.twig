@@ -1,5 +1,5 @@
 <div id="test-options">
-    <p class="info"><i class="icon-wrench"></i> {{ test_options_title }}</p>
+    <p class="info"><i class="icon-wrench"></i> {{ test_options_title }}</p>    
 
 {% if 'html-validation' in available_task_types|keys %}
 
@@ -27,21 +27,21 @@
                     <div class="span2 css-validator-option-set validator-option-set css-general">
                         <p>Handling warnings:</p>
                         <label class="checkbox">
-                            <input type="checkbox" value="1" name="css-validation-ignore-warnings" {% if (test_options['css-validation-ignore-warnings'] == 1) %} checked {% endif %}> Ignore warnings (report errors only)
+                            <input type="checkbox" value="1" name="css-validation-ignore-warnings" {% if (test_options['css-validation-ignore-warnings'] == 1 or (test_options['css-validation'] == '' and default_css_validation_options['ignore-warnings'] == 1)) %} checked {% endif %}> Ignore warnings (report errors only)
                         </label>
                     </div>
                     <div class="span2 css-validator-option-set validator-option-set css-vendor-extensions">                                
                         <p>Vendor extension issues:</p>
                         <label class="radio">
-                            <input type="radio" name="css-validation-vendor-extensions" value="ignore" {% if test_options['css-validation-vendor-extensions'] == 'ignore' %} checked {% endif %}>
+                            <input type="radio" name="css-validation-vendor-extensions" value="ignore" {% if test_options['css-validation-vendor-extensions'] == 'ignore' or (test_options['css-validation'] == '' and default_css_validation_options['vendor-extensions'] == 'ignore') %} checked {% endif %}>
                             Ignore
                         </label>
                         <label class="radio">
-                            <input type="radio" name="css-validation-vendor-extensions" value="warn" {% if test_options['css-validation-vendor-extensions'] == 'warn' %} checked {% endif %}>
+                            <input type="radio" name="css-validation-vendor-extensions" value="warn" {% if test_options['css-validation-vendor-extensions'] == 'warn' or (test_options['css-validation'] == '' and default_css_validation_options['vendor-extensions'] == 'warn') %} checked {% endif %}>
                             Report as warnings
                         </label>                         
                         <label class="radio">
-                            <input type="radio" name="css-validation-vendor-extensions" value="error" {% if test_options['css-validation-vendor-extensions'] == 'error' %} checked {% endif %}>
+                            <input type="radio" name="css-validation-vendor-extensions" value="error" {% if test_options['css-validation-vendor-extensions'] == 'error' or (test_options['css-validation'] == '' and default_css_validation_options['vendor-extensions'] == 'error') %} checked {% endif %}>
                             Report as errors
                         </label> 
                     </div>                                
@@ -49,7 +49,7 @@
                         <p>Common <a href="http://en.wikipedia.org/wiki/Content_delivery_network">CDN</a> domains:</p>
 
                         <label class="checkbox css-ignore-common-cdn-domains">
-                            <input type="checkbox" value="1" name="css-validation-ignore-common-cdns"  {% if (test_options['css-validation-ignore-common-cdns'] == 1) %} checked {% endif %} /> Ignore CSS from common CDNs:
+                            <input type="checkbox" value="1" name="css-validation-ignore-common-cdns"  {% if (test_options['css-validation-ignore-common-cdns'] == 1) or (test_options['css-validation'] == '' and default_css_validation_options['ignore-common-cdns'] == 1) %} checked {% endif %} /> Ignore CSS from common CDNs:
 
                                     {% if css_validation_ignore_common_cdns|length > 0 %}
                             <ul>

@@ -17,10 +17,22 @@ class TestOptions {
     private $testTypeOptionsMap = array(
         'html-validation' => array(),
         'css-validation' => array(
-            'css-validation-ignore-warnings' => 'string',
-            'css-validation-ignore-common-cdns' => 'string',
-            'css-validation-vendor-extensions' => 'string',
-            'css-validation-domains-to-ignore' => 'array'
+            'css-validation-ignore-warnings' => array(
+                'type' => 'int',
+                'default' => 1
+            ),
+            'css-validation-ignore-common-cdns' => array(
+                'type' => 'int',
+                'default' => 1                
+            ),
+            'css-validation-vendor-extensions' => array(
+                'type' => 'string',
+                'default' => 'warn'               
+            ),
+            'css-validation-domains-to-ignore' => array(
+                'type' => 'array',
+                'default' => array()              
+            ),
         ),
         'js-static-analysis' => array(),
     );
@@ -136,26 +148,57 @@ class TestOptions {
         $absoluteTestTypeOptions = array();
         $testTypeOptions = $this->getTestTypeOptions($testType);
         
-        foreach ($this->testTypeOptionsMap[$testType] as $optionKey => $optionType) {
+        foreach ($this->testTypeOptionsMap[$testType] as $optionKey => $optionDefinition) {
             $key = ($useFullOptionKey) ? $optionKey : str_replace($testType.'-', '', $optionKey);
             
-            $optionValue = 0;
+            
             if (isset($testTypeOptions[$optionKey])) {
-                switch ($optionType) {
+                switch ($optionDefinition['type']) {
                     case 'array':
                         $optionValue = explode("\n", $testTypeOptions[$optionKey]);
                         foreach ($optionValue as $index => $value) {
                             $optionValue[$index] = trim($value);
                         }
                         break;
+                        
+                    case 'int':
+                        $optionValue = (int)$testTypeOptions[$optionKey];
+                        break;
 
                     default:
                         $optionValue = $testTypeOptions[$optionKey];
                         break;
                 }                
-            }
+            } else {
+                $optionValue = $optionDefinition['default'];
+            }            
             
-            $absoluteTestTypeOptions[$key] = $optionValue;
+            
+            //var_dump($key, $optionDefinition, $optionValue);
+            //exit();
+            
+//            
+//            
+//            
+//            $optionValue = null;
+//            if (isset($testTypeOptions[$optionKey])) {
+//                switch ($optionType) {
+//                    case 'array':
+//                        $optionValue = explode("\n", $testTypeOptions[$optionKey]);
+//                        foreach ($optionValue as $index => $value) {
+//                            $optionValue[$index] = trim($value);
+//                        }
+//                        break;
+//
+//                    default:
+//                        $optionValue = $testTypeOptions[$optionKey];
+//                        break;
+//                }                
+//            }
+//            
+//            if (!is_null($optionValue)) {
+                $absoluteTestTypeOptions[$key] = $optionValue;
+//            }                      
         }
         
         return $absoluteTestTypeOptions;

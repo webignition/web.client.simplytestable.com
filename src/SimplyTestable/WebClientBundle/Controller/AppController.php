@@ -296,8 +296,8 @@ class AppController extends BaseViewController
             ), true));            
         }        
         
-        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();       
-        
+        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
+
         $taskTypes = array();
         foreach ($remoteTestSummary->task_types as $taskTypeObject) {
             $taskTypes[] = $taskTypeObject->name;
@@ -328,9 +328,15 @@ class AppController extends BaseViewController
     private function getRemoteTestSummaryArray($remoteTestSummary) {        
         $remoteTestSummaryArray = (array)$remoteTestSummary;
         
-        foreach ($remoteTestSummaryArray as $key => $value) {
+        foreach ($remoteTestSummaryArray as $key => $value) {            
             if ($value instanceof \stdClass){
-                $remoteTestSummaryArray[$key] = (array)$value;
+                $remoteTestSummaryArray[$key] = get_object_vars($value);
+            }
+        }
+        
+        if (isset($remoteTestSummaryArray['task_type_options'])) {
+            foreach ($remoteTestSummaryArray['task_type_options'] as $testType => $testTypeOptions) {
+                $remoteTestSummaryArray['task_type_options'][$testType] = get_object_vars($testTypeOptions);
             }
         }
         
@@ -550,6 +556,11 @@ class AppController extends BaseViewController
             'available_task_types' => $this->getAvailableTaskTypes(),
             'test_options' => $this->getTestOptionsFromRemoteTestSummary($remoteTestSummary),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
+            'default_css_validation_options' => array(
+                'ignore-warnings' => 1,
+                'vendor-extensions' => 'warn',
+                'ignore-common-cdns' => 1                
+            ),
             'test_options_title' => 'Re-check:'
         );
                        
