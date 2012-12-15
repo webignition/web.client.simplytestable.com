@@ -32,9 +32,9 @@ class TestStartController extends BaseController
         if ($testOptions->hasTestTypes() === false) {
             $this->get('session')->setFlash('test_start_error', 'no-test-types-selected');
             return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));                
-        }
+        }        
         
-        $jsonResponseObject = $this->getTestService()->start($this->getWebsite(), $testOptions)->getContentObject();        
+        $jsonResponseObject = $this->getTestService()->start($this->getCanonicalUrlFromWebsite($this->getWebsite()), $testOptions)->getContentObject();
         return $this->redirect($this->generateUrl(
             'app_progress',
             array(
@@ -43,6 +43,21 @@ class TestStartController extends BaseController
             ),
             true
         ));
+    }
+    
+    
+    /**
+     * 
+     * @param string $website
+     * @return string
+     */
+    private function getCanonicalUrlFromWebsite($website) {
+        $url = new \webignition\NormalisedUrl\NormalisedUrl($website);
+        $url->setFragment(null);
+        $url->setPath('/');
+        $url->setQuery(null);
+        
+        return (string)$url;
     }
     
     
