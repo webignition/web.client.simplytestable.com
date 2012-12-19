@@ -661,12 +661,12 @@ opacity: 0.8;
 top: 40px;    
 }
 
-#test-options .css-ignore-common-cdn-domains ul {
+#test-options .ignore-common-cdn-domains ul {
 margin: 0;
 padding: 0;    
 }
 
-#test-options .css-ignore-common-cdn-domains ul li {
+#test-options .ignore-common-cdn-domains ul li {
     list-style-type: none;
     opacity:0.8;
 }

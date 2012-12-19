@@ -49,7 +49,9 @@ class AppController extends BaseViewController
         'css-validation-ignore-common-cdns' => 1,
         'css-validation-vendor-extensions' => "warn",
         'css-validation-domains-to-ignore' => "",
-        'js-static-analysis' => 1        
+        'js-static-analysis' => 1,
+        'js-static-analysis-ignore-common-cdns' => 1,
+        'js-static-analysis-domains-to-ignore' => "",
     );    
     
     public function indexAction()
@@ -96,6 +98,7 @@ class AppController extends BaseViewController
             'available_task_types' => $this->getAvailableTaskTypes(),
             'test_options' => $testOptions,
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
+            'js_static_analysis_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'test_options_title' => 'What do you want to check?'
         ));         
 
@@ -297,7 +300,6 @@ class AppController extends BaseViewController
         }        
         
         $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
-
         $taskTypes = array();
         foreach ($remoteTestSummary->task_types as $taskTypeObject) {
             $taskTypes[] = $taskTypeObject->name;
@@ -561,6 +563,9 @@ class AppController extends BaseViewController
                 'vendor-extensions' => 'warn',
                 'ignore-common-cdns' => 1                
             ),
+            'default_js_static_analysis_options' => array(
+                'ignore-common-cdns' => 1                
+            ),            
             'test_options_title' => 'Re-check:'
         );
                        

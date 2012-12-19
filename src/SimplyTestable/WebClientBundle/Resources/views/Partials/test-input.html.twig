@@ -82,13 +82,13 @@
         {% elseif app.request.attributes.get('_route') == 'app_progress' %}          
             
         <div id="test-options">
-            <p class="expandable-control{% if remote_test_summary.task_type_options|length == 0 %}-disabled{% endif %} for-css-validation-options-expandable expandable-control-default-closed">
+            <p class="expandable-control{% if remote_test_summary.task_type_options|length == 0 %}-disabled{% endif %} for-test-options-expandable expandable-control-default-closed">
                 Checking                 
                 {% for task_type in task_types %}
                     <span class="test-type">{{ task_type }}</span>{% if loop.length > 1 %}{% if loop.index == loop.length - 1 %} and {% else %}{% if loop.index != loop.length %},{% endif %}{% endif %}{% endif %}
                 {% endfor %}
             </p>
-            <div id="css-validation-options-expandable">
+            <div id="test-options-expandable">
                 {% for task_type,task_type_options in remote_test_summary.task_type_options %}                    
                     <div class="test-options-advanced">
                         <div class="title">Selected <span class="test-type">{{ task_type }}</span> options:</div>                                        
@@ -119,12 +119,26 @@
                             {% endif %}                               
                             {% if ((task_type_options['ignore-common-cdns'] is defined) and (task_type_options['ignore-common-cdns'] == 1)) %}
                                 <li>
-                                    CSS served from <strong>common CDN domains</strong> is being <strong>ignored</strong>
+                                    {% if task_type == 'CSS validation' %}
+                                        CSS
+                                    {% elseif task_type == 'JS static analysis' %}
+                                        JavaScript
+                                    {% else %}
+                                        Content
+                                    {% endif %}                                    
+                                    served from <strong>common CDN domains</strong> is being <strong>ignored</strong>
                                 </li>
                             {% endif %}
                             {% if ((task_type_options['domains-to-ignore'] is defined) and (task_type_options['domains-to-ignore']|length > 0) and (task_type_options['domains-to-ignore'][0] != '')) %}
                                 <li>
-                                    CSS served from <strong>these chosen domains</strong> is being ignored:
+                                    {% if task_type == 'CSS validation' %}
+                                        CSS
+                                    {% elseif task_type == 'JS static analysis' %}
+                                        JavaScript
+                                    {% else %}
+                                        Content
+                                    {% endif %}                                    
+                                    served from <strong>these chosen domains</strong> is being ignored:
                                     {% for domain in task_type_options['domains-to-ignore'] %}
                                     <strong>{{domain}}</strong>{% if ((loop.index == loop.length - 1) and loop.length > 1) %} and {% endif %}{% if ((loop.index != loop.length - 1) and (not loop.last)) %}, {% endif %}
                                     {% endfor %}

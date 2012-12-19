@@ -48,7 +48,7 @@
                     <div class="span3 css-validator-option-set validator-option-set css-common-cdn-domains">
                         <p>Common <a href="http://en.wikipedia.org/wiki/Content_delivery_network">CDN</a> domains:</p>
 
-                        <label class="checkbox css-ignore-common-cdn-domains">
+                        <label class="checkbox ignore-common-cdn-domains">
                             <input type="checkbox" value="1" name="css-validation-ignore-common-cdns"  {% if (test_options['css-validation-ignore-common-cdns'] == 1) or (test_options['css-validation'] == '' and default_css_validation_options['ignore-common-cdns'] == 1) %} checked {% endif %} /> Ignore CSS from common CDNs:
 
                                     {% if css_validation_ignore_common_cdns|length > 0 %}
@@ -76,14 +76,46 @@
 
 {% endif %}
 
-{% if 'js-static-analysisppp' in available_task_types|keys %}
+{% if 'js-static-analysis' in available_task_types|keys %}
 
         <div class="test-options-set" id="js-static-analysis-validation-options">
             <label class="checkbox">
-                <input type="checkbox" value="1" name="js-static-analysis" {% if (js_static_analysis_selected == 1) %} checked {% endif %} /> JavaScript static analysis
+                <input type="checkbox" value="1" name="js-static-analysis" {% if (test_options['js-static-analysis'] == 1) %} checked {% endif %} /> JavaScript static analysis
                 <span class="help-block">Analyse the quality of your JavaScript with <a href="http://www.jslint.com/lint.html">JSLint</a></span>
             </label>
-        </div>
+                
+        <div class="test-options-advanced">
+            <div class="expandable-control expandable-control-default-closed for-js-static-analysis-options-expandable">Advanced JS static analysis options</div>
+            <div id="js-static-analysis-options-expandable">
+                <div class="row-fluid">                                                            
+                    <div class="span3 validator-option-set js-static-analysis-common-cdn-domains">
+                        <p>Common <a href="http://en.wikipedia.org/wiki/Content_delivery_network">CDN</a> domains:</p>
+
+                        <label class="checkbox ignore-common-cdn-domains">
+                            <input type="checkbox" value="1" name="js-static-analysis-ignore-common-cdns"  {% if (test_options['js-static-analysis-ignore-common-cdns'] == 1) or (test_options['js-static-analysis'] == '' and default_js_static_analysis_options['ignore-common-cdns'] == 1) %} checked {% endif %} /> Ignore JS from common CDNs:
+
+                                    {% if css_validation_ignore_common_cdns|length > 0 %}
+                            <ul>
+                                        {% for cdn_domain_to_ignore in css_validation_ignore_common_cdns %}                                        
+                                    <li>&ndash; {{ cdn_domain_to_ignore }}</li>                                        
+                                        {% endfor %}
+                                </ul>                                        
+                                    {% endif %}                                    
+                            </label> 
+                        </div>                                 
+                        <div class="span5 css-validator-option-set validator-option-set css-domains-to-ignore">
+                            <p>Linked JavaScript domains to ignore:</p>
+
+                            <span class="help-block">
+                                You might be linking to third-party JavaScript resources that you don't control and that you
+                                want the validator to ignore.
+                            </span>
+                            <textarea name="js-static-analysis-domains-to-ignore" rows="5" placeholder="example.mycdn.com                                 one-per-line.example.com">{% if test_options['js-static-analysis-domains-to-ignore'] != '' %}{{test_options['js-static-analysis-domains-to-ignore']|join('\n')}}{% endif %}</textarea>
+                        </div>                             
+                    </div>                          
+                </div>
+            </div>                
+        </div>    
 
 {% endif %}
     </div>
