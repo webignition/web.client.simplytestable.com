@@ -42,7 +42,11 @@ class TestOptions {
             'js-static-analysis-domains-to-ignore' => array(
                 'type' => 'array',
                 'default' => array()              
-            ),            
+            ),  
+            'js-static-analysis-jslint-options' => array(
+                'type' => 'string',
+                'default' => '/*jslint nomen: true, sloppy: true, white: true, browser: true */'               
+            ),
         ),
     );
     

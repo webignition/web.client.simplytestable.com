@@ -675,6 +675,12 @@ padding: 0;
     width:60%;
 }
 
+.js-static-analysis-jslint-options textarea {
+    width:96%;
+font-family: monospace;
+font-size: 10px;    
+}
+
 #test-options .test-options-advanced {
     margin-left: 18px;
 }

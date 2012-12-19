@@ -52,6 +52,7 @@ class AppController extends BaseViewController
         'js-static-analysis' => 1,
         'js-static-analysis-ignore-common-cdns' => 1,
         'js-static-analysis-domains-to-ignore' => "",
+        'js-static-analysis-jslint-options' => "/*jslint nomen: true, sloppy: true, white: true, browser: true */"
     );    
     
     public function indexAction()

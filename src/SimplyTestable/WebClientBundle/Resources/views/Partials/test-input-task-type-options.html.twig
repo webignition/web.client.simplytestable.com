@@ -88,6 +88,15 @@
             <div class="expandable-control expandable-control-default-closed for-js-static-analysis-options-expandable">Advanced JS static analysis options</div>
             <div id="js-static-analysis-options-expandable">
                 <div class="row-fluid">                                                            
+                    <div class="span5 css-validator-option-set validator-option-set js-static-analysis-jslint-options">
+                        <p>JSLint options:</p>
+
+                        <span class="help-block">
+                            Option to use with the JSLint static analyser. Refer to the
+                            <a href="http://www.jslint.com/lint.html#options">JSLint options documentation</a>.
+                        </span>
+                        <textarea name="js-static-analysis-js-lint-options" rows="5" placeholder="/* */">{% if test_options['js-static-analysis-jslint-options'] != '' %}{{test_options['js-static-analysis-jslint-options']}}{% endif %}</textarea>
+                    </div>                     
                     <div class="span3 validator-option-set js-static-analysis-common-cdn-domains">
                         <p>Common <a href="http://en.wikipedia.org/wiki/Content_delivery_network">CDN</a> domains:</p>
 
@@ -103,7 +112,7 @@
                                     {% endif %}                                    
                             </label> 
                         </div>                                 
-                        <div class="span5 css-validator-option-set validator-option-set css-domains-to-ignore">
+                        <div class="span4 css-validator-option-set validator-option-set css-domains-to-ignore">
                             <p>Linked JavaScript domains to ignore:</p>
 
                             <span class="help-block">
@@ -114,6 +123,47 @@
                         </div>                             
                     </div>                          
                 </div>
+            
+<!--
+[--indent]
+[--maxerr]
+[--maxlen]
+[--predef]
+[--anon]
+[--bitwise]
+[--browser]
+[--cap]
+[--continue]
+[--css]
+[--debug]
+[--devel]
+[--eqeq]
+[--es5]
+[--evil]
+[--forin]
+[--fragment]
+[--newcap]
+[--node]
+[--nomen]
+[--on]
+[--passfail]
+[--plusplus]
+[--properties]
+[--regexp]
+[--rhino]
+[--undef]
+[--unparam]
+[--sloppy]
+[--stupid]
+[--sub]
+[--vars]
+[--white]
+[--widget]
+[--windows]
+[--json]
+[--color]
+[--terse]
+-->
             </div>                
         </div>    
 

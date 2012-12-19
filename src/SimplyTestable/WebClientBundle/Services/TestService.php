@@ -103,6 +103,9 @@ class TestService extends CoreApplicationService {
             }
         }
         
+        var_dump($queryData);
+        exit();
+        
         if (count($queryData)) {
             $httpRequest->setQueryData($queryData);
         }
