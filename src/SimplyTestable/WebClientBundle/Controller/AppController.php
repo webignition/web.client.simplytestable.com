@@ -241,7 +241,7 @@ class AppController extends BaseViewController
         }        
     }
     
-    public function progressAction($website, $test_id) {
+    public function progressAction($website, $test_id) {        
         $this->getTestService()->setUser($this->getUser());
         
         if ($this->isUsingOldIE()) {
@@ -626,12 +626,14 @@ class AppController extends BaseViewController
     private function getTasksGroupedByUrl($tasks = array()) {
         $tasksGroupedByUrl = array();
         foreach ($tasks as $task) {
+            $url = idn_to_utf8($task->getUrl());
+            
             /* @var $task Task */
-            if (!isset($tasksGroupedByUrl[$task->getUrl()])) {
-                $tasksGroupedByUrl[$task->getUrl()] = array();
+            if (!isset($tasksGroupedByUrl[$url])) {
+                $tasksGroupedByUrl[$url] = array();
             }
             
-            $tasksGroupedByUrl[$task->getUrl()][] = $task;
+            $tasksGroupedByUrl[$url][] = $task;
         }
         
         return $tasksGroupedByUrl;
