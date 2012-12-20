@@ -306,6 +306,7 @@ class AppController extends BaseViewController
         }
         
         $viewData = array(
+            'website' => idn_to_utf8($website),
             'this_url' => $this->getProgressUrl($website, $test_id),
             'test_input_action_url' => $this->generateUrl('test_cancel', array(
                 'website' => $website,
@@ -545,6 +546,7 @@ class AppController extends BaseViewController
         }
         
         $viewData = array(
+            'website' => idn_to_utf8($website),
             'this_url' => $this->getResultsUrl($website, $test_id),
             'test_input_action_url' => $this->generateUrl('test_start'),
             'test' => $test,

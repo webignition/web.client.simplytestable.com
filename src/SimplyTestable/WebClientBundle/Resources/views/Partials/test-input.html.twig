@@ -5,15 +5,15 @@
             <label for="input-website">
                 {% if test is defined %}
                     {% if test.state == 'new'  %}
-                    <i class="icon-cog"></i> Testing {{ test.website }}
+                    <i class="icon-cog"></i> Testing
                     {% elseif test.state == 'queued'  %}
-                    <i class="icon-cog"></i> Testing {{ test.website }} 
+                    <i class="icon-cog"></i> Testing 
                     {% elseif test.state == 'preparing' or test.state == 'in-progress' %}
-                    <i class="icon-cog"></i> Testing {{ test.website }}
+                    <i class="icon-cog"></i> Testing
                     {% elseif test.state == 'completed' or test.state == 'cancelled' or test.state == 'no-sitemap' %}
-                    <i class="icon-bar-chart"></i> Results for {{ test.website }}
+                    <i class="icon-bar-chart"></i> Results for 
                     {% endif %} 
-                    <span id="test-id">(#{{ test.testId }})</span>
+                    {{ website }} <span id="test-id">(#{{ test.testId }})</span>
                 {% else %}
                     <i class="icon-play-circle"></i> Start new website test
                 {% endif %}               
@@ -63,7 +63,7 @@
         {% endif %}             
 
         <div class="fields input-append larger">                    
-            <input name="website" id="input-website" type="text" placeholder="Enter website homepage URL &hellip;" {% if test is defined %} {% if test.state != 'completed' and test.state != 'cancelled' and test.state != 'no-sitemap' %} disabled {% endif %} value="{{ test.website }}" {% endif %} {% if website is defined %} value="{{ website }}" {% endif %}>            
+            <input name="website" id="input-website" type="text" placeholder="Enter website homepage URL &hellip;" {% if test is defined %} {% if test.state != 'completed' and test.state != 'cancelled' and test.state != 'no-sitemap' %} disabled {% endif %} {% endif %} {% if website is defined %} value="{{ website }}" {% endif %}>            
             {% if test is defined %}
                 {% if test.state == 'completed' or test.state == 'cancelled' %}
                 <button type="submit" class="btn btn-primary btn-large">Run test again<i class="icon-repeat icon-large"></i></button>

@@ -1,6 +1,11 @@
 {% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
 
-{% block title %}Testing {{test.website}} (#{{test.testId}}) - {{ parent() }}{% endblock %}
+{% block title %}Testing {{website}} (#{{test.testId}}) - {{ parent() }}{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script type="text/javascript" src="/bundles/simplytestablewebclient/js/punycode.min.js"></script>
+{% endblock %} 
 
 {% block body_class %}{{ parent() }} app-progress {% endblock %}
 
