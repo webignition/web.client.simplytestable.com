@@ -71,7 +71,9 @@
                                         DNS timeout resolving the domain for the URL
                                     {% elseif task.output.result.isCurlUrlFormatFailure %}
                                         Bad URL format       
-                                    {% endif %}
+                                    {% elseif task.output.result.isHtmlInvalidDocumentTypeFailure %}
+                                        Invalid document type     
+                                    {% endif %}                                        
                                 {% elseif task.state == 'completed' %}
                                     {% if task.output.result.hasErrors %}
                                         <span class="label label-important">Failed</span><span class="label label-important">
@@ -234,7 +236,26 @@
 
                         <p>
                             There's something funny about that URL. It's not made right, it can't be used.
-                        </p>                        
+                        </p>                                              
+                    {% elseif task.output.result.isHtmlInvalidDocumentTypeFailure %}
+                        <h2 class="info"><i class="icon-exclamation-sign"></i> Invalid document type!</h2>
+                        
+                        <p>
+                            The page at <a href="{{ task.url }}">{{ task.url }}</a> contains an invalid
+                            doctype declaration:
+                        </p>
+                        
+                        <pre>{{ task.output.result.firstError.message }}</pre>
+
+                        
+                        <p>
+                            Have a look at <a href="http://www.w3.org/QA/2002/04/valid-dtd-list.html">recommended doctype declarations</a>
+                            and read more about <a href="http://en.wikipedia.org/wiki/Document_Type_Declaration">what a doctype declaration is</a>.
+                        </p>
+                        
+                        <p>
+                            
+                        </p>                       
                     {% endif %}
                 </div>
                 <div class="clearfix"></div>

@@ -126,6 +126,15 @@ class Result {
     
     
     /**
+     * 
+     * @return boolean
+     */
+    public function isHtmlInvalidDocumentTypeFailure() {
+        return $this->isOfErrorClass('/document-type-invalid/');         
+    }
+    
+    
+    /**
      *
      * @return boolean 
      */
