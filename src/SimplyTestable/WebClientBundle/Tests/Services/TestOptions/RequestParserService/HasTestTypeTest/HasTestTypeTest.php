@@ -1,10 +1,10 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Command;
+namespace SimplyTestable\WebClientBundle\Tests\Services\TestOptions\RequestParserService\HasTestTypeTest;
 
 use SimplyTestable\WebClientBundle\Tests\BaseTestCase;
 
-class TestOptionsRequestParserServiceHasTestTypeTest extends BaseTestCase {   
+class HasTestTypeTest extends BaseTestCase {   
 
     public function testHas000() {
         $requestData = new \Symfony\Component\HttpFoundation\ParameterBag();

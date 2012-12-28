@@ -19,11 +19,11 @@ class TestOptions {
         'css-validation' => array(
             'css-validation-ignore-warnings' => array(
                 'type' => 'int',
-                'default' => 1
+                'default' => 0
             ),
             'css-validation-ignore-common-cdns' => array(
                 'type' => 'int',
-                'default' => 1                
+                'default' => 0                
             ),
             'css-validation-vendor-extensions' => array(
                 'type' => 'string',
@@ -37,7 +37,7 @@ class TestOptions {
         'js-static-analysis' => array(
             'js-static-analysis-ignore-common-cdns' => array(
                 'type' => 'int',
-                'default' => 1                
+                'default' => 0                
             ),            
             'js-static-analysis-domains-to-ignore' => array(
                 'type' => 'array',
