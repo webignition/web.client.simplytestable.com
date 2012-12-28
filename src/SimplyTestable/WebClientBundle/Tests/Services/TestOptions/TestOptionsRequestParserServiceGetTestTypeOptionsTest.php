@@ -119,6 +119,53 @@ class TestOptionsRequestParserServiceGetTestTypeOptionsTest extends BaseTestCase
         $cssValidationOptions = $this->getCssValidationTestTypeOptions();
         $this->assertFalse(isset($cssValidationOptions['css-validation-ignore-common-cdns']));         
     }
+    
+
+    public function testJsStaticAnalysisDomainsToIgnoreOne() {
+        $this->requestData->set('js-static-analysis', '1');
+        $this->requestData->set('js-static-analysis-domains-to-ignore', 'one.example.com');
+        
+        $jsStaticAnalysisOptions = $this->getJsStaticAnalysisTestTypeOptions();
+        
+        $this->assertEquals('one.example.com', $jsStaticAnalysisOptions['js-static-analysis-domains-to-ignore']);        
+    }
+
+    public function testJsStaticAnalysisDomainsToIgnoreOneTwo() {
+        $this->requestData->set('js-static-analysis', '1');
+        $this->requestData->set('js-static-analysis-domains-to-ignore', 'one.example.com'."\r\n".'two.example.com');
+        
+        $jsStaticAnalysisOptions = $this->getJsStaticAnalysisTestTypeOptions();
+        
+        $this->assertEquals('one.example.com'."\r\n".'two.example.com', $jsStaticAnalysisOptions['js-static-analysis-domains-to-ignore']);        
+    }    
+    
+    public function testJsStaticAnalysisDomainsToIgnoreUnset() {
+        $jsStaticAnalysisOptions = $this->getJsStaticAnalysisTestTypeOptions();
+        $this->assertFalse(isset($jsStaticAnalysisOptions['js-static-analysis-domains-to-ignore']));         
+    }
+    
+    public function testJsStaticAnalysisIgnoreCommonCdnsTrue() {
+        $this->requestData->set('js-static-analysis', '1');
+        $this->requestData->set('js-static-analysis-ignore-common-cdns', '1');
+        
+        $jsStaticAnalysisOptions = $this->getJsStaticAnalysisTestTypeOptions();
+        
+        $this->assertEquals('1', $jsStaticAnalysisOptions['js-static-analysis-ignore-common-cdns']);        
+    }     
+    
+    public function testJsStaticAnalysisIgnoreCommonCdnsFalse() {
+        $this->requestData->set('js-static-analysis', '1');
+        $this->requestData->set('js-static-analysis-ignore-common-cdns', '0');
+        
+        $jsStaticAnalysisOptions = $this->getJsStaticAnalysisTestTypeOptions();
+        
+        $this->assertEquals('0', $jsStaticAnalysisOptions['js-static-analysis-ignore-common-cdns']);        
+    } 
+    
+    public function testJsStaticAnalysisIgnoreCommonCdnsUnset() {
+        $jsStaticAnalysisOptions = $this->getJsStaticAnalysisTestTypeOptions();
+        $this->assertFalse(isset($jsStaticAnalysisOptions['js-static-analysis-ignore-common-cdns']));         
+    }
         
     
     /**
@@ -128,6 +175,14 @@ class TestOptionsRequestParserServiceGetTestTypeOptionsTest extends BaseTestCase
     private function getCssValidationTestTypeOptions() {
         return $this->getTestOptions()->getTestTypeOptions('css-validation');
     }
+    
+    /**
+     * 
+     * @return array
+     */
+    private function getJsStaticAnalysisTestTypeOptions() {
+        return $this->getTestOptions()->getTestTypeOptions('js-static-analysis');
+    }    
     
     
     /**
