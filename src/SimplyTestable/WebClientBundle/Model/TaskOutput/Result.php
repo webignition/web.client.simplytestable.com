@@ -194,6 +194,20 @@ class Result {
     }
     
     
+    /**
+     * 
+     * @return boolean
+     */
+    public function isCssValidationUnknownExceptionError() {        
+        $errors = $this->getErrors();
+        if (count($errors) === 0) {
+            return false;
+        }        
+        
+        return $errors[0]->getMessage() == 'Unknown error';
+    }
+    
+    
     
     /**
      * 
@@ -201,7 +215,7 @@ class Result {
      * @return boolean
      */
     private function isOfErrorClass($errorClassPattern) {
-        foreach ($this->getErrors() as $error) {
+        foreach ($this->getErrors() as $error) {            
             if (preg_match($errorClassPattern, $error->getClass()) > 0) {
                 return true;
             }

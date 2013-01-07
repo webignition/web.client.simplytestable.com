@@ -54,8 +54,8 @@
                             
                             <tr>                
                                 <th>Outcome</th>
-                                <td class="outcome">                                
-                                {% if task.state == 'failed' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-limit-reached' %}
+                                <td class="outcome">                                                                         
+                                {% if task.state == 'failed' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-limit-reached' %}                                                                                
                                     {% if task.output.result.isHttpClientErrorFailure %}
                                         {{ task.output.result.firstError.class|replace({'http-retrieval-': ''}) }}
                                         {{ task.output.result.firstError }}
@@ -73,6 +73,8 @@
                                         Bad URL format       
                                     {% elseif task.output.result.isHtmlInvalidDocumentTypeFailure %}
                                         Invalid document type     
+                                    {% elseif task.output.result.isCssValidationUnknownExceptionError %}
+                                        Validator error   
                                     {% endif %}                                        
                                 {% elseif task.state == 'completed' %}
                                     {% if task.output.result.hasErrors %}
@@ -255,7 +257,18 @@
                         
                         <p>
                             
-                        </p>                       
+                        </p>
+                    {% elseif task.output.result.isCssValidationUnknownExceptionError %}
+                        <h2 class="info"><i class="icon-exclamation-sign"></i> Unknown validator error!</h2>
+                        
+                        <p>
+                            Sorry, the CSS validator went bang when validating {{ task.url }}.
+                        </p>
+                        
+                        <p>
+                            This most commonly happens if the URL to be validated redirects to another URL. We're
+                            working to fix this.                            
+                        </p>
                     {% endif %}
                 </div>
                 <div class="clearfix"></div>
