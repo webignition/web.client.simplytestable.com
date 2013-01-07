@@ -6,10 +6,14 @@ php:
 before_script:    
   # Installing pecl_http module
   - printf "\n\n\n\n" | pecl -q install pecl_http
-  - echo "extension=http.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`  
+  - echo "extension=http.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`    
   
   # Install composer for dependency management
-  - wget http://getcomposer.org/composer.phar 
+  - wget http://getcomposer.org/composer.phar   
+  
+  # Set the GitHub OAuth token to make use of the 6000 per hour rate limit
+  - "mkdir -p ~/.composer"
+  - cp .travis.composer.config.json ~/.composer/config.json   
   
   # Build!
   #- mkdir app/cache/test  
