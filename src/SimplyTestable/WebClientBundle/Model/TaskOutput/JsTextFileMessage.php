@@ -26,6 +26,16 @@ class JsTextFileMessage extends TextFileMessage {
      */
     private $fragment;
     
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function isException() {
+        return preg_match('/^[a-zA-z]+Exception$/', $this->fragment);
+    }
+    
+    
     /**
      *
      * @param int $columnNumber

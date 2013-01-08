@@ -295,7 +295,7 @@
                     {% elseif task.type == 'JS static analysis' %}
                         {% for context,errors in errors_by_js_context %}
                         <div>
-                            <h3><i class="icon icon-file"></i> {% if context == 'inline' %}Inline in your HTML{% else %}{{ context }}{% endif %}:</h3>                            
+                            <h3><i class="{% if errors[0].isException %}icon icon-ban-circle{% else %}icon icon-file{% endif %}"></i> {% if context == 'inline' %}Inline in your HTML{% else %}{{ context }}{% endif %}:</h3>                            
                             <ul class="errors">
                                 {% for error in errors %}
                                     <li>

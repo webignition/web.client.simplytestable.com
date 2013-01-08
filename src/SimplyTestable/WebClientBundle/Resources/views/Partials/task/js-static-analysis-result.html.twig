@@ -1,4 +1,27 @@
-<div class="js-static-analysis-result">
+{% if error.isException %}
+<div class="js-static-analysis-result">   
+    <div class="meta">     
+        <p>
+            Unable to analyse
+        </p>
+    </div>
+    <div class="content">
+        <span class="message">
+            {% if error.fragment == 'webResourceException' %}
+                An error occurred trying to retrieve the content of this script URL.
+            {% else %}
+                An unknown error occurred
+            {% endif %}
+        </span>
+        {% if error.fragment == 'webResourceException' %}
+            <pre class="fragment">HTTP response: {{error.message}}</pre>
+        {% else %}
+        {% endif %}                      
+    </div>
+    <div class="clearfix"></div>
+</div>
+{% else %}
+<div class="js-static-analysis-result">   
     <div class="meta">     
         <p>
             {% if error.getLineNumber > -1 and error.getColumnNumber == -1 %}
@@ -20,3 +43,5 @@
     </div>
     <div class="clearfix"></div>
 </div>
+{% endif %}
+
