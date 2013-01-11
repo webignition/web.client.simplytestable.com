@@ -54,8 +54,8 @@
                             
                             <tr>                
                                 <th>Outcome</th>
-                                <td class="outcome">                                
-                                {% if task.state == 'failed' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-limit-reached' %}
+                                <td class="outcome">                                                                         
+                                {% if task.state == 'failed' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-limit-reached' %}                                                                                
                                     {% if task.output.result.isHttpClientErrorFailure %}
                                         {{ task.output.result.firstError.class|replace({'http-retrieval-': ''}) }}
                                         {{ task.output.result.firstError }}
@@ -71,7 +71,11 @@
                                         DNS timeout resolving the domain for the URL
                                     {% elseif task.output.result.isCurlUrlFormatFailure %}
                                         Bad URL format       
-                                    {% endif %}
+                                    {% elseif task.output.result.isHtmlInvalidDocumentTypeFailure %}
+                                        Invalid document type     
+                                    {% elseif task.output.result.isCssValidationUnknownExceptionError %}
+                                        Validator error   
+                                    {% endif %}                                        
                                 {% elseif task.state == 'completed' %}
                                     {% if task.output.result.hasErrors %}
                                         <span class="label label-important">Failed</span><span class="label label-important">
@@ -234,7 +238,37 @@
 
                         <p>
                             There's something funny about that URL. It's not made right, it can't be used.
-                        </p>                        
+                        </p>                                              
+                    {% elseif task.output.result.isHtmlInvalidDocumentTypeFailure %}
+                        <h2 class="info"><i class="icon-exclamation-sign"></i> Invalid document type!</h2>
+                        
+                        <p>
+                            The page at <a href="{{ task.url }}">{{ task.url }}</a> contains an invalid
+                            doctype declaration:
+                        </p>
+                        
+                        <pre>{{ task.output.result.firstError.message }}</pre>
+
+                        
+                        <p>
+                            Have a look at <a href="http://www.w3.org/QA/2002/04/valid-dtd-list.html">recommended doctype declarations</a>
+                            and read more about <a href="http://en.wikipedia.org/wiki/Document_Type_Declaration">what a doctype declaration is</a>.
+                        </p>
+                        
+                        <p>
+                            
+                        </p>
+                    {% elseif task.output.result.isCssValidationUnknownExceptionError %}
+                        <h2 class="info"><i class="icon-exclamation-sign"></i> Unknown validator error!</h2>
+                        
+                        <p>
+                            Sorry, the CSS validator went bang when validating {{ task.url }}.
+                        </p>
+                        
+                        <p>
+                            This most commonly happens if the URL to be validated redirects to another URL. We're
+                            working to fix this.                            
+                        </p>
                     {% endif %}
                 </div>
                 <div class="clearfix"></div>
@@ -261,7 +295,7 @@
                     {% elseif task.type == 'JS static analysis' %}
                         {% for context,errors in errors_by_js_context %}
                         <div>
-                            <h3><i class="icon icon-file"></i> {% if context == 'inline' %}Inline in your HTML{% else %}{{ context }}{% endif %}:</h3>                            
+                            <h3><i class="{% if errors[0].isException %}icon icon-ban-circle{% else %}icon icon-file{% endif %}"></i> {% if context == 'inline' %}Inline in your HTML{% else %}{{ context }}{% endif %}:</h3>                            
                             <ul class="errors">
                                 {% for error in errors %}
                                     <li>

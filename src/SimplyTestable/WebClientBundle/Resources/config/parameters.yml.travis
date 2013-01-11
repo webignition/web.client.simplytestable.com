@@ -13,7 +13,7 @@ parameters:
     early_access:
   core_application:
     urls:
-      base: http://app.simplytestable.com      
+      base: http://travis.app.simplytestable.com      
       test_start: /job/{canonical-url}/start/
       test_status: /job/{canonical-url}/{test_id}/
       test_cancel: /job/{canonical-url}/{test_id}/cancel/
@@ -32,7 +32,7 @@ parameters:
       user_is_enabled: /user/{email}/enabled/
   public_site:
     urls:
-      home: http://simplytestable.com
+      home: http://travis.simplytestable.com
   content_type_web_resource_map:
     default: webignition\WebResource\WebResource
     application/json: webignition\WebResource\JsonDocument\JsonDocument

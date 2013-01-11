@@ -148,6 +148,22 @@ class Task {
     {
         return $this->url;
     }
+    
+    
+    /**
+     * 
+     * @return string
+     */
+    public function getNormalisedUrl() {
+        $url = (string)$this->getUrl();
+        if ($url == '') {
+            return $url;
+        }
+        
+        $normalisedUrl = new NormalisedUrl($url);
+        return (string)$normalisedUrl;
+    }
+    
 
     /**
      * Set state

@@ -95,7 +95,7 @@ class AppController extends BaseViewController
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
             'recent_tests' => $recentTests,
-            'website' => $this->getPersistentValue('website'),
+            'website' => idn_to_utf8($this->getPersistentValue('website')),
             'available_task_types' => $this->getAvailableTaskTypes(),
             'test_options' => $testOptions,
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
@@ -242,7 +242,7 @@ class AppController extends BaseViewController
         }        
     }
     
-    public function progressAction($website, $test_id) {
+    public function progressAction($website, $test_id) {        
         $this->getTestService()->setUser($this->getUser());
         
         if ($this->isUsingOldIE()) {
@@ -307,6 +307,7 @@ class AppController extends BaseViewController
         }
         
         $viewData = array(
+            'website' => idn_to_utf8($website),
             'this_url' => $this->getProgressUrl($website, $test_id),
             'test_input_action_url' => $this->generateUrl('test_cancel', array(
                 'website' => $website,
@@ -546,6 +547,7 @@ class AppController extends BaseViewController
         }
         
         $viewData = array(
+            'website' => idn_to_utf8($website),
             'this_url' => $this->getResultsUrl($website, $test_id),
             'test_input_action_url' => $this->generateUrl('test_start'),
             'test' => $test,
@@ -625,12 +627,14 @@ class AppController extends BaseViewController
     private function getTasksGroupedByUrl($tasks = array()) {
         $tasksGroupedByUrl = array();
         foreach ($tasks as $task) {
+            $url = idn_to_utf8($task->getUrl());
+            
             /* @var $task Task */
-            if (!isset($tasksGroupedByUrl[$task->getUrl()])) {
-                $tasksGroupedByUrl[$task->getUrl()] = array();
+            if (!isset($tasksGroupedByUrl[$url])) {
+                $tasksGroupedByUrl[$url] = array();
             }
             
-            $tasksGroupedByUrl[$task->getUrl()][] = $task;
+            $tasksGroupedByUrl[$url][] = $task;
         }
         
         return $tasksGroupedByUrl;

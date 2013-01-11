@@ -1,0 +1,18 @@
+parameters:
+    database_driver: pdo_mysql
+    database_host: localhost
+    database_port: null
+    database_name: myapp_test
+    database_user: root
+    database_password: null
+    mailer_auth_mode: login
+    mailer_transport: smtp
+    mailer_host: localhost
+    mailer_user: null
+    mailer_password: null
+    locale: en
+    secret: SetThis!
+    database_path: null
+    admin_user_username: SetThis!
+    admin_user_password: SetThis!
+    simplytestable_session_savepath: /tmp
