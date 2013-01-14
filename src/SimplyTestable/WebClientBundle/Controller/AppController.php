@@ -81,7 +81,8 @@ class AppController extends BaseViewController
         'js-static-analysis-jslint-option-windows' => 0,
         'js-static-analysis-jslint-option-maxerr' => 50,
         'js-static-analysis-jslint-option-indent' => 4,
-        'js-static-analysis-jslint-option-maxlen' => 256
+        'js-static-analysis-jslint-option-maxlen' => 256,
+        'js-static-analysis-jslint-option-predef' => ""
     );    
     
     public function indexAction()

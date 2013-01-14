@@ -163,7 +163,11 @@ class TestOptions {
             'js-static-analysis-jslint-option-maxlen' => array(    
                 'type' => 'int',
                 'default' => 256
-            ),                         
+            ),  
+            'js-static-analysis-jslint-option-predef' => array(
+                'type' => 'array',
+                'default' => array()              
+            ),              
         ),
     );
     

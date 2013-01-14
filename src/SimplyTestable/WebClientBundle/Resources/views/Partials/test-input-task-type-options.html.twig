@@ -175,6 +175,14 @@
                                 </div>
                             </div>
                             <div class="span3 jslint-option-set-group">
+                                <h3>Predefined variable names:</h3>
+                                <div class="row-fluid">
+                                    <div class="span12 jslint-option-set">
+                                        <textarea name="js-static-analysis-jslint-option-predef" rows="5" placeholder="NamesOfVariables                                AssumedToBePredefined                     OnePerLine">{% if test_options['js-static-analysis-jslint-option-predef'] != '' %}{{test_options['js-static-analysis-jslint-option-predef']|join('\n')}}{% endif %}</textarea>
+                                    </div>
+                                </div>
+                            </div>                                 
+                            <div class="span3 jslint-option-set-group">
                                 <h3>Analysis limits:</h3>
                                 <div class="row-fluid">
                                     <div class="span12 jslint-option-set">
