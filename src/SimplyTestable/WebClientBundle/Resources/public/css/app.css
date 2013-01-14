@@ -731,6 +731,23 @@ body.app-progress .test-options-advanced ul li {
    margin-bottom: 4px;
 }
 
+body.app .jslint-option-set-group {
+    
+}
+
+body.app .jslint-option-set-group h3 {
+    opacity: 0.8;
+    font-size:14px;
+}
+
+body.app .jslint-option-set {
+    
+}
+
+body.app .jslint-option-set label {
+    font-size: 13px;
+}
+
 @media (min-width: 1200px) {
     body.single-page-dialog #main input {
         width:96%;

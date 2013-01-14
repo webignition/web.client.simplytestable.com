@@ -85,18 +85,290 @@
             </label>
                 
         <div class="test-options-advanced">
-            <div class="expandable-control expandable-control-default-closed for-js-static-analysis-options-expandable">Advanced JS static analysis options</div>
+            <div class="expandable-control+ expandable-control-default-closed for-js-static-analysis-options-expandable">Advanced JS static analysis options</div>
             <div id="js-static-analysis-options-expandable">
-                <div class="row-fluid">                                                            
-                    <div class="span5 css-validator-option-set validator-option-set js-static-analysis-jslint-options">
+                <div class="row-fluid">
+                    <div class="span12 css-validator-option-set validator-option-set js-static-analysis-jslint-options">
                         <p>JSLint options:</p>
 
                         <span class="help-block">
                             Option to use with the JSLint static analyser. Refer to the
                             <a href="http://www.jslint.com/lint.html#options">JSLint options documentation</a>.
                         </span>
-                        <textarea name="js-static-analysis-js-lint-options" rows="5" placeholder="/* */">{% if test_options['js-static-analysis-jslint-options'] != '' %}{{test_options['js-static-analysis-jslint-options']}}{% endif %}</textarea>
-                    </div>                     
+                        
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <label class="checkbox">
+                                    <input type="checkbox" name="js-static-analysis-jslint-option-passfail" />
+                                    Stop on first error
+                                </label>
+                            </div>                             
+                        </div>                         
+                        
+                        <div class="row-fluid">
+                            <div class="span9 jslint-option-set-group">
+                                <h3>Be tolerant of:</h3>
+                                <div class="row-fluid">
+                                    <div class="span12">
+                                        <div class="span4 jslint-option-set">
+                                            <!--
+                                            bitwise
+                                            continue
+                                            debug
+                                            eqeq
+                                            es5
+                                            evil
+                                            forin
+                                            newcap
+                                            -->                                
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-bitwise" />
+                                                bitwise operators
+                                            </label>
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-continue" />
+                                                continue
+                                            </label>
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-debug" />
+                                                debugger statements
+                                            </label>
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-evil" />
+                                                eval
+                                            </label>                                
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-eqeq" />
+                                                == and !=
+                                            </label>
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-es5" />
+                                                ES5 syntax
+                                            </label>
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-forin" />
+                                                unfiltered <em>for in</em>
+                                            </label>
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-newcap" />
+                                                uncapitalised constructors
+                                            </label>
+                                        </div>
+                                        <div class="span4 jslint-option-set">
+                                            <!--
+                                            nomen
+                                            plusplus
+                                            regexp
+                                            undef
+                                            unparam
+                                            sloppy
+                                            stupid
+                                            sub
+                                            -->                                 
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-nomen" />
+                                                dangling _ in identifiers
+                                            </label>
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-plusplus" />
+                                                ++&nbsp;and&nbsp;--
+                                            </label>
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-regexp" />
+                                                .&nbsp;and&nbsp;[^...]&nbsp;in&nbsp;/RegExp/
+                                            </label>
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-undef" />
+                                                misordered definitions
+                                            </label>                                
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-unparam" />
+                                                unused parameters
+                                            </label>
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-sloppy" />
+                                                missing&nbsp;'use strict'&nbsp;pragma
+                                            </label>
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-stupid" />
+                                                stupidity
+                                            </label>
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-sub" />
+                                                inefficient subscripting
+                                            </label>
+                                        </div>
+                                        <div class="span4 jslint-option-set">
+                                            <!--
+                                            *todo
+                                            vars
+                                            white
+                                            css
+                                            on
+                                            fragment
+                                            passfail
+                                            -->                               
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-vars" />
+                                                many var statements per function
+                                            </label>
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-white" />
+                                                messy white space
+                                            </label>
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-css" />
+                                                CSS workarounds
+                                            </label>
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-on" />
+                                                HTML event handlers
+                                            </label>                                
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-fragment" />
+                                                HTML fragments
+                                            </label>
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-anon" />
+                                                space omitted in anonymous function declarations
+                                            </label>
+
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-cap" />
+                                                uppercase HTML
+                                            </label> 
+
+                                            <label class="checkbox disabled">
+                                                <input type="checkbox" name="js-static-analysis-jslint-option-todo" disabled="" />
+                                                TODO comments
+                                            </label> 
+                                        </div>                                            
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span3 jslint-option-set-group">
+                                <h3>Assume:</h3>
+                                <div class="row-fluid">
+                                    <div class="span12 jslint-option-set">
+                                        <!--
+                                        browser
+                                        devel
+                                        node
+                                        rhino
+                                        windows
+                                        *safe
+                                        *adsafe
+                                        -->                                 
+
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="js-static-analysis-jslint-option-devel" />
+                                            console,alert,&nbsp;...
+                                        </label>
+<!--
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="js-static-analysis-jslint-option-node" />
+                                            Node.js
+                                        </label>
+
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="js-static-analysis-jslint-option-rhino" />
+                                            Rhino
+                                        </label>
+-->
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="js-static-analysis-jslint-option-windows" />
+                                            Windows
+                                        </label>                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+<!--
+[--indent]
+[--maxerr]
+[--maxlen]
+[--predef]
+[--anon]
+[--cap]
+
+
+[--properties]
+
+[--widget]
+
+[--json]
+[--color]
+[--terse]
+-->
+                        
+                        
+<!--
+[--indent]
+[--maxerr]
+[--maxlen]
+[--predef]
+[--anon]
+[--bitwise]
+[--browser]
+[--cap]
+[--continue]
+[--css]
+[--debug]
+[--devel]
+[--eqeq]
+[--es5]
+[--evil]
+[--forin]
+[--fragment]
+[--newcap]
+[--node]
+[--nomen]
+[--on]
+[--passfail]
+[--plusplus]
+[--properties]
+[--regexp]
+[--rhino]
+[--undef]
+[--unparam]
+[--sloppy]
+[--stupid]
+[--sub]
+[--vars]
+[--white]
+[--widget]
+[--windows]
+[--json]
+[--color]
+[--terse]
+-->
+                        
+                    </div>                      
+                </div>
+                <div class="row-fluid">                                                                               
                     <div class="span3 validator-option-set js-static-analysis-common-cdn-domains">
                         <p>Common <a href="http://en.wikipedia.org/wiki/Content_delivery_network">CDN</a> domains:</p>
 
