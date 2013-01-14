@@ -18,7 +18,7 @@ class TestStartController extends BaseController
         
         $this->getTestOptionsRequestParserService()->setRequestData($this->getRequestValues(HTTP_METH_POST));
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
-        
+
         if (!$this->hasWebsite()) {            
             $this->get('session')->setFlash('test_start_error', 'website-blank');
             return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));

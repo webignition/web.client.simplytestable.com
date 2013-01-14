@@ -51,8 +51,40 @@ class AppController extends BaseViewController
         'css-validation-domains-to-ignore' => "",
         'js-static-analysis' => 1,
         'js-static-analysis-ignore-common-cdns' => 1,
-        'js-static-analysis-domains-to-ignore' => "",
-        'js-static-analysis-jslint-options' => "/*jslint nomen: true, sloppy: true, white: true, browser: true */"
+        'js-static-analysis-domains-to-ignore' => "",        
+        'js-static-analysis-jslint-option-passfail' => 0,
+        'js-static-analysis-jslint-option-bitwise' => 0,
+        'js-static-analysis-jslint-option-continue' => 0,
+        'js-static-analysis-jslint-option-debug' => 0,
+        'js-static-analysis-jslint-option-evil' => 0,       
+        'js-static-analysis-jslint-option-eqeq' => 0,
+        'js-static-analysis-jslint-option-es5' => 0,
+        'js-static-analysis-jslint-option-forin' => 0,
+        'js-static-analysis-jslint-option-newcap' => 0,
+        'js-static-analysis-jslint-option-nomen' => 0,
+        'js-static-analysis-jslint-option-plusplus' => 0,
+        'js-static-analysis-jslint-option-regexp' => 0,
+        'js-static-analysis-jslint-option-undef' => 0,
+        'js-static-analysis-jslint-option-unparam' => 0,
+        'js-static-analysis-jslint-option-sloppy' => 0,
+        'js-static-analysis-jslint-option-stupid' => 0,
+        'js-static-analysis-jslint-option-sub' => 0,        
+                                            
+        'js-static-analysis-jslint-option-vars' => 0,
+        'js-static-analysis-jslint-option-white' => 0,
+        'js-static-analysis-jslint-option-css' => 0,
+        'js-static-analysis-jslint-option-on' => 0,
+        'js-static-analysis-jslint-option-fragment' => 0,
+        'js-static-analysis-jslint-option-anon' => 0,
+        'js-static-analysis-jslint-option-cap' => 0,
+      
+                                            
+                                            
+                                            
+                                            
+                                            
+                                                    
+        
     );    
     
     public function indexAction()
@@ -65,6 +97,9 @@ class AppController extends BaseViewController
         $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);
         
         $testOptions = $this->getPersistentValues($this->testOptionNamesAndDefaultValues);
+        
+//        var_dump($testOptions);
+//        exit();
         
         $testStartError = $this->getFlash('test_start_error');        
         

@@ -1,3 +1,12 @@
+{% macro persistent_checkbox(label, name, test_options) %}
+    <label class="checkbox">
+        <input type="checkbox" name="{{ name }}" value="1" {% if (test_options[name] == 1) %} checked {% endif %} />
+    {{ label | raw }}
+    </label>
+{% endmacro %}
+    
+{% import _self as form %}
+
 <div id="test-options">
     <p class="info"><i class="icon-wrench"></i> {{ test_options_title }}</p>    
 
@@ -97,11 +106,8 @@
                         </span>
                         
                         <div class="row-fluid">
-                            <div class="span12">
-                                <label class="checkbox">
-                                    <input type="checkbox" name="js-static-analysis-jslint-option-passfail" />
-                                    Stop on first error
-                                </label>
+                            <div class="span12">  
+                                {{ form.persistent_checkbox('Stop on first error', 'js-static-analysis-jslint-option-passfail', test_options) }}
                             </div>                             
                         </div>                         
                         
@@ -111,159 +117,36 @@
                                 <div class="row-fluid">
                                     <div class="span12">
                                         <div class="span4 jslint-option-set">
-                                            <!--
-                                            bitwise
-                                            continue
-                                            debug
-                                            eqeq
-                                            es5
-                                            evil
-                                            forin
-                                            newcap
-                                            -->                                
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-bitwise" />
-                                                bitwise operators
-                                            </label>
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-continue" />
-                                                continue
-                                            </label>
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-debug" />
-                                                debugger statements
-                                            </label>
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-evil" />
-                                                eval
-                                            </label>                                
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-eqeq" />
-                                                == and !=
-                                            </label>
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-es5" />
-                                                ES5 syntax
-                                            </label>
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-forin" />
-                                                unfiltered <em>for in</em>
-                                            </label>
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-newcap" />
-                                                uncapitalised constructors
-                                            </label>
+<!-- bitwise, continue, debug, eqeq, es5, evil, forin, newcap -->                                            
+{{ form.persistent_checkbox('bitwise operators', 'js-static-analysis-jslint-option-bitwise', test_options) }}
+{{ form.persistent_checkbox('continue', 'js-static-analysis-jslint-option-continue', test_options) }}
+{{ form.persistent_checkbox('debugger operations', 'js-static-analysis-jslint-option-debug', test_options) }}
+{{ form.persistent_checkbox('eval', 'js-static-analysis-jslint-option-evil', test_options) }}
+{{ form.persistent_checkbox('== and !=', 'js-static-analysis-jslint-option-eqeq', test_options) }}
+{{ form.persistent_checkbox('ES5 syntax', 'js-static-analysis-jslint-option-es5', test_options) }}
+{{ form.persistent_checkbox('unfiltered <em>for in</em>', 'js-static-analysis-jslint-option-forin', test_options) }}
+{{ form.persistent_checkbox('uncapitalised constructors', 'js-static-analysis-jslint-option-newcap', test_options) }}
                                         </div>
                                         <div class="span4 jslint-option-set">
-                                            <!--
-                                            nomen
-                                            plusplus
-                                            regexp
-                                            undef
-                                            unparam
-                                            sloppy
-                                            stupid
-                                            sub
-                                            -->                                 
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-nomen" />
-                                                dangling _ in identifiers
-                                            </label>
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-plusplus" />
-                                                ++&nbsp;and&nbsp;--
-                                            </label>
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-regexp" />
-                                                .&nbsp;and&nbsp;[^...]&nbsp;in&nbsp;/RegExp/
-                                            </label>
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-undef" />
-                                                misordered definitions
-                                            </label>                                
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-unparam" />
-                                                unused parameters
-                                            </label>
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-sloppy" />
-                                                missing&nbsp;'use strict'&nbsp;pragma
-                                            </label>
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-stupid" />
-                                                stupidity
-                                            </label>
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-sub" />
-                                                inefficient subscripting
-                                            </label>
+<!-- nomen, plusplus, regexp, undef, unparam, sloppy, stupid, sub -->
+{{ form.persistent_checkbox('dangling _ in identifiers', 'js-static-analysis-jslint-option-nomen', test_options) }}
+{{ form.persistent_checkbox('++&nbsp;and&nbsp;--', 'js-static-analysis-jslint-option-plusplus', test_options) }}
+{{ form.persistent_checkbox('.&nbsp;and&nbsp;[^...]&nbsp;in&nbsp;/RegExp/', 'js-static-analysis-jslint-option-regexp', test_options) }}
+{{ form.persistent_checkbox('misordered definitions', 'js-static-analysis-jslint-option-undef', test_options) }}
+{{ form.persistent_checkbox('unused parameters', 'js-static-analysis-jslint-option-unparam', test_options) }}
+{{ form.persistent_checkbox('missing&nbsp;\'use strict\'&nbsp;pragma', 'js-static-analysis-jslint-option-sloppy', test_options) }}
+{{ form.persistent_checkbox('stupidity', 'js-static-analysis-jslint-option-stupid', test_options) }}
+{{ form.persistent_checkbox('inefficient subscripting', 'js-static-analysis-jslint-option-sub', test_options) }}
                                         </div>
                                         <div class="span4 jslint-option-set">
-                                            <!--
-                                            *todo
-                                            vars
-                                            white
-                                            css
-                                            on
-                                            fragment
-                                            passfail
-                                            -->                               
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-vars" />
-                                                many var statements per function
-                                            </label>
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-white" />
-                                                messy white space
-                                            </label>
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-css" />
-                                                CSS workarounds
-                                            </label>
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-on" />
-                                                HTML event handlers
-                                            </label>                                
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-fragment" />
-                                                HTML fragments
-                                            </label>
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-anon" />
-                                                space omitted in anonymous function declarations
-                                            </label>
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-cap" />
-                                                uppercase HTML
-                                            </label> 
-
-                                            <label class="checkbox disabled">
-                                                <input type="checkbox" name="js-static-analysis-jslint-option-todo" disabled="" />
-                                                TODO comments
-                                            </label> 
+<!-- *todo, vars, white, css, on, fragment, anon, cap -->
+{{ form.persistent_checkbox('many var statements per function', 'js-static-analysis-jslint-option-vars', test_options) }}
+{{ form.persistent_checkbox('messy white space', 'js-static-analysis-jslint-option-white', test_options) }}
+{{ form.persistent_checkbox('CSS workarounds', 'js-static-analysis-jslint-option-css', test_options) }}
+{{ form.persistent_checkbox('HTML event handlers', 'js-static-analysis-jslint-option-on', test_options) }}
+{{ form.persistent_checkbox('HTML fragments', 'js-static-analysis-jslint-option-fragment', test_options) }}
+{{ form.persistent_checkbox('space omitted in anonymous function declarations', 'js-static-analysis-jslint-option-anon', test_options) }}
+{{ form.persistent_checkbox('uppercase HTML', 'js-static-analysis-jslint-option-cap', test_options) }}
                                         </div>                                            
                                     </div>
                                 </div>

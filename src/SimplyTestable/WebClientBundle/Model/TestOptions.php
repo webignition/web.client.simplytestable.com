@@ -43,10 +43,104 @@ class TestOptions {
                 'type' => 'array',
                 'default' => array()              
             ),  
-            'js-static-analysis-jslint-options' => array(
-                'type' => 'string',
-                'default' => '/*jslint nomen: true, sloppy: true, white: true, browser: true */'               
+            'js-static-analysis-jslint-option-passfail' => array(    
+                'type' => 'int',
+                'default' => 0
             ),
+            'js-static-analysis-jslint-option-bitwise' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),            
+            'js-static-analysis-jslint-option-continue' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),               
+            'js-static-analysis-jslint-option-debug' => array(    
+                'type' => 'int',
+                'default' => 0
+            ), 
+            'js-static-analysis-jslint-option-evil' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),             
+            'js-static-analysis-jslint-option-eqeq' => array(    
+                'type' => 'int',
+                'default' => 0
+            ), 
+            'js-static-analysis-jslint-option-es5' => array(    
+                'type' => 'int',
+                'default' => 0
+            ), 
+            'js-static-analysis-jslint-option-forin' => array(    
+                'type' => 'int',
+                'default' => 0
+            ), 
+            'js-static-analysis-jslint-option-newcap' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),
+            'js-static-analysis-jslint-option-nomen' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),            
+            'js-static-analysis-jslint-option-plusplus' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),   
+            'js-static-analysis-jslint-option-regexp' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),   
+            'js-static-analysis-jslint-option-undef' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),   
+            'js-static-analysis-jslint-option-unparam' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),   
+            'js-static-analysis-jslint-option-sloppy' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),   
+            'js-static-analysis-jslint-option-stupid' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),   
+            'js-static-analysis-jslint-option-sub' => array(    
+                'type' => 'int',
+                'default' => 0
+            ), 
+            
+            'js-static-analysis-jslint-option-vars' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),  
+            'js-static-analysis-jslint-option-white' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),  
+            'js-static-analysis-jslint-option-css' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),  
+            'js-static-analysis-jslint-option-on' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),  
+            'js-static-analysis-jslint-option-fragment' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),  
+            'js-static-analysis-jslint-option-anon' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),  
+            'js-static-analysis-jslint-option-cap' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),
+            
         ),
     );
     
@@ -162,8 +256,7 @@ class TestOptions {
         $testTypeOptions = $this->getTestTypeOptions($testType);
         
         foreach ($this->testTypeOptionsMap[$testType] as $optionKey => $optionDefinition) {
-            $key = ($useFullOptionKey) ? $optionKey : str_replace($testType.'-', '', $optionKey);
-            
+            $key = ($useFullOptionKey) ? $optionKey : str_replace($testType.'-', '', $optionKey);            
             
             if (isset($testTypeOptions[$optionKey])) {
                 switch ($optionDefinition['type']) {
@@ -184,34 +277,9 @@ class TestOptions {
                 }                
             } else {
                 $optionValue = $optionDefinition['default'];
-            }            
+            }
             
-            
-            //var_dump($key, $optionDefinition, $optionValue);
-            //exit();
-            
-//            
-//            
-//            
-//            $optionValue = null;
-//            if (isset($testTypeOptions[$optionKey])) {
-//                switch ($optionType) {
-//                    case 'array':
-//                        $optionValue = explode("\n", $testTypeOptions[$optionKey]);
-//                        foreach ($optionValue as $index => $value) {
-//                            $optionValue[$index] = trim($value);
-//                        }
-//                        break;
-//
-//                    default:
-//                        $optionValue = $testTypeOptions[$optionKey];
-//                        break;
-//                }                
-//            }
-//            
-//            if (!is_null($optionValue)) {
-                $absoluteTestTypeOptions[$key] = $optionValue;
-//            }                      
+            $absoluteTestTypeOptions[$key] = $optionValue;                    
         }
         
         return $absoluteTestTypeOptions;
