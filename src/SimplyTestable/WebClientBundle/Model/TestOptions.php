@@ -147,12 +147,23 @@ class TestOptions {
             'js-static-analysis-jslint-option-devel' => array(    
                 'type' => 'int',
                 'default' => 0
-            ),            
-            ),
+            ),                        
             'js-static-analysis-jslint-option-windows' => array(    
                 'type' => 'int',
                 'default' => 0
             ),               
+            'js-static-analysis-jslint-option-maxerr' => array(    
+                'type' => 'int',
+                'default' => 50
+            ),     
+            'js-static-analysis-jslint-option-indent' => array(    
+                'type' => 'int',
+                'default' => 4
+            ),             
+            'js-static-analysis-jslint-option-maxlen' => array(    
+                'type' => 'int',
+                'default' => 256
+            ),                         
         ),
     );
     

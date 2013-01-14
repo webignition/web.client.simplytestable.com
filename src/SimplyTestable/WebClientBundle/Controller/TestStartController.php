@@ -74,6 +74,7 @@ class TestStartController extends BaseController
         }
         
         $absoluteTestTypes = $testOptions->getAbsoluteTestTypes();        
+
         foreach ($absoluteTestTypes as $testTypeKey => $selectedValue) {
             $redirectValues[$testTypeKey] = $selectedValue;
             $redirectValues = array_merge($redirectValues, $testOptions->getAbsoluteTestTypeOptions($testTypeKey));

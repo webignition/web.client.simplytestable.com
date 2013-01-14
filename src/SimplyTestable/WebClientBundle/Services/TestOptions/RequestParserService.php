@@ -81,7 +81,7 @@ class RequestParserService {
      * @param string $testTypeKey
      * @return array
      */
-    private function parseTestTypeOptions($testTypeKey) {
+    private function parseTestTypeOptions($testTypeKey) {        
         $testTypeOptions = array();
         
         foreach ($this->requestData as $key => $value) {            

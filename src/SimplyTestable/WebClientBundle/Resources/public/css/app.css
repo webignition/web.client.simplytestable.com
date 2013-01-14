@@ -748,6 +748,10 @@ body.app .jslint-option-set label {
     font-size: 13px;
 }
 
+body.app .inline-short {
+    width:30px;
+}
+
 @media (min-width: 1200px) {
     body.single-page-dialog #main input {
         width:96%;
