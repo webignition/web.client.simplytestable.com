@@ -68,8 +68,7 @@ class AppController extends BaseViewController
         'js-static-analysis-jslint-option-unparam' => 0,
         'js-static-analysis-jslint-option-sloppy' => 0,
         'js-static-analysis-jslint-option-stupid' => 0,
-        'js-static-analysis-jslint-option-sub' => 0,        
-                                            
+        'js-static-analysis-jslint-option-sub' => 0,                                            
         'js-static-analysis-jslint-option-vars' => 0,
         'js-static-analysis-jslint-option-white' => 0,
         'js-static-analysis-jslint-option-css' => 0,
@@ -77,14 +76,9 @@ class AppController extends BaseViewController
         'js-static-analysis-jslint-option-fragment' => 0,
         'js-static-analysis-jslint-option-anon' => 0,
         'js-static-analysis-jslint-option-cap' => 0,
-      
-                                            
-                                            
-                                            
-                                            
-                                            
-                                                    
-        
+        'js-static-analysis-jslint-option-browser' => 0,
+        'js-static-analysis-jslint-option-devel' => 0,
+        'js-static-analysis-jslint-option-windows' => 0
     );    
     
     public function indexAction()

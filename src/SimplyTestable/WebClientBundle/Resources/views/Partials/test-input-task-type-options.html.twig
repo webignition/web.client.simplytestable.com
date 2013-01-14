@@ -158,32 +158,16 @@
                                         <!--
                                         browser
                                         devel
-                                        node
-                                        rhino
+                                        *node
+                                        *rhino
                                         windows
                                         *safe
                                         *adsafe
-                                        -->                                 
-
-                                        <label class="checkbox">
-                                            <input type="checkbox" name="js-static-analysis-jslint-option-devel" />
-                                            console,alert,&nbsp;...
-                                        </label>
-<!--
-                                        <label class="checkbox">
-                                            <input type="checkbox" name="js-static-analysis-jslint-option-node" />
-                                            Node.js
-                                        </label>
-
-                                        <label class="checkbox">
-                                            <input type="checkbox" name="js-static-analysis-jslint-option-rhino" />
-                                            Rhino
-                                        </label>
--->
-                                        <label class="checkbox">
-                                            <input type="checkbox" name="js-static-analysis-jslint-option-windows" />
-                                            Windows
-                                        </label>                                        
+                                        -->     
+{{ form.persistent_checkbox('browser', 'js-static-analysis-jslint-option-browser', test_options) }}
+{{ form.persistent_checkbox('console,alert,&nbsp;...', 'js-static-analysis-jslint-option-devel', test_options) }}
+{{ form.persistent_checkbox('Windows', 'js-static-analysis-jslint-option-windows', test_options) }}
+                                  
                                     </div>
                                 </div>
                             </div>

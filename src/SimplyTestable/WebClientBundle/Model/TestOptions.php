@@ -140,7 +140,19 @@ class TestOptions {
                 'type' => 'int',
                 'default' => 0
             ),
-            
+            'js-static-analysis-jslint-option-browser' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),
+            'js-static-analysis-jslint-option-devel' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),            
+            ),
+            'js-static-analysis-jslint-option-windows' => array(    
+                'type' => 'int',
+                'default' => 0
+            ),               
         ),
     );
     
