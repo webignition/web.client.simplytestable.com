@@ -12,6 +12,33 @@ class TestStartController extends BaseController
     );
     
     
+    /**
+     * Names of inputs where the value should be inverted (boolean)
+     * 
+     * @var array
+     */
+    private $invertOptionKeys = array(
+        'js-static-analysis-jslint-option-bitwise',
+        'js-static-analysis-jslint-option-continue',
+        'js-static-analysis-jslint-option-debug',
+        'js-static-analysis-jslint-option-evil',
+        'js-static-analysis-jslint-option-eqeq',
+        'js-static-analysis-jslint-option-forin',
+        'js-static-analysis-jslint-option-newcap',
+        'js-static-analysis-jslint-option-nomen',
+        'js-static-analysis-jslint-option-plusplus',
+        'js-static-analysis-jslint-option-regexp',
+        'js-static-analysis-jslint-option-undef',
+        'js-static-analysis-jslint-option-unparam',
+        'js-static-analysis-jslint-option-sloppy',
+        'js-static-analysis-jslint-option-stupid',
+        'js-static-analysis-jslint-option-sub',
+        'js-static-analysis-jslint-option-vars',
+        'js-static-analysis-jslint-option-white',
+        'js-static-analysis-jslint-option-anon'
+    );    
+    
+    
     public function startAction()
     {        
         $this->getTestService()->setUser($this->getUser());

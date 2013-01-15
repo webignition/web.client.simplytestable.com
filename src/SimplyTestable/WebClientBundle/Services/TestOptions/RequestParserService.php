@@ -22,7 +22,8 @@ class RequestParserService {
      *
      * @var TestOptions
      */
-    private $testOptions = null;
+    private $testOptions = null;       
+
     
     
     /**
@@ -85,7 +86,7 @@ class RequestParserService {
         $testTypeOptions = array();
         
         foreach ($this->requestData as $key => $value) {            
-            if ($this->requestKeyMatchesTestTypeKey($key, $testTypeKey)) {                
+            if ($this->requestKeyMatchesTestTypeKey($key, $testTypeKey)) {
                 $testTypeOptions[$key] = $value;
             }
         }

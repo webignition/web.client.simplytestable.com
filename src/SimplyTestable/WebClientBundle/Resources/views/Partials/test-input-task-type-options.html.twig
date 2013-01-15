@@ -94,7 +94,7 @@
             </label>
                 
         <div class="test-options-advanced">
-            <div class="expandable-control+ expandable-control-default-closed for-js-static-analysis-options-expandable">Advanced JS static analysis options</div>
+            <div class="expandable-control expandable-control-default-closed for-js-static-analysis-options-expandable">Advanced JS static analysis options</div>
             <div id="js-static-analysis-options-expandable">
                 <div class="row-fluid">
                     <div class="span12 css-validator-option-set validator-option-set js-static-analysis-jslint-options">
@@ -113,6 +113,7 @@
                                 <div class="row-fluid">
                                     <div class="span12">
                                         <div class="span3 jslint-option-set">
+<!-- bitwise, continue, debug, evil, eqeq, forin, newcap, nomen, plusplus, regexp, undef, unparam, sloppy, stupid, sub, vars, white, anon -->  
 <!-- bitwise, continue, debug, evil, eqeq, forin -->                                            
 {{ form.persistent_checkbox('When bitwise operators are used', 'js-static-analysis-jslint-option-bitwise', test_options) }}
 {{ form.persistent_checkbox('When <code>continue</code> is used', 'js-static-analysis-jslint-option-continue', test_options) }}
@@ -131,7 +132,7 @@
 {{ form.persistent_checkbox('About unused parameters', 'js-static-analysis-jslint-option-unparam', test_options) }}
                                         </div>
                                         <div class="span5 jslint-option-set">
-<!--   sloppy, stupid, sub, vars, white,anon, cap -->
+<!--   sloppy, stupid, sub, vars, white, anon -->
 <!-- 
 *todo (not supported by node-jslint)
 *css (relevant only to CSS linting),
