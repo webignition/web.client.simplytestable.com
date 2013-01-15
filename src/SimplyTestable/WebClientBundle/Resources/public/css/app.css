@@ -692,8 +692,8 @@ body.app-progress #test-options .test-options-advanced {
 
 #test-options  .validator-option-set p {
     font-weight: bold;
-    opacity: 0.8;
     margin: 6px 0;
+    color:#565656;
 }
 
 body.app-task-results .outcome {
@@ -736,8 +736,9 @@ body.app .jslint-option-set-group {
 }
 
 body.app .jslint-option-set-group h3 {
-    opacity: 0.8;
+    color:#565656;
     font-size:14px;
+    margin:0;
 }
 
 body.app .jslint-option-set {
@@ -750,6 +751,32 @@ body.app .jslint-option-set label {
 
 body.app .inline-short {
     width:30px;
+}
+
+body.app .jslint-options-container {
+    padding-left:15px;
+    margin-left:5px;
+    border-left-width: 5px;
+    border-left-style: solid;
+    border-left-color: #e7e7e7;
+}
+
+#test-options .test-options-set:hover .jslint-options-container {
+    border-left-color: #ddd;
+}
+
+body.app .jslint-integer-options {
+    margin-top:-8px;
+}
+
+.help-block-inline {
+    display:inline;
+    font-weight: normal;
+}
+
+body.app .test-options-set code {
+    background-color: #fee9cc;
+    color:#565656;
 }
 
 @media (min-width: 1200px) {

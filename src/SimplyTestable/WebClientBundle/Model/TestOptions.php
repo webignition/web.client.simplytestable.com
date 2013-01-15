@@ -120,23 +120,7 @@ class TestOptions {
                 'type' => 'int',
                 'default' => 0
             ),  
-            'js-static-analysis-jslint-option-css' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),  
-            'js-static-analysis-jslint-option-on' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),  
-            'js-static-analysis-jslint-option-fragment' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),  
             'js-static-analysis-jslint-option-anon' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),  
-            'js-static-analysis-jslint-option-cap' => array(    
                 'type' => 'int',
                 'default' => 0
             ),
