@@ -94,7 +94,7 @@
             </label>
                 
         <div class="test-options-advanced">
-            <div class="expandable-control expandable-control-default-closed for-js-static-analysis-options-expandable">Advanced JS static analysis options</div>
+            <div class="expandable-control+ expandable-control-default-closed for-js-static-analysis-options-expandable">Advanced JS static analysis options</div>
             <div id="js-static-analysis-options-expandable">
                 <div class="row-fluid">
                     <div class="span12 css-validator-option-set validator-option-set js-static-analysis-jslint-options">
@@ -104,6 +104,50 @@
                         </span></p>
                         
                         <div class="jslint-options-container">
+                            
+                        <div class="row-fluid">
+                            <div class="span12 jslint-option-set-group">                            
+                                <h3>Limits:</h3>
+                                <div class="row-fluid">
+                                    <div class="span12">
+                                        {{ form.persistent_checkbox('Stop on first error', 'js-static-analysis-jslint-option-passfail', test_options) }}
+                                    </div>                                            
+                                </div>                                
+                                <div class="row-fluid">                                        
+                                    <div class="span12 jslint-integer-options">
+                                        <label>
+                                            Stop when reaching
+                                            <input id="js-static-analysis-jslint-option-maxerr"
+                                                   class="inline-short"
+                                                   type="text"
+                                                   name="js-static-analysis-jslint-option-maxerr"
+                                                   value="{{ test_options['js-static-analysis-jslint-option-maxerr'] }}" />
+                                            errors.
+                                        </label>
+                                            Assume an
+                                        <label>
+                                            indentation level of  
+                                            <input id="js-static-analysis-jslint-option-indent"
+                                                   class="inline-short"
+                                                   type="text"
+                                                   name="js-static-analysis-jslint-option-indent"
+                                                   value="{{ test_options['js-static-analysis-jslint-option-indent'] }}" />
+                                            spaces
+                                        </label>
+                                            and a
+                                        <label>
+                                            maximum line length of
+                                            <input id="js-static-analysis-jslint-option-maxlen"
+                                                   class="inline-short"
+                                                   type="text"
+                                                   name="js-static-analysis-jslint-option-maxlen"
+                                                   value="{{ test_options['js-static-analysis-jslint-option-maxlen'] }}" />
+                                            characters.
+                                        </label>                                                 
+                                    </div>  
+                                </div>
+                            </div>
+                        </div>
 
                          
 
@@ -184,45 +228,7 @@
                                 </div>
                             </div>                                 
                             <div class="span6 jslint-option-set-group">
-                                <h3>Analysis limits:</h3>
-                                <div class="row-fluid">
-                                    <div class="span12 jslint-option-set">
-                                        <div class="row-fluid">
-                                            <div class="span4">
-                                                {{ form.persistent_checkbox('Stop on first error', 'js-static-analysis-jslint-option-passfail', test_options) }}
-                                            </div>                                            
-                                            <div class="span6 jslint-integer-options">
-                                                <label>
-                                                    Stop when reaching
-                                                    <input id="js-static-analysis-jslint-option-maxerr"
-                                                           class="inline-short"
-                                                           type="text"
-                                                           name="js-static-analysis-jslint-option-maxerr"
-                                                           value="{{ test_options['js-static-analysis-jslint-option-maxerr'] }}" />
-                                                    errors
-                                                </label>
-                                                <label>
-                                                    Indentation level: 
-                                                    <input id="js-static-analysis-jslint-option-indent"
-                                                           class="inline-short"
-                                                           type="text"
-                                                           name="js-static-analysis-jslint-option-indent"
-                                                           value="{{ test_options['js-static-analysis-jslint-option-indent'] }}" />
-                                                    spaces
-                                                </label>                                            
-                                                <label>
-                                                    Maximum line length:
-                                                    <input id="js-static-analysis-jslint-option-maxlen"
-                                                           class="inline-short"
-                                                           type="text"
-                                                           name="js-static-analysis-jslint-option-maxlen"
-                                                           value="{{ test_options['js-static-analysis-jslint-option-maxlen'] }}" />
-                                                    characters
-                                                </label>                                                 
-                                            </div>
-                                        </div>                                            
-                                    </div>
-                                </div>
+
                             </div>                                
                         </div>
                             </div>

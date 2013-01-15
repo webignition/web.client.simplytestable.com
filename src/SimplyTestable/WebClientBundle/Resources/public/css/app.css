@@ -765,8 +765,18 @@ body.app .jslint-options-container {
     border-left-color: #ddd;
 }
 
-body.app .jslint-integer-options {
+/*body.app .jslint-integer-options {
     margin-top:-8px;
+}*/
+
+body.app .jslint-integer-options label {
+    display:inline;
+}
+
+body.app .jslint-integer-options input {
+    display:inline;
+    vertical-align: baseline;
+    text-align: center;
 }
 
 .help-block-inline {
