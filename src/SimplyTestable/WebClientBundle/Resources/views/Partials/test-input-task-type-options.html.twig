@@ -113,29 +113,25 @@
                                 <div class="row-fluid">
                                     <div class="span12">
                                         <div class="span3 jslint-option-set">
-<!-- bitwise, continue, debug, eqeq, es5, evil, forin, newcap -->                                            
+<!-- bitwise, continue, debug, evil, eqeq, forin -->                                            
 {{ form.persistent_checkbox('When bitwise operators are used', 'js-static-analysis-jslint-option-bitwise', test_options) }}
 {{ form.persistent_checkbox('When <code>continue</code> is used', 'js-static-analysis-jslint-option-continue', test_options) }}
 {{ form.persistent_checkbox('About <code>debugger</code> operations', 'js-static-analysis-jslint-option-debug', test_options) }}
 {{ form.persistent_checkbox('About <code>eval</code>', 'js-static-analysis-jslint-option-evil', test_options) }}
 {{ form.persistent_checkbox('When <code>==</code> or <code>!=</code> is used', 'js-static-analysis-jslint-option-eqeq', test_options) }}
-{{ form.persistent_checkbox('About ES5 syntax', 'js-static-analysis-jslint-option-es5', test_options) }}
 {{ form.persistent_checkbox('About unfiltered <code>for &hellip; in</code>', 'js-static-analysis-jslint-option-forin', test_options) }}
-{{ form.persistent_checkbox('When uncapitalised constructors are used', 'js-static-analysis-jslint-option-newcap', test_options) }}
                                         </div>
-                                        <div class="span3 jslint-option-set">
-<!-- nomen, plusplus, regexp, undef, unparam, sloppy, stupid, sub -->
+                                        <div class="span4 jslint-option-set">
+<!-- newcap, nomen, plusplus, regexp, undef, unparam -->
+{{ form.persistent_checkbox('When uncapitalised constructors are used', 'js-static-analysis-jslint-option-newcap', test_options) }}
 {{ form.persistent_checkbox('About dangling <code>_</code> in identifiers', 'js-static-analysis-jslint-option-nomen', test_options) }}
 {{ form.persistent_checkbox('About <code>++</code> and <code>-</code> operations', 'js-static-analysis-jslint-option-plusplus', test_options) }}
 {{ form.persistent_checkbox('About <code>.</code> and <code>[^&hellip;]</code> in <code>/RegExp/</code> literals', 'js-static-analysis-jslint-option-regexp', test_options) }}
 {{ form.persistent_checkbox('When a variable is undefined', 'js-static-analysis-jslint-option-undef', test_options) }}
 {{ form.persistent_checkbox('About unused parameters', 'js-static-analysis-jslint-option-unparam', test_options) }}
-{{ form.persistent_checkbox('When code is not in strict mode', 'js-static-analysis-jslint-option-sloppy', test_options) }}
-{{ form.persistent_checkbox('About blocking <code>&hellip;Sync</code> methods', 'js-static-analysis-jslint-option-stupid', test_options) }}
-{{ form.persistent_checkbox('When not using dot notation to access properties', 'js-static-analysis-jslint-option-sub', test_options) }}
                                         </div>
-                                        <div class="span6 jslint-option-set">
-<!-- vars, white,anon, cap -->
+                                        <div class="span5 jslint-option-set">
+<!--   sloppy, stupid, sub, vars, white,anon, cap -->
 <!-- 
 *todo (not supported by node-jslint)
 *css (relevant only to CSS linting),
@@ -143,6 +139,9 @@
 *fragment (relevant only to HTML fragment checking)
 *cap (relevant only to HTML fragment checking)
 -->
+{{ form.persistent_checkbox('When code is not in strict mode (<code>\'use strict\';</code>)', 'js-static-analysis-jslint-option-sloppy', test_options) }}
+{{ form.persistent_checkbox('About blocking <code>&hellip;Sync</code> methods', 'js-static-analysis-jslint-option-stupid', test_options) }}
+{{ form.persistent_checkbox('When not using dot notation to access properties', 'js-static-analysis-jslint-option-sub', test_options) }}
 {{ form.persistent_checkbox('About multiple var statements per function', 'js-static-analysis-jslint-option-vars', test_options) }}
 {{ form.persistent_checkbox('About messy white space', 'js-static-analysis-jslint-option-white', test_options) }}
 {{ form.persistent_checkbox('When space is omitted in anonymous function declarations', 'js-static-analysis-jslint-option-anon', test_options) }}
@@ -167,7 +166,8 @@
                                         *safe
                                         *adsafe
                                         -->     
-{{ form.persistent_checkbox('browser', 'js-static-analysis-jslint-option-browser', test_options) }}
+{{ form.persistent_checkbox('Browser', 'js-static-analysis-jslint-option-browser', test_options) }}
+{{ form.persistent_checkbox('ECMAScript 5', 'js-static-analysis-jslint-option-es5', test_options) }}
 {{ form.persistent_checkbox('console,alert,&nbsp;...', 'js-static-analysis-jslint-option-devel', test_options) }}
 {{ form.persistent_checkbox('Windows', 'js-static-analysis-jslint-option-windows', test_options) }}
                                   

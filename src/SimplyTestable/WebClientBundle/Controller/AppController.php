@@ -72,7 +72,7 @@ class AppController extends BaseViewController
         'js-static-analysis-jslint-option-vars' => 0,
         'js-static-analysis-jslint-option-white' => 0,
         'js-static-analysis-jslint-option-anon' => 0,
-        'js-static-analysis-jslint-option-browser' => 0,
+        'js-static-analysis-jslint-option-browser' => 1,
         'js-static-analysis-jslint-option-devel' => 0,
         'js-static-analysis-jslint-option-windows' => 0,
         'js-static-analysis-jslint-option-maxerr' => 50,

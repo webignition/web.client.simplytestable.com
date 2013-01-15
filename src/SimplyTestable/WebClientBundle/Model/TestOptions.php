@@ -110,8 +110,7 @@ class TestOptions {
             'js-static-analysis-jslint-option-sub' => array(    
                 'type' => 'int',
                 'default' => 0
-            ), 
-            
+            ),            
             'js-static-analysis-jslint-option-vars' => array(    
                 'type' => 'int',
                 'default' => 0
@@ -126,7 +125,7 @@ class TestOptions {
             ),
             'js-static-analysis-jslint-option-browser' => array(    
                 'type' => 'int',
-                'default' => 0
+                'default' => 1
             ),
             'js-static-analysis-jslint-option-devel' => array(    
                 'type' => 'int',
