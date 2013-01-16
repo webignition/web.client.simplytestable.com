@@ -83,7 +83,7 @@ class UserSerializerService {
      * @return string
      */
     private function encrypt($plaintext, $key) {        
-        return \mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $key, $plaintext, MCRYPT_MODE_ECB, $this->getIv());        
+        return mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $key, $plaintext, MCRYPT_MODE_ECB, $this->getIv());        
     }
     
     
@@ -94,7 +94,7 @@ class UserSerializerService {
      * @return strings
      */
     private function decrypt($ciphertext, $key) {        
-        return \mcrypt_decrypt( MCRYPT_RIJNDAEL_256, $key, $ciphertext, MCRYPT_MODE_ECB, $this->getIv());
+        return mcrypt_decrypt( MCRYPT_RIJNDAEL_256, $key, $ciphertext, MCRYPT_MODE_ECB, $this->getIv());
     }
     
     
@@ -103,7 +103,7 @@ class UserSerializerService {
      * @return int
      */
     private function getIvSize() {
-        return \mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
+        return mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
     }
     
     
@@ -113,7 +113,7 @@ class UserSerializerService {
      */
     private function getIv() {
         if (is_null($this->iv)) {
-            $this->iv = \mcrypt_create_iv($this->getIvSize(), MCRYPT_RAND);
+            $this->iv = mcrypt_create_iv($this->getIvSize(), MCRYPT_RAND);
         }
         
         return $this->iv;
