@@ -12,7 +12,15 @@ class Version20120925115659 extends BaseMigration
 {
     public function up(Schema $schema)
     {        
-        $this->addCommonStatement('ALTER TABLE TaskOutput ADD errorCount INT NOT NULL');        
+        $this->statements['mysql'] = array(
+            "ALTER TABLE TaskOutput ADD errorCount INT NOT NULL"            
+        );
+        
+        $this->statements['sqlite'] = array(
+            "ALTER TABLE TaskOutput ADD errorCount INT NOT NULL DEFAULT 0"
+        );        
+        
+   
         parent::up($schema);
     }
 
