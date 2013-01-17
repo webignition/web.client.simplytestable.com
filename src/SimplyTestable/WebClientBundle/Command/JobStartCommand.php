@@ -50,7 +50,7 @@ class JobStartCommand extends BaseCommand
             }
             
             $testOptions = new \SimplyTestable\WebClientBundle\Model\TestOptions();
-            $testOptions->addTestType('html-validation');
+            $testOptions->addTestType('HTML validation');
 
             $this->getTestService()->start($testCanonicalUrl, $testOptions);  
             
