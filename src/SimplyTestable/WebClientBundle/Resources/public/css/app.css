@@ -450,7 +450,8 @@ body.app-progress form .larger input {
     padding: 14px 9px 13px 9px;      
 }
 
-body.app #input .btn-primary {
+body.app #input .btn-primary,
+body.app-results #input .btn-primary {    
     width:20%;
 }
 
