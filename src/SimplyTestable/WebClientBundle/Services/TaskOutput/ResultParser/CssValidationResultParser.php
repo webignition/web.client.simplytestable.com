@@ -36,7 +36,7 @@ class CssValidationResultParser extends ResultParser {
     private function getMessageFromOutput(\stdClass $rawMessageObject) {        
         $propertyToMethodMap = array(
             'context' => 'setContext',
-            'lineNumber' => 'setLineNumber',
+            'line_number' => 'setLineNumber',
             'message' => 'setMessage',
             'ref' => 'setRef'
         );
