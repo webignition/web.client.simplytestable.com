@@ -70,7 +70,11 @@ class JsStaticAnalysisResultParser extends ResultParser {
      * @return boolean
      */
     private function hasErrors(\stdClass $rawOutputObject) {
-        foreach ($rawOutputObject as $jsSourceReference => $entriesObject) {            
+        foreach ($rawOutputObject as $jsSourceReference => $entriesObject) {
+            if (isset($entriesObject->statusLine) && $entriesObject->statusLine == 'failed') {
+                return true;
+            }
+            
             if (count($entriesObject->entries)) {
                 return true;
             }
