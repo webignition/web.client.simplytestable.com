@@ -101,11 +101,7 @@ section.top {
 }
 
 #main #input .fields input {
-    width:65%;
-}
-
-#main #input .fields button {
-    width:30%;
+    width:60%;
 }
 
 #main #input .fields button i {
@@ -443,14 +439,23 @@ body.single-page-dialog #main button.submit {
     margin-top:20px;
 }
 
+
 form .larger input {
+    font-size: 15px;
+    padding: 12px 9px 12px 9px;      
+}
+
+body.app-progress form .larger input {
     font-size: 15px;
     padding: 14px 9px 13px 9px;      
 }
 
-body.app form .larger input {
-    font-size: 15px;
-    padding: 14px 9px 13px 9px;      
+body.app #input .btn-primary {
+    width:20%;
+}
+
+body.app-progress #input .btn-primary {
+    width:30%;
 }
 
 form .larger button {
