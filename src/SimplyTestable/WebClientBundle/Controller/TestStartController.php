@@ -32,9 +32,9 @@ class TestStartController extends BaseController
         if ($testOptions->hasTestTypes() === false) {
             $this->get('session')->setFlash('test_start_error', 'no-test-types-selected');
             return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));                
-        }        
+        }
         
-        $jsonResponseObject = $this->getTestService()->start($this->getCanonicalUrlFromWebsite($this->getWebsite()), $testOptions)->getContentObject();
+        $jsonResponseObject = $this->getTestService()->start($this->getTestUrl(), $testOptions)->getContentObject();
         return $this->redirect($this->generateUrl(
             'app_progress',
             array(
@@ -43,6 +43,35 @@ class TestStartController extends BaseController
             ),
             true
         ));
+    }
+    
+    
+    /**
+     * 
+     * @return type
+     */
+    private function getTestUrl() {
+        if ($this->isFullTest()) {
+            return $this->getCanonicalUrlFromWebsite($this->getWebsite());
+        }
+        
+        $url = new \webignition\NormalisedUrl\NormalisedUrl($this->getWebsite());
+        return (string)$url;
+    }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    private function isFullTest() {
+        /* @var $requestParameters \Symfony\Component\HttpFoundation\ParameterBag */
+        $requestParameters = $this->getRequestValues(HTTP_METH_POST);
+        if (!$requestParameters->has('full-single')) {
+            return true;
+        }
+        
+        return $requestParameters->get('full-single') == 'full';
     }
     
     
