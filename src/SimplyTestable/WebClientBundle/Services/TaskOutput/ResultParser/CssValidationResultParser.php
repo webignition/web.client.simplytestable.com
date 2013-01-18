@@ -18,7 +18,7 @@ class CssValidationResultParser extends ResultParser {
         
         if (count($rawOutputArray) === 0) {
             return $result;
-        }       
+        }
    
         foreach ($rawOutputArray as $rawMessageObject) {            
             $result->addMessage($this->getMessageFromOutput($rawMessageObject));
@@ -33,10 +33,10 @@ class CssValidationResultParser extends ResultParser {
      * @param \stdClass $rawMessageObject
      * @return \SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage 
      */
-    private function getMessageFromOutput(\stdClass $rawMessageObject) {        
+    private function getMessageFromOutput(\stdClass $rawMessageObject) {                
         $propertyToMethodMap = array(
             'context' => 'setContext',
-            'lineNumber' => 'setLineNumber',
+            'line_number' => 'setLineNumber',
             'message' => 'setMessage',
             'ref' => 'setRef'
         );
@@ -44,7 +44,7 @@ class CssValidationResultParser extends ResultParser {
         $message = new CssTextFileMessage();
         $message->setType($rawMessageObject->type);
         
-        foreach ($propertyToMethodMap as $property => $methodName) {
+        foreach ($propertyToMethodMap as $property => $methodName) {            
             if (isset($rawMessageObject->$property)) {
                 $message->$methodName($rawMessageObject->$property);
             }

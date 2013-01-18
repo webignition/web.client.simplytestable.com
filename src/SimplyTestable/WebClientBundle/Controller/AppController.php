@@ -466,7 +466,7 @@ class AppController extends BaseViewController
                 'website' => $website,
                 'test_id' => $test_id
             ), true));
-        }      
+        }
         
         $taskListFilter = $this->getRequestValue('filter', 'with-errors');
         
@@ -482,8 +482,8 @@ class AppController extends BaseViewController
 //            return $response;
 //        }
         
-        try {
-            $test = $this->getTestService()->get($website, $test_id, $this->getUser());
+        try {            
+            $test = $this->getTestService()->get($website, $test_id, $this->getUser());            
         } catch (UserServiceException $e) {
             if (!$this->isLoggedIn()) {                
                 $redirectParameters = json_encode(array(
@@ -513,14 +513,14 @@ class AppController extends BaseViewController
                 'user' => $this->getUser(),
                 'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),                
             ));            
-        }
+        }      
         
         if ($test->getWebsite() != $website) {
             return $this->redirect($this->generateUrl('app_test_redirector', array(
                 'website' => $test->getWebsite(),
                 'test_id' => $test_id
             ), true));            
-        }
+        }       
         
         if (!in_array($test->getState(), $this->testFinishedStates)) {
             return $this->redirect($this->getProgressUrl($website, $test_id));

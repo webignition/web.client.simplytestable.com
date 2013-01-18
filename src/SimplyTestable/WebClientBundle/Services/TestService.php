@@ -151,6 +151,9 @@ class TestService extends CoreApplicationService {
             return true;
         }
         
+        var_dump("cp03");
+        exit();         
+        
         return $this->get($canonicalUrl, $testId, $user) instanceof Test;
     }
     
@@ -164,11 +167,11 @@ class TestService extends CoreApplicationService {
     public function get($canonicalUrl, $testId, User $user) {                        
         if ($this->hasEntity($testId)) {           
             /* @var $test Test */
-            $this->currentTest = $this->fetchEntity($testId);
+            $this->currentTest = $this->fetchEntity($testId);          
             
-            if ($this->currentTest->getState() != 'completed' && $this->currentTest->getState() != 'cancelled') {
+            if (($this->currentTest->getState() != 'completed' && $this->currentTest->getState() != 'cancelled')) {
                 $this->update();             
-            }
+            }          
         } else {            
             $this->currentTest = new Test();
             $this->currentTest->setTestId($testId);
@@ -195,8 +198,8 @@ class TestService extends CoreApplicationService {
      * @param int $testId
      * @return boolean
      */
-    private function hasEntity($testId) {
-        return !is_null($this->fetchEntity($testId));
+    private function hasEntity($testId) {        
+        return $this->getEntityRepository()->hasById($testId);
     }
     
     
@@ -206,6 +209,9 @@ class TestService extends CoreApplicationService {
      * @return type 
      */
     private function fetchEntity($testId) {
+//        return $this->getEntityRepository()->getById($testId);
+//        exit();
+//        
         return $this->getEntityRepository()->findOneBy(array(
             'testId' => $testId
         ));

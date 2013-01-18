@@ -92,7 +92,7 @@ class TaskService extends CoreApplicationService {
      * @param array $remoteTaskIds
      * @return array 
      */
-    public function getCollection(Test $test, $remoteTaskIds = null) {              
+    public function getCollection(Test $test, $remoteTaskIds = null) {                      
         if (!is_array($remoteTaskIds)) {
             $remoteTaskIds = $this->getRemoteTaskIds($test);
         }       
@@ -111,7 +111,7 @@ class TaskService extends CoreApplicationService {
         
         $tasksToPersist = array();
         $tasks = array();
-        $previousTaskStates = array();
+        $previousTaskStates = array();     
         
         if (count($localTasksToUpdate)) {            
             $tasks = $this->getEntityRepository()->getCollectionByTestAndRemoteId($test, $remoteTaskIds);
@@ -125,7 +125,7 @@ class TaskService extends CoreApplicationService {
         }       
         
         if (count($tasksToRetrieve)) {
-            $remoteTasksObject = $this->retrieveRemoteCollection($test, $tasksToRetrieve);                       
+            $remoteTasksObject = $this->retrieveRemoteCollection($test, $tasksToRetrieve);    
             
             foreach ($remoteTasksObject as $remoteTaskObject) {                
                 $task = (isset($tasks[$remoteTaskObject->id])) ? $tasks[$remoteTaskObject->id] : new Task();
@@ -247,8 +247,7 @@ class TaskService extends CoreApplicationService {
         $taskOutput->setContent($remoteOutputObject->output);
         $taskOutput->setType($task->getType());
         $taskOutput->setErrorCount($remoteOutputObject->error_count);
-        $taskOutput->setWarningCount($remoteOutputObject->warning_count);
-        $taskOutput->setTask($task);        
+        $taskOutput->setWarningCount($remoteOutputObject->warning_count);      
         
         $task->setOutput($taskOutput);
     }
@@ -279,7 +278,7 @@ class TaskService extends CoreApplicationService {
      * @param array $remoteTaskIds
      * @return array 
      */
-    private function retrieveRemoteCollection(Test $test, $remoteTaskIds) {
+    private function retrieveRemoteCollection(Test $test, $remoteTaskIds) {        
         $httpRequest = $this->getAuthorisedHttpRequest(
             $this->getUrl('test_tasks', array(
                 'canonical-url' => (string)$test->getWebsite(),
