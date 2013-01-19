@@ -142,10 +142,7 @@ class TestStartController extends BaseController
      * 
      * @return array
      */
-    private function getTestTypes() {
-        var_dump($this->getRequestValues(HTTP_METH_POST));
-        exit();
-        
+    private function getTestTypes() {        
         $testTypes = array();
         
         foreach ($this->allowedTestTypeMap as $testTypeKey => $testTypeName) {

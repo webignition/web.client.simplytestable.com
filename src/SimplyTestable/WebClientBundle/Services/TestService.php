@@ -149,10 +149,7 @@ class TestService extends CoreApplicationService {
     public function has($canonicalUrl, $testId, User $user) {        
         if ($this->hasEntity($testId)) {
             return true;
-        }
-        
-        var_dump("cp03");
-        exit();         
+        }       
         
         return $this->get($canonicalUrl, $testId, $user) instanceof Test;
     }
