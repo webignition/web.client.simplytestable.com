@@ -14,6 +14,8 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
  *         @ORM\Index(name="hash_idx", columns={"hash"})
  *     }
  * )
+ * @ORM\Entity(repositoryClass="SimplyTestable\WebClientBundle\Repository\TaskOutputRepository")
+ * 
  * @SerializerAnnotation\ExclusionPolicy("all") 
  */
 class Output {

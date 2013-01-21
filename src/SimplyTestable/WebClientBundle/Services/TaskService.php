@@ -61,6 +61,13 @@ class TaskService extends CoreApplicationService {
     private $taskOutputService;   
     
     
+    /**
+     *
+     * @var \SimplyTestable\WebClientBundle\Repository\TaskOutputRepository
+     */
+    private $taskOutputRepository;    
+    
+    
     public function __construct(
         EntityManager $entityManager,
         $parameters,
@@ -242,15 +249,35 @@ class TaskService extends CoreApplicationService {
     }
     
     
-    private function populateOutputfromRemoteOutputObject(Task $task, $remoteOutputObject) {                
-        $taskOutput = new Output();
-        $taskOutput->setContent($remoteOutputObject->output);
-        $taskOutput->setType($task->getType());
-        $taskOutput->setErrorCount($remoteOutputObject->error_count);
-        $taskOutput->setWarningCount($remoteOutputObject->warning_count);      
+    private function populateOutputfromRemoteOutputObject(Task $task, $remoteOutputObject) {        
+        $output = new Output();
+        $output->setContent($remoteOutputObject->output);
+        $output->setType($task->getType());
+        $output->setErrorCount($remoteOutputObject->error_count);
+        $output->setWarningCount($remoteOutputObject->warning_count);      
+        $output->generateHash();
         
-        $task->setOutput($taskOutput);
+        $existingOutput = $this->getTaskOutputEntityRepository()->findOutputByhash($output->getHash());
+        
+        if (!is_null($existingOutput)) {
+            $output = $existingOutput;
+        }
+        
+        $task->setOutput($output);
     }
+    
+    
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Repository\TaskOutputRepository
+     */
+    private function getTaskOutputEntityRepository() {
+        if (is_null($this->taskOutputRepository)) {
+            $this->taskOutputRepository = $this->entityManager->getRepository('SimplyTestable\WebClientBundle\Entity\Task\Output');
+        }
+        
+        return $this->taskOutputRepository;
+    }    
     
     
     /**
