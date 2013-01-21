@@ -119,18 +119,11 @@ class TaskController extends BaseViewController
         if ($response->isNotModified($this->getRequest())) {
             return $response;
         }
-
+        
         $test = $this->getTestService()->get($website, $test_id, $this->getUser());
-        $task = $this->getTaskService()->get($test, $task_id);
+        $task = $this->getTaskService()->get($test, $task_id);            
         
-        $this->getCssValidationErrorsGroupedByRef($task);
-        
-        if ($task->getState() == 'completed' || $task->getState() == 'failed') {
-            if ($this->getTaskOutputService()->has($test, $task)) {
-                $task->setOutput($this->getTaskOutputService()->get($test, $task));
-                $this->getTaskOutputService()->setParsedOutput($task);
-            }                
-        }
+        $this->getCssValidationErrorsGroupedByRef($task);         
         
         $viewData = array(
                 'test' => $test,

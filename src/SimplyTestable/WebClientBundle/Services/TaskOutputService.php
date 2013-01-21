@@ -149,7 +149,6 @@ class TaskOutputService extends CoreApplicationService {
         
         $taskOutput = new Output();
         $taskOutput->setContent($taskOutputResponse->getContentObject()->output->output);
-        $taskOutput->setTask($task);
         $taskOutput->setType($taskOutputResponse->getContentObject()->type);       
         
         $task->setOutput($taskOutput);
@@ -199,7 +198,6 @@ class TaskOutputService extends CoreApplicationService {
         foreach ($responseContentObject as $taskOutputResponseObject) {
             $taskOutput = new Output();
             $taskOutput->setContent($taskOutputResponseObject->output->output);
-            $taskOutput->setTask($tasksById[$taskOutputResponseObject->id]);
             $taskOutput->setType($taskOutputResponseObject->type);             
             $taskOutputCollection[$taskOutputResponseObject->id] = $taskOutput;
             $tasksById[$taskOutputResponseObject->id]->setOutput($taskOutput);
@@ -228,12 +226,12 @@ class TaskOutputService extends CoreApplicationService {
      * @return Task
      */
     public function setParsedOutput(Task $task) {         
-        if ($task->hasOutput()) {             
-            $parser = $this->taskOutputResultParserService->getParser($task->getOutput());
+        if ($task->hasOutput()) {            
+            $parser = $this->taskOutputResultParserService->getParser($task->getOutput());            
             $parser->setOutput($task->getOutput());
 
             $task->getOutput()->setResult($parser->getResult());
-        } 
+        }
         
         return $task;
     }
