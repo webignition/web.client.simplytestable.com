@@ -43,7 +43,7 @@ class TaskOutputRepository extends EntityRepository
     public function findHashlessOutput($limit = null) {
         $queryBuilder = $this->createQueryBuilder('TaskOutput');
         
-        if(is_int($limit) && $limit < 0) {
+        if(is_int($limit) && $limit > 0) {
             $queryBuilder->setMaxResults($limit);
         }        
 
