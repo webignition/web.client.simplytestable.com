@@ -39,7 +39,6 @@ class TaskOutputRepository extends EntityRepository
         return $ids;    
     }
     
-    
     public function findHashlessOutput($limit = null) {
         $queryBuilder = $this->createQueryBuilder('TaskOutput');
         
@@ -51,6 +50,25 @@ class TaskOutputRepository extends EntityRepository
         $queryBuilder->where('TaskOutput.hash IS NULL');
         
         return $queryBuilder->getQuery()->getResult();      
+    }    
+    
+    public function findHashlessOutputIds($limit = null) {
+        $queryBuilder = $this->createQueryBuilder('TaskOutput');
+        
+        if(is_int($limit) && $limit > 0) {
+            $queryBuilder->setMaxResults($limit);
+        }        
+
+        $queryBuilder->select('TaskOutput.id');
+        $queryBuilder->where('TaskOutput.hash IS NULL');
+        
+        $result = $queryBuilder->getQuery()->getResult();      
+        
+        if (count($result) === 0) {
+            return array();
+        }
+        
+        return $this->getSingleFieldCollectionFromResult($result, 'id');
     }
     
     
@@ -93,6 +111,17 @@ class TaskOutputRepository extends EntityRepository
         sort($ids);
         
         return $ids;       
+    }
+    
+    
+    private function getSingleFieldCollectionFromResult($result, $fieldName) {
+        $collection = array();
+        
+        foreach ($result as $resultItem) {
+            $collection[] = $resultItem[$fieldName];
+        }
+        
+        return $collection;
     }
     
 

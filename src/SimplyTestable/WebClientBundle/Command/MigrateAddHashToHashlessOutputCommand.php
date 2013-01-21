@@ -28,32 +28,50 @@ class MigrateAddHashToHashlessOutputCommand extends BaseCommand
         $this
             ->setName('simplytestable:add-hash-to-hashless-output')
             ->setDescription('Set the hash property on TaskOutput objects that have no hash set')
-            ->addOption('limit');
+            ->addOption('limit')
+            ->addOption('dry-run')                   
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     { 
         $output->writeln('Finding hashless output ...');
-        $hashlessOutputTasks = $this->getTaskOutputRepository()->findHashlessOutput($this->getLimit($input));
+        $hashlessOutputIds = $this->getTaskOutputRepository()->findHashlessOutputIds($this->getLimit($input));
         
-        if (count($hashlessOutputTasks) === 0) {
+        if (count($hashlessOutputIds) === 0) {
             $output->writeln('No task outputs require a hash to be set. Done.');
             return true;
         }
         
-        $output->writeln(count($hashlessOutputTasks).' outputs require a hash to be set.');
+        $output->writeln(count($hashlessOutputIds).' outputs require a hash to be set.');
         
-        foreach ($hashlessOutputTasks as $output) {
+        foreach ($hashlessOutputIds as $hashlessOutputId) {
+            $taskOutput = $this->getTaskOutputRepository()->find($hashlessOutputId);
+            
             /* @var $output TaskOutput */            
-            $output->generateHash();
-            $this->getEntityManager()->persist($output);
+            $output->writeln('Setting hash for ['.$taskOutput->getId().']');            
+            $taskOutput->generateHash();
+            
+            if (!$this->isDryRun($input)) {                
+                $this->getEntityManager()->persist($taskOutput);
+                $this->getEntityManager()->flush();
+            }           
+            
+            $this->getEntityManager()->detach($taskOutput);            
         }
-        
-        $this->getEntityManager()->flush();
         
         return true;
     }
+    
+    
+    /**
+     * 
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @return int
+     */
+    private function isDryRun(InputInterface $input) {
+        return $input->getOption('dry-run');
+    }    
     
     
     /**
