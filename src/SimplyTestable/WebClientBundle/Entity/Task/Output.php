@@ -9,7 +9,11 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 /**
  * 
  * @ORM\Entity
- * @ORM\Table(name="TaskOutput")
+ * @ORM\Table(name="TaskOutput",
+ *     indexes={
+ *         @ORM\Index(name="hash_idx", columns={"hash"})
+ *     }
+ * )
  * @SerializerAnnotation\ExclusionPolicy("all") 
  */
 class Output {
@@ -66,6 +70,13 @@ class Output {
      * @SerializerAnnotation\Expose
      */
     private $warningCount = 0;
+    
+    /**
+     *
+     * @var string
+     * @ORM\Column(type="string", nullable=true, length=32)
+     */
+    protected $hash;       
     
 
     /**
@@ -220,5 +231,41 @@ class Output {
     public function hasWarnings() {
         return $this->getWarningCount() > 0;
     }
+    
+    
+    /**
+     * Set hash
+     *
+     * @param string $hash
+     * @return Task
+     */
+    public function setHash($hash)
+    {
+        $this->hash = $hash;
+    
+        return $this;
+    }
+
+    /**
+     * Get hash
+     *
+     * @return string
+     */
+    public function getHash()
+    {
+        return $this->hash;
+    } 
+    
+    
+    /**
+     * 
+     * @return Task
+     */
+    public function generateHash() {        
+        return $this->setHash(md5('content:'.$this->getContent().'
+        type:'.$this->getType().'
+        error-count:'.$this->getErrorCount().'
+        warning-count:'.$this->getWarningCount()));
+    }    
     
 }
