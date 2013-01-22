@@ -44,19 +44,22 @@ class MigrateCanonicaliseTaskOutputCommand extends BaseCommand
     {        
         $output->writeln('Finding duplicate output ...');
         
-        $duplicateHashes = $this->getTaskOutputRepository()->findDuplicateHashes();
+        $duplicateHashes = $this->getTaskOutputRepository()->findDuplicateHashes($this->getLimit($input));       
         
         if (count($duplicateHashes) === 0) {
             $output->writeln('No duplicate output found. Done.');
             return true;
         }
         
+        $output->writeln('Processing ' . count($duplicateHashes) . ' duplicate hashes');
+        $globalUpdatedTaskCount = 0;
+        
         foreach ($duplicateHashes as $duplicateHash) {
             $outputIds = $this->getTaskOutputRepository()->findIdsBy($duplicateHash);
             
-            if (count($outputIds) > 1) {
-                $output->writeln('['.(count($outputIds) - 1) . '] duplicates found for '.$duplicateHash);
-                
+            $output->writeln('['.(count($outputIds) - 1) . '] duplicates found for '.$duplicateHash);
+            
+            if (count($outputIds) > 1) {                
                 $sourceId = $outputIds[0];
                 $sourceOutput = $this->getTaskOutputRepository()->find($sourceId);
                 $duplicatesToRemove = array_slice($outputIds, 1);
@@ -83,11 +86,15 @@ class MigrateCanonicaliseTaskOutputCommand extends BaseCommand
                 
                 if ($updatedTaskCount === 0) {
                     $output->writeln('No tasks using duplicates of ' . $duplicateHash);
-                }                
+                }
+                
+                $globalUpdatedTaskCount += $updatedTaskCount;
                 
                 $output->writeln('');             
             }
         }
+        
+        $output->writeln('['.$globalUpdatedTaskCount.'] tasks updated');
         
         return true;
     }
@@ -102,6 +109,22 @@ class MigrateCanonicaliseTaskOutputCommand extends BaseCommand
     private function isDryRun(InputInterface $input) {
         return $input->getOption('dry-run');
     }
+    
+    
+    /**
+     * 
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @return int
+     */
+    private function getLimit(InputInterface $input) {
+        if ($input->getOption('limit') === false) {
+            return 0;
+        }
+        
+        $limit = filter_var($input->getOption('limit'), FILTER_VALIDATE_INT);
+        
+        return ($limit <= 0) ? 0 : $limit;
+    }    
     
     
     /**
