@@ -80,13 +80,15 @@ class TestService extends CoreApplicationService {
     }     
     
     
-    public function start($canonicalUrl, TestOptions $testOptions) {
+    public function start($canonicalUrl, TestOptions $testOptions, $testType = 'full site') {
         $httpRequest = $this->getAuthorisedHttpRequest(
             $this->getUrl('test_start', array(
             'canonical-url' => $canonicalUrl
         ))); 
         
-        $queryData = array();
+        $queryData = array(
+            'type' => $testType
+        );
         
         if ($testOptions->hasTestTypes()) {
             $queryData['test-types'] = $testOptions->getTestTypes();
@@ -315,13 +317,14 @@ class TestService extends CoreApplicationService {
      * @return \SimplyTestable\WebClientBundle\Entity\Test\Test 
      */
     private function createTestFromRemoteTestSummary() {        
-        $remoteTestSummary = $this->getRemoteTestSummary();        
+        $remoteTestSummary = $this->getRemoteTestSummary();                
 
         $this->currentTest->setState($remoteTestSummary->state);
         $this->currentTest->setUser($remoteTestSummary->user);
         $this->currentTest->setWebsite(new NormalisedUrl($remoteTestSummary->website));
         $this->currentTest->setTestId($remoteTestSummary->id);
         $this->currentTest->setUrlCount($remoteTestSummary->url_count);        
+        $this->currentTest->setType($remoteTestSummary->type);
         
         $taskTypes = array();
         foreach ($remoteTestSummary->task_types as $taskTypeDetail) {

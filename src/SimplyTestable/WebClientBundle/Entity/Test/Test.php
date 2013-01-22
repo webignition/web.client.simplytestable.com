@@ -118,6 +118,13 @@ class Test {
     
     /**
      *
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $type;
+    
+    
+    /**
+     *
      * @var int
      */
     private $urlCount;
@@ -495,4 +502,28 @@ class Test {
     public function hasTaskIds() {
         return $this->getTaskIds()->count() > 0;
     }
+    
+    
+    /**
+     * Set type
+     *
+     * @param string $type
+     * @return Test
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string 
+     */
+    public function getType()
+    {
+        return $this->type;
+    }    
 }

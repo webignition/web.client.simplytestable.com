@@ -69,7 +69,8 @@
             <button type="submit" class="btn btn-primary btn-large" name="full-single" value="full">Test full site</button>
             <button type="submit" class="btn btn-large" name="full-single" value="single">Test this URL only</button>
                 {% elseif test.state == 'no-sitemap' %}
-                <button type="submit" class="btn btn-primary btn-large">Try again<i class="icon-repeat icon-large"></i></button>
+            <button type="submit" class="btn btn-primary btn-large" name="full-single" value="full">Test full site</button>
+            <button type="submit" class="btn btn-large" name="full-single" value="single">Test this URL only</button>
                 {% else %}
                 <button type="submit" class="btn btn-primary btn-large btn-danger">Cancel test <i class="icon-warning-sign icon-large"></i></button>
                 {% endif %}            

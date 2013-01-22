@@ -11,7 +11,7 @@ use SimplyTestable\BaseMigrationsBundle\Migration\BaseMigration,
 class Version20130117163556_remote_TaskOutput_Task extends BaseMigration
 {
     public function up(Schema $schema)
-    {
+    {        
 //        $this->addSql("ALTER TABLE TaskOutput DROP FOREIGN KEY FK_C9B3E5C48DB60186");
 //        $this->addSql("DROP INDEX UNIQ_C9B3E5C48DB60186 ON TaskOutput");
 //        $this->addSql("ALTER TABLE TaskOutput DROP task_id");        
@@ -22,17 +22,15 @@ class Version20130117163556_remote_TaskOutput_Task extends BaseMigration
             "ALTER TABLE TaskOutput DROP task_id"            
         );
         
-        $this->statements['sqlite'] = array(
-            "ALTER TABLE TaskOutput DROP FOREIGN KEY FK_C9B3E5C48DB60186",
-            "DROP INDEX UNIQ_C9B3E5C48DB60186 ON TaskOutput",
-            "ALTER TABLE TaskOutput DROP task_id"   
+        $this->statements['sqlite'] = array( 
+            "SELECT 1 + 1"
         );        
      
         parent::up($schema);
     }
 
     public function down(Schema $schema)
-    { 
+    {      
 //        $this->addSql("ALTER TABLE TaskOutput ADD task_id INT NOT NULL");
 //        $this->addSql("ALTER TABLE TaskOutput ADD CONSTRAINT FK_C9B3E5C48DB60186 FOREIGN KEY (task_id) REFERENCES Task (id)");
 //        $this->addSql("CREATE UNIQUE INDEX UNIQ_C9B3E5C48DB60186 ON TaskOutput (task_id)");        
