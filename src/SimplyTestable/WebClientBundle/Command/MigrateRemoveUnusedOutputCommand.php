@@ -52,7 +52,7 @@ class MigrateRemoveUnusedOutputCommand extends BaseCommand
             return true;
         }   
         
-        $output->writeln('['.count($unusedTaskOutputIds.'] outputs found');
+        $output->writeln('['.count($unusedTaskOutputIds).'] outputs found');
         
         foreach ($unusedTaskOutputIds as $unusedTaskOutputId) {
             $taskOutputToRemove = $this->getTaskOutputRepository()->find($unusedTaskOutputId);
