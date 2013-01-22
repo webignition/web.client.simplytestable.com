@@ -50,7 +50,9 @@ class MigrateRemoveUnusedOutputCommand extends BaseCommand
         if (count($unusedTaskOutputIds) === 0) {
             $output->writeln('No unused task outputs found. Done.');
             return true;
-        }        
+        }   
+        
+        $output->writeln('['.count($unusedTaskOutputIds.'] outputs found');
         
         foreach ($unusedTaskOutputIds as $unusedTaskOutputId) {
             $taskOutputToRemove = $this->getTaskOutputRepository()->find($unusedTaskOutputId);
