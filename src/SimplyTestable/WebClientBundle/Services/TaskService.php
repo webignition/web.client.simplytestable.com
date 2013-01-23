@@ -385,15 +385,6 @@ class TaskService extends CoreApplicationService {
     }
     
     
-//    public function getRemoteTaskIds(Test $test) {
-//        
-//    }
-    
-//    private function update($taskIds = array()) {
-//        
-//    }
-    
-    
     /**
      *
      * @param Test $test
@@ -416,78 +407,6 @@ class TaskService extends CoreApplicationService {
         
         return $this->taskOutputService->setParsedOutput($task);        
     }
-//    
-//    
-//    /**
-//     *
-//     * @param Test $test
-//     * @param array $task_ids
-//     * @return Task 
-//     */
-//    public function getCollection(Test $test, $task_ids) {
-//        $tasks = $this->getEntityRepository()->findBy(array(
-//            'id' => $task_ids,
-//            'test' => $test
-//        ));
-//        
-//        foreach ($tasks as $task) {
-//            $this->taskOutputService->setParsedOutput($task); 
-//        }
-//        
-//        return $tasks;
-//    }
-//    
-//    
-//    /**
-//     *
-//     * @param Task $task
-//     * @return \SimplyTestable\WebClientBundle\Entity\Task\Task 
-//     */
-//    public function markCancelled(Task $task) {
-//        $task->setState('cancelled');
-//        $this->entityManager->persist($task);
-//        $this->entityManager->flush(); 
-//        
-//        return $task;
-//    }
-//    
-//    
-//    /**
-//     *
-//     * @param Task $task
-//     * @return \SimplyTestable\WebClientBundle\Entity\Task\Task 
-//     */
-//    public function markFailed(Task $task) {
-//        $task->setState('failed');
-//        $this->entityManager->persist($task);
-//        $this->entityManager->flush(); 
-//        
-//        return $task;
-//    }    
-//    
-//    
-//    /**
-//     * 
-//     * @param array $taskIds
-//     * @return array 
-//     */
-//    public function getRemoteTaskIds($taskIds = null) {
-//        $queryBuilder = $this->getEntityRepository()->createQueryBuilder('Task');
-//        $queryBuilder->select('Task.taskId');
-//        
-//        if (is_array($taskIds)) {
-//            $queryBuilder->where('Task.id IN ('.  implode(',', $taskIds).')');
-//        }        
-//
-//        $result = $queryBuilder->getQuery()->getResult();        
-//
-//        $remoteTaskIds = array();
-//        foreach ($result as $resultItem) {
-//            $remoteTaskIds[] = (int)$resultItem['taskId'];
-//        }
-//
-//        return $remoteTaskIds;
-//    }
     
     
     /**
