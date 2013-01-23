@@ -392,21 +392,35 @@ class TaskService extends CoreApplicationService {
      * @return Task 
      */
     public function get(Test $test, $task_id) {
+        if (!$this->hasEntity($task_id)) {
+            $this->getCollection($test, array($task_id)); 
+        }        
+        
         $task = $this->getEntityRepository()->findOneBy(array(
             'taskId' => $task_id,
             'test' => $test
         ));
         
-        if ($task == null) {
-            return $task;
+        if (is_null($task)) {
+            return null;
         }
         
         if ($test->getState() == 'completed' || $test->getState() == 'cancelled') {
             $this->normaliseEndingState($task);           
         }        
         
-        return $this->taskOutputService->setParsedOutput($task);        
+        return $this->taskOutputService->setParsedOutput($task);       
     }
+    
+    
+    /**
+     *
+     * @param int $testId
+     * @return boolean
+     */
+    private function hasEntity($testId) {        
+        return $this->getEntityRepository()->hasByTaskId($testId);
+    }    
     
     
     /**

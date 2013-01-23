@@ -478,9 +478,9 @@ class AppController extends BaseViewController
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
         $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
-//        if ($response->isNotModified($this->getRequest())) {
-//            return $response;
-//        }
+        if ($response->isNotModified($this->getRequest())) {
+            return $response;
+        }
         
         try {            
             $test = $this->getTestService()->get($website, $test_id, $this->getUser());            
