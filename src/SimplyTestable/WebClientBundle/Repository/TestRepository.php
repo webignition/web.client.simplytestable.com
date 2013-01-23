@@ -6,10 +6,10 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 
 class TestRepository extends EntityRepository
 {  
-    public function hasById($test_id) {        
+    public function hasByTestId($test_id) {        
         $queryBuilder = $this->createQueryBuilder('Test');
         $queryBuilder->select('count(Test.id)');
-        $queryBuilder->where('Test.id = :TestId');
+        $queryBuilder->where('Test.testId = :TestId');
         $queryBuilder->setParameter('TestId', $test_id); 
         
         $result = $queryBuilder->getQuery()->getResult();        

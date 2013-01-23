@@ -163,7 +163,7 @@ class TestService extends CoreApplicationService {
      * @param int $testId
      * @return Test
      */
-    public function get($canonicalUrl, $testId, User $user) {                        
+    public function get($canonicalUrl, $testId, User $user) {
         if ($this->hasEntity($testId)) {           
             /* @var $test Test */
             $this->currentTest = $this->fetchEntity($testId);          
@@ -198,7 +198,7 @@ class TestService extends CoreApplicationService {
      * @return boolean
      */
     private function hasEntity($testId) {        
-        return $this->getEntityRepository()->hasById($testId);
+        return $this->getEntityRepository()->hasByTestId($testId);
     }
     
     
@@ -419,7 +419,7 @@ class TestService extends CoreApplicationService {
     
     /**
      *
-     * @return \Doctrine\ORM\EntityRepository
+     * @return \SimplyTestable\WebClientBundle\Repository\TestRepository
      */
     public function getEntityRepository() {
         if (is_null($this->entityRepository)) {
