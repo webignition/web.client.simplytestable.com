@@ -232,6 +232,7 @@ class Test {
     public function __construct()
     {
         $this->tasks = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->taskIds = new \Doctrine\Common\Collections\ArrayCollection();
         $this->timePeriod = new TimePeriod();
     }
     

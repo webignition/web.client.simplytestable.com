@@ -535,14 +535,16 @@ class AppController extends BaseViewController
             } else {
                 $taskTypes[] = $taskTypeObject->name;
             }                      
-        }        
+        }
         
-        if ($remoteTestSummary->task_count > $test->getTaskCount()) {
+        if ($remoteTestSummary->task_count > $test->getTaskCount()) {            
             $tasks = $this->getTaskService()->getCollection($test);
             
             foreach ($tasks as $task) {
                 $test->addTask($task);
-            }         
+            }
+            
+            $this->getTestService()->persist($test);
         }
         
         $viewData = array(

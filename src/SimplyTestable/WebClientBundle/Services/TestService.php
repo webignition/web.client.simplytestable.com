@@ -77,7 +77,13 @@ class TestService extends CoreApplicationService {
         $this->taskOutputService = $taskOutputService;
         $this->logger = $logger;
         $this->taskService = $taskService;
-    }     
+    } 
+    
+    
+    public function persist(Test $test) {
+        $this->entityManager->persist($test);
+        $this->entityManager->flush();
+    }
     
     
     public function start($canonicalUrl, TestOptions $testOptions, $testType = 'full site') {
