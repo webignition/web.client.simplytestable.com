@@ -99,11 +99,11 @@ class TaskService extends CoreApplicationService {
      * @param array $remoteTaskIds
      * @return array 
      */
-    public function getCollection(Test $test, $remoteTaskIds = null) {        
+    public function getCollection(Test $test, $remoteTaskIds = null) {
         if (!is_array($remoteTaskIds)) {
             $remoteTaskIds = $this->getRemoteTaskIds($test);
         }
-
+        
         $existenceResult = $this->getEntityRepository()->getCollectionExistsByTestAndRemoteId($test, $remoteTaskIds);        
         $tasksToRetrieve = array();
         $localTasksToUpdate = array();        
@@ -153,7 +153,7 @@ class TaskService extends CoreApplicationService {
         }
         
         if (count($tasksToPersist)) {
-           $this->entityManager->flush(); 
+            $this->entityManager->flush();
         }
         
         if ($test->getState() == 'completed' || $test->getState() == 'cancelled') {
@@ -337,27 +337,7 @@ class TaskService extends CoreApplicationService {
             return array();
         }
         
-        if (!$test->hasTaskIds()) {
-            $taskIds = $this->retrieveRemoteTaskIds($test);
-            
-            foreach ($taskIds as $taskIdValue) {
-                $taskId = new TaskId();
-                $taskId->setTaskId($taskIdValue);
-                $taskId->setTest($test);
-                $test->addTaskId($taskId);
-                
-                $this->entityManager->persist($taskId);
-            }
-            
-            $this->entityManager->flush();              
-        }
-        
-        $taskIds = array();
-        foreach ($test->getTaskIds() as $taskId) {
-            $taskIds[] = $taskId->getTaskId();
-        }
-        
-        return $taskIds;
+        return $this->retrieveRemoteTaskIds($test);
     }
     
     
