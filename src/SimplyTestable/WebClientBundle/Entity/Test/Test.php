@@ -89,11 +89,18 @@ class Test {
     
     /**
      *
-     * @var \Doctrine\Common\Collections\Collection
+     * @var string
      * 
-     * @ORM\OneToMany(targetEntity="SimplyTestable\WebClientBundle\Entity\Test\TaskId", mappedBy="test", cascade={"persist"})
+     * @ORM\Column(type="text", nullable=true)
+     */    
+    private $taskIdCollection;
+    
+    
+    /**
+     *
+     * @var array
      */
-    private $taskIds;
+    private $taskIds = null;
     
     
     /**
@@ -463,35 +470,20 @@ class Test {
     
     
     /**
-     * Add tasks
-     *
-     * @param \SimplyTestable\WebClientBundle\Entity\Test\TaskId $taskId
-     * @return Test
-     */
-    public function addTaskId(\SimplyTestable\WebClientBundle\Entity\Test\TaskId $taskId)
-    {
-        $this->taskIds[] = $taskId;
-    
-        return $this;
-    }
-
-    /**
-     * Remove tasks
-     *
-     * @param \SimplyTestable\WebClientBundle\Entity\Test\TaskId $taskId
-     */
-    public function removeTaskId(\SimplyTestable\WebClientBundle\Entity\Test\TaskId $taskId)
-    {
-        $this->taskIds->removeElement($taskId);
-    }
-
-    /**
      * Get tasks
      *
-     * @return Doctrine\Common\Collections\Collection 
+     * @return array
      */
     public function getTaskIds()
     {
+        if (is_null($this->taskIds)) {
+            $this->taskIds = array();
+            $rawTaskIds = explode(',', $this->getTaskIdCollection());
+            foreach ($rawTaskIds as $rawTaskId) {
+                $this->taskIds[] = (int)$rawTaskId;
+            }
+        }
+        
         return $this->taskIds;
     }    
     
@@ -503,6 +495,30 @@ class Test {
     public function hasTaskIds() {
         return $this->getTaskIds()->count() > 0;
     }
+    
+    
+    /**
+     * Set taskIdCollection
+     *
+     * @param string $type
+     * @return Test
+     */
+    public function setTaskIdColletion($taskIdCollection)
+    {
+        $this->taskIdCollection = $taskIdCollection;
+    
+        return $this;
+    }
+
+    /**
+     * Get taskIdCollection
+     *
+     * @return string 
+     */
+    public function getTaskIdCollection()
+    {
+        return $this->taskIdCollection;
+    }     
     
     
     /**
