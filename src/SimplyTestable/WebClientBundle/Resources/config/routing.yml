@@ -80,7 +80,25 @@ app_results:
     pattern:  /{website}/{test_id}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:App:results }  
     requirements:
-       website: ".+"            
+       website: ".+"
+       
+app_results_preparing:
+    pattern:  /{website}/{test_id}/results/preparing/
+    defaults: { _controller: SimplyTestableWebClientBundle:App:prepareResults }  
+    requirements:
+       website: ".+"       
+       
+task_results_retrieve:
+    pattern:  /{website}/{test_id}/results/retrieve/
+    defaults: { _controller: SimplyTestableWebClientBundle:TaskResults:retrieve }  
+    requirements:
+       website: ".+"  
+       
+task_results_retrieve_status:
+    pattern:  /{website}/{test_id}/results/retrieve/status/
+    defaults: { _controller: SimplyTestableWebClientBundle:TaskResults:status }  
+    requirements:
+       website: ".+"         
         
 app_tasks:
     pattern:  /{website}/{test_id}/tasks/
@@ -93,6 +111,12 @@ app_task_ids:
     defaults: { _controller: SimplyTestableWebClientBundle:Task:idCollection, _format: json }  
     requirements:
         website: ".+"
+        
+app_unretrieved_task_ids:
+    pattern:  /{website}/{test_id}/tasks/ids/unretrieved/{limit}/
+    defaults: { _controller: SimplyTestableWebClientBundle:Task:unretrievedIdCollection, _format: json }  
+    requirements:
+        website: ".+"  
 
 test_start:
     pattern:  /test/start/

@@ -11,6 +11,7 @@ use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 class AppController extends BaseViewController
 {
     const RESULTS_PAGE_LENGTH = 100;
+    const RESULTS_PREPARATION_THRESHOLD = 100;
     
     private $testFinishedStates = array(
         'cancelled',
@@ -454,6 +455,80 @@ class AppController extends BaseViewController
         return $taskCountByState;
     }    
     
+    public function prepareResultsAction($website, $test_id)
+    {                
+        if ($this->isUsingOldIE()) {
+            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
+        }        
+        
+        if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
+            return $this->redirect($this->generateUrl('app_test_redirector', array(
+                'website' => $website,
+                'test_id' => $test_id
+            ), true));
+        } 
+        
+        try {            
+            $test = $this->getTestService()->get($website, $test_id, $this->getUser());            
+        } catch (UserServiceException $e) {
+            if (!$this->isLoggedIn()) {                
+                $redirectParameters = json_encode(array(
+                    'route' => 'app_progress',
+                    'parameters' => array(
+                    'website' => $website,
+                    'test_id' => $test_id                        
+                    )
+                ));
+                
+                $this->get('session')->setFlash('user_signin_error', 'test-not-logged-in');
+                return $this->redirect($this->generateUrl('sign_in', array(
+                    'redirect' => base64_encode($redirectParameters)
+                ), true));                
+            }
+            
+            $this->setTemplate('SimplyTestableWebClientBundle:App:test-not-authorised.html.twig');
+            return $this->sendResponse(array(
+                'this_url' => $this->getProgressUrl($website, $test_id),
+                'test_input_action_url' => $this->generateUrl('test_cancel', array(
+                    'website' => $website,
+                    'test_id' => $test_id
+                )),
+                'website' => $website,
+                'test_id' => $test_id,
+                'public_site' => $this->container->getParameter('public_site'),
+                'user' => $this->getUser(),
+                'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),                
+            ));            
+        } 
+        
+        if (!$test->hasTaskIds()) {
+            $this->getTaskService()->getRemoteTaskIds($test);
+        }
+        
+        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
+        
+        $localTaskCount = $test->getTaskCount();
+        $remoteTaskCount = $remoteTestSummary->task_count;        
+        $completionPercent = round(($localTaskCount / $remoteTaskCount) * 100);
+        $remainingTasksToRetrieveCount = $remoteTaskCount - $localTaskCount;
+
+        
+        $templateName = 'SimplyTestableWebClientBundle:App:results-preparing.html.twig';        
+        return $this->render($templateName, array(            
+            'public_site' => $this->container->getParameter('public_site'),
+            'user' => $this->getUser(),
+            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+            'website' => idn_to_utf8($website),
+            'test' => $test,
+            'completion_percent' => $completionPercent,
+            'remaining_tasks_to_retrieve_count' => $remainingTasksToRetrieveCount,
+            'local_task_count' => $localTaskCount,
+            'remote_task_count' => $remoteTaskCount
+        ));      
+    }
+    
+    
+    
     public function resultsAction($website, $test_id) {                        
         $this->getTestService()->setUser($this->getUser());
         
@@ -527,6 +602,14 @@ class AppController extends BaseViewController
         }
         
         $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();        
+        if (($remoteTestSummary->task_count - self::RESULTS_PREPARATION_THRESHOLD) > $test->getTaskCount()) {            
+            return $this->redirect($this->generateUrl('app_results_preparing', array(
+                'website' => $test->getWebsite(),
+                'test_id' => $test_id
+            ), true));
+        } else {
+            $this->getTaskService()->getCollection($test);
+        }      
         
         $taskTypes = array();
         foreach ($remoteTestSummary->task_types as $taskTypeObject) {
@@ -535,16 +618,6 @@ class AppController extends BaseViewController
             } else {
                 $taskTypes[] = $taskTypeObject->name;
             }                      
-        }
-        
-        if ($remoteTestSummary->task_count > $test->getTaskCount()) {            
-            $tasks = $this->getTaskService()->getCollection($test);
-            
-            foreach ($tasks as $task) {
-                $test->addTask($task);
-            }
-            
-            $this->getTestService()->persist($test);
         }
         
         $viewData = array(

@@ -477,10 +477,15 @@ class Test {
     public function getTaskIds()
     {
         if (is_null($this->taskIds)) {
-            $this->taskIds = array();
-            $rawTaskIds = explode(',', $this->getTaskIdCollection());
-            foreach ($rawTaskIds as $rawTaskId) {
-                $this->taskIds[] = (int)$rawTaskId;
+            if (is_null($this->getTaskIdCollection()) || $this->getTaskIdCollection() == '') {
+                $this->taskIds = array();
+            } else {
+                $this->taskIds = array();
+                $rawTaskIds = explode(',', $this->getTaskIdCollection());
+
+                foreach ($rawTaskIds as $rawTaskId) {
+                    $this->taskIds[] = (int)$rawTaskId;
+                }                
             }
         }
         
@@ -492,8 +497,8 @@ class Test {
      *
      * @return boolean
      */
-    public function hasTaskIds() {
-        return $this->getTaskIds()->count() > 0;
+    public function hasTaskIds() {                
+        return count($this->getTaskIds()) > 0;
     }
     
     
@@ -504,8 +509,9 @@ class Test {
      * @return Test
      */
     public function setTaskIdColletion($taskIdCollection)
-    {
+    {        
         $this->taskIdCollection = $taskIdCollection;
+        $this->taskIds = null;
     
         return $this;
     }

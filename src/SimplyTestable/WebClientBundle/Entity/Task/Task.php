@@ -94,7 +94,7 @@ class Task {
      *
      * @var TaskOutput
      * 
-     * @ORM\ManyToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\Task\Output", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\Task\Output")
      * @SerializerAnnotation\Expose
      */
     private $output;

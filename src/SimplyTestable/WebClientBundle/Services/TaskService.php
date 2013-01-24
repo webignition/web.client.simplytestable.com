@@ -82,7 +82,7 @@ class TaskService extends CoreApplicationService {
     
     /**
      *
-     * @return \Doctrine\ORM\EntityRepository
+     * @return \SimplyTestable\WebClientBundle\Repository\TaskRepository
      */
     public function getEntityRepository() {
         if (is_null($this->entityRepository)) {
@@ -104,9 +104,9 @@ class TaskService extends CoreApplicationService {
             $remoteTaskIds = $this->getRemoteTaskIds($test);
         }
         
-        $existenceResult = $this->getEntityRepository()->getCollectionExistsByTestAndRemoteId($test, $remoteTaskIds);        
+        $existenceResult = $this->getEntityRepository()->getCollectionExistsByTestAndRemoteId($test, $remoteTaskIds);
         $tasksToRetrieve = array();
-        $localTasksToUpdate = array();        
+        $localTasksToUpdate = array();
         
         foreach ($existenceResult as $remoteTaskId => $exists) {
             if ($exists) {
@@ -114,7 +114,7 @@ class TaskService extends CoreApplicationService {
             } else {
                 $tasksToRetrieve[] = $remoteTaskId;
             }
-        }
+        }         
         
         $tasksToPersist = array();
         $tasks = array();
@@ -129,10 +129,30 @@ class TaskService extends CoreApplicationService {
                     $tasksToRetrieve[] = $task->getTaskId();
                 }
             }                        
-        }     
+        }
         
         if (count($tasksToRetrieve)) {
-            $remoteTasksObject = $this->retrieveRemoteCollection($test, $tasksToRetrieve);    
+            $remoteTasksObject = $this->retrieveRemoteCollection($test, $tasksToRetrieve);     
+            
+            $outputs = array();
+            
+            foreach ($remoteTasksObject as $remoteTaskObject) {
+                if (isset($remoteTaskObject->output)) {
+                    $outputs[] = $this->populateOutputfromRemoteOutputObject($remoteTaskObject);        
+                }
+            }
+            
+            if (count($outputs)) {
+                $outputs = $this->minimiseOutputCollection($outputs);
+                
+                if (count($outputs)) {
+                    foreach ($outputs as $output) {
+                        $this->entityManager->persist($output);
+                    }
+                    
+                    $this->entityManager->flush();                     
+                };                
+            }
             
             foreach ($remoteTasksObject as $remoteTaskObject) {                
                 $task = (isset($tasks[$remoteTaskObject->id])) ? $tasks[$remoteTaskObject->id] : new Task();
@@ -140,21 +160,23 @@ class TaskService extends CoreApplicationService {
                 $this->populateFromRemoteTaskObject($task, $remoteTaskObject);                
                 $tasks[$task->getTaskId()] = $task;                
             }
-        }           
+        }
         
         foreach ($tasks as $remoteTaskId => $task) {            
             if ($this->hasTaskStateChanged($task, $previousTaskStates)) {
-                $tasksToPersist[] = $task;
+                $tasksToPersist[$task->getTaskId()] = $task;
             }
-        }
-        
-        foreach ($tasksToPersist as $task) {
-            $this->entityManager->persist($task);
-        }
+        }  
+ 
         
         if (count($tasksToPersist)) {
+            foreach ($tasksToPersist as $task) {
+                /* @var $task Task */
+                $this->entityManager->persist($task);
+            }            
+            
             $this->entityManager->flush();
-        }
+        }         
         
         if ($test->getState() == 'completed' || $test->getState() == 'cancelled') {
             foreach ($tasks as $task) {
@@ -163,7 +185,23 @@ class TaskService extends CoreApplicationService {
         }
         
         return $tasks;
-    }  
+    }
+    
+    
+    private function minimiseOutputCollection($outputs) {
+        $processedHashes = array();
+        
+        foreach ($outputs as $outputIndex => $output) {
+            /* @var $output Output */
+            if (in_array($output->getHash(), $processedHashes) || $output->hasId()) {
+                unset($outputs[$outputIndex]);
+            } else {
+                $processedHashes[] = $output->getHash();
+            }
+        }
+        
+        return $outputs;
+    }
     
     
     private function normaliseEndingState(Task $task) {
@@ -239,28 +277,30 @@ class TaskService extends CoreApplicationService {
         }        
         
         if (isset($remoteTaskObject->output)) {
-            if (!$task->hasOutput()) {                
-                $this->populateOutputfromRemoteOutputObject($task, $remoteTaskObject->output);
+            if (!$task->hasOutput()) {
+                $task->setOutput($this->populateOutputfromRemoteOutputObject($remoteTaskObject));
             }            
         }        
     }
     
     
-    private function populateOutputfromRemoteOutputObject(Task $task, $remoteOutputObject) {        
+    private function populateOutputfromRemoteOutputObject($remoteTaskObject) {        
+        $remoteOutputObject = $remoteTaskObject->output;
+        
         $output = new Output();
         $output->setContent($remoteOutputObject->output);
-        $output->setType($task->getType());
+        $output->setType($remoteTaskObject->type);
         $output->setErrorCount($remoteOutputObject->error_count);
         $output->setWarningCount($remoteOutputObject->warning_count);      
         $output->generateHash();
         
         $existingOutput = $this->getTaskOutputEntityRepository()->findOutputByhash($output->getHash());
         
-        if (!is_null($existingOutput)) {
+        if (!is_null($existingOutput)) {            
             $output = $existingOutput;
         }
         
-        $task->setOutput($output);
+        return $output;
     }
     
     
@@ -337,7 +377,40 @@ class TaskService extends CoreApplicationService {
             return array();
         }
         
-        return $this->retrieveRemoteTaskIds($test);
+        if (!$test->hasTaskIds()) {            
+            $test->setTaskIdColletion(implode(',', $this->retrieveRemoteTaskIds($test)));
+
+            $this->entityManager->persist($test);
+            $this->entityManager->flush();
+        }
+        
+        return $test->getTaskIds();
+    }
+    
+    
+    /**
+     *
+     * @param Test $test
+     * @param int $limit
+     * @return array 
+     */
+    public function getUnretrievedRemoteTaskIds(Test $test, $limit) {
+        $remoteTaskIds = $this->getRemoteTaskIds($test);        
+        $retrievedRemoteTaskIds = $this->getEntityRepository()->findRetrievedRemoteTaskIds($test);
+        
+        $unretrievedRemoteTaskIds = array();
+        
+        foreach ($remoteTaskIds as $remoteTaskId) {
+            if (!in_array($remoteTaskId, $retrievedRemoteTaskIds)) {
+                $unretrievedRemoteTaskIds[] = $remoteTaskId;
+            }
+            
+            if (count($unretrievedRemoteTaskIds) === $limit) {
+                return $unretrievedRemoteTaskIds;
+            }
+        }
+        
+        return $unretrievedRemoteTaskIds;
     }
     
     

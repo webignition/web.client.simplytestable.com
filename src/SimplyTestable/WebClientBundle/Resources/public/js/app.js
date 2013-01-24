@@ -1,5 +1,131 @@
 var application = {};
 
+application.results = {};
+application.results.preparingController = function () {
+
+    var nextTaskIdCollection = [];
+    
+    var getResultsUrl = function () {
+        return window.location.href.replace('/preparing/', '');
+    };
+    
+    var getUnretrievedRemoteTaskIdsUrl = function () {
+        return window.location.href.replace('/results/preparing/', '/tasks/ids/unretrieved/100/');
+    };
+    
+    var getTaskResultsRetrieveUrl = function () {        
+        return window.location.href.replace('/preparing/', '/retrieve/');
+    };
+    
+    var getRetrievalStatusUrl = function () {
+        return getTaskResultsRetrieveUrl() + 'status/';
+    };
+    
+    var getRetrievalStatus = function () {        
+        jQuery.ajax({
+            complete:function (request, textStatus) {
+                //console.log('complete', request, textStatus);
+            },
+            dataType:'json',
+            error:function (request, textStatus, errorThrown) {
+                //console.log('error', request, textStatus, request.getAllResponseHeaders());
+            },
+            statusCode: {
+                403: function () {
+                    console.log('403');
+                },
+                500: function () {
+                    console.log('500');
+                }
+            },
+            success: function (data, textStatus, request) {                
+                $('#completion-percent-value').text(data['completion-percent']);
+                $('#remaining-tasks-to-retrieve-count').attr('class', data['remaining-tasks-to-retrieve-count']);
+                
+                $('#completion-percent-bar').css({
+                    'width':data['completion-percent'] + '%'
+                });
+                
+                $('#local-task-count').text(data['local-task-count']);
+                $('#remote-task-count').text(data['remote-task-count']);
+                
+                initialise();
+            },
+            url:getRetrievalStatusUrl()
+        });         
+    };
+    
+    var retrieveNextRemoteTaskIdCollection = function () {
+        jQuery.ajax({
+            type:'POST',
+            complete:function (request, textStatus) {
+                //console.log('complete', request, textStatus);
+            },
+            dataType:'json',
+            error:function (request, textStatus, errorThrown) {
+                //console.log(' retrieveNextRemoteTaskIdCollection error', request, textStatus, errorThrown, request.getAllResponseHeaders());
+            },
+            statusCode: {
+                403: function () {
+                    console.log('403');
+                },
+                500: function () {
+                    console.log('500');
+                }
+            },
+            data:{
+                'remoteTaskIds':nextTaskIdCollection.join(',')
+            },
+            success: function (data, textStatus, request) {
+                getRetrievalStatus();
+            },
+            url:getTaskResultsRetrieveUrl()
+        }); 
+    };
+
+    var getNextRemoteTaskIdCollection = function () {
+        jQuery.ajax({
+            complete:function (request, textStatus) {
+                //console.log('complete', request, textStatus);
+            },
+            dataType:'json',
+            error:function (request, textStatus, errorThrown) {
+                //console.log('getNextRemoteTaskIdCollection error');
+            },
+            statusCode: {
+                403: function () {
+                    console.log('403');
+                },
+                500: function () {
+                    console.log('500');
+                }
+            },
+            success: function (data, textStatus, request) {
+                nextTaskIdCollection = data;
+                retrieveNextRemoteTaskIdCollection();
+            },
+            url:getUnretrievedRemoteTaskIdsUrl()
+        });        
+    };
+    
+    
+    var getRemainingTasksToRetrieveCount = function () {
+        return parseInt($('#remaining-tasks-to-retrieve-count').attr('class'), 10);
+    };
+    
+    var initialise = function () {
+        if (getRemainingTasksToRetrieveCount() === 0) {            
+            window.location.href = getResultsUrl();
+        } else {
+            getNextRemoteTaskIdCollection();
+        }
+        
+        
+    };
+    
+    this.initialise = initialise;
+};
+
 application.progress = {};
 application.progress.testController = function () {    
     var latestTestData = {};
@@ -1140,6 +1266,11 @@ application.pages = {
                 
                 taskProgressController = new application.progress.taskController();
                 taskProgressController.initialise();
+            }
+            
+            if ($('body.app-results-preparing').length > 0) {                
+                resultsPreparingController = new application.results.preparingController();
+                resultsPreparingController.initialise();
             }
             
             if ($('body.content').length > 0) {                

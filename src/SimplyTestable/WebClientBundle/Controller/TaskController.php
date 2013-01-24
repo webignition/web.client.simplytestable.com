@@ -9,6 +9,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TaskController extends BaseViewController
 {  
+    const DEFAULT_UNRETRIEVED_TASKID_LIMIT = 100;
+    const MAX_UNRETRIEVED_TASKID_LIMIT = 1000;
+    
     private $finishedStates = array(
         'cancelled',
         'completed',
@@ -65,7 +68,29 @@ class TaskController extends BaseViewController
         $taskIds = $this->getTaskService()->getRemoteTaskIds($test);
 
         return new Response($this->getSerializer()->serialize($taskIds, 'json'));
-    }   
+    }
+    
+    
+    public function unretrievedIdCollectionAction($website, $test_id, $limit = null) {
+        $this->getTestService()->setUser($this->getUser());
+        
+        if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
+            return $this->sendNotFoundResponse();
+        }
+        
+        $test = $this->getTestService()->get($website, $test_id, $this->getUser());
+        $limit = filter_var($limit, FILTER_VALIDATE_INT);
+        if ($limit === false) {
+            $limit = self::DEFAULT_UNRETRIEVED_TASKID_LIMIT;
+        }
+        
+        if ($limit > self::MAX_UNRETRIEVED_TASKID_LIMIT) {
+            $limit = self::MAX_UNRETRIEVED_TASKID_LIMIT;
+        }
+        
+        $taskIds = $this->getTaskService()->getUnretrievedRemoteTaskIds($test, $limit);//
+        return new Response($this->getSerializer()->serialize($taskIds, 'json'));        
+    }
     
     
     /**
@@ -216,7 +241,7 @@ class TaskController extends BaseViewController
      *
      * @return \SimplyTestable\WebClientBundle\Services\TestService 
      */
-    private function getTestService() {
+    protected function getTestService() {
         return $this->container->get('simplytestable.services.testservice');
     }  
     
@@ -225,7 +250,7 @@ class TaskController extends BaseViewController
      *
      * @return \SimplyTestable\WebClientBundle\Services\TaskService 
      */
-    private function getTaskService() {
+    protected function getTaskService() {
         return $this->container->get('simplytestable.services.taskservice');
     }      
     

@@ -268,6 +268,15 @@ class Output {
         type:'.$this->getType().'
         error-count:'.$this->getErrorCount().'
         warning-count:'.$this->getWarningCount()));
-    }    
+    } 
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function hasId() {
+        return !is_null($this->getId());
+    }
     
 }
