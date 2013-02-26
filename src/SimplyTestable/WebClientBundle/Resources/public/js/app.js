@@ -82,8 +82,10 @@ application.results.preparingController = function () {
             url:getTaskResultsRetrieveUrl()
         }); 
     };
-
     var getNextRemoteTaskIdCollection = function () {
+//        getUnretrievedRemoteTaskIdsUrl();
+//        return;
+        
         jQuery.ajax({
             complete:function (request, textStatus) {
                 //console.log('complete', request, textStatus);

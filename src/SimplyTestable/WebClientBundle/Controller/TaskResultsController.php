@@ -45,7 +45,7 @@ class TaskResultsController extends TaskController
         
         $localTaskCount = $test->getTaskCount();
         $remoteTaskCount = $remoteTestSummary->task_count;        
-        $completionPercent = round(($localTaskCount / $remoteTaskCount) * 100);
+        $completionPercent = round(($localTaskCount / $remoteTaskCount) * 100, $this->getCompletionPercentPrecision($remoteTaskCount));
         $remainingTasksToRetrieveCount = $remoteTaskCount - $localTaskCount;
         
         return new Response($this->getSerializer()->serialize(array(
@@ -56,6 +56,22 @@ class TaskResultsController extends TaskController
         ), 'json'));
         
         exit();
+    }
+    
+    
+    /**
+     * 
+     * @param int $remoteTaskCount
+     * @return int
+     */
+    private function getCompletionPercentPrecision($remoteTaskCount) {        
+        if ($remoteTaskCount <= 10000) {
+            return 0;
+        }
+        
+        return 2;
+        
+        return (int)floor(log10($remoteTaskCount)) - 1;        
     }
     
     
