@@ -280,6 +280,14 @@
                 <div class="span12">
                     <h2 class="info"><i class="icon-ban-circle"></i> Errors ({{ task.output.errorCount }}) </h2>                    
                     {% if task.type == 'CSS validation' %}
+                        {% if task.output.hasErrors and not task.output.result.hasErrors %}
+                    <div class="span12 notification" id="task-summary">
+                        <p>
+                            Detailed results from this test are no longer available.
+                        </p>
+                    </div>
+                        {% endif %}                     
+                    
                         {% for ref,errors in errors_by_ref %}
                         <div>
                             <h3><i class="icon icon-file"></i> {% if ref == '' %}Inline in your HTML{% else %}{{ ref }}{% endif %}:</h3>                            
