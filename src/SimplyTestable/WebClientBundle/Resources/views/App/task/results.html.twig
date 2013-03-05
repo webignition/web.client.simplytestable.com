@@ -293,6 +293,14 @@
                         </div>
                         {% endfor %}
                     {% elseif task.type == 'JS static analysis' %}
+                        {% if task.output.hasErrors and not task.output.result.hasErrors %}
+                    <div class="span12 notification" id="task-summary">
+                        <p>
+                            Detailed results from this test are no longer available.
+                        </p>
+                    </div>
+                        {% endif %}                     
+                    
                         {% for context,errors in errors_by_js_context %}
                         <div>
                             <h3><i class="{% if errors[0].isException %}icon icon-ban-circle{% else %}icon icon-file{% endif %}"></i> {% if context == 'inline' %}Inline in your HTML{% else %}{{ context }}{% endif %}:</h3>                            
@@ -312,7 +320,6 @@
                             Detailed results from this test are no longer available.
                         </p>
                     </div>
-
                         {% endif %}                    
                     
                     <ul class="errors">

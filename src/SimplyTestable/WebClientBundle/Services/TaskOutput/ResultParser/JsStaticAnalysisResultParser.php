@@ -16,9 +16,9 @@ class JsStaticAnalysisResultParser extends ResultParser {
         
         $rawOutputObject = json_decode($this->getOutput()->getContent());
         
-        if (!$this->hasErrors($rawOutputObject)) {
+        if (is_null($rawOutputObject) || !$this->hasErrors($rawOutputObject)) {
             return $result;
-        }           
+        }
         
         foreach ($rawOutputObject as $jsSourceReference => $analysisOutput) {            
             $context = ($this->isInlineJsOutputKey($jsSourceReference)) ? 'inline' : $jsSourceReference;
@@ -69,7 +69,7 @@ class JsStaticAnalysisResultParser extends ResultParser {
      * @param \stdClass $rawOutputObject
      * @return boolean
      */
-    private function hasErrors(\stdClass $rawOutputObject) {
+    private function hasErrors(\stdClass $rawOutputObject) {        
         foreach ($rawOutputObject as $jsSourceReference => $entriesObject) {
             if (isset($entriesObject->statusLine) && $entriesObject->statusLine == 'failed') {
                 return true;
