@@ -306,7 +306,18 @@
                         </div>
                         {% endfor %}
                     {% else %}
-                    <ul class="errors">                        
+                        {% if task.output.hasErrors and not task.output.result.hasErrors %}
+                    <div class="span12 notification" id="task-summary">
+                        <p>
+                            Detailed results from this test are no longer available.
+                        </p>
+                    </div>
+
+                        {% endif %}                    
+                    
+                    <ul class="errors">
+
+                        
                         {% for error in task.output.result.getErrors %}
                             <li>
                                 {% if task.type == 'HTML validation' %}
