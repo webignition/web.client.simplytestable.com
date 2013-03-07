@@ -393,13 +393,29 @@ class UserController extends BaseViewController
         $user = new User();
         $user->setUsername($email);
         $user->setPassword($password);
-        
         $this->getUserService()->setUser($user);
         
-        return $this->redirect($this->generateUrl('app', array(), true));
+        $response = $this->redirect($this->generateUrl('app', array(), true));
+        
+        if ($staySignedIn == "1") {
+            $stringifiedUser = $this->getUserSerializerService()->serializeToString($user);
+            
+            $cookie = new Cookie(
+                'simplytestable-user',
+                $stringifiedUser,
+                time() + self::ONE_YEAR_IN_SECONDS,
+                '/',
+                '.simplytestable.com',
+                false,
+                true
+            );
+            
+            $response->headers->setCookie($cookie);
+        }        
+        
+        return $response;        
     }     
     
-
     public function signUpAction()
     {        
         if ($this->isUsingOldIE()) {
