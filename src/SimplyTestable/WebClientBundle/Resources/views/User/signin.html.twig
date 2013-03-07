@@ -142,7 +142,7 @@
         <button class="submit btn btn-large btn-primary" type="submit">Sign in!</button>
         <input type="hidden" name="redirect" value="{{ redirect }}" />
         <label class="checkbox" id="stay-signed-in-container">
-            <input type="checkbox" {% if stay_signed_in == "1" %}checked="checked"{% endif %} name="stay-signed-in" value="1"><span>Stay signed in</span>
+            <input type="checkbox" {% if stay_signed_in != "0" %}checked="checked"{% endif %} name="stay-signed-in" value="1"><span>Stay signed in</span>
         </label>        
     </div>       
 </form>   
