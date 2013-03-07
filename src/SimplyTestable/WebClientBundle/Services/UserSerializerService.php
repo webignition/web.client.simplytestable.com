@@ -67,14 +67,34 @@ class UserSerializerService {
      * @return \SimplyTestable\WebClientBundle\Model\User
      */
     public function unserializedFromString($user) {        
-        $base64EncodedUserValues = json_decode(base64_decode($user), true);
-        var_dump($base64EncodedUserValues);
-        
-        foreach ($base64EncodedUserValues as $key => $value) {
-            $base64EncodedUserValues[$key] = base64_decode($value);
+        $base64EncodedUserValues = json_decode(base64_decode($user), true);        
+        if (!is_array($base64EncodedUserValues)) {
+            return null;
         }
         
-        return $this->unserialize($base64EncodedUserValues);        
+        if (!count($base64EncodedUserValues)) {
+            return null;
+        }
+        
+        $expectedKeys = array('username', 'password', 'key', 'iv');
+        foreach  ($expectedKeys as $expectedKey) {
+            if (!isset($base64EncodedUserValues[$expectedKey])) {
+                return null;
+            }
+        }
+        
+        $userValues = array();
+        
+        foreach ($base64EncodedUserValues as $key => $value) {            
+            $base64DecodedValue = base64_decode($value);
+            if ($base64DecodedValue == '') {
+                return null;
+            }
+            
+            $userValues[$key] = $base64DecodedValue;
+        }
+        
+        return $this->unserialize($userValues);        
     }
     
     

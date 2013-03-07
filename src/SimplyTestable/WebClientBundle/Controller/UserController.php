@@ -158,7 +158,7 @@ class UserController extends BaseViewController
                 'redirect' => $redirect,
                 'stay-signed-in' => $staySignedIn
             ), true));                  
-        }
+        }        
         
         $this->getUserService()->setUser($user);
         
@@ -620,14 +620,4 @@ class UserController extends BaseViewController
             return false;
         }
     }
-    
-    
-    /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Services\UserSerializerService
-     */
-    private function getUserSerializerService() {
-        return $this->container->get('simplytestable.services.userserializerservice');
-    }
-
 }
