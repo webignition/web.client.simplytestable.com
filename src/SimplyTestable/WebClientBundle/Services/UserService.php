@@ -90,6 +90,19 @@ class UserService extends CoreApplicationService {
     } 
     
     
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Model\User $user
+     * @return boolean
+     */
+    public function isAdminUser(User $user) {
+        $comparatorUser = new User();
+        $comparatorUser->setUsername(strtolower($user->getUsername()));
+        
+        return $this->getAdminUser()->equals($comparatorUser);
+    }
+    
+    
     
     /**
      * 
@@ -194,17 +207,21 @@ class UserService extends CoreApplicationService {
      * @return boolean
      * @throws CoreApplicationAdminRequestException
      */
-    public function exists() {
-        /* @var $currentUser User */
-        $currentUser = ($this->hasUser()) ? $this->getUser() : null;
+    public function exists($email = null) {        
+        /* @var $currentUser User */        
+        $currentUser = ($this->hasUser()) ? $this->getUser() : null;        
         if (is_null($currentUser)) {
             return false;
+        }
+        
+        if ($this->isAdminUser($currentUser)) {
+            $currentUser = null;
         }
    
         $this->setUser($this->getAdminUser());
         
         $request = $this->getAuthorisedHttpRequest($this->getUrl('user_exists', array(
-            'email' => $currentUser->getUsername()
+            'email' => (is_null($currentUser)) ? $email : $currentUser->getUsername()
         )), HTTP_METH_POST);
         
         $response = $this->getHttpClient()->getResponse($request);
