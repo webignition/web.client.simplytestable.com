@@ -34,7 +34,8 @@ class UserController extends BaseViewController
             'email' => $this->getPersistentValue('email'),
             'user_signin_error' => $userSignInError,
             'user_signin_confirmation' => $userSignInConfirmation,
-            'redirect' => $redirect
+            'redirect' => $redirect,
+            'stay_signed_in' => $this->getPersistentValue('stay-signed-in')                
         ));
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
@@ -56,7 +57,8 @@ class UserController extends BaseViewController
             'email' => $this->getPersistentValue('email'),
             'user_signin_error' => $userSignInError,
             'user_signin_confirmation' => $userSignInConfirmation,
-            'redirect' => $redirect
+            'redirect' => $redirect,
+            'stay_signed_in' => $this->getPersistentValue('stay-signed-in')
         )), $cacheValidatorHeaders);        
     }
     
@@ -64,11 +66,13 @@ class UserController extends BaseViewController
     public function signInSubmitAction() {
         $email = trim($this->get('request')->request->get('email')); 
         $redirect = trim($this->get('request')->request->get('redirect')); 
+        $staySignedIn = trim($this->get('request')->request->get('stay-signed-in')); 
 
         if ($email == '') {
             $this->get('session')->setFlash('user_signin_error', 'blank-email');
             return $this->redirect($this->generateUrl('sign_in', array(
-                'redirect' => $redirect
+                'redirect' => $redirect,
+                'stay-signed-in' => $staySignedIn
             ), true));             
         } 
         

@@ -760,3 +760,16 @@ body.app-results-preparing #completion-percent {
         width:82%;
     }    
 }
+
+body.sign-in #stay-signed-in-container {
+    margin-left:100px;
+    margin-top:-30px;
+}
+
+body.sign-in #stay-signed-in-container span {
+    opacity: 0.8;
+}
+
+body.sign-in #stay-signed-in-container input {
+    width:auto;
+}
