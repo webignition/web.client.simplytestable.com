@@ -766,10 +766,10 @@ body.sign-in #stay-signed-in-container {
     margin-top:-30px;
 }
 
-body.sign-in #stay-signed-in-container span {
+#stay-signed-in-container span {
     opacity: 0.8;
 }
 
-body.sign-in #stay-signed-in-container input {
+body.single-page-dialog #stay-signed-in-container input {
     width:auto;
 }

@@ -303,7 +303,8 @@ class UserController extends BaseViewController
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
             'email' => $email,
             'token' => $token,
-            'user_reset_password_error' => $userResetPasswordError
+            'user_reset_password_error' => $userResetPasswordError,
+            'stay_signed_in' => $this->getPersistentValue('stay-signed-in')
             //'user_reset_password_confirmation' => $userResetPasswordConfirmation
 
         )), $cacheValidatorHeaders);        
@@ -341,6 +342,7 @@ class UserController extends BaseViewController
     public function resetPasswordChooseSubmitAction() {
         $email = trim($this->get('request')->request->get('email'));        
         $inputToken = trim($this->get('request')->request->get('token'));
+        $staySignedIn = trim($this->get('request')->request->get('stay-signed-in')) == '' ? 0 : 1; 
 
         if (!$this->isEmailValid($email) || $inputToken == '' || $this->getUserService()->exists($email) === false) {
             return $this->redirect($this->generateUrl('reset_password', array(), true));             
@@ -352,7 +354,8 @@ class UserController extends BaseViewController
             $this->get('session')->setFlash('user_reset_password_error', 'invalid-token');
             return $this->redirect($this->generateUrl('reset_password_choose', array(
                 'email' => $email,
-                'token' => $inputToken
+                'token' => $inputToken,
+                'stay-signed-in' => $staySignedIn
             ), true));            
         }
         
@@ -362,7 +365,8 @@ class UserController extends BaseViewController
             $this->get('session')->setFlash('user_reset_password_error', 'blank-password');
             return $this->redirect($this->generateUrl('reset_password_choose', array(
                 'email' => $email,
-                'token' => $inputToken
+                'token' => $inputToken,
+                'stay-signed-in' => $staySignedIn
             ), true));               
         }
         
@@ -372,7 +376,8 @@ class UserController extends BaseViewController
             $this->get('session')->setFlash('user_reset_password_error', 'unknown-error');
             return $this->redirect($this->generateUrl('reset_password_choose', array(
                 'email' => $email,
-                'token' => $inputToken
+                'token' => $inputToken,
+                'stay-signed-in' => $staySignedIn
             ), true));            
         }
         
@@ -380,7 +385,8 @@ class UserController extends BaseViewController
             $this->get('session')->setFlash('user_reset_password_error', 'invalid-token');
             return $this->redirect($this->generateUrl('reset_password_choose', array(
                 'email' => $email,
-                'token' => $inputToken
+                'token' => $inputToken,
+                'stay-signed-in' => $staySignedIn
             ), true));            
         }
         
