@@ -49,7 +49,7 @@
             <p><strong>Guess what?</strong> Looks like <strong>{{ email }}</strong>
                 already has an account.</p>
             <p>
-                Do you need to <a href="#">reset your password</a>?
+                Do you need to <a href="{{ path('reset_password', {'email': email}) }}">reset your password</a>?                
             </p>
         </div>                
             {% endif %}                         
