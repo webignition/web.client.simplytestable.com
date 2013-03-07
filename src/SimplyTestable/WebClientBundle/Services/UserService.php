@@ -82,6 +82,16 @@ class UserService extends CoreApplicationService {
      * @param \SimplyTestable\WebClientBundle\Model\User $user
      * @return boolean
      */
+    public function isSpecialUser(User $user) {
+        return $this->isPublicUser($user) || $this->isAdminUser($user);
+    }
+    
+    
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Model\User $user
+     * @return boolean
+     */
     public function isPublicUser(User $user) {
         $comparatorUser = new User();
         $comparatorUser->setUsername(strtolower($user->getUsername()));
@@ -214,14 +224,16 @@ class UserService extends CoreApplicationService {
             return false;
         }
         
-        if ($this->isAdminUser($currentUser)) {
+        if ($this->isSpecialUser($currentUser)) {
             $currentUser = null;
         }
+        
+        $userEmail = (is_null($currentUser)) ? $email : $currentUser->getUsername();      
    
         $this->setUser($this->getAdminUser());
         
         $request = $this->getAuthorisedHttpRequest($this->getUrl('user_exists', array(
-            'email' => (is_null($currentUser)) ? $email : $currentUser->getUsername()
+            'email' => $userEmail
         )), HTTP_METH_POST);
         
         $response = $this->getHttpClient()->getResponse($request);
