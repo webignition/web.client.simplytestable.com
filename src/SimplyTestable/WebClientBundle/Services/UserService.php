@@ -238,9 +238,11 @@ class UserService extends CoreApplicationService {
         
         $response = $this->getHttpClient()->getResponse($request);
         
-        if (!is_null($currentUser)) {
-            $this->setUser($currentUser);
-        }        
+        if (is_null($currentUser)) {
+            $currentUser = $this->getPublicUser();
+        }    
+        
+        $this->setUser($currentUser);    
         
         if ($response->getResponseCode() == 401) {
             throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
