@@ -80,7 +80,8 @@ class UserController extends BaseViewController
             $this->get('session')->setFlash('user_signin_error', 'invalid-email');
             return $this->redirect($this->generateUrl('sign_in', array(
                 'email' => $email,
-                'redirect' => $redirect                
+                'redirect' => $redirect,
+                'stay-signed-in' => $staySignedIn
             ), true));              
         }        
         
@@ -90,7 +91,8 @@ class UserController extends BaseViewController
             $this->get('session')->setFlash('user_signin_error', 'blank-password');
             return $this->redirect($this->generateUrl('sign_in', array(
                 'email' => $email,
-                'redirect' => $redirect
+                'redirect' => $redirect,
+                'stay-signed-in' => $staySignedIn
             ), true));             
         }          
         
@@ -102,7 +104,8 @@ class UserController extends BaseViewController
             $this->get('session')->setFlash('user_signin_error', 'public-user');
             return $this->redirect($this->generateUrl('sign_in', array(
                 'email' => $email,
-                'redirect' => $redirect
+                'redirect' => $redirect,
+                'stay-signed-in' => $staySignedIn
             ), true));             
         }
         
@@ -115,7 +118,8 @@ class UserController extends BaseViewController
                     $this->get('session')->setFlash('user_signin_error', 'authentication-failure');
                     return $this->redirect($this->generateUrl('sign_in', array(
                         'email' => $email,
-                        'redirect' => $redirect                        
+                        'redirect' => $redirect,
+                        'stay-signed-in' => $staySignedIn
                     ), true));                        
                 } else {
                     $this->getUserService()->clearUser();
@@ -125,7 +129,8 @@ class UserController extends BaseViewController
                     $this->get('session')->setFlash('user_signin_error', 'user-not-enabled');
                     return $this->redirect($this->generateUrl('sign_in', array(
                         'email' => $email,
-                        'redirect' => $redirect                        
+                        'redirect' => $redirect,
+                        'stay-signed-in' => $staySignedIn
                     ), true));                       
                 }       
             } else {
@@ -133,7 +138,8 @@ class UserController extends BaseViewController
                 $this->get('session')->setFlash('user_signin_error', 'invalid-user');
                 return $this->redirect($this->generateUrl('sign_in', array(
                     'email' => $email,
-                    'redirect' => $redirect                    
+                    'redirect' => $redirect,
+                    'stay-signed-in' => $staySignedIn
                 ), true));                   
             }                         
         }
@@ -144,7 +150,11 @@ class UserController extends BaseViewController
             $this->sendConfirmationToken($email, $token);                  
 
             $this->get('session')->setFlash('user_signin_error', 'user-not-enabled');
-            return $this->redirect($this->generateUrl('sign_in', array('email' => $email), true));                       
+            return $this->redirect($this->generateUrl('sign_in', array(
+                'email' => $email,
+                'redirect' => $redirect,
+                'stay-signed-in' => $staySignedIn
+            ), true));                  
         }         
         
         $this->getUserService()->setUser($user);
