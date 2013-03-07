@@ -8,9 +8,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 use SimplyTestable\WebClientBundle\Model\User;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class UserController extends BaseViewController
 {     
+    const ONE_YEAR_IN_SECONDS = 31536000;
+    
     public function signOutSubmitAction() {
         $this->getUserService()->clearUser();
         return $this->redirect($this->generateUrl('app', array(), true));        
@@ -155,17 +158,33 @@ class UserController extends BaseViewController
                 'redirect' => $redirect,
                 'stay-signed-in' => $staySignedIn
             ), true));                  
-        }         
+        }
         
         $this->getUserService()->setUser($user);
         
         $redirectValues = $this->getDecodedRedirectValues();
         
-        if (is_null($redirectValues)) {
-            return $this->redirect($this->generateUrl('app', array(), true));
-        }
+        $response = (is_null($redirectValues))
+                ? $this->redirect($this->generateUrl('app', array(), true))
+                : $this->redirect($this->generateUrl($redirectValues['route'], $redirectValues['parameters'], true));
         
-        return $this->redirect($this->generateUrl($redirectValues['route'], $redirectValues['parameters'], true));
+        if ($staySignedIn == "1") {
+            $stringifiedUser = $this->getUserSerializerService()->serializeToString($user);
+            
+            $cookie = new Cookie(
+                'simplytestable-user',
+                $stringifiedUser,
+                time() + self::ONE_YEAR_IN_SECONDS,
+                '/',
+                '.simplytestable.com',
+                false,
+                true
+            );
+            
+            $response->headers->setCookie($cookie);
+        }        
+        
+        return $response;
     }
     
     
