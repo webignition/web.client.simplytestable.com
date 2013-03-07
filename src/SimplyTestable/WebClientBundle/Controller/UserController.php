@@ -16,7 +16,11 @@ class UserController extends BaseViewController
     
     public function signOutSubmitAction() {
         $this->getUserService()->clearUser();
-        return $this->redirect($this->generateUrl('app', array(), true));        
+        
+        $response = $this->redirect($this->generateUrl('app', array(), true));         
+        $response->headers->clearCookie('simplytestable-user', '/', '.simplytestable.com');
+        
+        return $response;    
     }
     
     
@@ -69,7 +73,7 @@ class UserController extends BaseViewController
     public function signInSubmitAction() {
         $email = trim($this->get('request')->request->get('email')); 
         $redirect = trim($this->get('request')->request->get('redirect')); 
-        $staySignedIn = trim($this->get('request')->request->get('stay-signed-in')); 
+        $staySignedIn = trim($this->get('request')->request->get('stay-signed-in')) == '' ? 0 : 1; 
 
         if ($email == '') {
             $this->get('session')->setFlash('user_signin_error', 'blank-email');
