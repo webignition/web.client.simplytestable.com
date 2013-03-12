@@ -151,6 +151,17 @@ abstract class BaseController extends Controller
     }
     
     
+    protected function getQueuedUrl($website) {
+        return $this->generateUrl(
+            'app_queued',
+            array(
+                'website' => $website
+            ),
+            true
+        );        
+    }
+    
+    
     /**
      * Get the results page URL for a given site and test ID
      * 

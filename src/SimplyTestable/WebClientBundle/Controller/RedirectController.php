@@ -21,19 +21,30 @@ class RedirectController extends BaseController
         'cancelled',
         'completed',
         'no-sitemap',
-    );
+    );    
     
+    /**
+     *
+     * @var \SimplyTestable\WebClientBundle\Services\TestQueueService
+     */
+    private $testQueueService;    
     
-    public function latestAction($website) {
-        exit();
-    }
-    
-    public function testAction($website, $test_id = null) {
+    public function testAction($website, $test_id = null) {        
         $this->getTestService()->setUser($this->getUser());
         
         $this->prepareNormalisedWebsiteAndTestId($website, $test_id);   
         
-        if ($this->hasWebsite() && !$this->hasTestId()) {
+        if ($this->hasWebsite() && !$this->hasTestId()) {            
+            if ($this->getTestQueueService()->contains($this->getUser(), $this->website)) {
+                return $this->redirect($this->generateUrl(
+                    'app_queued',
+                    array(
+                        'website' => $website               
+                    ),
+                    true
+                ));               
+            }
+            
             if (!$this->getTestService()->getEntityRepository()->hasForWebsite($this->website)) {
                 return $this->redirect($this->generateUrl('app', array(), true));
             }
@@ -150,12 +161,27 @@ class RedirectController extends BaseController
         );
     }
     
-    
     /**
      *
      * @return \SimplyTestable\WebClientBundle\Services\TestService 
      */
     private function getTestService() {
         return $this->container->get('simplytestable.services.testservice');
-    }
+    }    
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TestQueueService
+     */
+    private function getTestQueueService() {
+        if (is_null($this->testQueueService)) {
+            $this->testQueueService = $this->container->get('simplytestable.services.testqueueservice');
+            $this->testQueueService->setApplicationRootDirectory($this->container->get('kernel')->getRootDir());
+                    
+        }
+        
+        return $this->testQueueService;
+
+    }  
 }

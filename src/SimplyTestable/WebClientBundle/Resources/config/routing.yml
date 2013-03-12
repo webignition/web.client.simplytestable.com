@@ -62,9 +62,9 @@ app_task_results:
         test_id: "\d+"
         task_id: "\d+" 
         
-app_latest:
-  pattern: /{website}/latest/
-  defaults: { _controller: SimplyTestableWebClientBundle:Redirect:latest } 
+app_queued:
+  pattern: /{website}/queued/
+  defaults: { _controller: SimplyTestableWebClientBundle:App:queued } 
   requirements:
       website: ".+"  
         

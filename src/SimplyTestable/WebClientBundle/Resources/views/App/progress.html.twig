@@ -1,6 +1,14 @@
 {% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
 
-{% block title %}Testing {{website}} (#{{test.testId}}) - {{ parent() }}{% endblock %}
+{% block title %}
+{% if test is defined %}
+Testing {{website}} (#{{test.testId}}) - {{ parent() }}
+{% else %}
+Testing {{website}} - {{ parent() }}
+{% endif %}
+{% endblock %}
+
+
 
 {% block javascripts %}
 {{ parent() }}

@@ -30,7 +30,49 @@ class TestQueueService {
      */
     public function getApplicationRootDirectory() {
         return $this->applicationRootDirectory;
-    }    
+    }  
+    
+    
+    public function getRemoteTestSummary(User $user, $canonicalUrl) {  
+        $test = $this->retrieve($user, $canonicalUrl);        
+        
+        $taskTypes = array();
+        
+        foreach ($test['options']->getTestTypes() as $taskType) {
+            $taskTypeObject = new \stdClass();
+            $taskTypeObject->name = $taskType;
+            
+            $taskTypes[] = $taskTypeObject;
+        }
+        
+        $taskCountByState = new \stdClass();
+        $taskCountByState->cancelled = 0;
+        $taskCountByState->queued = 0;
+        $taskCountByState->{'in-progress'} = 0;
+        $taskCountByState->completed = 0;
+        $taskCountByState->{'awaiting-cancellation'} = 0;
+        $taskCountByState->{'queued-for-assignment'} = 0;
+        $taskCountByState->{'failed-no-retry-available'} = 0;
+        $taskCountByState->{'failed-retry-available'} = 0;
+        $taskCountByState->{'failed-retry-limit-reached'} = 0;
+        $taskCountByState->skipped = 0;        
+        
+        $summary = new \stdClass();
+        $summary->website = $canonicalUrl;
+        $summary->state = 'new-queued';
+        $summary->url_count = 0;
+        $summary->task_count = 0;
+        $summary->task_count_by_state = $taskCountByState;
+        $summary->task_types = $taskTypes;
+        
+        $summary->errored_task_count = 0;
+        $summary->cancelled_task_count = 0;
+        $summary->skipped_task_count = 0;
+        $summary->task_type_options = array();
+        $summary->type = $test['type'];
+        
+        return $summary;
+    }
     
     
     /**
@@ -41,7 +83,7 @@ class TestQueueService {
      * @param string $testType
      * @return boolean
      */
-    public function enqueue(User $user, $canonicalUrl, TestOptions $testOptions, $testType = 'full site') {
+    public function enqueue(User $user, $canonicalUrl, TestOptions $testOptions, $testType = 'full site') {        
         if ($this->contains($user, $canonicalUrl)) {
             return true;
         }
@@ -57,13 +99,27 @@ class TestQueueService {
     }
     
     
+    public function retrieve(User $user, $canonicalUrl) {        
+        if (!$this->contains($user, $canonicalUrl)) {
+            return false;
+        }
+        
+        $testBasePath = $this->getTestBasePath($user, $canonicalUrl);
+        
+        return array(
+            'options' => unserialize(file_get_contents($testBasePath . '/options')),
+            'type' => file_get_contents($testBasePath . '/type')
+        );
+    }
+    
+    
     /**
      * 
      * @param \SimplyTestable\WebClientBundle\Model\User $user
      * @param string $canonicalUrl
      * @return boolean
      */
-    private function contains(User $user, $canonicalUrl) {
+    public function contains(User $user, $canonicalUrl) {         
         return file_exists($this->getTestBasePath($user, $canonicalUrl));
     }
     

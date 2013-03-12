@@ -53,7 +53,15 @@ class AppController extends BaseViewController
         'js-static-analysis' => 1,
         'js-static-analysis-ignore-common-cdns' => 1,
         'js-static-analysis-domains-to-ignore' => "",
-    );    
+    ); 
+    
+    
+    /**
+     *
+     * @var \SimplyTestable\WebClientBundle\Services\TestQueueService
+     */
+    private $testQueueService;
+    
     
     public function indexAction()
     {       
@@ -241,6 +249,48 @@ class AppController extends BaseViewController
                 return 'success';
         }        
     }
+    
+    
+    public function queuedAction($website) {
+        if ($this->isUsingOldIE()) {
+            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
+        } 
+        
+        $normalisedWebsite = new \webignition\NormalisedUrl\NormalisedUrl($website);
+        
+        if (!$this->getTestQueueService()->contains($this->getUser(), (string)$normalisedWebsite)) {
+            return $this->redirect($this->generateUrl('app_website', array(
+                'website' => (string)$normalisedWebsite,
+            ), true));            
+        }       
+        
+        $remoteTestSummary = $this->getTestQueueService()->getRemoteTestSummary($this->getUser(), (string)$normalisedWebsite);
+        $taskTypes = array();
+        foreach ($remoteTestSummary->task_types as $taskTypeObject) {
+            $taskTypes[] = $taskTypeObject->name;
+        }
+        
+        $viewData = array(
+            'website' => idn_to_utf8($website),
+            'this_url' => $this->getQueuedUrl($website),
+            'test_input_action_url' => $this->generateUrl('test_cancel', array(
+                'website' => $website,
+                'test_id' => null
+            )),
+            'remote_test_summary' => $this->getRemoteTestSummaryArray($remoteTestSummary),
+            'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
+            'state_label' => $this->testStateLabelMap['queued'].': ',
+            'state_icon' => $this->testStateIconMap['queued'],
+            'completion_percent' => 0,
+            'public_site' => $this->container->getParameter('public_site'),
+            'user' => $this->getUser(),
+            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+            'task_types' => $taskTypes
+        ); 
+        
+        $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
+        return $this->sendResponse($viewData);
+    }    
     
     public function progressAction($website, $test_id) {        
         $this->getTestService()->setUser($this->getUser());
@@ -784,6 +834,22 @@ class AppController extends BaseViewController
     private function getTaskService() {
         return $this->container->get('simplytestable.services.taskservice');
     } 
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TestQueueService
+     */
+    private function getTestQueueService() {
+        if (is_null($this->testQueueService)) {
+            $this->testQueueService = $this->container->get('simplytestable.services.testqueueservice');
+            $this->testQueueService->setApplicationRootDirectory($this->container->get('kernel')->getRootDir());
+                    
+        }
+        
+        return $this->testQueueService;
+
+    }    
     
     
     /**
