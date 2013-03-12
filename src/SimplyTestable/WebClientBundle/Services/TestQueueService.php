@@ -15,6 +15,28 @@ class TestQueueService {
      */
     private $applicationRootDirectory;
     
+    
+    private $dataFilenames = array(
+        'options',
+        'type',
+        'user',
+        'url'
+    );
+    
+    
+    /**
+     *
+     * @var \SimplyTestable\WebClientBundle\Services\UserSerializerService
+     */
+    private $userSerializerService;
+    
+    
+    public function __construct(
+        \SimplyTestable\WebClientBundle\Services\UserSerializerService $userSerializerService
+    ) {
+        $this->userSerializerService = $userSerializerService;
+    }     
+    
     /**
      * 
      * @param string $applicationRootDirectory
@@ -92,8 +114,60 @@ class TestQueueService {
         
         $this->makeDirectory($testBasePath);
         
+        file_put_contents($testBasePath . '/url', $canonicalUrl);
+        file_put_contents($testBasePath . '/user', $this->userSerializerService->serializeToString($user));
         file_put_contents($testBasePath . '/options', serialize($testOptions));
         file_put_contents($testBasePath . '/type', $testType);
+        
+        return true;
+    }
+    
+    
+    public function dequeue(User $user, $canonicalUrl) {
+        $queuedTest = $this->retrieve($user, $canonicalUrl);
+        if ($queuedTest !== false) {
+            $this->removeQueuedTest($this->getTestBasePath($user, $canonicalUrl));
+        }
+        
+        return $queuedTest;
+    }
+    
+    
+    public function listTests() {
+        $tests = array();
+        $queueBaseDirectory = new \DirectoryIterator($this->getQueueBasePath());        
+        
+        foreach ($queueBaseDirectory as $userDirectoryItem) {
+            if ($this->isDataDirectory($userDirectoryItem)) {
+                $userDirectory = new \DirectoryIterator($userDirectoryItem->getPathname());
+                
+                foreach ($userDirectory as $testDirectoryItem) {
+                    if ($this->isDataDirectory($testDirectoryItem)) {
+                        $tests[] = $this->retrieveFromPath($testDirectoryItem->getPathname());
+                    }
+                }                
+            }
+        }
+        
+        return $tests;
+    }
+    
+    private function isDataFile(\DirectoryIterator $directoryItem) {
+        if ($directoryItem->isDir()) {
+            return false;
+        }
+        
+        return in_array($directoryItem->getFilename(), $this->dataFilenames);
+    }
+    
+    private function isDataDirectory(\DirectoryIterator $directoryItem) {
+        if (!$directoryItem->isDir()) {
+            return false;
+        }
+        
+        if ($directoryItem->isDot()) {
+            return false;
+        }
         
         return true;
     }
@@ -104,12 +178,33 @@ class TestQueueService {
             return false;
         }
         
-        $testBasePath = $this->getTestBasePath($user, $canonicalUrl);
-        
+        return $this->retrieveFromPath($this->getTestBasePath($user, $canonicalUrl));
+    }
+    
+    
+    private function retrieveFromPath($testBasePath) {
         return array(
+            'user' => $this->userSerializerService->unserializedFromString(file_get_contents($testBasePath . '/user')),
             'options' => unserialize(file_get_contents($testBasePath . '/options')),
-            'type' => file_get_contents($testBasePath . '/type')
-        );
+            'type' => file_get_contents($testBasePath . '/type'),
+            'url' => file_get_contents($testBasePath . '/url')
+        );        
+    }
+    
+    private function removeQueuedTest($testBasePath) {
+        if (!file_exists($testBasePath)) {
+            return false;
+        }
+        
+        $testDirectory = new \DirectoryIterator($testBasePath);
+        foreach ($testDirectory as $directoryItem) {
+            if (!$directoryItem->isDir()) {
+                unlink($directoryItem->getPathname());
+            }
+        }
+        
+        rmdir($testBasePath);
+        return true;
     }
     
     

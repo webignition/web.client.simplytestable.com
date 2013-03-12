@@ -74,3 +74,5 @@ services:
     
   simplytestable.services.testqueueservice:
     class:  SimplyTestable\WebClientBundle\Services\TestQueueService
+    arguments:
+        userSerializerService: "@simplytestable.services.userserializerservice"    
