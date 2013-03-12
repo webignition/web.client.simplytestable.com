@@ -62,6 +62,12 @@ app_task_results:
         test_id: "\d+"
         task_id: "\d+" 
         
+app_latest:
+  pattern: /{website}/latest/
+  defaults: { _controller: SimplyTestableWebClientBundle:Redirect:latest } 
+  requirements:
+      website: ".+"  
+        
 app_task_results_redirector:
     pattern:  /{website}/{test_id}/{task_id}/
     defaults: { _controller: SimplyTestableWebClientBundle:Redirect:task }  

@@ -119,8 +119,11 @@ class TestService extends CoreApplicationService {
         try {
             return $this->webResourceService->get($httpRequest);
         } catch (\webignition\Http\Client\CurlException $curlException) {
-            
+         
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
+            if ($webResourceServiceException->getCode() == 503) {
+                throw $webResourceServiceException;                    
+            }
             
         }
     }

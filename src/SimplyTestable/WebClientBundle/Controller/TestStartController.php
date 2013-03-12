@@ -5,7 +5,15 @@ namespace SimplyTestable\WebClientBundle\Controller;
 use SimplyTestable\WebClientBundle\Model\TestOptions;
 
 class TestStartController extends BaseController
-{    
+{ 
+    
+    /**
+     *
+     * @var \SimplyTestable\WebClientBundle\Services\TestQueueService
+     */
+    private $testQueueService;
+    
+    
     private $allowedTestTypeMap = array(
         'html-validation' => 'HTML validation',
         'css-validation' => 'CSS validation'
@@ -34,15 +42,28 @@ class TestStartController extends BaseController
             return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));                
         }
         
-        $jsonResponseObject = $this->getTestService()->start($this->getTestUrl(), $testOptions, ($this->isFullTest() ? 'full site' : 'single url'))->getContentObject();
-        return $this->redirect($this->generateUrl(
-            'app_progress',
-            array(
-                'website' => $jsonResponseObject->website,
-                'test_id' => $jsonResponseObject->id
-            ),
-            true
-        ));
+        try {
+            $jsonResponseObject = $this->getTestService()->start($this->getTestUrl(), $testOptions, ($this->isFullTest() ? 'full site' : 'single url'))->getContentObject();
+            return $this->redirect($this->generateUrl(
+                'app_progress',
+                array(
+                    'website' => $jsonResponseObject->website,
+                    'test_id' => $jsonResponseObject->id
+                ),
+                true
+            ));
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
+            if ($webResourceServiceException->getCode() == 503) {
+                $this->getTestQueueService()->enqueue($this->getUser(), $this->getTestUrl(), $testOptions, ($this->isFullTest() ? 'full site' : 'single url'));
+                return $this->redirect($this->generateUrl(
+                    'app_latest',
+                    array(
+                        'website' => $this->getTestUrl()
+                    ),
+                    true
+                ));                
+            }
+        }
     }
     
     
@@ -237,5 +258,21 @@ class TestStartController extends BaseController
      */
     private function getTestOptionsRequestParserService() {
         return $this->container->get('simplytestable.services.testoptions.requestparserservice');
+    }    
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TestQueueService
+     */
+    private function getTestQueueService() {
+        if (is_null($this->testQueueService)) {
+            $this->testQueueService = $this->container->get('simplytestable.services.testqueueservice');
+            $this->testQueueService->setApplicationRootDirectory($this->container->get('kernel')->getRootDir());
+                    
+        }
+        
+        return $this->testQueueService;
+
     }    
 }

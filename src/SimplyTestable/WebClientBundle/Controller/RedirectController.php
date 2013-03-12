@@ -23,6 +23,11 @@ class RedirectController extends BaseController
         'no-sitemap',
     );
     
+    
+    public function latestAction($website) {
+        exit();
+    }
+    
     public function testAction($website, $test_id = null) {
         $this->getTestService()->setUser($this->getUser());
         
