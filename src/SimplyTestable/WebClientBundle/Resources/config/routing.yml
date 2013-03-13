@@ -140,6 +140,12 @@ test_cancel:
     requirements:
         website: ".+"
         
+test_cancel_queued:
+    pattern:  /test/{website}/cancel/
+    defaults: { _controller: SimplyTestableWebClientBundle:Test:cancelQueued }  
+    requirements:
+        website: ".+"        
+        
 app_test_redirector:
     pattern:  /{website}/{test_id}/
     defaults: { _controller: SimplyTestableWebClientBundle:Redirect:test }  
