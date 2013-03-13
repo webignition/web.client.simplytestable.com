@@ -20,6 +20,16 @@ Testing {{website}} - {{ parent() }}
 {% block main %}         
 <div class="row-fluid">
     <div class="span12">
+        {% if app.request.attributes.get('_route') == 'app_queued' %}
+        <div class="alert alert-info">   
+            {% if reason == 503 %}
+            We're in a <strong>read-only</strong> state whilst some 
+            <strong>maintenance</strong> is going on. Your test has been queued 
+            and will be started before too long.
+            {% endif %}
+        </div> 
+        {% endif %}
+        
                 {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %} 
         </div>
     </div>

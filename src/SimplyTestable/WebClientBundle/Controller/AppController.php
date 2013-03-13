@@ -262,7 +262,9 @@ class AppController extends BaseViewController
             return $this->redirect($this->generateUrl('app_website', array(
                 'website' => (string)$normalisedWebsite,
             ), true));            
-        }       
+        }
+        
+        $queuedTest = $this->getTestQueueService()->retrieve($this->getUser(), (string)$normalisedWebsite);
         
         $remoteTestSummary = $this->getTestQueueService()->getRemoteTestSummary($this->getUser(), (string)$normalisedWebsite);
         $taskTypes = array();
@@ -285,7 +287,8 @@ class AppController extends BaseViewController
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'task_types' => $taskTypes
+            'task_types' => $taskTypes,
+            'reason' => $queuedTest['reason']
         ); 
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
