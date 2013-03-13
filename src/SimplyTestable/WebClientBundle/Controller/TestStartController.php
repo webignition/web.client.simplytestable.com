@@ -54,7 +54,7 @@ class TestStartController extends BaseController
             ));
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
             if ($webResourceServiceException->getCode() == 503) {                               
-                $this->getTestQueueService()->enqueue($this->getUser(), $this->getTestUrl(), $testOptions, ($this->isFullTest() ? 'full site' : 'single url'));                
+                $this->getTestQueueService()->enqueue($this->getUser(), $this->getTestUrl(), $testOptions, ($this->isFullTest() ? 'full site' : 'single url'), $webResourceServiceException->getCode());
                 return $this->redirect($this->generateUrl(
                     'app_website',
                     array(

@@ -20,7 +20,8 @@ class TestQueueService {
         'options',
         'type',
         'user',
-        'url'
+        'url',
+        'reason'
     );
     
     
@@ -105,7 +106,7 @@ class TestQueueService {
      * @param string $testType
      * @return boolean
      */
-    public function enqueue(User $user, $canonicalUrl, TestOptions $testOptions, $testType = 'full site') {        
+    public function enqueue(User $user, $canonicalUrl, TestOptions $testOptions, $testType = 'full site', $reason) {        
         if ($this->contains($user, $canonicalUrl)) {
             return true;
         }
@@ -118,6 +119,7 @@ class TestQueueService {
         file_put_contents($testBasePath . '/user', $this->userSerializerService->serializeToString($user));
         file_put_contents($testBasePath . '/options', serialize($testOptions));
         file_put_contents($testBasePath . '/type', $testType);
+        file_put_contents($testBasePath . '/reason', $reason);
         
         return true;
     }
@@ -187,7 +189,8 @@ class TestQueueService {
             'user' => $this->userSerializerService->unserializedFromString(file_get_contents($testBasePath . '/user')),
             'options' => unserialize(file_get_contents($testBasePath . '/options')),
             'type' => file_get_contents($testBasePath . '/type'),
-            'url' => file_get_contents($testBasePath . '/url')
+            'url' => file_get_contents($testBasePath . '/url'),
+            'reason' => file_get_contents($testBasePath . '/reason')
         );        
     }
     
