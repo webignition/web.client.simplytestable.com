@@ -290,6 +290,29 @@ class TestService extends CoreApplicationService {
         return $this->remoteTestSummary;
     }
     
+    public function getLatestRemoteSummary($canonicalUrl) {
+        $retrievalUrl = $this->getUrl('test_latest', array(
+            'canonical-url' => $canonicalUrl
+        ));
+        
+        $httpRequest = $this->getAuthorisedHttpRequest($retrievalUrl);
+        
+        $testJsonDocument = null;
+        
+        /* @var $testJsonDocument \webignition\WebResource\JsonDocument\JsonDocument */
+        try {
+            return $this->webResourceService->get($httpRequest)->getContentObject();            
+        } catch (\webignition\Http\Client\CurlException $curlException) {
+            
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
+            if ($webResourceServiceException->getCode() == 403) {
+                $testJsonDocument = false;
+            }
+        }
+        
+        return $testJsonDocument;         
+    }
+    
     
     
     /**

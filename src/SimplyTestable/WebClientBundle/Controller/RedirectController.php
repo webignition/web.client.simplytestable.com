@@ -29,7 +29,7 @@ class RedirectController extends BaseController
      */
     private $testQueueService;    
     
-    public function testAction($website, $test_id = null) {        
+    public function testAction($website, $test_id = null) {                
         $this->getTestService()->setUser($this->getUser());
         
         $this->prepareNormalisedWebsiteAndTestId($website, $test_id);   
@@ -43,15 +43,26 @@ class RedirectController extends BaseController
                     ),
                     true
                 ));               
-            }
+            }            
             
-            if (!$this->getTestService()->getEntityRepository()->hasForWebsite($this->website)) {
-                return $this->redirect($this->generateUrl('app', array(), true));
-            }
+            $latestRemoteTestSummary = $this->getTestService()->getLatestRemoteSummary($this->website);
+            if (!is_null($latestRemoteTestSummary)) {
+                return $this->redirect($this->generateUrl(
+                    'app_test_redirector',
+                    array(
+                        'website' => $latestRemoteTestSummary->website,
+                        'test_id' => $latestRemoteTestSummary->id
+                    ),
+                    true
+                ));                 
+            }             
             
-            $test_id = $this->getTestService()->getEntityRepository()->getLatestId($this->website);
+            if ($this->getTestService()->getEntityRepository()->hasForWebsite($this->website)) {
+                $test_id = $this->getTestService()->getEntityRepository()->getLatestId($this->website);            
+                return $this->redirect($this->getRedirectorUrl($this->website, $test_id));                  
+            }             
             
-            return $this->redirect($this->getRedirectorUrl($this->website, $test_id));
+            return $this->redirect($this->generateUrl('app', array(), true));
         }        
 
         if ($this->hasWebsite() && $this->hasTestId()) {            
