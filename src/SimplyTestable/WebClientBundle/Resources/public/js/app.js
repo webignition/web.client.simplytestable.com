@@ -130,76 +130,7 @@ application.results.preparingController = function () {
 
 application.progress = {};
 
-application.progress.queuedTestController = function () {    
-//    var latestTestData = {};
-//    
-//    var setCompletionPercentValue = function () {
-//        var completionPercentValue = $('#completion-percent-value');
-//        
-//        if (completionPercentValue.text() != latestTestData.completion_percent) {
-//            completionPercentValue.text(latestTestData.completion_percent);
-//            
-//            if ($('html.csstransitions').length > 0) {
-//                $('#completion-percent-bar').css({
-//                    'width':latestTestData.completion_percent + '%'
-//                });                
-//            } else {
-//                $('#completion-percent-bar').animate({
-//                    'width':latestTestData.completion_percent + '%'
-//                });                
-//            }
-//        }        
-//    };
-//    
-//    var setCompletionPercentStateLabel = function () {
-//        var completionPercentStateLabel = $('#completion-percent-state-label');
-//        if (completionPercentStateLabel.text() != latestTestData.state_label) {
-//            completionPercentStateLabel.text(latestTestData.state_label);
-//        }         
-//    };
-//    
-//    var setCompletionPercentStateIcon = function () {        
-//        $('#completion-percent-state-icon').attr('class', '').addClass(latestTestData.state_icon);
-//     
-//    };    
-//    
-//    var getTestQueueWidth = function (queueName) {        
-//        var minimumQueueWidth = 2; 
-//        
-//        if (latestTestData.task_count_by_state[queueName] == 0) {
-//            return minimumQueueWidth;
-//        }
-//        
-//        var queueWidth = (latestTestData.task_count_by_state[queueName] / latestTestData.remote_test_summary.task_count) * 100;
-//        
-//        return (queueWidth < minimumQueueWidth) ? minimumQueueWidth : queueWidth;
-//    };
-//    
-//    var setTestQueues = function () { 
-//        var queues = ['queued', 'in_progress', 'completed', 'failed', 'skipped'];
-//        
-//        for (var queueNameIndex = 0; queueNameIndex < queues.length; queueNameIndex++) {
-//            var queueName = queues[queueNameIndex];
-//
-//            $('#test-summary .test-states .' + queueName).each(function () {                
-//                var queueDetail = $(this);
-//                var bar = $('.bar .label', queueDetail)
-//                bar.animate({
-//                    'width': getTestQueueWidth(queueName) + '%'
-//                });
-//                
-//                bar.text(latestTestData.task_count_by_state[queueName]);
-//            });               
-//        }
-//    };
-//    
-//    var setUrlCount = function () {        
-//        $('#test-summary-url-count').text(latestTestData.remote_test_summary.url_count);
-//    };
-//    
-//    var setTaskCount = function () {        
-//        $('#test-summary-task-count').text(latestTestData.remote_test_summary.task_count);
-//    };
+application.progress.queuedTestController = function () {
     
     var checkState = function () {
         var now = new Date();
