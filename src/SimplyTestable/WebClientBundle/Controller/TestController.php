@@ -15,7 +15,7 @@ class TestController extends BaseController
         $normalisedWebsite = new \webignition\NormalisedUrl\NormalisedUrl($website);        
         $result = ($this->getTestQueueService()->contains($this->getUser(), (string)$normalisedWebsite)) ? 'queued' : 'not queued';
         
-        return new \Symfony\Component\HttpFoundation\Response($result);       
+        return new \Symfony\Component\HttpFoundation\Response('"'.$result.'"');       
     }
     
     
