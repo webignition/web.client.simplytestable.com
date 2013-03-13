@@ -29,17 +29,17 @@ class RedirectController extends BaseController
      */
     private $testQueueService;    
     
-    public function testAction($website, $test_id = null) {                
+    public function testAction($website, $test_id = null) {
         $this->getTestService()->setUser($this->getUser());
         
         $this->prepareNormalisedWebsiteAndTestId($website, $test_id);   
         
-        if ($this->hasWebsite() && !$this->hasTestId()) {            
+        if ($this->hasWebsite() && !$this->hasTestId()) {                        
             if ($this->getTestQueueService()->contains($this->getUser(), $this->website)) {
                 return $this->redirect($this->generateUrl(
                     'app_queued',
                     array(
-                        'website' => $website               
+                        'website' => $this->website               
                     ),
                     true
                 ));               
