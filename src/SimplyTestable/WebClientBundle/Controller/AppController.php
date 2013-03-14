@@ -299,7 +299,7 @@ class AppController extends BaseViewController
         return $this->sendResponse($viewData);
     }    
     
-    public function progressAction($website, $test_id) {        
+    public function progressAction($website, $test_id) {
         $this->getTestService()->setUser($this->getUser());
         
         if ($this->isUsingOldIE()) {
@@ -379,7 +379,8 @@ class AppController extends BaseViewController
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'task_types' => $taskTypes
+            'task_types' => $taskTypes,
+            'test_cancel_error' => $this->getFlash('test_cancel_error')
         );          
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');

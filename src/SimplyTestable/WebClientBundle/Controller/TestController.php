@@ -2,6 +2,8 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+use webignition\IsHttpStatusCode\IsHttpStatusCode;
+
 class TestController extends BaseController
 {    
     /**
@@ -31,7 +33,7 @@ class TestController extends BaseController
     
     
     public function cancelAction()
-    {
+    {        
         $this->getTestService()->setUser($this->getUser());
         
         if (!$this->hasWebsite()) {
@@ -39,7 +41,9 @@ class TestController extends BaseController
             return $this->redirect($this->generateUrl('app', array(), true));
         }
         
-        if ($this->getTestService()->cancel($this->getWebsite(), $this->getTestId())) {
+        $cancelResult = $this->getTestService()->cancel($this->getWebsite(), $this->getTestId());
+        
+        if ($cancelResult === true) {
             return $this->redirect($this->generateUrl(
                 'app_results',
                 array(
@@ -48,8 +52,21 @@ class TestController extends BaseController
                 ),
                 true
             ));       
-        }
-    }
+        }        
+        
+        if (IsHttpStatusCode::check($cancelResult)) {
+            $this->get('session')->setFlash('test_cancel_error', $cancelResult);
+
+            return $this->redirect($this->generateUrl(
+                'app_progress',
+                array(
+                    'website' => $this->getWebsite(),
+                    'test_id' => $this->getTestId()
+                ),
+                true
+            ));
+        }       
+    }    
     
     
     /**

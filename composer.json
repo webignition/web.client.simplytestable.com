@@ -23,7 +23,8 @@
         "webignition/web-json-model":">=0.1,<2.0",
         "jms/serializer-bundle": "0.9.0",
         "webignition/simplytestable-base-migrations-bundle":"1.1",
-        "webignition/resque-bundle":"*"
+        "webignition/resque-bundle":"*",
+        "webignition/is-http-status-code":"0.2"
     },
     "repositories": [
         {
