@@ -19,10 +19,11 @@ class TestController extends BaseController
     }
     
     
-    public function cancelQueuedAction($website) {
+    public function cancelQueuedAction($website) {        
         $normalisedWebsite = new \webignition\NormalisedUrl\NormalisedUrl($website);        
         if ($this->getTestQueueService()->contains($this->getUser(), (string)$normalisedWebsite)) {
             $this->getTestQueueService()->dequeue($this->getUser(), (string)$normalisedWebsite);
+            $this->get('session')->setFlash('test_cancelled_queued_website', (string)$normalisedWebsite);
         }        
         
         return $this->redirect($this->generateUrl('app', array(), true));

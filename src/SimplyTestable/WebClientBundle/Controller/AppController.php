@@ -79,9 +79,12 @@ class AppController extends BaseViewController
         $recentTests = $this->getRecentTests(9);
         $recentTestsHash = md5(json_encode($recentTests));        
         
+        $testCancelledQueuedWebsite = $this->getFlash('test_cancelled_queued_website');
+        
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
             'test_start_error' => $testStartError,
-            'recent_tests_hash' => $recentTestsHash
+            'recent_tests_hash' => $recentTestsHash,
+            'test_cancelled_queued_website' => $testCancelledQueuedWebsite
         ));
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
@@ -108,7 +111,8 @@ class AppController extends BaseViewController
             'test_options' => $testOptions,
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
-            'test_options_title' => 'What do you want to check?'
+            'test_options_title' => 'What do you want to check?',
+            'test_cancelled_queued_website' => $testCancelledQueuedWebsite
         ));         
 
         return $this->getCachableResponse($this->render($templateName, array(            
