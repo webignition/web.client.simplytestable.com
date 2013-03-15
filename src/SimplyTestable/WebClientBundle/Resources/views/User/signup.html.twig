@@ -40,6 +40,20 @@
             work. I don't know why.
         </div>                
             {% endif %}                                                    
+        
+            {% if user_create_error == 'create-failed-read-only' %}
+        <div class="alert alert-error for:input-email">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p><strong>Sorry, I can't do that right now</strong></p>
+            <p>
+                We're in a <strong>read-only</strong> state whilst some 
+                <strong>maintenance</strong> is going on.
+            </p>
+            <p>
+                Give it a go again soon, this won't take long.
+            </p>
+        </div>                
+            {% endif %}         
         {% endif %}
 
         {% if user_create_confirmation is defined and user_create_confirmation != '' %}

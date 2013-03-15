@@ -483,15 +483,20 @@ class UserController extends BaseViewController
         
         $this->getUserService()->setUser($this->getUserService()->getPublicUser());
         $createResponse = $this->getUserService()->create($email, $password);        
-                
-        if ($this->userCreationFailed($createResponse)) {
-            $this->get('session')->setFlash('user_create_error', 'create-failed');
-            return $this->redirect($this->generateUrl('sign_up', array('email' => $email), true));               
-        }
         
         if ($this->userCreationUserAlreadyExists($createResponse)) {
             $this->get('session')->setFlash('user_create_confirmation', 'user-exists');
             return $this->redirect($this->generateUrl('sign_up', array('email' => $email), true));             
+        }
+        
+        if ($this->userCreationFailedDueToReadOnly($createResponse)) {
+            $this->get('session')->setFlash('user_create_error', 'create-failed-read-only');
+            return $this->redirect($this->generateUrl('sign_up', array('email' => $email), true));               
+        }        
+                
+        if ($this->userCreationFailed($createResponse)) {
+            $this->get('session')->setFlash('user_create_error', 'create-failed');
+            return $this->redirect($this->generateUrl('sign_up', array('email' => $email), true));               
         }
         
         $token = $this->getUserService()->getConfirmationToken($email);        
@@ -606,6 +611,15 @@ class UserController extends BaseViewController
         $this->get('session')->setFlash('user_signin_confirmation', 'user-activated');
         return $this->redirect($this->generateUrl('sign_in', array('email' => $email), true));  
     }    
+
+    /**
+     * 
+     * @param mixed $createResponse
+     * @return boolean
+     */
+    private function userCreationFailedDueToReadOnly($createResponse) {
+        return $createResponse === 503;
+    }    
     
     
     /**
@@ -614,7 +628,7 @@ class UserController extends BaseViewController
      * @return boolean
      */
     private function userCreationFailed($createResponse) {
-        return is_null($createResponse);
+        return $createResponse !== true;
     }
     
     
@@ -624,7 +638,7 @@ class UserController extends BaseViewController
      * @return boolean
      */
     private function userCreationUserAlreadyExists($createResponse) {
-        return $createResponse === false;
+        return $createResponse === 302;
     }  
     
     

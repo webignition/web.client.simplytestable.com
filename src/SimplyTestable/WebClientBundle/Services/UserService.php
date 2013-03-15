@@ -171,17 +171,11 @@ class UserService extends CoreApplicationService {
         
         try {
             $response = $this->getHttpClient()->getResponse($request);
-            
-            if ($response->getResponseCode() == $userExistsResponseCode) {
-                return false;
-            }
-            
-            return true;
+            return $response->getResponseCode() == 200 ? true : $response->getResponseCode();
         } catch (\webignition\Http\Client\CurlException $curlException) {     
+            return $curlException->getCode();
             return null;
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-            return null;
-        }       
+        }     
     }
     
     
