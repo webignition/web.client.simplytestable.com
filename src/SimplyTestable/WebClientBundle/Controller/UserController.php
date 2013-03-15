@@ -595,11 +595,11 @@ class UserController extends BaseViewController
     
     
     public function signupConfirmSubmitAction($email) {
-        $user = new User();
-        $user->setUsername($email);
-        $this->getUserService()->setUser($user);
+//        $user = new User();
+//        $user->setUsername($email);
+//        $this->getUserService()->setUser($user);
         
-        if ($this->getUserService()->exists() === false) {
+        if ($this->getUserService()->exists($email) === false) {
             $this->get('session')->setFlash('token_resend_error', 'invalid-user');
             return $this->redirect($this->generateUrl('sign_up_confirm', array('email' => $email), true));          
         }

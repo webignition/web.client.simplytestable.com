@@ -176,9 +176,7 @@ class UserService extends CoreApplicationService {
     }
     
     
-    public function activate($token) {
-        $currentUser = ($this->hasUser()) ? $this->getUser() : null;
-   
+    public function activate($token) {   
         $this->setUser($this->getAdminUser());
         
         $request = $this->getAuthorisedHttpRequest($this->getUrl('user_activate', array(
@@ -187,11 +185,8 @@ class UserService extends CoreApplicationService {
         
         try {
             $response = $this->getHttpClient()->getResponse($request);
+            $this->setUser($this->getPublicUser());  
             
-            if (!is_null($currentUser)) {
-                $this->setUser($currentUser);
-            }        
-
             if ($response->getResponseCode() == 401) {
                 throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
             }        
@@ -202,8 +197,8 @@ class UserService extends CoreApplicationService {
             
             return $response->getResponseCode() == 200 ? true : $response->getResponseCode();
         } catch (\webignition\Http\Client\CurlException $curlException) {     
+            $this->setUser($this->getPublicUser());  
             return $curlException->getCode();
-            return null;
         }     
     }    
     
