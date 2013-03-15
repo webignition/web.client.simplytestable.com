@@ -185,21 +185,26 @@ class UserService extends CoreApplicationService {
             'token' => $token
         )), HTTP_METH_POST);
         
-        $response = $this->getHttpClient()->getResponse($request);
-        
-        if (!is_null($currentUser)) {
-            $this->setUser($currentUser);
-        }        
-        
-        if ($response->getResponseCode() == 401) {
-            throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
-        }        
-        
-        if ($response->getResponseCode() == 400) {
-            return false;
-        }
+        try {
+            $response = $this->getHttpClient()->getResponse($request);
+            
+            if (!is_null($currentUser)) {
+                $this->setUser($currentUser);
+            }        
 
-        return true;      
+            if ($response->getResponseCode() == 401) {
+                throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
+            }        
+
+            if ($response->getResponseCode() == 400) {
+                return false;
+            }            
+            
+            return $response->getResponseCode() == 200 ? true : $response->getResponseCode();
+        } catch (\webignition\Http\Client\CurlException $curlException) {     
+            return $curlException->getCode();
+            return null;
+        }     
     }    
     
     

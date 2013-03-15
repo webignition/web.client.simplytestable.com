@@ -610,7 +610,11 @@ class UserController extends BaseViewController
             return $this->redirect($this->generateUrl('sign_up_confirm', array('email' => $email), true));            
         }
         
-        $activationResponse = $this->getUserService()->activate($token);
+        $activationResponse = $this->getUserService()->activate($token);        
+        if ($this->requestFailedDueToReadOnly($activationResponse)) {
+            $this->get('session')->setFlash('user_token_error', 'failed-read-only');
+            return $this->redirect($this->generateUrl('sign_up_confirm', array('email' => $email), true));                
+        }
         
         if ($activationResponse == false) {
             $this->get('session')->setFlash('user_token_error', 'invalid-token');

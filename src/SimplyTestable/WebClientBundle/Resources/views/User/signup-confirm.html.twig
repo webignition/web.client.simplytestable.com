@@ -63,6 +63,20 @@
         </div>                
         {% endif %}                                                   
     
+        {% if user_token_error == 'failed-read-only' %}
+        <div class="alert alert-error for:input-email">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p><strong>Sorry, I can't do that right now</strong></p>
+            <p>
+                We're in a <strong>read-only</strong> state whilst some 
+                <strong>maintenance</strong> is going on.
+            </p>
+            <p>
+                Give it a go again soon, this won't take long.
+            </p>
+        </div>                
+        {% endif %}     
+    
         {% if user_token_error == 'invalid-token' %}
         <div class="alert alert-error for:input-email">
             <button type="button" class="close" data-dismiss="alert">×</button>
