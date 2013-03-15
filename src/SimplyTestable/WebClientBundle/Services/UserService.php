@@ -128,13 +128,10 @@ class UserService extends CoreApplicationService {
         ));
         
         try {
-            $response = $this->getHttpClient()->getResponse($request);
-            
-            return $response->getResponseCode() == 200;
+            $response = $this->getHttpClient()->getResponse($request);            
+            return ($response->getResponseCode() == 200) ? true : $response->getResponseCode();
         } catch (\webignition\Http\Client\CurlException $curlException) {     
-            return null;
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-            return null;
+            return $curlException->getCode();
         }
     }
     

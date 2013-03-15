@@ -371,6 +371,15 @@ class UserController extends BaseViewController
         }
         
         $passwordResetResponse = $this->getUserService()->resetPassword($token, $password);
+        
+        if ($this->requestFailedDueToReadOnly($passwordResetResponse)) {
+            $this->get('session')->setFlash('user_reset_password_error', 'failed-read-only');
+            return $this->redirect($this->generateUrl('reset_password_choose', array(
+                'email' => $email,
+                'token' => $inputToken,
+                'stay-signed-in' => $staySignedIn
+            ), true));             
+        }
             
         if (is_null($passwordResetResponse)) {
             $this->get('session')->setFlash('user_reset_password_error', 'unknown-error');
@@ -489,7 +498,7 @@ class UserController extends BaseViewController
             return $this->redirect($this->generateUrl('sign_up', array('email' => $email), true));             
         }
         
-        if ($this->userCreationFailedDueToReadOnly($createResponse)) {
+        if ($this->requestFailedDueToReadOnly($createResponse)) {
             $this->get('session')->setFlash('user_create_error', 'create-failed-read-only');
             return $this->redirect($this->generateUrl('sign_up', array('email' => $email), true));               
         }        
@@ -617,8 +626,8 @@ class UserController extends BaseViewController
      * @param mixed $createResponse
      * @return boolean
      */
-    private function userCreationFailedDueToReadOnly($createResponse) {
-        return $createResponse === 503;
+    private function requestFailedDueToReadOnly($responseCode) {
+        return $responseCode === 503;
     }    
     
     
