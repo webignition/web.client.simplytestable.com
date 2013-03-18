@@ -9,6 +9,12 @@
         <span class="message">
             {% if error.fragment == 'webResourceException' %}
                 An error occurred trying to retrieve the content of this script URL.
+            {% elseif error.fragment == 'curlException' %}  
+                {% if error.message == 6 %}
+                It appears that the domain name does not exist
+                {% else %}
+                An unknown error occurred
+                {% endif %}
             {% else %}
                 An unknown error occurred
             {% endif %}
