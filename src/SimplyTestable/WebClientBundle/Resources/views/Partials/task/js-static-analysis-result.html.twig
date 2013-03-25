@@ -12,7 +12,10 @@
             {% elseif error.fragment == 'curlException' %}  
                 {% if error.message == 6 %}
                 It appears that the domain name does not exist
-                {% else %}
+                {% elseif error.message == 37 %}
+                You're using a <strong>file://</strong> URL to reference a JavaScript
+                resource. That will never work on the Internet.
+                {% else %}                
                 An unknown error occurred
                 {% endif %}
             {% else %}
