@@ -148,6 +148,25 @@ abstract class BaseController extends Controller
             ),
             true
         );
+    }    
+    
+    
+    /**
+     * Get the progress page URL for a given site and test ID
+     * 
+     * @param string $website
+     * @param string $test_id
+     * @return string
+     */
+    protected function getPreparingResultsUrl($website, $test_id) {
+        return $this->generateUrl(
+            'app_results_preparing',
+            array(
+                'website' => $website,
+                'test_id' => $test_id
+            ),
+            true
+        );
     }
     
     

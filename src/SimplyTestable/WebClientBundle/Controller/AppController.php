@@ -514,7 +514,7 @@ class AppController extends BaseViewController
     }    
     
     public function prepareResultsAction($website, $test_id)
-    {                
+    {        
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }        
@@ -569,11 +569,11 @@ class AppController extends BaseViewController
         $remoteTaskCount = $remoteTestSummary->task_count;        
         $completionPercent = round(($localTaskCount / $remoteTaskCount) * 100);
         $remainingTasksToRetrieveCount = $remoteTaskCount - $localTaskCount;
-
         
-        $templateName = 'SimplyTestableWebClientBundle:App:results-preparing.html.twig';        
-        return $this->render($templateName, array(            
+        $this->setTemplate('SimplyTestableWebClientBundle:App:results-preparing.html.twig');
+        return $this->sendResponse(array(            
             'public_site' => $this->container->getParameter('public_site'),
+            'this_url' => $this->getPreparingResultsUrl($website, $test_id),
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
             'website' => idn_to_utf8($website),
@@ -582,12 +582,12 @@ class AppController extends BaseViewController
             'remaining_tasks_to_retrieve_count' => $remainingTasksToRetrieveCount,
             'local_task_count' => $localTaskCount,
             'remote_task_count' => $remoteTaskCount
-        ));      
+        ));     
     }
     
     
     
-    public function resultsAction($website, $test_id) {                        
+    public function resultsAction($website, $test_id) {                                
         $this->getTestService()->setUser($this->getUser());
         
         if ($this->isUsingOldIE()) {
@@ -660,11 +660,17 @@ class AppController extends BaseViewController
         }
         
         $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();        
-        if (($remoteTestSummary->task_count - self::RESULTS_PREPARATION_THRESHOLD) > $test->getTaskCount()) {            
-            return $this->redirect($this->generateUrl('app_results_preparing', array(
+        if (($remoteTestSummary->task_count - self::RESULTS_PREPARATION_THRESHOLD) > $test->getTaskCount()) {
+            $urlParameters = array(
                 'website' => $test->getWebsite(),
-                'test_id' => $test_id
-            ), true));
+                'test_id' => $test_id                
+            );
+            
+            if ($this->get('request')->query->has('output')) {
+                $urlParameters['output'] = $this->get('request')->query->get('output');
+            }
+            
+            return $this->redirect($this->generateUrl('app_results_preparing', $urlParameters, true));
         } else {
             $this->getTaskService()->getCollection($test);
         }      
