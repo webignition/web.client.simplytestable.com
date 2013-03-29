@@ -360,8 +360,8 @@ application.progress.testController = function () {
                 }
             },
             success: function (data, textStatus, request) {                
-                if (data.this_url !== window.location.href) {                    
-                    //window.location.href = data.this_url;
+                if (data.this_url != window.location.href) {                    
+                    window.location.href = data.this_url;
                     return;
                 }
                 
