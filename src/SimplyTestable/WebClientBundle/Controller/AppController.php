@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 
 class AppController extends BaseViewController
-{
+{    
     const RESULTS_PAGE_LENGTH = 100;
     const RESULTS_PREPARATION_THRESHOLD = 100;
     
@@ -299,7 +299,7 @@ class AppController extends BaseViewController
         return $this->sendResponse($viewData);
     }    
     
-    public function progressAction($website, $test_id) {
+    public function progressAction($website, $test_id) {        
         $this->getTestService()->setUser($this->getUser());
         
         if ($this->isUsingOldIE()) {
@@ -361,7 +361,7 @@ class AppController extends BaseViewController
         $taskTypes = array();
         foreach ($remoteTestSummary->task_types as $taskTypeObject) {
             $taskTypes[] = $taskTypeObject->name;
-        }
+        }        
         
         $viewData = array(
             'website' => idn_to_utf8($website),
@@ -381,12 +381,16 @@ class AppController extends BaseViewController
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
             'task_types' => $taskTypes,
             'test_cancel_error' => $this->getFlash('test_cancel_error')
-        );          
+        );  
+        
+        if ($this->isJsonResponseRequired()) {
+            $viewData['estimated_seconds_remaining'] = $this->getEstimatedSecondsRemaining($remoteTestSummary);
+        }
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
         return $this->sendResponse($viewData);
-    }
-    
+    }    
+        
     private function getRemoteTestSummaryArray($remoteTestSummary) {        
         $remoteTestSummaryArray = (array)$remoteTestSummary;
         
@@ -404,6 +408,43 @@ class AppController extends BaseViewController
         
         return $remoteTestSummaryArray;
     }
+    
+    
+    /**
+     * 
+     * @param \stdClass $remoteTestSummary
+     * @return int
+     */
+    private function getEstimatedSecondsRemaining(\stdClass $remoteTestSummary) {
+        /**
+         * Estimated minutes remaining = remaining task count / (current tasks per minute / current active jobs)
+         * Estimated seconds remaining = estimated minutes remaining * 60
+         */
+        
+        $incompleteTaskStates = array(
+            'queued',
+            'in-progress',
+            'queued-for-assignment'
+        );
+        
+        $remainingTaskCount = 0;
+        foreach ($incompleteTaskStates as $incompleteTaskState) {
+            $remainingTaskCount += $remoteTestSummary->task_count_by_state->$incompleteTaskState;
+        }
+        
+        $tasksPerMinute = $this->getCoreApplicationStatusService()->getTaskThroughputPerMinute();        
+        if ($tasksPerMinute === 0) {
+            return -1;
+        }
+        
+        $inProgressJobCount = $this->getCoreApplicationStatusService()->getInProgressJobCount();        
+        if ($inProgressJobCount === 0) {
+            return -1;
+        }        
+
+        $estimatedMinutesRemaining = $remainingTaskCount / ($tasksPerMinute / $inProgressJobCount);
+        return (int)ceil($estimatedMinutesRemaining * 60);               
+    }  
     
     
     /**
@@ -848,6 +889,15 @@ class AppController extends BaseViewController
     private function getTaskService() {
         return $this->container->get('simplytestable.services.taskservice');
     } 
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\CoreApplicationStatusService
+     */
+    private function getCoreApplicationStatusService() {
+        return $this->container->get('simplytestable.services.coreapplicationstatusservice');
+    }     
     
     
     /**
