@@ -76,3 +76,9 @@ services:
     class:  SimplyTestable\WebClientBundle\Services\TestQueueService
     arguments:
         userSerializerService: "@simplytestable.services.userserializerservice"    
+        
+  simplytestable.services.coreapplicationstatusservice:
+    class:  SimplyTestable\WebClientBundle\Services\CoreApplicationStatusService          
+    arguments:
+        parameters: %core_application%
+        webResourceService: "@simplytestable.services.webresourceservice"       
