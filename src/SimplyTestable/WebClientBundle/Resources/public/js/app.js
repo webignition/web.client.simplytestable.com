@@ -180,11 +180,14 @@ application.progress.queuedTestController = function () {
 
 application.progress.testController = function () {    
     var latestTestData = {};
+    var estimatedTimeRemainingHistory = [];
+    var estimatedTimeRemainingUpdateThreshold = 10;
+    var estimatedTimeRemainingIsFirstDisplay = true;
     
     var setCompletionPercentValue = function () {
         var completionPercentValue = $('#completion-percent-value');
         
-        if (completionPercentValue.text() != latestTestData.completion_percent) {
+        if (completionPercentValue.text() !== latestTestData.completion_percent) {
             completionPercentValue.text(latestTestData.completion_percent);
             
             if ($('html.csstransitions').length > 0) {
@@ -201,7 +204,7 @@ application.progress.testController = function () {
     
     var setCompletionPercentStateLabel = function () {
         var completionPercentStateLabel = $('#completion-percent-state-label');
-        if (completionPercentStateLabel.text() != latestTestData.state_label) {
+        if (completionPercentStateLabel.text() !== latestTestData.state_label) {
             completionPercentStateLabel.text(latestTestData.state_label);
         }         
     };
@@ -214,7 +217,7 @@ application.progress.testController = function () {
     var getTestQueueWidth = function (queueName) {        
         var minimumQueueWidth = 2; 
         
-        if (latestTestData.task_count_by_state[queueName] == 0) {
+        if (latestTestData.task_count_by_state[queueName] === 0) {
             return minimumQueueWidth;
         }
         
@@ -249,6 +252,90 @@ application.progress.testController = function () {
         $('#test-summary-task-count').text(latestTestData.remote_test_summary.task_count);
     };
     
+    var storeEstimatedTimeRemaining = function () {
+        if (latestTestData.estimated_seconds_remaining === -1) {
+            return;
+        }
+        
+        estimatedTimeRemainingHistory.push(latestTestData.estimated_seconds_remaining);
+        
+        if (estimatedTimeRemainingHistory.length >= estimatedTimeRemainingUpdateThreshold) {            
+            setEstimatedTimeRemaining();
+            estimatedTimeRemainingHistory = [];
+        }
+    };
+    
+    var setEstimatedTimeRemaining = function () {
+        if (estimatedTimeRemainingHistory.length === 1 && estimatedTimeRemainingHistory[0] < 1) {
+            return;
+        }
+        
+        var timeRemainingString = 'About ' + formatEstimatedTimeRemaining(calculateEstimatedTimeRemaining()) + ' remaining';
+        
+        if (estimatedTimeRemainingIsFirstDisplay === true) {
+            estimatedTimeRemainingIsFirstDisplay = false;
+            $('#completion-time-remaining').css({
+                'display':'none'
+            }).text(timeRemainingString).fadeIn();
+            
+        } else {            
+            $('#completion-time-remaining').text(timeRemainingString);
+        }              
+    };
+    
+    var formatEstimatedTimeRemaining = function (durationInSeconds) {
+        var now = new Date().getTime();
+        var endTimestamp = now + (durationInSeconds * 1000);
+        
+        return moment(endTimestamp).fromNow(true);
+    };
+    
+    var calculateEstimatedTimeRemaining = function () {        
+        var average = function(a) {
+            var r = {mean: 0, variance: 0, deviation: 0}, t = a.length;
+            for (var m, s = 0, l = t; l--; s += a[l]);
+            for (m = r.mean = s / t, l = t, s = 0; l--; s += Math.pow(a[l] - m, 2));
+            return r.deviation = Math.sqrt(r.variance = s / t), r;
+        };
+        
+        var getSubsetWithinStandardDeviation = function (averageData) {            
+            var withinStdDev = averageData.deviation / (averageData.mean / 10);
+            var withinStd = function(mean, val, stdev) {
+                var low = mean-(stdev*averageData.deviation);
+                var hi = mean+(stdev*averageData.deviation);
+                return (val > low) && (val < hi);
+            };           
+            
+            var subset = [];
+            
+            for (var index = 0; index < estimatedTimeRemainingHistory.length; index++) {
+                if (withinStd(averageData.mean, estimatedTimeRemainingHistory[index], withinStdDev)) {
+                    subset.push(estimatedTimeRemainingHistory[index]);
+                }
+            }
+            
+            return subset;            
+        };      
+        
+        var averageData = average(estimatedTimeRemainingHistory);        
+        var subset = getSubsetWithinStandardDeviation(averageData);
+        
+        var subsetAverageData = average(subset);
+        
+//        console.log(estimatedTimeRemainingHistory);
+//        console.log(subset);
+//        console.log(averageData);
+//        console.log(averageData.mean);
+//        console.log(subsetAverageData);
+//        console.log(subsetAverageData.mean);        
+//        
+//        console.log('from latest', formatEstimatedTimeRemaining(estimatedTimeRemainingHistory[0]));
+//        console.log('from mean', formatEstimatedTimeRemaining(averageData.mean));
+//        console.log('from subset mean', formatEstimatedTimeRemaining(subsetAverageData.mean));
+        
+        return subsetAverageData.mean;
+    };
+    
     var refreshTestSummary = function () {
         var now = new Date();
         
@@ -272,9 +359,9 @@ application.progress.testController = function () {
                     console.log('500');
                 }
             },
-            success: function (data, textStatus, request) {
-                if (data.this_url !== window.location.href) {
-                    window.location.href = data.this_url;
+            success: function (data, textStatus, request) {                
+                if (data.this_url !== window.location.href) {                    
+                    //window.location.href = data.this_url;
                     return;
                 }
                 
@@ -286,6 +373,7 @@ application.progress.testController = function () {
                 setTestQueues();
                 setUrlCount();               
                 setTaskCount();
+                storeEstimatedTimeRemaining();
                 
                 window.setTimeout(function () {
                     refreshTestSummary(10);
