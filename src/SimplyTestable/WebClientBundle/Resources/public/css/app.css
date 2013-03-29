@@ -773,3 +773,9 @@ body.sign-in #stay-signed-in-container {
 body.single-page-dialog #stay-signed-in-container input {
     width:auto;
 }
+
+body.app-progress #completion-time-remaining {
+    padding:0;
+    margin: -10px 0 -10px 0;
+    opacity: 0.6;
+}
