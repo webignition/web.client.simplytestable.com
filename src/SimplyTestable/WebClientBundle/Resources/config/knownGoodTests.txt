@@ -115,7 +115,7 @@ http://www.smokymountainescapes.com/
 http://golfweek.com/
 http://www.zenzero.co.uk/
 http://winefolly.com/
-http://www.chinapaintsprayer.com/
+http://www.shmandarin.info/
 http://www.website.com/
 http://www.ztlights.com/
 http://review31.co.uk/
@@ -156,3 +156,8 @@ http://www.technologyreview.com/
 http://www.the-quarter.com/
 http://blog.groovehq.com/
 http://blog.crowdtilt.com/
+http://blog.linode.com/
+http://alexmaccaw.com/
+http://segment.io/
+http://99u.com/
+http://blog.dubture.com/
