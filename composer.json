@@ -19,12 +19,12 @@
         "jms/security-extra-bundle": "1.2.*",
         "jms/di-extra-bundle": "1.1.*",
         "webignition/url":">=1.1,<2.0",
-        "webignition/http-client":"*",
         "webignition/web-json-model":">=0.1,<2.0",
         "jms/serializer-bundle": "0.9.0",
         "webignition/simplytestable-base-migrations-bundle":"1.1",
         "webignition/resque-bundle":"*",
-        "webignition/is-http-status-code":"0.2"
+        "webignition/is-http-status-code":"0.2",
+        "guzzle/guzzle":"3.3.1"
     },
     "repositories": [
         {
