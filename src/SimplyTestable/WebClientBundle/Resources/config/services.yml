@@ -1,11 +1,11 @@
 services:
-  simplytestable.services.httpClient:
-    class:  webignition\Http\Client\Client
-    
+  simplytestable.services.httpClientService:
+    class:  SimplyTestable\WebClientBundle\Services\HttpClientService
+
   simplytestable.services.webresourceservice:
     class:   SimplyTestable\WebClientBundle\Services\WebResourceService
     arguments:
-        httpClient: "@simplytestable.services.httpClient"
+        httpClientService: "@simplytestable.services.httpClientService"
         contentTypeWebResourceMap: %content_type_web_resource_map%    
 
   simplytestable.services.testservice:

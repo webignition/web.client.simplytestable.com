@@ -29,9 +29,9 @@ abstract class CoreApplicationService {
     
     /**
      *
-     * @var \webignition\Http\Client\Client
+     * @var \SimplyTestable\WebClientBundle\Service\HttpClientService
      */
-    private $httpClient;
+    private $httpClientService;
     
     
     public function __construct(
@@ -40,7 +40,7 @@ abstract class CoreApplicationService {
     ) {
         $this->parameters = $parameters;
         $this->webResourceService = $webResourceService;
-        $this->httpClient = $webResourceService->getHttpClient();
+        $this->httpClientService;
     } 
     
     

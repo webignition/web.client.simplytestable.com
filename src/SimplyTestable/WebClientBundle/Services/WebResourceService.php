@@ -10,9 +10,9 @@ class WebResourceService {
     
     /**
      *
-     * @var \webignition\Http\Client\Client
+     * @var \SimplyTestable\WebClientBundle\Services\HttpClientService
      */
-    private $httpClient; 
+    private $httpClientService;
     
     
     /**
@@ -25,17 +25,14 @@ class WebResourceService {
     
     /**
      *
-     * @param \webignition\Http\Client\Client $httpClient
+     * @param \SimplyTestable\WebClientBundle\Services\HttpClientService $httpClientService
      * @param array $contentTypeWebResourceMap
      */
     public function __construct(
-            \webignition\Http\Client\Client $httpClient,
+            \SimplyTestable\WebClientBundle\Services\HttpClientService $httpClientService,
             $contentTypeWebResourceMap)
     {
-        $this->httpClient = $httpClient;
-        $this->httpClient->redirectHandler()->enable();
-        $this->httpClient->sender()->setRetryLimit(10);
-        
+        $this->httpClientService = $httpClientService;
         $this->contentTypeWebResourceMap = $contentTypeWebResourceMap;        
     }
     
@@ -82,10 +79,10 @@ class WebResourceService {
     
     /**
      * 
-     * @return \webignition\Http\Client\Client
+     * @return \SimplyTestable\WebClientBundle\Services\HttpClientService
      */
-    public function getHttpClient() {
-        return $this->httpClient;
+    public function getHttpClientService() {
+        return $this->httpClientService;
     }
     
 }
