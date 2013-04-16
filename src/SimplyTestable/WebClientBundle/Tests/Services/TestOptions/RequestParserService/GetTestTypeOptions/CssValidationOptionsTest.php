@@ -4,7 +4,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Services\TestOptions\RequestParse
 
 use SimplyTestable\WebClientBundle\Tests\Services\TestOptions\RequestParserService\AbstractTestOptionsTest;
 
-class TestOptionsRequestParserServicesGettestTypeOptionsCssValidationOptionsTest extends AbstractTestOptionsTest {    
+class GetTestTypeOptionsCssValidationOptionsTest extends AbstractTestOptionsTest {    
 
     public function testCssValidationIgnoreWarningsTrue() {        
         $this->getRequestData()->set('css-validation', '1');
