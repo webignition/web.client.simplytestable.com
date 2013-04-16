@@ -4,14 +4,8 @@ namespace SimplyTestable\WebClientBundle\Controller;
 
 use SimplyTestable\WebClientBundle\Model\TestOptions;
 
-class TestStartController extends BaseController
-{ 
-    
-    /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Services\TestQueueService
-     */
-    private $testQueueService;    
+class TestStartController extends TestController
+{
     
     public function startAction()
     {        
@@ -127,38 +121,6 @@ class TestStartController extends BaseController
         return $redirectValues;
     }
     
-    
-    /**
-     *
-     * @return boolean
-     */
-    private function hasWebsite() {
-        return trim($this->getRequestValue('website')) != '';
-    }
-    
-    
-    /**
-     *
-     * @return string
-     */
-    private function getWebsite() {
-        $websiteUrl = $this->getNormalisedRequestUrl();
-        if (!$websiteUrl) {
-            return null;
-        }
-        
-        return (string)$websiteUrl; 
-    }
-    
-    
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TestService
-     */
-    private function getTestService() {
-        return $this->container->get('simplytestable.services.testservice');
-    }
-    
     /**
      * 
      * @return \SimplyTestable\WebClientBundle\Services\WebsiteBlockListService
@@ -176,21 +138,5 @@ class TestStartController extends BaseController
      */
     private function getTestOptionsRequestParserService() {
         return $this->container->get('simplytestable.services.testoptions.requestparserservice');
-    }    
-    
-    
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TestQueueService
-     */
-    private function getTestQueueService() {
-        if (is_null($this->testQueueService)) {
-            $this->testQueueService = $this->container->get('simplytestable.services.testqueueservice');
-            $this->testQueueService->setApplicationRootDirectory($this->container->get('kernel')->getRootDir());
-                    
-        }
-        
-        return $this->testQueueService;
-
-    }    
+    }  
 }

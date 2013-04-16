@@ -73,7 +73,7 @@ class TestController extends BaseController
      *
      * @return boolean
      */
-    private function hasWebsite() {
+    protected function hasWebsite() {
         return trim($this->getRequestValue('website')) != '';
     }
     
@@ -82,7 +82,7 @@ class TestController extends BaseController
      *
      * @return string
      */
-    private function getWebsite() {
+    protected function getWebsite() {
         $websiteUrl = $this->getNormalisedRequestUrl();
         if (!$websiteUrl) {
             return null;
@@ -105,7 +105,7 @@ class TestController extends BaseController
      *
      * @return \SimplyTestable\WebClientBundle\Services\TestService
      */
-    private function getTestService() {
+    protected function getTestService() {
         return $this->container->get('simplytestable.services.testservice');
     } 
     
@@ -114,7 +114,7 @@ class TestController extends BaseController
      *
      * @return \SimplyTestable\WebClientBundle\Services\TestQueueService
      */
-    private function getTestQueueService() {
+    protected function getTestQueueService() {
         if (is_null($this->testQueueService)) {
             $this->testQueueService = $this->container->get('simplytestable.services.testqueueservice');
             $this->testQueueService->setApplicationRootDirectory($this->container->get('kernel')->getRootDir());
