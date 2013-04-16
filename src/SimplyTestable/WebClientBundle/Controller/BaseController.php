@@ -76,11 +76,11 @@ abstract class BaseController extends Controller
         }
         
         $availableHttpMethods = array(
-            HTTP_METH_GET,
-            HTTP_METH_POST
+            \Guzzle\Http\Message\Request::GET,
+            \Guzzle\Http\Message\Request::POST
         );
         
-        $defaultHttpMethod = HTTP_METH_GET;
+        $defaultHttpMethod = \Guzzle\Http\Message\Request::GET;
         $requestedHttpMethods = array();
         
         if (is_null($httpMethod)) {
@@ -109,8 +109,8 @@ abstract class BaseController extends Controller
      * @param int $httpMethod
      * @return type 
      */
-    protected function getRequestValues($httpMethod = HTTP_METH_GET) {
-        return ($httpMethod == HTTP_METH_POST) ? $this->getRequest()->request : $this->getRequest()->query;            
+    protected function getRequestValues($httpMethod = \Guzzle\Http\Message\Request::GET) {
+        return ($httpMethod == \Guzzle\Http\Message\Request::POST) ? $this->getRequest()->request : $this->getRequest()->query;            
     }   
     
     /**

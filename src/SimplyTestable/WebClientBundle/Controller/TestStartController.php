@@ -24,7 +24,7 @@ class TestStartController extends BaseController
     {        
         $this->getTestService()->setUser($this->getUser());
         
-        $this->getTestOptionsRequestParserService()->setRequestData($this->getRequestValues(HTTP_METH_POST));
+        $this->getTestOptionsRequestParserService()->setRequestData($this->getRequestValues(\Guzzle\Http\Message\Request::POST));
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
         
         if (!$this->hasWebsite()) {            
