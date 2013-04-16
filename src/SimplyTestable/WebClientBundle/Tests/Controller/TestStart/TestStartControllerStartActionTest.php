@@ -44,6 +44,30 @@ class TestStartControllerStartActionTest extends BaseSimplyTestableTestCase {
         ))->startAction();
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertEquals('http://localhost/http://example.com//', $response->getTargetUrl());
+    }    
+    
+    public function testStartActionReceives404FromCoreApplication() {          
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
+        
+        $response = $this->getTestStartController('startAction', array(
+            'website' => 'http://example.com',
+            'html-validation' => '1'
+        ))->startAction();
+        
+        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertEquals('http://localhost/http://example.com//', $response->getTargetUrl());
+    }     
+    
+    public function testStartActionReceives500FromCoreApplication() {          
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
+        
+        $response = $this->getTestStartController('startAction', array(
+            'website' => 'http://example.com',
+            'html-validation' => '1'
+        ))->startAction();
+        
+        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertEquals('http://localhost/http://example.com//', $response->getTargetUrl());
     }       
 }
 
