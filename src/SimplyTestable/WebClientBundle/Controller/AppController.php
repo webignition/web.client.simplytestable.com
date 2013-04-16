@@ -67,7 +67,7 @@ class AppController extends BaseViewController
     {       
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        }        
+        }
         
         $templateName = 'SimplyTestableWebClientBundle:App:index.html.twig';
         $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);
