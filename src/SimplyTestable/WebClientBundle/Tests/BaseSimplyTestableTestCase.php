@@ -46,7 +46,16 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
      */
     protected function getHttpClientService() {
         return $this->container->get('simplytestable.services.httpclientservice');
-    }   
+    }  
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TestWebResourceService
+     */    
+    protected function getWebResourceService() {
+        return $this->container->get('simplytestable.services.webresourceservice');
+    }
 
 
 }

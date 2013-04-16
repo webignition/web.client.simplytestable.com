@@ -54,7 +54,7 @@ class TestStartController extends BaseController
             ));
         } catch (\Guzzle\Http\Exception\CurlException $curlException) {
             $this->get('session')->setFlash('test_start_error', 'curl-error');
-            $this->get('session')->setFlash('curl-error-code', $curlException->getErrorNo());
+            $this->get('session')->setFlash('curl_error_code', $curlException->getErrorNo());
             return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
             //if ($webResourceException->getResponse()->getStatusCode() == 503) {                               
