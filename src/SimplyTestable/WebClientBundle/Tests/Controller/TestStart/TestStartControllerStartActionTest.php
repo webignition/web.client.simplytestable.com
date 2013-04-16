@@ -34,6 +34,17 @@ class TestStartControllerStartActionTest extends BaseSimplyTestableTestCase {
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertRegExp('/http:\/\/localhost\/http:\/\/example.com\/\/[0-9]?\/progress\//', $response->getTargetUrl());
     }     
+    
+    public function testStartActionReceives503FromCoreApplication() {          
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
+        
+        $response = $this->getTestStartController('startAction', array(
+            'website' => 'http://example.com',
+            'html-validation' => '1'
+        ))->startAction();
+        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertEquals('http://localhost/http://example.com//', $response->getTargetUrl());
+    }       
 }
 
 

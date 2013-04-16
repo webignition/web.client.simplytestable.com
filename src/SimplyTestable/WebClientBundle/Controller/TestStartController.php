@@ -56,18 +56,17 @@ class TestStartController extends BaseController
             $this->get('session')->setFlash('test_start_error', 'curl-error');
             $this->get('session')->setFlash('curl-error-code', $curlException->getErrorNo());
             return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));
-        } catch (\Exception $e) {            
-            var_dump(get_class($e));
-//            if ($webResourceServiceException->getCode() == 503) {                               
-//                $this->getTestQueueService()->enqueue($this->getUser(), $this->getTestUrl(), $testOptions, ($this->isFullTest() ? 'full site' : 'single url'), $webResourceServiceException->getCode());
-//                return $this->redirect($this->generateUrl(
-//                    'app_website',
-//                    array(
-//                        'website' => $this->getTestUrl()                        
-//                    ),
-//                    true
-//                ));                
-//            }
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
+            if ($webResourceException->getResponse()->getStatusCode() == 503) {                               
+                $this->getTestQueueService()->enqueue($this->getUser(), $this->getTestUrl(), $testOptions, ($this->isFullTest() ? 'full site' : 'single url'), $webResourceException->getResponse()->getStatusCode());
+                return $this->redirect($this->generateUrl(
+                    'app_website',
+                    array(
+                        'website' => $this->getTestUrl()                        
+                    ),
+                    true
+                ));                
+            }
         }
     }
     
