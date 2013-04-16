@@ -88,14 +88,34 @@ abstract class CoreApplicationService {
     }
     
     
-    protected function getAuthorisedHttpRequest($url = '', $request_method = HTTP_METH_GET, $options = array()) {
-        $httpRequest = new \HttpRequest($url, $request_method, $options);
-        $httpRequest->addHeaders(array(
+    protected function addAuthorisationToRequest(\Guzzle\Http\Message\Request $request) {
+        $request->addHeaders(array(
             'Authorization' => 'Basic ' . base64_encode($this->getUser()->getUsername().':'.$this->getUser()->getPassword())
         ));
         
-        return $httpRequest;
+        return $request;                
     }
+    
+    
+//    /**
+//     * 
+//     * @param string $url
+//     * @param string $request_method
+//     * @return \Guzzle\Http\Message\Request
+//     */
+//    protected function getAuthorisedHttpRequest($url = '', $request_method = \Guzzle\Http\Message\Request::GET) {
+//        if ($request_method == \Guzzle\Http\Message\Request::GET) {
+//            $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($url);
+//        } else {
+//            $httpRequest = $this->webResourceService->getHttpClientService()->postRequest($url);
+//        }
+//
+//        $httpRequest->addHeaders(array(
+//            'Authorization' => 'Basic ' . base64_encode($this->getUser()->getUsername().':'.$this->getUser()->getPassword())
+//        ));
+//        
+//        return $httpRequest;
+//    }
     
     
     /**

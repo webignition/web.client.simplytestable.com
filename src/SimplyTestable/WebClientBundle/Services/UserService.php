@@ -122,7 +122,7 @@ class UserService extends CoreApplicationService {
      * @throws UserServiceException
      */
     public function resetPassword($token, $password) {
-        $request = $this->getAuthorisedHttpRequest($this->getUrl('user_reset_password', array('token' => $token)), HTTP_METH_POST);
+        $request = $this->getAuthorisedHttpRequest($this->getUrl('user_reset_password', array('token' => $token)), \Guzzle\Http\Message\Request::POST);
         $request->addPostFields(array(
             'password' => $password
         ));
@@ -146,7 +146,7 @@ class UserService extends CoreApplicationService {
         $request = $this->getAuthorisedHttpRequest($this->getUrl('user', array(
             'email' => $this->getUser()->getUsername(),
             'password' => $this->getUser()->getPassword()
-        )), HTTP_METH_POST);
+        )), \Guzzle\Http\Message\Request::POST);
         
         $response = $this->getHttpClient()->getResponse($request);
         return $response->getResponseCode() == 200;
@@ -154,7 +154,7 @@ class UserService extends CoreApplicationService {
     
     
     public function create($email, $password) {
-        $request = $this->getAuthorisedHttpRequest($this->getUrl('user_create'), HTTP_METH_POST);
+        $request = $this->getAuthorisedHttpRequest($this->getUrl('user_create'), \Guzzle\Http\Message\Request::POST);
         $request->addPostFields(array(
             'email' => $email,
             'password' => $password
@@ -181,7 +181,7 @@ class UserService extends CoreApplicationService {
         
         $request = $this->getAuthorisedHttpRequest($this->getUrl('user_activate', array(
             'token' => $token
-        )), HTTP_METH_POST);
+        )), \Guzzle\Http\Message\Request::POST);
         
         try {
             $response = $this->getHttpClient()->getResponse($request);
@@ -225,7 +225,7 @@ class UserService extends CoreApplicationService {
         
         $request = $this->getAuthorisedHttpRequest($this->getUrl('user_exists', array(
             'email' => $userEmail
-        )), HTTP_METH_POST);
+        )), \Guzzle\Http\Message\Request::POST);
         
         $response = $this->getHttpClient()->getResponse($request);
         
@@ -260,7 +260,7 @@ class UserService extends CoreApplicationService {
         
         $request = $this->getAuthorisedHttpRequest($this->getUrl('user_is_enabled', array(
             'email' => $currentUser->getUsername()
-        )), HTTP_METH_POST);
+        )), \Guzzle\Http\Message\Request::POST);
         
         $response = $this->getHttpClient()->getResponse($request);
         

@@ -52,17 +52,22 @@ class TestStartController extends BaseController
                 ),
                 true
             ));
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-            if ($webResourceServiceException->getCode() == 503) {                               
-                $this->getTestQueueService()->enqueue($this->getUser(), $this->getTestUrl(), $testOptions, ($this->isFullTest() ? 'full site' : 'single url'), $webResourceServiceException->getCode());
-                return $this->redirect($this->generateUrl(
-                    'app_website',
-                    array(
-                        'website' => $this->getTestUrl()                        
-                    ),
-                    true
-                ));                
-            }
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            $this->get('session')->setFlash('test_start_error', 'curl-error');
+            $this->get('session')->setFlash('curl-error-code', $curlException->getErrorNo());
+            return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));
+        } catch (\Exception $e) {            
+            var_dump(get_class($e));
+//            if ($webResourceServiceException->getCode() == 503) {                               
+//                $this->getTestQueueService()->enqueue($this->getUser(), $this->getTestUrl(), $testOptions, ($this->isFullTest() ? 'full site' : 'single url'), $webResourceServiceException->getCode());
+//                return $this->redirect($this->generateUrl(
+//                    'app_website',
+//                    array(
+//                        'website' => $this->getTestUrl()                        
+//                    ),
+//                    true
+//                ));                
+//            }
         }
     }
     
@@ -87,7 +92,7 @@ class TestStartController extends BaseController
      */
     private function isFullTest() {
         /* @var $requestParameters \Symfony\Component\HttpFoundation\ParameterBag */
-        $requestParameters = $this->getRequestValues(HTTP_METH_POST);
+        $requestParameters = $this->getRequestValues(\Guzzle\Http\Message\Request::POST);
         if (!$requestParameters->has('full-single')) {
             return true;
         }

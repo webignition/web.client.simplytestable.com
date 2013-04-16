@@ -87,45 +87,30 @@ class TestService extends CoreApplicationService {
     
     
     public function start($canonicalUrl, TestOptions $testOptions, $testType = 'full site') {
-        $httpRequest = $this->getAuthorisedHttpRequest(
-            $this->getUrl('test_start', array(
+        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_start', array(
             'canonical-url' => $canonicalUrl
-        ))); 
-        
-        $queryData = array(
+        )), null, array_merge(array(
             'type' => $testType
-        );
+        ), $testOptions->__toArray()));
         
-        if ($testOptions->hasTestTypes()) {
-            $queryData['test-types'] = $testOptions->getTestTypes();
-            $testTypeKeys = $testOptions->getTestTypeKeys();
-            
-            foreach ($testTypeKeys as $testTypeKey) {
-                $testType = $testOptions->getNameFromKey($testTypeKey);                
-                
-                if (!isset($queryData['test-type-options'])) {
-                    $queryData['test-type-options'] = array();
-                }
-                
-                $queryData['test-type-options'][$testType] = $testOptions->getAbsoluteTestTypeOptions($testTypeKey, false);
-            }
-        }
-        
-        if (count($queryData)) {
-            $httpRequest->setQueryData($queryData);
-        }
+        $this->addAuthorisationToRequest($httpRequest);
         
         /* @var $response \webignition\WebResource\JsonDocument\JsonDocument */
         try {
             return $this->webResourceService->get($httpRequest);
-        } catch (\webignition\Http\Client\CurlException $curlException) {
-         
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-            if ($webResourceServiceException->getCode() == 503) {
-                throw $webResourceServiceException;                    
-            }
-            
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            throw $curlException;
         }
+        
+        //exit();
+//        } catch (\webignition\Http\Client\CurlException $curlException) {
+//         
+//        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
+//            if ($webResourceServiceException->getCode() == 503) {
+//                throw $webResourceServiceException;                    
+//            }
+//            
+//        }
     }
     
     

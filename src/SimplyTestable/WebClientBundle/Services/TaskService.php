@@ -349,7 +349,7 @@ class TaskService extends CoreApplicationService {
                 'test_id' => $test->getTestId()
         )));
         
-        $httpRequest->setMethod(HTTP_METH_POST);
+        $httpRequest->setMethod(\Guzzle\Http\Message\Request::POST);
         
         $httpRequest->setPostFields(array(
             'taskIds' => implode(',', $remoteTaskIds)            

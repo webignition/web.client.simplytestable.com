@@ -173,7 +173,7 @@ class TaskOutputService extends CoreApplicationService {
             'test_id' => $test->getTestId()            
         )));
         
-        $httpRequest->setMethod(HTTP_METH_POST);
+        $httpRequest->setMethod(\Guzzle\Http\Message\Request::POST);
         
         $httpRequest->setPostFields(array(
             'task_ids' => implode(',', array_keys($tasksById))            

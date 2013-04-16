@@ -148,6 +148,31 @@ abstract class BaseTestCase extends WebTestCase {
      */
     protected function getFixturesDataPath($testName) {
         return __DIR__ . self::FIXTURES_DATA_RELATIVE_PATH . '/' . str_replace('\\', DIRECTORY_SEPARATOR, get_class($this)) . '/' . $testName;
-    }    
+    }  
+    
+    
+    protected function setHttpFixtures($fixtures) {
+        $plugin = new \Guzzle\Plugin\Mock\MockPlugin();
+        
+        foreach ($fixtures as $fixture) {
+            $plugin->addResponse($fixture);
+        }
+         
+        $this->getHttpClientService()->get()->addSubscriber($plugin);              
+    }
+    
+    
+    protected function getHttpFixtures($path) {
+        $fixtures = array();
+        
+        $fixturesDirectory = new \DirectoryIterator($path);
+        foreach ($fixturesDirectory as $directoryItem) {
+            if ($directoryItem->isFile()) {                
+                $fixtures[] = \Guzzle\Http\Message\Response::fromMessage(file_get_contents($directoryItem->getPathname()));
+            }
+        }
+        
+        return $fixtures;
+    }     
 
 }

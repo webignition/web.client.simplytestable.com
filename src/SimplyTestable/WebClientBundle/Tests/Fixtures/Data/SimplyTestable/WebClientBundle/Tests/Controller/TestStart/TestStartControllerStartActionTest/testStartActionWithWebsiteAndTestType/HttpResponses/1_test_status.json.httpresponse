@@ -1,0 +1,41 @@
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+   "id":1,
+   "user":"public",
+   "website":"http:\/\/example.com\/",
+   "state":"new",
+   "url_count":0,
+   "task_count":0,
+   "task_count_by_state":{
+      "cancelled":0,
+      "queued":0,
+      "in-progress":0,
+      "completed":0,
+      "awaiting-cancellation":0,
+      "queued-for-assignment":0,
+      "failed-no-retry-available":0,
+      "failed-retry-available":0,
+      "failed-retry-limit-reached":0,
+      "skipped":0
+   },
+   "task_types":[
+      {
+         "name":"HTML validation"
+      },
+      {
+         "name":"CSS validation"
+      },
+      {
+         "name":"JS static analysis"
+      }
+   ],
+   "errored_task_count":0,
+   "cancelled_task_count":0,
+   "skipped_task_count":0,
+   "task_type_options":[
+
+   ],
+   "type":"Full site"
+}
