@@ -11,14 +11,7 @@ class TestStartController extends BaseController
      *
      * @var \SimplyTestable\WebClientBundle\Services\TestQueueService
      */
-    private $testQueueService;
-    
-    
-    private $allowedTestTypeMap = array(
-        'html-validation' => 'HTML validation',
-        'css-validation' => 'CSS validation'
-    );
-    
+    private $testQueueService;    
     
     public function startAction()
     {        
@@ -56,17 +49,15 @@ class TestStartController extends BaseController
             $this->get('session')->setFlash('test_start_error', 'curl-error');
             $this->get('session')->setFlash('curl_error_code', $curlException->getErrorNo());
             return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
-            //if ($webResourceException->getResponse()->getStatusCode() == 503) {                               
-                $this->getTestQueueService()->enqueue($this->getUser(), $this->getTestUrl(), $testOptions, ($this->isFullTest() ? 'full site' : 'single url'), $webResourceException->getResponse()->getStatusCode());
-                return $this->redirect($this->generateUrl(
-                    'app_website',
-                    array(
-                        'website' => $this->getTestUrl()                        
-                    ),
-                    true
-                ));                
-            //}
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {                            
+            $this->getTestQueueService()->enqueue($this->getUser(), $this->getTestUrl(), $testOptions, ($this->isFullTest() ? 'full site' : 'single url'), $webResourceException->getResponse()->getStatusCode());
+            return $this->redirect($this->generateUrl(
+                'app_website',
+                array(
+                    'website' => $this->getTestUrl()                        
+                ),
+                true
+            ));
         }
     }
     
@@ -136,74 +127,6 @@ class TestStartController extends BaseController
         return $redirectValues;
     }
     
-    /**
-     * 
-     * @param string $name
-     * @return boolean
-     */
-    private function isOptionsSelected($name) {
-        return $this->getRequestValue($name) === "1";
-    }    
-    
-    
-    /**
-     * 
-     * @return array|boolean
-     */
-    private function getTestOptions() {
-        $testTypes = $this->getTestTypes();
-        
-        if (count($testTypes) == 0) {
-            return false;
-        }
-        
-        return array(
-            'test-types' => $testTypes
-        );
-    }
-    
-    
-    /**
-     * 
-     * @return array
-     */
-    private function getTestTypes() {        
-        $testTypes = array();
-        
-        foreach ($this->allowedTestTypeMap as $testTypeKey => $testTypeName) {
-            if ($this->getRequestValue($testTypeKey) === "1") {
-                $testTypes[$testTypeKey] = $testTypeName;
-            }
-        }              
-        
-        return $testTypes;
-    }
-    
-    
-    
-    
-    
-    public function cancelAction()
-    {
-        $this->getTestService()->setUser($this->getUser());
-        
-        if (!$this->hasWebsite()) {
-            $this->get('session')->setFlash('test_start_error', '');
-            return $this->redirect($this->generateUrl('app', array(), true));
-        }
-        
-        if ($this->getTestService()->cancel($this->getWebsite(), $this->getTestId())) {
-            return $this->redirect($this->generateUrl(
-                'app_results',
-                array(
-                    'website' => $this->getWebsite(),
-                    'test_id' => $this->getTestId()
-                ),
-                true
-            ));       
-        }
-    }
-    
     
     /**
      *
@@ -225,15 +148,6 @@ class TestStartController extends BaseController
         }
         
         return (string)$websiteUrl; 
-    }
-    
-    
-    /**
-     *
-     * @return int 
-     */
-    private function getTestId() {
-        return $this->getRequestValue('test_id', 0);
     }
     
     
