@@ -11,14 +11,9 @@ class AppControllerTest extends BaseSimplyTestableTestCase {
     }    
     
     public function testNormalMinimalUsage() {  
-        $this->container->enterScope('request');     
-        
-        $appController = $this->getAppController('indexAction');
-        $response = $appController->indexAction();
-        
-        $this->assertEquals(200, $response->getStatusCode());
-    }
-    
+        $this->container->enterScope('request');
+        $this->assertEquals(200, $this->getAppController('indexAction')->indexAction()->getStatusCode());
+    }    
 }
 
 
