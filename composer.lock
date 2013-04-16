@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "e18e777761b0ee736c29637147391550",
+    "hash": "09f3e959c96d654045645d5fd45b0ad2",
     "packages": [
         {
             "name": "doctrine/common",
@@ -1635,22 +1635,22 @@
         },
         {
             "name": "webignition/internet-media-type",
-            "version": "0.4",
+            "version": "0.4.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/internet-media-type.git",
-                "reference": "0.4"
+                "reference": "0.4.1.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/webignition/internet-media-type/zipball/0.4",
-                "reference": "0.4",
+                "url": "https://api.github.com/repos/webignition/internet-media-type/zipball/0.4.1.1",
+                "reference": "0.4.1.1",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0",
                 "webignition/quoted-string": ">=0.1,<2.0",
-                "webignition/string-parser": ">=0.1, <2.0"
+                "webignition/string-parser": ">=0.2.1, <2.0"
             },
             "type": "library",
             "autoload": {
@@ -1677,7 +1677,7 @@
                 "media type",
                 "media-type"
             ],
-            "time": "2012-08-16 08:14:02"
+            "time": "2013-03-18 14:58:48"
         },
         {
             "name": "webignition/is-http-status-code",
@@ -1718,21 +1718,20 @@
         },
         {
             "name": "webignition/quoted-string",
-            "version": "0.2",
+            "version": "0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/quoted-string.git",
-                "reference": "0.2"
+                "reference": "0.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/webignition/quoted-string/zipball/0.2",
-                "reference": "0.2",
+                "url": "https://github.com/webignition/quoted-string/zipball/0.1",
+                "reference": "0.1",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0",
-                "webignition/string-parser": "0.1"
+                "php": ">=5.3.0"
             },
             "type": "library",
             "autoload": {
@@ -1756,7 +1755,7 @@
                 "parser",
                 "quoted-string"
             ],
-            "time": "2012-08-15 12:44:56"
+            "time": "2012-08-15 09:52:06"
         },
         {
             "name": "webignition/resque-bundle",
@@ -1859,16 +1858,16 @@
         },
         {
             "name": "webignition/string-parser",
-            "version": "0.1",
+            "version": "0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/string-parser.git",
-                "reference": "0.1"
+                "reference": "0.2.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/webignition/string-parser/zipball/0.1",
-                "reference": "0.1",
+                "url": "https://api.github.com/repos/webignition/string-parser/zipball/0.2.1",
+                "reference": "0.2.1",
                 "shasum": ""
             },
             "require": {
@@ -1896,7 +1895,7 @@
                 "parser",
                 "string"
             ],
-            "time": "2012-08-15 12:36:12"
+            "time": "2013-03-18 14:32:24"
         },
         {
             "name": "webignition/url",
