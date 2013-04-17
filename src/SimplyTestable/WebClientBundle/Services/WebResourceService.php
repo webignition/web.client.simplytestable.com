@@ -51,9 +51,7 @@ class WebResourceService {
      * @return \SimplyTestable\WebClientBundle\Services\webResourceClassName
      * @throws WebResourceException
      */
-    public function get(\Guzzle\Http\Message\Request $request) {
-        var_dump($request->getUrl());
-        
+    public function get(\Guzzle\Http\Message\Request $request) {        
         // Guzzle seems to be flailing in errors if redirects total more than 4
         $request->getParams()->set('redirect.max', 4);
         

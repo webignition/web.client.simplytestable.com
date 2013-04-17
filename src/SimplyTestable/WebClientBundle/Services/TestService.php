@@ -303,8 +303,6 @@ class TestService extends CoreApplicationService {
      */
     private function createTestFromRemoteTestSummary() {        
         $remoteTestSummary = $this->getRemoteTestSummary();
-        
-        var_dump($remoteTestSummary);
 
         $this->currentTest->setState($remoteTestSummary->state);
         $this->currentTest->setUser($remoteTestSummary->user);
