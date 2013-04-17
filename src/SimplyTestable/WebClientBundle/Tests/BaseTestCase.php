@@ -80,7 +80,6 @@ abstract class BaseTestCase extends WebTestCase {
         
         foreach ($migrationStatusOutputLines as $migrationStatusOutputLine) {
             if (substr_count($migrationStatusOutputLine, '>> New Migrations:')) {
-                //var_dump($migrationStatusOutputLine, (int)trim(str_replace('>> Available Migrations:', '', $migrationStatusOutputLine)));
                 if ((int)trim(str_replace('>> New Migrations:', '', $migrationStatusOutputLine)) > 0) {
                     return true;
                 }

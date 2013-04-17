@@ -181,33 +181,8 @@ class TestOptions {
             } else {
                 $optionValue = $optionDefinition['default'];
             }            
-            
-            
-            //var_dump($key, $optionDefinition, $optionValue);
-            //exit();
-            
-//            
-//            
-//            
-//            $optionValue = null;
-//            if (isset($testTypeOptions[$optionKey])) {
-//                switch ($optionType) {
-//                    case 'array':
-//                        $optionValue = explode("\n", $testTypeOptions[$optionKey]);
-//                        foreach ($optionValue as $index => $value) {
-//                            $optionValue[$index] = trim($value);
-//                        }
-//                        break;
-//
-//                    default:
-//                        $optionValue = $testTypeOptions[$optionKey];
-//                        break;
-//                }                
-//            }
-//            
-//            if (!is_null($optionValue)) {
-                $absoluteTestTypeOptions[$key] = $optionValue;
-//            }                      
+
+            $absoluteTestTypeOptions[$key] = $optionValue;                     
         }
         
         return $absoluteTestTypeOptions;
