@@ -191,10 +191,7 @@ class TestService extends CoreApplicationService {
      * @param int $testId
      * @return type 
      */
-    private function fetchEntity($testId) {
-//        return $this->getEntityRepository()->getById($testId);
-//        exit();
-//        
+    private function fetchEntity($testId) {       
         return $this->getEntityRepository()->findOneBy(array(
             'testId' => $testId
         ));
@@ -212,6 +209,8 @@ class TestService extends CoreApplicationService {
             if ($webResourceException->getResponse()->getStatusCode() === 403) {                
                 throw new UserServiceException(403);
             }
+            
+            throw $webResourceException;
         }        
                     
         if (!$remoteTestSummary) {

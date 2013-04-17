@@ -64,7 +64,7 @@ class AppController extends BaseViewController
     
     
     public function indexAction()
-    {       
+    {        
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }
@@ -297,15 +297,9 @@ class AppController extends BaseViewController
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
         return $this->sendResponse($viewData);
-    }    
+    }
     
-    public function progressAction($website, $test_id) {
-        $this->getTestService()->setUser($this->getUser());
-        
-        if ($this->isUsingOldIE()) {
-            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        } 
-        
+    private function retrieveTest($website, $test_id) {
         try {
             if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
                 return $this->redirect($this->generateUrl('app_test_redirector', array(
@@ -314,7 +308,7 @@ class AppController extends BaseViewController
                 ), true));
             }           
             
-            $test = $this->getTestService()->get($website, $test_id, $this->getUser());            
+            return $this->getTestService()->get($website, $test_id, $this->getUser());            
         } catch (UserServiceException $e) {
             if (!$this->isLoggedIn()) {                
                 $redirectParameters = json_encode(array(
@@ -344,7 +338,19 @@ class AppController extends BaseViewController
                 'user' => $this->getUser(),
                 'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),                
             ));            
-        }         
+        }
+    }
+    
+    public function progressAction($website, $test_id) {
+        $this->getTestService()->setUser($this->getUser());
+        
+        if ($this->isUsingOldIE()) {
+            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
+        } 
+        
+        if (!($test = $this->retrieveTest($website, $test_id)) instanceof Test) {
+            return $test;
+        }
         
         if (in_array($test->getState(), $this->testFinishedStates)) {
             return $this->redirect($this->getResultsUrl($website, $test_id));

@@ -30,6 +30,21 @@ class AppControllerProgressActionMinimalTest extends BaseSimplyTestableTestCase 
         
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertEquals('/signin/', $redirectUrl->getPath());
+    } 
+    
+    public function testGetProgressWithHttpClientErrorRetrievingRemoteSummary() {
+        $this->removeAllTests();
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
+        
+        $this->container->enterScope('request');
+        
+        try {
+            $this->getAppController('progressAction')->progressAction('http://example.com/', 1);
+            $this->fail('WebResourceException 404 has not been raised.');
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
+            $this->assertEquals(400, $webResourceException->getResponse()->getStatusCode());
+            return;
+        };
     }    
 }
 
