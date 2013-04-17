@@ -163,13 +163,21 @@ abstract class BaseTestCase extends WebTestCase {
     
     
     protected function getHttpFixtures($path) {
-        $fixtures = array();
-        
+        $fixtures = array();        
         $fixturesDirectory = new \DirectoryIterator($path);
+        
+        $fixturePathnames = array();
+        
         foreach ($fixturesDirectory as $directoryItem) {
-            if ($directoryItem->isFile()) {                
-                $fixtures[] = \Guzzle\Http\Message\Response::fromMessage(file_get_contents($directoryItem->getPathname()));
+            if ($directoryItem->isFile()) { 
+                $fixturePathnames[] = $directoryItem->getPathname();
             }
+        }
+        
+        sort($fixturePathnames);
+        
+        foreach ($fixturePathnames as $fixturePathname) {
+                $fixtures[] = \Guzzle\Http\Message\Response::fromMessage(file_get_contents($fixturePathname));            
         }
         
         return $fixtures;
