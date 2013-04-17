@@ -49,6 +49,7 @@ class AppControllerProgressActionMinimalTest extends BaseSimplyTestableTestCase 
     
     public function testGetProgressWithAuthorisedUserAsJson() {
         $this->removeAllTests();
+        $this->getHttpClientService()->reset();
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         
         $this->container->enterScope('request');

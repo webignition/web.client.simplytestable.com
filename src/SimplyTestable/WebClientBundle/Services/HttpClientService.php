@@ -31,6 +31,11 @@ class HttpClientService {
     }
     
     
+    public function reset() {
+        $this->httpClient = null;
+    }
+    
+    
     /**
      * 
      * @param string $uri
