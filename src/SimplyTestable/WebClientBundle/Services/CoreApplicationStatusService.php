@@ -40,6 +40,11 @@ class CoreApplicationStatusService extends CoreApplicationService {
      */
     private function getRemoteCoreApplicationSummaryProperty($propertyName) {
         $remoteCoreApplicationSummary = $this->getRemoteCoreApplicationSummary();
+        
+        if (is_null($this->remoteCoreApplicationSummary)) {
+            return null;
+        }
+        
         return isset($remoteCoreApplicationSummary->$propertyName) ? $remoteCoreApplicationSummary->$propertyName : null;        
     }
     
@@ -50,17 +55,13 @@ class CoreApplicationStatusService extends CoreApplicationService {
      */
     private function getRemoteCoreApplicationSummary() {
         if (is_null($this->remoteCoreApplicationSummary)) {
-            $httpRequest = $this->getAuthorisedHttpRequest($this->getUrl());            
+            $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl());
+            $this->addAuthorisationToRequest($httpRequest);          
 
             try {
                 $this->remoteCoreApplicationSummary = $this->webResourceService->get($httpRequest)->getContentObject();
-            } catch (\webignition\Http\Client\CurlException $curlException) {
-                var_dump("cp02", $curlException->getCode(), $curlException->getMessage());                
-                return $curlException;
-            } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-                var_dump("cp03", $webResourceServiceException->getCode(), $webResourceServiceException->getMessage());
-                exit();                
-                return $webResourceServiceException->getCode();
+            } catch (\Exception $curlException) {
+                return null;
             }             
         }
         

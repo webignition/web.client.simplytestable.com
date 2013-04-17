@@ -14,8 +14,8 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
      * @param array $postData
      * @return \SimplyTestable\WebClientBundle\Controller\AppController
      */
-    protected function getAppController($methodName, $postData = array()) {
-        return $this->getController(self::APP_CONTROLLER_NAME, $methodName, $postData);
+    protected function getAppController($methodName, $postData = array(), $queryData = array()) {
+        return $this->getController(self::APP_CONTROLLER_NAME, $methodName, $postData, $queryData);
     }
     
 

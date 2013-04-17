@@ -46,6 +46,23 @@ class AppControllerProgressActionMinimalTest extends BaseSimplyTestableTestCase 
             return;
         };
     }    
+    
+    public function testGetProgressWithAuthorisedUserAsJson() {
+        $this->removeAllTests();
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
+        
+        $this->container->enterScope('request');
+        
+        $response = $this->getAppController(
+            'progressAction',
+            array(),
+            array(
+                'output' => 'json'
+            )
+        )->progressAction('http://example.com/', 1);
+        
+        $this->assertEquals(200, $response->getStatusCode());
+    }    
 }
 
 
