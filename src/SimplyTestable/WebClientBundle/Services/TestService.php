@@ -302,7 +302,9 @@ class TestService extends CoreApplicationService {
      * @return \SimplyTestable\WebClientBundle\Entity\Test\Test 
      */
     private function createTestFromRemoteTestSummary() {        
-        $remoteTestSummary = $this->getRemoteTestSummary();                
+        $remoteTestSummary = $this->getRemoteTestSummary();
+        
+        var_dump($remoteTestSummary);
 
         $this->currentTest->setState($remoteTestSummary->state);
         $this->currentTest->setUser($remoteTestSummary->user);
