@@ -60,14 +60,22 @@ class TaskController extends BaseViewController
     public function idCollectionAction($website, $test_id) {        
         $this->getTestService()->setUser($this->getUser());
         
-        if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
-            return $this->sendNotFoundResponse();
-        }
-        
-        $test = $this->getTestService()->get($website, $test_id, $this->getUser());        
-        $taskIds = $this->getTaskService()->getRemoteTaskIds($test);
+        try {        
+            if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
+                return $this->sendNotFoundResponse();
+            }
+            
+            $test = $this->getTestService()->get($website, $test_id, $this->getUser());        
+            $taskIds = $this->getTaskService()->getRemoteTaskIds($test);
 
-        return new Response($this->getSerializer()->serialize($taskIds, 'json'));
+            return new Response($this->getSerializer()->serialize($taskIds, 'json'));
+        } catch (\SimplyTestable\WebClientBundle\Exception\UserServiceException $userServiceException) {
+            return $this->sendNotFoundResponse();
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
+            return new Response($this->getSerializer()->serialize(null, 'json'));
+        } catch (\Guzzle\Http\Exception\RequestException $requestException)  {
+            return new Response($this->getSerializer()->serialize(null, 'json'));
+        }
     }
     
     

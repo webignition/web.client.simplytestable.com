@@ -6,17 +6,31 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     
     const APP_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\AppController';    
     const TEST_START_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TestStartController';    
+    const TASK_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TaskController';    
 
     
     /**
      *
      * @param string $methodName
      * @param array $postData
+     * @param array $queryData
      * @return \SimplyTestable\WebClientBundle\Controller\AppController
      */
     protected function getAppController($methodName, $postData = array(), $queryData = array()) {
         return $this->getController(self::APP_CONTROLLER_NAME, $methodName, $postData, $queryData);
     }
+    
+    
+    /**
+     *
+     * @param string $methodName
+     * @param array $postData
+     * @param array $queryData
+     * @return \SimplyTestable\WebClientBundle\Controller\TaskController
+     */
+    protected function getTaskController($methodName, $postData = array(), $queryData = array()) {
+        return $this->getController(self::TASK_CONTROLLER_NAME, $methodName, $postData, $queryData);
+    }    
     
 
     /**

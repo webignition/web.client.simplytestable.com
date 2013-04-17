@@ -420,21 +420,14 @@ class TaskService extends CoreApplicationService {
      * @return array 
      */
     private function retrieveRemoteTaskIds(Test $test) {
-        $httpRequest = $this->getAuthorisedHttpRequest(
-            $this->getUrl('test_task_ids', array(
+        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_task_ids', array(
                 'canonical-url' => (string)$test->getWebsite(),
                 'test_id' => $test->getTestId()
         )));
-
-        try {
-            return $this->webResourceService->get($httpRequest)->getContentObject();          
-        } catch (\webignition\Http\Client\CurlException $curlException) {
-            
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-            if ($webResourceServiceException->getCode() == 403) {
-                return false;
-            }
-        }          
+        
+        $this->addAuthorisationToRequest($httpRequest);
+        
+        return $this->webResourceService->get($httpRequest)->getContentObject();
     }
     
     
