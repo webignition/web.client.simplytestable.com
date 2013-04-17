@@ -299,21 +299,21 @@ class AppController extends BaseViewController
         return $this->sendResponse($viewData);
     }    
     
-    public function progressAction($website, $test_id) {        
+    public function progressAction($website, $test_id) {
         $this->getTestService()->setUser($this->getUser());
         
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        }
-        
-        if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
-            return $this->redirect($this->generateUrl('app_test_redirector', array(
-                'website' => $website,
-                'test_id' => $test_id
-            ), true));
         } 
         
         try {
+            if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
+                return $this->redirect($this->generateUrl('app_test_redirector', array(
+                    'website' => $website,
+                    'test_id' => $test_id
+                ), true));
+            }           
+            
             $test = $this->getTestService()->get($website, $test_id, $this->getUser());            
         } catch (UserServiceException $e) {
             if (!$this->isLoggedIn()) {                
@@ -344,7 +344,7 @@ class AppController extends BaseViewController
                 'user' => $this->getUser(),
                 'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),                
             ));            
-        }
+        }         
         
         if (in_array($test->getState(), $this->testFinishedStates)) {
             return $this->redirect($this->getResultsUrl($website, $test_id));

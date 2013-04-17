@@ -101,16 +101,6 @@ class TestService extends CoreApplicationService {
         } catch (\Guzzle\Http\Exception\CurlException $curlException) {
             throw $curlException;
         }
-        
-        //exit();
-//        } catch (\webignition\Http\Client\CurlException $curlException) {
-//         
-//        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-//            if ($webResourceServiceException->getCode() == 503) {
-//                throw $webResourceServiceException;                    
-//            }
-//            
-//        }
     }
     
     
@@ -216,7 +206,14 @@ class TestService extends CoreApplicationService {
      * @return boolean
      */
     private function create() {
-        $remoteTestSummary = $this->getRemoteTestSummary();              
+        try {
+            $remoteTestSummary = $this->getRemoteTestSummary();  
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
+            if ($webResourceException->getResponse()->getStatusCode() === 403) {                
+                throw new UserServiceException(403);
+            }
+        }        
+                    
         if (!$remoteTestSummary) {
             return false;
         }
@@ -238,23 +235,7 @@ class TestService extends CoreApplicationService {
         $this->currentTest->setState($remoteTestSummary->state);
         $this->currentTest->setUrlCount($remoteTestSummary->url_count); 
         
-        $this->updateTimePeriodFromJsonObject($this->currentTest->getTimePeriod(), $remoteTestSummary);
-        
-//        foreach ($jsonObject->tasks as $taskJsonObject) {
-//            $retrievedTask = $this->createTaskFromJsonObject($taskJsonObject);
-//            
-//            if ($test->hasTask($retrievedTask)) {
-//                $currentTask = $test->getTask($retrievedTask);
-//                if ($currentTask->getState() != $retrievedTask->getState()) {                    
-//                    $this->populateTaskFromJsonObject($currentTask, $taskJsonObject);
-//                    $this->entityManager->persist($currentTask);
-//                }
-//            } else {
-//                $retrievedTask->setTest($test);
-//                $test->addTask($retrievedTask);
-//                $this->entityManager->persist($retrievedTask);
-//            }
-//        }        
+        $this->updateTimePeriodFromJsonObject($this->currentTest->getTimePeriod(), $remoteTestSummary);       
     }
     
     
@@ -297,35 +278,23 @@ class TestService extends CoreApplicationService {
         
         return $testJsonDocument;         
     }
-    
-    
+
     
     /**
-     *
-     * @return \webignition\WebResource\JsonDocument\JsonDocument 
+     * 
+     * @return \webignition\WebResource\JsonDocument\JsonDocument
+     * @throws WebResourceException
+     * @throws \Guzzle\Http\Exception\CurlException
      */
-    private function retrieveRemoteTestSummary() {        
-        $retrievalUrl = $this->getUrl('test_status', array(
+    private function retrieveRemoteTestSummary() {
+        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_status', array(
             'canonical-url' => $this->currentTest->getWebsite(),
             'test_id' => $this->currentTest->getTestId()
-        ));
+        )));
         
-        $httpRequest = $this->getAuthorisedHttpRequest($retrievalUrl);
+        $this->addAuthorisationToRequest($httpRequest);
         
-        $testJsonDocument = null;
-        
-        /* @var $testJsonDocument \webignition\WebResource\JsonDocument\JsonDocument */
-        try {
-            $testJsonDocument =  $this->webResourceService->get($httpRequest);
-        } catch (\webignition\Http\Client\CurlException $curlException) {
-            
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-            if ($webResourceServiceException->getCode() == 403) {
-                $testJsonDocument = false;
-            }
-        }
-        
-        return $testJsonDocument;     
+        return $this->webResourceService->get($httpRequest);   
     }
     
     
@@ -446,7 +415,16 @@ class TestService extends CoreApplicationService {
         }
         
         return $this->entityRepository;
-    }   
+    } 
+    
+    
+    /**
+     * 
+     * @return \Doctrine\ORM\EntityManager
+     */
+    public function getEntityManager() {        
+        return $this->entityManager;
+    }
     
     
 }

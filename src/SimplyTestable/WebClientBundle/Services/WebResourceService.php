@@ -42,12 +42,14 @@ class WebResourceService {
      */
     public function getHttpClientService() {        
         return $this->httpClientService;
-    }    
+    }
+    
     
     /**
-     *
+     * 
      * @param \Guzzle\Http\Message\Request $request
-     * @return \webignition\WebResource\WebResource 
+     * @return \SimplyTestable\WebClientBundle\Services\webResourceClassName
+     * @throws WebResourceException
      */
     public function get(\Guzzle\Http\Message\Request $request) {        
         // Guzzle seems to be flailing in errors if redirects total more than 4

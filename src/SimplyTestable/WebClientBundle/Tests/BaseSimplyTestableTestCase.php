@@ -56,6 +56,25 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     protected function getWebResourceService() {
         return $this->container->get('simplytestable.services.webresourceservice');
     }
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TestService
+     */    
+    protected function getTestService() {
+        return $this->container->get('simplytestable.services.testservice');
+    }    
+    
+    
+    protected function removeAllTests() {        
+        $tests = $this->getTestService()->getEntityRepository()->findAll();
+        
+        foreach ($tests as $test) {
+            $this->getTestService()->getEntityManager()->remove($test);
+        }
+        
+        $this->getTestService()->getEntityManager()->flush();
+    }    
 
 
 }
