@@ -129,7 +129,7 @@ abstract class BaseController extends Controller
         }
         
         return $url;
-    }  
+    }   
     
     
     /**
@@ -244,6 +244,15 @@ abstract class BaseController extends Controller
      */
     protected function getUserSerializerService() {
         return $this->container->get('simplytestable.services.userserializerservice');
-    }   
+    }
+    
+    
+    /**
+     *
+     * @return \Symfony\Component\HttpKernel\Log\LoggerInterface
+     */
+    protected function getLogger() {
+        return $this->container->get('logger');
+    }
     
 }

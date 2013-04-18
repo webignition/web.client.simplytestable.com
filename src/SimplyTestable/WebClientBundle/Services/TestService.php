@@ -376,31 +376,17 @@ class TestService extends CoreApplicationService {
     
     /**
      *
-     * @param string $canonicalUrl
+     * @param Test $test
      * @param int $testId
      * @return boolean 
      */
-    public function cancel($canonicalUrl, $testId) {
-        $httpRequest = $this->getAuthorisedHttpRequest(
-            $this->getUrl('test_cancel', array(
-            'canonical-url' => $canonicalUrl,
-            'test_id' => $testId
+    public function cancel(Test $test) {        
+        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_cancel', array(
+            'canonical-url' => (string)$test->getWebsite(),
+            'test_id' => $test->getTestId()
         )));
         
-        /* @var $response \webignition\WebResource\JsonDocument\JsonDocument */
-        try {
-            $this->webResourceService->get($httpRequest);
-            return true;
-        } catch (\webignition\Http\Client\CurlException $curlException) {
-            $this->logger->warn('TestService::cancel:curlException: ['.$curlException->getCode().'] ['.$curlException->getMessage().']');
-            return $curlException;
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {                      
-            $this->logger->warn('TestService::cancel:WebResourceServiceException: ['.$webResourceServiceException->getCode().'] ['.$webResourceServiceException->getMessage().']');
-//            if ($webResourceServiceException->getCode() == 403) {
-//                return false;
-//            }            
-            return $webResourceServiceException->getCode();
-        }        
+        return $this->webResourceService->get($httpRequest);       
     }
     
     

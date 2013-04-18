@@ -10,7 +10,7 @@ class TestController extends BaseController
      *
      * @var \SimplyTestable\WebClientBundle\Services\TestQueueService
      */
-    private $testQueueService;    
+    private $testQueueService;
     
     
     public function queuedStatusAction($website) {        
@@ -33,30 +33,41 @@ class TestController extends BaseController
     
     
     public function cancelAction()
-    {        
+    {
         $this->getTestService()->setUser($this->getUser());
         
-        if (!$this->hasWebsite()) {
-            $this->get('session')->setFlash('test_start_error', '');
-            return $this->redirect($this->generateUrl('app', array(), true));
-        }
-        
-        $cancelResult = $this->getTestService()->cancel($this->getWebsite(), $this->getTestId());
-        
-        if ($cancelResult === true) {
+        try {
+            $test = $this->getTestService()->get($this->getWebsite(), $this->getTestId(), $this->getUser());                        
+            $this->getTestService()->cancel($test);
             return $this->redirect($this->generateUrl(
                 'app_results',
+                array(
+                    'website' => $test->getWebsite(),
+                    'test_id' => $test->getTestId()
+                ),
+                true
+            ));           
+        } catch (\SimplyTestable\WebClientBundle\Exception\UserServiceException $userServiceException) {
+            return $this->redirect($this->generateUrl(
+                'app',
+                array(),
+                true
+            ));
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
+            $this->getLogger()->err('TestController::cancelAction:webResourceException ['.$webResourceException->getResponse()->getStatusCode().']');            
+            
+            return $this->redirect($this->generateUrl(
+                'app_progress',
                 array(
                     'website' => $this->getWebsite(),
                     'test_id' => $this->getTestId()
                 ),
                 true
-            ));       
-        }        
-        
-        if (IsHttpStatusCode::check($cancelResult)) {
-            $this->get('session')->setFlash('test_cancel_error', $cancelResult);
+            ));             
 
+        } catch (\Guzzle\Http\Exception\CurlException $curlException)  {
+            $this->getLogger()->err('TestController::cancelAction:curlException ['.$curlException->getErrorNo().']');
+            
             return $this->redirect($this->generateUrl(
                 'app_progress',
                 array(
@@ -65,8 +76,8 @@ class TestController extends BaseController
                 ),
                 true
             ));
-        }       
-    }    
+        }     
+    } 
     
     
     /**
@@ -89,7 +100,7 @@ class TestController extends BaseController
         }
         
         return (string)$websiteUrl; 
-    }
+    }    
     
     
     /**
@@ -123,5 +134,5 @@ class TestController extends BaseController
         
         return $this->testQueueService;
 
-    }     
+    }
 }
