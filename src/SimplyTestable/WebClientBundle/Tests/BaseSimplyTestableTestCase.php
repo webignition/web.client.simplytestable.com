@@ -88,17 +88,6 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
         return $this->container->get('simplytestable.services.taskservice');
     }     
     
-    
-    protected function removeAllTests() {        
-        $tests = $this->getTestService()->getEntityRepository()->findAll();
-        
-        foreach ($tests as $test) {
-            $this->getTestService()->getEntityManager()->remove($test);
-        }
-        
-        $this->getTestService()->getEntityManager()->flush();
-    }    
-    
     protected function removeAllTasks() {        
         $tasks = $this->getTaskService()->getEntityRepository()->findAll();        
         foreach ($tasks as $task) {
@@ -106,7 +95,18 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
         }
         
         $this->getTaskService()->getEntityManager()->flush();
-    }     
-
+    }      
+    
+    protected function removeAllTests() {        
+        $this->removeAllTasks();
+        
+        $tests = $this->getTestService()->getEntityRepository()->findAll();
+        
+        foreach ($tests as $test) {
+            $this->getTestService()->getEntityManager()->remove($test);
+        }
+        
+        $this->getTestService()->getEntityManager()->flush();
+    }
 
 }
