@@ -86,12 +86,12 @@ class TestService extends CoreApplicationService {
     }
     
     
-    public function start($canonicalUrl, TestOptions $testOptions, $testType = 'full site') {
+    public function start($canonicalUrl, TestOptions $testOptions, $testType = 'full site') {        
         $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_start', array(
             'canonical-url' => $canonicalUrl
-        )), null, array_merge(array(
+        )).'?'.http_build_query(array_merge(array(
             'type' => $testType
-        ), $testOptions->__toArray()));
+        ), $testOptions->__toArray())));
         
         $this->addAuthorisationToRequest($httpRequest);
         

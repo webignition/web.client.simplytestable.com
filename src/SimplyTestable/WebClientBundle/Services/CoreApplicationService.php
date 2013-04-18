@@ -27,20 +27,12 @@ abstract class CoreApplicationService {
     private $parameters;
     
     
-    /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Service\HttpClientService
-     */
-    private $httpClientService;
-    
-    
     public function __construct(
         $parameters,
         \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService
     ) {
         $this->parameters = $parameters;
         $this->webResourceService = $webResourceService;
-        $this->httpClientService;
     } 
     
     
@@ -94,36 +86,6 @@ abstract class CoreApplicationService {
         ));
         
         return $request;                
-    }
-    
-    
-//    /**
-//     * 
-//     * @param string $url
-//     * @param string $request_method
-//     * @return \Guzzle\Http\Message\Request
-//     */
-//    protected function getAuthorisedHttpRequest($url = '', $request_method = \Guzzle\Http\Message\Request::GET) {
-//        if ($request_method == \Guzzle\Http\Message\Request::GET) {
-//            $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($url);
-//        } else {
-//            $httpRequest = $this->webResourceService->getHttpClientService()->postRequest($url);
-//        }
-//
-//        $httpRequest->addHeaders(array(
-//            'Authorization' => 'Basic ' . base64_encode($this->getUser()->getUsername().':'.$this->getUser()->getPassword())
-//        ));
-//        
-//        return $httpRequest;
-//    }
-    
-    
-    /**
-     * 
-     * @return \webignition\Http\Client\Client
-     */
-    protected function getHttpClient() {
-        return $this->httpClient;
     }
     
 }
