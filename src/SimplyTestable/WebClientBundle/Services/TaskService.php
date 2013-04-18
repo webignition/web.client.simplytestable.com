@@ -132,7 +132,7 @@ class TaskService extends CoreApplicationService {
         }
         
         if (count($tasksToRetrieve)) {
-            $remoteTasksObject = $this->retrieveRemoteCollection($test, $tasksToRetrieve);     
+            $remoteTasksObject = $this->retrieveRemoteCollection($test, $tasksToRetrieve);                            
             
             $outputs = array();
             
@@ -343,27 +343,16 @@ class TaskService extends CoreApplicationService {
      * @return array 
      */
     private function retrieveRemoteCollection(Test $test, $remoteTaskIds) {        
-        $httpRequest = $this->getAuthorisedHttpRequest(
-            $this->getUrl('test_tasks', array(
+        $httpRequest = $this->webResourceService->getHttpClientService()->postRequest($this->getUrl('test_tasks', array(
                 'canonical-url' => (string)$test->getWebsite(),
                 'test_id' => $test->getTestId()
-        )));
-        
-        $httpRequest->setMethod(\Guzzle\Http\Message\Request::POST);
-        
-        $httpRequest->setPostFields(array(
+        )), null, array(
             'taskIds' => implode(',', $remoteTaskIds)            
         ));
-
-        try {
-            return $this->webResourceService->get($httpRequest)->getContentObject(); 
-        } catch (\webignition\Http\Client\CurlException $curlException) {
-            
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-            if ($webResourceServiceException->getCode() == 403) {
-                return false;
-            }
-        }       
+        
+        $this->addAuthorisationToRequest($httpRequest);
+        
+        return $this->webResourceService->get($httpRequest)->getContentObject();     
     }  
     
     
@@ -506,4 +495,12 @@ class TaskService extends CoreApplicationService {
     private function isIncomplete(Task $task) {
         return in_array($task->getState(), $this->incompleteStates);
     }        
+    
+    /**
+     * 
+     * @return \Doctrine\ORM\EntityManager
+     */
+    public function getEntityManager() {        
+        return $this->entityManager;
+    }    
 }

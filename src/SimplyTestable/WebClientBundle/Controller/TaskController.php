@@ -30,30 +30,34 @@ class TaskController extends BaseViewController
     public function collectionAction($website, $test_id) {
         $this->getTestService()->setUser($this->getUser());
         
-        if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
-            return $this->sendNotFoundResponse();
-        }
-        
-        $test = $this->getTestService()->get($website, $test_id, $this->getUser());        
-        $taskIds = $this->getRequestTaskIds();               
-        $tasks = $this->getTaskService()->getCollection($test, $taskIds);
-        
-        foreach ($tasks as $task) {
-            if (in_array($task->getState(), $this->finishedStates)) {
-                if ($task->hasOutput()) {             
-                    $parser = $this->getTaskOutputResultParserService()->getParser($task->getOutput());
-                    $parser->setOutput($task->getOutput());
-
-                    $task->getOutput()->setResult($parser->getResult());
-                }
+        try {        
+            if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
+                return $this->sendNotFoundResponse();
             }
             
-//            if (in_array($task->getState(), $this->failedStates)) {
-//                $task->setState('failed');
-//            }
-        }
+            $test = $this->getTestService()->get($website, $test_id, $this->getUser());        
+            $taskIds = $this->getRequestTaskIds();               
+            $tasks = $this->getTaskService()->getCollection($test, $taskIds);
 
-        return new Response($this->getSerializer()->serialize($tasks, 'json'));
+            foreach ($tasks as $task) {
+                if (in_array($task->getState(), $this->finishedStates)) {
+                    if ($task->hasOutput()) {             
+                        $parser = $this->getTaskOutputResultParserService()->getParser($task->getOutput());
+                        $parser->setOutput($task->getOutput());
+
+                        $task->getOutput()->setResult($parser->getResult());
+                    }
+                }
+            }
+
+            return new Response($this->getSerializer()->serialize($tasks, 'json'));            
+        } catch (\SimplyTestable\WebClientBundle\Exception\UserServiceException $userServiceException) {
+            return $this->sendNotFoundResponse();
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
+            return new Response($this->getSerializer()->serialize(null, 'json'));
+        } catch (\Guzzle\Http\Exception\RequestException $requestException)  {
+            return new Response($this->getSerializer()->serialize(null, 'json'));
+        }
     }
     
     

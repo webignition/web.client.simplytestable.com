@@ -80,6 +80,15 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     }    
     
     
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TaskService
+     */    
+    protected function getTaskService() {
+        return $this->container->get('simplytestable.services.taskservice');
+    }     
+    
+    
     protected function removeAllTests() {        
         $tests = $this->getTestService()->getEntityRepository()->findAll();
         
@@ -89,6 +98,15 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
         
         $this->getTestService()->getEntityManager()->flush();
     }    
+    
+    protected function removeAllTasks() {        
+        $tasks = $this->getTaskService()->getEntityRepository()->findAll();        
+        foreach ($tasks as $task) {
+            $this->getTaskService()->getEntityManager()->remove($task);
+        }
+        
+        $this->getTaskService()->getEntityManager()->flush();
+    }     
 
 
 }
