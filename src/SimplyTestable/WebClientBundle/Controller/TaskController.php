@@ -28,9 +28,7 @@ class TaskController extends BaseViewController
     
    
     public function collectionAction($website, $test_id) {
-        $this->getTestService()->setUser($this->getUser());
-        
-        try {        
+        return $this->retrieveAuthorisedRemoteCollection(function () use ($website, $test_id) {
             if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
                 return $this->sendNotFoundResponse();
             }
@@ -50,21 +48,13 @@ class TaskController extends BaseViewController
                 }
             }
 
-            return new Response($this->getSerializer()->serialize($tasks, 'json'));            
-        } catch (\SimplyTestable\WebClientBundle\Exception\UserServiceException $userServiceException) {
-            return $this->sendNotFoundResponse();
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
-            return new Response($this->getSerializer()->serialize(null, 'json'));
-        } catch (\Guzzle\Http\Exception\RequestException $requestException)  {
-            return new Response($this->getSerializer()->serialize(null, 'json'));
-        }
+            return new Response($this->getSerializer()->serialize($tasks, 'json'));  
+        });
     }
     
     
     public function idCollectionAction($website, $test_id) {        
-        $this->getTestService()->setUser($this->getUser());
-        
-        try {        
+        return $this->retrieveAuthorisedRemoteCollection(function () use ($website, $test_id) {
             if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
                 return $this->sendNotFoundResponse();
             }
@@ -72,14 +62,23 @@ class TaskController extends BaseViewController
             $test = $this->getTestService()->get($website, $test_id, $this->getUser());        
             $taskIds = $this->getTaskService()->getRemoteTaskIds($test);
 
-            return new Response($this->getSerializer()->serialize($taskIds, 'json'));
+            return new Response($this->getSerializer()->serialize($taskIds, 'json'));  
+        });
+    }
+    
+    
+    private function retrieveAuthorisedRemoteCollection(\Closure $closure) {                
+        $this->getTestService()->setUser($this->getUser());
+        
+        try {
+            return $closure();            
         } catch (\SimplyTestable\WebClientBundle\Exception\UserServiceException $userServiceException) {
             return $this->sendNotFoundResponse();
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
             return new Response($this->getSerializer()->serialize(null, 'json'));
         } catch (\Guzzle\Http\Exception\RequestException $requestException)  {
             return new Response($this->getSerializer()->serialize(null, 'json'));
-        }
+        }        
     }
     
     
