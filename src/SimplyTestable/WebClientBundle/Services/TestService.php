@@ -380,11 +380,13 @@ class TestService extends CoreApplicationService {
      * @param int $testId
      * @return boolean 
      */
-    public function cancel(Test $test) {        
+    public function cancel(Test $test) {
         $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_cancel', array(
             'canonical-url' => (string)$test->getWebsite(),
             'test_id' => $test->getTestId()
         )));
+        
+        $this->addAuthorisationToRequest($httpRequest);
         
         return $this->webResourceService->get($httpRequest);       
     }
