@@ -28,17 +28,17 @@ class TaskController extends BaseViewController
     
    
     public function collectionAction($website, $test_id) {
-        $self = $this;
+        $this->getTestService()->setUser($this->getUser());
         
-        return $this->retrieveAuthorisedRemoteCollection(function () use ($website, $test_id, $self) {            
-            $test = $self->getTestService()->get($website, $test_id, $self->getUser());        
-            $taskIds = $self->getRequestTaskIds();               
-            $tasks = $self->getTaskService()->getCollection($test, $taskIds);
+        try {            
+            $test = $this->getTestService()->get($website, $test_id, $this->getUser());        
+            $taskIds = $this->getRequestTaskIds();               
+            $tasks = $this->getTaskService()->getCollection($test, $taskIds);
 
             foreach ($tasks as $task) {
-                if (in_array($task->getState(), $self->finishedStates)) {
+                if (in_array($task->getState(), $this->finishedStates)) {
                     if ($task->hasOutput()) {             
-                        $parser = $self->getTaskOutputResultParserService()->getParser($task->getOutput());
+                        $parser = $this->getTaskOutputResultParserService()->getParser($task->getOutput());
                         $parser->setOutput($task->getOutput());
 
                         $task->getOutput()->setResult($parser->getResult());
@@ -46,38 +46,32 @@ class TaskController extends BaseViewController
                 }
             }
 
-            return new Response($self->getSerializer()->serialize($tasks, 'json'));  
-        });
+            return new Response($this->getSerializer()->serialize($tasks, 'json'));        
+        } catch (\SimplyTestable\WebClientBundle\Exception\UserServiceException $userServiceException) {
+            return $this->sendNotFoundResponse();            
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
+            return new Response($this->getSerializer()->serialize(null, 'json'));
+        } catch (\Guzzle\Http\Exception\RequestException $requestException)  {
+            return new Response($this->getSerializer()->serialize(null, 'json'));
+        }
     }
     
     
     public function idCollectionAction($website, $test_id) {        
-        $self = $this;
+        $this->getTestService()->setUser($this->getUser());
         
-        return $this->retrieveAuthorisedRemoteCollection(function () use ($website, $test_id, $self) {            
-            $test = $self->getTestService()->get($website, $test_id, $self->getUser());        
-            $taskIds = $self->getTaskService()->getRemoteTaskIds($test);
+        try {            
+            $test = $this->getTestService()->get($website, $test_id, $this->getUser());        
+            $taskIds = $this->getTaskService()->getRemoteTaskIds($test);
 
-            return new Response($self->getSerializer()->serialize($taskIds, 'json'));  
-        });
-    }
-    
-    
-    private function retrieveAuthorisedRemoteCollection(\Closure $remoteAction) {
-        $self = $this;
-        
-        return $this->performAuthorisedRemoteAction(
-            $remoteAction,
-            function () use ($self) {
-                return $self->sendNotFoundResponse();
-            },
-            function () use ($self) {
-                return new Response($self->getSerializer()->serialize(null, 'json'));
-            },
-            function () use ($self) {
-                return new Response($self->getSerializer()->serialize(null, 'json'));
-            }
-        );      
+            return new Response($this->getSerializer()->serialize($taskIds, 'json'));          
+        } catch (\SimplyTestable\WebClientBundle\Exception\UserServiceException $userServiceException) {
+            return $this->sendNotFoundResponse();            
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
+            return new Response($this->getSerializer()->serialize(null, 'json'));
+        } catch (\Guzzle\Http\Exception\RequestException $requestException)  {
+            return new Response($this->getSerializer()->serialize(null, 'json'));
+        }
     }
     
     

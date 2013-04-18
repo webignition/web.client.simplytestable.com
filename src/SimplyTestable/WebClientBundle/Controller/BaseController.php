@@ -244,26 +244,6 @@ abstract class BaseController extends Controller
      */
     protected function getUserSerializerService() {
         return $this->container->get('simplytestable.services.userserializerservice');
-    } 
-    
-    
-    protected function performAuthorisedRemoteAction(
-            \Closure $remoteAction,
-            \Closure $unauthorisedAction,
-            \Closure $webResourceExceptionAction,
-            \Closure $requestExceptionAction)
-    {
-        $this->getTestService()->setUser($this->getUser());
-        
-        try {            
-            return $remoteAction();            
-        } catch (\SimplyTestable\WebClientBundle\Exception\UserServiceException $userServiceException) {
-            return $unauthorisedAction($userServiceException);
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
-            return $webResourceExceptionAction($webResourceException);
-        } catch (\Guzzle\Http\Exception\RequestException $requestException)  {
-            return $requestExceptionAction($requestException);
-        }                 
-    }    
+    }   
     
 }
