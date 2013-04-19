@@ -622,18 +622,9 @@ class AppController extends BaseViewController
     
     
     
-    public function resultsAction($website, $test_id) {                                
-        $this->getTestService()->setUser($this->getUser());
-        
+    public function resultsAction($website, $test_id) {        
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        }        
-        
-        if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
-            return $this->redirect($this->generateUrl('app_test_redirector', array(
-                'website' => $website,
-                'test_id' => $test_id
-            ), true));
         }
         
         $taskListFilter = $this->getRequestValue('filter', 'with-errors');
@@ -650,38 +641,13 @@ class AppController extends BaseViewController
             return $response;
         }
         
-        try {            
-            $test = $this->getTestService()->get($website, $test_id, $this->getUser());            
-        } catch (UserServiceException $e) {
-            if (!$this->isLoggedIn()) {                
-                $redirectParameters = json_encode(array(
-                    'route' => 'app_progress',
-                    'parameters' => array(
-                    'website' => $website,
-                    'test_id' => $test_id                        
-                    )
-                ));
-                
-                $this->get('session')->setFlash('user_signin_error', 'test-not-logged-in');
-                return $this->redirect($this->generateUrl('sign_in', array(
-                    'redirect' => base64_encode($redirectParameters)
-                ), true));                
-            }
-            
-            $this->setTemplate('SimplyTestableWebClientBundle:App:test-not-authorised.html.twig');
-            return $this->sendResponse(array(
-                'this_url' => $this->getProgressUrl($website, $test_id),
-                'test_input_action_url' => $this->generateUrl('test_cancel', array(
-                    'website' => $website,
-                    'test_id' => $test_id
-                )),
-                'website' => $website,
-                'test_id' => $test_id,
-                'public_site' => $this->container->getParameter('public_site'),
-                'user' => $this->getUser(),
-                'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),                
-            ));            
-        }      
+        $this->getTestService()->setUser($this->getUser());        
+        $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
+        if ($testRetrievalOutcome->hasResponse()) {
+            return $testRetrievalOutcome->getResponse();
+        }
+        
+        $test = $testRetrievalOutcome->getTest();     
         
         if ($test->getWebsite() != $website) {
             return $this->redirect($this->generateUrl('app_test_redirector', array(
@@ -695,7 +661,7 @@ class AppController extends BaseViewController
         }
         
         $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();        
-        if (($remoteTestSummary->task_count - self::RESULTS_PREPARATION_THRESHOLD) > $test->getTaskCount()) {
+        if (($remoteTestSummary->task_count - self::RESULTS_PREPARATION_THRESHOLD) > $test->getTaskCount()) {            
             $urlParameters = array(
                 'website' => $test->getWebsite(),
                 'test_id' => $test_id                
