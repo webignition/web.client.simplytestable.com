@@ -11,13 +11,13 @@ class ProgressActionHttpTest extends BaseSimplyTestableTestCase {
     }    
     
     public function testWithAuthorisedUser() {
-        $this->performProgressActionTest(array(
+        $this->performActionTest(array(
             'statusCode' => 200
         ));
     }
     
     public function testWithUnauthorisedUser() {
-        $this->performProgressActionTest(array(
+        $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signin/'
         ));
@@ -25,7 +25,7 @@ class ProgressActionHttpTest extends BaseSimplyTestableTestCase {
     
     
     public function testWithNonExistentTest() {
-        $this->performProgressActionTest(array(
+        $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signin/'
         ));
@@ -33,7 +33,7 @@ class ProgressActionHttpTest extends BaseSimplyTestableTestCase {
     
     
     public function testWithFinishedTest() {
-        $this->performProgressActionTest(array(
+        $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/http://example.com//1/results/'
         ));
@@ -41,7 +41,7 @@ class ProgressActionHttpTest extends BaseSimplyTestableTestCase {
     
     
     public function testWithAuthorisedUserAsJson() {
-        $this->performProgressActionTest(array(
+        $this->performActionTest(array(
             'statusCode' => 200
         ), array(
             'postData' => array(),
@@ -52,7 +52,9 @@ class ProgressActionHttpTest extends BaseSimplyTestableTestCase {
     }   
     
     
-    private function performProgressActionTest($responseProperties, $methodProperties = array()) {
+    private function performActionTest($responseProperties, $methodProperties = array()) {
+        $controllerActionName = $this->getControllerActionName();
+        
         list(, $caller) = debug_backtrace(false);
         
         $this->removeAllTests();
@@ -64,10 +66,10 @@ class ProgressActionHttpTest extends BaseSimplyTestableTestCase {
         $queryData = isset($methodProperties['queryData']) ? $methodProperties['queryData'] : array();
         
         $response = $this->getAppController(
-            'progressAction',
+            $controllerActionName,
             $postData,
             $queryData
-        )->progressAction('http://example.com/', 1);
+        )->$controllerActionName('http://example.com/', 1);
         
         $this->assertEquals($responseProperties['statusCode'], $response->getStatusCode());        
         
@@ -75,6 +77,17 @@ class ProgressActionHttpTest extends BaseSimplyTestableTestCase {
             $redirectUrl = new \webignition\Url\Url($response->getTargetUrl());
             $this->assertEquals($responseProperties['redirectPath'], $redirectUrl->getPath());            
         }
+    }
+    
+    
+    /**
+     * Get the name of the controller action method from the test class name
+     * 
+     * @return string
+     */
+    private function getControllerActionName() {
+        $classNameParts = explode('\\', __CLASS__);        
+        return str_replace('HttpTest', '', $classNameParts[count($classNameParts) - 1]);
     }
     
     
