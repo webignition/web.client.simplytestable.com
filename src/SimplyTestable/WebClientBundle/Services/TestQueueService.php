@@ -36,7 +36,23 @@ class TestQueueService {
         \SimplyTestable\WebClientBundle\Services\UserSerializerService $userSerializerService
     ) {
         $this->userSerializerService = $userSerializerService;
-    }     
+    } 
+    
+    
+    /**
+     * 
+     * @return int
+     */
+    public function count() {
+        return count($this->listTests());
+    }
+    
+    public function clear() {
+        foreach ($this->listTests() as $queuedTest) {
+            $this->dequeue($queuedTest['user'], $queuedTest['url']);
+        }
+    }
+    
     
     /**
      * 
@@ -247,7 +263,7 @@ class TestQueueService {
      * @param string $path
      * @return boolean
      */
-    private function makeDirectory($path) {
+    private function makeDirectory($path) {        
         if (!file_exists($path)) {            
             return mkdir($path, 0777, true);
         }

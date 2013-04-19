@@ -8,6 +8,8 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     const TEST_START_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TestStartController';    
     const TASK_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TaskController';    
     const TEST_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TestController';    
+    
+    private $testQueueService;
 
     
     /**
@@ -91,6 +93,27 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
         return $this->container->get('simplytestable.services.testservice');
     }    
     
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TestQueueService
+     */    
+    protected function getTestQueueService() {
+        if (is_null($this->testQueueService)) {
+            $this->testQueueService = $this->container->get('simplytestable.services.testqueueservice');
+            $this->testQueueService->setApplicationRootDirectory($this->container->get('kernel')->getRootDir());
+        }
+        
+        return $this->testQueueService;
+    }    
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\UserService
+     */    
+    protected function getUserService() {
+        return $this->container->get('simplytestable.services.userservice');
+    }     
     
     /**
      *
@@ -98,7 +121,7 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
      */    
     protected function getTaskService() {
         return $this->container->get('simplytestable.services.taskservice');
-    }     
+    }      
     
     protected function removeAllTasks() {        
         $tasks = $this->getTaskService()->getEntityRepository()->findAll();        
