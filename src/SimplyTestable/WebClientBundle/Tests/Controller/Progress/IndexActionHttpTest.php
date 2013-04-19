@@ -1,10 +1,10 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Controller\App;
+namespace SimplyTestable\WebClientBundle\Tests\Controller\Progress;
 
 use SimplyTestable\WebClientBundle\Tests\BaseSimplyTestableTestCase;
 
-class ProgressActionHttpTest extends BaseSimplyTestableTestCase {    
+class IndexActionHttpTest extends BaseSimplyTestableTestCase {    
     
     public static function setUpBeforeClass() {
         self::setupDatabaseIfNotExists();
@@ -65,7 +65,7 @@ class ProgressActionHttpTest extends BaseSimplyTestableTestCase {
         $postData = isset($methodProperties['postData']) ? $methodProperties['postData'] : array();
         $queryData = isset($methodProperties['queryData']) ? $methodProperties['queryData'] : array();
         
-        $response = $this->getAppController(
+        $response = $this->getProgressController(
             $controllerActionName,
             $postData,
             $queryData
@@ -98,7 +98,7 @@ class ProgressActionHttpTest extends BaseSimplyTestableTestCase {
         $this->container->enterScope('request');
         
         try {
-            $this->getAppController('progressAction')->progressAction('http://example.com/', 1);
+            $this->getProgressController('indexAction')->indexAction('http://example.com/', 1);
             $this->fail('WebResourceException 404 has not been raised.');
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
             $this->assertEquals(400, $webResourceException->getResponse()->getStatusCode());
@@ -113,7 +113,7 @@ class ProgressActionHttpTest extends BaseSimplyTestableTestCase {
         $this->container->enterScope('request');
         
         try {
-            $this->getAppController('progressAction')->progressAction('http://example.com/', 1);
+            $this->getProgressController('indexAction')->indexAction('http://example.com/', 1);
             $this->fail('WebResourceException 500 has not been raised.');
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
             $this->assertEquals(500, $webResourceException->getResponse()->getStatusCode());
@@ -136,16 +136,11 @@ class ProgressActionHttpTest extends BaseSimplyTestableTestCase {
         $this->container->enterScope('request');
         
         try {
-            $this->getAppController('progressAction')->progressAction('http://example.com/', 1);
+            $this->getProgressController('indexAction')->indexAction('http://example.com/', 1);
             $this->fail('CurlException 6 has not been raised.');
         } catch (\Guzzle\Http\Exception\CurlException $curlException) {
             $this->assertEquals(6, $curlException->getErrorNo());
             return;
         };
-    }     
-    
-
-   
+    }   
 }
-
-

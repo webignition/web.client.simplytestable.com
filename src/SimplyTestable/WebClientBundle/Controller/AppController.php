@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 
-class AppController extends BaseViewController
+class AppController extends TestViewController
 {    
     const RESULTS_PAGE_LENGTH = 100;
     const RESULTS_PREPARATION_THRESHOLD = 100;
@@ -298,119 +298,7 @@ class AppController extends BaseViewController
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
         return $this->sendResponse($viewData);
     }
-    
-    
-    /**
-     * 
-     * @param string $website
-     * @param int $test_id
-     * @return \SimplyTestable\WebClientBundle\Model\ControllerTestRetrievalOutcome
-     */
-    private function getTestRetrievalOutcome($website, $test_id) {
-        $outcome = new \SimplyTestable\WebClientBundle\Model\ControllerTestRetrievalOutcome();
-        
-        try {
-            if ($this->getTestService()->has($website, $test_id, $this->getUser())) {
-                $outcome->setTest($this->getTestService()->get($website, $test_id, $this->getUser()));
-            } else {
-                $outcome->setResponse( $this->redirect($this->generateUrl('app_test_redirector', array(
-                    'website' => $website,
-                    'test_id' => $test_id
-                ), true)));               
-            }            
-        } catch (UserServiceException $e) {
-            if ($this->isLoggedIn()) {
-                $this->setTemplate('SimplyTestableWebClientBundle:App:test-not-authorised.html.twig');
-                $outcome->setResponse($this->sendResponse(array(
-                    'this_url' => $this->getProgressUrl($website, $test_id),
-                    'test_input_action_url' => $this->generateUrl('test_cancel', array(
-                        'website' => $website,
-                        'test_id' => $test_id
-                    )),
-                    'website' => $website,
-                    'test_id' => $test_id,
-                    'public_site' => $this->container->getParameter('public_site'),
-                    'user' => $this->getUser(),
-                    'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),                
-                )));                
-            } else {
-                $redirectParameters = json_encode(array(
-                    'route' => 'app_progress',
-                    'parameters' => array(
-                    'website' => $website,
-                    'test_id' => $test_id                        
-                    )
-                ));
-                
-                $this->get('session')->setFlash('user_signin_error', 'test-not-logged-in');
-                
-                $outcome->setResponse($this->redirect($this->generateUrl('sign_in', array(
-                    'redirect' => base64_encode($redirectParameters)
-                ), true)));               
-            }          
-        }
-        
-        return $outcome;
-    }
-    
-    public function progressAction($website, $test_id) {
-        $this->getTestService()->setUser($this->getUser());
-        
-        if ($this->isUsingOldIE()) {
-            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        }
-        
-        $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
-        if ($testRetrievalOutcome->hasResponse()) {
-            return $testRetrievalOutcome->getResponse();
-        }
-        
-        $test = $testRetrievalOutcome->getTest();
-        
-        if (in_array($test->getState(), $this->testFinishedStates)) {
-            return $this->redirect($this->getResultsUrl($website, $test_id));
-        }
-        
-        if ($test->getWebsite() != $website) {
-            return $this->redirect($this->generateUrl('app_test_redirector', array(
-                'website' => $test->getWebsite(),
-                'test_id' => $test_id
-            ), true));            
-        }        
-        
-        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
-        $taskTypes = array();
-        foreach ($remoteTestSummary->task_types as $taskTypeObject) {
-            $taskTypes[] = $taskTypeObject->name;
-        }        
-        
-        $viewData = array(
-            'website' => idn_to_utf8($website),
-            'this_url' => $this->getProgressUrl($website, $test_id),
-            'test_input_action_url' => $this->generateUrl('test_cancel', array(
-                'website' => $website,
-                'test_id' => $test_id
-            )),
-            'test' => $test,
-            'remote_test_summary' => $this->getRemoteTestSummaryArray($remoteTestSummary),
-            'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
-            'state_label' => $this->testStateLabelMap[$test->getState()].': ',
-            'state_icon' => $this->testStateIconMap[$test->getState()],
-            'completion_percent' => $this->getCompletionPercent($remoteTestSummary),
-            'public_site' => $this->container->getParameter('public_site'),
-            'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'task_types' => $taskTypes,
-            'test_cancel_error' => $this->getFlash('test_cancel_error')
-        );  
-        
-        if ($this->isJsonResponseRequired()) {
-            $viewData['estimated_seconds_remaining'] = $this->getEstimatedSecondsRemaining($remoteTestSummary);
-        }
-        
-        $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
-        return $this->sendResponse($viewData);
-    }    
+
         
     private function getRemoteTestSummaryArray($remoteTestSummary) {        
         $remoteTestSummaryArray = (array)$remoteTestSummary;
@@ -428,44 +316,7 @@ class AppController extends BaseViewController
         }
         
         return $remoteTestSummaryArray;
-    }
-    
-    
-    /**
-     * 
-     * @param \stdClass $remoteTestSummary
-     * @return int
-     */
-    private function getEstimatedSecondsRemaining(\stdClass $remoteTestSummary) {
-        /**
-         * Estimated minutes remaining = remaining task count / (current tasks per minute / current active jobs)
-         * Estimated seconds remaining = estimated minutes remaining * 60
-         */
-        
-        $incompleteTaskStates = array(
-            'queued',
-            'in-progress',
-            'queued-for-assignment'
-        );
-        
-        $remainingTaskCount = 0;
-        foreach ($incompleteTaskStates as $incompleteTaskState) {
-            $remainingTaskCount += $remoteTestSummary->task_count_by_state->$incompleteTaskState;
-        }
-        
-        $tasksPerMinute = $this->getCoreApplicationStatusService()->getTaskThroughputPerMinute();        
-        if ($tasksPerMinute === 0) {
-            return -1;
-        }
-        
-        $inProgressJobCount = $this->getCoreApplicationStatusService()->getInProgressJobCount();        
-        if ($inProgressJobCount === 0) {
-            return -1;
-        }        
-
-        $estimatedMinutesRemaining = $remainingTaskCount / ($tasksPerMinute / $inProgressJobCount);
-        return (int)ceil($estimatedMinutesRemaining * 60);               
-    }  
+    } 
     
     
     /**
@@ -835,29 +686,11 @@ class AppController extends BaseViewController
     
     /**
      *
-     * @return \SimplyTestable\WebClientBundle\Services\TestService 
-     */
-    private function getTestService() {
-        return $this->container->get('simplytestable.services.testservice');
-    }  
-    
-    
-    /**
-     *
      * @return \SimplyTestable\WebClientBundle\Services\TaskService 
      */
     private function getTaskService() {
         return $this->container->get('simplytestable.services.taskservice');
-    } 
-    
-    
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\CoreApplicationStatusService
-     */
-    private function getCoreApplicationStatusService() {
-        return $this->container->get('simplytestable.services.coreapplicationstatusservice');
-    }     
+    }    
     
     
     /**
@@ -873,16 +706,7 @@ class AppController extends BaseViewController
         
         return $this->testQueueService;
 
-    }    
-    
-    
-    /**
-     *
-     * @return \JMS\SerializerBundle\Serializer\Serializer
-     */
-    protected function getSerializer() {
-        return $this->container->get('serializer');
-    }   
+    }
     
     
     public function outdatedBrowserAction() {

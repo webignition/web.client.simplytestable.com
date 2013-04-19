@@ -217,4 +217,12 @@ abstract class BaseViewController extends BaseController
         return $values;
     }
     
+    /**
+     *
+     * @return \JMS\SerializerBundle\Serializer\Serializer
+     */
+    protected function getSerializer() {
+        return $this->container->get('serializer');
+    }     
+    
 }
