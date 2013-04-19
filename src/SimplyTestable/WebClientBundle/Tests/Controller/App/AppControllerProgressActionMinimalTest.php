@@ -11,26 +11,72 @@ class AppControllerProgressActionMinimalTest extends BaseSimplyTestableTestCase 
     }    
     
     public function testGetProgressWithAuthorisedUser() {
-        $this->removeAllTests();
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
-        $this->container->enterScope('request');
-        
-        $this->assertEquals(200, $this->getAppController('progressAction')->progressAction('http://example.com/', 1)->getStatusCode());
+        $this->performProgressActionTest(array(
+            'statusCode' => 200
+        ));
     }
     
     public function testGetProgressWithUnauthorisedUser() {
-        $this->removeAllTests();        
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
+        $this->performProgressActionTest(array(
+            'statusCode' => 302,
+            'redirectPath' => '/signin/'
+        ));
+    } 
+    
+    
+    public function testGetProgressWithNonExistentTest() {
+        $this->performProgressActionTest(array(
+            'statusCode' => 302,
+            'redirectPath' => '/signin/'
+        ));
+    }   
+    
+    
+    public function testGetProgressWithFinishedTest() {
+        $this->performProgressActionTest(array(
+            'statusCode' => 302,
+            'redirectPath' => '/http://example.com//1/results/'
+        ));
+    } 
+    
+    
+    public function testGetProgressWithAuthorisedUserAsJson() {
+        $this->performProgressActionTest(array(
+            'statusCode' => 200
+        ), array(
+            'postData' => array(),
+            'queryData' => array(
+                'output' => 'json'
+            )
+        ));
+    }   
+    
+    
+    private function performProgressActionTest($responseProperties, $methodProperties = array()) {
+        list(, $caller) = debug_backtrace(false);
+        
+        $this->removeAllTests();
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath($caller['function'] . '/HttpResponses')));
         
         $this->container->enterScope('request');
         
-        $response = $this->getAppController('progressAction')->progressAction('http://example.com/', 1);
-        $redirectUrl = new \webignition\Url\Url($response->getTargetUrl());
+        $postData = isset($methodProperties['postData']) ? $methodProperties['postData'] : array();
+        $queryData = isset($methodProperties['queryData']) ? $methodProperties['queryData'] : array();
         
-        $this->assertEquals(302, $response->getStatusCode());
-        $this->assertEquals('/signin/', $redirectUrl->getPath());
-    } 
+        $response = $this->getAppController(
+            'progressAction',
+            $postData,
+            $queryData
+        )->progressAction('http://example.com/', 1);
+        
+        $this->assertEquals($responseProperties['statusCode'], $response->getStatusCode());        
+        
+        if ($response->getStatusCode() == 302) {
+            $redirectUrl = new \webignition\Url\Url($response->getTargetUrl());
+            $this->assertEquals($responseProperties['redirectPath'], $redirectUrl->getPath());            
+        }
+    }
+    
     
     public function testGetProgressWithHttpClientErrorRetrievingRemoteSummary() {
         $this->removeAllTests();
@@ -85,22 +131,8 @@ class AppControllerProgressActionMinimalTest extends BaseSimplyTestableTestCase 
         };
     }     
     
-    public function testGetProgressWithAuthorisedUserAsJson() {
-        $this->removeAllTests();
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
-        $this->container->enterScope('request');
-        
-        $response = $this->getAppController(
-            'progressAction',
-            array(),
-            array(
-                'output' => 'json'
-            )
-        )->progressAction('http://example.com/', 1);
-        
-        $this->assertEquals(200, $response->getStatusCode());
-    }    
+
+   
 }
 
 
