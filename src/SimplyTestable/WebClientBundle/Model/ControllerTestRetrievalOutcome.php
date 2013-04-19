@@ -55,4 +55,22 @@ class ControllerTestRetrievalOutcome {
         return !is_null($this->response);
     }
     
+    
+    /**
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function getResponse() {
+        return $this->response;
+    }
+    
+    
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Entity\Test\Test
+     */
+    public function getTest() {
+        return $this->test;
+    }
+    
 }
