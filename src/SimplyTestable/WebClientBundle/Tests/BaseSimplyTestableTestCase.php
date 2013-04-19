@@ -5,7 +5,7 @@ namespace SimplyTestable\WebClientBundle\Tests;
 abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     
     const APP_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\AppController';    
-    const PROGRESS_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\ProgressController';    
+    const TEST_PROGRESS_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TestProgressController';    
     const TEST_START_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TestStartController';    
     const TASK_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TaskController';    
     const TEST_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TestController';    
@@ -30,10 +30,10 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
      * @param string $methodName
      * @param array $postData
      * @param array $queryData
-     * @return \SimplyTestable\WebClientBundle\Controller\ProgressController
+     * @return \SimplyTestable\WebClientBundle\Controller\TestProgressController
      */
-    protected function getProgressController($methodName, $postData = array(), $queryData = array()) {
-        return $this->getController(self::PROGRESS_CONTROLLER_NAME, $methodName, $postData, $queryData);
+    protected function getTestProgressController($methodName, $postData = array(), $queryData = array()) {
+        return $this->getController(self::TEST_PROGRESS_CONTROLLER_NAME, $methodName, $postData, $queryData);
     }    
     
     

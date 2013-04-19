@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Controller\Progress;
+namespace SimplyTestable\WebClientBundle\Tests\Controller\TestProgress;
 
 use SimplyTestable\WebClientBundle\Tests\BaseSimplyTestableTestCase;
 
@@ -65,7 +65,7 @@ class IndexActionHttpTest extends BaseSimplyTestableTestCase {
         $postData = isset($methodProperties['postData']) ? $methodProperties['postData'] : array();
         $queryData = isset($methodProperties['queryData']) ? $methodProperties['queryData'] : array();
         
-        $response = $this->getProgressController(
+        $response = $this->getTestProgressController(
             $controllerActionName,
             $postData,
             $queryData
@@ -98,7 +98,7 @@ class IndexActionHttpTest extends BaseSimplyTestableTestCase {
         $this->container->enterScope('request');
         
         try {
-            $this->getProgressController('indexAction')->indexAction('http://example.com/', 1);
+            $this->getTestProgressController('indexAction')->indexAction('http://example.com/', 1);
             $this->fail('WebResourceException 404 has not been raised.');
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
             $this->assertEquals(400, $webResourceException->getResponse()->getStatusCode());
@@ -113,7 +113,7 @@ class IndexActionHttpTest extends BaseSimplyTestableTestCase {
         $this->container->enterScope('request');
         
         try {
-            $this->getProgressController('indexAction')->indexAction('http://example.com/', 1);
+            $this->getTestProgressController('indexAction')->indexAction('http://example.com/', 1);
             $this->fail('WebResourceException 500 has not been raised.');
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
             $this->assertEquals(500, $webResourceException->getResponse()->getStatusCode());
@@ -136,7 +136,7 @@ class IndexActionHttpTest extends BaseSimplyTestableTestCase {
         $this->container->enterScope('request');
         
         try {
-            $this->getProgressController('indexAction')->indexAction('http://example.com/', 1);
+            $this->getTestProgressController('indexAction')->indexAction('http://example.com/', 1);
             $this->fail('CurlException 6 has not been raised.');
         } catch (\Guzzle\Http\Exception\CurlException $curlException) {
             $this->assertEquals(6, $curlException->getErrorNo());

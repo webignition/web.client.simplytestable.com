@@ -84,7 +84,7 @@ app_task_results_redirector:
 
 app_progress:
     pattern:  /{website}/{test_id}/progress/
-    defaults: { _controller: SimplyTestableWebClientBundle:Progress:index }  
+    defaults: { _controller: SimplyTestableWebClientBundle:TestProgress:index }  
     requirements:
         website: ".+" 
         

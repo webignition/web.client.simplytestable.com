@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 
-class ProgressController extends TestViewController
+class TestProgressController extends TestViewController
 {        
     private $testFinishedStates = array(
         'cancelled',
