@@ -10,13 +10,13 @@ class AppControllerProgressActionMinimalTest extends BaseSimplyTestableTestCase 
         self::setupDatabaseIfNotExists();
     }    
     
-    public function testGetProgressWithAuthorisedUser() {
+    public function testWithAuthorisedUser() {
         $this->performProgressActionTest(array(
             'statusCode' => 200
         ));
     }
     
-    public function testGetProgressWithUnauthorisedUser() {
+    public function testWithUnauthorisedUser() {
         $this->performProgressActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signin/'
@@ -24,7 +24,7 @@ class AppControllerProgressActionMinimalTest extends BaseSimplyTestableTestCase 
     } 
     
     
-    public function testGetProgressWithNonExistentTest() {
+    public function testWithNonExistentTest() {
         $this->performProgressActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signin/'
@@ -32,7 +32,7 @@ class AppControllerProgressActionMinimalTest extends BaseSimplyTestableTestCase 
     }   
     
     
-    public function testGetProgressWithFinishedTest() {
+    public function testWithFinishedTest() {
         $this->performProgressActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/http://example.com//1/results/'
@@ -40,7 +40,7 @@ class AppControllerProgressActionMinimalTest extends BaseSimplyTestableTestCase 
     } 
     
     
-    public function testGetProgressWithAuthorisedUserAsJson() {
+    public function testWithAuthorisedUserAsJson() {
         $this->performProgressActionTest(array(
             'statusCode' => 200
         ), array(
@@ -78,7 +78,7 @@ class AppControllerProgressActionMinimalTest extends BaseSimplyTestableTestCase 
     }
     
     
-    public function testGetProgressWithHttpClientErrorRetrievingRemoteSummary() {
+    public function testWithHttpClientErrorRetrievingRemoteSummary() {
         $this->removeAllTests();
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         
@@ -93,7 +93,7 @@ class AppControllerProgressActionMinimalTest extends BaseSimplyTestableTestCase 
         };
     }    
     
-    public function testGetProgressWithHttpServerErrorRetrievingRemoteSummary() {
+    public function testWithHttpServerErrorRetrievingRemoteSummary() {
         $this->removeAllTests();
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         
@@ -109,7 +109,7 @@ class AppControllerProgressActionMinimalTest extends BaseSimplyTestableTestCase 
     }
     
     
-    public function testGetProgressWithCurlErrorRetrievingRemoteSummary() {
+    public function testWithCurlErrorRetrievingRemoteSummary() {
         $this->removeAllTests();
         $this->getWebResourceService()->setRequestSkeletonToCurlErrorMap(array(
             'http://ci.app.simplytestable.com/job/http://example.com//1/' => array(
