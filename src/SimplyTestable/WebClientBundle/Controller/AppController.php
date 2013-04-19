@@ -577,49 +577,22 @@ class AppController extends BaseViewController
     
     public function prepareResultsAction($website, $test_id)
     {        
+        $this->getTestService()->setUser($this->getUser());
+        
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        }        
+        }
         
-        if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
-            return $this->redirect($this->generateUrl('app_test_redirector', array(
-                'website' => $website,
-                'test_id' => $test_id
-            ), true));
-        } 
+        $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
+        if ($testRetrievalOutcome->hasResponse()) {
+            return $testRetrievalOutcome->getResponse();
+        }
         
-        try {            
-            $test = $this->getTestService()->get($website, $test_id, $this->getUser());            
-        } catch (UserServiceException $e) {
-            if (!$this->isLoggedIn()) {                
-                $redirectParameters = json_encode(array(
-                    'route' => 'app_progress',
-                    'parameters' => array(
-                    'website' => $website,
-                    'test_id' => $test_id                        
-                    )
-                ));
-                
-                $this->get('session')->setFlash('user_signin_error', 'test-not-logged-in');
-                return $this->redirect($this->generateUrl('sign_in', array(
-                    'redirect' => base64_encode($redirectParameters)
-                ), true));                
-            }
-            
-            $this->setTemplate('SimplyTestableWebClientBundle:App:test-not-authorised.html.twig');
-            return $this->sendResponse(array(
-                'this_url' => $this->getProgressUrl($website, $test_id),
-                'test_input_action_url' => $this->generateUrl('test_cancel', array(
-                    'website' => $website,
-                    'test_id' => $test_id
-                )),
-                'website' => $website,
-                'test_id' => $test_id,
-                'public_site' => $this->container->getParameter('public_site'),
-                'user' => $this->getUser(),
-                'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),                
-            ));            
-        } 
+        $test = $testRetrievalOutcome->getTest();
+
+        if (!in_array($test->getState(), $this->testFinishedStates)) {
+            return $this->redirect($this->getProgressUrl($website, $test_id));
+        }
         
         if (!$test->hasTaskIds()) {
             $this->getTaskService()->getRemoteTaskIds($test);
