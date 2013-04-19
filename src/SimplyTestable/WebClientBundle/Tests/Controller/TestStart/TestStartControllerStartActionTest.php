@@ -70,9 +70,9 @@ class TestStartControllerStartActionTest extends BaseSimplyTestableTestCase {
         $this->assertEquals('http://localhost/http://example.com//', $response->getTargetUrl());
     }
     
-    public function testStartRaisesCurlErrorCommunicatingWithCoreApplication() {          
+    public function testStartRaisesCurlErrorCommunicatingWithCoreApplication() {       
         $this->getWebResourceService()->setRequestSkeletonToCurlErrorMap(array(
-            'http://ci.app.simplytestable.com/job/http://example.com//start/' => array(
+            'http://ci.app.simplytestable.com/job/http://example.com//start/?type=full%20site&test-types%5B0%5D=HTML%20validation' => array(
                 'GET' => array(
                     'errorMessage' => "Couldn't resolve host. The given remote host was not resolved.",
                     'errorNumber' => 6                    
