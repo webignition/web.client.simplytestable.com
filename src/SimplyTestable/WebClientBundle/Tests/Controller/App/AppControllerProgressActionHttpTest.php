@@ -4,7 +4,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Controller\App;
 
 use SimplyTestable\WebClientBundle\Tests\BaseSimplyTestableTestCase;
 
-class AppControllerProgressActionMinimalTest extends BaseSimplyTestableTestCase {    
+class AppControllerProgressActionHttpTest extends BaseSimplyTestableTestCase {    
     
     public static function setUpBeforeClass() {
         self::setupDatabaseIfNotExists();
