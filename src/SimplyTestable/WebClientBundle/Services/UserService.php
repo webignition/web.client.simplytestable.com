@@ -154,25 +154,27 @@ class UserService extends CoreApplicationService {
     
     
     public function create($email, $password) {
-        $request = $this->getAuthorisedHttpRequest($this->getUrl('user_create'), \Guzzle\Http\Message\Request::POST);
-        $request->addPostFields(array(
+        $request = $this->webResourceService->getHttpClientService()->postRequest(
+                $this->getUrl('user_create'),
+                null,
+                array(
             'email' => $email,
             'password' => $password
         ));
         
-        $userExistsResponseCode = 302;
-        
-        if ($this->getHttpClient()->redirectHandler()->isEnabled($userExistsResponseCode)) {
-            $this->getHttpClient()->redirectHandler()->disable($userExistsResponseCode);
-        }        
+        $this->addAuthorisationToRequest($request);        
+        $request->getParams()->set('redirect.disable', true);
         
         try {
-            $response = $this->getHttpClient()->getResponse($request);
-            return $response->getResponseCode() == 200 ? true : $response->getResponseCode();
-        } catch (\webignition\Http\Client\CurlException $curlException) {     
-            return $curlException->getCode();
-            return null;
-        }     
+            $response = $request->send();
+//            echo $response;
+//            exit();
+            return $response->getStatusCode() == 200 ? true : $response->getStatusCode();
+        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+            return $badResponseException->getResponse()->getStatusCode();
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            return $curlException->getErrorNo();
+        }
     }
     
     
@@ -283,21 +285,23 @@ class UserService extends CoreApplicationService {
      * @throws CoreApplicationAdminRequestException
      */
     public function getConfirmationToken($email) {
+        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('user_get_token', array(
+            'email' => $email
+        )));
+        
         $currentUser = ($this->hasUser()) ? $this->getUser() : null;
    
         $this->setUser($this->getAdminUser());
         
-        $request = $this->getAuthorisedHttpRequest($this->getUrl('user_get_token', array(
-            'email' => $email
-        )));
-        
+        $this->addAuthorisationToRequest($request);
+
         try {
-            $response = $this->getHttpClient()->getResponse($request);
-        } catch (\webignition\Http\Client\CurlException $curlException) {                 
+            $response = $request->send();
+        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+            $response = $badResponseException->getResponse();
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
             $response = null;
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-            $response = null;
-        }              
+        }            
         
         if (is_null($response)) {
             return null;
@@ -307,7 +311,7 @@ class UserService extends CoreApplicationService {
             $this->setUser($currentUser);
         }
         
-        if ($response->getResponseCode() == 401) {
+        if ($response->getStatusCode() == 401) {
             throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
         }
 

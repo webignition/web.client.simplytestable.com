@@ -10,6 +10,7 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     const TEST_START_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TestStartController';    
     const TASK_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TaskController';    
     const TEST_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TestController';    
+    const USER_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\UserController';    
     
     private $testQueueService;
 
@@ -72,7 +73,6 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
         return $this->getController(self::TEST_START_CONTROLLER_NAME, $methodName, $postData);
     } 
     
-    
     /**
      *
      * @param string $methodName
@@ -81,6 +81,17 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
      */
     protected function getTestController($methodName, $postData = array()) {
         return $this->getController(self::TEST_CONTROLLER_NAME, $methodName, $postData);
+    }      
+    
+    
+    /**
+     *
+     * @param string $methodName
+     * @param array $postData
+     * @return \SimplyTestable\WebClientBundle\Controller\UserController
+     */
+    protected function getUserController($methodName, $postData = array()) {
+        return $this->getController(self::USER_CONTROLLER_NAME, $methodName, $postData);
     }     
    
     /**
