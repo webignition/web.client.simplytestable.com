@@ -1,10 +1,10 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Controller\App;
+namespace SimplyTestable\WebClientBundle\Tests\Controller\TestResults;
 
 use SimplyTestable\WebClientBundle\Tests\BaseSimplyTestableTestCase;
 
-class ResultsActionHttpTest extends BaseSimplyTestableTestCase {    
+class IndexActionHttpTest extends BaseSimplyTestableTestCase {    
     
     public static function setUpBeforeClass() {
         self::setupDatabaseIfNotExists();
@@ -61,7 +61,7 @@ class ResultsActionHttpTest extends BaseSimplyTestableTestCase {
         $postData = isset($methodProperties['postData']) ? $methodProperties['postData'] : array();
         $queryData = isset($methodProperties['queryData']) ? $methodProperties['queryData'] : array();
         
-        $response = $this->getAppController(
+        $response = $this->getTestResultsController(
             $controllerActionName,
             $postData,
             $queryData
@@ -94,7 +94,7 @@ class ResultsActionHttpTest extends BaseSimplyTestableTestCase {
         $this->container->enterScope('request');
         
         try {
-            $this->getAppController('prepareResultsAction')->prepareResultsAction('http://example.com/', 1);
+            $this->getTestResultsController('indexAction')->indexAction('http://example.com/', 1);
             $this->fail('WebResourceException 404 has not been raised.');
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
             $this->assertEquals(400, $webResourceException->getResponse()->getStatusCode());
@@ -109,7 +109,7 @@ class ResultsActionHttpTest extends BaseSimplyTestableTestCase {
         $this->container->enterScope('request');
         
         try {
-            $this->getAppController('prepareResultsAction')->prepareResultsAction('http://example.com/', 1);
+            $this->getTestResultsController('indexAction')->indexAction('http://example.com/', 1);
             $this->fail('WebResourceException 500 has not been raised.');
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
             $this->assertEquals(500, $webResourceException->getResponse()->getStatusCode());
@@ -132,7 +132,7 @@ class ResultsActionHttpTest extends BaseSimplyTestableTestCase {
         $this->container->enterScope('request');
         
         try {
-            $this->getAppController('prepareResultsAction')->prepareResultsAction('http://example.com/', 1);
+            $this->getTestResultsController('indexAction')->indexAction('http://example.com/', 1);
             $this->fail('CurlException 6 has not been raised.');
         } catch (\Guzzle\Http\Exception\CurlException $curlException) {
             $this->assertEquals(6, $curlException->getErrorNo());

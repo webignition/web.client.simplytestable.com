@@ -270,11 +270,4 @@ class TestProgressController extends TestViewController
     private function getCoreApplicationStatusService() {
         return $this->container->get('simplytestable.services.coreapplicationstatusservice');
     }
-    
-    
-    public function outdatedBrowserAction() {
-        $publicSiteParameters = $this->container->getParameter('public_site');        
-        return $this->redirect($publicSiteParameters['urls']['home']);
-    }  
-
 }
