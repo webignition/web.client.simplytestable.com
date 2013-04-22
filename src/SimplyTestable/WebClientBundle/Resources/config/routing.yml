@@ -90,7 +90,7 @@ app_progress:
         
 app_results:
     pattern:  /{website}/{test_id}/results/
-    defaults: { _controller: SimplyTestableWebClientBundle:App:results }  
+    defaults: { _controller: SimplyTestableWebClientBundle:TestResults:index }  
     requirements:
        website: ".+"
        
