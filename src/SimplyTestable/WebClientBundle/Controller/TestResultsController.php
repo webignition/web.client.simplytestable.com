@@ -61,7 +61,7 @@ class TestResultsController extends TestViewController
         $allAvailableTaskTypes = $this->container->getParameter('available_task_types');
         $availableTaskTypes = $allAvailableTaskTypes['default'];
         
-        if ($this->isEarlyAccessUser()) {
+        if ($this->isEarlyAccessUser() && is_array($allAvailableTaskTypes['early_access'])) {
             $availableTaskTypes = array_merge($availableTaskTypes, $allAvailableTaskTypes['early_access']);
         }
         
