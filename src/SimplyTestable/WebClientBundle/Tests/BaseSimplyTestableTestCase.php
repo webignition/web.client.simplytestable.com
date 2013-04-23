@@ -1,6 +1,7 @@
 <?php
 
 namespace SimplyTestable\WebClientBundle\Tests;
+use SimplyTestable\WebClientBundle\Model\User;
 
 abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     
@@ -13,6 +14,31 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     const USER_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\UserController';    
     
     private $testQueueService;
+    
+    
+    /**
+     *
+     * @var User
+     */
+    private $user;
+    
+    
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Model\User $user
+     */
+    protected function setUser(User $user) {
+        $this->user = $user;
+    }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    private function hasUser() {
+        return !is_null($this->user);
+    }
 
     
     /**
@@ -100,8 +126,13 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
      * @param string $methodName
      * @return Symfony\Bundle\FrameworkBundle\Controller\Controller
      */
-    private function getController($controllerName, $methodName, array $postData = array(), array $queryData = array()) {        
-        return $this->createController($controllerName, $methodName, $postData, $queryData);
+    private function getController($controllerName, $methodName, array $postData = array(), array $queryData = array()) {   
+        $cookieData = array();
+        if ($this->hasUser()) {
+            $cookieData['simplytestable-user'] = $this->getUserSerializerService()->serializeToString($this->user);
+        }
+        
+        return $this->createController($controllerName, $methodName, $postData, $queryData, $cookieData);
     }
     
     
@@ -146,11 +177,21 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     
     /**
      *
+     * @return \SimplyTestable\WebClientBundle\Services\UserSerializerService
+     */    
+    protected function getUserSerializerService() {
+        return $this->container->get('simplytestable.services.userserializerservice');
+    }  
+    
+    
+    /**
+     *
      * @return \SimplyTestable\WebClientBundle\Services\UserService
      */    
     protected function getUserService() {
         return $this->container->get('simplytestable.services.userservice');
-    }     
+    }  
+    
     
     /**
      *

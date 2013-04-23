@@ -100,11 +100,16 @@ abstract class BaseTestCase extends WebTestCase {
      * @param array An array of parameters to pass into the request.
      * @return \Symfony\Bundle\FrameworkBundle\Controller\Controller The built Controller object.
      */
-    protected function createController($controllerClass, $controllerMethod, array $parameters = array(), array $query = array()) {
-        $request = $this->createWebRequest();
+    protected function createController($controllerClass, $controllerMethod, array $parameters = array(), array $query = array(), array $cookies = array()) {
+        $request = $this->createWebRequest();        
         $request->attributes->set('_controller', $controllerClass.'::'.$controllerMethod);
         $request->request->add($parameters);
-        $request->query->add($query);
+        $request->query->add($query);       
+
+        foreach ($cookies as $cookieName => $cookieValue) {
+            $request->cookies->add(array($cookieName => $cookieValue));
+        }       
+        
         $this->container->set('request', $request);
               
         $controllerCallable = $this->getControllerCallable($request);        

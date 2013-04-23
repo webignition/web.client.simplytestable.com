@@ -110,15 +110,16 @@ class TestService extends CoreApplicationService {
      * @return \webignition\WebResource\JsonDocument\JsonDocument
      */
     public function getList($limit) {
-        $httpRequest = $this->getAuthorisedHttpRequest(
-            $this->getUrl('tests_list', array(
+        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('tests_list', array(
             'limit' => $limit
         )));
         
+        $this->addAuthorisationToRequest($request);
+        
         /* @var $response \webignition\WebResource\JsonDocument\JsonDocument */
         try {
-            return $this->webResourceService->get($httpRequest);
-        } catch (\webignition\Http\Client\CurlException $curlException) {
+            return $this->webResourceService->get($request);
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
             
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
             

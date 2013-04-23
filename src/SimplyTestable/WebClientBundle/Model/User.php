@@ -14,7 +14,17 @@ class User {
      *
      * @var string
      */
-    private $password = null;    
+    private $password = null;   
+    
+    
+    /**
+     * 
+     * @param string $username
+     * @param string $password
+     */
+    public function __construct($username = null, $password = null) {
+        $this->setUsername($username)->setPassword($password);
+    }
     
     
     /**
