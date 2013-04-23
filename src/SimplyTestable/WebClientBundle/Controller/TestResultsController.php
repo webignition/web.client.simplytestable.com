@@ -29,15 +29,7 @@ class TestResultsController extends TestViewController
         'js-static-analysis' => 1,
         'js-static-analysis-ignore-common-cdns' => 1,
         'js-static-analysis-domains-to-ignore' => "",
-    ); 
-    
-    
-    /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Services\TestQueueService
-     */
-    private $testQueueService;
-
+    );
     
     
     /**
