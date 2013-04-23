@@ -372,7 +372,7 @@ class UserController extends BaseViewController
             ), true));               
         }
         
-        $passwordResetResponse = $this->getUserService()->resetPassword($token, $password);
+        $passwordResetResponse = $this->getUserService()->resetPassword($token, $password);        
         
         if ($this->requestFailedDueToReadOnly($passwordResetResponse)) {
             $this->get('session')->setFlash('user_reset_password_error', 'failed-read-only');
@@ -382,17 +382,8 @@ class UserController extends BaseViewController
                 'stay-signed-in' => $staySignedIn
             ), true));             
         }
-            
-        if (is_null($passwordResetResponse)) {
-            $this->get('session')->setFlash('user_reset_password_error', 'unknown-error');
-            return $this->redirect($this->generateUrl('reset_password_choose', array(
-                'email' => $email,
-                'token' => $inputToken,
-                'stay-signed-in' => $staySignedIn
-            ), true));            
-        }
         
-        if ($passwordResetResponse === false) {
+        if ($passwordResetResponse === 404) {
             $this->get('session')->setFlash('user_reset_password_error', 'invalid-token');
             return $this->redirect($this->generateUrl('reset_password_choose', array(
                 'email' => $email,

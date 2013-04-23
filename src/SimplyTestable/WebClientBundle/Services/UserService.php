@@ -147,16 +147,27 @@ class UserService extends CoreApplicationService {
      * @throws UserServiceException
      */
     public function resetPassword($token, $password) {
-        $request = $this->getAuthorisedHttpRequest($this->getUrl('user_reset_password', array('token' => $token)), \Guzzle\Http\Message\Request::POST);
-        $request->addPostFields(array(
-            'password' => $password
-        ));
+        $request = $this->webResourceService->getHttpClientService()->postRequest(
+            $this->getUrl('user_reset_password', array('token' => $token)),
+            null,
+            array(
+                'password' => $password
+            )
+        );
+        
+        $this->addAuthorisationToRequest($request);
         
         try {
-            $response = $this->getHttpClient()->getResponse($request);            
-            return ($response->getResponseCode() == 200) ? true : $response->getResponseCode();
-        } catch (\webignition\Http\Client\CurlException $curlException) {     
-            return $curlException->getCode();
+            $response = $request->send();          
+            return ($response->getStatusCode() == 200) ? true : $response->getStatusCode();
+        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+            if ($badResponseException->getResponse()->getStatusCode() == 401) {
+                throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
+            }
+            
+            return $badResponseException->getResponse()->getStatusCode();            
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            return $curlException->getErrorNo();
         }
     }
     
@@ -248,7 +259,7 @@ class UserService extends CoreApplicationService {
      * @return boolean
      * @throws CoreApplicationAdminRequestException
      */
-    public function exists($email = null) {
+    public function exists($email = null) {        
         if (!$this->hasUser()) {
             return false;
         }     
@@ -294,7 +305,7 @@ class UserService extends CoreApplicationService {
         $this->addAuthorisationToRequest($request);
         
         try {
-            $response = $request->send();
+            $response = $request->send();                        
         } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
             $response = $badResponseException->getResponse();
         }
