@@ -13,8 +13,7 @@ services:
     arguments:
         entityManager: "@doctrine.orm.entity_manager"  
         parameters: %core_application%
-        webResourceService: "@simplytestable.services.webresourceservice"            
-        taskOutputService: "@simplytestable.services.taskoutputservice"
+        webResourceService: "@simplytestable.services.webresourceservice"
         logger: "@logger"
         taskService: "@simplytestable.services.taskservice" 
 

@@ -34,14 +34,7 @@ class TestService extends CoreApplicationService {
      *
      * @var \Doctrine\ORM\EntityRepository
      */
-    private $entityRepository;    
-    
-    
-    /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Services\TaskOutputService
-     */
-    private $taskOutputService;
+    private $entityRepository;
     
     /**
      *
@@ -68,13 +61,11 @@ class TestService extends CoreApplicationService {
         EntityManager $entityManager,
         $parameters,
         \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService,
-        \SimplyTestable\WebClientBundle\Services\TaskOutputService $taskOutputService,
         Logger $logger,
         \SimplyTestable\WebClientBundle\Services\TaskService $taskService
     ) {
         parent::__construct($parameters, $webResourceService);
         $this->entityManager = $entityManager; 
-        $this->taskOutputService = $taskOutputService;
         $this->logger = $logger;
         $this->taskService = $taskService;
     } 
