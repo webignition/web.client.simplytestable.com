@@ -256,16 +256,7 @@ class TaskController extends BaseViewController
      */
     protected function getTaskService() {
         return $this->container->get('simplytestable.services.taskservice');
-    }      
-    
-    
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TaskOutputService 
-     */
-    private function getTaskOutputService() {
-        return $this->container->get('simplytestable.services.taskoutputservice');
-    }   
+    }
     
     
     /**
