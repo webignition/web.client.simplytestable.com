@@ -36,7 +36,7 @@ class ResetPasswordChooseSubmitActionTest extends BaseSimplyTestableTestCase {
         ))->resetPasswordChooseSubmitAction();
         $this->assertEquals(302, $response->getStatusCode());        
         $responseUrl = new \webignition\Url\Url($response->getTargetUrl());
-        $this->assertEquals('/reset-password/nonexistent-user@example.com/non-blank-token/', $responseUrl->getPath());         
+        $this->assertEquals('/reset-password/', $responseUrl->getPath());         
     }    
     
     public function testWithInvalidTokenPreReset() {
