@@ -53,30 +53,28 @@ class TaskService extends CoreApplicationService {
      */
     private $entityRepository;    
     
-    
-    /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Services\TaskOutputService
-     */
-    private $taskOutputService;   
-    
-    
     /**
      *
      * @var \SimplyTestable\WebClientBundle\Repository\TaskOutputRepository
      */
-    private $taskOutputRepository;    
+    private $taskOutputRepository;
+    
+    
+    /**
+     * @var \SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory
+     */
+    private $taskOutputResultParserService;      
     
     
     public function __construct(
         EntityManager $entityManager,
         $parameters,
         \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService,
-        \SimplyTestable\WebClientBundle\Services\TaskOutputService $taskOutputService
+        \SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory $taskOutputResultParserService
     ) {
         parent::__construct($parameters, $webResourceService);
-        $this->entityManager = $entityManager; 
-        $this->taskOutputService = $taskOutputService;
+        $this->entityManager = $entityManager;
+        $this->taskOutputResultParserService = $taskOutputResultParserService;
     }
     
     
@@ -444,8 +442,25 @@ class TaskService extends CoreApplicationService {
             $this->normaliseEndingState($task);           
         }        
         
-        return $this->taskOutputService->setParsedOutput($task);       
+        return $this->setParsedOutput($task);       
     }
+    
+    
+    /**
+     *
+     * @param Task $task 
+     * @return Task
+     */
+    public function setParsedOutput(Task $task) {         
+        if ($task->hasOutput()) {            
+            $parser = $this->taskOutputResultParserService->getParser($task->getOutput());            
+            $parser->setOutput($task->getOutput());
+
+            $task->getOutput()->setResult($parser->getResult());
+        }
+        
+        return $task;
+    }    
     
     
     /**

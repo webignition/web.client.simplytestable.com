@@ -23,15 +23,7 @@ services:
         entityManager: "@doctrine.orm.entity_manager"  
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"            
-        taskOutputService: "@simplytestable.services.taskoutputservice"    
-
-  simplytestable.services.taskoutputservice:
-    class:   SimplyTestable\WebClientBundle\Services\TaskOutputService  
-    arguments:
-        entityManager: "@doctrine.orm.entity_manager"      
-        parameters: %core_application%
-        webResourceService: "@simplytestable.services.webresourceservice"
-        taskOutputResultParserService: "@simplytestable.services.taskoutputresultparserfactoryservice" 
+        taskOutputResultParserService: "@simplytestable.services.taskoutputresultparserfactoryservice"
 
   simplytestable.services.taskoutputresultparserfactoryservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory
