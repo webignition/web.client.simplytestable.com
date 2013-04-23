@@ -183,27 +183,31 @@ class UserService extends CoreApplicationService {
     public function activate($token) {   
         $this->setUser($this->getAdminUser());
         
-        $request = $this->getAuthorisedHttpRequest($this->getUrl('user_activate', array(
+        $request = $this->webResourceService->getHttpClientService()->postRequest($this->getUrl('user_activate', array(
             'token' => $token
-        )), \Guzzle\Http\Message\Request::POST);
+        )));
+        
+        $this->addAuthorisationToRequest($request);
         
         try {
-            $response = $this->getHttpClient()->getResponse($request);
-            $this->setUser($this->getPublicUser());  
-            
-            if ($response->getResponseCode() == 401) {
-                throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
-            }        
+            $response = $request->send();                        
+        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+            $response = $badResponseException->getResponse();
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            return $curlException->getErrorNo();
+        }
+        
+        $this->setUser($this->getPublicUser());
+        
+        if ($response->getStatusCode() == 401) {
+            throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
+        }        
 
-            if ($response->getResponseCode() == 400) {
-                return false;
-            }            
-            
-            return $response->getResponseCode() == 200 ? true : $response->getResponseCode();
-        } catch (\webignition\Http\Client\CurlException $curlException) {     
-            $this->setUser($this->getPublicUser());  
-            return $curlException->getCode();
-        }     
+        if ($response->getStatusCode() == 400) {
+            return false;
+        }         
+        
+        return $response->getStatusCode() == 200 ? true : $response->getStatusCode();        
     }    
     
     
