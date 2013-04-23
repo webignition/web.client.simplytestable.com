@@ -11,7 +11,8 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     const TEST_START_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TestStartController';    
     const TASK_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TaskController';    
     const TEST_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TestController';    
-    const USER_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\UserController';    
+    const USER_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\UserController';
+    const REDIRECT_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\RedirectController';
     
     private $testQueueService;
     
@@ -118,6 +119,15 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
      */
     protected function getUserController($methodName, $postData = array()) {
         return $this->getController(self::USER_CONTROLLER_NAME, $methodName, $postData);
+    }     
+    
+    /**
+     *
+     * @param string $methodName
+     * @return \SimplyTestable\WebClientBundle\Controller\RedirectController
+     */
+    protected function getRedirectController($methodName, $postData = array(), $queryData = array()) {
+        return $this->getController(self::REDIRECT_CONTROLLER_NAME, $methodName, $postData, $queryData);
     }     
    
     /**
