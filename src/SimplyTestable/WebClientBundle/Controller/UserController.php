@@ -118,37 +118,39 @@ class UserController extends BaseViewController
         
         $this->getUserService()->setUser($user);
         
-        if (!$this->getUserService()->authenticate()) {            
-            if ($this->getUserService()->exists()) {
-                if ($this->getUserService()->isEnabled()) {
-                    $this->getUserService()->clearUser();
-                    $this->get('session')->setFlash('user_signin_error', 'authentication-failure');
-                    return $this->redirect($this->generateUrl('sign_in', array(
-                        'email' => $email,
-                        'redirect' => $redirect,
-                        'stay-signed-in' => $staySignedIn
-                    ), true));                        
-                } else {
-                    $this->getUserService()->clearUser();
-                    $token = $this->getUserService()->getConfirmationToken($email);        
-                    $this->sendConfirmationToken($email, $token);                  
-
-                    $this->get('session')->setFlash('user_signin_error', 'user-not-enabled');
-                    return $this->redirect($this->generateUrl('sign_in', array(
-                        'email' => $email,
-                        'redirect' => $redirect,
-                        'stay-signed-in' => $staySignedIn
-                    ), true));                       
-                }       
-            } else {
+        if (!$this->getUserService()->authenticate()) {
+            if (!$this->getUserService()->exists()) {
                 $this->getUserService()->clearUser();
                 $this->get('session')->setFlash('user_signin_error', 'invalid-user');
                 return $this->redirect($this->generateUrl('sign_in', array(
                     'email' => $email,
                     'redirect' => $redirect,
                     'stay-signed-in' => $staySignedIn
-                ), true));                   
-            }                         
+                ), true));                 
+            }          
+
+            if ($this->getUserService()->isEnabled()) {
+                $this->getUserService()->clearUser();
+                $this->get('session')->setFlash('user_signin_error', 'authentication-failure');
+                return $this->redirect($this->generateUrl('sign_in', array(
+                    'email' => $email,
+                    'redirect' => $redirect,
+                    'stay-signed-in' => $staySignedIn
+                ), true));                        
+            }
+            
+            $this->getUserService()->clearUser();
+            $token = $this->getUserService()->getConfirmationToken($email);
+
+            $this->sendConfirmationToken($email, $token);                  
+
+            $this->get('session')->setFlash('user_signin_error', 'user-not-enabled');          
+            
+            return $this->redirect($this->generateUrl('sign_in', array(
+                'email' => $email,
+                'redirect' => $redirect,
+                'stay-signed-in' => $staySignedIn
+            ), true)); 
         }
         
         if (!$this->getUserService()->isEnabled()) {
@@ -536,7 +538,7 @@ class UserController extends BaseViewController
     }
     
     
-    public function signupConfirmResendAction($email) {        
+    public function signupConfirmResendAction($email) {
         if ($this->getUserService()->exists($email) === false) {
             $this->get('session')->setFlash('token_resend_error', 'invalid-user');
             return $this->redirect($this->generateUrl('sign_up_confirm', array('email' => $email), true));          
@@ -551,7 +553,7 @@ class UserController extends BaseViewController
         )));
     }
     
-    private function sendConfirmationToken($email, $token) {
+    private function sendConfirmationToken($email, $token) {        
         $userCreationConfirmationEmailSettings = $this->container->getParameter('user_creation_confirmation_email');        
 
         $confirmationUrl = $this->generateUrl('sign_up_confirm', array(
