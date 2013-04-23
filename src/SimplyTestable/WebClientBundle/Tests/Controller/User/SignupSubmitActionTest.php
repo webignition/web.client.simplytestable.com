@@ -55,7 +55,7 @@ class SignupSubmitActionTest extends BaseSimplyTestableTestCase {
         
         $responseUrl = new \webignition\Url\Url($response->getTargetUrl());
         $this->assertEquals('/signup/', $responseUrl->getPath());        
-    } 
+    }
 
     public function testWithFailedDueToReadOnly() {
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
@@ -100,6 +100,23 @@ class SignupSubmitActionTest extends BaseSimplyTestableTestCase {
         $responseUrl = new \webignition\Url\Url($response->getTargetUrl());
         $this->assertEquals('/signup/', $responseUrl->getPath());        
     }      
+    
+    
+    public function testWithInvalidAdminCredentials() {
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
+        
+        try {
+            $response = $this->getUserController('signUpSubmitAction', array(
+                'email' => 'user@example.com',
+                'password' => 'password'
+            ))->signUpSubmitAction();
+            $this->assertEquals(302, $response->getStatusCode());
+            $this->fail('CoreApplicationAdminRequestException  401 has not been raised.');
+        } catch (\SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException $exception) {            
+            $this->assertEquals(401, $exception->getCode());
+            return;
+        };       
+    }    
     
     
     public function testSuccess() {

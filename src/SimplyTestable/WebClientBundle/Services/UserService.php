@@ -167,10 +167,12 @@ class UserService extends CoreApplicationService {
         
         try {
             $response = $request->send();
-//            echo $response;
-//            exit();
             return $response->getStatusCode() == 200 ? true : $response->getStatusCode();
         } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+            if ($badResponseException->getResponse()->getStatusCode() == 401) {
+                throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
+            }
+            
             return $badResponseException->getResponse()->getStatusCode();
         } catch (\Guzzle\Http\Exception\CurlException $curlException) {
             return $curlException->getErrorNo();
@@ -225,11 +227,18 @@ class UserService extends CoreApplicationService {
    
         $this->setUser($this->getAdminUser());
         
-        $request = $this->getAuthorisedHttpRequest($this->getUrl('user_exists', array(
+        $request = $this->webResourceService->getHttpClientService()->postRequest($this->getUrl('user_exists', array(
             'email' => $userEmail
-        )), \Guzzle\Http\Message\Request::POST);
+        )));
         
-        $response = $this->getHttpClient()->getResponse($request);
+        $this->addAuthorisationToRequest($request);
+        
+        try {
+            $response = $request->send();
+            return $response->getStatusCode() == 200 ? true : $response->getStatusCode();
+        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+            $response = $badResponseException->getResponse();
+        }
         
         if (is_null($currentUser)) {
             $currentUser = $this->getPublicUser();
@@ -237,11 +246,15 @@ class UserService extends CoreApplicationService {
         
         $this->setUser($currentUser);    
         
-        if ($response->getResponseCode() == 401) {
+        if ($response->getStatusCode() == 401) {
             throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
         } 
         
-        return $response->getResponseCode() == 200;         
+        if (is_null($response)) {
+            return null;
+        }
+        
+        return $response->getStatusCode() == 200;         
     }
     
     
