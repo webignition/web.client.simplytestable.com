@@ -30,6 +30,7 @@ parameters:
       user_reset_password: /user/reset-password/{token}/
       user: /user/{email}/
       user_is_enabled: /user/{email}/enabled/
+      test_latest: /job/{canonical-url}/latest/
   public_site:
     urls:
       home: http://travis.simplytestable.com
