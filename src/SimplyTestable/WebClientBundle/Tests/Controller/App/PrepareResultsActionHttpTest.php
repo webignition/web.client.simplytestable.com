@@ -10,11 +10,11 @@ class PrepareResultsActionHttpTest extends BaseSimplyTestableTestCase {
         self::setupDatabaseIfNotExists();
     }    
     
-//    public function testWithAuthorisedUser() {
-//        $this->performActionTest(array(
-//            'statusCode' => 200
-//        ));
-//    }
+    public function testWithAuthorisedUser() {
+        $this->performActionTest(array(
+            'statusCode' => 200
+        ));
+    }
     
     public function testWithUnauthorisedUser() {
         $this->performActionTest(array(
