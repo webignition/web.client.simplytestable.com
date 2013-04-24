@@ -6,13 +6,13 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 
-class CssValidationResultParser extends ResultParser {    
+class CssValidationResultParser extends ResultParser {      
     
     /**
      * @return Result
      */
-    public function getResult() {        
-        $result = new Result();
+    protected function buildResult() {        
+        $result = new Result();        
         
         $rawOutputArray = json_decode($this->getOutput()->getContent());
         

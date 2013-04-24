@@ -8,14 +8,13 @@ use SimplyTestable\WebClientBundle\Entity\Task\Output;
 
 class JsStaticAnalysisResultParser extends ResultParser {    
     
-    /**
-     * @return Result
-     */
-    public function getResult() {        
+    
+    protected function buildResult() {
         $result = new Result();
         
         $rawOutputObject = json_decode($this->getOutput()->getContent());
-        if (is_array($rawOutputObject) || is_null($rawOutputObject) || !$this->hasErrors($rawOutputObject)) {
+        
+        if ($this->isErrorFreeOutput($rawOutputObject)) {
             return $result;
         }
         
@@ -31,11 +30,31 @@ class JsStaticAnalysisResultParser extends ResultParser {
                     $result->addMessage($this->getFailureMEssageFromAnalysisOutput($analysisOutput, $context));                 
                 }                
             }
-            
-
         }
         
-        return $result;
+        return $result;        
+    }
+    
+    
+    /**
+     * 
+     * @param \stdClass $rawOutputObject
+     * @return boolean
+     */
+    private function isErrorFreeOutput($rawOutputObject) {
+        if (is_array($rawOutputObject)) {
+            return true;
+        } 
+        
+        if (is_null($rawOutputObject)) {
+            return true;
+        } 
+        
+        if (!$this->hasErrors($rawOutputObject)) {
+            return true;
+        } 
+        
+        return false;
     }
     
     

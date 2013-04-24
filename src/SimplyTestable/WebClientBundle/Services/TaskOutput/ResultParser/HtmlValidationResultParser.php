@@ -6,12 +6,12 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\HtmlTextFileMessage;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 
-class HtmlValidationResultParser extends ResultParser {    
+class HtmlValidationResultParser extends ResultParser {        
     
     /**
      * @return Result
      */
-    public function getResult() {        
+    protected function buildResult() {        
         $result = new Result();
         
         $rawOutputObject = json_decode($this->getOutput()->getContent());
