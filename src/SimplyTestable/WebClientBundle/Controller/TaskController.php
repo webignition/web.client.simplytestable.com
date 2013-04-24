@@ -7,7 +7,7 @@ use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
-class TaskController extends BaseViewController
+class TaskController extends TestViewController
 {  
     const DEFAULT_UNRETRIEVED_TASKID_LIMIT = 100;
     const MAX_UNRETRIEVED_TASKID_LIMIT = 1000;
@@ -72,7 +72,7 @@ class TaskController extends BaseViewController
         } catch (\Guzzle\Http\Exception\RequestException $requestException)  {
             return new Response($this->getSerializer()->serialize(null, 'json'));
         }
-    }
+    }    
     
     
     public function unretrievedIdCollectionAction($website, $test_id, $limit = null) {
@@ -127,14 +127,9 @@ class TaskController extends BaseViewController
     public function resultsAction($website, $test_id, $task_id) {        
         $this->getTestService()->setUser($this->getUser());
         
-        if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
-            return $this->redirect($this->generateUrl('app', array(), true));
+        if ($this->isUsingOldIE()) {
+            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }
-        
-        /**
-            'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-         */
         
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
             'website' => $website,
@@ -147,10 +142,22 @@ class TaskController extends BaseViewController
         $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
         if ($response->isNotModified($this->getRequest())) {
             return $response;
+        }        
+        
+        $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
+        if ($testRetrievalOutcome->hasResponse()) {
+            return $testRetrievalOutcome->getResponse();
         }
         
-        $test = $this->getTestService()->get($website, $test_id, $this->getUser());
-        $task = $this->getTaskService()->get($test, $task_id);            
+        $test = $testRetrievalOutcome->getTest();        
+        $task = $this->getTaskService()->get($test, $task_id);
+        
+        if (is_null($task)) {
+            return $this->redirect($this->generateUrl('app_test_redirector', array(
+                'website' => $website,
+                'test_id' => $test_id
+            )));            
+        }
         
         $this->getCssValidationErrorsGroupedByRef($task);         
         
