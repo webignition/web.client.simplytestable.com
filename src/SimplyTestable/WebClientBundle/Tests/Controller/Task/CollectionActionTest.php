@@ -4,7 +4,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Controller\Task;
 
 use SimplyTestable\WebClientBundle\Tests\BaseSimplyTestableTestCase;
 
-class TaskControllerCollectionActionTest extends BaseSimplyTestableTestCase {    
+class CollectionActionTest extends BaseSimplyTestableTestCase {    
     
     public static function setUpBeforeClass() {
         self::setupDatabaseIfNotExists();
