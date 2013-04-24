@@ -85,7 +85,17 @@ class TaskControllerCollectionActionTest extends BaseSimplyTestableTestCase {
         $response = $this->getTaskController('collectionAction')->collectionAction('http://example.com/', 1);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertNull(json_decode($response->getContent()));        
-    }      
+    }
+    
+    
+    public function testJsStaticAnalysisResultParsingOfEmptyCollection() {
+        $this->removeAllTests();
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
+
+        $response = $this->getTaskController('collectionAction')->CollectionAction('http://lautokaurbana.com/', 4857);
+    
+        $this->assertEquals(200, $response->getStatusCode());        
+    }
 }
 
 

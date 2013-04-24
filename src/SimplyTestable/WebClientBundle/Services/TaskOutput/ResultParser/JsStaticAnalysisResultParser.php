@@ -15,8 +15,7 @@ class JsStaticAnalysisResultParser extends ResultParser {
         $result = new Result();
         
         $rawOutputObject = json_decode($this->getOutput()->getContent());
-        
-        if (is_null($rawOutputObject) || !$this->hasErrors($rawOutputObject)) {
+        if (is_array($rawOutputObject) || is_null($rawOutputObject) || !$this->hasErrors($rawOutputObject)) {
             return $result;
         }
         
