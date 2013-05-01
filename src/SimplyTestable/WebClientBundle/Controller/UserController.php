@@ -168,11 +168,7 @@ class UserController extends BaseViewController
         
         $this->getUserService()->setUser($user);
         
-        $redirectValues = $this->getDecodedRedirectValues();
-        
-        $response = (is_null($redirectValues))
-                ? $this->redirect($this->generateUrl('app', array(), true))
-                : $this->redirect($this->generateUrl($redirectValues['route'], $redirectValues['parameters'], true));
+        $response = $this->getPostSignInRedirectResponse();        
         
         if ($staySignedIn == "1") {
             $stringifiedUser = $this->getUserSerializerService()->serializeToString($user);
@@ -194,33 +190,15 @@ class UserController extends BaseViewController
     }
     
     
-    private function getDecodedRedirectValues() {
-        $redirectValues = json_decode(base64_decode($this->get('request')->request->get('redirect')));
-        if (is_null($redirectValues)) {
-            return null;
+    private function getPostSignInRedirectResponse() {
+        $redirectValues = json_decode(base64_decode($this->get('request')->request->get('redirect')), true);        
+      
+        if (!is_array($redirectValues) || !isset($redirectValues['route'])) {
+            return $this->redirect($this->generateUrl('app', array(), true));
         }
-        
-        if (!$redirectValues instanceof \stdClass) {
-            return null;
-        }
-        
-        if (!isset($redirectValues->route)) {
-            return null;
-        }
-        
-        if (!isset($redirectValues->parameters)) {
-            return null;
-        } 
-        
-        $redirectParameters = array();
-        foreach ($redirectValues->parameters as $key => $value) {
-            $redirectParameters[$key] = $value;
-        }
-        
-        return array(
-            'route' => $redirectValues->route,
-            'parameters' => $redirectParameters
-        );
+
+        $parameters = isset($redirectValues['parameters']) ? $redirectValues['parameters'] : array();
+        return $this->redirect($this->generateUrl($redirectValues['route'], $parameters, true));
     }
     
     
