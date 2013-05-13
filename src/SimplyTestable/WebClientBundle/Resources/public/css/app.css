@@ -779,3 +779,44 @@ body.app-progress #completion-time-remaining {
     margin: -10px 0 -10px 0;
     opacity: 0.6;
 }
+
+body.account h1,
+body.account h2,
+body.account h3,
+body.account h4 {
+    font-weight: normal;
+}
+
+body.account h1 {
+    font-size:32px;
+    line-height: 44px;
+}
+
+body.account h2 {
+    font-size:26px;
+    line-height: 34px;
+    opacity:0.7;
+}
+
+body.account h3 {
+    font-size:18px;
+    line-height: 24px;
+    opacity:0.7;
+}
+
+body.account .account-details label {
+    width:140px;
+}
+
+body.account .plan table {
+    
+}
+
+body.account .plan th {
+    padding-left: 0;
+    font-weight: normal;
+}
+
+body.account .plan-section {
+    margin-bottom:30px;
+}

@@ -151,6 +151,10 @@ app_test_redirector:
     defaults: { _controller: SimplyTestableWebClientBundle:Redirect:test }  
     requirements:
         website: ".+"   
+        
+user_account_index:
+    pattern:  /account/
+    defaults: { _controller: SimplyTestableWebClientBundle:UserAccount:index }           
 
 app_website:
     pattern:  /{website}/

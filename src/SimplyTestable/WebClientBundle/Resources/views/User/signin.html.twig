@@ -70,6 +70,18 @@
         </div>                
             {% endif %}   
         
+            {% if user_signin_error == 'account-not-logged-in' %}
+        <div class="alert alert-info">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p>
+                <strong>Hello!</strong>
+            </p>
+            <p>
+                You need to sign in to access your account.
+            </p>
+        </div>                
+            {% endif %}         
+        
             {% if user_signin_error == 'test-not-logged-in' %}
         <div class="alert alert-info">
             <button type="button" class="close" data-dismiss="alert">×</button>
