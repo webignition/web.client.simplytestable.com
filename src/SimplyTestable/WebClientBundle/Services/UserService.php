@@ -164,7 +164,7 @@ class UserService extends CoreApplicationService {
      * @return null|boolean
      * @throws UserServiceException
      */
-    public function resetPassword($token, $password) {
+    public function resetPassword($token, $password) {        
         $request = $this->webResourceService->getHttpClientService()->postRequest(
             $this->getUrl('user_reset_password', array('token' => $token)),
             null,
@@ -187,6 +187,11 @@ class UserService extends CoreApplicationService {
         } catch (\Guzzle\Http\Exception\CurlException $curlException) {
             return $curlException->getErrorNo();
         }
+    }
+    
+    
+    public function resetLoggedInUserPassword($password) {        
+        return $this->resetPassword($this->getConfirmationToken($this->getUser()->getUsername()), $password);      
     }
     
     
@@ -323,7 +328,7 @@ class UserService extends CoreApplicationService {
         $this->addAuthorisationToRequest($request);
         
         try {
-            $response = $request->send();                        
+            $response = $request->send();            
         } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
             $response = $badResponseException->getResponse();
         }

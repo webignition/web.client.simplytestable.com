@@ -89,6 +89,47 @@
             <div class="control-group">
                 
 {% if user_account_details_update_notice is defined and user_account_details_update_notice != '' %}    
+    {% if user_account_details_update_notice == 'password-missing' %}
+    <div class="alert alert-info">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <p>
+            <strong>Nearly!</strong>
+        </p>       
+        <p>
+            To change your password, enter your current password <strong>and</strong> enter your choice of new password.
+        </p>
+        <p>
+            Leave the password fields blank if you don't want to change your password.
+        </p>
+    </div>                
+    {% endif %}
+                
+    {% if user_account_details_update_notice == 'password-failed-read-only' %}
+    <div class="alert alert-error">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <p><strong>Sorry, I can't do that right now</strong></p>
+        <p>
+            We're in a <strong>read-only</strong> state whilst some 
+            <strong>maintenance</strong> is going on.
+        </p>
+        <p>
+            Give it a go again soon, this won't take long.
+        </p>
+    </div>              
+    {% endif %}                
+                
+    {% if user_account_details_update_notice == 'password-invalid' %}
+    <div class="alert alert-error">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <p>
+            <strong>Not quite!</strong>
+        </p>       
+        <p>
+            That's not your current password. Give it a go again.
+        </p>
+    </div>                
+    {% endif %}                  
+                
     {% if user_account_details_update_notice == 'show-help' %}
     <div class="alert alert-info">
         <button type="button" class="close" data-dismiss="alert">×</button>
@@ -141,6 +182,13 @@
             Would you mind trying that again?
         </div>               
     {% endif %}                  
+                
+    {% if user_account_details_update_notice == 'password-done' %}
+        <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert">×</button>            
+            <strong>Yay!</strong> Your password has been changed.
+        </div>               
+    {% endif %}                
 {% endif %}                
                 
                 <label class="control-label" for="email">Email</label>

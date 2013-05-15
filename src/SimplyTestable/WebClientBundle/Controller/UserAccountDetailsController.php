@@ -14,7 +14,7 @@ class UserAccountDetailsController extends UserAccountController
             return $notLoggedInResponse;
         }
         
-        $redirectParameters = array();
+        $redirectResponse = $this->redirect($this->generateUrl('user_account_index', array(), true));
         
         if (!$this->hasAnyRequestValues()) {
             $this->get('session')->setFlash('user_account_details_update_notice', 'show-help');
@@ -30,7 +30,7 @@ class UserAccountDetailsController extends UserAccountController
                     
                     if ($response === true) {
                         $this->sendEmailChangeConfirmationToken();  
-                        $this->get('session')->setFlash('user_account_details_update_notice', 'done');
+                        $this->get('session')->setFlash('user_account_details_update_notice', 'email-done');
                     } else {
                         switch ($response) {
                             case 409:
@@ -48,9 +48,56 @@ class UserAccountDetailsController extends UserAccountController
                 }                
             }
         }
+        
+        if ($this->hasRequestCurrentPassword() && !$this->hasRequestNewPassword()) {
+            $this->get('session')->setFlash('user_account_details_update_notice', 'password-missing');
+        } elseif (!$this->hasRequestCurrentPassword() && $this->hasRequestNewPassword()) {
+            $this->get('session')->setFlash('user_account_details_update_notice', 'password-missing');
+        } elseif ($this->hasRequestCurrentPassword() && $this->hasRequestNewPassword()) {
+            if ($this->getRequestCurrentPassword() != $this->getUser()->getPassword()) {
+                $this->get('session')->setFlash('user_account_details_update_notice', 'password-invalid');
+            } else {
+                $this->getUserService()->setUser($this->getUser());
+                $passwordResetResponse = $this->getUserService()->resetLoggedInUserPassword($this->getRequestNewPassword());
+                
+                if ($passwordResetResponse === true) {
+                    $user = $this->getUser();            
+                    $user->setPassword($this->getRequestNewPassword());
+                    $this->getUserService()->setUser($user, true);
+
+                    if (!is_null($this->getRequest()->cookies->get('simplytestable-user'))) {
+                        $stringifiedUser = $this->getUserSerializerService()->serializeToString($user);
+
+                        $cookie = new Cookie(
+                            'simplytestable-user',
+                            $stringifiedUser,
+                            time() + self::ONE_YEAR_IN_SECONDS,
+                            '/',
+                            '.simplytestable.com',
+                            false,
+                            true
+                        );
+
+                        $redirectResponse->headers->setCookie($cookie);
+                    }
+                    
+                    $this->get('session')->setFlash('user_account_details_update_notice', 'password-done');                    
+                    
+                } else {
+                    switch ($passwordResetResponse) {
+                        case 503:
+                            $this->get('session')->setFlash('user_account_details_update_notice', 'password-failed-read-only');
+                            break;
+                        
+                        default:
+                            $this->get('session')->setFlash('user_account_details_update_notice', 'unknown');
+                    }                    
+                }              
+            }
+        }
                 
         
-        return $this->redirect($this->generateUrl('user_account_index', $redirectParameters, true));        
+        return $redirectResponse;        
     }
     
     
@@ -240,6 +287,15 @@ class UserAccountDetailsController extends UserAccountController
     private function getRequestEmailAddress() {        
         return trim($this->get('request')->request->get('email'));
     }
+    
+    
+    private function getRequestCurrentPassword() {
+        return $this->get('request')->request->get('current-password');
+    }
+    
+    private function getRequestNewPassword() {
+        return $this->get('request')->request->get('new-password');
+    }    
     
     
     /**

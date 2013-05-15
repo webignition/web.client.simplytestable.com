@@ -123,10 +123,75 @@ class UpdateActionTest extends BaseSimplyTestableTestCase {
         $responseUrl = new \webignition\Url\Url($response->getTargetUrl());
         $this->assertEquals('/account/', $responseUrl->getPath());          
         
-        $this->assertEquals('done', $this->container->get('session')->getFlash('user_account_details_update_notice'));        
+        $this->assertEquals('email-done', $this->container->get('session')->getFlash('user_account_details_update_notice'));        
     }
-
+    
+    public function testWithCurrentPasswordAndNoNewPassword() {        
+        $user = $this->makeUser();        
+        $this->setUser($user); 
+        
+        $response = $this->getUserAccountDetailsController('updateAction', array(
+            'current-password' => $user->getPassword()
+        ))->updateAction();
+        
+        $this->assertEquals(302, $response->getStatusCode());
+        
+        $responseUrl = new \webignition\Url\Url($response->getTargetUrl());
+        $this->assertEquals('/account/', $responseUrl->getPath());          
+        
+        $this->assertEquals('password-missing', $this->container->get('session')->getFlash('user_account_details_update_notice'));        
+    }
+    
+    public function testWithNoCurrentPasswordAndNewPassword() {        
+        $user = $this->makeUser();        
+        $this->setUser($user); 
+        
+        $response = $this->getUserAccountDetailsController('updateAction', array(
+            'new-password' => $user->getPassword()
+        ))->updateAction();
+        
+        $this->assertEquals(302, $response->getStatusCode());
+        
+        $responseUrl = new \webignition\Url\Url($response->getTargetUrl());
+        $this->assertEquals('/account/', $responseUrl->getPath());          
+        
+        $this->assertEquals('password-missing', $this->container->get('session')->getFlash('user_account_details_update_notice'));        
+    }  
+    
+    public function testWithInvalidCurrentPassword() {        
+        $user = $this->makeUser();        
+        $this->setUser($user); 
+        
+        $response = $this->getUserAccountDetailsController('updateAction', array(
+            'current-password' => 'invalid-current-password',
+            'new-password' => 'new-password'
+        ))->updateAction();
+        
+        $this->assertEquals(302, $response->getStatusCode());
+        
+        $responseUrl = new \webignition\Url\Url($response->getTargetUrl());
+        $this->assertEquals('/account/', $responseUrl->getPath());          
+        
+        $this->assertEquals('password-invalid', $this->container->get('session')->getFlash('user_account_details_update_notice'));        
+    }   
+    
+    public function testWithCurrentPasswordAndNewPassword() {        
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
+        
+        $user = $this->makeUser();        
+        $this->setUser($user); 
+        
+        $response = $this->getUserAccountDetailsController('updateAction', array(
+            'current-password' => $user->getPassword(),
+            'new-password' => 'new-password'
+        ))->updateAction();
+        
+        $this->assertEquals(302, $response->getStatusCode());
+        
+        $responseUrl = new \webignition\Url\Url($response->getTargetUrl());
+        $this->assertEquals('/account/', $responseUrl->getPath());          
+        
+        $this->assertEquals('password-done', $this->container->get('session')->getFlash('user_account_details_update_notice'));        
+    }
+   
 }
-
-
- 
