@@ -14,25 +14,108 @@
 <div class="row-fluid">
     <div class="span6 account-details">
         <h2>Account details</h2>
-
-
-        <form class="form-horizontal">
+        
+{% if email_change_request is defined %}
+    <div class="alert alert-info confirm-email-change">
+        <p>
+            <strong>Confirm email address change</strong>
+        </p>
+        <p>
+            We've emailed a confirmation code to  <strong>{{ email_change_request['new_email'] }}</strong>.
+        </p>        
+        
+        <form class="form-horizontal" method="post" action="{{ path('user_account_details_confirm_email_change') }}">
+            <div class="control-group">                
+                <label class="control-label" for="token">Confirmation code</label>
+                <div class="controls">
+                    <input class="input-xlarge" name="token" type="text" id="token" placeholder="Enter your confirmation code" value="{{token}}">
+                </div>
+            </div>
             <div class="control-group">
+                <div class="controls">
+                    <button name="confirm" value="1" type="submit" class="btn btn-primary">Confirm</button>
+                    <button name="re-send" value="1" type="submit" class="btn">Re-send code</button>
+                    <button name="cancel" value="cancel" type="submit" class="btn">Cancel change</button>
+                </div>
+            </div>
+        </form>        
+    </div>         
+{% endif %}
+
+
+        <form class="form-horizontal" method="post" action="{{ path('user_account_details_update') }}">
+            <div class="control-group">
+                
+{% if user_account_details_update_notice is defined and user_account_details_update_notice != '' %}    
+    {% if user_account_details_update_notice == 'show-help' %}
+    <div class="alert alert-info">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <p>
+            <strong>Slow down!</strong>
+        </p>
+        <p>
+            <strong>To change your email address</strong>: enter the new email
+            address you would like to use.
+        </p>        
+        <p>
+            <strong>To change your password</strong>: enter your current password
+            to verify your identity and then enter your choice of new password.
+        </p>
+    </div>                
+    {% endif %}
+                
+    {% if user_account_details_update_notice == 'same-email' %}
+    <div class="alert alert-info">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <p>
+            <strong>That's the email address you're already using!</strong>
+        </p>
+        <p>
+            To change your email address, enter something different.
+        </p>
+    </div>                
+    {% endif %}  
+                
+    {% if user_account_details_update_notice == 'email-taken' %}
+        <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            The email address <strong> {{ user_account_details_update_email }} </strong> is in use by someone else.
+        </div>               
+    {% endif %}                 
+                
+    {% if user_account_details_update_notice == 'invalid-email' %}
+        <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>Hmmm.</strong> I'm not convinced that <strong> {{ user_account_details_update_email }} </strong> is a valid email address.
+        </div>               
+    {% endif %}                             
+                
+    {% if user_account_details_update_notice == 'unknown' %}
+        <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            
+            <strong>Hmmm.</strong><br>
+            Something went wrong when I tried to do that. I'm not sure what happened.
+            Would you mind trying that again?
+        </div>               
+    {% endif %}                  
+{% endif %}                
+                
                 <label class="control-label" for="email">Email</label>
                 <div class="controls">
-                    <input type="text" id="email" placeholder="Choose your email address" value="{{user.username}}">
+                    <input name="email" type="text" id="email" placeholder="Choose your email address" value="{{user.username}}">
                 </div>
             </div>
             <div class="control-group">
                 <label class="control-label" for="currentPassword">Current password</label>
                 <div class="controls">
-                    <input type="password" id="currentPassword" placeholder="Current password">
+                    <input name="current-password" type="password" id="currentPassword" placeholder="Current password">
                 </div>
             </div>                
             <div class="control-group">
                 <label class="control-label" for="newPassword">New password</label>
                 <div class="controls">
-                    <input type="password" id="newPassword" placeholder="New password">
+                    <input name="new-password" type="password" id="newPassword" placeholder="New password">
                 </div>
             </div>
             <div class="control-group">

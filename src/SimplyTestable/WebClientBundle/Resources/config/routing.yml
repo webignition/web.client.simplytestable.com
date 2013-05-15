@@ -49,6 +49,18 @@ sign_up_confirm_submit:
 sign_up_confirm_resend:
     pattern:  /signup/confirm/{email}/resend/
     defaults: { _controller: SimplyTestableWebClientBundle:User:signUpConfirmResend }
+    
+user_account_details_update:
+    pattern:  /account/details/update/
+    defaults: { _controller: SimplyTestableWebClientBundle:UserAccountDetails:update }          
+    
+user_account_details_confirm_email_change:
+    pattern:  /account/details/update/confirm-email-change/
+    defaults: { _controller: SimplyTestableWebClientBundle:UserAccountDetails:confirmEmailChange }          
+        
+user_account_index:
+    pattern:  /account/
+    defaults: { _controller: SimplyTestableWebClientBundle:UserAccount:index }    
 
 app:
     pattern:  /
@@ -150,11 +162,7 @@ app_test_redirector:
     pattern:  /{website}/{test_id}/
     defaults: { _controller: SimplyTestableWebClientBundle:Redirect:test }  
     requirements:
-        website: ".+"   
-        
-user_account_index:
-    pattern:  /account/
-    defaults: { _controller: SimplyTestableWebClientBundle:UserAccount:index }           
+        website: ".+"
 
 app_website:
     pattern:  /{website}/

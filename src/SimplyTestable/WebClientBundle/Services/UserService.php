@@ -316,7 +316,7 @@ class UserService extends CoreApplicationService {
      * @return boolean
      * @throws CoreApplicationAdminRequestException
      */
-    private function getAdminResponse(\Guzzle\Http\Message\Request $request) {
+    protected function getAdminResponse(\Guzzle\Http\Message\Request $request) {
         $currentUser = $this->getUser();
         
         $this->setUser($this->getAdminUser());        
@@ -422,5 +422,7 @@ class UserService extends CoreApplicationService {
     public function clearUser() {
         $this->session->set('user', null);
     }
+    
+
     
 }

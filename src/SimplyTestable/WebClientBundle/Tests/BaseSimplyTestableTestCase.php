@@ -12,6 +12,7 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     const TASK_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TaskController';    
     const TEST_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TestController';    
     const USER_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\UserController';
+    const USER_ACCOUNT_DETAILS_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\UserAccountDetailsController';
     const REDIRECT_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\RedirectController';
     
     private $testQueueService;
@@ -109,8 +110,8 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     protected function getTestController($methodName, $postData = array()) {
         return $this->getController(self::TEST_CONTROLLER_NAME, $methodName, $postData);
     }      
-    
-    
+
+
     /**
      *
      * @param string $methodName
@@ -119,6 +120,17 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
      */
     protected function getUserController($methodName, $postData = array()) {
         return $this->getController(self::USER_CONTROLLER_NAME, $methodName, $postData);
+    }      
+    
+    
+    /**
+     *
+     * @param string $methodName
+     * @param array $postData
+     * @return \SimplyTestable\WebClientBundle\Controller\UserAccountDetailsController
+     */
+    protected function getUserAccountDetailsController($methodName, $postData = array()) {
+        return $this->getController(self::USER_ACCOUNT_DETAILS_CONTROLLER_NAME, $methodName, $postData);
     }     
     
     /**
@@ -230,6 +242,13 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
         }
         
         $this->getTestService()->getEntityManager()->flush();
+    }
+    
+    protected function makeUser() {
+        $user = new \SimplyTestable\WebClientBundle\Model\User();
+        $user->setUsername('user@example.com');
+        $user->setPassword('password');
+        return $user;
     }
 
 }

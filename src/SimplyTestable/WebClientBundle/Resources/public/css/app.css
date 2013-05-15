@@ -820,3 +820,11 @@ body.account .plan th {
 body.account .plan-section {
     margin-bottom:30px;
 }
+
+body.account .confirm-email-change form {
+    margin-left: -16px;
+}
+
+body.account .confirm-email-change form #token {
+    width:100%;
+}

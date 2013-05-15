@@ -11,15 +11,24 @@ class UserAccountController extends BaseViewController
             return $notLoggedInResponse;
         }
         
-        $this->setTemplate('SimplyTestableWebClientBundle:User/Account:index.html.twig');       
-        return $this->sendResponse(array(            
+        $viewData = array(            
             'public_site' => $this->container->getParameter('public_site'),              
             'user' => $this->getUser(),
             'is_logged_in' => true,
-        ));
+            'user_account_details_update_notice' => $this->getFlash('user_account_details_update_notice'),
+            'user_account_details_update_email' => $this->getFlash('user_account_details_update_email')
+        );
+        
+        if ($this->getUserEmailChangeRequestService()->hasEmailChangeRequest($this->getUser()->getUsername())) {
+            $viewData['email_change_request'] = $this->getUserEmailChangeRequestService()->getEmailChangeRequest($this->getUser()->getUsername());
+            $viewData['token'] = $this->get('request')->query->get('token');
+        }
+        
+        $this->setTemplate('SimplyTestableWebClientBundle:User/Account:index.html.twig');       
+        return $this->sendResponse($viewData);
     }
     
-    private function getNotLoggedInResponse() {
+    protected function getNotLoggedInResponse() {
         if ($this->isLoggedIn()) {
             return null;
         }
@@ -33,5 +42,13 @@ class UserAccountController extends BaseViewController
         return $this->redirect($this->generateUrl('sign_in', array(
             'redirect' => base64_encode($redirectParameters)
         ), true));           
-    }    
+    } 
+    
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService
+     */
+    protected function getUserEmailChangeRequestService() {
+        return $this->get('simplytestable.services.useremailchangerequestservice');
+    }
 }
