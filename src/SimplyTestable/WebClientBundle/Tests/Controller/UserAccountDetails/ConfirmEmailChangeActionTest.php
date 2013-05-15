@@ -19,6 +19,7 @@ class ConfirmEmailChangeActionTest extends BaseSimplyTestableTestCase {
     
     
     public function testResendAction() {
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         $this->setUser($this->makeUser());
         
         $response = $this->getUserAccountDetailsController('confirmEmailChangeAction', array(
