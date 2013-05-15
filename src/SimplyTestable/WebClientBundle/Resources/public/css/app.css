@@ -486,12 +486,11 @@ div.input-secondary {
 
 .navbar .user-link,
 .navbar form.sign-out-form .icon-user {
-    border-left: 1px solid #999;
     padding-left:10px;
 }
 
 .navbar  form.sign-out-form {
-    margin:0;
+    margin:1px 0 0 0;
     padding:0;
 }
 
@@ -827,4 +826,12 @@ body.account .confirm-email-change form {
 
 body.account .confirm-email-change form #token {
     width:100%;
+}
+
+.navbar-link {
+    text-decoration:none;    
+}
+
+.navbar-link:hover {
+    text-decoration:none;
 }
