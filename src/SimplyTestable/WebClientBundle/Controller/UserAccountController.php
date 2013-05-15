@@ -16,7 +16,8 @@ class UserAccountController extends BaseViewController
             'user' => $this->getUser(),
             'is_logged_in' => true,
             'user_account_details_update_notice' => $this->getFlash('user_account_details_update_notice'),
-            'user_account_details_update_email' => $this->getFlash('user_account_details_update_email')
+            'user_account_details_update_email' => $this->getFlash('user_account_details_update_email'),
+            'user_account_details_update_email_confirm_notice' => $this->getFlash('user_account_details_update_email_confirm_notice')
         );
         
         if ($this->getUserEmailChangeRequestService()->hasEmailChangeRequest($this->getUser()->getUsername())) {

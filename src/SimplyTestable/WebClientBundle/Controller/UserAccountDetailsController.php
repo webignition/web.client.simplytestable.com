@@ -3,9 +3,12 @@
 namespace SimplyTestable\WebClientBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class UserAccountDetailsController extends UserAccountController
 {   
+    const ONE_YEAR_IN_SECONDS = 31536000;    
+    
     public function updateAction() {        
         if (($notLoggedInResponse = $this->getNotLoggedInResponse()) instanceof Response) {
             return $notLoggedInResponse;
@@ -52,6 +55,10 @@ class UserAccountDetailsController extends UserAccountController
     
     
     public function confirmEmailChangeAction() {
+        if (($notLoggedInResponse = $this->getNotLoggedInResponse()) instanceof Response) {
+            return $notLoggedInResponse;
+        }        
+        
         $actionKeys = array('confirm', 're-send', 'cancel');
         $requestedAction = null;
         
@@ -69,7 +76,7 @@ class UserAccountDetailsController extends UserAccountController
             case 'confirm':
                 return $this->confirmEmailChangeConfirmAction($this->get('request')->request->get('token'));
                 
-            case 're-send':
+            case 're-send':                
                 return $this->confirmEmailChangeResendAction();
                 
             case 'cancel':
@@ -79,20 +86,75 @@ class UserAccountDetailsController extends UserAccountController
         return $this->redirect($this->generateUrl('user_account_index', array(), true));
     }
     
-    private function confirmEmailChangeConfirmAction() {
-        var_dump("confirm");
-        exit();
+    private function confirmEmailChangeConfirmAction($token) {        
+        $redirectResponse =  $this->redirect($this->generateUrl('user_account_index', array(), true)); 
         
-        return $this->redirect($this->generateUrl('user_account_index', array(), true));
+        $token = trim($token);
+        if ($token === '') {
+            $this->get('session')->setFlash('user_account_details_update_email_confirm_notice', 'invalid-token');
+            return $redirectResponse;          
+        }
+        
+        $emailChangeRequest = $this->getUserEmailChangeRequestService()->getEmailChangeRequest($this->getUser()->getUsername());        
+        if ($token !== $emailChangeRequest['token']) {
+            $this->get('session')->setFlash('user_account_details_update_email_confirm_notice', 'invalid-token');
+                        return $redirectResponse; 
+        }
+        
+        $result = $this->getUserEmailChangeRequestService()->confirmEmailChangeRequest($token);
+        
+        if ($result === true) {   
+            $user = $this->getUser();            
+            $user->setUsername($emailChangeRequest['new_email']);            
+            $this->getUserService()->setUser($user, true);
+            
+
+            if (!is_null($this->getRequest()->cookies->get('simplytestable-user'))) {
+                $stringifiedUser = $this->getUserSerializerService()->serializeToString($user);
+
+                $cookie = new Cookie(
+                    'simplytestable-user',
+                    $stringifiedUser,
+                    time() + self::ONE_YEAR_IN_SECONDS,
+                    '/',
+                    '.simplytestable.com',
+                    false,
+                    true
+                );
+
+                $redirectResponse->headers->setCookie($cookie);
+            }
+            
+            $this->get('session')->setFlash('user_account_details_update_email_confirm_notice', 'success');
+        } else {
+            switch ($result) {
+                case 400:
+                    $this->get('session')->setFlash('user_account_details_update_email_confirm_notice', 'invalid-token');
+                    break;
+                
+                case 409:
+                    $this->get('session')->setFlash('user_account_details_update_email_confirm_notice', 'email-taken');
+                    $this->get('session')->setFlash('user_account_details_update_email', $emailChangeRequest['new_email']);
+                    break;
+                
+                default:
+                    $this->get('session')->setFlash('user_account_details_update_email_confirm_notice', 'unknown');
+                    break;                    
+            }
+        }
+        
+        return $redirectResponse; 
     }
     
     private function confirmEmailChangeResendAction() {
         $this->sendEmailChangeConfirmationToken();
+        $this->get('session')->setFlash('user_account_details_confirm_email_change_notice', 're-sent');
         return $this->redirect($this->generateUrl('user_account_index', array(), true));
     }
     
     private function confirmEmailChangeCancelAction() {
         $this->getUserEmailChangeRequestService()->cancelEmailChangeRequest();
+        $this->get('session')->setFlash('user_account_details_confirm_email_change_notice', 'cancelled');
         return $this->redirect($this->generateUrl('user_account_index', array(), true));
     }
     

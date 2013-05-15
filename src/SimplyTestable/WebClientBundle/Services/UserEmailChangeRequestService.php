@@ -66,6 +66,27 @@ class UserEmailChangeRequestService extends UserService {
     }
     
     
+    public function confirmEmailChangeRequest($token) {
+        $request = $this->webResourceService->getHttpClientService()->postRequest(
+            $this->getUrl('user_email_change_request_confirm', array(
+                'email' => $this->getUser()->getUsername(),
+                'token' => $token
+            ))
+        );
+        
+        $this->addAuthorisationToRequest($request);
+        
+        try {
+            $response = $request->send();             
+            return $response->getStatusCode() == 200 ? true : $response->getStatusCode();
+        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {            
+            return $badResponseException->getResponse()->getStatusCode();
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            return $curlException->getErrorNo();
+        }         
+    }    
+    
+    
     public function createEmailChangeRequest($newEmail) {        
         $request = $this->webResourceService->getHttpClientService()->postRequest(
             $this->getUrl('user_email_change_request_create', array(

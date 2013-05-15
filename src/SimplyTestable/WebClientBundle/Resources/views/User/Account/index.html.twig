@@ -15,7 +15,49 @@
     <div class="span6 account-details">
         <h2>Account details</h2>
         
-{% if email_change_request is defined %}
+{% if email_change_request is defined %}        
+        {% if user_account_details_update_email_confirm_notice is defined and user_account_details_update_email_confirm_notice != '' %}   
+            {% if user_account_details_update_email_confirm_notice == 'invalid-token' %}
+                <div class="alert alert-error">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p><strong>Hmmm, that's not the right confirmation code</strong></p>
+                    <p>
+                        Try having the confirmation email re-sent if you're not
+                        sure the confirmation code is correct.
+                    </p>
+                    <p>
+                        If you're copying the confirmation code from the email,
+                        try instead to click the link below the code.
+                    </p>
+                </div>               
+            {% endif %}
+        
+            {% if user_account_details_update_email_confirm_notice == 'email-taken' %}
+                <div class="alert alert-error">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p><strong>Hmmm, that email address has been taken</strong></p>
+                    <p>
+                        The email address <strong> {{ user_account_details_update_email }} </strong> is in use by someone else.
+                        It wasn't before but it is now.
+                    </p>
+                    <p>
+                        If you still want to change your email address you'll have
+                        to try again with something different.
+                    </p>                    
+                </div>               
+            {% endif %}       
+        
+            {% if user_account_details_update_email_confirm_notice == 'unknown' %}
+                <div class="alert alert-error">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+
+                    <strong>Hmmm.</strong><br>
+                    Something went wrong when I tried to do that. I'm not sure what happened.
+                    Would you mind trying that again?
+                </div>               
+            {% endif %}        
+        {% endif %}   
+        
     <div class="alert alert-info confirm-email-change">
         <p>
             <strong>Confirm email address change</strong>
@@ -88,7 +130,7 @@
             <button type="button" class="close" data-dismiss="alert">×</button>
             <strong>Hmmm.</strong> I'm not convinced that <strong> {{ user_account_details_update_email }} </strong> is a valid email address.
         </div>               
-    {% endif %}                             
+    {% endif %}                           
                 
     {% if user_account_details_update_notice == 'unknown' %}
         <div class="alert alert-error">
