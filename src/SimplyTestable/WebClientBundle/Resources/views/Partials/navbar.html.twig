@@ -11,10 +11,10 @@
                     <div class="pull-right">                        
                         <form class="form-inline sign-out-form" method="post" action="{{ path('sign_out_submit') }}">
                             <p class="navbar-text">                                
-                                <!--<a href="{# path('user_account_index') #}" class="navbar-link">-->
+                                <a href="{{ path('user_account_index') }}" class="navbar-link">
                                     <i class="icon icon-user"></i>
                                     {{ user.username }}
-                                <!--</a>-->
+                                </a>
                                 <button class="btn btn-small btn-primary" type="submit">
                                     Sign out
                                     <i class="icon icon-caret-right"></i>
