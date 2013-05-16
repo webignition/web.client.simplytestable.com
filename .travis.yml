@@ -27,3 +27,6 @@ before_script:
 script:
   - phpunit -c app
   - php phpcpd.phar --exclude src/SimplyTestable/WebClientBundle/Tests/ src/SimplyTestable/WebClientBundle/
+  
+after_script:
+  - php phpcpd.phar --exclude src/SimplyTestable/WebClientBundle/Tests/ src/SimplyTestable/WebClientBundle/ 
