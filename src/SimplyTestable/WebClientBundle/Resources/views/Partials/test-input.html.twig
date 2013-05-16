@@ -21,7 +21,7 @@
                     <i class="icon-cog"></i> Testing 
                     {% elseif test.state == 'preparing' or test.state == 'in-progress' %}
                     <i class="icon-cog"></i> Testing
-                    {% elseif test.state == 'completed' or test.state == 'cancelled' or test.state == 'no-sitemap' %}
+                    {% elseif test.state == 'completed' or test.state == 'cancelled' or test.state == 'failed-no-sitemap' %}
                     <i class="icon-bar-chart"></i> Results for 
                     {% endif %} 
                     {{ website }} <span id="test-id">(#{{ test.testId }})</span>
@@ -78,12 +78,12 @@
         {% endif %}          
 
         <div class="fields input-prepend input-append larger">                    
-            <input name="website" id="input-website" type="text" placeholder="Enter website URL &hellip;" {% if app.request.attributes.get('_route') == 'app_queued' %}disabled{% endif %} {% if test is defined %} {% if test.state != 'completed' and test.state != 'cancelled' and test.state != 'no-sitemap' %} disabled {% endif %} {% endif %} {% if website is defined %} value="{{ website }}" {% endif %}>            
+            <input name="website" id="input-website" type="text" placeholder="Enter website URL &hellip;" {% if app.request.attributes.get('_route') == 'app_queued' %}disabled{% endif %} {% if test is defined %} {% if test.state != 'completed' and test.state != 'cancelled' and test.state != 'failed-no-sitemap' %} disabled {% endif %} {% endif %} {% if website is defined %} value="{{ website }}" {% endif %}>            
             {% if test is defined %}
                 {% if test.state == 'completed' or test.state == 'cancelled' %}
             <button type="submit" class="btn btn-primary btn-large" name="full-single" value="full">Test full site</button>
             <button type="submit" class="btn btn-large" name="full-single" value="single">Test this URL only</button>
-                {% elseif test.state == 'no-sitemap' %}
+                {% elseif test.state == 'failed-no-sitemap' %}
             <button type="submit" class="btn btn-primary btn-large" name="full-single" value="full">Test full site</button>
             <button type="submit" class="btn btn-large" name="full-single" value="single">Test this URL only</button>
                 {% else %}

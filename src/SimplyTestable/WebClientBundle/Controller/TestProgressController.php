@@ -13,7 +13,7 @@ class TestProgressController extends TestViewController
     private $testFinishedStates = array(
         'cancelled',
         'completed',
-        'no-sitemap',
+        'failed-no-sitemap',
     );
     
     private $taskFinishedStates = array(

@@ -11,8 +11,8 @@
 
     <div class="row-fluid">
         <section>                
-            <div class="span12 {% if test.state == 'no-sitemap' %} notification-panel {% endif %}" id="test-summary">
-                    {% if test.state == 'no-sitemap' %}
+            <div class="span12 {% if test.state == 'failed-no-sitemap' %} notification-panel {% endif %}" id="test-summary">
+                    {% if test.state == 'failed-no-sitemap' %}
                     <h2 class="info"><i class="icon-exclamation-sign"></i>Couldn't find any URLs to test!</h2>
 
                     <div class="intro">

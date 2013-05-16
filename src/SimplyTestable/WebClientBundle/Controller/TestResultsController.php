@@ -16,7 +16,7 @@ class TestResultsController extends TestViewController
     private $testFinishedStates = array(
         'cancelled',
         'completed',
-        'no-sitemap',
+        'failed-no-sitemap',
     );
 
     private $testOptionNamesAndDefaultValues = array(

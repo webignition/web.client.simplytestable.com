@@ -20,7 +20,7 @@ class RedirectController extends BaseController
     private $testFinishedStates = array(
         'cancelled',
         'completed',
-        'no-sitemap',
+        'failed-no-sitemap',
     );    
     
     /**
