@@ -25,7 +25,11 @@ class UserController extends BaseViewController
     
     
     public function signInAction()
-    {                
+    {       
+        if ($this->isLoggedIn()) {
+            return $this->redirect($this->generateUrl('app', array(), true));
+        }        
+        
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }        
