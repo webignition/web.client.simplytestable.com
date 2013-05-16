@@ -189,12 +189,21 @@
             <strong>Yay!</strong> Your password has been changed.
         </div>               
     {% endif %}                
-{% endif %}                
+{% endif %}    
                 
+{% if email_change_request is defined %} 
+                <label class="control-label" for="email">Email</label>
+                <div class="controls controls-disabled">
+                    {{user.username}}
+                </div>
+{% else %}               
                 <label class="control-label" for="email">Email</label>
                 <div class="controls">
                     <input name="email" type="text" id="email" placeholder="Choose your email address" value="{{user.username}}">
                 </div>
+{% endif %}
+                
+
             </div>
             <div class="control-group">
                 <label class="control-label" for="currentPassword">Current password</label>

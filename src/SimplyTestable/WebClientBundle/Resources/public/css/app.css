@@ -835,3 +835,7 @@ body.account .confirm-email-change form #token {
 .navbar-link:hover {
     text-decoration:none;
 }
+
+body.account div.controls-disabled {
+    padding-top: 5px;
+}
