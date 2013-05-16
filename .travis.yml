@@ -24,3 +24,6 @@ before_script:
 script:
   - phpunit -c app
   
+after_script:
+  - wget http://pear.phpunit.de/get/phpcpd.phar
+  - php phpcpd.phar --exclude src/SimplyTestable/WebClientBundle/Tests/ src/SimplyTestable/WebClientBundle/
