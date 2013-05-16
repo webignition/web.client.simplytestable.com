@@ -5,6 +5,9 @@ php:
   - 5.5
   
 before_script:  
+  # Install code quality tools
+  - wget http://pear.phpunit.de/get/phpcpd.phar
+  
   # Install composer for dependency management
   - wget http://getcomposer.org/composer.phar   
   
@@ -23,7 +26,4 @@ before_script:
   
 script:
   - phpunit -c app
-  
-after_script:
-  - wget http://pear.phpunit.de/get/phpcpd.phar
   - php phpcpd.phar --exclude src/SimplyTestable/WebClientBundle/Tests/ src/SimplyTestable/WebClientBundle/
