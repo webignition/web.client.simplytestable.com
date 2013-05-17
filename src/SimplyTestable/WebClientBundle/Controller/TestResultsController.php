@@ -112,7 +112,59 @@ class TestResultsController extends TestViewController
         }
         
         return $taskCountByState;
-    }    
+    }
+    
+    
+    public function failedNoUrlsDetectedAction($website, $test_id) {
+        if ($this->isUsingOldIE()) {
+            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
+        }
+     
+        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
+        $cacheValidatorIdentifier->setParameter('website', $website);
+        $cacheValidatorIdentifier->setParameter('test_id', $test_id);
+        
+        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
+        
+        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
+        if ($response->isNotModified($this->getRequest())) {
+            return $response;
+        }
+        
+        $this->getTestService()->setUser($this->getUser());        
+        $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
+        if ($testRetrievalOutcome->hasResponse()) {
+            return $testRetrievalOutcome->getResponse();
+        }
+        
+        $test = $testRetrievalOutcome->getTest();
+        
+        if ($test->getWebsite() != $website) {
+            return $this->redirect($this->generateUrl('app_test_redirector', array(
+                'website' => $test->getWebsite(),
+                'test_id' => $test_id
+            ), true));            
+        }       
+        
+        if ($test->getState() !== 'failed-no-sitemap') {
+            return $this->redirect($this->getProgressUrl($website, $test_id));
+        }
+        
+        $viewData = array(
+            'website' => idn_to_utf8($website),
+            'test' => $test,
+            'public_site' => $this->container->getParameter('public_site'),
+            'user' => $this->getUser(),
+            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser())
+        );
+
+            
+        $this->setTemplate('SimplyTestableWebClientBundle:App:results-failed-no-sitemap.html.twig');
+        return $this->getCachableResponse(
+                $this->sendResponse($viewData),
+                $cacheValidatorHeaders
+        ); 
+    }
     
     
     public function indexAction($website, $test_id) {        
@@ -140,7 +192,13 @@ class TestResultsController extends TestViewController
             return $testRetrievalOutcome->getResponse();
         }
         
-        $test = $testRetrievalOutcome->getTest();     
+        $test = $testRetrievalOutcome->getTest();                
+        if ($test->getState() == 'failed-no-sitemap') {            
+            return $this->redirect($this->generateUrl('app_results_failed_no_urls_detected', array(
+                'website' => $test->getWebsite(),
+                'test_id' => $test_id
+            ), true));             
+        }
         
         if ($test->getWebsite() != $website) {
             return $this->redirect($this->generateUrl('app_test_redirector', array(

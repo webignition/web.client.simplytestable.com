@@ -730,8 +730,24 @@ body.app-progress .test-options-advanced ul li {
    margin-bottom: 4px;
 }
 
-body.app-results-preparing h1 {
+body.app-results-preparing h1,
+body.app-results-failed-no-urls-detected h1 {
     margin-bottom: 40px;
+}
+
+body.app-results-failed-no-urls-detected p.intro {
+    font-size:20px;
+    line-height: 28px;    
+}
+
+body.app-results-failed-no-urls-detected #detail-expandable ul {
+    margin-bottom:0;
+    padding-bottom:10px;
+}
+
+body.app-results-failed-no-urls-detected h3 {
+    font-size: 14px;
+    line-height: 22px;    
 }
 
 body.app-results-preparing .summary {

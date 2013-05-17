@@ -13,7 +13,7 @@ use SimplyTestable\WebClientBundle\Model\TestOptions;
 use webignition\NormalisedUrl\NormalisedUrl;
 
 
-class TestService extends CoreApplicationService {        
+class TestService extends CoreApplicationService {    
     
     const ENTITY_NAME = 'SimplyTestable\WebClientBundle\Entity\Test\Test';      
     
@@ -401,6 +401,17 @@ class TestService extends CoreApplicationService {
      */
     public function getEntityManager() {        
         return $this->entityManager;
+    }
+    
+    
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Entity\Test\Test $test
+     * @return boolean
+     */
+    public function isFailed(Test $test) {
+        $failedStatePrefix = 'failed';        
+        return substr($test->getState(), 0, strlen($failedStatePrefix)) === $failedStatePrefix;
     }
     
     

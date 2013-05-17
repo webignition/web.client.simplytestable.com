@@ -72,7 +72,7 @@ app_task_results:
     requirements:
         website: ".+"
         test_id: "\d+"
-        task_id: "\d+" 
+        task_id: "\d+"        
         
 app_queued:
   pattern: /{website}/queued/
@@ -84,8 +84,8 @@ test_queued_status:
   pattern: /{website}/queued/status/
   defaults: { _controller: SimplyTestableWebClientBundle:Test:queuedStatus, _format: json  } 
   requirements:
-      website: ".+"       
-        
+      website: ".+"
+      
 app_task_results_redirector:
     pattern:  /{website}/{test_id}/{task_id}/
     defaults: { _controller: SimplyTestableWebClientBundle:Redirect:task }  
@@ -105,6 +105,12 @@ app_results:
     defaults: { _controller: SimplyTestableWebClientBundle:TestResults:index }  
     requirements:
        website: ".+"
+       
+app_results_failed_no_urls_detected:
+    pattern:  /{website}/{test_id}/results/failed/no-urls-detected/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestResults:failedNoUrlsDetected }  
+    requirements:
+       website: ".+"       
        
 app_results_preparing:
     pattern:  /{website}/{test_id}/results/preparing/
@@ -144,7 +150,13 @@ app_unretrieved_task_ids:
 
 test_start:
     pattern:  /test/start/
-    defaults: { _controller: SimplyTestableWebClientBundle:TestStart:start }
+    defaults: { _controller: SimplyTestableWebClientBundle:TestStart:startNew }
+    
+test_clone_and_start:
+    pattern:  /test/start/clone/{website}/{test_id}/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestStart:cloneAndStart }    
+    requirements:
+        website: ".+"
     
 test_cancel:
     pattern:  /test/{website}/{test_id}/cancel/

@@ -11,15 +11,15 @@ class TestStartControllerStartActionTest extends BaseSimplyTestableTestCase {
     }    
     
     public function testStartActionWithNoWebsite() {          
-        $response = $this->getTestStartController('startAction')->startAction();
+        $response = $this->getTestStartController('startNewAction')->startNewAction();
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertEquals('website-blank', $this->container->get('session')->getFlash('test_start_error'));
     }    
     
     public function testStartActionWithNoTestTypes() {          
-        $response = $this->getTestStartController('startAction', array(
+        $response = $this->getTestStartController('startNewAction', array(
             'website' => 'http://example.com'
-        ))->startAction();
+        ))->startNewAction();
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertEquals('no-test-types-selected', $this->container->get('session')->getFlash('test_start_error'));
     }     
@@ -27,10 +27,10 @@ class TestStartControllerStartActionTest extends BaseSimplyTestableTestCase {
     public function testStartActionWithWebsiteAndTestType() {          
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         
-        $response = $this->getTestStartController('startAction', array(
+        $response = $this->getTestStartController('startNewAction', array(
             'website' => 'http://example.com',
             'html-validation' => '1'
-        ))->startAction();
+        ))->startNewAction();
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertRegExp('/http:\/\/localhost\/http:\/\/example.com\/\/[0-9]?\/progress\//', $response->getTargetUrl());
     }     
@@ -38,10 +38,10 @@ class TestStartControllerStartActionTest extends BaseSimplyTestableTestCase {
     public function testStartActionReceives503FromCoreApplication() {          
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         
-        $response = $this->getTestStartController('startAction', array(
+        $response = $this->getTestStartController('startNewAction', array(
             'website' => 'http://example.com',
             'html-validation' => '1'
-        ))->startAction();
+        ))->startNewAction();
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertEquals('http://localhost/http://example.com//', $response->getTargetUrl());
     }    
@@ -49,10 +49,10 @@ class TestStartControllerStartActionTest extends BaseSimplyTestableTestCase {
     public function testStartActionReceives404FromCoreApplication() {          
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         
-        $response = $this->getTestStartController('startAction', array(
+        $response = $this->getTestStartController('startNewAction', array(
             'website' => 'http://example.com',
             'html-validation' => '1'
-        ))->startAction();
+        ))->startNewAction();
         
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertEquals('http://localhost/http://example.com//', $response->getTargetUrl());
@@ -61,10 +61,10 @@ class TestStartControllerStartActionTest extends BaseSimplyTestableTestCase {
     public function testStartActionReceives500FromCoreApplication() {          
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         
-        $response = $this->getTestStartController('startAction', array(
+        $response = $this->getTestStartController('startNewAction', array(
             'website' => 'http://example.com',
             'html-validation' => '1'
-        ))->startAction();
+        ))->startNewAction();
         
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertEquals('http://localhost/http://example.com//', $response->getTargetUrl());
@@ -80,10 +80,10 @@ class TestStartControllerStartActionTest extends BaseSimplyTestableTestCase {
             )
         ));        
         
-        $response = $this->getTestStartController('startAction', array(
+        $response = $this->getTestStartController('startNewAction', array(
             'website' => 'http://example.com',
             'html-validation' => '1'
-        ))->startAction();
+        ))->startNewAction();
         
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertEquals('curl-error', $this->container->get('session')->getFlash('test_start_error'));
