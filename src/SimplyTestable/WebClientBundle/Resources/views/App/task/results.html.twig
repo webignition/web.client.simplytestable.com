@@ -55,7 +55,7 @@
                             <tr>                
                                 <th>Outcome</th>
                                 <td class="outcome">                                                                         
-                                {% if task.state == 'failed' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-limit-reached' %}                                                                                
+                                {% if task.state == 'failed' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-limit-reached' %}                                                                                                                        
                                     {% if task.output.result.isHttpClientErrorFailure %}
                                         {{ task.output.result.firstError.class|replace({'http-retrieval-': ''}) }}
                                         {{ task.output.result.firstError }}
@@ -73,6 +73,8 @@
                                         Bad URL format       
                                     {% elseif task.output.result.isHtmlInvalidDocumentTypeFailure %}
                                         Invalid document type     
+                                    {% elseif task.output.result.isHtmlMissingDocumentTypeFailure %}
+                                        Missing document type                          
                                     {% elseif task.output.result.isCssValidationUnknownExceptionError %}
                                         Validator error   
                                     {% endif %}                                        
@@ -258,6 +260,29 @@
                         <p>
                             
                         </p>
+                    {% elseif task.output.result.isHtmlMissingDocumentTypeFailure %}
+                        <h2 class="info"><i class="icon-exclamation-sign"></i> Missing document type!</h2>
+                        
+                        <p>
+                            The page at <a href="{{ task.url }}">{{ task.url }}</a> does not have a
+                            document type.
+                        </p>
+                        
+                        <p>
+                            There are many versions of HTML and in order to check 
+                            if your document is valid we need to know what 
+                            version of HTML you are using.
+                        </p>
+
+                        
+                        <p>
+                            Have a look at <a href="http://www.w3.org/QA/2002/04/valid-dtd-list.html">recommended doctype declarations</a>
+                            and read more about <a href="http://en.wikipedia.org/wiki/Document_Type_Declaration">what a doctype declaration is</a>.
+                        </p>
+                        
+                        <p>
+                            
+                        </p>                        
                     {% elseif task.output.result.isCssValidationUnknownExceptionError %}
                         <h2 class="info"><i class="icon-exclamation-sign"></i> Unknown validator error!</h2>
                         
