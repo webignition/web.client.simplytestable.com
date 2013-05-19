@@ -112,6 +112,12 @@ app_results_failed_no_urls_detected:
     requirements:
        website: ".+"       
        
+app_results_rejected:
+    pattern:  /{website}/{test_id}/results/rejected/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestResults:rejected }  
+    requirements:
+       website: ".+"         
+       
 app_results_preparing:
     pattern:  /{website}/{test_id}/results/preparing/
     defaults: { _controller: SimplyTestableWebClientBundle:App:prepareResults }  

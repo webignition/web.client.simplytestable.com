@@ -1,0 +1,44 @@
+{% extends 'SimplyTestableWebClientBundle::App/single-page-dialog.html.twig' %}
+
+{% block title %}{{website}} (#{{test.testId}}) - {{ parent() }}{% endblock %}
+
+{% block body_class %} single-page-notification {{ parent() }} {% endblock %}
+
+{% block content %}
+
+<h1>
+{% if is_logged_in %}
+        Plan limit reached
+        
+{% else %}
+        Free test limit reached
+{% endif %}
+</h1>
+
+<p>
+
+</p>
+
+{% if rejection.constraint.name == 'full_site_jobs_per_site' %}
+<p class="intro">    
+    We allow <strong>{{ rejection.constraint.limit }}</strong> full-site 
+    tests for free per month per website for those who don't have an account.
+</p>
+
+<p class="intro">
+    There have already been <strong>{{ rejection.constraint.limit }}</strong> free full-site tests
+    this month for <strong>{{ website }}</strong>.
+</p>
+        
+<p class="intro">
+    Create an account or sign in to run more full-site tests this site.
+</p>
+{% endif %}
+
+<div class="cta">
+    <a href="{{ path('sign_up') }}" class="btn btn-primary btn-large"><i class="icon icon-user"></i> Create account</a>
+    or
+    <a href="{{ path('sign_in') }}" class="btn">Sign in</a>
+</div>
+
+{% endblock %}

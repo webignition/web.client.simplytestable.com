@@ -731,21 +731,25 @@ body.app-progress .test-options-advanced ul li {
 }
 
 body.app-results-preparing h1,
-body.app-results-failed-no-urls-detected h1 {
+body.single-page-notification h1 {
     margin-bottom: 40px;
 }
 
-body.app-results-failed-no-urls-detected p.intro {
-    font-size:20px;
-    line-height: 28px;    
+body.single-page-notification p.intro {
+    font-size:18px;
+    line-height: 24px;    
 }
 
-body.app-results-failed-no-urls-detected #detail-expandable ul {
+body.single-page-notification .cta {
+    margin-top:40px;
+}
+
+body.single-page-notification #detail-expandable ul {
     margin-bottom:0;
     padding-bottom:10px;
 }
 
-body.app-results-failed-no-urls-detected h3 {
+body.single-page-notification h3 {
     font-size: 14px;
     line-height: 22px;    
 }
