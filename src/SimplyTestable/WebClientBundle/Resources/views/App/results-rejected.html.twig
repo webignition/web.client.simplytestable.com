@@ -1,6 +1,6 @@
 {% extends 'SimplyTestableWebClientBundle::App/single-page-dialog.html.twig' %}
 
-{% block title %}{{website}} (#{{test.testId}}) - {{ parent() }}{% endblock %}
+{% block title %}Free test limit reached {{website}} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
 {% block body_class %} single-page-notification {{ parent() }} {% endblock %}
 
@@ -15,10 +15,6 @@
 {% endif %}
 </h1>
 
-<p>
-
-</p>
-
 {% if rejection.constraint.name == 'full_site_jobs_per_site' %}
 <p class="intro">    
     We allow <strong>{{ rejection.constraint.limit }}</strong> full-site 
@@ -32,6 +28,22 @@
         
 <p class="intro">
     Create an account or sign in to run more full-site tests this site.
+</p>
+{% endif %}
+
+{% if rejection.constraint.name == 'single_url_jobs_per_url' %}
+<p class="intro">    
+    We allow <strong>{{ rejection.constraint.limit }}</strong> single-URL 
+    tests for free per month per URL for those who don't have an account.
+</p>
+
+<p class="intro">
+    There have already been <strong>{{ rejection.constraint.limit }}</strong> free single-URL tests
+    this month for <strong>{{ website }}</strong>.
+</p>
+        
+<p class="intro">
+    Create an account or sign in to run more single-URL tests this site.
 </p>
 {% endif %}
 
