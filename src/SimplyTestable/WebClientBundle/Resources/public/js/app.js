@@ -252,6 +252,48 @@ application.progress.testController = function () {
         $('#test-summary-task-count').text(latestTestData.remote_test_summary.task_count);
     };
     
+    var displayAmmendment = function (messageContent) {
+        var ammendmentNotification = $('<div class="alert alert-info alert-ammendment">').append(
+            '<i class="icon icon-warning-sign"></i>'
+        ).append(
+            messageContent
+        );
+            
+        var ammendmentNotificationClone = ammendmentNotification.clone(ammendmentNotification);
+        ammendmentNotificationClone.css({
+            'display':'none',
+            'opacity':0
+        });
+        
+        $($('#main .span12').get(0)).prepend(ammendmentNotificationClone);        
+        ammendmentNotificationClone.slideDown(function () {
+            ammendmentNotificationClone.remove();
+            
+            ammendmentNotification.css({
+                'opacity':0
+            });
+            
+            $($('#main .span12').get(0)).prepend(ammendmentNotification);
+            
+            ammendmentNotification.animate({
+                'opacity':1
+            });
+        });
+    };
+    
+    var setAmmendments = function () {
+        if ($('.alert-ammendment').length > 0) {
+            return;
+        }
+        
+        if (latestTestData.remote_test_summary.ammendments && latestTestData.remote_test_summary.ammendments[0]) {
+            if (latestTestData.remote_test_summary.ammendments[0].reason.indexOf('plan-url-limit-reached:') !== -1) {
+                var messageContent = $('<span>This <strong>free demo</strong> has been limited to the first <strong>'+latestTestData.remote_test_summary.ammendments[0].constraint.limit+'</strong> URLs of the <strong>'+latestTestData.remote_test_summary.ammendments[0].reason.replace('plan-url-limit-reached:discovered-url-count-', '')+'</strong> that were discovered. Create an account or sign in to start a new test without this limit.</span>');                
+                displayAmmendment(messageContent);                
+            }
+        }
+    };
+    
     var storeEstimatedTimeRemaining = function () {
         if (latestTestData.estimated_seconds_remaining === -1) {
             return;
@@ -373,6 +415,7 @@ application.progress.testController = function () {
                 setTestQueues();
                 setUrlCount();               
                 setTaskCount();
+                setAmmendments();
                 storeEstimatedTimeRemaining();
                 
                 window.setTimeout(function () {

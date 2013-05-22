@@ -859,3 +859,13 @@ body.account .confirm-email-change form #token {
 body.account div.controls-disabled {
     padding-top: 5px;
 }
+
+.alert .icon-warning-sign {
+    font-size: 26px;
+    vertical-align: middle;
+    margin-right:6px;
+}
+
+.alert-from-view .icon-warning-sign {
+    margin-right:0;
+}

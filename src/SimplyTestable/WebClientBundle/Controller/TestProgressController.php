@@ -66,7 +66,7 @@ class TestProgressController extends TestViewController
             ), true));            
         }        
         
-        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
+        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();        
         $taskTypes = array();
         foreach ($remoteTestSummary->task_types as $taskTypeObject) {
             $taskTypes[] = $taskTypeObject->name;
@@ -112,6 +112,19 @@ class TestProgressController extends TestViewController
         if (isset($remoteTestSummaryArray['task_type_options'])) {
             foreach ($remoteTestSummaryArray['task_type_options'] as $testType => $testTypeOptions) {
                 $remoteTestSummaryArray['task_type_options'][$testType] = get_object_vars($testTypeOptions);
+            }
+        }
+        
+        if (isset($remoteTestSummaryArray['ammendments'])) {
+            $remoteTestSummaryArray['ammendments'] = array();
+            
+            foreach ($remoteTestSummary->ammendments as $ammendment) {
+                $ammendmentArray = (array)$ammendment;                
+                if (isset($ammendment->constraint)) {
+                    $ammendmentArray['constraint'] = (array)$ammendment->constraint;
+                }                
+                
+                $remoteTestSummaryArray['ammendments'][] = $ammendmentArray;
             }
         }
         

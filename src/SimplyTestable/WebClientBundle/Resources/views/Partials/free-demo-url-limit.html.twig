@@ -1,0 +1,8 @@
+<div class="alert alert-info alert-ammendment alert-from-view">
+    <i class="icon icon-warning-sign"></i>
+    <span>
+        This <strong>free demo</strong> has been limited to only the first <strong>{{remote_test_summary.ammendments[0].constraint.limit}}</strong>
+        URLs of the <strong>{{ remote_test_summary.ammendments[0].reason|replace({'plan-url-limit-reached:discovered-url-count-': ''}) }}</strong> that were discovered.
+        Create an account or sign in to start a new test without this limit.
+    </span>
+</div>
