@@ -27,3 +27,11 @@ margin-top: -1px;
         margin-top:0;
     }
 }
+
+.navbar-user-link {
+border-left: 1px solid #999;
+}
+
+.navbar a.active {
+    color:#fff;
+}
