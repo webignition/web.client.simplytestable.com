@@ -12,3 +12,7 @@ _configurator:
 
 _main:
     resource: routing.yml
+    
+SimplyTestableWebClientBundle:
+    resource: "@SimplyTestableWebClientBundle/Resources/config/routing_dev.yml"
+    prefix:   /    

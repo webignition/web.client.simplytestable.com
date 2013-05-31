@@ -12,9 +12,7 @@ sign_in:
     
 sign_in_submit:
     pattern:  /signin/submit/
-    defaults: { _controller: SimplyTestableWebClientBundle:User:signInSubmit }     
-    requirements:
-        _scheme:  https    
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signInSubmit }       
     
 reset_password:
     pattern:  /reset-password/
@@ -23,14 +21,10 @@ reset_password:
 reset_password_submit:
     pattern:  /reset-password/submit/
     defaults: { _controller: SimplyTestableWebClientBundle:User:resetPasswordSubmit }     
-    requirements:
-        _scheme:  https        
 
 reset_password_choose_submit:
     pattern:  /reset-password/choose/submit/
     defaults: { _controller: SimplyTestableWebClientBundle:User:resetPasswordChooseSubmit }       
-    requirements:
-        _scheme:  https        
     
 reset_password_choose:
     pattern:  /reset-password/{email}/{token}/
@@ -43,8 +37,6 @@ sign_up:
 sign_up_submit:
     pattern:  /signup/submit/
     defaults: { _controller: SimplyTestableWebClientBundle:User:signUpSubmit }   
-    requirements:
-        _scheme:  https        
     
 sign_up_confirm:
     pattern:  /signup/confirm/{email}/
@@ -57,20 +49,14 @@ sign_up_confirm_submit:
 sign_up_confirm_resend:
     pattern:  /signup/confirm/{email}/resend/
     defaults: { _controller: SimplyTestableWebClientBundle:User:signUpConfirmResend }
-    requirements:
-        _scheme:  https        
     
 user_account_details_update:
     pattern:  /account/details/update/
     defaults: { _controller: SimplyTestableWebClientBundle:UserAccountDetails:update }          
-    requirements:
-        _scheme:  https        
     
 user_account_details_confirm_email_change:
     pattern:  /account/details/update/confirm-email-change/
     defaults: { _controller: SimplyTestableWebClientBundle:UserAccountDetails:confirmEmailChange }          
-    requirements:
-        _scheme:  https        
         
 user_account_index:
     pattern:  /account/
@@ -171,32 +157,24 @@ app_unretrieved_task_ids:
 test_start:
     pattern:  /test/start/
     defaults: { _controller: SimplyTestableWebClientBundle:TestStart:startNew }
-    requirements:
-        _scheme:  https        
     
 test_clone_and_start:
     pattern:  /test/start/clone/{website}/{test_id}/
     defaults: { _controller: SimplyTestableWebClientBundle:TestStart:cloneAndStart }    
     requirements:
         website: ".+"
-    requirements:
-        _scheme:  https            
     
 test_cancel:
     pattern:  /test/{website}/{test_id}/cancel/
     defaults: { _controller: SimplyTestableWebClientBundle:Test:cancel }  
     requirements:
         website: ".+"
-    requirements:
-        _scheme:  https            
         
 test_cancel_queued:
     pattern:  /test/{website}/cancel/
     defaults: { _controller: SimplyTestableWebClientBundle:Test:cancelQueued }  
     requirements:
-        website: ".+"      
-    requirements:
-        _scheme:  https            
+        website: ".+"        
         
 app_test_redirector:
     pattern:  /{website}/{test_id}/
