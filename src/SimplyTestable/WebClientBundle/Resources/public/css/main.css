@@ -35,3 +35,7 @@ border-left: 1px solid #999;
 .navbar a.active {
     color:#fff;
 }
+
+.terms-notice {
+    margin-top: 20px;
+}
