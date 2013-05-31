@@ -869,3 +869,7 @@ body.account div.controls-disabled {
 .alert-from-view .icon-warning-sign {
     margin-right:0;
 }
+
+#recent-site-tests .span4 {
+    width:31%;
+}
