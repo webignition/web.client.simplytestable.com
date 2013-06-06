@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "09f3e959c96d654045645d5fd45b0ad2",
+    "hash": "6fb44a48086379c5924ddd937956cf33",
     "packages": [
         {
             "name": "doctrine/common",
@@ -1128,6 +1128,52 @@
             ],
             "description": "This bundle generates code for you",
             "time": "2012-11-19 16:10:57"
+        },
+        {
+            "name": "stripe/stripe-php",
+            "version": "v1.7.15",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stripe/stripe-php.git",
+                "reference": "v1.7.15"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/v1.7.15",
+                "reference": "v1.7.15",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=5.2"
+            },
+            "require-dev": {
+                "vierbergenlars/simpletest": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "lib/Stripe/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Stripe and contributors",
+                    "homepage": "https://github.com/stripe/stripe-php/contributors"
+                }
+            ],
+            "description": "Stripe PHP Library",
+            "homepage": "https://stripe.com/",
+            "keywords": [
+                "api",
+                "payment processing",
+                "stripe"
+            ],
+            "time": "2013-02-21 20:00:30"
         },
         {
             "name": "swiftmailer/swiftmailer",
