@@ -38,6 +38,7 @@ parameters:
   public_site:
     urls:
       home: http://simplytestable.com
+      plans_and_pricing: plans/
   content_type_web_resource_map:
     default: webignition\WebResource\WebResource
     application/json: webignition\WebResource\JsonDocument\JsonDocument
