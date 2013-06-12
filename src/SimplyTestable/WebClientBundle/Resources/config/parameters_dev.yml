@@ -1,4 +1,5 @@
 parameters:
   public_site:
     urls:
-      home: http://local.simplytestable.com
+      home: http://local.simplytestable.com/
+      plans_and_pricing: plans/
