@@ -61,13 +61,6 @@ class UserAccountController extends AbstractUserAccountController
      */
     private function getPlanPresentationName($plan) {
         return ucwords($plan);
-    }
-    
-    /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService
-     */
-    protected function getUserEmailChangeRequestService() {
-        return $this->get('simplytestable.services.useremailchangerequestservice');
-    }
+    }    
+
 }

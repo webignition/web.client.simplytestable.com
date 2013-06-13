@@ -19,4 +19,12 @@ abstract class AbstractUserAccountController extends BaseViewController
             'redirect' => base64_encode($redirectParameters)
         ), true));           
     }
+    
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService
+     */
+    protected function getUserEmailChangeRequestService() {
+        return $this->get('simplytestable.services.useremailchangerequestservice');
+    }    
 }
