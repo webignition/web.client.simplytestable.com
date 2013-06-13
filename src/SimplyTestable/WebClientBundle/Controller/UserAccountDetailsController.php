@@ -5,7 +5,7 @@ namespace SimplyTestable\WebClientBundle\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Cookie;
 
-class UserAccountDetailsController extends UserAccountController
+class UserAccountDetailsController extends AbstractUserAccountController
 {   
     const ONE_YEAR_IN_SECONDS = 31536000;    
     

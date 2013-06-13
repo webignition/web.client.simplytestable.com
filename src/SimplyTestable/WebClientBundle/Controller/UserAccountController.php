@@ -4,20 +4,30 @@ namespace SimplyTestable\WebClientBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 
-class UserAccountController extends BaseViewController
+class UserAccountController extends AbstractUserAccountController
 {   
     public function indexAction() {
         if (($notLoggedInResponse = $this->getNotLoggedInResponse()) instanceof Response) {
             return $notLoggedInResponse;
-        }
+        }        
+
+        $plan = $this->getUserService()->getPlanSummary($this->getUser())->getContentObject();
         
+        if (isset($plan->summary) && isset($plan->summary->trial_period_days)) {
+            $plan->summary->days_of_trial_period = $this->getDayOfTrialPeriod($plan);
+        }
+      
         $viewData = array(            
             'public_site' => $this->container->getParameter('public_site'),              
             'user' => $this->getUser(),
+            'plan' => $plan,
+            'plan_presentation_name' => $this->getPlanPresentationName($plan->name),
             'is_logged_in' => true,
             'user_account_details_update_notice' => $this->getFlash('user_account_details_update_notice'),
             'user_account_details_update_email' => $this->getFlash('user_account_details_update_email'),
-            'user_account_details_update_email_confirm_notice' => $this->getFlash('user_account_details_update_email_confirm_notice')
+            'user_account_details_update_email_confirm_notice' => $this->getFlash('user_account_details_update_email_confirm_notice'),
+            'plan_subscribe_error' => $this->getFlash('plan_subscribe_error'),
+            'plan_subscribe_success' => $this->getFlash('plan_subscribe_success'),
         );
         
         if ($this->getUserEmailChangeRequestService()->hasEmailChangeRequest($this->getUser()->getUsername())) {
@@ -29,21 +39,29 @@ class UserAccountController extends BaseViewController
         return $this->sendResponse($viewData);
     }
     
-    protected function getNotLoggedInResponse() {
-        if ($this->isLoggedIn()) {
-            return null;
+    
+    /**
+     * 
+     * @param \stdClass $plan
+     * @return int
+     */
+    private function getDayOfTrialPeriod($plan) {
+        if (!isset($plan->summary)) {
+            return 0;
         }
         
-        $redirectParameters = json_encode(array(
-            'route' => 'user_account_index'
-        ));
-
-        $this->get('session')->setFlash('user_signin_error', 'account-not-logged-in');
-
-        return $this->redirect($this->generateUrl('sign_in', array(
-            'redirect' => base64_encode($redirectParameters)
-        ), true));           
-    } 
+        return (int)ceil($plan->summary->trial_period_days - ($plan->summary->trial_end - time()) / 86400);
+    }
+    
+    
+    /**
+     * 
+     * @param string $plan
+     * @return string
+     */
+    private function getPlanPresentationName($plan) {
+        return ucwords($plan);
+    }
     
     /**
      * 

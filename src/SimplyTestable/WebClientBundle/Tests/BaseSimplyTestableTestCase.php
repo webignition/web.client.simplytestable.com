@@ -13,6 +13,7 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     const TEST_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TestController';    
     const USER_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\UserController';
     const USER_ACCOUNT_DETAILS_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\UserAccountDetailsController';
+    const USER_ACCOUNT_PLAN_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\UserAccountPlanController';
     const REDIRECT_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\RedirectController';
     
     private $testQueueService;
@@ -131,7 +132,19 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
      */
     protected function getUserAccountDetailsController($methodName, $postData = array()) {
         return $this->getController(self::USER_ACCOUNT_DETAILS_CONTROLLER_NAME, $methodName, $postData);
-    }     
+    }   
+    
+    
+    /**
+     *
+     * @param string $methodName
+     * @param array $postData
+     * @return \SimplyTestable\WebClientBundle\Controller\UserAccountPlanController
+     */
+    protected function getUserAccountPlanController($methodName, $postData = array()) {
+        return $this->getController(self::USER_ACCOUNT_PLAN_CONTROLLER_NAME, $methodName, $postData);
+    }    
+    
     
     /**
      *

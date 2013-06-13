@@ -428,6 +428,52 @@ class UserService extends CoreApplicationService {
         $this->session->set('user', null);
     }
     
+    
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Model\User $user
+     * @return \webignition\WebResource\JsonDocument\JsonDocument
+     * @throws \SimplyTestable\WebClientBundle\Services\CurlException
+     */
+    public function getSummary(User $user) {
+        $request = $this->webResourceService->getHttpClientService()->getRequest(
+                $this->getUrl('user', array(
+                    'email' => $user->getUsername()
+                ))
+        );
+        
+        $this->addAuthorisationToRequest($request);
+
+        try {
+            return $this->webResourceService->get($request);
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            throw $curlException;
+        }        
+    }
+    
+    
+    
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Model\User $user
+     * @return \webignition\WebResource\JsonDocument\JsonDocument
+     * @throws \SimplyTestable\WebClientBundle\Services\CurlException
+     */
+    public function getPlanSummary(User $user) {
+        $request = $this->webResourceService->getHttpClientService()->getRequest(
+                $this->getUrl('user_plan', array(
+                    'email' => $user->getUsername()
+                ))
+        );
+        
+        $this->addAuthorisationToRequest($request);
+
+        try {
+            return $this->webResourceService->get($request);
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            throw $curlException;
+        }        
+    }    
 
     
 }
