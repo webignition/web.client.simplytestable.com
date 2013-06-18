@@ -14,6 +14,10 @@ class UserAccountController extends AbstractUserAccountController
         $plan = $this->getUserService()->getPlanSummary($this->getUser())->getContentObject();
         $card = $this->getUserService()->getCardSummary($this->getUser())->getContentObject();
         
+        if (isset($card->exp_month)) {
+            $card->exp_month_name = $this->getMonthNameFromNumber($card->exp_month);
+        }
+        
         if (isset($plan->summary) && isset($plan->summary->trial_period_days)) {
             $plan->summary->days_of_trial_period = $this->getDayOfTrialPeriod($plan);
         }
@@ -39,6 +43,48 @@ class UserAccountController extends AbstractUserAccountController
         
         $this->setTemplate('SimplyTestableWebClientBundle:User/Account:index.html.twig');       
         return $this->sendResponse($viewData);
+    }
+    
+    private function getMonthNameFromNumber($monthNumber) {
+        $monthNumber = (int)$monthNumber;
+        
+        switch ($monthNumber) {
+            case 1:
+                return 'January';
+                
+            case 2:
+                return 'February';
+                
+            case 3:
+                return 'March';
+                
+            case 4:
+                return 'April';
+                
+            case 5:
+                return 'May';
+                
+            case 6:
+                return 'June';
+                
+            case 7:
+                return 'July';
+                
+            case 8:
+                return 'August';
+                
+            case 9:
+                return 'September';
+                
+            case 10:
+                return 'October';
+                
+            case 11:
+                return 'November';
+
+            case 12:
+                return 'December';                
+        }
     }
     
     

@@ -226,6 +226,7 @@
 
                 <div class="plan-section">
                     <h2>Payment details</h2>
+                    
             {% if plan.name == 'basic' %}
                 {% if card|length == 0 %}
                     <p>
@@ -238,9 +239,36 @@
                 {% endif %}
             {% else %}
                  {% if card|length %}
-                    <p>
-                        Has card!
-                    </p>
+                     
+                    
+                    <div class="row-fluid card-container">
+                        <div class="span6 card-container-label">
+                            <span class="card-type card-type-{{ card.type|lower}}"></span>
+                        </div>
+                        <div class="span6 details">
+                    <div class="card-details">
+                        <p> 
+                            <i class="icon icon-asterisk"></i>
+                            <i class="icon icon-asterisk"></i>
+                            <i class="icon icon-asterisk"></i>
+                            <i class="icon icon-asterisk"></i>                                
+                            <i class="icon icon-asterisk"></i>
+                            <i class="icon icon-asterisk"></i>
+                            <i class="icon icon-asterisk"></i>
+                            <i class="icon icon-asterisk"></i>
+                            <i class="icon icon-asterisk"></i>
+                            <i class="icon icon-asterisk"></i>
+                            <i class="icon icon-asterisk"></i>
+                            <i class="icon icon-asterisk"></i>                            
+                            {{ card.last4 }}
+                            <span class="exp_date">expiring {{ card.exp_month_name }} {{ card.exp_year }}</span>
+                        </p>
+                    </div>                            
+                        <a class="btn btn-small" href="{{ path('user_account_card') }}">Change </a>
+                        <a class="btn btn-small btn-danger" href="{{ path('user_account_card') }}">Remove</a>                            
+                        </div>
+                    </div>                                       
+
                  {% else %}
                     {% if plan.summary.status == 'trialing' %}
                        <p>
@@ -251,7 +279,7 @@
                            Enter your card details now to ensure your subscription remains
                            active.
                        </p>
-                       <a class="btn" href="{{ path('user_account_card') }}">Add card <i class="icon icon-credit-card"></i></a>    
+                       <a class="btn" href="{{ path('user_account_card') }}">Add card <i class="icon icon-credit-card"></i></a>
                     {% endif %}                        
                  {% endif %}
                     

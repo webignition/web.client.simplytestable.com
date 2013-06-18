@@ -873,3 +873,42 @@ body.account div.controls-disabled {
 #recent-site-tests .span4 {
     width:31%;
 }
+
+body.user-account-index .card-container .card-container-label {
+    width:166px;
+    position: relative;
+}
+
+body.user-account-index .card-type {
+    display:block;
+    background-repeat: no-repeat;
+    height: 32px; 
+    position: absolute;
+    right:0;
+    width:51px;
+}
+
+/**
+* Credit card icons from http://media.smashingmagazine.com/wp-content/uploads/2010/10/payment-icon-set.zip
+* as referenced by http://www.smashingmagazine.com/2010/10/21/free-png-credit-card-debit-card-and-payment-icons-set-18-icons/ 
+* Icons are free to use
+*/
+body.user-account-index .card-type-visa {
+    background-image: url('/bundles/simplytestablewebclient/images/visa-straight-32px.png');
+}
+
+body.user-account-index .card-type-mastercard {
+    background-image: url('/bundles/simplytestablewebclient/images/mastercard-straight-32px.png');
+}
+
+body.user-account-index .card-details .icon {
+    font-size:7px;
+    vertical-align: middle;
+}
+
+body.user-account-index .card-details .exp_date {
+    opacity: 0.7;
+    font-size: 12px;
+    display:block;
+    margin-top: -4px;
+}
