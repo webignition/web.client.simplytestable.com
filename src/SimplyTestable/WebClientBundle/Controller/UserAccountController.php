@@ -12,6 +12,7 @@ class UserAccountController extends AbstractUserAccountController
         }        
 
         $plan = $this->getUserService()->getPlanSummary($this->getUser())->getContentObject();
+        $card = $this->getUserService()->getCardSummary($this->getUser())->getContentObject();
         
         if (isset($plan->summary) && isset($plan->summary->trial_period_days)) {
             $plan->summary->days_of_trial_period = $this->getDayOfTrialPeriod($plan);
@@ -22,6 +23,7 @@ class UserAccountController extends AbstractUserAccountController
             'user' => $this->getUser(),
             'plan' => $plan,
             'plan_presentation_name' => $this->getPlanPresentationName($plan->name),
+            'card' => $card,
             'is_logged_in' => true,
             'user_account_details_update_notice' => $this->getFlash('user_account_details_update_notice'),
             'user_account_details_update_email' => $this->getFlash('user_account_details_update_email'),

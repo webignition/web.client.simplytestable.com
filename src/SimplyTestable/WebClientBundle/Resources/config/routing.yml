@@ -62,6 +62,14 @@ user_account_index:
     pattern:  /account/
     defaults: { _controller: SimplyTestableWebClientBundle:UserAccount:index }    
     
+user_account_card:
+    pattern:  /account/card/
+    defaults: { _controller: SimplyTestableWebClientBundle:UserAccountCard:index }        
+    
+user_account_card_associate:
+    pattern:  /account/card/{stripe_card_token}/associate/
+    defaults: { _controller: SimplyTestableWebClientBundle:UserAccountCard:associate }        
+    
 user_account_plan_subscribe:
     pattern:  /account/plan/subscribe/
     defaults: { _controller: SimplyTestableWebClientBundle:UserAccountPlan:subscribe }    

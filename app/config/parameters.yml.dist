@@ -16,3 +16,4 @@ parameters:
     admin_user_username: SetThis!
     admin_user_password: SetThis!
     simplytestable_session_savepath: /tmp
+    stripe_publishable_key: stripe_publishable_key_value

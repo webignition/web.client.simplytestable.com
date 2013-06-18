@@ -92,4 +92,14 @@ services:
         adminUserUsername: %admin_user_username%
         adminUserPassword: %admin_user_password%
         session: "@session"
+        userSerializerService: "@simplytestable.services.userserializerservice"         
+        
+  simplytestable.services.useraccountcardservice:
+    class:  SimplyTestable\WebClientBundle\Services\UserAccountCardService        
+    arguments:
+        parameters: %core_application%
+        webResourceService: "@simplytestable.services.webresourceservice"   
+        adminUserUsername: %admin_user_username%
+        adminUserPassword: %admin_user_password%
+        session: "@session"
         userSerializerService: "@simplytestable.services.userserializerservice"              

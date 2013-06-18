@@ -37,6 +37,8 @@ parameters:
       user_email_change_request_confirm: /user/{email}/email-change-request/{token}/
       user_plan_subscribe: /user/{email}/{plan}/subscribe/
       user_plan: /user/{email}/plan/
+      user_card_summary: /user/{email}/card-summary/      
+      user_card_associate: /user/{email}/card/{stripe_card_token}/associate/  
   public_site:
     urls:
       home: http://simplytestable.com
