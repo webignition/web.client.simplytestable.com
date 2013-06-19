@@ -19,7 +19,7 @@
             <h1>Your card details</h1>
         </div>
     </div>
-    <div class="row-fluid">
+    <div class="row-fluid">        
         <form method="post" class="form-horizontal" id="payment-form" action={{ path('user_account_card_associate', {'stripe_card_token' : 'stripe_card_token'}) }}>
             <div class="span6">
                 <div class="control-group">
@@ -32,36 +32,57 @@
                 <div class="control-group">
                     <label class="control-label" for="inputFirstName">Name</label>
                     <div class="controls">
-                        <input class="span12" type="text" id="inputFirstName" placeholder="Name" data-stripe="name">
+                        <input value="{{ card.name }}" class="span12" type="text" id="inputFirstName" placeholder="Name" data-stripe="name">
                     </div>
                 </div>
                 <div class="control-group">
                     <label class="control-label" for="inputStreetAddress">Street address</label>
                     <div class="controls">
-                        <input class="span12" type="text" id="inputStreetAddress" placeholder="Steet address" data-stripe="address_line_1">
+                        <input value="{{ card.address_line1 }}" class="span12" type="text" id="inputStreetAddress" placeholder="Steet address" data-stripe="address_line1">
                     </div>
                 </div>
                 <div class="control-group">
                     <label class="control-label" for="inputCity">City</label>
                     <div class="controls">
-                        <input type="text" id="inputCity" placeholder="City" data-stripe="address_city">
+                        <input value="{{ card.address_city }}" type="text" id="inputCity" placeholder="City" data-stripe="address_city">
                     </div>
                 </div>
                 <div class="control-group">
                     <label class="control-label" for="inputState">State or County</label>
                     <div class="controls">
-                        <input type="text" id="inputState" placeholder="State or County" data-stripe="address_state">
+                        <input value="{{ card.address_state }}" type="text" id="inputState" placeholder="State or County" data-stripe="address_state">
                     </div>
                 </div>
                 <div class="control-group">
                     <label class="control-label" for="inputZip">Zip or postal code</label>
                     <div class="controls">
-                        <input type="text" id="inputZip" placeholder="Zip or postal code" data-stripe="address_zip">
+                        <input value="{{ card.address_zip }}" type="text" id="inputZip" placeholder="Zip or postal code" data-stripe="address_zip">
+                    </div>
+                </div>                    
+                <div class="control-group">
+                    <label class="control-label" for="inputCountry">Country</label>
+                    <div class="controls">                        
+                        <select data-stripe="address_country">
+                            {% for country_code, country_name in countries %}
+                                {% if card.address_country is defined %}
+                                <option {% if card.address_country == country_code %}selected{% endif%} value="{{ country_code }}">{{ country_name }}</option>                             
+                                {% else %}
+                                <option {% if card.address_country == 'GB' %}selected{% endif%} value="{{ country_code }}">{{ country_name }}</option>                             
+                                {% endif %}                              
+                            {% endfor %}
+                        </select>                        
                     </div>
                 </div>                            
                 <div class="control-group">
                     <div class="controls">
-                        <button type="submit" class="btn">Add card</button>
+                        <button type="submit" class="btn">
+                            {% if card|length == 0 %}
+                                Add
+                            {% else %}
+                                Update
+                            {% endif %}
+                            card
+                        </button>
                     </div>
                 </div>            
             </div>            
@@ -71,6 +92,9 @@
                     <label class="control-label"></label>
                     <div class="controls">
                         <h2>Credit card</h2>
+                        <p>
+                            We accept Visa and Mastercard credit and debit cards.
+                        </p>
                     </div>
                 </div>                
 

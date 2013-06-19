@@ -1470,7 +1470,6 @@ application.account.cardController = function() {
         var error = $('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">×</button><p>'+getMessage(fieldName, code, message)+'</p></div>');
         var field = $('[data-stripe=' + fieldName + ']');
         var fieldContainer = field.closest('.controls');
-        console.log(field, fieldContainer);
         
         var errorSpacer = error.clone();
         errorSpacer.css({
@@ -1494,12 +1493,9 @@ application.account.cardController = function() {
     };
     
     var validate = function () {
-        return {};
-        
-        
         var requiredFieldNames = [
             'name',
-            'address_line_1',
+            'address_line1',
             'address_city',
             'address_state',
             'address_zip',
@@ -1512,8 +1508,6 @@ application.account.cardController = function() {
         for (var requiredFieldIndex = 0; requiredFieldIndex < requiredFieldNames.length; requiredFieldIndex++) {            
             var field = $('[data-stripe=' + requiredFieldNames[requiredFieldIndex] + ']');
             var value = $.trim(field.val());
-            
-            console.log(field.attr('data-stripe'), value, value === '');
             
             if (value === '') {
                 return {
@@ -1528,24 +1522,20 @@ application.account.cardController = function() {
         return {};
     };
 
-    var initialise = function() {
+    var initialise = function() {        
         $('#payment-form').submit(function(event) {
-            var form = $(this);
-            
+            var form = $(this);            
             form.find('button').prop('disabled', true);
-            
-            
             $('.alert', form).remove();
-            var validationResponse = validate();
             
+            var validationResponse = validate();            
             if (validationResponse.hasOwnProperty('error')) {
-                displayError(validationResponse.error.param, validationResponse.error.message);
+                displayError(validationResponse.error.param, null, validationResponse.error.message);
                 form.find('button').prop('disabled', false);
                 return false;
             }           
 
             Stripe.createToken(form, function (status, response) {
-                //console.log(response);
                 form.find('button').prop('disabled', false);
                 
                 if (response.hasOwnProperty('error')) {
@@ -1556,24 +1546,7 @@ application.account.cardController = function() {
                 }
                 
                 form.attr('action', form.attr('action').replace('stripe_card_token', response.id));
-                form.get(0).submit();                
-
-
-//  var $form = $('#payment-form');
-//
-//  if (response.error) {
-//    // Show the errors on the form
-//    $form.find('.payment-errors').text(response.error.message);
-//    $form.find('button').prop('disabled', false);
-//  } else {
-//    // token contains id, last4, and card type
-//    var token = response.id;
-//    // Insert the token into the form so it gets submitted to the server
-//    $form.append($('<input type="hidden" name="stripeToken" />').val(token));
-//    // and submit
-//    $form.get(0).submit();
-//  }                        
-
+                form.get(0).submit();
             });
 
             // Prevent the form from submitting with the default action
@@ -1590,70 +1563,12 @@ application.pages = {
         'initialise': function() {
             if ($('body.user-account-card').length > 0) {
                 accountCardController = new application.account.cardController();
-                accountCardController.initialise();                
-                
-//                console.log("cp01");
-//                console.log(Stripe);
-//
-//                $('#payment-form').submit(function(event) {
-//                    var $form = $(this);
-//
-//                    // Disable the submit button to prevent repeated clicks
-//                    $form.find('button').prop('disabled', true);
-//
-//                    Stripe.createToken($form, function (status, response) {
-//                        if (response.hasOwnProperty('error')) {
-//                            console.log(response.error);
-//                            $form.find('button').prop('disabled', false);
-//                        } else {
-//                            
-//                        }
-//                        
-//                        
-//                        
-//                        
-//                        
-//                        
-////  var $form = $('#payment-form');
-////
-////  if (response.error) {
-////    // Show the errors on the form
-////    $form.find('.payment-errors').text(response.error.message);
-////    $form.find('button').prop('disabled', false);
-////  } else {
-////    // token contains id, last4, and card type
-////    var token = response.id;
-////    // Insert the token into the form so it gets submitted to the server
-////    $form.append($('<input type="hidden" name="stripeToken" />').val(token));
-////    // and submit
-////    $form.get(0).submit();
-////  }                        
-//                        
-//                    });
-//
-//                    // Prevent the form from submitting with the default action
-//                    return false;
-//                });
-
-//                queuedTestController = new application.progress.queuedTestController();
-//                queuedTestController.initialise();
-//                
-////                testProgressController = new application.progress.testController();
-////                testProgressController.initialise();
-////                
-////                taskProgressController = new application.progress.taskController();
-////                taskProgressController.initialise();
+                accountCardController.initialise();
             }
 
             if ($('body.app-queued').length > 0) {
                 queuedTestController = new application.progress.queuedTestController();
                 queuedTestController.initialise();
-
-//                testProgressController = new application.progress.testController();
-//                testProgressController.initialise();
-//                
-//                taskProgressController = new application.progress.taskController();
-//                taskProgressController.initialise();
             }
 
             if ($('body.app-progress').length > 0 && $('body.app-queued').length === 0) {

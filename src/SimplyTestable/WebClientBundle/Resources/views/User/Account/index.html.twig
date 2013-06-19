@@ -6,284 +6,271 @@
 
 
 {% block main %}
-    <div class="row-fluid">
-        <div class="span12">
-            <h1>Your account</h1>
-        </div>
+<div class="row-fluid">
+    <div class="span12">
+        <h1>Your account</h1>
     </div>
-    <div class="row-fluid">
-        <div class="span6 account-details">
-            <h2>Account details</h2>
+</div>
+<div class="row-fluid">
+    <div class="span6 account-details">
+        <h2>Account details</h2>
 
 {% if email_change_request is defined %}        
         {% if user_account_details_update_email_confirm_notice is defined and user_account_details_update_email_confirm_notice != '' %}   
             {% if user_account_details_update_email_confirm_notice == 'invalid-token' %}
-            <div class="alert alert-error">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <p><strong>Hmmm, that's not the right confirmation code</strong></p>
-                <p>
-                    Try having the confirmation email re-sent if you're not
-                    sure the confirmation code is correct.
-                </p>
-                <p>
-                    If you're copying the confirmation code from the email,
-                    try instead to click the link below the code.
-                </p>
-            </div>               
+        <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p><strong>Hmmm, that's not the right confirmation code</strong></p>
+            <p>
+                Try having the confirmation email re-sent if you're not
+                sure the confirmation code is correct.
+            </p>
+            <p>
+                If you're copying the confirmation code from the email,
+                try instead to click the link below the code.
+            </p>
+        </div>               
             {% endif %}
 
             {% if user_account_details_update_email_confirm_notice == 'email-taken' %}
-            <div class="alert alert-error">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <p><strong>Hmmm, that email address has been taken</strong></p>
-                <p>
-                    The email address <strong> {{ user_account_details_update_email }} </strong> is in use by someone else.
-                    It wasn't before but it is now.
-                </p>
-                <p>
-                    If you still want to change your email address you'll have
-                    to try again with something different.
-                </p>                    
-            </div>               
+        <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p><strong>Hmmm, that email address has been taken</strong></p>
+            <p>
+                The email address <strong> {{ user_account_details_update_email }} </strong> is in use by someone else.
+                It wasn't before but it is now.
+            </p>
+            <p>
+                If you still want to change your email address you'll have
+                to try again with something different.
+            </p>                    
+        </div>               
             {% endif %}       
 
             {% if user_account_details_update_email_confirm_notice == 'unknown' %}
-            <div class="alert alert-error">
-                <button type="button" class="close" data-dismiss="alert">×</button>
+        <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">×</button>
 
-                <strong>Hmmm.</strong><br>
-                Something went wrong when I tried to do that. I'm not sure what happened.
-                Would you mind trying that again?
-            </div>               
+            <strong>Hmmm.</strong><br>
+            Something went wrong when I tried to do that. I'm not sure what happened.
+            Would you mind trying that again?
+        </div>               
             {% endif %}        
         {% endif %}   
 
-            <div class="alert alert-info confirm-email-change">
-                <p>
-                    <strong>Confirm email address change</strong>
-                </p>
-                <p>
-                    We've emailed a confirmation code to  <strong>{{ email_change_request['new_email'] }}</strong>.
-                </p>        
+        <div class="alert alert-info confirm-email-change">
+            <p>
+                <strong>Confirm email address change</strong>
+            </p>
+            <p>
+                We've emailed a confirmation code to  <strong>{{ email_change_request['new_email'] }}</strong>.
+            </p>        
 
-                <form class="form-horizontal" method="post" action="{{ path('user_account_details_confirm_email_change') }}">
-                    <div class="control-group">                
-                        <label class="control-label" for="token">Confirmation code</label>
-                        <div class="controls">
-                            <input class="input-xlarge" name="token" type="text" id="token" placeholder="Enter your confirmation code" value="{{token}}">
-                        </div>
+            <form class="form-horizontal" method="post" action="{{ path('user_account_details_confirm_email_change') }}">
+                <div class="control-group">                
+                    <label class="control-label" for="token">Confirmation code</label>
+                    <div class="controls">
+                        <input class="input-xlarge" name="token" type="text" id="token" placeholder="Enter your confirmation code" value="{{token}}">
                     </div>
-                    <div class="control-group">
-                        <div class="controls">
-                            <button name="confirm" value="1" type="submit" class="btn btn-primary">Confirm</button>
-                            <button name="re-send" value="1" type="submit" class="btn">Re-send code</button>
-                            <button name="cancel" value="cancel" type="submit" class="btn">Cancel change</button>
-                        </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <button name="confirm" value="1" type="submit" class="btn btn-primary">Confirm</button>
+                        <button name="re-send" value="1" type="submit" class="btn">Re-send code</button>
+                        <button name="cancel" value="cancel" type="submit" class="btn">Cancel change</button>
                     </div>
-                </form>        
-            </div>         
+                </div>
+            </form>        
+        </div>         
 {% endif %}
 
 
-            <form class="form-horizontal" method="post" action="{{ path('user_account_details_update') }}">
-                <div class="control-group">
+        <form class="form-horizontal" method="post" action="{{ path('user_account_details_update') }}">
+            <div class="control-group">
 
 {% if user_account_details_update_notice is defined and user_account_details_update_notice != '' %}    
     {% if user_account_details_update_notice == 'password-missing' %}
-                    <div class="alert alert-info">
-                        <button type="button" class="close" data-dismiss="alert">×</button>
-                        <p>
-                            <strong>Nearly!</strong>
-                        </p>       
-                        <p>
-                            To change your password, enter your current password <strong>and</strong> enter your choice of new password.
-                        </p>
-                        <p>
-                            Leave the password fields blank if you don't want to change your password.
-                        </p>
-                    </div>                
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p>
+                        <strong>Nearly!</strong>
+                    </p>       
+                    <p>
+                        To change your password, enter your current password <strong>and</strong> enter your choice of new password.
+                    </p>
+                    <p>
+                        Leave the password fields blank if you don't want to change your password.
+                    </p>
+                </div>                
     {% endif %}
 
     {% if user_account_details_update_notice == 'password-failed-read-only' %}
-                    <div class="alert alert-error">
-                        <button type="button" class="close" data-dismiss="alert">×</button>
-                        <p><strong>Sorry, I can't do that right now</strong></p>
-                        <p>
-                            We're in a <strong>read-only</strong> state whilst some 
-                            <strong>maintenance</strong> is going on.
-                        </p>
-                        <p>
-                            Give it a go again soon, this won't take long.
-                        </p>
-                    </div>              
+                <div class="alert alert-error">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p><strong>Sorry, I can't do that right now</strong></p>
+                    <p>
+                        We're in a <strong>read-only</strong> state whilst some 
+                        <strong>maintenance</strong> is going on.
+                    </p>
+                    <p>
+                        Give it a go again soon, this won't take long.
+                    </p>
+                </div>              
     {% endif %}                
 
     {% if user_account_details_update_notice == 'password-invalid' %}
-                    <div class="alert alert-error">
-                        <button type="button" class="close" data-dismiss="alert">×</button>
-                        <p>
-                            <strong>Not quite!</strong>
-                        </p>       
-                        <p>
-                            That's not your current password. Give it a go again.
-                        </p>
-                    </div>                
+                <div class="alert alert-error">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p>
+                        <strong>Not quite!</strong>
+                    </p>       
+                    <p>
+                        That's not your current password. Give it a go again.
+                    </p>
+                </div>                
     {% endif %}                  
 
     {% if user_account_details_update_notice == 'show-help' %}
-                    <div class="alert alert-info">
-                        <button type="button" class="close" data-dismiss="alert">×</button>
-                        <p>
-                            <strong>Slow down!</strong>
-                        </p>
-                        <p>
-                            <strong>To change your email address</strong>: enter the new email
-                            address you would like to use.
-                        </p>        
-                        <p>
-                            <strong>To change your password</strong>: enter your current password
-                            to verify your identity and then enter your choice of new password.
-                        </p>
-                    </div>                
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p>
+                        <strong>Slow down!</strong>
+                    </p>
+                    <p>
+                        <strong>To change your email address</strong>: enter the new email
+                        address you would like to use.
+                    </p>        
+                    <p>
+                        <strong>To change your password</strong>: enter your current password
+                        to verify your identity and then enter your choice of new password.
+                    </p>
+                </div>                
     {% endif %}
 
     {% if user_account_details_update_notice == 'same-email' %}
-                    <div class="alert alert-info">
-                        <button type="button" class="close" data-dismiss="alert">×</button>
-                        <p>
-                            <strong>That's the email address you're already using!</strong>
-                        </p>
-                        <p>
-                            To change your email address, enter something different.
-                        </p>
-                    </div>                
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p>
+                        <strong>That's the email address you're already using!</strong>
+                    </p>
+                    <p>
+                        To change your email address, enter something different.
+                    </p>
+                </div>                
     {% endif %}  
 
     {% if user_account_details_update_notice == 'email-taken' %}
-                    <div class="alert alert-error">
-                        <button type="button" class="close" data-dismiss="alert">×</button>
-                        The email address <strong> {{ user_account_details_update_email }} </strong> is in use by someone else.
-                    </div>               
+                <div class="alert alert-error">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    The email address <strong> {{ user_account_details_update_email }} </strong> is in use by someone else.
+                </div>               
     {% endif %}                 
 
     {% if user_account_details_update_notice == 'invalid-email' %}
-                    <div class="alert alert-error">
-                        <button type="button" class="close" data-dismiss="alert">×</button>
-                        <strong>Hmmm.</strong> I'm not convinced that <strong> {{ user_account_details_update_email }} </strong> is a valid email address.
-                    </div>               
+                <div class="alert alert-error">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <strong>Hmmm.</strong> I'm not convinced that <strong> {{ user_account_details_update_email }} </strong> is a valid email address.
+                </div>               
     {% endif %}                           
 
     {% if user_account_details_update_notice == 'unknown' %}
-                    <div class="alert alert-error">
-                        <button type="button" class="close" data-dismiss="alert">×</button>
+                <div class="alert alert-error">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
 
-                        <strong>Hmmm.</strong><br>
-                        Something went wrong when I tried to do that. I'm not sure what happened.
-                        Would you mind trying that again?
-                    </div>               
+                    <strong>Hmmm.</strong><br>
+                    Something went wrong when I tried to do that. I'm not sure what happened.
+                    Would you mind trying that again?
+                </div>               
     {% endif %}                  
 
     {% if user_account_details_update_notice == 'password-done' %}
-                    <div class="alert alert-success">
-                        <button type="button" class="close" data-dismiss="alert">×</button>            
-                        <strong>Yay!</strong> Your password has been changed.
-                    </div>               
+                <div class="alert alert-success">
+                    <button type="button" class="close" data-dismiss="alert">×</button>            
+                    <strong>Yay!</strong> Your password has been changed.
+                </div>               
     {% endif %}                
 {% endif %}    
 
 {% if email_change_request is defined %} 
-                    <label class="control-label" for="email">Email</label>
-                    <div class="controls controls-disabled">
+                <label class="control-label" for="email">Email</label>
+                <div class="controls controls-disabled">
                     {{user.username}}
-                        </div>
+                    </div>
 {% else %}               
-                        <label class="control-label" for="email">Email</label>
-                        <div class="controls">
-                            <input name="email" type="text" id="email" placeholder="Choose your email address" value="{{user.username}}">
-                        </div>
+                    <label class="control-label" for="email">Email</label>
+                    <div class="controls">
+                        <input name="email" type="text" id="email" placeholder="Choose your email address" value="{{user.username}}">
+                    </div>
 {% endif %}
 
 
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="currentPassword">Current password</label>
+                    <div class="controls">
+                        <input name="current-password" type="password" id="currentPassword" placeholder="Current password">
                     </div>
-                    <div class="control-group">
-                        <label class="control-label" for="currentPassword">Current password</label>
-                        <div class="controls">
-                            <input name="current-password" type="password" id="currentPassword" placeholder="Current password">
-                        </div>
-                    </div>                
-                    <div class="control-group">
-                        <label class="control-label" for="newPassword">New password</label>
-                        <div class="controls">
-                            <input name="new-password" type="password" id="newPassword" placeholder="New password">
-                        </div>
+                </div>                
+                <div class="control-group">
+                    <label class="control-label" for="newPassword">New password</label>
+                    <div class="controls">
+                        <input name="new-password" type="password" id="newPassword" placeholder="New password">
                     </div>
-                    <div class="control-group">
-                        <div class="controls">
-                            <button type="submit" class="btn">Save changes</button>
-                        </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <button type="submit" class="btn">Save changes</button>
                     </div>
-                </form>
+                </div>
+            </form>
 
-                <div class="plan-section">
-                    <h2>Payment details</h2>
-                    
-            {% if plan.name == 'basic' %}
-                {% if card|length == 0 %}
-                    <p>
-                        You're on a <strong>free</strong> plan, no payment details needed.
-                    </p>
+            <div class="plan-section">
+                <h2>Payment details</h2>
+                {% if plan.name == 'basic' and card|length == 0 %}
+                <p>
+                    You're on a <strong>free</strong> plan, no payment details needed.
+                </p>
                 {% else %}
-                    <p>
-                        Free plan but has card, explain why and give the option to remove.
-                    </p>           
-                {% endif %}
-            {% else %}
-                 {% if card|length %}
-                     
-                    
-                    <div class="row-fluid card-container">
-                        <div class="span6 card-container-label">
-                            <span class="card-type card-type-{{ card.type|lower}}"></span>
-                        </div>
-                        <div class="span6 details">
-                    <div class="card-details">
-                        <p> 
-                            <i class="icon icon-asterisk"></i>
-                            <i class="icon icon-asterisk"></i>
-                            <i class="icon icon-asterisk"></i>
-                            <i class="icon icon-asterisk"></i>                                
-                            <i class="icon icon-asterisk"></i>
-                            <i class="icon icon-asterisk"></i>
-                            <i class="icon icon-asterisk"></i>
-                            <i class="icon icon-asterisk"></i>
-                            <i class="icon icon-asterisk"></i>
-                            <i class="icon icon-asterisk"></i>
-                            <i class="icon icon-asterisk"></i>
-                            <i class="icon icon-asterisk"></i>                            
+                    {% if card|length %}
+                <div class="row-fluid card-container">
+                    <div class="span6 card-container-label">
+                        <span class="card-type card-type-{{ card.type|lower}}"></span>
+                    </div>
+                    <div class="span6 details">
+                        <div class="card-details">
+                            <p> 
+                                <i class="icon icon-asterisk"></i>
+                                <i class="icon icon-asterisk"></i>
+                                <i class="icon icon-asterisk"></i>
+                                <i class="icon icon-asterisk"></i>                                
+                                <i class="icon icon-asterisk"></i>
+                                <i class="icon icon-asterisk"></i>
+                                <i class="icon icon-asterisk"></i>
+                                <i class="icon icon-asterisk"></i>
+                                <i class="icon icon-asterisk"></i>
+                                <i class="icon icon-asterisk"></i>
+                                <i class="icon icon-asterisk"></i>
+                                <i class="icon icon-asterisk"></i>                            
                             {{ card.last4 }}
-                            <span class="exp_date">expiring {{ card.exp_month_name }} {{ card.exp_year }}</span>
-                        </p>
-                    </div>                            
-                        <a class="btn btn-small" href="{{ path('user_account_card') }}">Change </a>
-                        <a class="btn btn-small btn-danger" href="{{ path('user_account_card') }}">Remove</a>                            
-                        </div>
-                    </div>                                       
-
+                                <span class="exp_date">expiring {{ card.exp_month_name }} {{ card.exp_year }}</span>
+                            </p>
+                        </div>                            
+                        <a href="{{ path('user_account_card') }}">Change your card details <i class="icon icon-caret-right"></i></a>                            
+                    </div>
+                </div>
                  {% else %}
                     {% if plan.summary.status == 'trialing' %}
-                       <p>
-                           We need your credit card details to continue your subscription
-                           after your trial ends.
-                       </p>
-                       <p>
-                           Enter your card details now to ensure your subscription remains
-                           active.
-                       </p>
-                       <a class="btn" href="{{ path('user_account_card') }}">Add card <i class="icon icon-credit-card"></i></a>
+                <p>
+                    We need your credit card details to continue your subscription
+                    after your trial ends.
+                </p>
+                <p>
+                    Enter your card details now to ensure your subscription remains
+                    active.
+                </p>
+                <a class="btn" href="{{ path('user_account_card') }}">Add card <i class="icon icon-credit-card"></i></a>
                     {% endif %}                        
                  {% endif %}
-                    
-
             {% endif %}
                 </div>
 
