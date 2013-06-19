@@ -11,7 +11,11 @@ class UserAccountCardController extends AbstractUserAccountController {
             return $notLoggedInResponse;
         }
 
-        //$plan = $this->getUserService()->getPlanSummary($this->getUser())->getContentObject();
+        $plan = $this->getUserService()->getPlanSummary($this->getUser())->getContentObject();
+        if ($plan->name == 'basic') {
+            return $this->redirect($this->generateUrl('user_account_index', array(), true));
+        }
+        
         $card = $this->getUserService()->getCardSummary($this->getUser())->getContentObject();
 
         $currentYear = date('Y');
