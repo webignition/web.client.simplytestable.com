@@ -265,7 +265,7 @@
                     {% if trial_days_remaining <= 3 %}               
                 <p>
                     <strong>
-                        Your trial ends in only {{ trial_days_remaining }} days!
+                        Your trial ends in less than {{ trial_days_remaining }} days!
                     </strong>
                 </p>
                 
@@ -387,7 +387,7 @@
                                     {% set trial_days_remaining = plan.summary.trial_period_days - plan.summary.days_of_trial_period + 1 %}                               
                                     {% if trial_days_remaining > 0 %}
                             <p>
-                                Switch between premium plans free for the next <strong>{{ trial_days_remaining }}</strong> day{% if trial_days_remaining != 1%}s{% endif %}.
+                                Switch between premium plans free for up to <strong>{{ trial_days_remaining }}</strong> day{% if trial_days_remaining != 1%}s{% endif %}.
                             </p>                                
                                     {% endif %}                            
                                 {% endif %}                                
