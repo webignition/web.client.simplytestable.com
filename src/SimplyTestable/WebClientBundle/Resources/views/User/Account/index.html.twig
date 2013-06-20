@@ -225,63 +225,53 @@
 
             <div class="plan-section">
                 <h2>Payment details</h2>
+                
                 {% if plan.name == 'basic' and card|length == 0 %}
                 <p>
                     You're on a <strong>free</strong> plan, no payment details needed.
                 </p>
-                {% else %}
-                    {% if card|length %}
-                <div class="row-fluid card-container">
-                    <div class="span6 card-container-label">
-                        <span class="card-type card-type-{{ card.type|lower}}"></span>
-                    </div>
-                    <div class="span6 details">
-                        <div class="card-details">
-                            <p> 
-                                <i class="icon icon-asterisk"></i>
-                                <i class="icon icon-asterisk"></i>
-                                <i class="icon icon-asterisk"></i>
-                                <i class="icon icon-asterisk"></i>                                
-                                <i class="icon icon-asterisk"></i>
-                                <i class="icon icon-asterisk"></i>
-                                <i class="icon icon-asterisk"></i>
-                                <i class="icon icon-asterisk"></i>
-                                <i class="icon icon-asterisk"></i>
-                                <i class="icon icon-asterisk"></i>
-                                <i class="icon icon-asterisk"></i>
-                                <i class="icon icon-asterisk"></i>                            
-                            {{ card.last4 }}
-                                <span class="exp_date">expiring {{ card.exp_month_name }} {{ card.exp_year }}</span>
-                            </p>
-                        </div>                            
-                        <a href="{{ path('user_account_card') }}">Change your card details <i class="icon icon-caret-right"></i></a>                            
-                    </div>
-                </div>
-                 {% else %}
-                    {% if plan.summary.status == 'trialing' %}
-
-                    {% set trial_days_remaining = plan.summary.trial_period_days - plan.summary.days_of_trial_period + 1 %}
+                {% else %}                
+                    {% if card|length %}                
+                        {% include 'SimplyTestableWebClientBundle:Partials/User/Account:card-summary.html.twig' %} 
+                    {% else %}
+                        {% if plan.summary.status == 'trialing' %}
+                            {% set trial_days_remaining = plan.summary.trial_period_days - plan.summary.days_of_trial_period + 1 %}
                 
-                    {% if trial_days_remaining <= 3 %}               
-                <p>
-                    <strong>
-                        Your trial ends in less than {{ trial_days_remaining }} days!
-                    </strong>
-                </p>
-                
-                    {% endif %}                
-
+                            {% if trial_days_remaining <= 3 %}               
+                        <p>
+                            <strong>
+                                {% if trial_days_remaining == 1 %}
+                                    Your trial ends today!
+                                {% else %}
+                                    Your trial ends in less than {{ trial_days_remaining }} days!
+                                {% endif %}                        
+                            </strong>
+                        </p>               
+                            {% endif %}
                 <p>
                     We need your credit card details to continue your subscription
                     after your trial ends.
+                </p>                        
+                        
+                    {% endif %}
+                
+                    {% if plan.summary.status == 'active' %}
+                <p>
+                    <strong>Your trial has ended!</strong>
                 </p>
+                
+                <p>
+                    We need your credit card details now to continue your subscription.
+                </p>                   
+                    {% endif %}
+
                 <p>
                     Enter your card details now to ensure your subscription remains
                     active.
-                </p>
+                </p> 
 
                 <a class="btn" href="{{ path('user_account_card') }}">Add card <i class="icon icon-credit-card"></i></a>
-                    {% endif %}                        
+                        
                  {% endif %}
             {% endif %}
                 </div>
