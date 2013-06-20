@@ -249,25 +249,24 @@
                         </p>               
                             {% endif %}
                 <p>
-                    We need your credit card details to continue your subscription
+                    We need your credit or debit card details to continue your subscription
                     after your trial ends.
                 </p>                        
                         
                     {% endif %}
                 
-                    {% if plan.summary.status == 'active' %}
                 <p>
                     <strong>Your trial has ended!</strong>
-                </p>
+                </p>                  
                 
                 <p>
-                    We need your credit card details now to continue your subscription.
-                </p>                   
-                    {% endif %}
-
+                    We need your credit or debit card details now to continue your subscription.
+                </p>                 
+                
                 <p>
-                    Enter your card details now to ensure your subscription remains
-                    active.
+                    Your account will be downgraded to the basic plan if
+                    we are unable to take payment for your subscription three days
+                    after your trial ended.
                 </p> 
 
                 <a class="btn" href="{{ path('user_account_card') }}">Add card <i class="icon icon-credit-card"></i></a>
