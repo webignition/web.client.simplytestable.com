@@ -355,7 +355,23 @@
                         </div>
 
                         <div class="plan-section">
-                            <h3>Change plan</h3>
+                            <h3>Change plan</h3>                            
+                            
+                            {% if plan.name =='basic' and plan.start_trial_period > 0 %}
+                                <p>
+                                    Try any premium plan free for <strong>{{ plan.start_trial_period }}</strong> day{% if plan.start_trial_period != 1%}s{% endif %}.
+                                </p> 
+                            {% else %}
+                                {% if plan.summary is defined %}
+                                    {% set trial_days_remaining = plan.summary.trial_period_days - plan.summary.days_of_trial_period + 1 %}                               
+                                    {% if trial_days_remaining > 0 %}
+                                    <p>
+                                        Switch between premium plans free for the next <strong>{{ trial_days_remaining }}</strong> day{% if trial_days_remaining != 1%}s{% endif %}.
+                                    </p>                                
+                                    {% endif %}                            
+                                {% endif %}                                
+                            {% endif %}
+                            
                             <form method="post" action="{{ path('user_account_plan_subscribe') }}">
                                 <div class="input-append">
                                     <select name="plan">
