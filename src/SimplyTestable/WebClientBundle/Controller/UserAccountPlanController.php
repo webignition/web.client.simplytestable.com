@@ -11,14 +11,20 @@ class UserAccountPlanController extends AbstractUserAccountController
             return $notLoggedInResponse;
         }
         
-        $response = $this->getUserPlanSubscriptionService()->subscribe($this->getUser(), $this->get('request')->request->get('plan'));
-        if ($response === true) {
-            $this->get('session')->setFlash('plan_subscribe_success', 'ok');
-        } else {
-            $this->get('session')->setFlash('plan_subscribe_error', $response);            
-        }
+        $redirectResponse = $this->redirect($this->generateUrl('user_account_index', array(), true));
         
-        $redirectResponse = $this->redirect($this->generateUrl('user_account_index', array(), true));        
+        $plan = $this->getUserService()->getPlanSummary($this->getUser())->getContentObject();
+        if ($plan->name == $this->get('request')->request->get('plan')) {
+            $this->get('session')->setFlash('plan_subscribe_success', 'already-on-plan');
+        } else {
+            $response = $this->getUserPlanSubscriptionService()->subscribe($this->getUser(), $this->get('request')->request->get('plan'));
+            if ($response === true) {
+                $this->get('session')->setFlash('plan_subscribe_success', 'ok');
+            } else {
+                $this->get('session')->setFlash('plan_subscribe_error', $response);            
+            }            
+        }
+                
         return $redirectResponse;
     }
     
