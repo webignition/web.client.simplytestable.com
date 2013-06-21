@@ -234,46 +234,9 @@
                     {% if card|length %}                
                         {% include 'SimplyTestableWebClientBundle:Partials/User/Account:card-summary.html.twig' %} 
                     {% else %}
-                        {% if plan.summary.status == 'trialing' %}
-                            {% set trial_days_remaining = plan.summary.trial_period_days - plan.summary.days_of_trial_period + 1 %}
-                
-                            {% if trial_days_remaining <= 3 %}               
-                        <p>
-                            <strong>
-                                {% if trial_days_remaining == 1 %}
-                                    Your trial ends today!
-                                {% else %}
-                                    Your trial ends in less than {{ trial_days_remaining }} days!
-                                {% endif %}                        
-                            </strong>
-                        </p>               
-                            {% endif %}
-                <p>
-                    We need your credit or debit card details to continue your subscription
-                    after your trial ends.
-                </p>                        
-                        
-                    {% else %}
-                
-                <p>
-                    <strong>Your trial has ended!</strong>
-                </p>                  
-                
-                <p>
-                    We need your credit or debit card details now to continue your subscription.
-                </p>                 
-                
-                <p>
-                    If you can't provide payment within 3 days your account
-                    will be downgraded to the free basic plan. 
-                </p> 
-                
+                        {% include 'SimplyTestableWebClientBundle:Partials/User/Account:no-card.html.twig' %} 
+                    {% endif %}
                 {% endif %}
-
-                <a class="btn" href="{{ path('user_account_card') }}">Add card <i class="icon icon-credit-card"></i></a>
-                        
-                 {% endif %}
-            {% endif %}
                 </div>
 
             </div>
