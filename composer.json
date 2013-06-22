@@ -25,8 +25,8 @@
         "webignition/resque-bundle":"*",
         "webignition/is-http-status-code":"0.2",
         "guzzle/guzzle":"3.3.1",
-        "webignition/internet-media-type":">=0.1,<2.0",
-        "stripe/stripe-php": "1.7.15"
+        "webignition/internet-media-type":">=0.1,<2.0",        
+        "jasonlewis/expressive-date": "1.0.*"
     },
     "repositories": [
         {

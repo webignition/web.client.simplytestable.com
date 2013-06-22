@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "6fb44a48086379c5924ddd937956cf33",
+    "hash": "d093c65c40d0c1262fc35915a6a417de",
     "packages": [
         {
             "name": "doctrine/common",
@@ -458,6 +458,51 @@
                 "web service"
             ],
             "time": "2013-03-10 23:05:38"
+        },
+        {
+            "name": "jasonlewis/expressive-date",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jasonlewis/expressive-date",
+                "reference": "v1.0.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/jasonlewis/expressive-date/archive/v1.0.1.zip",
+                "reference": "v1.0.1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "0.7.*"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Jason Lewis",
+                    "email": "jason.lewis1991@gmail.com",
+                    "homepage": "http://jasonlewis.me",
+                    "role": "Creator"
+                }
+            ],
+            "description": "A fluent extension to PHPs DateTime class.",
+            "keywords": [
+                "date",
+                "time"
+            ],
+            "time": "2012-12-14 12:46:47"
         },
         {
             "name": "jdorn/sql-formatter",
@@ -1128,52 +1173,6 @@
             ],
             "description": "This bundle generates code for you",
             "time": "2012-11-19 16:10:57"
-        },
-        {
-            "name": "stripe/stripe-php",
-            "version": "v1.7.15",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/stripe/stripe-php.git",
-                "reference": "v1.7.15"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/v1.7.15",
-                "reference": "v1.7.15",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "php": ">=5.2"
-            },
-            "require-dev": {
-                "vierbergenlars/simpletest": "*"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "lib/Stripe/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Stripe and contributors",
-                    "homepage": "https://github.com/stripe/stripe-php/contributors"
-                }
-            ],
-            "description": "Stripe PHP Library",
-            "homepage": "https://stripe.com/",
-            "keywords": [
-                "api",
-                "payment processing",
-                "stripe"
-            ],
-            "time": "2013-02-21 20:00:30"
         },
         {
             "name": "swiftmailer/swiftmailer",
