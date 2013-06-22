@@ -39,6 +39,7 @@ parameters:
       user_plan: /user/{email}/plan/
       user_card_summary: /user/{email}/card-summary/      
       user_card_associate: /user/{email}/card/{stripe_card_token}/associate/  
+      user_list_stripe_events: /user/{email}/stripe-events/{type}/   
   public_site:
     urls:
       home: http://travis.simplytestable.com
@@ -71,3 +72,7 @@ parameters:
    - cdnjs.cloudflare.com
    - netdna.bootstrapcdn.com
    - static.nrelate.com
+  stripe:
+   payment_retry_limit: 3,
+   payment_retry_periods:
+     [1,1,1]

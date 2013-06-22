@@ -30,24 +30,4 @@ class UserAccountCardService extends UserService {
         } 
     }
     
-//    public function subscribe(User $user, $plan) {        
-//        $request = $this->webResourceService->getHttpClientService()->postRequest(
-//                $this->getUrl('user_plan_subscribe', array(
-//                    'email' => $user->getUsername(),
-//                    'plan' => $plan
-//                ))
-//        );
-//        
-//        $this->addAuthorisationToRequest($request);
-//        
-//        try {
-//            $response = $request->send();            
-//            return $response->getStatusCode() == 200 ? true : $response->getStatusCode();
-//        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {            
-//            return $badResponseException->getResponse()->getStatusCode();
-//        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-//            return $curlException->getErrorNo();
-//        }
-//    }
-    
 }

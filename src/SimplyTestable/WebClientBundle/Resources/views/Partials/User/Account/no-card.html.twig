@@ -25,13 +25,47 @@
     </p>
 
     <p>
-        We need your credit or debit card details now to continue your subscription.
-    </p>                 
-
+        We need your credit or debit card details now to continue your premium subscription.
+    </p>
+    
+    {% if payment_status['attempt_count'] == 0 %}
     <p>
-        If you can't provide payment within 3 days your account
+        We will attempt to collect payment in {{ payment_status['next_payment_attempt_relative'] }}.
+        If this fails, we will re-try a further {{ stripe['payment_retry_limit'] }} times over the following days.
+    </p>
+    {% else %}
+        {% set retry_limit = stripe['payment_retry_limit'] + 1 %}
+        {% set retry_count = retry_limit - payment_status['attempt_count'] %}
+    
+        {% for attempt_count in stripe['payment_retry_limit'] .. 1 %}
+            {% if payment_status['attempt_count'] == attempt_count %}
+    
+    <p>
+        We've tried {{ payment_status['attempt_count'] }} time{%if payment_status['attempt_count'] != '1'%}s{% endif %}        
+        to collect payment. We'll try again in {{ payment_status['next_payment_attempt_relative'] }}.
+        {% if retry_count > 1%}        
+        If this fails, we will re-try a further {{ retry_count }} time{%if retry_count != '1'%}s{% endif %}
+        over the following days.        
+        {% endif %}    
+    </p>
+    
+        {% if retry_count > 1%}               
+    <p>
+        If our last attempt to collect payment fails your account
         will be downgraded to the free basic plan. 
-    </p> 
+    </p>     
+        {% else %}
+    <p>
+        Our next payment attempt will be our last. If it fails your account
+        will be downgraded to the free basic plan. 
+    </p>     
+        {% endif %}       
+
+            {% endif %}
+        {% endfor %}       
+    {% endif %}
+
+    
 
 {% endif %}
 
