@@ -1,5 +1,5 @@
-{% if plan.summary.status == 'trialing' %}
-    {% set trial_days_remaining = plan.summary.trial_period_days - plan.summary.days_of_trial_period + 1 %}
+{% if user_summary.stripe_customer.subscription.status == 'trialing' %}
+    {% set trial_days_remaining = user_summary.user_plan.start_trial_period - user_summary.stripe_customer.subscription.day_of_trial_period + 1 %}
 
     {% if trial_days_remaining <= 3 %}               
     <p>
@@ -28,21 +28,21 @@
         We need your credit or debit card details now to continue your premium subscription.
     </p>
     
-    {% if payment_status['attempt_count'] == 0 %}
+    {% if stripe_event_data['invoice.updated'].attempt_count == 0 %}
     <p>
-        We will attempt to collect payment in {{ payment_status['next_payment_attempt_relative'] }}.
+        We will attempt to collect payment in {{ stripe_event_data['invoice.updated'].next_payment_attempt_relative }}.
         If this fails, we will re-try a further {{ stripe['payment_retry_limit'] }} times over the following days.
     </p>
     {% else %}
         {% set retry_limit = stripe['payment_retry_limit'] + 1 %}
-        {% set retry_count = retry_limit - payment_status['attempt_count'] %}
+        {% set retry_count = retry_limit - stripe_event_data['invoice.updated'].attempt_count %}
     
         {% for attempt_count in stripe['payment_retry_limit'] .. 1 %}
-            {% if payment_status['attempt_count'] == attempt_count %}
+            {% if stripe_event_data['invoice.updated'].attempt_count == attempt_count %}
     
     <p>
-        We've tried {{ payment_status['attempt_count'] }} time{%if payment_status['attempt_count'] != '1'%}s{% endif %}        
-        to collect payment. We'll try again in {{ payment_status['next_payment_attempt_relative'] }}.
+        We've tried {{ stripe_event_data['invoice.updated'].attempt_count }} time{%if stripe_event_data['invoice.updated'].attempt_count != '1'%}s{% endif %}        
+        to collect payment. We'll try again in {{ stripe_event_data['invoice.updated'].next_payment_attempt_relative }}.
         {% if retry_count > 1%}        
         If this fails, we will re-try a further {{ retry_count }} time{%if retry_count != '1'%}s{% endif %}
         over the following days.        

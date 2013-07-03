@@ -32,10 +32,10 @@ application.results.preparingController = function() {
             },
             statusCode: {
                 403: function() {
-                    console.log('403');
+                    //console.log('403');
                 },
                 500: function() {
-                    console.log('500');
+                    //console.log('500');
                 }
             },
             success: function(data, textStatus, request) {
@@ -67,10 +67,10 @@ application.results.preparingController = function() {
             },
             statusCode: {
                 403: function() {
-                    console.log('403');
+                    //console.log('403');
                 },
                 500: function() {
-                    console.log('500');
+                    //console.log('500');
                 }
             },
             data: {
@@ -96,10 +96,10 @@ application.results.preparingController = function() {
             },
             statusCode: {
                 403: function() {
-                    console.log('403');
+                    //console.log('403');
                 },
                 500: function() {
-                    console.log('500');
+                    //console.log('500');
                 }
             },
             success: function(data, textStatus, request) {
@@ -149,14 +149,14 @@ application.progress.queuedTestController = function() {
             },
             dataType: 'json',
             error: function(request, textStatus, errorThrown) {
-                console.log('error', request, textStatus, request.getAllResponseHeaders());
+                //console.log('error', request, textStatus, request.getAllResponseHeaders());
             },
             statusCode: {
                 403: function() {
-                    console.log('403');
+                    //console.log('403');
                 },
                 500: function() {
-                    console.log('500');
+                    //console.log('500');
                 }
             },
             success: function(data, textStatus, request) {
@@ -393,14 +393,14 @@ application.progress.testController = function() {
             },
             dataType: 'json',
             error: function(request, textStatus, errorThrown) {
-                console.log('error', request, textStatus, request.getAllResponseHeaders());
+                //console.log('error', request, textStatus, request.getAllResponseHeaders());
             },
             statusCode: {
                 403: function() {
-                    console.log('403');
+                    //console.log('403');
                 },
                 500: function() {
-                    console.log('500');
+                    //console.log('500');
                 }
             },
             success: function(data, textStatus, request) {
@@ -598,14 +598,14 @@ application.progress.taskController = function() {
                 },
                 dataType: 'json',
                 error: function(request, textStatus, errorThrown) {
-                    console.log('error', request, textStatus, request.getAllResponseHeaders());
+                    //console.log('error', request, textStatus, request.getAllResponseHeaders());
                 },
                 statusCode: {
                     403: function() {
-                        console.log('403');
+                        //console.log('403');
                     },
                     500: function() {
-                        console.log('500');
+                        //console.log('500');
                     }
                 },
                 success: function(data, textStatus, request) {
@@ -1466,9 +1466,14 @@ application.account.cardController = function() {
         return message;
     };
     
-    var displayError = function (fieldName, code, message) {        
+    var displayFieldError = function (fieldName, code, message) {        
         var error = $('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">×</button><p>'+getMessage(fieldName, code, message)+'</p></div>');
         var field = $('[data-stripe=' + fieldName + ']');
+        
+        if (field.attr('data-stripe') === undefined) {
+            return false;
+        }
+        
         var fieldContainer = field.closest('.controls');
         
         var errorSpacer = error.clone();
@@ -1490,6 +1495,8 @@ application.account.cardController = function() {
                 'opacity': 1
             });            
         });
+        
+        return true;
     };
     
     var validate = function () {
@@ -1522,31 +1529,68 @@ application.account.cardController = function() {
         return {};
     };
 
-    var initialise = function() {        
-        $('#payment-form').submit(function(event) {
+    var initialise = function() {       
+        $('#payment-form').submit(function(event) {            
             var form = $(this);            
             form.find('button').prop('disabled', true);
             $('.alert', form).remove();
             
             var validationResponse = validate();            
             if (validationResponse.hasOwnProperty('error')) {
-                displayError(validationResponse.error.param, null, validationResponse.error.message);
+                displayFieldError(validationResponse.error.param, null, validationResponse.error.message);
                 form.find('button').prop('disabled', false);
                 return false;
-            }           
+            }                        
 
-            Stripe.createToken(form, function (status, response) {
-                form.find('button').prop('disabled', false);
-                
+            Stripe.createToken(form, function (status, response) {                
                 if (response.hasOwnProperty('error')) {
-                    //console.log(response.error.param, response.error.message);
                     displayError(response.error.param, response.error.code, response.error.message);
                     form.find('button').prop('disabled', false);
                     return false;
                 }
                 
-                form.attr('action', form.attr('action').replace('stripe_card_token', response.id));
-                form.get(0).submit();
+                jQuery.ajax({
+                    type:'POST',                    
+                    dataType: 'json',
+                    complete: function(request, textStatus) {
+                        //console.log('complete', request, textStatus);
+                    },                    
+                    error: function(request, textStatus, errorThrown) {
+                       //console.log('error', request.responseText);
+                    }, 
+                    success: function(data, textStatus, request) {
+                        if (data.hasOwnProperty('this_url')) {
+                            window.location = data.this_url;
+                            return false;
+                        }
+                        
+                        if (data.hasOwnProperty('user_account_card_exception_param') && data.user_account_card_exception_param !== '') {
+                            displayFieldError(
+                                data.user_account_card_exception_param,
+                                data.user_account_card_exception_code,
+                                data.user_account_card_exception_message
+                            );                            
+                        } else {
+                            displayFieldError(
+                                'number',
+                                data.user_account_card_exception_code,
+                                data.user_account_card_exception_message
+                            );                             
+                        }                        
+
+                        form.find('button').prop('disabled', false);
+                        return false;
+                    },                            
+                    statusCode: {                
+                        403: function() {
+                            //console.log('403');
+                        },
+                        500: function() {
+                            //console.log('500');
+                        }
+                    },
+                    url: window.location + response.id + '/associate/?output=json'
+                });
             });
 
             // Prevent the form from submitting with the default action

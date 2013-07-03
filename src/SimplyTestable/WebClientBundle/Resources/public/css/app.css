@@ -917,3 +917,7 @@ body.user-account-card .control-group-cvc a {
     margin-top:10px;
     display:block;
 }
+
+body.user-account-index .plan-section .alert-error {
+    margin-bottom:0;
+}

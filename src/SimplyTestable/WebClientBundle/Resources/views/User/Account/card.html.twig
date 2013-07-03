@@ -17,6 +17,7 @@
     <div class="row-fluid">
         <div class="span12">
             <h1>Your card details</h1>
+            {{ user_account_card_exception_param }}
         </div>
     </div>
     <div class="row-fluid">        
@@ -32,31 +33,55 @@
                 <div class="control-group">
                     <label class="control-label" for="inputFirstName">Name</label>
                     <div class="controls">
-                        <input value="{% if card.name is defined %}{{ card.name }}{% endif %}" class="span12" type="text" id="inputFirstName" placeholder="Name" data-stripe="name">
+                        <input value="{% if user_summary.stripe_customer.active_card.name is defined %}{{ user_summary.stripe_customer.active_card.name }}{% endif %}" class="span12" type="text" id="inputFirstName" placeholder="Name" data-stripe="name">
                     </div>
                 </div>
                 <div class="control-group">
                     <label class="control-label" for="inputStreetAddress">Street address</label>
                     <div class="controls">
-                        <input value="{% if card.address_line1 is defined %}{{ card.address_line1 }}{% endif %}" class="span12" type="text" id="inputStreetAddress" placeholder="Steet address" data-stripe="address_line1">
+                        {% if user_summary.stripe_customer.active_card is defined and user_summary.stripe_customer.active_card.address_line1_check == 'fail'  %}
+                        
+                        <div class="alert alert-error">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            <p>
+                                Your card issuer could not verify that this line of the
+                                address is correct.
+                            </p>
+                        </div>  
+                            
+                        {% endif %}
+
+                        <input value="{% if user_summary.stripe_customer.active_card.address_line1 is defined %}{{ user_summary.stripe_customer.active_card.address_line1 }}{% endif %}" class="span12" type="text" id="inputStreetAddress" placeholder="Steet address" data-stripe="address_line1">
                     </div>
                 </div>
                 <div class="control-group">
                     <label class="control-label" for="inputCity">City</label>
                     <div class="controls">
-                        <input value="{% if card.address_city is defined %}{{ card.address_city }}{% endif %}" type="text" id="inputCity" placeholder="City" data-stripe="address_city">
+                        <input value="{% if user_summary.stripe_customer.active_card.address_city is defined %}{{ user_summary.stripe_customer.active_card.address_city }}{% endif %}" type="text" id="inputCity" placeholder="City" data-stripe="address_city">
                     </div>
                 </div>
                 <div class="control-group">
                     <label class="control-label" for="inputState">State or County</label>
                     <div class="controls">
-                        <input value="{% if card.address_state is defined %}{{ card.address_state }}{% endif %}" type="text" id="inputState" placeholder="State or County" data-stripe="address_state">
+                        <input value="{% if user_summary.stripe_customer.active_card.address_state is defined %}{{ user_summary.stripe_customer.active_card.address_state }}{% endif %}" type="text" id="inputState" placeholder="State or County" data-stripe="address_state">
                     </div>
                 </div>
                 <div class="control-group">
                     <label class="control-label" for="inputZip">Zip or postal code</label>
                     <div class="controls">
-                        <input value="{% if card.address_zip is defined %}{{ card.address_zip }}{% endif %}" type="text" id="inputZip" placeholder="Zip or postal code" data-stripe="address_zip">
+                        {% if (user_summary.stripe_customer.active_card is defined and user_summary.stripe_customer.active_card.address_zip_check == 'fail') or (user_account_card_exception_param  is defined and user_account_card_exception_param  == 'address_zip')  %}
+                        
+                        <div class="alert alert-error">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            <p>
+                                Your card issuer could not verify that the zip or postal
+                                code you provided is correct.
+                            </p>
+                        </div>  
+                            
+                        {% endif %}
+                        
+                        <input value="{% if user_summary.stripe_customer.active_card.address_zip is defined %}{{ user_summary.stripe_customer.active_card.address_zip }}{% endif %}" type="text" id="inputZip" placeholder="Zip or postal code" data-stripe="address_zip">
                     </div>
                 </div>                    
                 <div class="control-group">
@@ -64,8 +89,8 @@
                     <div class="controls">                        
                         <select data-stripe="address_country">
                             {% for country_code, country_name in countries %}
-                                {% if card.address_country is defined %}
-                                <option {% if card.address_country == country_code %}selected{% endif%} value="{{ country_code }}">{{ country_name }}</option>                             
+                                {% if user_summary.stripe_customer.active_card.address_country is defined %}
+                                <option {% if user_summary.stripe_customer.active_card.address_country == country_code %}selected{% endif%} value="{{ country_code }}">{{ country_name }}</option>                             
                                 {% else %}
                                 <option {% if country_code == 'GB' %}selected{% endif%} value="{{ country_code }}">{{ country_name }}</option>                             
                                 {% endif %}                              
@@ -76,10 +101,10 @@
                     <div class="control-group">
                         <div class="controls">
                             <button type="submit" class="btn">
-                            {% if card|length == 0 %}
-                                    Add
-                            {% else %}
+                            {% if user_summary.stripe_customer.active_card is defined %}
                                     Update
+                            {% else %}
+                                    Add
                             {% endif %}
                                     card
                                 </button>
@@ -107,6 +132,7 @@
                         <div class="control-group">
                             <label class="control-label" for="inputExpiryMonth">Expiry date</label>
                             <div class="controls">
+                                <!-- user_account_card_exception_param -->
                                 <select class="span4" id="inputExpiryMonth" data-stripe="exp_month">
                                     <option value="00">Month</option>
                                     <option value="01">January</option>
@@ -134,6 +160,18 @@
                         <div class="control-group control-group-cvc">
                             <label class="control-label" for="inputCVC">CVC</label>
                             <div class="controls">
+                                {% if (user_summary.stripe_customer.active_card is defined and user_summary.stripe_customer.active_card.cvc_check == 'fail') or (user_account_card_exception_param  is defined and user_account_card_exception_param  == 'cvc') %}
+
+                                <div class="alert alert-error">
+                                    <button type="button" class="close" data-dismiss="alert">×</button>
+                                    <p>
+                                        Your card issuer could not verify that the CVC
+                                        you provided is correct.
+                                    </p>
+                                </div>  
+
+                                {% endif %}                                
+                                
                                 <input type="text" id="inputCVC" placeholder="" class="span3" data-stripe="cvc"><span class="help-inline">Usually 3 digits on the back</span>
                                 <br>
                                 <div class="expandable-control expandable-control-default-closed for-detail-expandable">What is a CVC and where do I find it?</div>

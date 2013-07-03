@@ -1,6 +1,6 @@
 <div class="row-fluid card-container">
     <div class="span6 card-container-label">
-        <span class="card-type card-type-{{ card.type|lower}}"></span>
+        <span class="card-type card-type-{{ user_summary.stripe_customer.active_card.type|lower}}"></span>
     </div>
     <div class="span6 details">
         <div class="card-details">
@@ -17,8 +17,8 @@
                 <i class="icon icon-asterisk"></i>
                 <i class="icon icon-asterisk"></i>
                 <i class="icon icon-asterisk"></i>                            
-                            {{ card.last4 }}
-                <span class="exp_date">expiring {{ card.exp_month_name }} {{ card.exp_year }}</span>
+                            {{ user_summary.stripe_customer.active_card.last4 }}
+                <span class="exp_date">expiring {{ user_summary.stripe_customer.active_card.exp_month_name }} {{ user_summary.stripe_customer.active_card.exp_year }}</span>
             </p>
         </div>                            
         <a href="{{ path('user_account_card') }}">Change your card details <i class="icon icon-caret-right"></i></a>                            

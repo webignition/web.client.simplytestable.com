@@ -449,54 +449,7 @@ class UserService extends CoreApplicationService {
         } catch (\Guzzle\Http\Exception\CurlException $curlException) {
             throw $curlException;
         }        
-    }
-    
-    
-    
-    /**
-     * 
-     * @param \SimplyTestable\WebClientBundle\Model\User $user
-     * @return \webignition\WebResource\JsonDocument\JsonDocument
-     * @throws \SimplyTestable\WebClientBundle\Services\CurlException
-     */
-    public function getPlanSummary(User $user) {
-        $request = $this->webResourceService->getHttpClientService()->getRequest(
-                $this->getUrl('user_plan', array(
-                    'email' => $user->getUsername()
-                ))
-        );
-        
-        $this->addAuthorisationToRequest($request);
-
-        try {
-            return $this->webResourceService->get($request);
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-            throw $curlException;
-        }        
-    }    
-    
-    
-    /**
-     * 
-     * @param \SimplyTestable\WebClientBundle\Model\User $user
-     * @return \webignition\WebResource\JsonDocument\JsonDocument
-     * @throws \SimplyTestable\WebClientBundle\Services\CurlException
-     */
-    public function getCardSummary(User $user) {
-        $request = $this->webResourceService->getHttpClientService()->getRequest(
-                $this->getUrl('user_card_summary', array(
-                    'email' => $user->getUsername()
-                ))
-        );
-        
-        $this->addAuthorisationToRequest($request);
-
-        try {
-            return $this->webResourceService->get($request);
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-            throw $curlException;
-        }        
-    }      
+    }  
 
     
 }

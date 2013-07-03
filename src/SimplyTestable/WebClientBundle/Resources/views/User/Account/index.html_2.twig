@@ -1,0 +1,375 @@
+{% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
+
+{% block title %}Your account ({{ user.username }}) - {{ parent() }}{% endblock %}
+
+{% block body_class %} account {{ parent() }}{% endblock %}
+
+{% block main %}
+<div class="row-fluid">
+    <div class="span12">
+        <h1>Your account</h1>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span6 account-details">
+        <h2>Account details</h2>
+
+{% if email_change_request is defined %}        
+        {% if user_account_details_update_email_confirm_notice is defined and user_account_details_update_email_confirm_notice != '' %}   
+            {% if user_account_details_update_email_confirm_notice == 'invalid-token' %}
+        <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p><strong>Hmmm, that's not the right confirmation code</strong></p>
+            <p>
+                Try having the confirmation email re-sent if you're not
+                sure the confirmation code is correct.
+            </p>
+            <p>
+                If you're copying the confirmation code from the email,
+                try instead to click the link below the code.
+            </p>
+        </div>               
+            {% endif %}
+
+            {% if user_account_details_update_email_confirm_notice == 'email-taken' %}
+        <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p><strong>Hmmm, that email address has been taken</strong></p>
+            <p>
+                The email address <strong> {{ user_account_details_update_email }} </strong> is in use by someone else.
+                It wasn't before but it is now.
+            </p>
+            <p>
+                If you still want to change your email address you'll have
+                to try again with something different.
+            </p>                    
+        </div>               
+            {% endif %}       
+
+            {% if user_account_details_update_email_confirm_notice == 'unknown' %}
+        <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+
+            <strong>Hmmm.</strong><br>
+            Something went wrong when I tried to do that. I'm not sure what happened.
+            Would you mind trying that again?
+        </div>               
+            {% endif %}        
+        {% endif %}   
+
+        <div class="alert alert-info confirm-email-change">
+            <p>
+                <strong>Confirm email address change</strong>
+            </p>
+            <p>
+                We've emailed a confirmation code to  <strong>{{ email_change_request['new_email'] }}</strong>.
+            </p>        
+
+            <form class="form-horizontal" method="post" action="{{ path('user_account_details_confirm_email_change') }}">
+                <div class="control-group">                
+                    <label class="control-label" for="token">Confirmation code</label>
+                    <div class="controls">
+                        <input class="input-xlarge" name="token" type="text" id="token" placeholder="Enter your confirmation code" value="{{token}}">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <button name="confirm" value="1" type="submit" class="btn btn-primary">Confirm</button>
+                        <button name="re-send" value="1" type="submit" class="btn">Re-send code</button>
+                        <button name="cancel" value="cancel" type="submit" class="btn">Cancel change</button>
+                    </div>
+                </div>
+            </form>        
+        </div>         
+{% endif %}
+
+
+        <form class="form-horizontal" method="post" action="{{ path('user_account_details_update') }}">
+            <div class="control-group">
+
+{% if user_account_details_update_notice is defined and user_account_details_update_notice != '' %}    
+    {% if user_account_details_update_notice == 'password-missing' %}
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p>
+                        <strong>Nearly!</strong>
+                    </p>       
+                    <p>
+                        To change your password, enter your current password <strong>and</strong> enter your choice of new password.
+                    </p>
+                    <p>
+                        Leave the password fields blank if you don't want to change your password.
+                    </p>
+                </div>                
+    {% endif %}
+
+    {% if user_account_details_update_notice == 'password-failed-read-only' %}
+                <div class="alert alert-error">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p><strong>Sorry, I can't do that right now</strong></p>
+                    <p>
+                        We're in a <strong>read-only</strong> state whilst some 
+                        <strong>maintenance</strong> is going on.
+                    </p>
+                    <p>
+                        Give it a go again soon, this won't take long.
+                    </p>
+                </div>              
+    {% endif %}                
+
+    {% if user_account_details_update_notice == 'password-invalid' %}
+                <div class="alert alert-error">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p>
+                        <strong>Not quite!</strong>
+                    </p>       
+                    <p>
+                        That's not your current password. Give it a go again.
+                    </p>
+                </div>                
+    {% endif %}                  
+
+    {% if user_account_details_update_notice == 'show-help' %}
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p>
+                        <strong>Slow down!</strong>
+                    </p>
+                    <p>
+                        <strong>To change your email address</strong>: enter the new email
+                        address you would like to use.
+                    </p>        
+                    <p>
+                        <strong>To change your password</strong>: enter your current password
+                        to verify your identity and then enter your choice of new password.
+                    </p>
+                </div>                
+    {% endif %}
+
+    {% if user_account_details_update_notice == 'same-email' %}
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p>
+                        <strong>That's the email address you're already using!</strong>
+                    </p>
+                    <p>
+                        To change your email address, enter something different.
+                    </p>
+                </div>                
+    {% endif %}  
+
+    {% if user_account_details_update_notice == 'email-taken' %}
+                <div class="alert alert-error">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    The email address <strong> {{ user_account_details_update_email }} </strong> is in use by someone else.
+                </div>               
+    {% endif %}                 
+
+    {% if user_account_details_update_notice == 'invalid-email' %}
+                <div class="alert alert-error">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <strong>Hmmm.</strong> I'm not convinced that <strong> {{ user_account_details_update_email }} </strong> is a valid email address.
+                </div>               
+    {% endif %}                           
+
+    {% if user_account_details_update_notice == 'unknown' %}
+                <div class="alert alert-error">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+
+                    <strong>Hmmm.</strong><br>
+                    Something went wrong when I tried to do that. I'm not sure what happened.
+                    Would you mind trying that again?
+                </div>               
+    {% endif %}                  
+
+    {% if user_account_details_update_notice == 'password-done' %}
+                <div class="alert alert-success">
+                    <button type="button" class="close" data-dismiss="alert">×</button>            
+                    <strong>Yay!</strong> Your password has been changed.
+                </div>               
+    {% endif %}                
+{% endif %}    
+
+{% if email_change_request is defined %} 
+                <label class="control-label" for="email">Email</label>
+                <div class="controls controls-disabled">
+                    {{user.username}}
+                    </div>
+{% else %}               
+                    <label class="control-label" for="email">Email</label>
+                    <div class="controls">
+                        <input name="email" type="text" id="email" placeholder="Choose your email address" value="{{user.username}}">
+                    </div>
+{% endif %}
+
+
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="currentPassword">Current password</label>
+                    <div class="controls">
+                        <input name="current-password" type="password" id="currentPassword" placeholder="Current password">
+                    </div>
+                </div>                
+                <div class="control-group">
+                    <label class="control-label" for="newPassword">New password</label>
+                    <div class="controls">
+                        <input name="new-password" type="password" id="newPassword" placeholder="New password">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <button type="submit" class="btn">Save changes</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="plan-section">
+                <h2>Payment details</h2>
+                
+                <!-- $this->assertNotNull($responseObject->stripe_customer->active_card); -->
+
+        
+            {% if stripe_event_data.invoice is defined%}
+        
+            <div class="plan-section">
+                <h2>Latest invoice</h2>
+                
+
+                </div> 
+        
+            {% endif %}
+
+            </div>
+            <div class="span6 plan">
+                <h2>Plan: {{ plan_presentation_name }} {{ plan_subscribe_error }}</h2>
+
+        {% if plan_subscribe_success is defined and plan_subscribe_success != '' %}            
+                {% if plan_subscribe_success == 'already-on-plan' %}
+                <div class="alert alert-success for:input-website">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p><strong>You're already there!</strong></p>
+                    <p>
+                        You've already on the <strong>{{ user_summary.user_plan.plan.name }}</strong> plan.
+                    </p>
+                </div>                
+                {% else %}
+                <div class="alert alert-success for:input-website">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p><strong>All done!</strong></p>
+                    <p>
+                        You've changed to the <strong>{{ user_summary.user_plan.plan.name }}</strong> plan.
+                    </p>
+                </div>                
+                {% endif %}
+        {% endif %}             
+
+        {% if plan_subscribe_error is defined and plan_subscribe_error != '' %}            
+            {% if plan_subscribe_error == '403' %}
+                <div class="alert alert-error for:input-website">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p><strong>That didn't work</strong></p>
+                    <p>
+                        Looks like we're having trouble talking to our subscription service.                
+                    </p>
+                </div>            
+            {% endif %}        
+        {% endif %} 
+
+                <div class="plan-section">
+                    <p>
+                        You are on the <strong>{{ user_summary.user_plan.plan.name }}</strong> plan{% if user_summary.user_plan.plan.name == 'basic' %}. This is <strong>free of charge</strong> and always will be.
+                    {% else %}
+                        at <strong>&pound{{ plan.summary.amount / 100 }} per {{ plan.summary.interval }}</strong>.                    
+                    {% endif %}
+
+                    {% if plan.summary is defined and plan.summary|length > 0 %}
+                        {% if plan.summary.status == 'trialing' %}
+                        You are on day <strong>{{ plan.summary.days_of_trial_period }}</strong> of your <strong>{{ plan.summary.trial_period_days }}</strong> day trial
+                        ending <strong>{{ plan.summary.trial_end|date("d") }} {{ plan.summary.trial_end|date("F") }} {{ plan.summary.trial_end|date("Y") }}</strong>.
+                        {% endif %}                    
+                    {% endif %}
+                    </p>            
+                </div>            
+
+                <div class="plan-section">
+                    <h3>Monthly allowances</h3>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Full-site test jobs per site</th>
+                                <td>Unlimited</td>
+                            </tr>
+                            <tr>
+                                <th>Single-URL tests</th>
+                                <td>Unlimited</td>
+                            </tr>
+                            <tr>
+                                <th>URLs per test job</th>
+                                <td>
+                                {% if plan.urls_per_job is defined %}
+                                    {{ plan.urls_per_job }}
+                                {% else %}
+                                        Unlimited
+                                {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Credits</th>
+                                    <td>
+                                {% if plan.credits is defined %}
+                                    {{ plan.credits.used }} of 
+                                    {{ plan.credits.limit }} used ({{ (plan.credits.used / plan.credits.limit) * 100 }}%)
+                                {% else %}
+                                            Unlimited
+                                {% endif %}                                
+                                        </td>
+                                    </tr>                
+                                </tbody>            
+                            </table>             
+                        </div>
+
+                        <div class="plan-section">
+                            <h3>Change plan</h3> 
+                            
+                            {% if user_summary.user_plan.plan.name == 'basic' %}
+                                {% if user_summary.user_plan.start_trial_period > 0  %}
+                            <p>
+                                Try any premium plan free for <strong>{{ user_summary.user_plan.start_trial_period }}</strong> day{% if user_summary.user_plan.start_trial_period != 1%}s{% endif %}.
+                            </p>                             
+                                {% endif %}
+                            {% else %}
+                            {% endif %}
+
+                            {% if user_summary.user_plan.plan.name !='basic' %}
+                                {% if plan.summary is defined %}
+                                    {% set trial_days_remaining = plan.summary.trial_period_days - plan.summary.days_of_trial_period + 1 %}                               
+                                    {% if trial_days_remaining > 0 %}
+                            <p>
+                                Switch between premium plans free for up to <strong>{{ trial_days_remaining }}</strong> day{% if trial_days_remaining != 1%}s{% endif %}.
+                            </p>                                
+                                    {% endif %}                            
+                                {% endif %}                                
+                            {% endif %}
+
+                            <form method="post" action="{{ path('user_account_plan_subscribe') }}">
+                                <div class="input-append">
+                                    <select name="plan">
+                                        <option value="basic" {% if user_summary.user_plan.plan.name == 'basic' %}selected{% endif %}>Basic (&pound;0)</option>
+                                        <option value="personal" {% if user_summary.user_plan.plan.name == 'personal' %}selected{% endif %}>Personal (&pound;9)</option>
+                                        <option value="agency" {% if user_summary.user_plan.plan.name == 'agency' %}selected{% endif %}>Agency (&pound;19)</option>
+                                        <option value="business" {% if user_summary.user_plan.plan.name == 'business' %}selected{% endif %}>Business (&pound;59)</option>
+                                        <option value="enterprise" {% if user_summary.user_plan.plan.name == 'enterprise' %}selected{% endif %}>Enterprise (&pound;299)</option>
+                                    </select>  
+                                    <button class="btn" type="submit">Subscribe</button>
+                                </div>
+                            </form>
+
+                            <a href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">View plan and pricing details <i class="icon icon-caret-right"></i></a>
+
+                            <!--<span class="btn btn-primary">Upgrade</span>-->
+                        </div>
+
+                    </div>
+
+                </div>
+{% endblock %}

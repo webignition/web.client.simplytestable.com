@@ -13,8 +13,9 @@ class UserAccountPlanController extends AbstractUserAccountController
         
         $redirectResponse = $this->redirect($this->generateUrl('user_account_index', array(), true));
         
-        $plan = $this->getUserService()->getPlanSummary($this->getUser())->getContentObject();
-        if ($plan->name == $this->get('request')->request->get('plan')) {
+        $userSummary = $this->getUserService()->getSummary($this->getUser())->getContentObject();
+
+        if ($userSummary->user_plan->plan->name == $this->get('request')->request->get('plan')) {
             $this->get('session')->setFlash('plan_subscribe_success', 'already-on-plan');
         } else {
             $response = $this->getUserPlanSubscriptionService()->subscribe($this->getUser(), $this->get('request')->request->get('plan'));

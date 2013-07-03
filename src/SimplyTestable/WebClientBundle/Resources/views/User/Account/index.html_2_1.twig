@@ -13,14 +13,21 @@
 <div class="row-fluid">
     <div class="span6 account-details">
         <h2>Account details</h2>
-        {% include 'SimplyTestableWebClientBundle:Partials/User/Account:account-details.html.twig' %}
     </div>
     <div class="span6 plan">
-        <h2>Plan: {{ plan_presentation_name }}</h2>
-        {% include 'SimplyTestableWebClientBundle:Partials/User/Account:plan-details.html.twig' %}
+        <h2>Plan: {{ plan_presentation_name }} {{ plan_subscribe_error }}</h2>
 
-    </div>
 
-</div>
 
+
+
+
+
+
+
+
+
+            </div>
+
+        </div>
 {% endblock %}

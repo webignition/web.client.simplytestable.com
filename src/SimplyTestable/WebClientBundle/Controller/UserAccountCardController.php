@@ -5,43 +5,84 @@ namespace SimplyTestable\WebClientBundle\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserAccountCardController extends AbstractUserAccountController {
-
+    
     public function indexAction() {
         if (($notLoggedInResponse = $this->getNotLoggedInResponse()) instanceof Response) {
             return $notLoggedInResponse;
         }
-
-        $plan = $this->getUserService()->getPlanSummary($this->getUser())->getContentObject();
-        if ($plan->name == 'basic') {
-            return $this->redirect($this->generateUrl('user_account_index', array(), true));
-        }
         
-        $card = $this->getUserService()->getCardSummary($this->getUser())->getContentObject();
+        $userSummary = $this->getUserService()->getSummary($this->getUser())->getContentObject();
+        
+//        var_dump($userSummary->stripe_customer->active_card);
+//        exit();
+
+//        $plan = $this->getUserService()->getPlanSummary($this->getUser())->getContentObject();
+//        if ($plan->name == 'basic') {
+//            return $this->redirect($this->generateUrl('user_account_index', array(), true));
+//        }
+//        
+//        $card = $this->getUserService()->getCardSummary($this->getUser())->getContentObject();      
 
         $currentYear = date('Y');
-
-        $viewData = array(
+        
+        $viewData = array_merge(array(
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
-            'card' => $card,
+            'user_summary' => $userSummary,
             'stripe_publishable_key' => $this->container->getParameter('stripe_publishable_key'),
             'countries' => $this->getCountries(),
             'is_logged_in' => true,
             'expiry_year_start' => $currentYear,
             'expiry_year_end' => $currentYear + 10
-        );
+        ), $this->getViewFlashValues(array(
+            'user_account_card_exception_message',
+            'user_account_card_exception_param',
+            'user_account_card_exception_code'
+        )));
 
         $this->setTemplate('SimplyTestableWebClientBundle:User/Account:card.html.twig');
         return $this->sendResponse($viewData);
     }
+    
+    
+    
+    /**
+     * 
+     * @param array $keys
+     * @return array
+     */
+    private function getViewFlashValues($keys) {
+        $flashValues = array();
+        
+        foreach ($keys as $key) {
+            $flashValues[$key] = $this->getFlash($key);
+        }
+        
+        return $flashValues;
+    }
 
-    public function associateAction($stripe_card_token) {
+    public function associateAction($stripe_card_token) {        
         if (($notLoggedInResponse = $this->getNotLoggedInResponse()) instanceof Response) {
             return $notLoggedInResponse;
         }
-
-        $this->getUserAccountCardService()->associate($this->getUser(), $stripe_card_token);
-        return $this->redirect($this->generateUrl('user_account_index', array(), true));
+        
+        try {
+            $this->getUserAccountCardService()->associate($this->getUser(), $stripe_card_token);
+            return $this->redirect($this->generateUrl('user_account_index', array(), true));
+        } catch (\SimplyTestable\WebClientBundle\Exception\UserAccountCardException $userAccountCardException) {
+            if ($this->isJsonResponseRequired()) {
+                return $this->sendResponse(array(
+                    'user_account_card_exception_message' => $userAccountCardException->getMessage(),
+                    'user_account_card_exception_param' => $userAccountCardException->getParam(),
+                    'user_account_card_exception_code' => $userAccountCardException->getCode()
+                ));
+            } else {
+                $this->get('session')->setFlash('user_account_card_exception_message', $userAccountCardException->getMessage());
+                $this->get('session')->setFlash('user_account_card_exception_param', $userAccountCardException->getParam());
+                $this->get('session')->setFlash('user_account_card_exception_code', $userAccountCardException->getCode());                
+                return $this->redirect($this->generateUrl('user_account_card', array(), true));
+            }
+        }
     }
 
     private function getCountries() {
@@ -294,6 +335,6 @@ class UserAccountCardController extends AbstractUserAccountController {
      */
     protected function getUserAccountCardService() {
         return $this->get('simplytestable.services.useraccountcardservice');
-    }
+    }    
 
 }

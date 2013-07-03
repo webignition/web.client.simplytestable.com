@@ -39,3 +39,8 @@ border-left: 1px solid #999;
 .terms-notice {
     margin-top: 20px;
 }
+
+.alert-error a {
+    text-decoration: underline;
+    color:#b94a48;
+}

@@ -5,68 +5,69 @@ namespace SimplyTestable\WebClientBundle\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserAccountController extends AbstractUserAccountController {
+    
+    const STRIPE_CARD_CHECK_KEY_POSTFIX = '_check';
 
     public function indexAction() {
         if (($notLoggedInResponse = $this->getNotLoggedInResponse()) instanceof Response) {
             return $notLoggedInResponse;
         }
+        
+        $userSummary = $this->getUserService()->getSummary($this->getUser())->getContentObject();
+        
+        //$this->getUserStripeEventData($userSummary);
+//        
+//        var_dump($userSummary, $userSummary->user_plan->plan->name);
+//        exit();
 
-        $plan = $this->getUserService()->getPlanSummary($this->getUser())->getContentObject();
-        $card = $this->getUserService()->getCardSummary($this->getUser())->getContentObject();
-
-        $paymentStatus = array();
-
-        if (count($card) === 0) {
-            // trialing, active, past_due, canceled, or unpaid
-            if ($plan->summary->status != 'trialing') {
-                switch ($plan->summary->status) {
-                    case 'active':
-                        // get latest invoice.created event, get next_payment_attempt from event data
-                        $eventData = $this->getUserStripeEventService()->getLatestData($this->getUser(), 'invoice.created');
-                        break;
-
-                    case 'past_due':
-                        // get latest invoice.updated event, get next_payment_attempt from event data
-                        $eventData = $this->getUserStripeEventService()->getLatestData($this->getUser(), 'invoice.updated');
-                        break;
-
-                    case 'cancelled':
-                        // wait and see
-                        var_dump("sub cancelled, what do we do?");
-                        exit();
-                        break;
+        //$paymentStatus = array();
+//        $stripeEventData = array();
+//
+//
+//
+//
+//
+//        if (isset($card->exp_month)) {
+//            $card->exp_month_name = $this->getMonthNameFromNumber($card->exp_month);
+//        }
+//
+//        if (isset($plan->summary) && isset($plan->summary->trial_period_days)) {
+//            $plan->summary->days_of_trial_period = $this->getDayOfTrialPeriod($plan);
+//        }
+        
+        if (isset($userSummary->stripe_customer)) {
+            $userSummary->stripe_customer->subscription->day_of_trial_period = $this->getDayOfTrialPeriod($userSummary);
+        } 
+        
+        if (isset($userSummary->stripe_customer->active_card)) {
+            $userSummary->stripe_customer->active_card->exp_month_name = $this->getMonthNameFromNumber($userSummary->stripe_customer->active_card->exp_month);
+            $cardCheckFailures = array();
+            
+            foreach ($userSummary->stripe_customer->active_card as $cardKey => $cardValue) {                
+                if ($this->isCardKeyCheckFailure($cardKey, $cardValue)) {
+                    $cardCheckFailures[] = $this->getCardFieldFromCheckKey($cardKey);
                 }
-                
-                $nextPaymentDate = new \ExpressiveDate(date('c', $eventData->next_payment_attempt));                
-                $paymentStatus['next_payment_attempt'] = $eventData->next_payment_attempt;                
-                $paymentStatus['next_payment_attempt_relative'] = $nextPaymentDate->getRelativeDate();                
-                $paymentStatus['attempt_count'] = $eventData->attempt_count;                
-                
             }
-        }
-
-        if (isset($card->exp_month)) {
-            $card->exp_month_name = $this->getMonthNameFromNumber($card->exp_month);
-        }
-
-        if (isset($plan->summary) && isset($plan->summary->trial_period_days)) {
-            $plan->summary->days_of_trial_period = $this->getDayOfTrialPeriod($plan);
+            
+            if (count($cardCheckFailures)) {
+                $userSummary->stripe_customer->active_card->check_failures = $cardCheckFailures;
+            }
         }
 
         $viewData = array(
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
-            'plan' => $plan,
-            'plan_presentation_name' => $this->getPlanPresentationName($plan->name),
-            'card' => $card,
+            'user_summary' => $userSummary,
+            'plan_presentation_name' => $this->getPlanPresentationName($userSummary->user_plan->plan->name),
             'is_logged_in' => true,
             'user_account_details_update_notice' => $this->getFlash('user_account_details_update_notice'),
             'user_account_details_update_email' => $this->getFlash('user_account_details_update_email'),
             'user_account_details_update_email_confirm_notice' => $this->getFlash('user_account_details_update_email_confirm_notice'),
             'plan_subscribe_error' => $this->getFlash('plan_subscribe_error'),
             'plan_subscribe_success' => $this->getFlash('plan_subscribe_success'),
-            'payment_status' => $paymentStatus,
-            'stripe' => $this->container->getParameter('stripe')
+            'stripe_event_data' => $this->getUserStripeEventData($userSummary),
+            'stripe' => $this->container->getParameter('stripe'),
+            'this_url' => $this->generateUrl('user_account_index', array(), true)
         );
 
         if ($this->getUserEmailChangeRequestService()->hasEmailChangeRequest($this->getUser()->getUsername())) {
@@ -77,6 +78,77 @@ class UserAccountController extends AbstractUserAccountController {
         $this->setTemplate('SimplyTestableWebClientBundle:User/Account:index.html.twig');
         return $this->sendResponse($viewData);
     }
+    
+    
+    /**
+     * 
+     * @param string $checkKey
+     * @return string
+     */
+    private function getCardFieldFromCheckKey($checkKey) {
+        if (!$this->isCardKeyCheckKey($checkKey)) {
+            return $checkKey;
+        }
+        
+        return substr($checkKey, 0, strlen($checkKey) - strlen(self::STRIPE_CARD_CHECK_KEY_POSTFIX));
+    }
+    
+    
+    /**
+     * 
+     * @param string $cardKey
+     * @param mixed $cardValue
+     * @return boolean
+     */
+    private function isCardKeyCheckFailure($cardKey, $cardValue) {        
+        return $this->isCardKeyCheckKey($cardKey) && $cardValue === 'fail';
+    }
+    
+    
+    /**
+     * 
+     * @param string $cardKey
+     * @return boolean
+     */
+    private function isCardKeyCheckKey($cardKey) {
+        return substr($cardKey, strlen($cardKey) - strlen(self::STRIPE_CARD_CHECK_KEY_POSTFIX)) == self::STRIPE_CARD_CHECK_KEY_POSTFIX;                
+    }
+    
+    private function getUserStripeEventData($userSummary) {
+        if (!isset($userSummary->stripe_customer)) {
+            return array();
+        }
+        
+        $stripeEventData = array();
+        
+        switch ($userSummary->stripe_customer->subscription->status) {
+            case 'trialing':
+                $stripeEventData['invoice'] = $this->getUserStripeEventService()->getLatestData($this->getUser(), 'invoice.created');
+                break;
+            
+            case 'active':
+                $stripeEventData['invoice'] = $this->getUserStripeEventService()->getLatestData($this->getUser(), 'invoice.created');
+                break;
+            
+            case 'past_due':
+                $stripeEventData['invoice'] = $this->getUserStripeEventService()->getLatestData($this->getUser(), 'invoice.updated');
+                $stripeEventData['charge.failed'] = $this->getUserStripeEventService()->getLatestData($this->getUser(), 'charge.failed');
+                break;
+            
+            case 'cancelled':
+                var_dump("sub cancelled, what do we do?");
+                exit();                
+                break;
+        }
+            
+        if (isset($stripeEventData['invoice.updated'])) {
+            $nextPaymentDate = new \ExpressiveDate(date('c', $stripeEventData['invoice.updated']->next_payment_attempt));
+            $stripeEventData['invoice.updated']->next_payment_attempt_relative = $nextPaymentDate->getRelativeDate();
+        }
+        
+        return $stripeEventData;
+    }
+    
 
     private function getMonthNameFromNumber($monthNumber) {
         $monthNumber = (int) $monthNumber;
@@ -120,17 +192,18 @@ class UserAccountController extends AbstractUserAccountController {
         }
     }
 
+
     /**
      * 
-     * @param \stdClass $plan
+     * @param \stdClass $userSummary
      * @return int
      */
-    private function getDayOfTrialPeriod($plan) {
-        if (!isset($plan->summary)) {
+    private function getDayOfTrialPeriod($userSummary) {
+        if (!isset($userSummary->stripe_customer)) {
             return 0;
         }
-
-        return (int) ceil($plan->summary->trial_period_days - ($plan->summary->trial_end - time()) / 86400);
+        
+        return (int) ceil($userSummary->stripe_customer->subscription->plan->trial_period_days - ($userSummary->stripe_customer->subscription->trial_end - time()) / 86400);
     }
 
     /**
