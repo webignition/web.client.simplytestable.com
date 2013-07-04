@@ -921,3 +921,15 @@ body.user-account-card .control-group-cvc a {
 body.user-account-index .plan-section .alert-error {
     margin-bottom:0;
 }
+
+body.user-account-index .latest-invoice td {
+    padding-left:0;
+}
+
+body.user-account-index .latest-invoice td span {
+    opacity:0.7;
+}
+
+body.user-account-index .latest-invoice .icon-ok {
+    color:#468847;
+}

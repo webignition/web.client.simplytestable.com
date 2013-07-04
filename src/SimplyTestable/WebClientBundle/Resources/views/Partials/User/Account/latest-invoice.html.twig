@@ -1,0 +1,24 @@
+<p class="invoice-date">
+    {{ stripe_event_data['invoice'].date|date("j F Y") }}<br>
+    {% if stripe_event_data['invoice'] == true %}Paid <i class="icon icon-ok"></i>{% endif %}    
+</p>
+
+<table class="table">
+    <tbody>
+        {% for line in stripe_event_data['invoice'].lines.data %}
+        <tr>
+            <td>
+                {% if line.type == 'subscription' %}
+                    Subscription to {{ line.plan.name|lower }} plan {% if line.amount == 0 %}(free trial){% endif %}
+                    <br><span>{{ line.period.start|date("j F Y") }} to {{ line.period.end|date("j F Y") }}</span>
+                {% endif %}
+            </td>
+            <td>&pound;{{ line.amount|number_format(2) }}</td>
+        </tr>            
+        {% endfor %}
+        <tr>
+            <td>Total</td>
+            <td>&pound;{{ stripe_event_data['invoice'].total|number_format(2) }}</td>
+        </tr>
+    </tbody>
+</table>

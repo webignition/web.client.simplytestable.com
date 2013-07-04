@@ -141,10 +141,17 @@ class UserAccountController extends AbstractUserAccountController {
                 break;
         }
             
-        if (isset($stripeEventData['invoice.updated'])) {
-            $nextPaymentDate = new \ExpressiveDate(date('c', $stripeEventData['invoice.updated']->next_payment_attempt));
-            $stripeEventData['invoice.updated']->next_payment_attempt_relative = $nextPaymentDate->getRelativeDate();
+        if (isset($stripeEventData['invoice'])) {
+            if (!is_null($stripeEventData['invoice']->next_payment_attempt)) {
+                $nextPaymentDate = new \ExpressiveDate(date('c', $stripeEventData['invoice']->next_payment_attempt));
+                $stripeEventData['invoice']->next_payment_attempt_relative = $nextPaymentDate->getRelativeDate();                
+            }
         }
+        
+        //var_dump($stripeEventData['invoice']);
+        //var_dump($stripeEventData['invoice']->lines->data[0]);
+//        var_dump($stripeEventData['invoice']->lines->data[0]->period->end);
+        //exit();
         
         return $stripeEventData;
     }

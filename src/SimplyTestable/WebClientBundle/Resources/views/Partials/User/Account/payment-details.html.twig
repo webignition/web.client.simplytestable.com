@@ -8,10 +8,6 @@
         {% if user_summary.stripe_customer.active_card.check_failures is defined and user_summary.stripe_customer.active_card.check_failures|length > 0 %}
             {% include 'SimplyTestableWebClientBundle:Partials/User/Account:payment-summary-card-check-failures.html.twig' %}                         
         {% endif %}
-
-        <!-- trialing, active, past_due, canceled, or unpaid -->
-        {% set payment_summary_template = 'SimplyTestableWebClientBundle:Partials/User/Account:payment-summary-' ~ user_summary.stripe_customer.subscription.status ~ '.html.twig' %}                
-        {% include payment_summary_template  %} 
         {% include 'SimplyTestableWebClientBundle:Partials/User/Account:card-summary.html.twig' %}                         
     {% else %}
         {% include 'SimplyTestableWebClientBundle:Partials/User/Account:no-card.html.twig' %} 
