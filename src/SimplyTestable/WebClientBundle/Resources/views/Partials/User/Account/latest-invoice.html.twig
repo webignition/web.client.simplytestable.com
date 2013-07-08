@@ -1,6 +1,5 @@
 <p class="invoice-date">
-    {{ stripe_event_data['invoice'].date|date("j F Y") }}<br>
-    {% if stripe_event_data['invoice'] == true %}Paid <i class="icon icon-ok"></i>{% endif %}    
+    {{ stripe_event_data['invoice'].date|date("j F Y") }} - {% if stripe_event_data['invoice'] == true %}paid <i class="icon icon-ok"></i>{% endif %}    
 </p>
 
 <table class="table">

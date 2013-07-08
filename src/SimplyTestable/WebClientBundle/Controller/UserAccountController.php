@@ -17,7 +17,7 @@ class UserAccountController extends AbstractUserAccountController {
         
         //$this->getUserStripeEventData($userSummary);
 //        
-//        var_dump($userSummary, $userSummary->user_plan->plan->name);
+//        var_dump($userSummary->stripe_customer->subscription->status);
 //        exit();
 
         //$paymentStatus = array();
