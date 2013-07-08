@@ -208,7 +208,7 @@
     {% include 'SimplyTestableWebClientBundle:Partials/User/Account:payment-details.html.twig' %} 
 </div>
 
-{% if stripe_event_data.invoice is defined%}
+{% if stripe_event_data['invoice'] is defined and stripe_event_data['invoice'].date is defined%}
 <div class="plan-section latest-invoice">
     <h2>Latest invoice</h2>
     {% include 'SimplyTestableWebClientBundle:Partials/User/Account:latest-invoice.html.twig' %} 
