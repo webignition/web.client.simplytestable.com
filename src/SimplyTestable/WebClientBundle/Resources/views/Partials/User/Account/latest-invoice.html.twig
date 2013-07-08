@@ -26,3 +26,12 @@
         </tr>
     </tbody>
 </table>
+
+{% if stripe_event_data['invoice'].attempt_count == 0 %}
+<p>    
+    We haven't tried to take payment for this invoice yet. We will try
+    in about {{ stripe_event_data['invoice'].next_payment_attempt_relative }}.
+</p>
+{% else %}
+{% endif %}
+
