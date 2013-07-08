@@ -35,7 +35,7 @@ class UserAccountController extends AbstractUserAccountController {
 //            $plan->summary->days_of_trial_period = $this->getDayOfTrialPeriod($plan);
 //        }
         
-        if (isset($userSummary->stripe_customer)) {
+        if (isset($userSummary->stripe_customer) && isset($userSummary->stripe_customer->subscription)) {
             $userSummary->stripe_customer->subscription->day_of_trial_period = $this->getDayOfTrialPeriod($userSummary);
         } 
         
@@ -120,6 +120,22 @@ class UserAccountController extends AbstractUserAccountController {
         }
         
         $stripeEventData = array();
+        
+        if (!isset($userSummary->stripe_customer->subscription)) {
+            $eventKeys = array(
+                'invoice.updated',
+                'invoice.created'
+            );
+            
+            foreach ($eventKeys as $eventKey) {
+                $eventData = $this->getUserStripeEventService()->getLatestData($this->getUser(), $eventKey);
+                if (!is_null($eventData) && !isset($stripeEventData['invoice'])) {
+                    $stripeEventData['invoice'] = $eventData;
+                }
+            }
+            
+            return $stripeEventData;
+        }
         
         switch ($userSummary->stripe_customer->subscription->status) {
             case 'trialing':
@@ -207,6 +223,10 @@ class UserAccountController extends AbstractUserAccountController {
      */
     private function getDayOfTrialPeriod($userSummary) {
         if (!isset($userSummary->stripe_customer)) {
+            return 0;
+        }
+        
+        if (!isset($userSummary->stripe_customer->subscription)) {
             return 0;
         }
         
