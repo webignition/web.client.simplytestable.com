@@ -30,6 +30,104 @@
     {% endif %}        
 {% endif %}
 
+{% if user_account_card_exception_code is defined and user_account_card_exception_code != '' %}            
+<div class="alert alert-error for:input-website">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <p><strong>That didn't work</strong></p>
+
+        {% if user_account_card_exception_code == 'incorrect_number' %}
+        <p>
+            Your payment card number is incorrect.
+        </p>
+            
+        {% endif %}
+            
+        {% if user_account_card_exception_code == 'invalid_number' %}
+        <p>
+            Your payment card number is not valid.
+        </p>
+        {% endif %}
+            
+        {% if user_account_card_exception_code == 'invalid_expiry_month' or user_account_card_exception_code == 'invalid_expiry_year' %}
+        <p>
+            Your payment card's expiry date is invalid. Has it expired?
+        </p>
+        {% endif %}
+            
+        {% if user_account_card_exception_code == 'invalid_cvc' %}
+        <p>
+            Your payment card's security (CVC) code is invalid.
+        </p>            
+        {% endif %}
+            
+        {% if user_account_card_exception_code == 'expired_card' %}
+        <p>
+            Your payment card has expired. Are you using an old card by mistake?
+        </p>                        
+        {% endif %}
+            
+        {% if user_account_card_exception_code == 'incorrect_cvc' %}
+        <p>
+            Your payment card's security code is incorrect. Try updating
+            your card details.
+        </p>
+        {% endif %}
+            
+        {% if user_account_card_exception_code == 'incorrect_zip' %}
+        <p>
+            The zip or postal code you entered failed validation. Did you
+            enter the wrong address for your card?
+        </p>         
+        {% endif %}
+            
+        {% if user_account_card_exception_code == 'card_declined' %}
+        <p>
+            Your payment card was declined by your card provider.
+        </p>            
+        <p>
+            Some common reasons for this:
+        </p>
+        <ul>
+            <li>
+                you have reached your card's limit
+            </li>            
+            <li>
+                your card has been blocked
+            </li>            
+            <li>
+                your card provider's fraud checks are a little flaky
+            </li>
+        </ul>
+        <p>
+            If you can't immediately figure this one out, give your
+            card provider a call and ask them why charges for Simply Testable
+            are being declined.
+        </p>
+        {% endif %}
+            
+        {% if user_account_card_exception_code == 'missing' %}
+        <p>
+            You need to add a credit or debit card so that we can take payment for
+            your premium subscription.
+        </p>
+        {% endif %}
+            
+        {% if user_account_card_exception_code == 'processing_error' %}
+        <p>
+            An error occurred while processing payment for your premium subscription.
+        </p>         
+        <p>
+            This can happen from time to time if your card provider is having issues.
+            Sometimes we ask them to charge your card and they just ignore us.
+        </p>         
+        <p>
+            Please give it a go again in a few minutes.
+        </p>            
+        {% endif %}	                    
+
+</div>        
+{% endif %}
+
 <div class="plan-section">
     <p>
         You are on the <strong>{{ user_summary.user_plan.plan.name }}</strong> plan{% if user_summary.user_plan.plan.name == 'basic' %}. This is <strong>free of charge</strong> and always will be.

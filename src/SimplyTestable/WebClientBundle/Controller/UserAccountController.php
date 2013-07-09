@@ -53,22 +53,26 @@ class UserAccountController extends AbstractUserAccountController {
                 $userSummary->stripe_customer->active_card->check_failures = $cardCheckFailures;
             }
         }
-
-        $viewData = array(
+        
+        $viewData = array_merge(array(
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
             'user_summary' => $userSummary,
             'plan_presentation_name' => $this->getPlanPresentationName($userSummary->user_plan->plan->name),
             'is_logged_in' => true,
-            'user_account_details_update_notice' => $this->getFlash('user_account_details_update_notice'),
-            'user_account_details_update_email' => $this->getFlash('user_account_details_update_email'),
-            'user_account_details_update_email_confirm_notice' => $this->getFlash('user_account_details_update_email_confirm_notice'),
-            'plan_subscribe_error' => $this->getFlash('plan_subscribe_error'),
-            'plan_subscribe_success' => $this->getFlash('plan_subscribe_success'),
             'stripe_event_data' => $this->getUserStripeEventData($userSummary),
             'stripe' => $this->container->getParameter('stripe'),
             'this_url' => $this->generateUrl('user_account_index', array(), true)
-        );
+        ), $this->getViewFlashValues(array(
+            'user_account_details_update_notice',
+            'user_account_details_update_email',
+            'user_account_details_update_email_confirm_notice',
+            'plan_subscribe_error',
+            'plan_subscribe_success',
+            'user_account_card_exception_message',
+            'user_account_card_exception_param',
+            'user_account_card_exception_code'
+        )));
 
         if ($this->getUserEmailChangeRequestService()->hasEmailChangeRequest($this->getUser()->getUsername())) {
             $viewData['email_change_request'] = $this->getUserEmailChangeRequestService()->getEmailChangeRequest($this->getUser()->getUsername());

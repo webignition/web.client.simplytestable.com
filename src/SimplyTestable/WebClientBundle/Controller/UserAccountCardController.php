@@ -42,24 +42,8 @@ class UserAccountCardController extends AbstractUserAccountController {
 
         $this->setTemplate('SimplyTestableWebClientBundle:User/Account:card.html.twig');
         return $this->sendResponse($viewData);
-    }
-    
-    
-    
-    /**
-     * 
-     * @param array $keys
-     * @return array
-     */
-    private function getViewFlashValues($keys) {
-        $flashValues = array();
-        
-        foreach ($keys as $key) {
-            $flashValues[$key] = $this->getFlash($key);
-        }
-        
-        return $flashValues;
-    }
+    }    
+
 
     public function associateAction($stripe_card_token) {        
         if (($notLoggedInResponse = $this->getNotLoggedInResponse()) instanceof Response) {
@@ -74,7 +58,7 @@ class UserAccountCardController extends AbstractUserAccountController {
                 return $this->sendResponse(array(
                     'user_account_card_exception_message' => $userAccountCardException->getMessage(),
                     'user_account_card_exception_param' => $userAccountCardException->getParam(),
-                    'user_account_card_exception_code' => $userAccountCardException->getCode()
+                    'user_account_card_exception_code' => $userAccountCardException->getStripeCode()
                 ));
             } else {
                 $this->get('session')->setFlash('user_account_card_exception_message', $userAccountCardException->getMessage());
