@@ -1,4 +1,4 @@
-{% if stripe_event_data['invoice'].paid == false %}
+{% if stripe_event_data['invoice'].paid == false and stripe_event_data['invoice'].closed == false %}
     {% if stripe_event_data['invoice'].attempt_count == 0 %}
     <p>
         We will attempt to collect payment in {{ stripe_event_data['invoice'].next_payment_attempt_relative }}.
@@ -41,11 +41,17 @@
 
 <p class="invoice-date">
     {{ stripe_event_data['invoice'].date|date("j F Y") }} - 
+
     {% if stripe_event_data['invoice'].paid == true %}
     paid <i class="icon icon-ok"></i>
     {% else %}
-    unpaid
-    {% endif %}    
+        {% if stripe_event_data['invoice'].closed == true %}
+            closed (from previous premium subscription)
+        {% else %}
+            unpaid
+        {% endif %}    
+    {% endif %}     
+
 </p>
 
 <table class="table">
