@@ -28,43 +28,7 @@
         We need your credit or debit card details now to continue your premium subscription.
     </p>
     
-    {% if stripe_event_data['invoice'].attempt_count == 0 %}
-    <p>
-        zero
-        We will attempt to collect payment in {{ stripe_event_data['invoice'].next_payment_attempt_relative }}.
-        If this fails, we will re-try a further {{ stripe['payment_retry_limit'] }} times over the following days.
-    </p>
-    {% else %}
-        {% set retry_limit = stripe['payment_retry_limit'] + 1 %}
-        {% set retry_count = retry_limit - stripe_event_data['invoice'].attempt_count %}
-        {% set subsequent_retry_count = retry_count - 1 %}
-    
-        {% for attempt_count in stripe['payment_retry_limit'] .. 1 %}
-            {% if stripe_event_data['invoice'].attempt_count == attempt_count %}    
-    <p>
-        We've tried {{ stripe_event_data['invoice'].attempt_count }} time{%if stripe_event_data['invoice'].attempt_count != '1'%}s{% endif %}        
-        to collect payment. We'll try again in {{ stripe_event_data['invoice'].next_payment_attempt_relative }}.
-        {% if retry_count > 1%}        
-        If this fails, we will re-try a further {{ subsequent_retry_count }} time{%if subsequent_retry_count != '1'%}s{% endif %}
-        over the following days.        
-        {% endif %}    
-    </p>
-    
-        {% if retry_count > 1%}               
-    <p>
-        If our last attempt to collect payment fails your account
-        will be downgraded to the free basic plan. 
-    </p>     
-        {% else %}
-    <p>
-        Our next payment attempt will be our last. If it fails your account
-        will be downgraded to the free basic plan. 
-    </p>     
-        {% endif %}       
 
-            {% endif %}
-        {% endfor %}       
-    {% endif %}
 
     
 
