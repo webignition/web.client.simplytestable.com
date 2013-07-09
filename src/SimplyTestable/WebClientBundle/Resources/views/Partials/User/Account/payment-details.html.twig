@@ -1,4 +1,4 @@
-{% if user_summary.user_plan.plan.name == 'basic' and user.stripe_customer is not defined %}
+{% if user_summary.user_plan.plan.name == 'basic' and user_summary.stripe_customer is not defined %}
 <p>
     You're on a <strong>free</strong> plan, no payment details needed.
 </p>
