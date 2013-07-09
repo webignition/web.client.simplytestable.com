@@ -118,3 +118,10 @@
     <a href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">View plan and pricing details <i class="icon icon-caret-right"></i></a>
     
 </div>
+
+{% if stripe_event_data['invoice'] is defined and stripe_event_data['invoice'].date is defined%}
+<div class="plan-section latest-invoice">
+    <h2>Latest invoice</h2>
+    {% include 'SimplyTestableWebClientBundle:Partials/User/Account:latest-invoice.html.twig' %} 
+</div>
+{% endif %}
