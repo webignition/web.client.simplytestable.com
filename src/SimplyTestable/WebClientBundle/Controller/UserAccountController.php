@@ -234,7 +234,8 @@ class UserAccountController extends AbstractUserAccountController {
             return 0;
         }
         
-        return (int) ceil($userSummary->stripe_customer->subscription->plan->trial_period_days - ($userSummary->stripe_customer->subscription->trial_end - time()) / 86400);
+        $trialPeriodRemaining = $userSummary->stripe_customer->subscription->trial_end - time();
+        return (int)($userSummary->user_plan->start_trial_period - floor($trialPeriodRemaining / 86400));
     }
 
     /**

@@ -139,7 +139,7 @@
 
         {% if user_summary.stripe_customer.subscription.status is defined %}
             {% if user_summary.stripe_customer.subscription.status == 'trialing' %}
-        You are on day <strong>{{ user_summary.stripe_customer.subscription.day_of_trial_period }}</strong> of your <strong>{{ user_summary.stripe_customer.subscription.plan.trial_period_days }}</strong> day trial
+        You are on day <strong>{{ user_summary.stripe_customer.subscription.day_of_trial_period }}</strong> of your <strong>{{ user_summary.user_plan.start_trial_period }}</strong> day trial
         ending <strong>{{ user_summary.stripe_customer.subscription.trial_end|date("d") }} {{ user_summary.stripe_customer.subscription.trial_end|date("F") }} {{ user_summary.stripe_customer.subscription.trial_end|date("Y") }}</strong>.
             {% endif %}                    
         {% endif %}
