@@ -160,14 +160,14 @@
             </tr>
             <tr>
                 <th>URLs per test job</th>
-                <td>{% if plan.urls_per_job is defined %}{{ plan.urls_per_job }}{% else %}Unlimited{% endif %}</td>
+                <td>{% if user_summary.plan_constraints.urls_per_job is defined %}{{ user_summary.plan_constraints.urls_per_job }}{% else %}Unlimited{% endif %}</td>
             </tr>
             <tr>
                 <th>Credits</th>
                 <td>
-                    {% if plan.credits is defined %}
-                        {{ plan.credits.used }} of 
-                        {{ plan.credits.limit }} used ({{ (plan.credits.used / plan.credits.limit) * 100 }}%)
+                    {% if user_summary.plan_constraints.credits is defined %}
+                        {{ user_summary.plan_constraints.credits.used }} of 
+                        {{ user_summary.plan_constraints.credits.limit }} used ({{ (user_summary.plan_constraints.credits.used / user_summary.plan_constraints.credits.limit) * 100 }}%)
                     {% else %}
                         Unlimited
                     {% endif %}                                
