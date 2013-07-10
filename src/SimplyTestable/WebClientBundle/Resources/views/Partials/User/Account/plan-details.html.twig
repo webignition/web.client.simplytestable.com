@@ -178,8 +178,9 @@
 </div>
 
 <div class="plan-section">
-    <h3>Change plan</h3> 
-
+    <h3>Change plan</h3>
+    
+{% if user_summary.user_plan.start_trial_period is defined %}
             {% if user_summary.user_plan.plan.name == 'basic' %}
                 {% if user_summary.user_plan.start_trial_period > 0  %}
     {% if user_summary.user_plan.start_trial_period == 365 %}
@@ -222,7 +223,15 @@
         </div>
     </form>
 
-    <a href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">View plan and pricing details <i class="icon icon-caret-right"></i></a>
+    <a href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">View plan and pricing details <i class="icon icon-caret-right"></i></a>    
+{% else %}    
+    <p>
+        You'll be able to upgrade to a premium plan very soon. We're upgrading
+        this right this second.
+    </p>    
+{% endif %}    
+
+
     
 </div>
 
