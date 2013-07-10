@@ -62,7 +62,8 @@ class UserAccountController extends AbstractUserAccountController {
             'is_logged_in' => true,
             'stripe_event_data' => $this->getUserStripeEventData($userSummary),
             'stripe' => $this->container->getParameter('stripe'),
-            'this_url' => $this->generateUrl('user_account_index', array(), true)
+            'this_url' => $this->generateUrl('user_account_index', array(), true),
+            'premium_plan_launch_offer_end' => $this->container->getParameter('premium_plan_launch_offer_end')
         ), $this->getViewFlashValues(array(
             'user_account_details_update_notice',
             'user_account_details_update_email',

@@ -74,3 +74,4 @@ parameters:
    payment_retry_limit: 3,
    payment_retry_periods:
      [1,1,1]
+  premium_plan_launch_offer_end: 31 July 2013
