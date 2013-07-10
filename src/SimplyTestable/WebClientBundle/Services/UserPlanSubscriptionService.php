@@ -2,9 +2,6 @@
 namespace SimplyTestable\WebClientBundle\Services;
 
 use SimplyTestable\WebClientBundle\Model\User;
-//use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
-//use SimplyTestable\WebClientBundle\Exception\UserServiceException;
-
 
 class UserPlanSubscriptionService extends UserService {
     
@@ -26,6 +23,7 @@ class UserPlanSubscriptionService extends UserService {
             if ($this->httpResponseHasStripeError($response)) {
                 throw $this->getUserAccountCardExceptionFromHttpResponse($response);
             }
+            return $response->getStatusCode();
         } catch (\Guzzle\Http\Exception\CurlException $curlException) {
             return $curlException->getErrorNo();
         }        
