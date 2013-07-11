@@ -440,7 +440,8 @@ class UserController extends BaseViewController
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
             'user_create_error' => $userCreateError,
             'user_create_confirmation' => $userCreateConfirmation,
-            'email' => $this->getPersistentValue('email')
+            'email' => $this->getPersistentValue('email'),
+            'plan' => $this->getPersistentValue('plan')                
         )), $cacheValidatorHeaders);        
     }
     
