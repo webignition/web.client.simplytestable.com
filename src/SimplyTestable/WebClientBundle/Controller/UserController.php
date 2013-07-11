@@ -446,23 +446,32 @@ class UserController extends BaseViewController
     
     
     public function signUpSubmitAction() {
-        $email = trim($this->get('request')->request->get('email'));
+        $plan = trim($this->get('request')->request->get('plan'));
         
+        $email = trim($this->get('request')->request->get('email'));        
         if ($email == '') {
             $this->get('session')->setFlash('user_create_error', 'blank-email');
-            return $this->redirect($this->generateUrl('sign_up', array(), true));             
+            return $this->redirect($this->generateUrl('sign_up', array(
+                'plan' => $plan 
+            ), true));             
         }
         
         if (!$this->isEmailValid($email)) {
             $this->get('session')->setFlash('user_create_error', 'invalid-email');
-            return $this->redirect($this->generateUrl('sign_up', array('email' => $email), true));              
+            return $this->redirect($this->generateUrl('sign_up', array(
+                'email' => $email,
+                'plan' => $plan 
+            ), true));              
         } 
         
         $password = trim($this->get('request')->request->get('password'));
         if ($password == '') {
             $this->get('session')->setFlash('user_create_prefil', $email);
             $this->get('session')->setFlash('user_create_error', 'blank-password');
-            return $this->redirect($this->generateUrl('sign_up', array('email' => $email), true));             
+            return $this->redirect($this->generateUrl('sign_up', array(
+                'email' => $email,
+                'plan' => $plan 
+            ), true));               
         }        
         
         $this->getUserService()->setUser($this->getUserService()->getPublicUser());
