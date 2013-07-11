@@ -220,13 +220,14 @@ class UserService extends CoreApplicationService {
     }
     
     
-    public function create($email, $password) {
+    public function create($email, $password, $plan = null) {
         $request = $this->webResourceService->getHttpClientService()->postRequest(
                 $this->getUrl('user_create'),
                 null,
                 array(
             'email' => $email,
-            'password' => $password
+            'password' => $password,
+            'plan' => $plan
         ));
         
         $this->addAuthorisationToRequest($request);        

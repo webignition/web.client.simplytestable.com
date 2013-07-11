@@ -476,7 +476,7 @@ class UserController extends BaseViewController
         }        
         
         $this->getUserService()->setUser($this->getUserService()->getPublicUser());
-        $createResponse = $this->getUserService()->create($email, $password);        
+        $createResponse = $this->getUserService()->create($email, $password, $plan);        
         
         if ($this->userCreationUserAlreadyExists($createResponse)) {
             $this->get('session')->setFlash('user_create_confirmation', 'user-exists');
