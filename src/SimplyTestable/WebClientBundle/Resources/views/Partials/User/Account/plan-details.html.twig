@@ -166,8 +166,8 @@
                 <th>Credits</th>
                 <td>
                     {% if user_summary.plan_constraints.credits is defined %}
-                        {{ user_summary.plan_constraints.credits.used }} of 
-                        {{ user_summary.plan_constraints.credits.limit }} used ({{ (user_summary.plan_constraints.credits.used / user_summary.plan_constraints.credits.limit) * 100 }}%)
+                        {{ user_summary.plan_constraints.credits.used|number_format(0) }} of 
+                        {{ user_summary.plan_constraints.credits.limit|number_format(0) }} used ({{ (user_summary.plan_constraints.credits.used / user_summary.plan_constraints.credits.limit) * 100 }}%)
                     {% else %}
                         Unlimited
                     {% endif %}                                
