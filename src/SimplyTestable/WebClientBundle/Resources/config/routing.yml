@@ -84,7 +84,14 @@ app_task_results:
     requirements:
         website: ".+"
         test_id: "\d+"
-        task_id: "\d+"        
+        task_id: "\d+" 
+        
+app_test_url_limit_notification:
+    pattern:  /{website}/{test_id}/url-limit-notification/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestNotification:urlLimit }  
+    requirements:
+        website: ".+"
+        test_id: "\d+"  
         
 app_queued:
   pattern: /{website}/queued/
