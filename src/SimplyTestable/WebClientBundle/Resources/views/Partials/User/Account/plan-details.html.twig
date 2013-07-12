@@ -214,10 +214,10 @@
         <div class="input-append">
             <select name="plan">
                 <option value="basic" {% if user_summary.user_plan.plan.name == 'basic' %}selected{% endif %}>Basic (&pound;0)</option>
-                <option value="personal" {% if user_summary.user_plan.plan.name == 'personal' %}selected{% endif %}>Personal (&pound;9)</option>
-                <option value="agency" {% if user_summary.user_plan.plan.name == 'agency' %}selected{% endif %}>Agency (&pound;19)</option>
-                <option value="business" {% if user_summary.user_plan.plan.name == 'business' %}selected{% endif %}>Business (&pound;59)</option>
-                <option value="enterprise" {% if user_summary.user_plan.plan.name == 'enterprise' %}selected{% endif %}>Enterprise (&pound;299)</option>
+                <option value="personal" {% if user_summary.user_plan.plan.name == 'personal' %}selected{% endif %}>Personal (&pound;{{ plans.personal.price }})</option>
+                <option value="agency" {% if user_summary.user_plan.plan.name == 'agency' %}selected{% endif %}>Agency (&pound;{{ plans.agency.price }})</option>
+                <option value="business" {% if user_summary.user_plan.plan.name == 'business' %}selected{% endif %}>Business (&pound;{{ plans.business.price }})</option>
+                <option value="enterprise" {% if user_summary.user_plan.plan.name == 'enterprise' %}selected{% endif %}>Enterprise (&pound;{{ plans.enterprise.price }})</option>
             </select>  
             <button class="btn" type="submit">Subscribe</button>
         </div>

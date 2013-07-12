@@ -15,26 +15,6 @@ class UserAccountController extends AbstractUserAccountController {
         
         $userSummary = $this->getUserService()->getSummary($this->getUser())->getContentObject();
         
-        //$this->getUserStripeEventData($userSummary);
-//        
-//        var_dump($userSummary->stripe_customer->subscription->status);
-//        exit();
-
-        //$paymentStatus = array();
-//        $stripeEventData = array();
-//
-//
-//
-//
-//
-//        if (isset($card->exp_month)) {
-//            $card->exp_month_name = $this->getMonthNameFromNumber($card->exp_month);
-//        }
-//
-//        if (isset($plan->summary) && isset($plan->summary->trial_period_days)) {
-//            $plan->summary->days_of_trial_period = $this->getDayOfTrialPeriod($plan);
-//        }
-        
         if (isset($userSummary->stripe_customer) && isset($userSummary->stripe_customer->subscription)) {
             $userSummary->stripe_customer->subscription->day_of_trial_period = $this->getDayOfTrialPeriod($userSummary);
         } 
@@ -63,7 +43,8 @@ class UserAccountController extends AbstractUserAccountController {
             'stripe_event_data' => $this->getUserStripeEventData($userSummary),
             'stripe' => $this->container->getParameter('stripe'),
             'this_url' => $this->generateUrl('user_account_index', array(), true),
-            'premium_plan_launch_offer_end' => $this->container->getParameter('premium_plan_launch_offer_end')
+            'premium_plan_launch_offer_end' => $this->container->getParameter('premium_plan_launch_offer_end'),
+            'plans' => $this->container->getParameter('plans')
         ), $this->getViewFlashValues(array(
             'user_account_details_update_notice',
             'user_account_details_update_email',
