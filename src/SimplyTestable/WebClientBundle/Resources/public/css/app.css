@@ -933,3 +933,7 @@ body.user-account-index .latest-invoice td span {
 body.user-account-index .latest-invoice .icon-ok {
     color:#468847;
 }
+
+.alert a {
+    text-decoration: underline;
+}

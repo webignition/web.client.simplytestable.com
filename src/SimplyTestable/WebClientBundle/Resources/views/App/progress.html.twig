@@ -43,7 +43,7 @@ Testing {{website}} - {{ parent() }}
             
         {% if remote_test_summary.ammendments is defined %}
             {% if remote_test_summary.ammendments[0].constraint is defined %}
-                {% include 'SimplyTestableWebClientBundle:Partials:free-demo-url-limit.html.twig' %}
+                {% include 'SimplyTestableWebClientBundle:Partials:test-url-limit-notification.html.twig' %}
             {% endif %}         
         {% endif %}
         
