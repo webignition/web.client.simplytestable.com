@@ -1,5 +1,10 @@
 var application = {};
 
+application.common = {};
+application.common.isLoggedIn = function () {
+    return $('.sign-out-form').prop('tagName') === 'FORM';
+};
+
 application.results = {};
 application.results.preparingController = function() {
 
@@ -287,9 +292,10 @@ application.progress.testController = function() {
         }
 
         if (latestTestData.remote_test_summary.ammendments && latestTestData.remote_test_summary.ammendments[0]) {
-            if (latestTestData.remote_test_summary.ammendments[0].reason.indexOf('plan-url-limit-reached:') !== -1) {
-                var messageContent = $('<span>This <strong>free demo</strong> has been limited to the first <strong>' + latestTestData.remote_test_summary.ammendments[0].constraint.limit + '</strong> URLs of the <strong>' + latestTestData.remote_test_summary.ammendments[0].reason.replace('plan-url-limit-reached:discovered-url-count-', '') + '</strong> that were discovered. Create an account or sign in to start a new test without this limit.</span>');
-                displayAmmendment(messageContent);
+            if (latestTestData.remote_test_summary.ammendments[0].reason.indexOf('plan-url-limit-reached:') !== -1) {                
+                $.get(window.location.href.replace('progress', 'url-limit-notification'), function(data) {
+                    displayAmmendment(data);
+                });
             }
         }
     };
