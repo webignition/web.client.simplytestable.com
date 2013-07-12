@@ -203,15 +203,19 @@ class TestResultsController extends TestViewController
             return $this->redirect($this->getProgressUrl($website, $test_id));
         }
         
-        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary(); 
+        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();         
+        $userSummary = ($remoteTestSummary->rejection->constraint->name == 'credits_per_month')
+                ? $this->getUserService()->getSummary($this->getUser())->getContentObject()
+                : null;
         
         $viewData = array(
             'website' => idn_to_utf8($website),
             'test' => $test,
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
+            'userSummary' => $userSummary,
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'rejection' => $remoteTestSummary->rejection
+            'remote_test_summary' => $remoteTestSummary
         );
 
             
