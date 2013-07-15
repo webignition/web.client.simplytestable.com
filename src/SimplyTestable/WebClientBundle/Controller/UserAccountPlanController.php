@@ -23,9 +23,14 @@ class UserAccountPlanController extends AbstractUserAccountController
         try {
             $response = $this->getUserPlanSubscriptionService()->subscribe($this->getUser(), $this->get('request')->request->get('plan'));
             $this->get('logger')->err('UserAccountPlanController::subscribeAction::subscribe method done');
+            
+            
+            
             if ($response === true) {
+                $this->get('logger')->err('UserAccountPlanController::subscribeAction::subscribe method return true');
                 $this->get('session')->setFlash('plan_subscribe_success', 'ok');
             } else {
+                $this->get('logger')->err('UserAccountPlanController::subscribeAction::subscribe method return ' . $response);
                 $this->get('session')->setFlash('plan_subscribe_error', $response);            
             } 
         } catch (\SimplyTestable\WebClientBundle\Exception\UserAccountCardException $userAccountCardException) {
