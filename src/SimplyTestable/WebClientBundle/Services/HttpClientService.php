@@ -58,4 +58,15 @@ class HttpClientService {
         return $request;        
     }
     
+    /**
+     * 
+     * @param string $uri
+     * @param array $headers
+     * @return \Guzzle\Http\Message\Request
+     */
+    public function headRequest($uri = null, $headers = null) {
+        $request = $this->get()->head($uri, $headers);
+        return $request;        
+    }    
+    
 }
