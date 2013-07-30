@@ -15,7 +15,15 @@
         </p>
     </div>
     <div class="content">
-        <span class="message">{{ error }}</span>        
+        <span class="message">
+        {{ error }}
+        {% if (documentation_urls[ loop.index0 ].exists) %}
+            <span class="label label-info"><a href="{{documentation_urls[ loop.index0 ].url}}">
+                Fix<i class="icon icon-caret-right"></i>
+            </a></span>
+        {% endif %}
+             
+        </span>        
     </div>
     <div class="clearfix"></div>
 </div>

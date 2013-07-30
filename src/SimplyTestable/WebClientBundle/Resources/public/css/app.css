@@ -705,8 +705,12 @@ body.app-task-results .section-marker {
     margin-top:-60px;
 }
 
-body.app-task-results .outcome a {
+body.app-task-results .label a {
     color: #fff;
+}
+
+body.app-task-results .label a:hover i {
+    text-decoration: none;
 }
 
 body.app-task-results .outcome .label {

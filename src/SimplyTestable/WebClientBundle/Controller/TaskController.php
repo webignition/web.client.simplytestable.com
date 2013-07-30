@@ -140,9 +140,9 @@ class TaskController extends TestViewController
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
         $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
-        if ($response->isNotModified($this->getRequest())) {
-            return $response;
-        }        
+//        if ($response->isNotModified($this->getRequest())) {
+//            return $response;
+//        }        
         
         $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
         if ($testRetrievalOutcome->hasResponse()) {
@@ -169,6 +169,12 @@ class TaskController extends TestViewController
                 'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),                        
         );
         
+        if ($task->getType() == 'HTML validation') {
+            $documentationUrls = $this->getHtmlValidationErrorDocumentationUrls($task);
+            $viewData['documentation_urls'] = $documentationUrls;
+            $viewData['fixes'] = $this->getErrorFixes($task, $documentationUrls);
+        }        
+        
         if ($task->getType() == 'CSS validation') {
             $viewData['errors_by_ref'] = $this->getCssValidationErrorsGroupedByRef($task);
             $viewData['warnings_by_ref'] = $this->getCssValidationWarningsGroupedByRef($task);
@@ -182,6 +188,80 @@ class TaskController extends TestViewController
             'SimplyTestableWebClientBundle:App:task/results.html.twig',
             $viewData
         ), $cacheValidatorHeaders);        
+    }
+    
+    private function getErrorFixes(Task $task, $documentationUrls) {
+        $fixes = array();
+        
+        if ($task->getOutput()->getErrorCount() === 0) {
+            return $fixes;
+        }        
+        
+        if ($task->getType() != 'HTML validation') {
+            return $fixes;
+        }
+        
+        $errors = $task->getOutput()->getResult()->getErrors();
+        
+        foreach ($errors as $errorIndex => $error) {
+            if (isset($documentationUrls[$errorIndex]) && $documentationUrls[$errorIndex]['exists'] === true) {
+                $fixes[] = array(
+                    'error' => $error,
+                    'documentation_url' => $documentationUrls[$errorIndex]['url']
+                );
+            }
+        }
+        
+        return $fixes;        
+    }
+    
+    private function getHtmlValidationErrorDocumentationUrls(Task $task) {
+        $documentationUrls = array();
+        
+        if ($task->getOutput()->getErrorCount() === 0) {
+            return $documentationUrls;
+        }
+        
+        $documentationSiteProperties = $this->container->getParameter('documentation_site');
+        
+        $baseUrl = $documentationSiteProperties['urls']['home']
+                 . $documentationSiteProperties['urls']['errors']
+                 . $documentationSiteProperties['urls']['html-validation'];
+        
+        $errors = $task->getOutput()->getResult()->getErrors();
+        
+        $normaliser = new \webignition\HtmlValidationErrorNormaliser\HtmlValidationErrorNormaliser();        
+        $linkifier = new \webignition\HtmlValidationErrorLinkifier\HtmlValidationErrorLinkifier();
+        
+        $this->getDocumentationUrlCheckerService()->setDocumentationSitemapPath($this->container->get('kernel')->locateResource('@SimplyTestableWebClientBundle/Resources/config/documentation_sitemap.xml'));        
+        foreach ($errors as $error) {
+            $normalisationResult = $normaliser->normalise($error->getMessage());
+            
+            if ($normalisationResult->isNormalised()) {
+                $parameterisedUrl = $baseUrl . $linkifier->linkify($normalisationResult->getNormalisedError()->getNormalForm()) . '/' . $linkifier->linkify($normalisationResult->getNormalisedError()->getNormalForm(), $normalisationResult->getNormalisedError()->getParameters()) . '/';
+                
+                if ($this->getDocumentationUrlCheckerService()->exists($parameterisedUrl)) {
+                    $documentationUrls[] = array(
+                        'url' => $parameterisedUrl,
+                        'exists' => true
+                    );
+                } else {
+                    $url = $baseUrl . $linkifier->linkify($normalisationResult->getNormalisedError()->getNormalForm());
+                    $documentationUrls[] = array(
+                        'url' => $url,
+                        'exists' => $this->getDocumentationUrlCheckerService()->exists($url)
+                    );                                         
+                }
+            } else {
+                $url = $baseUrl . $linkifier->linkify($normalisationResult->getRawError()) . '/';
+                $documentationUrls[] = array(
+                    'url' => $url,
+                    'exists' => $this->getDocumentationUrlCheckerService()->exists($url)
+                );
+            }
+        }
+        
+        return $documentationUrls;
     }
     
     
@@ -254,8 +334,7 @@ class TaskController extends TestViewController
      */
     protected function getTestService() {
         return $this->container->get('simplytestable.services.testservice');
-    }  
-    
+    }     
     
     /**
      *
@@ -264,6 +343,14 @@ class TaskController extends TestViewController
     protected function getTaskService() {
         return $this->container->get('simplytestable.services.taskservice');
     }
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService
+     */
+    protected function getDocumentationUrlCheckerService() {
+        return $this->container->get('simplytestable.services.documentationurlcheckerservice');
+    }    
     
     
     /**

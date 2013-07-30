@@ -96,3 +96,8 @@ parameters:
       description_brief: Full corporate treatment
       urls_per_job: 10000
       credits_per_month: unlimited
+  documentation_site:
+    urls:
+      home: http://help.simplytestable.com/
+      errors: errors/
+      html-validation: html-validation/
