@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "d093c65c40d0c1262fc35915a6a417de",
+    "hash": "34a7df93451930ff3d1b30a07fbdee4c",
     "packages": [
         {
             "name": "doctrine/common",
@@ -1679,6 +1679,94 @@
             "time": "2012-07-14 13:29:54"
         },
         {
+            "name": "webignition/html-validation-error-linkifier",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/html-validation-error-linkifier.git",
+                "reference": "8c7ad2d644c18c35d991bf265db12094b85395b6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webignition/html-validation-error-linkifier/zipball/8c7ad2d644c18c35d991bf265db12094b85395b6",
+                "reference": "8c7ad2d644c18c35d991bf265db12094b85395b6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0",
+                "webignition/html-validation-error-normaliser": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "jon@webignition.net"
+                }
+            ],
+            "description": "Translate a normalised HTML validation error message a useful hyperlink url ",
+            "homepage": "https://github.com/webignition/html-validation-error-linkifier",
+            "keywords": [
+                "error",
+                "html",
+                "linkifier",
+                "validation"
+            ],
+            "time": "2013-07-29 22:32:09"
+        },
+        {
+            "name": "webignition/html-validation-error-normaliser",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/html-validation-error-normaliser.git",
+                "reference": "28a3459b43a4145cb3a84c6eeca835d0d25e1b35"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webignition/html-validation-error-normaliser/zipball/28a3459b43a4145cb3a84c6eeca835d0d25e1b35",
+                "reference": "28a3459b43a4145cb3a84c6eeca835d0d25e1b35",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "jon@webignition.net"
+                }
+            ],
+            "description": "Take an HTML validation error and get the normal form of it",
+            "homepage": "https://github.com/webignition/html-validation-error-normaliser",
+            "keywords": [
+                "error",
+                "html",
+                "normaliser",
+                "normalizer",
+                "validation"
+            ],
+            "time": "2013-07-24 16:44:57"
+        },
+        {
             "name": "webignition/internet-media-type",
             "version": "0.4.1.1",
             "source": {
@@ -2075,9 +2163,10 @@
 
     ],
     "minimum-stability": "dev",
-    "stability-flags": [
-
-    ],
+    "stability-flags": {
+        "webignition/html-validation-error-normaliser": 20,
+        "webignition/html-validation-error-linkifier": 20
+    },
     "platform": {
         "php": ">=5.3.3"
     },
