@@ -171,8 +171,11 @@ class TaskController extends TestViewController
         
         if ($task->getType() == 'HTML validation') {
             $documentationUrls = $this->getHtmlValidationErrorDocumentationUrls($task);
+            $fixes = $this->getErrorFixes($task, $documentationUrls);
+            
             $viewData['documentation_urls'] = $documentationUrls;
-            $viewData['fixes'] = $this->getErrorFixes($task, $documentationUrls);
+            $viewData['fixes'] = $fixes;
+            $viewData['distinct_fixes'] = $this->getDistinctFixes($fixes);
         }        
         
         if ($task->getType() == 'CSS validation') {
@@ -188,6 +191,20 @@ class TaskController extends TestViewController
             'SimplyTestableWebClientBundle:App:task/results.html.twig',
             $viewData
         ), $cacheValidatorHeaders);        
+    }
+    
+    private function getDistinctFixes($fixes) {
+        $distinctUrls = array();
+        $distinctFixes = array();
+        
+        foreach ($fixes as $fix) {
+            if (!in_array($fix['documentation_url'], $distinctUrls)) {
+                $distinctUrls[] = $fix['documentation_url'];
+                $distinctFixes[] = $fix;
+            }
+        }
+        
+        return $distinctFixes;
     }
     
     private function getErrorFixes(Task $task, $documentationUrls) {
@@ -206,7 +223,7 @@ class TaskController extends TestViewController
         foreach ($errors as $errorIndex => $error) {
             if (isset($documentationUrls[$errorIndex]) && $documentationUrls[$errorIndex]['exists'] === true) {
                 $fixes[] = array(
-                    'error' => $error,
+                    'error' => ucfirst($error),
                     'documentation_url' => $documentationUrls[$errorIndex]['url']
                 );
             }
@@ -246,7 +263,7 @@ class TaskController extends TestViewController
                         'exists' => true
                     );
                 } else {
-                    $url = $baseUrl . $linkifier->linkify($normalisationResult->getNormalisedError()->getNormalForm());
+                    $url = $baseUrl . $linkifier->linkify($normalisationResult->getNormalisedError()->getNormalForm()) . '/';
                     $documentationUrls[] = array(
                         'url' => $url,
                         'exists' => $this->getDocumentationUrlCheckerService()->exists($url)
