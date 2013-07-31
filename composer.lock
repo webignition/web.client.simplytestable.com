@@ -1684,12 +1684,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/html-validation-error-linkifier.git",
-                "reference": "8c7ad2d644c18c35d991bf265db12094b85395b6"
+                "reference": "30abf1b4d5e6d75fbc58259323f2c5150c6ed619"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/html-validation-error-linkifier/zipball/8c7ad2d644c18c35d991bf265db12094b85395b6",
-                "reference": "8c7ad2d644c18c35d991bf265db12094b85395b6",
+                "url": "https://api.github.com/repos/webignition/html-validation-error-linkifier/zipball/30abf1b4d5e6d75fbc58259323f2c5150c6ed619",
+                "reference": "30abf1b4d5e6d75fbc58259323f2c5150c6ed619",
                 "shasum": ""
             },
             "require": {
@@ -1720,7 +1720,7 @@
                 "linkifier",
                 "validation"
             ],
-            "time": "2013-07-29 22:32:09"
+            "time": "2013-07-31 14:06:18"
         },
         {
             "name": "webignition/html-validation-error-normaliser",
