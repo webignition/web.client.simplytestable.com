@@ -79,7 +79,7 @@ class TestService extends CoreApplicationService {
     
     public function start($canonicalUrl, TestOptions $testOptions, $testType = 'full site') {        
         $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_start', array(
-            'canonical-url' => $canonicalUrl
+            'canonical-url' => urlencode($canonicalUrl)
         )).'?'.http_build_query(array_merge(array(
             'type' => $testType
         ), $testOptions->__toArray())));
@@ -249,7 +249,7 @@ class TestService extends CoreApplicationService {
     
     public function getLatestRemoteSummary($canonicalUrl) {
         $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_latest', array(
-            'canonical-url' => $canonicalUrl
+            'canonical-url' => urlencode($canonicalUrl)
         )));
         
         $this->addAuthorisationToRequest($request);
@@ -275,9 +275,9 @@ class TestService extends CoreApplicationService {
      * @throws WebResourceException
      * @throws \Guzzle\Http\Exception\CurlException
      */
-    private function retrieveRemoteTestSummary() {
+    private function retrieveRemoteTestSummary() {        
         $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_status', array(
-            'canonical-url' => $this->currentTest->getWebsite(),
+            'canonical-url' => urlencode($this->currentTest->getWebsite()),
             'test_id' => $this->currentTest->getTestId()
         )));
         
@@ -372,7 +372,7 @@ class TestService extends CoreApplicationService {
      */
     public function cancel(Test $test) {
         $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_cancel', array(
-            'canonical-url' => (string)$test->getWebsite(),
+            'canonical-url' => urlencode($test->getWebsite()),
             'test_id' => $test->getTestId()
         )));
         

@@ -342,7 +342,7 @@ class TaskService extends CoreApplicationService {
      */
     private function retrieveRemoteCollection(Test $test, $remoteTaskIds) {        
         $httpRequest = $this->webResourceService->getHttpClientService()->postRequest($this->getUrl('test_tasks', array(
-                'canonical-url' => (string)$test->getWebsite(),
+                'canonical-url' => urlencode($test->getWebsite()),
                 'test_id' => $test->getTestId()
         )), null, array(
             'taskIds' => implode(',', $remoteTaskIds)            
@@ -408,7 +408,7 @@ class TaskService extends CoreApplicationService {
      */
     private function retrieveRemoteTaskIds(Test $test) {
         $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_task_ids', array(
-                'canonical-url' => (string)$test->getWebsite(),
+                'canonical-url' => urlencode($test->getWebsite()),
                 'test_id' => $test->getTestId()
         )));
         
