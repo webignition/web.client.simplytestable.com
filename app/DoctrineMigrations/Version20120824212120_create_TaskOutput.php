@@ -35,10 +35,8 @@ class Version20120824212120_create_TaskOutput extends BaseMigration
             "CREATE TABLE TaskOutput (
                 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 content LONGTEXT DEFAULT NULL COLLATE NOCASE,
-                type VARCHAR(255) NOT NULL COLLATE NOCASE,
-                task_id INT NOT NULL,
-                FOREIGN KEY (task_id) REFERENCES Task (id))",
-            "CREATE UNIQUE INDEX UNIQ_C9B3E5C48DB60186 ON TaskOutput (task_id)"
+                type VARCHAR(255) NOT NULL COLLATE NOCASE
+             )"
         );
         
         parent::up($schema);

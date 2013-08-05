@@ -145,12 +145,16 @@ abstract class BaseViewController extends BaseController
      * 
      * @return boolean
      */
-    private function isUsingIE6() {        
-        if (!preg_match('/msie 6\.[0-9]+/i', $_SERVER['HTTP_USER_AGENT'])) {
+    private function isUsingIE6() {       
+        if (!preg_match('/msie 6\.[0-9]+/i', $this->get('request')->server->get('HTTP_USER_AGENT'))) {
             return false;
         }
         
-        if (preg_match('/opera/i', $_SERVER['HTTP_USER_AGENT'])) {
+        if (preg_match('/opera/i', $this->get('request')->server->get('HTTP_USER_AGENT'))) {
+            return false;
+        }
+        
+        if (preg_match('/msie 8.[0-9]+/i', $this->get('request')->server->get('HTTP_USER_AGENT'))) {
             return false;
         }
         
@@ -163,7 +167,7 @@ abstract class BaseViewController extends BaseController
      * @return boolean
      */
     private function isUsingIE7() {        
-        if (!preg_match('/msie 7\.[0-9]+/i', $_SERVER['HTTP_USER_AGENT'])) {
+        if (!preg_match('/msie 7\.[0-9]+/i', $this->get('request')->server->get('HTTP_USER_AGENT'))) {
             return false;
         }
         
@@ -212,5 +216,13 @@ abstract class BaseViewController extends BaseController
         
         return $values;
     }
+    
+    /**
+     *
+     * @return \JMS\SerializerBundle\Serializer\Serializer
+     */
+    protected function getSerializer() {
+        return $this->container->get('serializer');
+    }     
     
 }

@@ -7,6 +7,8 @@ build/
 vendor
 bin
 composer.phar
+phpcpd.phar
 /nbproject
 /src/SimplyTestable/WebClientBundle/Resources/public/vendor/
 src/SimplyTestable/WebClientBundle/Resources/config/parameters.yml
+data/queue/test/*

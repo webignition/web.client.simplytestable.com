@@ -7,11 +7,28 @@ use SimplyTestable\WebClientBundle\Entity\Task\Output;
 
 abstract class ResultParser {
     
+    private $parsedResultCache = array();    
+    
+    
     /**
      *
      * @var Output 
      */
     private $output;
+    
+    
+    /**
+     * @return Result
+     */
+    public function getResult() {
+        $cacheKey = md5($this->getOutput()->getContent());
+        
+        if (!isset($this->parsedResultCache[$cacheKey])) {
+            $this->parsedResultCache[$cacheKey] = $this->buildResult();
+        }
+        
+        return $this->parsedResultCache[$cacheKey];
+    }     
     
     
     /**
@@ -37,6 +54,6 @@ abstract class ResultParser {
     /**
      * @return Result
      */
-    abstract public function getResult();  
+    abstract protected function buildResult();  
     
 }

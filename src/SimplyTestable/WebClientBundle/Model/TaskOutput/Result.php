@@ -123,6 +123,15 @@ class Result {
         
         return self::OUTCOME_PASSED;
     }
+
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function isHtmlMissingDocumentTypeFailure() {
+        return $this->isOfErrorClass('/document-type-missing/');         
+    }
     
     
     /**

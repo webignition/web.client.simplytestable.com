@@ -121,7 +121,7 @@ class ExceptionController extends Controller
         $message = \Swift_Message::newInstance();
         
         $message->setSubject($this->getDeveloperEmailSubject($exception));
-        $message->setFrom('exceptions@simplytestable.com');
+        $message->setFrom('robot@simplytestable.com');
         $message->setTo('jon@simplytestable.com');
         $message->setBody($this->renderView('SimplyTestableWebClientBundle:Email:exception.txt.twig', array(
             'status_code' => $exception->getStatusCode(),

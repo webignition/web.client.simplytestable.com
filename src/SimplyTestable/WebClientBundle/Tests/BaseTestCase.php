@@ -64,12 +64,29 @@ abstract class BaseTestCase extends WebTestCase {
         return $this->application->run($input);
     }
     
-    protected function setupDatabase() {
+    protected static function setupDatabase() {
         exec('php app/console doctrine:database:drop -e test --force && php app/console doctrine:database:create -e test && php app/console doctrine:migrations:migrate -e test --no-interaction');
-        //$this->runConsole("doctrine:database:drop", array("--force" => true));
-        //$this->runConsole("doctrine:database:create");        
-        //$this->runConsole("doctrine:migrations:migrate", array("--no-interaction" => true));        
-        //exec('php app/console doctrine:migrations:migrate --no-interaction');
+    } 
+    
+    protected static function setupDatabaseIfNotExists() {
+        if (self::areDatabaseMigrationsNeeded()) {
+            self::setupDatabase();
+        }
+    }
+    
+    private static function areDatabaseMigrationsNeeded() {
+        $migrationStatusOutputLines = array();
+        exec('php app/console doctrine:migrations:status', $migrationStatusOutputLines);
+        
+        foreach ($migrationStatusOutputLines as $migrationStatusOutputLine) {
+            if (substr_count($migrationStatusOutputLine, '>> New Migrations:')) {
+                if ((int)trim(str_replace('>> New Migrations:', '', $migrationStatusOutputLine)) > 0) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;      
     }    
 
     /**
@@ -83,11 +100,16 @@ abstract class BaseTestCase extends WebTestCase {
      * @param array An array of parameters to pass into the request.
      * @return \Symfony\Bundle\FrameworkBundle\Controller\Controller The built Controller object.
      */
-    protected function createController($controllerClass, $controllerMethod, array $parameters = array(), array $query = array()) {
-        $request = $this->createWebRequest();
+    protected function createController($controllerClass, $controllerMethod, array $parameters = array(), array $query = array(), array $cookies = array()) {
+        $request = $this->createWebRequest();        
         $request->attributes->set('_controller', $controllerClass.'::'.$controllerMethod);
         $request->request->add($parameters);
-        $request->query->add($query);
+        $request->query->add($query);       
+
+        foreach ($cookies as $cookieName => $cookieValue) {
+            $request->cookies->add(array($cookieName => $cookieValue));
+        }       
+        
         $this->container->set('request', $request);
               
         $controllerCallable = $this->getControllerCallable($request);        
@@ -130,6 +152,39 @@ abstract class BaseTestCase extends WebTestCase {
      */
     protected function getFixturesDataPath($testName) {
         return __DIR__ . self::FIXTURES_DATA_RELATIVE_PATH . '/' . str_replace('\\', DIRECTORY_SEPARATOR, get_class($this)) . '/' . $testName;
-    }    
+    }  
+    
+    
+    protected function setHttpFixtures($fixtures) {
+        $plugin = new \Guzzle\Plugin\Mock\MockPlugin();
+        
+        foreach ($fixtures as $fixture) {
+            $plugin->addResponse($fixture);
+        }
+         
+        $this->getHttpClientService()->get()->addSubscriber($plugin);              
+    }
+    
+    
+    protected function getHttpFixtures($path) {
+        $fixtures = array();        
+        $fixturesDirectory = new \DirectoryIterator($path);
+        
+        $fixturePathnames = array();
+        
+        foreach ($fixturesDirectory as $directoryItem) {
+            if ($directoryItem->isFile()) { 
+                $fixturePathnames[] = $directoryItem->getPathname();
+            }
+        }
+        
+        sort($fixturePathnames);
+        
+        foreach ($fixturePathnames as $fixturePathname) {
+                $fixtures[] = \Guzzle\Http\Message\Response::fromMessage(file_get_contents($fixturePathname));            
+        }
+        
+        return $fixtures;
+    }     
 
 }

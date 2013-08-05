@@ -1,5 +1,16 @@
+        {% if test_cancelled_queued_website is defined and test_cancelled_queued_website != '' %}
+        <div class="alert alert-info for:input-website">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>Your test of {{ test_cancelled_queued_website }} has 
+            been cancelled</strong>.<br>We can't show you
+            and results as we're in a <strong>read-only</strong> state whilst some 
+            <strong>maintenance</strong> is going on and your test was never
+            started.
+        </div>               
+        {% endif %} 
+
 <section>
-<div id="input" class="leader">            
+<div id="input" class="leader">                  
     <form method="post" action="{{ test_input_action_url }}">                
         <h1 class="info">
             <label for="input-website">
@@ -10,15 +21,19 @@
                     <i class="icon-cog"></i> Testing 
                     {% elseif test.state == 'preparing' or test.state == 'in-progress' %}
                     <i class="icon-cog"></i> Testing
-                    {% elseif test.state == 'completed' or test.state == 'cancelled' or test.state == 'no-sitemap' %}
+                    {% elseif test.state == 'completed' or test.state == 'cancelled' or test.state == 'failed-no-sitemap' %}
                     <i class="icon-bar-chart"></i> Results for 
                     {% endif %} 
                     {{ website }} <span id="test-id">(#{{ test.testId }})</span>
                 {% else %}
-                    <i class="icon-play-circle"></i> Start new website test
+                    {% if app.request.attributes.get('_route') == 'app_queued' %}
+                        <i class="icon-cog"></i> Testing 
+                    {% else %}                
+                        <i class="icon-play-circle"></i> Start new website test
+                    {% endif %}                                        
                 {% endif %}               
             </label>
-        </h1>
+        </h1>           
             
         {% if test_start_error is defined and test_start_error != '' %}
             {% if test_start_error == 'website-blank' %}
@@ -60,26 +75,34 @@
             
             
             {% endif %}            
-        {% endif %}             
+        {% endif %}          
 
-        <div class="fields input-append larger">                    
-            <input name="website" id="input-website" type="text" placeholder="Enter website homepage URL &hellip;" {% if test is defined %} {% if test.state != 'completed' and test.state != 'cancelled' and test.state != 'no-sitemap' %} disabled {% endif %} {% endif %} {% if website is defined %} value="{{ website }}" {% endif %}>            
+        <div class="fields input-prepend input-append larger">                    
+            <input name="website" id="input-website" type="text" placeholder="Enter website URL &hellip;" {% if app.request.attributes.get('_route') == 'app_queued' %}disabled{% endif %} {% if test is defined %} {% if test.state != 'completed' and test.state != 'cancelled' and test.state != 'failed-no-sitemap' %} disabled {% endif %} {% endif %} {% if website is defined %} value="{{ website }}" {% endif %}>            
             {% if test is defined %}
                 {% if test.state == 'completed' or test.state == 'cancelled' %}
-                <button type="submit" class="btn btn-primary btn-large">Run test again<i class="icon-repeat icon-large"></i></button>
-                {% elseif test.state == 'no-sitemap' %}
-                <button type="submit" class="btn btn-primary btn-large">Try again<i class="icon-repeat icon-large"></i></button>
+            <button type="submit" class="btn btn-primary btn-large" name="full-single" value="full">Test full site</button>
+            <button type="submit" class="btn btn-large" name="full-single" value="single">Test this URL only</button>
+                {% elseif test.state == 'failed-no-sitemap' %}
+            <button type="submit" class="btn btn-primary btn-large" name="full-single" value="full">Test full site</button>
+            <button type="submit" class="btn btn-large" name="full-single" value="single">Test this URL only</button>
                 {% else %}
                 <button type="submit" class="btn btn-primary btn-large btn-danger">Cancel test <i class="icon-warning-sign icon-large"></i></button>
                 {% endif %}            
             {% else %}
-            <button type="submit" class="btn btn-primary btn-large">Start new test <i class="icon-play icon-large"></i></button>                        
+                {% if app.request.attributes.get('_route') == 'app_queued' %}
+                    <button type="submit" class="btn btn-primary btn-large btn-danger">Cancel test <i class="icon-warning-sign icon-large"></i></button>
+                {% else %}
+            <button type="submit" class="btn btn-primary btn-large" name="full-single" value="full">Test full site</button>
+            <button type="submit" class="btn btn-large" name="full-single" value="single">Test this URL only</button>
+            <i class="icon-play icon-large"></i>                    
+                {% endif %}
             {% endif %}
-        </div>
+        </div>           
             
         {% if app.request.attributes.get('_route') == 'app' %}
         {% include 'SimplyTestableWebClientBundle:Partials:test-input-task-type-options.html.twig' %} 
-        {% elseif app.request.attributes.get('_route') == 'app_progress' %}          
+        {% elseif app.request.attributes.get('_route') == 'app_progress' or app.request.attributes.get('_route') == 'app_queued' %}          
             
         <div id="test-options">
             <p class="expandable-control{% if remote_test_summary.task_type_options|length == 0 %}-disabled{% endif %} for-test-options-expandable expandable-control-default-closed">

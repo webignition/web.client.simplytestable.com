@@ -49,6 +49,30 @@ sign_up_confirm_submit:
 sign_up_confirm_resend:
     pattern:  /signup/confirm/{email}/resend/
     defaults: { _controller: SimplyTestableWebClientBundle:User:signUpConfirmResend }
+    
+user_account_details_update:
+    pattern:  /account/details/update/
+    defaults: { _controller: SimplyTestableWebClientBundle:UserAccountDetails:update }          
+    
+user_account_details_confirm_email_change:
+    pattern:  /account/details/update/confirm-email-change/
+    defaults: { _controller: SimplyTestableWebClientBundle:UserAccountDetails:confirmEmailChange }          
+        
+user_account_index:
+    pattern:  /account/
+    defaults: { _controller: SimplyTestableWebClientBundle:UserAccount:index }    
+    
+user_account_card:
+    pattern:  /account/card/
+    defaults: { _controller: SimplyTestableWebClientBundle:UserAccountCard:index }        
+    
+user_account_card_associate:
+    pattern:  /account/card/{stripe_card_token}/associate/
+    defaults: { _controller: SimplyTestableWebClientBundle:UserAccountCard:associate }        
+    
+user_account_plan_subscribe:
+    pattern:  /account/plan/subscribe/
+    defaults: { _controller: SimplyTestableWebClientBundle:UserAccountPlan:subscribe }    
 
 app:
     pattern:  /
@@ -62,6 +86,25 @@ app_task_results:
         test_id: "\d+"
         task_id: "\d+" 
         
+app_test_url_limit_notification:
+    pattern:  /{website}/{test_id}/url-limit-notification/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestNotification:urlLimit }  
+    requirements:
+        website: ".+"
+        test_id: "\d+"  
+        
+app_queued:
+  pattern: /{website}/queued/
+  defaults: { _controller: SimplyTestableWebClientBundle:App:queued } 
+  requirements:
+      website: ".+" 
+      
+test_queued_status:
+  pattern: /{website}/queued/status/
+  defaults: { _controller: SimplyTestableWebClientBundle:Test:queuedStatus, _format: json  } 
+  requirements:
+      website: ".+"
+      
 app_task_results_redirector:
     pattern:  /{website}/{test_id}/{task_id}/
     defaults: { _controller: SimplyTestableWebClientBundle:Redirect:task }  
@@ -72,15 +115,45 @@ app_task_results_redirector:
 
 app_progress:
     pattern:  /{website}/{test_id}/progress/
-    defaults: { _controller: SimplyTestableWebClientBundle:App:progress }  
+    defaults: { _controller: SimplyTestableWebClientBundle:TestProgress:index }  
     requirements:
         website: ".+" 
         
 app_results:
     pattern:  /{website}/{test_id}/results/
-    defaults: { _controller: SimplyTestableWebClientBundle:App:results }  
+    defaults: { _controller: SimplyTestableWebClientBundle:TestResults:index }  
     requirements:
-       website: ".+"            
+       website: ".+"
+       
+app_results_failed_no_urls_detected:
+    pattern:  /{website}/{test_id}/results/failed/no-urls-detected/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestResults:failedNoUrlsDetected }  
+    requirements:
+       website: ".+"       
+       
+app_results_rejected:
+    pattern:  /{website}/{test_id}/results/rejected/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestResults:rejected }  
+    requirements:
+       website: ".+"         
+       
+app_results_preparing:
+    pattern:  /{website}/{test_id}/results/preparing/
+    defaults: { _controller: SimplyTestableWebClientBundle:App:prepareResults }  
+    requirements:
+       website: ".+"       
+       
+task_results_retrieve:
+    pattern:  /{website}/{test_id}/results/retrieve/
+    defaults: { _controller: SimplyTestableWebClientBundle:TaskResults:retrieve }  
+    requirements:
+       website: ".+"  
+       
+task_results_retrieve_status:
+    pattern:  /{website}/{test_id}/results/retrieve/status/
+    defaults: { _controller: SimplyTestableWebClientBundle:TaskResults:status }  
+    requirements:
+       website: ".+"         
         
 app_tasks:
     pattern:  /{website}/{test_id}/tasks/
@@ -93,10 +166,22 @@ app_task_ids:
     defaults: { _controller: SimplyTestableWebClientBundle:Task:idCollection, _format: json }  
     requirements:
         website: ".+"
+        
+app_unretrieved_task_ids:
+    pattern:  /{website}/{test_id}/tasks/ids/unretrieved/{limit}/
+    defaults: { _controller: SimplyTestableWebClientBundle:Task:unretrievedIdCollection, _format: json }  
+    requirements:
+        website: ".+"  
 
 test_start:
     pattern:  /test/start/
-    defaults: { _controller: SimplyTestableWebClientBundle:TestStart:start }
+    defaults: { _controller: SimplyTestableWebClientBundle:TestStart:startNew }
+    
+test_clone_and_start:
+    pattern:  /test/start/clone/{website}/{test_id}/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestStart:cloneAndStart }    
+    requirements:
+        website: ".+"
     
 test_cancel:
     pattern:  /test/{website}/{test_id}/cancel/
@@ -104,11 +189,17 @@ test_cancel:
     requirements:
         website: ".+"
         
+test_cancel_queued:
+    pattern:  /test/{website}/cancel/
+    defaults: { _controller: SimplyTestableWebClientBundle:Test:cancelQueued }  
+    requirements:
+        website: ".+"        
+        
 app_test_redirector:
     pattern:  /{website}/{test_id}/
     defaults: { _controller: SimplyTestableWebClientBundle:Redirect:test }  
     requirements:
-        website: ".+"   
+        website: ".+"
 
 app_website:
     pattern:  /{website}/

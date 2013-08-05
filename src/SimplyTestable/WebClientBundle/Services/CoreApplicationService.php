@@ -27,20 +27,12 @@ abstract class CoreApplicationService {
     private $parameters;
     
     
-    /**
-     *
-     * @var \webignition\Http\Client\Client
-     */
-    private $httpClient;
-    
-    
     public function __construct(
         $parameters,
         \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService
     ) {
         $this->parameters = $parameters;
         $this->webResourceService = $webResourceService;
-        $this->httpClient = $webResourceService->getHttpClient();
     } 
     
     
@@ -88,22 +80,12 @@ abstract class CoreApplicationService {
     }
     
     
-    protected function getAuthorisedHttpRequest($url = '', $request_method = HTTP_METH_GET, $options = array()) {
-        $httpRequest = new \HttpRequest($url, $request_method, $options);
-        $httpRequest->addHeaders(array(
+    protected function addAuthorisationToRequest(\Guzzle\Http\Message\Request $request) {
+        $request->addHeaders(array(
             'Authorization' => 'Basic ' . base64_encode($this->getUser()->getUsername().':'.$this->getUser()->getPassword())
         ));
         
-        return $httpRequest;
-    }
-    
-    
-    /**
-     * 
-     * @return \webignition\Http\Client\Client
-     */
-    protected function getHttpClient() {
-        return $this->httpClient;
+        return $request;                
     }
     
 }

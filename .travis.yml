@@ -2,11 +2,11 @@ language: php
 php:
   - 5.3
   - 5.4
+  - 5.5
   
-before_script:    
-  # Installing pecl_http module
-  - printf "\n\n\n\n" | pecl -q install pecl_http
-  - echo "extension=http.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`    
+before_script:  
+  # Install code quality tools
+  - wget http://pear.phpunit.de/get/phpcpd.phar
   
   # Install composer for dependency management
   - wget http://getcomposer.org/composer.phar   
@@ -26,3 +26,6 @@ before_script:
   
 script:
   - phpunit -c app
+  
+after_script:
+  - php phpcpd.phar --exclude src/SimplyTestable/WebClientBundle/Tests/ src/SimplyTestable/WebClientBundle/ 

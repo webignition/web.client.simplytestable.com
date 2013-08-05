@@ -4,7 +4,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Services\TestOptions\RequestParse
 
 use SimplyTestable\WebClientBundle\Tests\Services\TestOptions\RequestParserService\AbstractTestOptionsTest;
 
-class TestOptionsRequestParserServicesGetAbsolutetestTypeOptionsJsStaticAnalysisOptionsTest extends AbstractTestOptionsTest {    
+class GetAbsolutetestTypeOptionsJsStaticAnalysisOptionsTest extends AbstractTestOptionsTest {    
 
     public function testJsStaticAnalysisDomainsToIgnoreOne() {
         $this->getRequestData()->set('js-static-analysis', '1');

@@ -4,8 +4,9 @@ namespace SimplyTestable\WebClientBundle\Services;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
+use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
 
-class UserService extends CoreApplicationService {    
+class UserService extends CoreApplicationService {
     
     const PUBLIC_USER_USERNAME = 'public';
     const PUBLIC_USER_PASSWORD = 'public';
@@ -35,6 +36,27 @@ class UserService extends CoreApplicationService {
      * @var \SimplyTestable\WebClientBundle\Services\UserSerializerService
      */
     private $userSerializerService;
+    
+    
+    /**
+     *
+     * @var array
+     */
+    private $existsResultCache = array();
+    
+    
+    /**
+     *
+     * @var array
+     */
+    private $enabledResultsCache = array();
+    
+    
+    /**
+     *
+     * @var array
+     */
+    private $confirmationTokenCache = array();
     
     
     public function __construct(
@@ -82,12 +104,57 @@ class UserService extends CoreApplicationService {
      * @param \SimplyTestable\WebClientBundle\Model\User $user
      * @return boolean
      */
+    public function isSpecialUser(User $user) {
+        return $this->isPublicUser($user) || $this->isAdminUser($user);
+    }
+    
+    
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Model\User $user
+     * @return boolean
+     */
     public function isPublicUser(User $user) {
         $comparatorUser = new User();
         $comparatorUser->setUsername(strtolower($user->getUsername()));
         
+        if ($comparatorUser->getUsername() == 'public@simplytestable.com') {
+            return true;
+        }
+        
         return $this->getPublicUser()->equals($comparatorUser);
     } 
+    
+    
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Model\User $user
+     * @return boolean
+     */
+    public function isAdminUser(User $user) {
+        $comparatorUser = new User();
+        $comparatorUser->setUsername(strtolower($user->getUsername()));
+        
+        return $this->getAdminUser()->equals($comparatorUser);
+    }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function isLoggedIn() {
+        $user = $this->getUser();
+        if ($user->equals($this->getPublicUser())) {
+            return false;
+        }
+        
+        if ($user->equals($this->getAdminUser())) {
+            return false;
+        }
+        
+        return true;
+    }
     
     
     
@@ -98,21 +165,34 @@ class UserService extends CoreApplicationService {
      * @return null|boolean
      * @throws UserServiceException
      */
-    public function resetPassword($token, $password) {
-        $request = $this->getAuthorisedHttpRequest($this->getUrl('user_reset_password', array('token' => $token)), HTTP_METH_POST);
-        $request->addPostFields(array(
-            'password' => $password
-        ));
+    public function resetPassword($token, $password) {        
+        $request = $this->webResourceService->getHttpClientService()->postRequest(
+            $this->getUrl('user_reset_password', array('token' => $token)),
+            null,
+            array(
+                'password' => $password
+            )
+        );
+        
+        $this->addAuthorisationToRequest($request);
         
         try {
-            $response = $this->getHttpClient()->getResponse($request);
+            $response = $request->send();          
+            return ($response->getStatusCode() == 200) ? true : $response->getStatusCode();
+        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+            if ($badResponseException->getResponse()->getStatusCode() == 401) {
+                throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
+            }
             
-            return $response->getResponseCode() == 200;
-        } catch (\webignition\Http\Client\CurlException $curlException) {     
-            return null;
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-            return null;
+            return $badResponseException->getResponse()->getStatusCode();            
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            return $curlException->getErrorNo();
         }
+    }
+    
+    
+    public function resetLoggedInUserPassword($password) {        
+        return $this->resetPassword($this->getConfirmationToken($this->getUser()->getUsername()), $password);      
     }
     
     
@@ -123,69 +203,79 @@ class UserService extends CoreApplicationService {
      * @return boolean
      */
     public function authenticate() {
-        $request = $this->getAuthorisedHttpRequest($this->getUrl('user', array(
+        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('user', array(
             'email' => $this->getUser()->getUsername(),
             'password' => $this->getUser()->getPassword()
-        )), HTTP_METH_POST);
+        )));
         
-        $response = $this->getHttpClient()->getResponse($request);
-        return $response->getResponseCode() == 200;
-    }
-    
-    
-    public function create($email, $password) {
-        $request = $this->getAuthorisedHttpRequest($this->getUrl('user_create'), HTTP_METH_POST);
-        $request->addPostFields(array(
-            'email' => $email,
-            'password' => $password
-        ));
-        
-        $userExistsResponseCode = 302;
-        
-        if ($this->getHttpClient()->redirectHandler()->isEnabled($userExistsResponseCode)) {
-            $this->getHttpClient()->redirectHandler()->disable($userExistsResponseCode);
-        }        
+        $this->addAuthorisationToRequest($request);
         
         try {
-            $response = $this->getHttpClient()->getResponse($request);
-            
-            if ($response->getResponseCode() == $userExistsResponseCode) {
-                return false;
-            }
-            
-            return true;
-        } catch (\webignition\Http\Client\CurlException $curlException) {     
-            return null;
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-            return null;
-        }       
+            $response = $request->send();            
+        } catch (\Guzzle\Http\Exception\ClientErrorResponseException $clientErrorResponseException) {
+            $response = $clientErrorResponseException->getResponse();
+        }
+
+        return $response->isSuccessful();
     }
     
     
-    public function activate($token) {
-        $currentUser = ($this->hasUser()) ? $this->getUser() : null;
-   
+    public function create($email, $password, $plan = null) {
+        $request = $this->webResourceService->getHttpClientService()->postRequest(
+                $this->getUrl('user_create'),
+                null,
+                array(
+            'email' => $email,
+            'password' => $password,
+            'plan' => $plan
+        ));
+        
+        $this->addAuthorisationToRequest($request);        
+        $request->getParams()->set('redirect.disable', true);
+        
+        try {
+            $response = $request->send();
+            return $response->getStatusCode() == 200 ? true : $response->getStatusCode();
+        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+            if ($badResponseException->getResponse()->getStatusCode() == 401) {
+                throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
+            }
+            
+            return $badResponseException->getResponse()->getStatusCode();
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            return $curlException->getErrorNo();
+        }
+    }
+    
+    
+    public function activate($token) {   
         $this->setUser($this->getAdminUser());
         
-        $request = $this->getAuthorisedHttpRequest($this->getUrl('user_activate', array(
+        $request = $this->webResourceService->getHttpClientService()->postRequest($this->getUrl('user_activate', array(
             'token' => $token
-        )), HTTP_METH_POST);
+        )));
         
-        $response = $this->getHttpClient()->getResponse($request);
+        $this->addAuthorisationToRequest($request);
         
-        if (!is_null($currentUser)) {
-            $this->setUser($currentUser);
-        }        
+        try {
+            $response = $request->send();                        
+        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+            $response = $badResponseException->getResponse();
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            return $curlException->getErrorNo();
+        }
         
-        if ($response->getResponseCode() == 401) {
+        $this->setUser($this->getPublicUser());
+        
+        if ($response->getStatusCode() == 401) {
             throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
         }        
-        
-        if ($response->getResponseCode() == 400) {
-            return false;
-        }
 
-        return true;      
+        if ($response->getStatusCode() == 400) {
+            return false;
+        }         
+        
+        return $response->getStatusCode() == 200 ? true : $response->getStatusCode();        
     }    
     
     
@@ -194,31 +284,71 @@ class UserService extends CoreApplicationService {
      * @return boolean
      * @throws CoreApplicationAdminRequestException
      */
-    public function exists() {
-        /* @var $currentUser User */
-        $currentUser = ($this->hasUser()) ? $this->getUser() : null;
-        if (is_null($currentUser)) {
+    public function exists($email = null) {        
+        if (!$this->hasUser()) {
             return false;
+        }     
+        
+        $email = (is_null($email)) ? $this->getUser()->getUsername() : $email;
+        
+        if (!isset($this->existsResultCache[$email])) {
+            $existsResult = $this->getAdminBooleanResponse($this->webResourceService->getHttpClientService()->postRequest($this->getUrl('user_exists', array(
+                'email' => $email
+            ))));
+            if (is_null($existsResult)) {
+                return null;
+            }
+            
+            $this->existsResultCache[$email] = $existsResult;
         }
-   
-        $this->setUser($this->getAdminUser());
         
-        $request = $this->getAuthorisedHttpRequest($this->getUrl('user_exists', array(
-            'email' => $currentUser->getUsername()
-        )), HTTP_METH_POST);
+        return $this->existsResultCache[$email];        
+    }
+    
+    
+    /**
+     * 
+     * @param \Guzzle\Http\Message\Request $request
+     * @return boolean
+     * @throws CoreApplicationAdminRequestException
+     */
+    private function getAdminBooleanResponse(\Guzzle\Http\Message\Request $request) {
+        return $this->getAdminResponse($request)->getStatusCode() === 200;         
+    }
+    
+    
+    /**
+     * 
+     * @param \Guzzle\Http\Message\Request $request
+     * @return boolean
+     * @throws CoreApplicationAdminRequestException
+     */
+    protected function getAdminResponse(\Guzzle\Http\Message\Request $request) {
+        $currentUser = $this->getUser();
         
-        $response = $this->getHttpClient()->getResponse($request);
+        $this->setUser($this->getAdminUser());        
+        $this->addAuthorisationToRequest($request);
+        
+        try {
+            $response = $request->send();            
+        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+            $response = $badResponseException->getResponse();
+        }
         
         if (!is_null($currentUser)) {
             $this->setUser($currentUser);
         }        
         
-        if ($response->getResponseCode() == 401) {
+        if ($response->getStatusCode() == 401) {
             throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
         } 
         
-        return $response->getResponseCode() == 200;         
-    }
+        if (is_null($response)) {
+            return null;
+        }
+        
+        return $response;            
+    }    
     
     
     /**
@@ -226,31 +356,25 @@ class UserService extends CoreApplicationService {
      * @return boolean
      * @throws CoreApplicationAdminRequestException
      */
-    public function isEnabled() {
+    public function isEnabled() {        
         if (!$this->exists()) {
             return false;
         }
         
-        /* @var $currentUser User */
-        $currentUser = ($this->hasUser()) ? $this->getUser() : null;        
-   
-        $this->setUser($this->getAdminUser());
+        $email = $this->getUser()->getUsername();
         
-        $request = $this->getAuthorisedHttpRequest($this->getUrl('user_is_enabled', array(
-            'email' => $currentUser->getUsername()
-        )), HTTP_METH_POST);
-        
-        $response = $this->getHttpClient()->getResponse($request);
-        
-        if (!is_null($currentUser)) {
-            $this->setUser($currentUser);
+        if (!isset($this->enabledResultsCache[$email])) {
+            $existsResult = $this->getAdminBooleanResponse($this->webResourceService->getHttpClientService()->postRequest($this->getUrl('user_is_enabled', array(
+                'email' => $email
+            ))));           
+            if (is_null($existsResult)) {
+                return null;
+            }
+            
+            $this->enabledResultsCache[$email] = $existsResult;
         }
         
-        if ($response->getResponseCode() == 401) {
-            throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
-        } 
-        
-        return $response->getResponseCode() == 200;           
+        return $this->enabledResultsCache[$email];          
     }
 
     
@@ -261,35 +385,13 @@ class UserService extends CoreApplicationService {
      * @throws CoreApplicationAdminRequestException
      */
     public function getConfirmationToken($email) {
-        $currentUser = ($this->hasUser()) ? $this->getUser() : null;
-   
-        $this->setUser($this->getAdminUser());
-        
-        $request = $this->getAuthorisedHttpRequest($this->getUrl('user_get_token', array(
-            'email' => $email
-        )));
-        
-        try {
-            $response = $this->getHttpClient()->getResponse($request);
-        } catch (\webignition\Http\Client\CurlException $curlException) {                 
-            $response = null;
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-            $response = null;
-        }              
-        
-        if (is_null($response)) {
-            return null;
+        if (!isset($this->confirmationTokenCache[$email])) {
+            $this->confirmationTokenCache[$email] = json_decode($this->getAdminResponse($this->webResourceService->getHttpClientService()->getRequest($this->getUrl('user_get_token', array(
+                'email' => $email
+            ))))->getBody());
         }
         
-        if (!is_null($currentUser)) {
-            $this->setUser($currentUser);
-        }
-        
-        if ($response->getResponseCode() == 401) {
-            throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
-        }
-
-        return json_decode($response->getBody());
+        return $this->confirmationTokenCache[$email];
     }
     
     
@@ -327,5 +429,80 @@ class UserService extends CoreApplicationService {
     public function clearUser() {
         $this->session->set('user', null);
     }
+    
+    
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Model\User $user
+     * @return \webignition\WebResource\JsonDocument\JsonDocument
+     * @throws \SimplyTestable\WebClientBundle\Services\CurlException
+     */
+    public function getSummary(User $user) {
+        $request = $this->webResourceService->getHttpClientService()->getRequest(
+                $this->getUrl('user', array(
+                    'email' => $user->getUsername()
+                ))
+        );
+        
+        $this->addAuthorisationToRequest($request);
+
+        try {
+            return $this->webResourceService->get($request);
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            throw $curlException;
+        }        
+    } 
+    
+    
+    /**
+     * 
+     * @param \Guzzle\Http\Message\Response $response
+     * @return boolean
+     */
+    protected function httpResponseHasStripeError(\Guzzle\Http\Message\Response $response) {
+        return count($this->getStripeErrorValuesFromHttpResponse($response)) > 0;
+    } 
+    
+    
+    /**
+     * 
+     * @param \Guzzle\Http\Message\Response $response
+     * @return \SimplyTestable\WebClientBundle\Exception\UserAccountCardException
+     */
+    protected function getUserAccountCardExceptionFromHttpResponse(\Guzzle\Http\Message\Response $response) { 
+        $stripeErrorValues = $this->getStripeErrorValuesFromHttpResponse($response);
+        
+        $message = (isset($stripeErrorValues['message'])) ? $stripeErrorValues['message'] : '';
+        $param = (isset($stripeErrorValues['param'])) ? $stripeErrorValues['param'] : '';
+        $code = (isset($stripeErrorValues['code'])) ? $stripeErrorValues['code'] : '';
+        
+        return new UserAccountCardException($message, $param, $code);      
+    }
+    
+    
+    /**
+     * 
+     * @param \Guzzle\Http\Message\Response $response
+     * @return array
+     */
+    private function getStripeErrorValuesFromHttpResponse(\Guzzle\Http\Message\Response $response) {
+        $stripeErrorKeys = array('message', 'param', 'code');
+        $stripeErrorValues = array();
+        
+        foreach ($stripeErrorKeys as $stripeErrorKeySuffix) {
+            $stripeErrorKey = 'x-stripe-error-' . $stripeErrorKeySuffix;
+            
+            if ($response->hasHeader($stripeErrorKey)) {
+                $errorHeaderValues = $response->getHeader($stripeErrorKey)->toArray();
+
+                if (count($errorHeaderValues)) {
+                    $stripeErrorValues[$stripeErrorKeySuffix] = $errorHeaderValues[0];
+                }                
+            }
+        }        
+        
+        return $stripeErrorValues;       
+    }    
+
     
 }

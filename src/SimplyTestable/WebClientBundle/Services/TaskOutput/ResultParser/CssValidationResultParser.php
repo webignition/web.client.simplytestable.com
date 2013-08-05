@@ -6,19 +6,19 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 
-class CssValidationResultParser extends ResultParser {    
+class CssValidationResultParser extends ResultParser {      
     
     /**
      * @return Result
      */
-    public function getResult() {        
-        $result = new Result();
+    protected function buildResult() {        
+        $result = new Result();        
         
         $rawOutputArray = json_decode($this->getOutput()->getContent());
         
         if (count($rawOutputArray) === 0) {
             return $result;
-        }       
+        }
    
         foreach ($rawOutputArray as $rawMessageObject) {            
             $result->addMessage($this->getMessageFromOutput($rawMessageObject));
@@ -33,10 +33,10 @@ class CssValidationResultParser extends ResultParser {
      * @param \stdClass $rawMessageObject
      * @return \SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage 
      */
-    private function getMessageFromOutput(\stdClass $rawMessageObject) {        
+    private function getMessageFromOutput(\stdClass $rawMessageObject) {                
         $propertyToMethodMap = array(
             'context' => 'setContext',
-            'lineNumber' => 'setLineNumber',
+            'line_number' => 'setLineNumber',
             'message' => 'setMessage',
             'ref' => 'setRef'
         );
@@ -44,7 +44,7 @@ class CssValidationResultParser extends ResultParser {
         $message = new CssTextFileMessage();
         $message->setType($rawMessageObject->type);
         
-        foreach ($propertyToMethodMap as $property => $methodName) {
+        foreach ($propertyToMethodMap as $property => $methodName) {            
             if (isset($rawMessageObject->$property)) {
                 $message->$methodName($rawMessageObject->$property);
             }

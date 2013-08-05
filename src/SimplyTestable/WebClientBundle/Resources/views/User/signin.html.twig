@@ -41,7 +41,7 @@
                 <strong>Yippee!</strong>
             </p>
             <p>
-                Your account is now activate. Go ahead, sign in and enjoy.
+                Your account is now active. Go ahead, sign in and enjoy.
             </p>
         </div>                
         {% endif %}
@@ -69,6 +69,18 @@
             <strong>Slow down!</strong> You're going to have to enter in your password to sign in.
         </div>                
             {% endif %}   
+        
+            {% if user_signin_error == 'account-not-logged-in' %}
+        <div class="alert alert-info">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p>
+                <strong>Hello!</strong>
+            </p>
+            <p>
+                You need to sign in to access your account.
+            </p>
+        </div>                
+            {% endif %}         
         
             {% if user_signin_error == 'test-not-logged-in' %}
         <div class="alert alert-info">
@@ -137,11 +149,14 @@
     <div class="larger">
         <label  for="password">Password</label>
         <input name="password" type="password" id="password" placeholder="Enter your password" />
-    </div>
+    </div>       
     <div>
         <button class="submit btn btn-large btn-primary" type="submit">Sign in!</button>
         <input type="hidden" name="redirect" value="{{ redirect }}" />
-    </div>
+        <label class="checkbox" id="stay-signed-in-container">
+            <input type="checkbox" {% if stay_signed_in != "0" %}checked="checked"{% endif %} name="stay-signed-in" value="1"><span>Stay signed in</span>
+        </label>        
+    </div>       
 </form>   
 
 <form class="form-horizontal" method="get" action="{{ path('reset_password') }}">

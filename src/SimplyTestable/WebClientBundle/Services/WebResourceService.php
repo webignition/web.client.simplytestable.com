@@ -2,17 +2,16 @@
 
 namespace SimplyTestable\WebClientBundle\Services;
 
-use SimplyTestable\WebClientBundle\Exception\WebResourceServiceException;
-use webignition\WebResource\WebResource;
 use webignition\InternetMediaType\Parser\Parser as InternetMediaTypeParser;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 
-class WebResourceService {
+class WebResourceService {    
     
     /**
      *
-     * @var \webignition\Http\Client\Client
+     * @var \SimplyTestable\WebClientBundle\Services\HttpClientService
      */
-    private $httpClient; 
+    private $httpClientService;
     
     
     /**
@@ -25,46 +24,71 @@ class WebResourceService {
     
     /**
      *
-     * @param \webignition\Http\Client\Client $httpClient
+     * @param \SimplyTestable\WebClientBundle\Services\HttpClientService $httpClientService
      * @param array $contentTypeWebResourceMap
      */
     public function __construct(
-            \webignition\Http\Client\Client $httpClient,
+            \SimplyTestable\WebClientBundle\Services\HttpClientService $httpClientService,
             $contentTypeWebResourceMap)
     {
-        $this->httpClient = $httpClient;
-        $this->httpClient->redirectHandler()->enable();
-        $this->httpClient->sender()->setRetryLimit(10);
-        
+        $this->httpClientService = $httpClientService;        
         $this->contentTypeWebResourceMap = $contentTypeWebResourceMap;        
     }
     
     
     /**
-     *
-     * @param \HttpRequest $request
-     * @return \webignition\WebResource\WebResource 
-     * @throws \webignition\Http\Client\CurlException
-     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceServiceException
+     * 
+     * @return \SimplyTestable\WebClientBundle\Services\HttpClientService
      */
-    public function get($request) {
-        $response = $this->httpClient->getResponse($request);
-        $responseCodeClass = substr($response->getResponseCode(), 0, 1);
+    public function getHttpClientService() {        
+        return $this->httpClientService;
+    }
+    
+    
+    /**
+     * 
+     * @param \Guzzle\Http\Message\Request $request
+     * @return \SimplyTestable\WebClientBundle\Services\webResourceClassName
+     * @throws WebResourceException
+     */
+    public function get(\Guzzle\Http\Message\Request $request) {        
+        // Guzzle seems to be flailing in errors if redirects total more than 4
+        $request->getParams()->set('redirect.max', 4);
         
-        if ($responseCodeClass == 4 || $responseCodeClass == 5) {
-            throw new WebResourceServiceException($response->getResponseCode());
+        try {
+            $response = $request->send();
+        } catch (\Guzzle\Http\Exception\ServerErrorResponseException $serverErrorResponseException) {
+            $response = $serverErrorResponseException->getResponse();
+        } catch (\Guzzle\Http\Exception\ClientErrorResponseException $clientErrorResponseException) {
+            $response = $clientErrorResponseException->getResponse();
+        }
+        
+        if ($response->isInformational()) {
+            // Interesting to see what makes this happen
+            return;
+        }
+        
+        if ($response->isRedirect()) {
+            // Shouldn't happen, HTTP client should have the redirect handler
+            // enabled, redirects should be followed            
+            return;
+        }
+        
+        if ($response->isClientError() || $response->isServerError()) {
+            throw new WebResourceException($response, $request); 
         }
         
         $mediaTypeParser = new InternetMediaTypeParser();
-        $contentType = $mediaTypeParser->parse($response->getHeader('content-type'));
-        
+        $mediaTypeParser->setIgnoreInvalidAttributes(true);
+        $contentType = $mediaTypeParser->parse($response->getContentType());               
+
         $webResourceClassName = $this->getWebResourceClassName($contentType->getTypeSubtypeString());
 
-        $resource = new $webResourceClassName;
-        $resource->setContent($response->getBody());
-        $resource->setContentType($response->getHeader('content-type'));
-        $resource->setUrl($request->getUrl());       
-        
+        $resource = new $webResourceClassName;                
+        $resource->setContent($response->getBody(true));                              
+        $resource->setContentType((string)$contentType);                  
+        $resource->setUrl($response->getRequest()->getUrl());          
+
         return $resource;
     }
     
@@ -77,15 +101,6 @@ class WebResourceService {
      */
     private function getWebResourceClassName($contentType) {
         return (isset($this->contentTypeWebResourceMap[$contentType])) ? $this->contentTypeWebResourceMap[$contentType] : $this->contentTypeWebResourceMap['default'];
-    }
-    
-    
-    /**
-     * 
-     * @return \webignition\Http\Client\Client
-     */
-    public function getHttpClient() {
-        return $this->httpClient;
     }
     
 }

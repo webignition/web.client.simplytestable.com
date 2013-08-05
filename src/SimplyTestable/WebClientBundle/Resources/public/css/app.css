@@ -101,11 +101,7 @@ section.top {
 }
 
 #main #input .fields input {
-    width:65%;
-}
-
-#main #input .fields button {
-    width:30%;
+    width:60%;
 }
 
 #main #input .fields button i {
@@ -443,14 +439,24 @@ body.single-page-dialog #main button.submit {
     margin-top:20px;
 }
 
+
 form .larger input {
+    font-size: 15px;
+    padding: 12px 9px 12px 9px;      
+}
+
+body.app-progress form .larger input {
     font-size: 15px;
     padding: 14px 9px 13px 9px;      
 }
 
-body.app form .larger input {
-    font-size: 15px;
-    padding: 14px 9px 13px 9px;      
+body.app #input .btn-primary,
+body.app-results #input .btn-primary {    
+    width:20%;
+}
+
+body.app-progress #input .btn-primary {
+    width:30%;
 }
 
 form .larger button {
@@ -480,12 +486,11 @@ div.input-secondary {
 
 .navbar .user-link,
 .navbar form.sign-out-form .icon-user {
-    border-left: 1px solid #999;
     padding-left:10px;
 }
 
 .navbar  form.sign-out-form {
-    margin:0;
+    margin:1px 0 0 0;
     padding:0;
 }
 
@@ -675,12 +680,6 @@ padding: 0;
     width:60%;
 }
 
-.js-static-analysis-jslint-options textarea {
-    width:96%;
-font-family: monospace;
-font-size: 10px;    
-}
-
 #test-options .test-options-advanced {
     margin-left: 18px;
 }
@@ -692,8 +691,8 @@ body.app-progress #test-options .test-options-advanced {
 
 #test-options  .validator-option-set p {
     font-weight: bold;
+    opacity: 0.8;
     margin: 6px 0;
-    color:#565656;
 }
 
 body.app-task-results .outcome {
@@ -706,8 +705,12 @@ body.app-task-results .section-marker {
     margin-top:-60px;
 }
 
-body.app-task-results .outcome a {
+body.app-task-results .label a {
     color: #fff;
+}
+
+body.app-task-results .label a:hover i {
+    text-decoration: none;
 }
 
 body.app-task-results .outcome .label {
@@ -731,62 +734,36 @@ body.app-progress .test-options-advanced ul li {
    margin-bottom: 4px;
 }
 
-body.app .jslint-option-set-group {
-    
+body.app-results-preparing h1,
+body.single-page-notification h1 {
+    margin-bottom: 40px;
 }
 
-body.app .jslint-option-set-group h3 {
-    color:#565656;
-    font-size:14px;
-    margin:0;
+body.single-page-notification p.intro {
+    font-size:18px;
+    line-height: 24px;    
 }
 
-body.app .jslint-option-set {
-    
+body.single-page-notification .cta {
+    margin-top:40px;
 }
 
-body.app .jslint-option-set label {
-    font-size: 13px;
+body.single-page-notification #detail-expandable ul {
+    margin-bottom:0;
+    padding-bottom:10px;
 }
 
-body.app .inline-short {
-    width:30px;
+body.single-page-notification h3 {
+    font-size: 14px;
+    line-height: 22px;    
 }
 
-body.app .jslint-options-container {
-    padding-left:15px;
-    margin-left:5px;
-    border-left-width: 5px;
-    border-left-style: solid;
-    border-left-color: #e7e7e7;
+body.app-results-preparing .summary {
+    margin-top: 30px;    
 }
 
-#test-options .test-options-set:hover .jslint-options-container {
-    border-left-color: #ddd;
-}
+body.app-results-preparing #completion-percent {
 
-/*body.app .jslint-integer-options {
-    margin-top:-8px;
-}*/
-
-body.app .jslint-integer-options label {
-    display:inline;
-}
-
-body.app .jslint-integer-options input {
-    display:inline;
-    vertical-align: baseline;
-    text-align: center;
-}
-
-.help-block-inline {
-    display:inline;
-    font-weight: normal;
-}
-
-body.app .test-options-set code {
-    background-color: #fee9cc;
-    color:#565656;
 }
 
 @media (min-width: 1200px) {
@@ -805,4 +782,162 @@ body.app .test-options-set code {
     body.app-task-results .errors .content {        
         width:82%;
     }    
+}
+
+body.sign-in #stay-signed-in-container {
+    margin-left:100px;
+    margin-top:-30px;
+}
+
+#stay-signed-in-container span {
+    opacity: 0.8;
+}
+
+body.single-page-dialog #stay-signed-in-container input {
+    width:auto;
+}
+
+body.app-progress #completion-time-remaining {
+    padding:0;
+    margin: -10px 0 -10px 0;
+    opacity: 0.6;
+}
+
+body.account h1,
+body.account h2,
+body.account h3,
+body.account h4 {
+    font-weight: normal;
+}
+
+body.account h1 {
+    font-size:32px;
+    line-height: 44px;
+}
+
+body.account h2 {
+    font-size:26px;
+    line-height: 34px;
+    opacity:0.7;
+}
+
+body.account h3 {
+    font-size:18px;
+    line-height: 24px;
+    opacity:0.7;
+}
+
+body.account .account-details label {
+    width:140px;
+}
+
+body.account .plan table {
+    
+}
+
+body.account .plan th {
+    padding-left: 0;
+    font-weight: normal;
+}
+
+body.account .plan-section {
+    margin-bottom:30px;
+}
+
+body.account .confirm-email-change form {
+    margin-left: -16px;
+}
+
+body.account .confirm-email-change form #token {
+    width:100%;
+}
+
+.navbar-link {
+    text-decoration:none;    
+}
+
+.navbar-link:hover {
+    text-decoration:none;
+}
+
+body.account div.controls-disabled {
+    padding-top: 5px;
+}
+
+.alert .icon-warning-sign {
+    font-size: 26px;
+    vertical-align: middle;
+    margin-right:6px;
+}
+
+.alert-from-view .icon-warning-sign {
+    margin-right:0;
+}
+
+#recent-site-tests .span4 {
+    width:31%;
+}
+
+body.user-account-index .card-container .card-container-label {
+    width:166px;
+    position: relative;
+}
+
+body.user-account-index .card-type {
+    display:block;
+    background-repeat: no-repeat;
+    height: 32px; 
+    position: absolute;
+    right:0;
+    width:51px;
+}
+
+/**
+* Credit card icons from http://media.smashingmagazine.com/wp-content/uploads/2010/10/payment-icon-set.zip
+* as referenced by http://www.smashingmagazine.com/2010/10/21/free-png-credit-card-debit-card-and-payment-icons-set-18-icons/ 
+* Icons are free to use
+*/
+body.user-account-index .card-type-visa {
+    background-image: url('/bundles/simplytestablewebclient/images/visa-straight-32px.png');
+}
+
+body.user-account-index .card-type-mastercard {
+    background-image: url('/bundles/simplytestablewebclient/images/mastercard-straight-32px.png');
+}
+
+body.user-account-index .card-details .icon {
+    font-size:7px;
+    vertical-align: middle;
+}
+
+body.user-account-index .card-details .exp_date {
+    opacity: 0.7;
+    font-size: 12px;
+    display:block;
+    margin-top: -4px;
+}
+
+body.user-account-card .control-group-cvc a {
+    margin-top:10px;
+    display:block;
+}
+
+body.user-account-index .plan-section .alert-error {
+    margin-bottom:0;
+}
+
+body.user-account-index .latest-invoice td {
+    padding-left:0;
+}
+
+body.user-account-index .latest-invoice td span {
+    opacity:0.7;
+}
+
+body.user-account-index .latest-invoice .icon-ok {
+    color:#468847;
+}
+
+.alert a {
+    text-decoration: underline;
 }

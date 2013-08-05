@@ -1,0 +1,193 @@
+core_application_proxy:
+  pattern: /core-application-proxy/
+  defaults: { _controller: SimplyTestableWebClientBundle:CoreApplicationProxy:index } 
+
+sign_out_submit:
+    pattern:  /signout/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signOutSubmit }   
+
+sign_in:
+    pattern:  /signin/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signIn }   
+    
+sign_in_submit:
+    pattern:  /signin/submit/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signInSubmit }       
+    
+reset_password:
+    pattern:  /reset-password/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:resetPassword }       
+    
+reset_password_submit:
+    pattern:  /reset-password/submit/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:resetPasswordSubmit }     
+
+reset_password_choose_submit:
+    pattern:  /reset-password/choose/submit/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:resetPasswordChooseSubmit }       
+    
+reset_password_choose:
+    pattern:  /reset-password/{email}/{token}/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:resetPasswordChoose }           
+    
+sign_up:
+    pattern:  /signup/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signUp }      
+    
+sign_up_submit:
+    pattern:  /signup/submit/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signUpSubmit }   
+    
+sign_up_confirm:
+    pattern:  /signup/confirm/{email}/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signUpConfirm }       
+    
+sign_up_confirm_submit:
+    pattern:  /signup/confirm/{email}/submit/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signUpConfirmSubmit }     
+    
+sign_up_confirm_resend:
+    pattern:  /signup/confirm/{email}/resend/
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signUpConfirmResend }
+    
+user_account_details_update:
+    pattern:  /account/details/update/
+    defaults: { _controller: SimplyTestableWebClientBundle:UserAccountDetails:update }          
+    
+user_account_details_confirm_email_change:
+    pattern:  /account/details/update/confirm-email-change/
+    defaults: { _controller: SimplyTestableWebClientBundle:UserAccountDetails:confirmEmailChange }          
+        
+user_account_index:
+    pattern:  /account/
+    defaults: { _controller: SimplyTestableWebClientBundle:UserAccount:index }    
+
+app:
+    pattern:  /
+    defaults: { _controller: SimplyTestableWebClientBundle:App:index }
+    
+app_task_results:
+    pattern:  /{website}/{test_id}/{task_id}/results/
+    defaults: { _controller: SimplyTestableWebClientBundle:Task:results }  
+    requirements:
+        website: ".+"
+        test_id: "\d+"
+        task_id: "\d+"        
+        
+app_queued:
+  pattern: /{website}/queued/
+  defaults: { _controller: SimplyTestableWebClientBundle:App:queued } 
+  requirements:
+      website: ".+" 
+      
+test_queued_status:
+  pattern: /{website}/queued/status/
+  defaults: { _controller: SimplyTestableWebClientBundle:Test:queuedStatus, _format: json  } 
+  requirements:
+      website: ".+"
+      
+app_task_results_redirector:
+    pattern:  /{website}/{test_id}/{task_id}/
+    defaults: { _controller: SimplyTestableWebClientBundle:Redirect:task }  
+    requirements:
+        website: ".+"
+        test_id: "\d+"
+        task_id: "\d+"         
+
+app_progress:
+    pattern:  /{website}/{test_id}/progress/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestProgress:index }  
+    requirements:
+        website: ".+" 
+        
+app_results:
+    pattern:  /{website}/{test_id}/results/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestResults:index }  
+    requirements:
+       website: ".+"
+       
+app_results_failed_no_urls_detected:
+    pattern:  /{website}/{test_id}/results/failed/no-urls-detected/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestResults:failedNoUrlsDetected }  
+    requirements:
+       website: ".+"       
+       
+app_results_rejected:
+    pattern:  /{website}/{test_id}/results/rejected/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestResults:rejected }  
+    requirements:
+       website: ".+"         
+       
+app_results_preparing:
+    pattern:  /{website}/{test_id}/results/preparing/
+    defaults: { _controller: SimplyTestableWebClientBundle:App:prepareResults }  
+    requirements:
+       website: ".+"       
+       
+task_results_retrieve:
+    pattern:  /{website}/{test_id}/results/retrieve/
+    defaults: { _controller: SimplyTestableWebClientBundle:TaskResults:retrieve }  
+    requirements:
+       website: ".+"  
+       
+task_results_retrieve_status:
+    pattern:  /{website}/{test_id}/results/retrieve/status/
+    defaults: { _controller: SimplyTestableWebClientBundle:TaskResults:status }  
+    requirements:
+       website: ".+"         
+        
+app_tasks:
+    pattern:  /{website}/{test_id}/tasks/
+    defaults: { _controller: SimplyTestableWebClientBundle:Task:collection, _format: json }  
+    requirements:
+        website: ".+"   
+        
+app_task_ids:
+    pattern:  /{website}/{test_id}/tasks/ids/
+    defaults: { _controller: SimplyTestableWebClientBundle:Task:idCollection, _format: json }  
+    requirements:
+        website: ".+"
+        
+app_unretrieved_task_ids:
+    pattern:  /{website}/{test_id}/tasks/ids/unretrieved/{limit}/
+    defaults: { _controller: SimplyTestableWebClientBundle:Task:unretrievedIdCollection, _format: json }  
+    requirements:
+        website: ".+"  
+
+test_start:
+    pattern:  /test/start/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestStart:startNew }
+    
+test_clone_and_start:
+    pattern:  /test/start/clone/{website}/{test_id}/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestStart:cloneAndStart }    
+    requirements:
+        website: ".+"
+    
+test_cancel:
+    pattern:  /test/{website}/{test_id}/cancel/
+    defaults: { _controller: SimplyTestableWebClientBundle:Test:cancel }  
+    requirements:
+        website: ".+"
+        
+test_cancel_queued:
+    pattern:  /test/{website}/cancel/
+    defaults: { _controller: SimplyTestableWebClientBundle:Test:cancelQueued }  
+    requirements:
+        website: ".+"        
+        
+app_test_redirector:
+    pattern:  /{website}/{test_id}/
+    defaults: { _controller: SimplyTestableWebClientBundle:Redirect:test }  
+    requirements:
+        website: ".+"
+
+app_website:
+    pattern:  /{website}/
+    defaults: { _controller: SimplyTestableWebClientBundle:Redirect:test }  
+    requirements:
+        website: ".+"         
+        
+outdated_browser:
+    pattern:  /outdated-browser/
+    defaults: { _controller: SimplyTestableWebClientBundle:App:outdatedBrowser }

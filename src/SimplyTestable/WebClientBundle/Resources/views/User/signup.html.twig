@@ -9,6 +9,10 @@
     Sign up free in seconds to keep track of the tests you've started, find past test
     results, easily re-test when you make changes.
 </p>
+<p>
+    Upgrade to a premium plan by 31 July 2013 and take advantage of our 365 day
+    trial offer (usually 30 days).
+</p>
 
 <form class="form-horizontal" method="post" action="{{ path('sign_up_submit') }}">            
         {% if user_create_error is defined and user_create_error != '' %}
@@ -40,6 +44,20 @@
             work. I don't know why.
         </div>                
             {% endif %}                                                    
+        
+            {% if user_create_error == 'create-failed-read-only' %}
+        <div class="alert alert-error for:input-email">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p><strong>Sorry, I can't do that right now</strong></p>
+            <p>
+                We're in a <strong>read-only</strong> state whilst some 
+                <strong>maintenance</strong> is going on.
+            </p>
+            <p>
+                Give it a go again soon, this won't take long.
+            </p>
+        </div>                
+            {% endif %}         
         {% endif %}
 
         {% if user_create_confirmation is defined and user_create_confirmation != '' %}
@@ -49,7 +67,7 @@
             <p><strong>Guess what?</strong> Looks like <strong>{{ email }}</strong>
                 already has an account.</p>
             <p>
-                Do you need to <a href="#">reset your password</a>?
+                Do you need to <a href="{{ path('reset_password', {'email': email}) }}">reset your password</a>?                
             </p>
         </div>                
             {% endif %}                         
@@ -63,8 +81,22 @@
             <label  for="password">Password</label>
             <input name="password" type="password" id="password" placeholder="Choose a password" />
         </div>
+        <div class="larger">
+            <label  for="password">Account plan</label>
+            <select name="plan">
+                <option value="basic" {% if plan == 'basic' %}selected{% endif %}>Basic (free)</option>
+                <option value="personal" {% if plan == 'personal' %}selected{% endif %}>Personal (&pound;9 per month)</option>
+                <option value="agency" {% if plan == 'agency' %}selected{% endif %}>Agency (&pound;19 per month)</option>
+                <option value="business" {% if plan == 'business' %}selected{% endif %}>Business (&pound;59 per month)</option>              
+                <option value="enterprise" {% if plan == 'enterprise' %}selected{% endif %}>Enterprise (&pound;299 per month)</option>
+            </select>
+            <a href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">View plan and pricing details <i class="icon icon-caret-right"></i></a>    
+        </div>        
         <div>
             <button class="submit btn btn-large btn-primary" type="submit">Sign up!</button>
+            <p class="terms-notice">
+                By making use of this website you agree to the <a href="http://help.simplytestable.com/legal/terms-of-service/">terms of service</a>.
+            </p>
         </div>
     </form>   
 

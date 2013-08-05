@@ -25,6 +25,20 @@ abstract class BaseController extends Controller
      * @return \SimplyTestable\WebClientBundle\Model\User
      */
     public function getUser() {
+        $user = $this->getUserService()->getUser();
+        
+        if ($this->getUserService()->isPublicUser($user)) {
+            $userCookie = $this->getRequest()->cookies->get('simplytestable-user');
+            if (!is_null($userCookie)) {
+                $user = $this->getUserSerializerService()->unserializedFromString($userCookie);
+                if (is_null($user)) {
+                    $user = $this->getUserService()->getPublicUser();
+                } else {
+                    $this->getUserService()->setUser($user);
+                }
+            }
+        }        
+        
         return $this->getUserService()->getUser();
     }
     
@@ -62,11 +76,11 @@ abstract class BaseController extends Controller
         }
         
         $availableHttpMethods = array(
-            HTTP_METH_GET,
-            HTTP_METH_POST
+            \Guzzle\Http\Message\Request::GET,
+            \Guzzle\Http\Message\Request::POST
         );
         
-        $defaultHttpMethod = HTTP_METH_GET;
+        $defaultHttpMethod = \Guzzle\Http\Message\Request::GET;
         $requestedHttpMethods = array();
         
         if (is_null($httpMethod)) {
@@ -95,8 +109,8 @@ abstract class BaseController extends Controller
      * @param int $httpMethod
      * @return type 
      */
-    protected function getRequestValues($httpMethod = HTTP_METH_GET) {
-        return ($httpMethod == HTTP_METH_POST) ? $this->getRequest()->request : $this->getRequest()->query;            
+    protected function getRequestValues($httpMethod = \Guzzle\Http\Message\Request::GET) {
+        return ($httpMethod == \Guzzle\Http\Message\Request::POST) ? $this->getRequest()->request : $this->getRequest()->query;            
     }   
     
     /**
@@ -115,7 +129,7 @@ abstract class BaseController extends Controller
         }
         
         return $url;
-    }  
+    }   
     
     
     /**
@@ -134,6 +148,36 @@ abstract class BaseController extends Controller
             ),
             true
         );
+    }    
+    
+    
+    /**
+     * Get the progress page URL for a given site and test ID
+     * 
+     * @param string $website
+     * @param string $test_id
+     * @return string
+     */
+    protected function getPreparingResultsUrl($website, $test_id) {
+        return $this->generateUrl(
+            'app_results_preparing',
+            array(
+                'website' => $website,
+                'test_id' => $test_id
+            ),
+            true
+        );
+    }
+    
+    
+    protected function getQueuedUrl($website) {
+        return $this->generateUrl(
+            'app_queued',
+            array(
+                'website' => $website
+            ),
+            true
+        );        
     }
     
     
@@ -192,5 +236,23 @@ abstract class BaseController extends Controller
      */
     protected function getSession() {
         return $this->get('session');
-    }   
+    } 
+    
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Services\UserSerializerService
+     */
+    protected function getUserSerializerService() {
+        return $this->container->get('simplytestable.services.userserializerservice');
+    }
+    
+    
+    /**
+     *
+     * @return \Symfony\Component\HttpKernel\Log\LoggerInterface
+     */
+    protected function getLogger() {
+        return $this->container->get('logger');
+    }
+    
 }

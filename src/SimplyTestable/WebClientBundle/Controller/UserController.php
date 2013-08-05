@@ -8,17 +8,28 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 use SimplyTestable\WebClientBundle\Model\User;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class UserController extends BaseViewController
 {     
+    const ONE_YEAR_IN_SECONDS = 31536000;
+    
     public function signOutSubmitAction() {
         $this->getUserService()->clearUser();
-        return $this->redirect($this->generateUrl('app', array(), true));        
+        
+        $response = $this->redirect($this->generateUrl('app', array(), true));         
+        $response->headers->clearCookie('simplytestable-user', '/', '.simplytestable.com');
+        
+        return $response;    
     }
     
     
     public function signInAction()
-    {                
+    {       
+        if ($this->isLoggedIn()) {
+            return $this->redirect($this->generateUrl('app', array(), true));
+        }        
+        
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }        
@@ -34,7 +45,8 @@ class UserController extends BaseViewController
             'email' => $this->getPersistentValue('email'),
             'user_signin_error' => $userSignInError,
             'user_signin_confirmation' => $userSignInConfirmation,
-            'redirect' => $redirect
+            'redirect' => $redirect,
+            'stay_signed_in' => $this->getPersistentValue('stay-signed-in')                
         ));
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
@@ -56,7 +68,8 @@ class UserController extends BaseViewController
             'email' => $this->getPersistentValue('email'),
             'user_signin_error' => $userSignInError,
             'user_signin_confirmation' => $userSignInConfirmation,
-            'redirect' => $redirect
+            'redirect' => $redirect,
+            'stay_signed_in' => $this->getPersistentValue('stay-signed-in')
         )), $cacheValidatorHeaders);        
     }
     
@@ -64,11 +77,13 @@ class UserController extends BaseViewController
     public function signInSubmitAction() {
         $email = trim($this->get('request')->request->get('email')); 
         $redirect = trim($this->get('request')->request->get('redirect')); 
+        $staySignedIn = trim($this->get('request')->request->get('stay-signed-in')) == '' ? 0 : 1; 
 
         if ($email == '') {
             $this->get('session')->setFlash('user_signin_error', 'blank-email');
             return $this->redirect($this->generateUrl('sign_in', array(
-                'redirect' => $redirect
+                'redirect' => $redirect,
+                'stay-signed-in' => $staySignedIn
             ), true));             
         } 
         
@@ -76,7 +91,8 @@ class UserController extends BaseViewController
             $this->get('session')->setFlash('user_signin_error', 'invalid-email');
             return $this->redirect($this->generateUrl('sign_in', array(
                 'email' => $email,
-                'redirect' => $redirect                
+                'redirect' => $redirect,
+                'stay-signed-in' => $staySignedIn
             ), true));              
         }        
         
@@ -86,7 +102,8 @@ class UserController extends BaseViewController
             $this->get('session')->setFlash('user_signin_error', 'blank-password');
             return $this->redirect($this->generateUrl('sign_in', array(
                 'email' => $email,
-                'redirect' => $redirect
+                'redirect' => $redirect,
+                'stay-signed-in' => $staySignedIn
             ), true));             
         }          
         
@@ -98,40 +115,46 @@ class UserController extends BaseViewController
             $this->get('session')->setFlash('user_signin_error', 'public-user');
             return $this->redirect($this->generateUrl('sign_in', array(
                 'email' => $email,
-                'redirect' => $redirect
+                'redirect' => $redirect,
+                'stay-signed-in' => $staySignedIn
             ), true));             
         }
         
         $this->getUserService()->setUser($user);
         
-        if (!$this->getUserService()->authenticate()) {            
-            if ($this->getUserService()->exists()) {
-                if ($this->getUserService()->isEnabled()) {
-                    $this->getUserService()->clearUser();
-                    $this->get('session')->setFlash('user_signin_error', 'authentication-failure');
-                    return $this->redirect($this->generateUrl('sign_in', array(
-                        'email' => $email,
-                        'redirect' => $redirect                        
-                    ), true));                        
-                } else {
-                    $this->getUserService()->clearUser();
-                    $token = $this->getUserService()->getConfirmationToken($email);        
-                    $this->sendConfirmationToken($email, $token);                  
-
-                    $this->get('session')->setFlash('user_signin_error', 'user-not-enabled');
-                    return $this->redirect($this->generateUrl('sign_in', array(
-                        'email' => $email,
-                        'redirect' => $redirect                        
-                    ), true));                       
-                }       
-            } else {
+        if (!$this->getUserService()->authenticate()) {
+            if (!$this->getUserService()->exists()) {
                 $this->getUserService()->clearUser();
                 $this->get('session')->setFlash('user_signin_error', 'invalid-user');
                 return $this->redirect($this->generateUrl('sign_in', array(
                     'email' => $email,
-                    'redirect' => $redirect                    
-                ), true));                   
-            }                         
+                    'redirect' => $redirect,
+                    'stay-signed-in' => $staySignedIn
+                ), true));                 
+            }          
+
+            if ($this->getUserService()->isEnabled()) {
+                $this->getUserService()->clearUser();
+                $this->get('session')->setFlash('user_signin_error', 'authentication-failure');
+                return $this->redirect($this->generateUrl('sign_in', array(
+                    'email' => $email,
+                    'redirect' => $redirect,
+                    'stay-signed-in' => $staySignedIn
+                ), true));                        
+            }
+            
+            $this->getUserService()->clearUser();
+            $token = $this->getUserService()->getConfirmationToken($email);
+
+            $this->sendConfirmationToken($email, $token);                  
+
+            $this->get('session')->setFlash('user_signin_error', 'user-not-enabled');          
+            
+            return $this->redirect($this->generateUrl('sign_in', array(
+                'email' => $email,
+                'redirect' => $redirect,
+                'stay-signed-in' => $staySignedIn
+            ), true)); 
         }
         
         if (!$this->getUserService()->isEnabled()) {
@@ -140,48 +163,46 @@ class UserController extends BaseViewController
             $this->sendConfirmationToken($email, $token);                  
 
             $this->get('session')->setFlash('user_signin_error', 'user-not-enabled');
-            return $this->redirect($this->generateUrl('sign_in', array('email' => $email), true));                       
-        }         
+            return $this->redirect($this->generateUrl('sign_in', array(
+                'email' => $email,
+                'redirect' => $redirect,
+                'stay-signed-in' => $staySignedIn
+            ), true));                  
+        }        
         
         $this->getUserService()->setUser($user);
         
-        $redirectValues = $this->getDecodedRedirectValues();
+        $response = $this->getPostSignInRedirectResponse();        
         
-        if (is_null($redirectValues)) {
-            return $this->redirect($this->generateUrl('app', array(), true));
-        }
+        if ($staySignedIn == "1") {
+            $stringifiedUser = $this->getUserSerializerService()->serializeToString($user);
+            
+            $cookie = new Cookie(
+                'simplytestable-user',
+                $stringifiedUser,
+                time() + self::ONE_YEAR_IN_SECONDS,
+                '/',
+                '.simplytestable.com',
+                false,
+                true
+            );
+            
+            $response->headers->setCookie($cookie);
+        }        
         
-        return $this->redirect($this->generateUrl($redirectValues['route'], $redirectValues['parameters'], true));
+        return $response;
     }
     
     
-    private function getDecodedRedirectValues() {
-        $redirectValues = json_decode(base64_decode($this->get('request')->request->get('redirect')));
-        if (is_null($redirectValues)) {
-            return null;
+    private function getPostSignInRedirectResponse() {
+        $redirectValues = json_decode(base64_decode($this->get('request')->request->get('redirect')), true);        
+      
+        if (!is_array($redirectValues) || !isset($redirectValues['route'])) {
+            return $this->redirect($this->generateUrl('app', array(), true));
         }
-        
-        if (!$redirectValues instanceof \stdClass) {
-            return null;
-        }
-        
-        if (!isset($redirectValues->route)) {
-            return null;
-        }
-        
-        if (!isset($redirectValues->parameters)) {
-            return null;
-        } 
-        
-        $redirectParameters = array();
-        foreach ($redirectValues->parameters as $key => $value) {
-            $redirectParameters[$key] = $value;
-        }
-        
-        return array(
-            'route' => $redirectValues->route,
-            'parameters' => $redirectParameters
-        );
+
+        $parameters = isset($redirectValues['parameters']) ? $redirectValues['parameters'] : array();
+        return $this->redirect($this->generateUrl($redirectValues['route'], $parameters, true));
     }
     
     
@@ -266,7 +287,8 @@ class UserController extends BaseViewController
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
             'email' => $email,
             'token' => $token,
-            'user_reset_password_error' => $userResetPasswordError
+            'user_reset_password_error' => $userResetPasswordError,
+            'stay_signed_in' => $this->getPersistentValue('stay-signed-in')
             //'user_reset_password_confirmation' => $userResetPasswordConfirmation
 
         )), $cacheValidatorHeaders);        
@@ -304,6 +326,7 @@ class UserController extends BaseViewController
     public function resetPasswordChooseSubmitAction() {
         $email = trim($this->get('request')->request->get('email'));        
         $inputToken = trim($this->get('request')->request->get('token'));
+        $staySignedIn = trim($this->get('request')->request->get('stay-signed-in')) == '' ? 0 : 1; 
 
         if (!$this->isEmailValid($email) || $inputToken == '' || $this->getUserService()->exists($email) === false) {
             return $this->redirect($this->generateUrl('reset_password', array(), true));             
@@ -315,7 +338,8 @@ class UserController extends BaseViewController
             $this->get('session')->setFlash('user_reset_password_error', 'invalid-token');
             return $this->redirect($this->generateUrl('reset_password_choose', array(
                 'email' => $email,
-                'token' => $inputToken
+                'token' => $inputToken,
+                'stay-signed-in' => $staySignedIn
             ), true));            
         }
         
@@ -325,38 +349,57 @@ class UserController extends BaseViewController
             $this->get('session')->setFlash('user_reset_password_error', 'blank-password');
             return $this->redirect($this->generateUrl('reset_password_choose', array(
                 'email' => $email,
-                'token' => $inputToken
+                'token' => $inputToken,
+                'stay-signed-in' => $staySignedIn
             ), true));               
         }
         
-        $passwordResetResponse = $this->getUserService()->resetPassword($token, $password);
-            
-        if (is_null($passwordResetResponse)) {
-            $this->get('session')->setFlash('user_reset_password_error', 'unknown-error');
+        $passwordResetResponse = $this->getUserService()->resetPassword($token, $password);        
+        
+        if ($this->requestFailedDueToReadOnly($passwordResetResponse)) {
+            $this->get('session')->setFlash('user_reset_password_error', 'failed-read-only');
             return $this->redirect($this->generateUrl('reset_password_choose', array(
                 'email' => $email,
-                'token' => $inputToken
-            ), true));            
+                'token' => $inputToken,
+                'stay-signed-in' => $staySignedIn
+            ), true));             
         }
         
-        if ($passwordResetResponse === false) {
+        if ($passwordResetResponse === 404) {
             $this->get('session')->setFlash('user_reset_password_error', 'invalid-token');
             return $this->redirect($this->generateUrl('reset_password_choose', array(
                 'email' => $email,
-                'token' => $inputToken
+                'token' => $inputToken,
+                'stay-signed-in' => $staySignedIn
             ), true));            
         }
         
         $user = new User();
         $user->setUsername($email);
         $user->setPassword($password);
-        
         $this->getUserService()->setUser($user);
         
-        return $this->redirect($this->generateUrl('app', array(), true));
+        $response = $this->redirect($this->generateUrl('app', array(), true));
+        
+        if ($staySignedIn == "1") {
+            $stringifiedUser = $this->getUserSerializerService()->serializeToString($user);
+            
+            $cookie = new Cookie(
+                'simplytestable-user',
+                $stringifiedUser,
+                time() + self::ONE_YEAR_IN_SECONDS,
+                '/',
+                '.simplytestable.com',
+                false,
+                true
+            );
+            
+            $response->headers->setCookie($cookie);
+        }        
+        
+        return $response;        
     }     
     
-
     public function signUpAction()
     {        
         if ($this->isUsingOldIE()) {
@@ -397,42 +440,57 @@ class UserController extends BaseViewController
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
             'user_create_error' => $userCreateError,
             'user_create_confirmation' => $userCreateConfirmation,
-            'email' => $this->getPersistentValue('email')
+            'email' => $this->getPersistentValue('email'),
+            'plan' => $this->getPersistentValue('plan')                
         )), $cacheValidatorHeaders);        
     }
     
     
     public function signUpSubmitAction() {
-        $email = trim($this->get('request')->request->get('email'));
+        $plan = trim($this->get('request')->request->get('plan'));
         
+        $email = trim($this->get('request')->request->get('email'));        
         if ($email == '') {
             $this->get('session')->setFlash('user_create_error', 'blank-email');
-            return $this->redirect($this->generateUrl('sign_up', array(), true));             
+            return $this->redirect($this->generateUrl('sign_up', array(
+                'plan' => $plan 
+            ), true));             
         }
         
         if (!$this->isEmailValid($email)) {
             $this->get('session')->setFlash('user_create_error', 'invalid-email');
-            return $this->redirect($this->generateUrl('sign_up', array('email' => $email), true));              
+            return $this->redirect($this->generateUrl('sign_up', array(
+                'email' => $email,
+                'plan' => $plan 
+            ), true));              
         } 
         
         $password = trim($this->get('request')->request->get('password'));
         if ($password == '') {
             $this->get('session')->setFlash('user_create_prefil', $email);
             $this->get('session')->setFlash('user_create_error', 'blank-password');
-            return $this->redirect($this->generateUrl('sign_up', array('email' => $email), true));             
+            return $this->redirect($this->generateUrl('sign_up', array(
+                'email' => $email,
+                'plan' => $plan 
+            ), true));               
         }        
         
         $this->getUserService()->setUser($this->getUserService()->getPublicUser());
-        $createResponse = $this->getUserService()->create($email, $password);        
-                
-        if ($this->userCreationFailed($createResponse)) {
-            $this->get('session')->setFlash('user_create_error', 'create-failed');
-            return $this->redirect($this->generateUrl('sign_up', array('email' => $email), true));               
-        }
+        $createResponse = $this->getUserService()->create($email, $password, $plan);        
         
         if ($this->userCreationUserAlreadyExists($createResponse)) {
             $this->get('session')->setFlash('user_create_confirmation', 'user-exists');
             return $this->redirect($this->generateUrl('sign_up', array('email' => $email), true));             
+        }
+        
+        if ($this->requestFailedDueToReadOnly($createResponse)) {
+            $this->get('session')->setFlash('user_create_error', 'create-failed-read-only');
+            return $this->redirect($this->generateUrl('sign_up', array('email' => $email), true));               
+        }        
+                
+        if ($this->userCreationFailed($createResponse)) {
+            $this->get('session')->setFlash('user_create_error', 'create-failed');
+            return $this->redirect($this->generateUrl('sign_up', array('email' => $email), true));               
         }
         
         $token = $this->getUserService()->getConfirmationToken($email);        
@@ -463,7 +521,7 @@ class UserController extends BaseViewController
     }
     
     
-    public function signupConfirmResendAction($email) {        
+    public function signupConfirmResendAction($email) {
         if ($this->getUserService()->exists($email) === false) {
             $this->get('session')->setFlash('token_resend_error', 'invalid-user');
             return $this->redirect($this->generateUrl('sign_up_confirm', array('email' => $email), true));          
@@ -478,7 +536,7 @@ class UserController extends BaseViewController
         )));
     }
     
-    private function sendConfirmationToken($email, $token) {
+    private function sendConfirmationToken($email, $token) {        
         $userCreationConfirmationEmailSettings = $this->container->getParameter('user_creation_confirmation_email');        
 
         $confirmationUrl = $this->generateUrl('sign_up_confirm', array(
@@ -522,11 +580,11 @@ class UserController extends BaseViewController
     
     
     public function signupConfirmSubmitAction($email) {
-        $user = new User();
-        $user->setUsername($email);
-        $this->getUserService()->setUser($user);
+//        $user = new User();
+//        $user->setUsername($email);
+//        $this->getUserService()->setUser($user);
         
-        if ($this->getUserService()->exists() === false) {
+        if ($this->getUserService()->exists($email) === false) {
             $this->get('session')->setFlash('token_resend_error', 'invalid-user');
             return $this->redirect($this->generateUrl('sign_up_confirm', array('email' => $email), true));          
         }
@@ -537,7 +595,11 @@ class UserController extends BaseViewController
             return $this->redirect($this->generateUrl('sign_up_confirm', array('email' => $email), true));            
         }
         
-        $activationResponse = $this->getUserService()->activate($token);
+        $activationResponse = $this->getUserService()->activate($token);        
+        if ($this->requestFailedDueToReadOnly($activationResponse)) {
+            $this->get('session')->setFlash('user_token_error', 'failed-read-only');
+            return $this->redirect($this->generateUrl('sign_up_confirm', array('email' => $email), true));                
+        }
         
         if ($activationResponse == false) {
             $this->get('session')->setFlash('user_token_error', 'invalid-token');
@@ -547,6 +609,15 @@ class UserController extends BaseViewController
         $this->get('session')->setFlash('user_signin_confirmation', 'user-activated');
         return $this->redirect($this->generateUrl('sign_in', array('email' => $email), true));  
     }    
+
+    /**
+     * 
+     * @param mixed $createResponse
+     * @return boolean
+     */
+    private function requestFailedDueToReadOnly($responseCode) {
+        return $responseCode === 503;
+    }    
     
     
     /**
@@ -555,7 +626,7 @@ class UserController extends BaseViewController
      * @return boolean
      */
     private function userCreationFailed($createResponse) {
-        return is_null($createResponse);
+        return $createResponse !== true;
     }
     
     
@@ -565,7 +636,7 @@ class UserController extends BaseViewController
      * @return boolean
      */
     private function userCreationUserAlreadyExists($createResponse) {
-        return $createResponse === false;
+        return $createResponse === 302;
     }  
     
     
@@ -587,14 +658,4 @@ class UserController extends BaseViewController
             return false;
         }
     }
-    
-    
-    /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Services\UserSerializerService
-     */
-    private function getUserSerializerService() {
-        return $this->container->get('simplytestable.services.userserializerservice');
-    }
-
 }

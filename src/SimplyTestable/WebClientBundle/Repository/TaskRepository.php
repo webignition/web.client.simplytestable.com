@@ -15,10 +15,21 @@ class TaskRepository extends EntityRepository
     
     
     public function getCollectionExistsByTestAndRemoteId(Test $test, $taskIds = array()) {        
+        $queryBuilder = $this->createQueryBuilder('Task');
+        $queryBuilder->select('Task.taskId');
+        $queryBuilder->where('Task.test = :Test');       
+        $queryBuilder->setParameter('Test', $test);       
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        
+        $resultTaskIds = array();
+        foreach ($queryResult as $resultItem) {
+            $resultTaskIds[$resultItem['taskId']] = true;
+        }
+        
         $result = array();
         
-        foreach ($taskIds as $taskId) {            
-            $result[$taskId] = $this->getExistsByTestAndRemoteId($test, $taskId);            
+        foreach ($taskIds as $taskId) {
+            $result[$taskId] = isset($resultTaskIds[$taskId]);
         }
         
         return $result;
@@ -178,5 +189,80 @@ class TaskRepository extends EntityRepository
         $queryBuilder->setParameter('ErrorCount', 0);  
         
         return $this->getTaskIdsFromQueryResult($queryBuilder->getQuery()->getResult());    
-    }      
-}
+    }  
+    
+    public function findUsedTaskOutputIds() {
+        $queryBuilder = $this->createQueryBuilder('Task');
+        $queryBuilder->join('Task.output', 'TaskOutput');
+        $queryBuilder->select('DISTINCT TaskOutput.id as TaskOutputId');        
+       
+        $result = $queryBuilder->getQuery()->getResult(); 
+        
+        if (count($result) === 0) {
+            return array();
+        }
+        
+        $ids = array();
+        
+        foreach ($result as $taskOutputIdResult) {
+            $ids[] = $taskOutputIdResult['TaskOutputId'];
+        }
+        
+        return $ids;      
+    }   
+    
+    
+    /**
+     * 
+     * @param int $task_id
+     * @return boolean
+     */
+    public function hasByTaskId($task_id) {        
+        $queryBuilder = $this->createQueryBuilder('Task');
+        $queryBuilder->select('count(Task.id)');
+        $queryBuilder->where('Task.taskId = :TaskId');
+        $queryBuilder->setParameter('TaskId', $task_id); 
+        
+        $result = $queryBuilder->getQuery()->getResult();        
+        
+        return $result[0][1] > 0;     
+    } 
+    
+    
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Entity\Test\Test $test
+     * @return array
+     */
+    public function findRetrievedRemoteTaskIds(Test $test) {        
+        $queryBuilder = $this->createQueryBuilder('Task');
+        $queryBuilder->select('Task.taskId');
+        $queryBuilder->where('Task.test = :Test');
+        $queryBuilder->setParameter('Test', $test); 
+        
+        $result = $queryBuilder->getQuery()->getResult();        
+        
+        if (count($result) === 0) {
+            return array();
+        }
+        
+        return $this->getSingleFieldCollectionFromResult($result, 'taskId');
+    }
+    
+    
+    /**
+     * 
+     * @param array $result
+     * @param string $fieldName
+     * @return array
+     */
+    private function getSingleFieldCollectionFromResult($result, $fieldName) {
+        $values = array();
+        
+        foreach ($result as $resultItem) {
+            $values[] = $resultItem[$fieldName];
+        }
+        
+        return $values;         
+    }
+} 

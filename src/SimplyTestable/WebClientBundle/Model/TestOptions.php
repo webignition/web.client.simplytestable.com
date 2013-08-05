@@ -287,6 +287,7 @@ class TestOptions {
                 }                
             } else {
                 $optionValue = $optionDefinition['default'];
+
             }
             
             $absoluteTestTypeOptions[$key] = $optionValue;                    
@@ -329,6 +330,32 @@ class TestOptions {
         }
         
         return $absoluteTestTypes;
+    }
+    
+    
+    /**
+     * 
+     * @return array
+     */
+    public function __toArray() {
+        $optionsAsArray = array();
+        
+        if ($this->hasTestTypes()) {
+            $optionsAsArray['test-types'] = $this->getTestTypes();
+            $testTypeKeys = $this->getTestTypeKeys();
+            
+            foreach ($testTypeKeys as $testTypeKey) {
+                $testType = $this->getNameFromKey($testTypeKey);                
+                
+                if (!isset($optionsAsArray['test-type-options'])) {
+                    $optionsAsArray['test-type-options'] = array();
+                }
+                
+                $optionsAsArray['test-type-options'][$testType] = $this->getAbsoluteTestTypeOptions($testTypeKey, false);
+            }
+        }
+        
+        return $optionsAsArray;   
     }
 
     

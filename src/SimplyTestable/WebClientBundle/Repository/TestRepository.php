@@ -6,6 +6,29 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 
 class TestRepository extends EntityRepository
 {  
+    public function hasByTestId($test_id) {        
+        $queryBuilder = $this->createQueryBuilder('Test');
+        $queryBuilder->select('count(Test.id)');
+        $queryBuilder->where('Test.testId = :TestId');
+        $queryBuilder->setParameter('TestId', $test_id); 
+        
+        $result = $queryBuilder->getQuery()->getResult();        
+        
+        return $result[0][1] > 0;     
+    }    
+    
+    public function getById($test_id) {        
+        $queryBuilder = $this->createQueryBuilder('Test');
+        $queryBuilder->select('Test');
+        $queryBuilder->where('Test.id = :TestId');
+        $queryBuilder->setParameter('TestId', $test_id); 
+        
+        $result = $queryBuilder->getQuery()->getResult();        
+        
+        return (count($result) === 0) ? null : $result[0];      
+    }
+    
+    
     public function hasForWebsite($website) {            
         $queryBuilder = $this->createQueryBuilder('Test');
         $queryBuilder->select('count(Test.testId)');

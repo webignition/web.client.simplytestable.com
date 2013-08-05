@@ -8,17 +8,15 @@ use SimplyTestable\WebClientBundle\Entity\Task\Output;
 
 class JsStaticAnalysisResultParser extends ResultParser {    
     
-    /**
-     * @return Result
-     */
-    public function getResult() {        
+    
+    protected function buildResult() {
         $result = new Result();
         
         $rawOutputObject = json_decode($this->getOutput()->getContent());
         
-        if (!$this->hasErrors($rawOutputObject)) {
+        if ($this->isErrorFreeOutput($rawOutputObject)) {
             return $result;
-        }           
+        }
         
         foreach ($rawOutputObject as $jsSourceReference => $analysisOutput) {            
             $context = ($this->isInlineJsOutputKey($jsSourceReference)) ? 'inline' : $jsSourceReference;
@@ -32,11 +30,31 @@ class JsStaticAnalysisResultParser extends ResultParser {
                     $result->addMessage($this->getFailureMEssageFromAnalysisOutput($analysisOutput, $context));                 
                 }                
             }
-            
-
         }
         
-        return $result;
+        return $result;        
+    }
+    
+    
+    /**
+     * 
+     * @param \stdClass $rawOutputObject
+     * @return boolean
+     */
+    private function isErrorFreeOutput($rawOutputObject) {
+        if (is_array($rawOutputObject)) {
+            return true;
+        } 
+        
+        if (is_null($rawOutputObject)) {
+            return true;
+        } 
+        
+        if (!$this->hasErrors($rawOutputObject)) {
+            return true;
+        } 
+        
+        return false;
     }
     
     
@@ -69,8 +87,12 @@ class JsStaticAnalysisResultParser extends ResultParser {
      * @param \stdClass $rawOutputObject
      * @return boolean
      */
-    private function hasErrors(\stdClass $rawOutputObject) {
-        foreach ($rawOutputObject as $jsSourceReference => $entriesObject) {            
+    private function hasErrors(\stdClass $rawOutputObject) {        
+        foreach ($rawOutputObject as $jsSourceReference => $entriesObject) {
+            if (isset($entriesObject->statusLine) && $entriesObject->statusLine == 'failed') {
+                return true;
+            }
+            
             if (count($entriesObject->entries)) {
                 return true;
             }

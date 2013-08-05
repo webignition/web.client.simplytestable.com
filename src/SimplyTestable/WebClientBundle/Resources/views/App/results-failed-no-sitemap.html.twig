@@ -1,0 +1,67 @@
+{% extends 'SimplyTestableWebClientBundle::App/single-page-dialog.html.twig' %}
+
+{% block title %}No URLs detected for {{website}} (#{{test.testId}}) - {{ parent() }}{% endblock %}
+
+{% block body_class %} single-page-notification {{ parent() }} {% endblock %}
+
+{% block content %}
+
+<h1>Couldn't find any URLs to test!</h1>
+
+<p class="intro">
+    We couldn't find a sitemap or news feed to collect URLs from for
+    testing <strong>{{ website }}</strong>.
+</p>
+
+<div class="test-options-advanced">
+    <div class="expandable-control expandable-control-default-closed for-detail-expandable">More detail</div>
+    <div id="detail-expandable">
+        <h3>Why did this happen?</h3>
+        <p>
+            URLs for a site-wide test are collected from your sitemap, your RSS 
+            news feed or your ATOM news feed.
+        </p>
+
+        <p>
+            We looked hard but couldn't find any URLs for {{ website }} listed in 
+            any sitemaps or news feeds.
+        </p>
+
+        <h3>What you can do</h3>
+        <ul>
+            <li>
+                <p>
+                    create a <a href="http://support.google.com/webmasters/bin/answer.py?hl=en&amp;answer=183668">sitemap</a>,
+                    either an XML sitemap at <code>{{ website }}sitemap.xml</code> or a plain text sitemap at
+                    <code>{{ website }}sitemap.txt</code>
+                </p>
+            </li>
+            <li>
+                <p>
+                    update <code>{{ website }}robots.txt</code> and link to your sitemap if it is at a non-standard location
+                </p>
+            </li>                            
+            <li>
+                <p>
+                    ensure any RSS or ATOM news feed is valid
+                </p>
+            </li>                                   
+            <li>
+                <p>
+                    ensure links in any sitemap or news feed
+                    are for {{ website }} specifically
+                    and not any other domain
+                </p>
+            </li>                                
+        </ul>
+    </div>
+</div> 
+
+<form action="{{ path('test_clone_and_start', {'website': website, 'test_id': test.testId}) }}" method="post">
+    <button name="full-single" value="single" type="submit" class="btn btn-primary">Test just the above URL only</button>
+    <button name="full-single" value="full" type="submit" class="btn">Try starting full-site test again</button>
+</form>
+
+<!-- test_clone_and_start -->
+
+{% endblock %}

@@ -1,0 +1,37 @@
+{% if user_summary.stripe_customer.subscription.status == 'trialing' %}
+    {% set trial_days_remaining = user_summary.user_plan.start_trial_period - user_summary.stripe_customer.subscription.day_of_trial_period + 1 %}
+
+    {% if trial_days_remaining <= 3 %}               
+    <p>
+        <strong>
+        {% if trial_days_remaining == 1 %}
+            Your trial ends today!
+        {% else %}
+            Your trial ends in less than {{ trial_days_remaining }} days!
+        {% endif %}                        
+        </strong>
+    </p>               
+    {% endif %}
+    
+    <p>
+        We need your credit or debit card details to continue your subscription
+        after your trial ends.
+    </p>                        
+
+{% else %}
+    
+    <p>
+        <strong>Your trial has ended!</strong>
+    </p>
+
+    <p>
+        We need your credit or debit card details now to continue your premium subscription.
+    </p>
+    
+
+
+    
+
+{% endif %}
+
+<a class="btn" href="{{ path('user_account_card') }}">Add card <i class="icon icon-credit-card"></i></a>

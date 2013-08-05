@@ -48,8 +48,11 @@ class JobStartCommand extends BaseCommand
                 $testCanonicalUrlIndex = rand(0, count($knownGoodTests) - 1);
                 $testCanonicalUrl = $knownGoodTests[$testCanonicalUrlIndex];                
             }
+            
+            $testOptions = new \SimplyTestable\WebClientBundle\Model\TestOptions();
+            $testOptions->addTestType('HTML validation');
 
-            $this->getTestService()->start($testCanonicalUrl);  
+            $this->getTestService()->start($testCanonicalUrl, $testOptions);  
             
             $this->getLogger()->info("simplytestable:job:start: started job for [".$testCanonicalUrl."]");
         }       

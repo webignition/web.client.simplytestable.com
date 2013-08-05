@@ -40,10 +40,13 @@ class Version20120824212110_create_Task extends BaseMigration
                 type VARCHAR(255) NOT NULL COLLATE NOCASE,
                 timePeriod_id INT DEFAULT NULL,
                 test_id INT NOT NULL,
+                output_id INT DEFAULT NULL,
                 FOREIGN KEY (timePeriod_id) REFERENCES TimePeriod (id),
-                FOREIGN KEY (test_id) REFERENCES Test (id))",
+                FOREIGN KEY (test_id) REFERENCES Test (id),
+                FOREIGN KEY (output_id) REFERENCES TaskOutput (id))",
             "CREATE UNIQUE INDEX UNIQ_F24C741BE43FFED1 ON Task (timePeriod_id)",
-            "CREATE INDEX IDX_F24C741B1E5D0459 ON Task (test_id)"
+            "CREATE INDEX IDX_F24C741B1E5D0459 ON Task (test_id)",
+            "CREATE INDEX IDX_F24C741BDE097880 ON Task (output_id)"
         );
         
         parent::up($schema);
