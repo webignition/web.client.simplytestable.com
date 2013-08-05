@@ -941,3 +941,18 @@ body.user-account-index .latest-invoice .icon-ok {
 .alert a {
     text-decoration: underline;
 }
+
+form div.inline-short label {
+    display:inline;
+}
+
+form div.inline-short input {
+    display:inline;
+    width:26px;
+}
+
+#test-options h3 {
+    color:#333;
+    opacity:0.8;
+    font-size:14px;
+}
