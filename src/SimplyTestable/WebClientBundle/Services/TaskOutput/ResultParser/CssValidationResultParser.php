@@ -18,14 +18,41 @@ class CssValidationResultParser extends ResultParser {
         
         if (count($rawOutputArray) === 0) {
             return $result;
+        }      
+        
+        if ($this->isFailedOutput($rawOutputArray)) {            
+            $result->addMessage($this->getMessageFromFailedOutput($rawOutputArray->messages[0]));
+            return $result;
         }
    
-        foreach ($rawOutputArray as $rawMessageObject) {            
+        foreach ($rawOutputArray as $rawMessageObject) {  
+            if ($this->isFailedOutput($rawMessageObject)) {
+                $rawMessageObject = $rawMessageObject[0];
+            }
+            
             $result->addMessage($this->getMessageFromOutput($rawMessageObject));
-        }
+        }      
         
         return $result;
     }
+    
+    private function getMessageFromFailedOutput($outputMessage) {        
+        $message = new CssTextFileMessage();
+        $message->setType('error');
+        $message->setMessage($outputMessage->message);
+        $message->setClass($outputMessage->messageId);
+
+        return $message;
+    }    
+    
+    /**
+     * 
+     * @param \stdClass $rawOutputObject
+     * @return boolean
+     */
+    private function isFailedOutput($rawOutputObject) {        
+        return isset($rawOutputObject->messages) && is_array($rawOutputObject->messages) && $rawOutputObject->messages[0]->type === 'error';      
+    }    
     
     
     /**
