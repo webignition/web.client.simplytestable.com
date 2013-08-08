@@ -216,6 +216,19 @@ class Result {
         return $errors[0]->getMessage() == 'Unknown error';
     }
     
+    /**
+     * 
+     * @return boolean
+     */
+    public function isCssValidationSslExceptionError() {        
+        $errors = $this->getErrors();
+        if (count($errors) === 0) {
+            return false;
+        }        
+        
+        return $errors[0]->getMessage() == 'SSL Error';
+    }    
+    
     
     
     /**

@@ -83,7 +83,9 @@
                                         Missing document type                          
                                     {% elseif task.output.result.isCssValidationUnknownExceptionError %}
                                         Validator error   
-                                    {% endif %}                                        
+                                    {% elseif task.output.result.isCssValidationSslExceptionError %}
+                                        Validator error   
+                                    {% endif %}  
                                 {% elseif task.state == 'completed' %}
                                     {% if task.output.hasErrors %}
                                         <span class="label label-important">Failed</span><span class="label label-important">
@@ -294,6 +296,22 @@
                         <p>
                             
                         </p>                        
+                    {% elseif task.output.result.isCssValidationSslExceptionError %}
+                        <h2 class="info"><i class="icon-exclamation-sign"></i> SSL error!</h2>
+                        
+                        <p>
+                            Sorry, the CSS validator was unable to establish a SSL connection when validating {{ task.url }}.
+                        </p>
+                        
+                        <p>
+                            This can happen when validating secure URLs that use SSL certificates
+                            issued by lesser known certificate authorities.
+                        </p>
+                        
+                        <p>
+                            We don't have a solution for this. We have a rough idea of how to
+                            work around such issues but haven't any plans to do so at the moment.
+                        </p>
                     {% elseif task.output.result.isCssValidationUnknownExceptionError %}
                         <h2 class="info"><i class="icon-exclamation-sign"></i> Unknown validator error!</h2>
                         
