@@ -66,7 +66,7 @@ class CrawlProgressController extends TestViewController
         $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();        
         
         if (!isset($remoteTestSummary->crawl)) {
-            return $this->redirect($this->generateUrl('app_test_redirector', array(
+            return $this->redirect($this->generateUrl('app_progress', array(
                 'website' => $test->getWebsite(),
                 'test_id' => $test_id
             ), true));             

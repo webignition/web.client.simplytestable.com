@@ -29,13 +29,17 @@ application.crawl.progressController = function () {
     var setUrlCounts = function () {
         var processed_url_count = latestCrawlData.remote_test_summary.crawl.processed_url_count;
         var discovered_url_count = latestCrawlData.remote_test_summary.crawl.discovered_url_count;
+        var limit = latestCrawlData.remote_test_summary.crawl.limit;
         
         if (processed_url_count === 0 && discovered_url_count === 0) {
             return;
         } 
         
+        $('.progress .bar').css({
+            'width': ((discovered_url_count / limit) * 100) + '%'
+        });
+        
         $('#url_counts p').text('Checked ' + processed_url_count + ' URL' + (processed_url_count !== 1 ? 's' : '') + ', found ' + discovered_url_count + ' URL' + (discovered_url_count !== 1 ? 's' : '') + ' to test.');
-
     };   
     
     var refreshCrawlProgress = function () {

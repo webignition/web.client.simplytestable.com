@@ -8,6 +8,10 @@
 
 <h1><span class="background"><i class="icon {{ state_icon }}"></i></span> Crawling {{ website }}</h1>
 
+<div class="progress progress-striped active">
+  <div class="bar" style="width: {{ ((remote_test_summary.crawl.discovered_url_count / remote_test_summary.crawl.limit) * 100) }}%;"></div>
+</div>
+
 {% if (remote_test_summary.crawl.processed_url_count == 0)  %}
 <p class="intro">
     <span id="state_label">{{ state_label }}</span>   
@@ -19,7 +23,7 @@
     <p class="intro">
         {% if (remote_test_summary.crawl.processed_url_count > 0) %} 
             Checked <span id="processed_url_count">{{ remote_test_summary.crawl.processed_url_count}}</span> URL{% if remote_test_summary.crawl.processed_url_count != 1 %}s{% endif %}{% if (remote_test_summary.crawl.discovered_url_count) %},
-            found <span id="discovered_url_count">{{ remote_test_summary.crawl.discovered_url_count }}</span> URL{% if remote_test_summary.crawl.discovered_url_count != 1 %}s{% endif %} to test{% endif %}.                   
+            found <span id="discovered_url_count">{{ remote_test_summary.crawl.discovered_url_count }}</span> URL{% if remote_test_summary.crawl.discovered_url_count != 1 %}s{% endif %} to test{% endif %}.
         {% endif %}
     </p>
 </div>
