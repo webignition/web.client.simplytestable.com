@@ -5,6 +5,87 @@ application.common.isLoggedIn = function () {
     return $('.sign-out-form').prop('tagName') === 'FORM';
 };
 
+application.crawl = {};
+application.crawl.progressController = function () {
+    var latestCrawlData;
+    
+    var setStateLabel = function () {
+        var stateLabel = $('#state_label');        
+        if (stateLabel.get(0) === undefined) {
+            return;
+        }
+        
+        if (latestCrawlData.remote_test_summary.crawl.discovered_url_count === 0) {
+            stateLabel.text(latestCrawlData.state_label);
+        } else {
+            stateLabel.remove();
+        }
+    };
+    
+    var setStateIcon = function () {
+        $('h1 .icon').attr('class', 'icon').addClass(latestCrawlData.state_icon);
+    };
+    
+    var setUrlCounts = function () {
+        var processed_url_count = latestCrawlData.remote_test_summary.crawl.processed_url_count;
+        var discovered_url_count = latestCrawlData.remote_test_summary.crawl.discovered_url_count;
+        
+        if (processed_url_count === 0 && discovered_url_count === 0) {
+            return;
+        } 
+        
+        $('#url_counts p').text('Checked ' + processed_url_count + ' URL' + (processed_url_count !== 1 ? 's' : '') + ', found ' + discovered_url_count + ' URL' + (discovered_url_count !== 1 ? 's' : '') + ' to test.');
+
+    };   
+    
+    var refreshCrawlProgress = function () {
+        var now = new Date();
+
+        var getProgressUrl = function() {
+            return window.location.href + '?output=json&timestamp=' + now.getTime();
+        };
+
+        jQuery.ajax({
+            complete: function(request, textStatus) {
+                //console.log('complete', request, textStatus);
+            },
+            dataType: 'json',
+            error: function(request, textStatus, errorThrown) {
+                //console.log('error', request, textStatus, request.getAllResponseHeaders());
+            },
+            statusCode: {
+                403: function() {
+                    //console.log('403');
+                },
+                500: function() {
+                    //console.log('500');
+                }
+            },
+            success: function(data, textStatus, request) {
+                if (data.this_url != window.location.href) {
+                    window.location.href = data.this_url;
+                    return;
+                }
+
+                latestCrawlData = data;
+
+                setStateLabel();
+                setStateIcon();
+                setUrlCounts();
+
+                window.setTimeout(function() {
+                    refreshCrawlProgress();
+                }, 3000);
+            },
+            url: getProgressUrl()
+        });
+    };
+    
+    this.initialise = function() {
+        refreshCrawlProgress();
+    };    
+};
+
 application.results = {};
 application.results.preparingController = function() {
 
@@ -1633,6 +1714,11 @@ application.pages = {
                 resultsPreparingController = new application.results.preparingController();
                 resultsPreparingController.initialise();
             }
+            
+            if ($('body.crawl-progress').length > 0) {
+                crawlProgressController = new application.crawl.progressController();
+                crawlProgressController.initialise();
+            }            
 
             if ($('body.content').length > 0) {
                 getTwitters('footer-tweet', {

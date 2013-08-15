@@ -70,10 +70,7 @@ class CrawlProgressController extends TestViewController
                 'website' => $test->getWebsite(),
                 'test_id' => $test_id
             ), true));             
-        }
-        
-//        var_dump($remoteTestSummary);
-//        exit();         
+        }        
         
         $taskTypes = array();
         foreach ($remoteTestSummary->task_types as $taskTypeObject) {
@@ -82,7 +79,7 @@ class CrawlProgressController extends TestViewController
         
         $viewData = array(
             'website' => idn_to_utf8($website),
-            'this_url' => $this->getProgressUrl($website, $test_id),
+            'this_url' => $this->getCrawlUrl($website, $test_id),
             'test' => $test,
             'remote_test_summary' => $this->getRemoteTestSummaryArray($remoteTestSummary),
             'state_label' => $this->testStateLabelMap[$remoteTestSummary->crawl->state],
