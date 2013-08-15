@@ -95,6 +95,16 @@ class TestService extends CoreApplicationService {
     }
     
     
+    public function startCrawl(Test $test) {
+        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_crawl_start', array(
+            'canonical-url' => urlencode($test->getWebsite()),
+            'test_id' => $test->getTestId()
+        )));
+        
+        $this->addAuthorisationToRequest($httpRequest);
+        $this->webResourceService->getHttpClientService()->get()->send($httpRequest);
+    }
+    
     /**
      * 
      * @param int $limit

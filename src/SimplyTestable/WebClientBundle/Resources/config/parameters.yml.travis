@@ -15,6 +15,7 @@ parameters:
     urls:
       base: http://travis.app.simplytestable.com      
       test_start: /job/{canonical-url}/start/
+      test_crawl_start: /job/{canonical-url}/{test_id}/crawl/
       test_status: /job/{canonical-url}/{test_id}/
       test_cancel: /job/{canonical-url}/{test_id}/cancel/
       test_tasks: /job/{canonical-url}/{test_id}/tasks/

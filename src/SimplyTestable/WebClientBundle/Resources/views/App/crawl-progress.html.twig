@@ -1,0 +1,27 @@
+{% extends 'SimplyTestableWebClientBundle::App/single-page-dialog.html.twig' %}
+
+{% block title %}Crawling {{website}} (#{{test.testId}}) - {{ parent() }}{% endblock %}
+
+{% block body_class %} single-page-notification {{ parent() }} {% endblock %}
+
+{% block content %}
+
+<h1><span class="background"><i class="icon {{ state_icon }}"></i></span> Crawling {{ website }}</h1>
+
+<p class="intro">
+    {{ state_label }}
+    
+    {% if ((remote_test_summary.crawl.discoveredUrls | length) > 0) %}  
+        found {{ remote_test_summary.crawl.discoveredUrls | length }} so far
+    {% endif %}
+</p>
+
+{% if ((remote_test_summary.crawl.discoveredUrls | length) > 0) %}
+<ul>
+    {% for url in remote_test_summary.crawl.discoveredUrls %}
+        <li>{{ url }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% endblock %}

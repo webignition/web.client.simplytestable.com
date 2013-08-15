@@ -182,6 +182,18 @@ test_clone_and_start:
     defaults: { _controller: SimplyTestableWebClientBundle:TestStart:cloneAndStart }    
     requirements:
         website: ".+"
+        
+crawl_start:
+    pattern:  /test/{website}/{test_id}/crawl/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestStart:crawl }    
+    requirements:
+        website: ".+"        
+        
+crawl_progress:
+    pattern:  /test/{website}/{test_id}/crawling/
+    defaults: { _controller: SimplyTestableWebClientBundle:CrawlProgress:index }    
+    requirements:
+        website: ".+"          
     
 test_cancel:
     pattern:  /test/{website}/{test_id}/cancel/

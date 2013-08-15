@@ -941,3 +941,35 @@ body.user-account-index .latest-invoice .icon-ok {
 .alert a {
     text-decoration: underline;
 }
+
+body.single-page-notification .primary-options {
+    padding-bottom: 20px;
+}
+
+body.single-page-notification .secondary-options {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+}
+
+body.crawl-progress div.logo {
+    display:none;
+}
+
+body.crawl-progress h1 .background {
+    position: absolute;
+    top: 20px;
+    left: -50px;
+    background-color: #eee;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;   
+}
+
+body.crawl-progress h1 .icon {
+    color: #08c;
+    font-size: 80px;
+    margin-top: 33px;
+    margin-left: 21px;
+    display: block;    
+}
+
