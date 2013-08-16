@@ -35,7 +35,8 @@ class CrawlProgressController extends TestViewController
     private $testStateIconMap = array(
         'new' => 'icon-off',
         'queued' => 'icon-off',
-        'in-progress' => 'icon-play-circle'        
+        'in-progress' => 'icon-play-circle',
+        'completed' => 'icon-ok-circle'
     );
     
     public function indexAction($website, $test_id) {        
