@@ -51,6 +51,15 @@ Testing {{website}} - {{ parent() }}
 </div>                
             {% endif %}         
         {% endif %}
+            
+        {% if remote_test_summary.crawl is defined and remote_test_summary.crawl.limit and remote_test_summary.crawl.discovered_url_count == remote_test_summary.crawl.limit  %}
+<div class="alert alert-info alert-ammendment alert-from-view">
+    <i class="icon icon-warning-sign"></i>
+    <span>
+{% include 'SimplyTestableWebClientBundle:Partials:crawl-url-limit-notification.html.twig' %}
+    </span>
+</div>       
+        {% endif %}            
         
                 {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %}
         </div>
