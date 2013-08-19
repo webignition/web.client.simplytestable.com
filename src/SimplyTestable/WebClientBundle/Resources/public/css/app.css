@@ -977,3 +977,7 @@ body.crawl-progress h1 {
     overflow:hidden;
     white-space:nowrap;
 }
+
+body.app-results-failed-no-urls-detected .inline-forms form {
+    display:inline-block;
+}

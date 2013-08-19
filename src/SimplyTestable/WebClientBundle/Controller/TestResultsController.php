@@ -151,14 +151,22 @@ class TestResultsController extends TestViewController
             return $this->redirect($this->getProgressUrl($website, $test_id));
         }
         
+        $redirectParameters = json_encode(array(
+            'route' => 'app_results_failed_no_urls_detected',
+            'parameters' => array(
+                'website' => $website,
+                'test_id' => $test_id                        
+            )
+        ));       
+        
         $viewData = array(
             'website' => idn_to_utf8($website),
             'test' => $test,
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser())
+            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+            'redirect' => base64_encode($redirectParameters)
         );
-
             
         $this->setTemplate('SimplyTestableWebClientBundle:App:results-failed-no-sitemap.html.twig');
         return $this->getCachableResponse(
