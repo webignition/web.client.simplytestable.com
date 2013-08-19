@@ -981,3 +981,7 @@ body.crawl-progress h1 {
 body.app-results-failed-no-urls-detected .inline-forms form {
     display:inline-block;
 }
+
+body.crawl-progress p#subtext {
+    margin-top:-30px;
+}

@@ -8,6 +8,10 @@
 
 <h1><span class="background"><i class="icon {{ state_icon }}"></i></span> Crawling {{ website }}</h1>
 
+<p id="subtext">
+    Discovering up to {{ remote_test_summary.crawl.limit }} URLs. <a href="{{ path('user_account_index') }}">Upgrade your plan</a> to allow the discovery of more URLs.
+</p>
+
 <div class="progress progress-striped active">
   <div class="bar" style="width: {{ ((remote_test_summary.crawl.discovered_url_count / remote_test_summary.crawl.limit) * 100) }}%;"></div>
 </div>
