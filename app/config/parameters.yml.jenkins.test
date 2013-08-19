@@ -1,0 +1,19 @@
+parameters:
+    database_driver: pdo_mysql
+    database_host: localhost
+    database_port: null
+    database_name: web_client_simplytestable_com
+    database_user: dbuser
+    database_password: dbpassword
+    mailer_auth_mode: login
+    mailer_transport: smtp
+    mailer_host: localhost
+    mailer_user: null
+    mailer_password: null
+    locale: en
+    secret: Secret!
+    database_path: null
+    admin_user_username: admin
+    admin_user_password: password1
+    simplytestable_session_savepath: /tmp
+    stripe_publishable_key: stripe_publishable_key_value
