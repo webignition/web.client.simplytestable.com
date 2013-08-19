@@ -6,6 +6,26 @@
         </span>
     </a>
 </div>
+
+{% if test.type == 'crawl' %}
+<div class="row-fluid meta">
+    <div class="span4 total">
+        <span class="test-count">{{ test.crawl.processed_url_count }}</span><span class="subtext">URLs checked</span>
+    </div>
+    <div class="span4 total">
+        <span class="test-count">{{ test.crawl.discovered_url_count }}</span><span class="subtext">URLs found</span>
+    </div>
+    <div class="span4 detail">        
+        <div>
+            {% if test.crawl.state == 'completed' or test.crawl.state == 'cancelled' %}
+                <span class="caption">crawled</span>
+            {% else %}
+                <span class="caption">crawling &hellip;</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% else %}
 <div class="row-fluid meta">
     <div class="span4 total">
         <span class="test-count">{{ test['task_count'] }}</span><span class="subtext">tests overall</span>
@@ -29,3 +49,4 @@
         </div>
     </div>
 </div>
+{% endif %}
