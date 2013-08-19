@@ -1,0 +1,104 @@
+glit_resque:
+  prefix: "SimplyTestable\WebClientBundle"
+
+parameters:
+  resque_pid: "simplytestable_webclientbundle" 
+  early_access_users:
+    - "jon@webignition.net"
+  available_task_types:
+    default:
+      html-validation: "HTML validation"
+      css-validation: "CSS validation"
+      js-static-analysis: "JavaScript static analysis"      
+    early_access:
+  core_application:
+    urls:
+      base: http://ci.app.simplytestable.com      
+      test_start: /job/{canonical-url}/start/
+      test_crawl_start: /job/{canonical-url}/{test_id}/crawl/
+      test_status: /job/{canonical-url}/{test_id}/
+      test_cancel: /job/{canonical-url}/{test_id}/cancel/
+      test_tasks: /job/{canonical-url}/{test_id}/tasks/
+      test_task_ids: /job/{canonical-url}/{test_id}/tasks/ids/
+      test_list_urls: /tests/{canonical-url}/{test_id}/urls/
+      task_status: /tasks/{canonical-url}/{test_id}/{task_id}/status/
+      task_collection_status: /tasks/{canonical-url}/{test_id}/status/collection/
+      tests_list: /jobs/list/{limit}/
+      user_create: /user/create/
+      user_get_token: /user/{email}/token/
+      user_activate: /user/activate/{token}/
+      user_exists: /user/{email}/exists/    
+      user_reset_password: /user/reset-password/{token}/
+      user: /user/{email}/
+      user_is_enabled: /user/{email}/enabled/
+      test_latest: /job/{canonical-url}/latest/
+      user_email_change_request_get: /user/{email}/email-change-request/
+      user_email_change_request_create: /user/{email}/email-change-request/{new_email}/create/
+      user_email_change_request_cancel: /user/{email}/email-change-request/cancel/
+      user_email_change_request_confirm: /user/{email}/email-change-request/{token}/
+      user_plan_subscribe: /user/{email}/{plan}/subscribe/  
+      user_card_associate: /user/{email}/card/{stripe_card_token}/associate/  
+      user_list_stripe_events: /user/{email}/stripe-events/{type}/   
+  public_site:
+    urls:
+      home: http://simplytestable.com
+      plans_and_pricing: plans/
+  content_type_web_resource_map:
+    default: webignition\WebResource\WebResource
+    application/json: webignition\WebResource\JsonDocument\JsonDocument
+  task-output-result-parsers:
+    "HTML validation":
+        class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser
+    "CSS validation":
+        class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser        
+    "JS static analysis":
+        class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser          
+  user_creation_confirmation_email:
+    sender_email: robot@simplytestable.com
+    sender_name: Simply Testable Robot
+    subject: Activate your Simply Testable Account       
+  user_reset_password_email:
+    sender_email: robot@simplytestable.com
+    sender_name: Simply Testable Robot
+    subject: Reset your Simply Testable Password
+  user_email_change_request_confirmation_email:
+    sender_email: robot@simplytestable.com
+    sender_name: Simply Testable Robot
+    subject: Confirm your email address change
+  css-validation-ignore-common-cdns:
+   - ajax.aspnetcdn.com
+   - ajax.googleapis.com
+   - cdnjs.cloudflare.com
+   - netdna.bootstrapcdn.com
+   - static.nrelate.com
+  stripe:
+   payment_retry_limit: 3,
+   payment_retry_periods:
+     [1,1,1]
+  premium_plan_launch_offer_end: 31 July 2013
+  plans:
+    personal:
+      price: 9
+      description_brief: For small scale projects
+      urls_per_job: 50
+      credits_per_month: 5000
+    agency:
+      price: 19
+      description_brief: Great for small organisations
+      urls_per_job: 250
+      credits_per_month: 20000
+    business:
+      price: 59
+      description_brief: Best value for professionals
+      urls_per_job: 2500
+      credits_per_month: 100000
+    enterprise:
+      price: 299
+      description_brief: Full corporate treatment
+      urls_per_job: 10000
+      credits_per_month: unlimited
+  documentation_site:
+    urls:
+      home: http://help.simplytestable.com/
+      errors: errors/
+      html-validation: html-validation/
