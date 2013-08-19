@@ -973,3 +973,7 @@ body.crawl-progress h1 .icon {
     display: block;    
 }
 
+body.crawl-progress h1 {
+    overflow:hidden;
+    white-space:nowrap;
+}
