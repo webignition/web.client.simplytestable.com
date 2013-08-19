@@ -3,8 +3,8 @@ parameters:
     database_host: localhost
     database_port: null
     database_name: ci_gears_simplytestable_com
-    database_user: dbuser
-    database_password: dbpassword
+    database_user: root
+    database_password: root
     mailer_auth_mode: login
     mailer_transport: smtp
     mailer_host: localhost
