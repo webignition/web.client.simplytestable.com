@@ -17,3 +17,6 @@ parameters:
     admin_user_password: password1
     simplytestable_session_savepath: /tmp
     stripe_publishable_key: stripe_publishable_key_value
+    mailchimp_api_key: mailchimp_api_key_value
+    mailchimp_announcements_list_id: 1224633c43
+    mailchimp_updates_list_id: 311aedc7f4
