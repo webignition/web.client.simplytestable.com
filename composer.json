@@ -1,6 +1,6 @@
 {
-    "name": "symfony/framework-standard-edition",
-    "description": "The \"Symfony Standard Edition\" distribution",
+    "name": "simplytestable/webclient",
+    "description": "web client to interface with app.simplytestable.com",
     "autoload": {
         "psr-0": { "": "src/" }
     },
