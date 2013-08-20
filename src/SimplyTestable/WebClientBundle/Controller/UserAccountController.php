@@ -44,7 +44,9 @@ class UserAccountController extends AbstractUserAccountController {
             'stripe' => $this->container->getParameter('stripe'),
             'this_url' => $this->generateUrl('user_account_index', array(), true),
             'premium_plan_launch_offer_end' => $this->container->getParameter('premium_plan_launch_offer_end'),
-            'plans' => $this->container->getParameter('plans')
+            'plans' => $this->container->getParameter('plans'),
+            'mailchimp_updates_subscribed' => $this->getMailchimpService()->listContains('updates', $this->getUser()->getUsername()),
+            'mailchimp_announcements_subscribed' => $this->getMailchimpService()->listContains('announcements', $this->getUser()->getUsername()),
         ), $this->getViewFlashValues(array(
             'user_account_details_update_notice',
             'user_account_details_update_email',
@@ -228,13 +230,21 @@ class UserAccountController extends AbstractUserAccountController {
     private function getPlanPresentationName($plan) {
         return ucwords($plan);
     }
-
+    
     /**
      * 
      * @return \SimplyTestable\WebClientBundle\Services\UserStripeEventService
      */
     private function getUserStripeEventService() {
         return $this->container->get('simplytestable.services.userstripeeventservice');
+    }    
+
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Services\MailchimpService
+     */
+    private function getMailchimpService() {
+        return $this->container->get('simplytestable.services.mailchimpservice');
     }
 
 }

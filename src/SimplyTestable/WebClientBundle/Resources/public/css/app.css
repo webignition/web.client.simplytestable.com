@@ -985,3 +985,17 @@ body.app-results-failed-no-urls-detected .inline-forms form {
 body.crawl-progress p#subtext {
     margin-top:-30px;
 }
+
+body.user-account-index .news-subscriptions label {
+    width:auto;
+    margin: 14px auto;
+}
+
+body.user-account-index .news-subscriptions label strong {
+    display:block;
+    font-weight: normal;
+}
+
+body.user-account-index .news-subscriptions label span {
+    opacity:0.7;
+}

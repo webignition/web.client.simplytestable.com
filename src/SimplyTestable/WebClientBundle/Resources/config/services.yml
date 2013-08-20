@@ -123,3 +123,11 @@ services:
     class:  SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService
     arguments:
         webResourceService: "@simplytestable.services.webresourceservice"          
+
+  simplytestable.services.mailchimpservice:
+    class:   SimplyTestable\WebClientBundle\Services\MailchimpService
+    arguments: 
+        apiKey: %mailchimp_api_key%
+        updatesListId: %mailchimp_updates_list_id%
+        announcementsListId: %mailchimp_announcements_list_id%
+      

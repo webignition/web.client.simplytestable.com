@@ -14,6 +14,10 @@
     <div class="span6 account-details">
         <h2>Account details</h2>
         {% include 'SimplyTestableWebClientBundle:Partials/User/Account:account-details.html.twig' %}
+        <div class="news-subscriptions">
+            <h2>News subscriptions</h2>
+            {% include 'SimplyTestableWebClientBundle:Partials/User/Account:news-subscription-details.html.twig' %}
+        </div>
     </div>
     <div class="span6 plan">
         <h2>Plan: {{ plan_presentation_name }}</h2>
