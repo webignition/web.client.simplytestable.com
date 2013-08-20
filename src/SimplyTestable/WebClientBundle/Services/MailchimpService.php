@@ -47,8 +47,64 @@ class MailchimpService {
      * @return boolean
      */
     public function listContains($listId, $email) {
-        return in_array(strtolower($email), $this->getListMembers($listId));
+        $email = strtolower($email);        
+        $members = $this->getListMembers($listId);
+        
+        foreach ($members as $member) {
+            if (strtolower($member['email']) == $email) {
+                return true;
+            }
+        }
+        
+        return false;
     }
+    
+    
+    /**
+     * 
+     * @param string $listId
+     * @param string $email
+     * @return array
+     */
+    private function getMember($listId, $email) {       
+        $members = $this->getListMembers($listId);
+        
+        foreach ($members as $member) {
+            if (strtolower($member['email']) == $email) {
+                return $member;
+            }
+        }
+        
+        return null;
+    }
+    
+    
+    public function subscribe($listId, $email) {
+        $this->getClient()->subscribe(array(
+            'id' => $this->lists[$listId]['id'],
+            'email' => array(
+                'email' => $email
+            ),
+            'double_optin' => false
+        ));
+        
+        return true;      
+    }
+    
+    public function unsubscribe($listId, $email) {
+        $member = $this->getMember($listId, $email);
+        if (is_null($member)) {
+            return true;
+        }
+   
+        $this->getClient()->unsubscribe(array(
+            'id' => $this->lists[$listId]['id'],
+            'email' => $member,
+            'delete_member' => false
+        ));
+        
+        return true;
+    }    
     
     
     /**
@@ -62,10 +118,8 @@ class MailchimpService {
             $response = $this->getClient()->getListMembers(array(
                 'id' => $this->lists[$listId]['id']
             )); 
-
-            foreach ($response['data'] as $member) {
-                $this->lists[$listId]['members'][] = strtolower($member['email']);
-            }            
+            
+            $this->lists[$listId]['members'] = $response['data'];         
         }
         
         return $this->lists[$listId]['members'];
