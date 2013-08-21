@@ -4,6 +4,12 @@ use ZfrMailChimp\Client\MailChimpClient;
 
 class MailchimpService {
     
+    /**
+     *
+     * @var string
+     */
+    private $apiKey;
+    
     
     /**
      *
@@ -18,17 +24,15 @@ class MailchimpService {
      * 
      * @param string $apiKey
      */
-    public function __construct($apiKey, $updatesListId, $announcementsListId) {
-        $this->client = new MailChimpClient($apiKey);
+    public function __construct($apiKey, $lists) {
+        $this->apiKey = $apiKey;
         
-        $this->lists['updates'] = array(
-            'id' => $updatesListId
-        );
-        
-        $this->lists['announcements'] = array(
-            'id' => $announcementsListId
-        );
-    }
+        foreach ($lists as $name => $id) {
+            $this->lists[$name] = array(
+                'id' => $id
+            );
+        }
+    }    
     
     
     /**
@@ -36,6 +40,10 @@ class MailchimpService {
      * @return MailChimpClient
      */
     public function getClient() {
+        if (is_null($this->client)) {
+            $this->client = new MailChimpClient($this->apiKey);
+        }
+        
         return $this->client;
     }
     

@@ -20,3 +20,4 @@ parameters:
     mailchimp_api_key: mailchimp_api_key_value
     mailchimp_announcements_list_id: 1224633c43
     mailchimp_updates_list_id: 311aedc7f4
+    mailchimp_introduction_list_id: e1b78ec47a

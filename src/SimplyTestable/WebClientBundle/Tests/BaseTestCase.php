@@ -155,14 +155,18 @@ abstract class BaseTestCase extends WebTestCase {
     }  
     
     
-    protected function setHttpFixtures($fixtures) {
+    protected function setHttpFixtures($fixtures, $client = null) {
         $plugin = new \Guzzle\Plugin\Mock\MockPlugin();
         
         foreach ($fixtures as $fixture) {
             $plugin->addResponse($fixture);
         }
+        
+        if (is_null($client)) {
+            $client =  $this->getHttpClientService()->get();
+        }
          
-        $this->getHttpClientService()->get()->addSubscriber($plugin);              
+        $client->addSubscriber($plugin);              
     }
     
     
