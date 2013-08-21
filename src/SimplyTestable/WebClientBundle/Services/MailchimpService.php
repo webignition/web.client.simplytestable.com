@@ -80,6 +80,10 @@ class MailchimpService {
     
     
     public function subscribe($listId, $email) {
+        if ($this->listContains($listId, $email)) {
+            return true;
+        }
+        
         $this->getClient()->subscribe(array(
             'id' => $this->lists[$listId]['id'],
             'email' => array(
