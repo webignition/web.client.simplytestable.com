@@ -606,6 +606,15 @@ class UserController extends BaseViewController
             return $this->redirect($this->generateUrl('sign_up_confirm', array('email' => $email), true));            
         }
         
+        $this->getResqueQueueService()->add(
+            'SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob',
+            'email-list-subscribe',
+            array(
+                'listId' => 'announcements',
+                'email' => $email,
+            )
+        );         
+        
         $this->get('session')->setFlash('user_signin_confirmation', 'user-activated');
         return $this->redirect($this->generateUrl('sign_in', array('email' => $email), true));  
     }    
@@ -658,4 +667,12 @@ class UserController extends BaseViewController
             return false;
         }
     }
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\ResqueQueueService
+     */        
+    private function getResqueQueueService() {
+        return $this->container->get('simplytestable.services.resqueQueueService');
+    }      
 }
