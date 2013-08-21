@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "e8346a109d94401adf64d94701bd409a",
+    "hash": "ef1b065a467edfc4b0fb53c5bc0c60e9",
     "packages": [
         {
             "name": "doctrine/common",
@@ -460,23 +460,20 @@
         },
         {
             "name": "jasonlewis/expressive-date",
-            "version": "v1.0.1",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/jasonlewis/expressive-date",
-                "reference": "v1.0.1"
+                "url": "https://github.com/jasonlewis/expressive-date.git",
+                "reference": "v1.0.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/jasonlewis/expressive-date/archive/v1.0.1.zip",
-                "reference": "v1.0.1",
+                "url": "https://api.github.com/repos/jasonlewis/expressive-date/zipball/v1.0.2",
+                "reference": "v1.0.2",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.2.0"
-            },
-            "require-dev": {
-                "mockery/mockery": "0.7.*"
             },
             "type": "library",
             "autoload": {
@@ -501,7 +498,7 @@
                 "date",
                 "time"
             ],
-            "time": "2012-12-14 12:46:47"
+            "time": "2013-05-17 23:22:57"
         },
         {
             "name": "jdorn/sql-formatter",
