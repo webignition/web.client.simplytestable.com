@@ -88,6 +88,9 @@ class MailchimpService {
     
     
     public function subscribe($listId, $email) {
+//        var_dump($listId, $email, $this->listContains($listId, $email), $this->lists['introduction']);
+//        exit();
+        
         if ($this->listContains($listId, $email)) {
             return true;
         }
