@@ -613,16 +613,7 @@ class UserController extends BaseViewController
                 'listId' => 'announcements',
                 'email' => $email,
             )
-        );         
-        
-        $this->getResqueQueueService()->add(
-            'SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob',
-            'email-list-subscribe',
-            array(
-                'listId' => 'introduction',
-                'email' => $email,
-            )
-        );         
+        );                 
         
         $this->get('session')->setFlash('user_signin_confirmation', 'user-activated');
         return $this->redirect($this->generateUrl('sign_in', array('email' => $email), true));  
