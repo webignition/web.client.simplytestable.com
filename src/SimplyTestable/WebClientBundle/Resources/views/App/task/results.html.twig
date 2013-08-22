@@ -85,7 +85,9 @@
                                         Validator error   
                                     {% elseif task.output.result.isCssValidationSslExceptionError %}
                                         Validator error   
-                                    {% endif %}  
+                                    {% elseif task.output.result.isMarkuplessTextHtmlFailure %}
+                                        No markup found   
+                                    {% endif %} 
                                 {% elseif task.state == 'completed' %}
                                     {% if task.output.hasErrors %}
                                         <span class="label label-important">Failed</span><span class="label label-important">
@@ -322,6 +324,17 @@
                         <p>
                             This most commonly happens if the URL to be validated redirects to another URL. We're
                             working to fix this.                            
+                        </p>
+                    {% elseif task.output.result.isMarkuplessTextHtmlFailure %}
+                        <h2 class="info"><i class="icon-exclamation-sign"></i> No markup found!</h2>
+                        
+                        <p>
+                            The page at <a href="{{ task.url }}">{{ task.url }}</a> is being served as HTML
+                            but did not return any HTML.
+                        </p>
+                        
+                        <p>
+                            This tends to happen if the page being tested generated a plain text error.
                         </p>
                     {% endif %}
                 </div>
