@@ -27,9 +27,9 @@ class TestProgressController extends TestViewController
     );    
     
     private $testStateLabelMap = array(
-        'new' => 'New',
-        'queued' => 'Queued',
-        'preparing' => 'Discovering URLs to test',
+        'new' => 'New (waiting to start)',
+        'queued' => 'Waiting for first test to begin',
+        'preparing' => 'Looking for URLs in your sitemap or news feed',
         'in-progress' => 'Running'        
     );
     
@@ -82,7 +82,7 @@ class TestProgressController extends TestViewController
             'test' => $test,
             'remote_test_summary' => $this->getRemoteTestSummaryArray($remoteTestSummary),
             'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
-            'state_label' => $this->testStateLabelMap[$test->getState()].': ',
+            'state_label' => $this->getStateLabel($test, $remoteTestSummary),
             'state_icon' => $this->testStateIconMap[$test->getState()],
             'completion_percent' => $this->getCompletionPercent($remoteTestSummary),
             'public_site' => $this->container->getParameter('public_site'),
@@ -98,7 +98,17 @@ class TestProgressController extends TestViewController
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
         return $this->sendResponse($viewData);
-    }    
+    } 
+    
+    private function getStateLabel($test, $remoteTestSummary) {
+        $label = $this->testStateLabelMap[$test->getState()];
+        
+        if ($test->getState() == 'in-progress') {
+            $label .= ': ' . $this->getCompletionPercent($remoteTestSummary).'% done';
+        }
+        
+        return $label;
+    }  
         
     private function getRemoteTestSummaryArray($remoteTestSummary) {        
         $remoteTestSummaryArray = (array)$remoteTestSummary;

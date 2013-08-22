@@ -501,6 +501,16 @@ application.progress.testController = function() {
                 }
 
                 latestTestData = data;
+                
+                if (latestTestData.remote_test_summary.state === 'in-progress') {                    
+                    $('#test-summary-container').css({
+                        'display':'block'
+                    });                    
+                    
+                    $('#test-list').css({
+                        'display':'block'
+                    });                       
+                }
 
                 setCompletionPercentValue();
                 setCompletionPercentStateLabel();
@@ -521,6 +531,18 @@ application.progress.testController = function() {
 
     this.initialise = function() {
         refreshTestSummary();
+        
+        if (!$('#test-summary-container').hasClass('state-in-progress')) {
+            $('#test-summary-container').css({
+                'display':'none'
+            });            
+        }
+        
+        if (!$('#test-list').hasClass('state-in-progress')) {
+            $('#test-list').css({
+                'display':'none'
+            });            
+        }        
     };
 };
 

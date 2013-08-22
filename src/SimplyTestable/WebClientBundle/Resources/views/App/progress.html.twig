@@ -23,78 +23,61 @@ Testing {{website}} - {{ parent() }}
     <div class="span12">
         {% if app.request.attributes.get('_route') == 'app_progress' and test_cancel_error is defined and test_cancel_error != '' %}           
             {% if test_cancel_error == 503 %}
-        <div class="alert alert-error">   
-            Oops. We're in a <strong>read-only</strong> state whilst some 
-            <strong>maintenance</strong> is going on. You can cancel
-            this test right now.
-        </div> 
+            <div class="alert alert-error">   
+                Oops. We're in a <strong>read-only</strong> state whilst some 
+                <strong>maintenance</strong> is going on. You can cancel
+                this test right now.
+            </div> 
             {% endif %}        
         {% endif %}        
-        
+
         {% if app.request.attributes.get('_route') == 'app_queued' %}           
             {% if reason == 503 %}
-        <div class="alert alert-info">       
-            We're in a <strong>read-only</strong> state whilst some 
-            <strong>maintenance</strong> is going on. Your test has been queued 
-            and will be started before too long.
-        </div> 
+            <div class="alert alert-info">       
+                We're in a <strong>read-only</strong> state whilst some 
+                <strong>maintenance</strong> is going on. Your test has been queued 
+                and will be started before too long.
+            </div> 
             {% endif %}        
         {% endif %}
-            
+
         {% if remote_test_summary.ammendments is defined %}
             {% if remote_test_summary.ammendments[0].constraint is defined %}
-<div class="alert alert-info alert-ammendment alert-from-view">
-    <i class="icon icon-warning-sign"></i>
-    <span>
+            <div class="alert alert-info alert-ammendment alert-from-view">
+                <i class="icon icon-warning-sign"></i>
+                <span>
 {% include 'SimplyTestableWebClientBundle:Partials:test-url-limit-notification.html.twig' %}
-    </span>
-</div>                
+                    </span>
+                </div>                
             {% endif %}         
         {% endif %}
-            
+
         {% if remote_test_summary.crawl is defined and remote_test_summary.crawl.limit and remote_test_summary.crawl.discovered_url_count == remote_test_summary.crawl.limit  %}
-<div class="alert alert-info alert-ammendment alert-from-view">
-    <i class="icon icon-warning-sign"></i>
-    <span>
+                <div class="alert alert-info alert-ammendment alert-from-view">
+                    <i class="icon icon-warning-sign"></i>
+                    <span>
 {% include 'SimplyTestableWebClientBundle:Partials:crawl-url-limit-notification.html.twig' %}
-    </span>
-</div>       
+                        </span>
+                    </div>       
         {% endif %}            
-        
+
                 {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %}
-        </div>
-    </div>
+                </div>
+            </div>
 
 
-    <section>
-        <div class="row-fluid">
-            <div class="span12">
+            <section>
+                <div class="row-fluid">
+                    <div class="span12">
                     {% include 'SimplyTestableWebClientBundle:Partials/progress:completion-percent.html.twig' %}
-                </div>                
-            </div>          
-        </section>
-
-
-        <div class="row-fluid">
-            <section>                
-                <div class="span12" id="test-summary">
-                    <h2 class="info"><i class="icon-certificate"></i> Summary (<span id="test-summary-url-count">{{ remote_test_summary.url_count }}</span> urls, <span id="test-summary-task-count">{{ remote_test_summary.task_count }}</span> tests)</h2>
-                    {% include 'SimplyTestableWebClientBundle:Partials:progress/task-states.html.twig' %}
-                </div>
-                <div class="clearfix"></div>
+                    </div>                
+                </div>          
             </section>
-        </div>
 
 
-        <div id="test-list">
-            <div class="row-fluid">
-                <div class="span12">
-                    <section id="task-list-container">
-                        <h2 class="info"><i class="icon-tasks"></i> Progress</h2>
-                    </section>  
-                </div>
-            </div>            
-        </div>
+    {% include 'SimplyTestableWebClientBundle:Partials:progress/task-states.html.twig' %}
+    {% include 'SimplyTestableWebClientBundle:Partials:progress/task-progress.html.twig' %}
+   
 
 
 {% endblock %}
