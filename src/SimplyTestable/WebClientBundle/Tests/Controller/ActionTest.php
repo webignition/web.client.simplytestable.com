@@ -32,6 +32,12 @@ abstract class ActionTest extends BaseTest {
             $this->assertEquals($responseProperties['redirectPath'], $redirectUrl->getPath());            
         }
         
+        if (isset($responseProperties['flash'])) {
+            foreach ($responseProperties['flash'] as $key => $expectedValue) {
+                $this->assertEquals($expectedValue, $this->container->get('session')->getFlash($key));
+            }
+        }
+        
         return $response;
     }     
 
