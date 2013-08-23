@@ -18,7 +18,6 @@ abstract class BaseTest extends BaseSimplyTestableTestCase {
     
     abstract protected function getControllerName();     
     abstract protected function getActionName();    
-    //abstract protected function getTestMethodHasFixtureMap(); 
     
     protected function getCurrentController($postData = null, $queryData = null) {
         $postData = (is_array($postData)) ? $postData : array();

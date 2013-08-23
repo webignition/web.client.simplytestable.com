@@ -69,8 +69,8 @@ abstract class BaseController extends Controller
     }
     
     
-    protected function getRequestValue($name, $default = null, $httpMethod = null) {
-        $value = trim($this->get('request')->get($name));        
+    protected function getRequestValue($name, $default = null, $httpMethod = null) {        
+        $value = trim($this->get('request')->get($name));
         if ($value != '') {
             return $value;
         }
@@ -118,7 +118,7 @@ abstract class BaseController extends Controller
      * @return \webignition\NormalisedUrl\NormalisedUrl
      */
     protected function getNormalisedRequestUrl() {
-        $website = $this->getRequestValue('website');
+        $website = $this->getRequestValue('website');        
         if (is_null($website)) {
             return $website;
         }

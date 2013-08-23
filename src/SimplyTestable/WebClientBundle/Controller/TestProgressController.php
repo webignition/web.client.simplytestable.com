@@ -45,7 +45,7 @@ class TestProgressController extends TestViewController
         'in-progress' => 'icon-play-circle'        
     );
     
-    public function indexAction($website, $test_id) {        
+    public function indexAction($website, $test_id) {                
         $this->getTestService()->setUser($this->getUser());
         
         if ($this->isUsingOldIE()) {
@@ -53,7 +53,7 @@ class TestProgressController extends TestViewController
         }
         
         $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
-        if ($testRetrievalOutcome->hasResponse()) {
+        if ($testRetrievalOutcome->hasResponse()) {            
             return $testRetrievalOutcome->getResponse();
         }
         
@@ -67,14 +67,14 @@ class TestProgressController extends TestViewController
             if ($this->getUserService()->isPublicUser($this->getUser())) {
                 return $this->redirect($this->getResultsUrl($website, $test_id));
             }
-        }
+        }       
         
         if ($test->getWebsite() != $website) {
             return $this->redirect($this->generateUrl('app_test_redirector', array(
                 'website' => $test->getWebsite(),
                 'test_id' => $test_id
             ), true));            
-        }        
+        }      
         
         $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
         if ($test->getState() == 'failed-no-sitemap' && !isset($remoteTestSummary->crawl)) {

@@ -1,22 +1,28 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Controller\Task;
+namespace SimplyTestable\WebClientBundle\Tests\Controller\Task\CollectionAction;
 
-use SimplyTestable\WebClientBundle\Tests\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Controller\Task\ActionTest as BaseActionTest;
 
-class CollectionActionTest extends BaseSimplyTestableTestCase {    
-    
-    public static function setUpBeforeClass() {
-        self::setupDatabaseIfNotExists();
+class ActionTest extends BaseActionTest {      
+
+    protected function getActionName() {
+        return 'collectionAction';
     }    
     
-    public function testGetWithAuthorisedUser() {
-        $this->removeAllTests();
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-
-        $response = $this->getTaskController('collectionAction')->CollectionAction('http://example.com/', 1);
     
-        $this->assertEquals(200, $response->getStatusCode());
+    public function testGetWithAuthorisedUser() {
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
+        
+        $response =  $this->performActionTest(array(
+            'statusCode' => 200
+        ), array(
+            'methodArguments' => array(
+                'http://example.com/',
+                1
+            )
+        ));        
+
         $taskDetails = json_decode($response->getContent());
         
         $processedTaskIds = array();
@@ -36,39 +42,52 @@ class CollectionActionTest extends BaseSimplyTestableTestCase {
     }
     
     public function testGetWithUnauthorisedUser() {
-        $this->removeAllTests();
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
+        
+        $this->performActionTest(array(
+            'statusCode' => 404
+        ), array(
+            'methodArguments' => array(
+                'http://example.com/',
+                1
+            )
+        ));        
 
-        $response = $this->getTaskController('collectionAction')->CollectionAction('http://example.com/', 1);
-        $this->assertEquals(404, $response->getStatusCode());
     } 
     
 
     public function testGetWithHttpClientErrorRetrievingRemoteTasks() {
-        $this->removeAllTests();
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         
-        $this->container->enterScope('request');
-        
-        $response = $this->getTaskController('collectionAction')->collectionAction('http://example.com/', 1);
-        $this->assertEquals(200, $response->getStatusCode());
+        $response = $this->performActionTest(array(
+            'statusCode' => 200
+        ), array(
+            'methodArguments' => array(
+                'http://example.com/',
+                1
+            )
+        ));
+
         $this->assertNull(json_decode($response->getContent()));        
     }
     
     
     public function testGetWithHttpServerErrorRetrievingRemoteTasks() {
-        $this->removeAllTests();
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         
-        $this->container->enterScope('request');
-        
-        $response = $this->getTaskController('collectionAction')->collectionAction('http://example.com/', 1);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertNull(json_decode($response->getContent()));        
+        $response = $this->performActionTest(array(
+            'statusCode' => 200
+        ), array(
+            'methodArguments' => array(
+                'http://example.com/',
+                1
+            )
+        ));
+
+        $this->assertNull(json_decode($response->getContent()));          
     }      
     
     public function testGetWithCurlExceptionRetrievingRemoteTasks() {
-        $this->removeAllTests();
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         
         $this->getWebResourceService()->setRequestSkeletonToCurlErrorMap(array(
@@ -78,24 +97,34 @@ class CollectionActionTest extends BaseSimplyTestableTestCase {
                     'errorNumber' => 6                    
                 )
             )
-        ));        
+        ));   
         
-        $this->container->enterScope('request');
-        
-        $response = $this->getTaskController('collectionAction')->collectionAction('http://example.com/', 1);
-        $this->assertEquals(200, $response->getStatusCode());
+        $response = $this->performActionTest(array(
+            'statusCode' => 200
+        ), array(
+            'methodArguments' => array(
+                'http://example.com/',
+                1
+            )
+        ));
+
         $this->assertNull(json_decode($response->getContent()));        
     }
     
     
     public function testJsStaticAnalysisResultParsingOfEmptyCollection() {
-        $this->removeAllTests();
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-
-        $response = $this->getTaskController('collectionAction')->CollectionAction('http://lautokaurbana.com/', 4857);
-    
-        $this->assertEquals(200, $response->getStatusCode());        
+        
+        $this->performActionTest(array(
+            'statusCode' => 200
+        ), array(
+            'methodArguments' => array(
+                'http://example.com/',
+                1
+            )
+        ));      
     }
+
 }
 
 

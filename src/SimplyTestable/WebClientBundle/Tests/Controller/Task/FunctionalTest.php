@@ -1,13 +1,13 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Controller\App;
+namespace SimplyTestable\WebClientBundle\Tests\Controller\Task;
 
 use SimplyTestable\WebClientBundle\Tests\Controller\FunctionalTest as ControllerFunctionalTest;
 
 abstract class FunctionalTest extends ControllerFunctionalTest {
     
     protected function getControllerName() {
-        return self::APP_CONTROLLER_NAME;
+        return self::TASK_CONTROLLER_NAME;
     }    
     
 }

@@ -8,6 +8,11 @@ abstract class FunctionalTest extends BaseTest {
     
     abstract protected function getRoute();
     
+    protected function getCurrentRequestUrl($parameters = null) {
+        $parameters = (is_array($parameters)) ? $parameters : array();
+        
+        return $this->getCurrentController()->generateUrl($this->getRoute(), $parameters);
+    }    
     
     protected function publicUserNavbarContentTest(\Symfony\Component\DomCrawler\Crawler $crawler) {
         /* @var $navbar \Symfony\Component\DomCrawler\Crawler */

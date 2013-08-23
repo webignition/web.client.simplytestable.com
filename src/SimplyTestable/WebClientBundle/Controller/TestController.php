@@ -37,7 +37,7 @@ class TestController extends BaseController
         $this->getTestService()->setUser($this->getUser());
         
         try {
-            $test = $this->getTestService()->get($this->getWebsite(), $this->getTestId(), $this->getUser());                        
+            $test = $this->getTestService()->get($this->getWebsite(), $this->getTestId(), $this->getUser());                                    
             $this->getTestService()->cancel($test);
             return $this->redirect($this->generateUrl(
                 'app_results',
@@ -53,7 +53,7 @@ class TestController extends BaseController
                 array(),
                 true
             ));
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {                        
             $this->getLogger()->err('TestController::cancelAction:webResourceException ['.$webResourceException->getResponse()->getStatusCode().']');            
             
             return $this->redirect($this->generateUrl(
