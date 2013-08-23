@@ -586,10 +586,12 @@ body.app-task-results #task-summary h3 {
     opacity:0.9;
 }
 
-
-
 #test-options {
     margin-top:30px;
+}
+
+body.app-progress #test-options {
+    margin-top:0;
 }
 
 #test-options p.info {
@@ -998,4 +1000,10 @@ body.user-account-index .news-subscriptions label strong {
 
 body.user-account-index .news-subscriptions label span {
     opacity:0.7;
+}
+
+body.app-progress #cancel-form {
+    position:absolute;
+    top:30px;
+    right:30px;
 }

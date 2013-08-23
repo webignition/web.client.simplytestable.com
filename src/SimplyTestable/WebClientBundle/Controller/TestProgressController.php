@@ -32,7 +32,7 @@ class TestProgressController extends TestViewController
         'preparing' => 'Finding URLs to test: looking for sitemap or news feed',
         'in-progress' => 'Running',
         'crawling' => 'Finding URLs to test',
-        'failed-no-sitemap' => 'Preparing to find URLs'
+        'failed-no-sitemap' => 'Finding URLs to test: preparing to crawl'
     );
     
     private $testStateIconMap = array(
@@ -89,7 +89,7 @@ class TestProgressController extends TestViewController
         $taskTypes = array();
         foreach ($remoteTestSummary->task_types as $taskTypeObject) {
             $taskTypes[] = $taskTypeObject->name;
-        }        
+        }
         
         $viewData = array(
             'website' => idn_to_utf8($website),

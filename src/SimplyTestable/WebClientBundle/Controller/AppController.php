@@ -61,7 +61,7 @@ class AppController extends TestViewController
     
     
     public function indexAction()
-    {        
+    {           
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }
@@ -425,8 +425,8 @@ class AppController extends TestViewController
     
     public function prepareResultsAction($website, $test_id)
     {        
-        $this->getTestService()->setUser($this->getUser());
-        
+        $this->getTestService()->setUser($this->getUser());        
+                
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }
@@ -453,7 +453,7 @@ class AppController extends TestViewController
         $completionPercent = round(($localTaskCount / $remoteTaskCount) * 100);
         $remainingTasksToRetrieveCount = $remoteTaskCount - $localTaskCount;
         
-        $this->setTemplate('SimplyTestableWebClientBundle:App:results-preparing.html.twig');
+        $this->setTemplate('SimplyTestableWebClientBundle:App:results-preparing.html.twig');        
         return $this->sendResponse(array(            
             'public_site' => $this->container->getParameter('public_site'),
             'this_url' => $this->getPreparingResultsUrl($website, $test_id),

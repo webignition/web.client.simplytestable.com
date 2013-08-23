@@ -1,15 +1,15 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Controller\App;
+namespace SimplyTestable\WebClientBundle\Tests\Controller\App\QueuedAction;
 
-use SimplyTestable\WebClientBundle\Tests\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Controller\App\ActionTest as BaseActionTest;
 
-class QueuedActionHttpTest extends BaseSimplyTestableTestCase {    
-    
-    public static function setUpBeforeClass() {
-        self::setupDatabaseIfNotExists();
-    }    
-    
+class ActionTest extends BaseActionTest {         
+   
+    protected function getActionName() {
+        return 'queuedAction';
+    }
+
     public function testWithAuthorisedUserWithQueuedTest() {
         $testOptions = new \SimplyTestable\WebClientBundle\Model\TestOptions();
         $testOptions->addTestType('HTML validation');
@@ -26,6 +26,10 @@ class QueuedActionHttpTest extends BaseSimplyTestableTestCase {
         
         $this->performActionTest(array(
             'statusCode' => 200
+        ), array(
+            'methodArguments' => array(
+                'http://example.com/'
+            )
         ));
     }
     
@@ -50,6 +54,10 @@ class QueuedActionHttpTest extends BaseSimplyTestableTestCase {
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/http://example.com//'
+        ), array(
+            'methodArguments' => array(
+                'http://example.com/'
+            )
         ));
     } 
     
@@ -59,7 +67,11 @@ class QueuedActionHttpTest extends BaseSimplyTestableTestCase {
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/http://example.com//'            
-        ));    
+        ), array(
+            'methodArguments' => array(
+                'http://example.com/'
+            )
+        ));   
     }
     
     public function testWithUnauthorisedUserWithoutQueuedTest() {
@@ -67,43 +79,12 @@ class QueuedActionHttpTest extends BaseSimplyTestableTestCase {
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/http://example.com//'            
-        ));    
-    }    
-    
-    private function performActionTest($responseProperties, $methodProperties = array()) {
-        $controllerActionName = $this->getControllerActionName();
-        
-        $this->removeAllTests();
-        
-        $this->container->enterScope('request');
-        
-        $postData = isset($methodProperties['postData']) ? $methodProperties['postData'] : array();
-        $queryData = isset($methodProperties['queryData']) ? $methodProperties['queryData'] : array();
-        
-        $response = $this->getAppController(
-            $controllerActionName,
-            $postData,
-            $queryData
-        )->$controllerActionName('http://example.com/', 1);
-        
-        $this->assertEquals($responseProperties['statusCode'], $response->getStatusCode());        
-        
-        if ($response->getStatusCode() == 302) {
-            $redirectUrl = new \webignition\Url\Url($response->getTargetUrl());
-            $this->assertEquals($responseProperties['redirectPath'], $redirectUrl->getPath());            
-        }
+        ), array(
+            'methodArguments' => array(
+                'http://example.com/'
+            )
+        ));  
     }
-    
-    
-    /**
-     * Get the name of the controller action method from the test class name
-     * 
-     * @return string
-     */
-    private function getControllerActionName() {
-        $classNameParts = explode('\\', __CLASS__);        
-        return str_replace('HttpTest', '', $classNameParts[count($classNameParts) - 1]);
-    }    
     
 
    

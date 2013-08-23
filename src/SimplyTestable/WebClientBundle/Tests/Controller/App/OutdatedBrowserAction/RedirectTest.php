@@ -1,10 +1,10 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Controller\App;
+namespace SimplyTestable\WebClientBundle\Tests\Controller\App\OutdatedBrowserAction;
 
 use SimplyTestable\WebClientBundle\Tests\BaseSimplyTestableTestCase;
 
-class AppControllerOutdatedBrowserRedirectTest extends BaseSimplyTestableTestCase {    
+class RedirectTest extends BaseSimplyTestableTestCase {    
     
     public static function setUpBeforeClass() {
         self::setupDatabaseIfNotExists();

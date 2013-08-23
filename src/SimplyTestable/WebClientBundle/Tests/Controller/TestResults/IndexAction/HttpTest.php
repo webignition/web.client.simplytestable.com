@@ -1,14 +1,18 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Controller\TestResults;
+namespace SimplyTestable\WebClientBundle\Tests\Controller\TestResults\IndexAction;
 
-use SimplyTestable\WebClientBundle\Tests\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\HttpTest as BaseHttpTest;
 
-class IndexActionHttpTest extends BaseSimplyTestableTestCase {    
+class HttpTest extends BaseHttpTest {  
     
     public static function setUpBeforeClass() {
         self::setupDatabaseIfNotExists();
-    }    
+    }  
+    
+    public function getControllerActionName() {
+        return 'indexAction';
+    }
     
     public function testWithAuthorisedUser() {
         $this->performActionTest(array(
@@ -76,15 +80,15 @@ class IndexActionHttpTest extends BaseSimplyTestableTestCase {
     }
     
     
-    /**
-     * Get the name of the controller action method from the test class name
-     * 
-     * @return string
-     */
-    private function getControllerActionName() {
-        $classNameParts = explode('\\', __CLASS__);        
-        return str_replace('HttpTest', '', $classNameParts[count($classNameParts) - 1]);
-    }
+//    /**
+//     * Get the name of the controller action method from the test class name
+//     * 
+//     * @return string
+//     */
+//    private function getControllerActionName() {
+//        $classNameParts = explode('\\', __CLASS__);        
+//        return str_replace('HttpTest', '', $classNameParts[count($classNameParts) - 1]);
+//    }
     
     
     public function testWithHttpClientErrorRetrievingRemoteSummary() {
