@@ -65,7 +65,7 @@ class TestControllerCancelActionTest extends BaseSimplyTestableTestCase {
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         
         $this->getWebResourceService()->setRequestSkeletonToCurlErrorMap(array(
-            'http://ci.app.simplytestable.com/job/http://example.com//1/cancel/' => array(
+            'http://ci.app.simplytestable.com/job/http%3A%2F%2Fexample.com%2F/1/' => array(
                 'GET' => array(
                     'errorMessage' => "Couldn't resolve host. The given remote host was not resolved.",
                     'errorNumber' => 6                    

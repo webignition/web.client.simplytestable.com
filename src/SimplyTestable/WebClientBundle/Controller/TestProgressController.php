@@ -29,8 +29,10 @@ class TestProgressController extends TestViewController
     private $testStateLabelMap = array(
         'new' => 'New (waiting to start)',
         'queued' => 'Waiting for first test to begin',
-        'preparing' => 'Looking for URLs in your sitemap or news feed',
-        'in-progress' => 'Running'        
+        'preparing' => 'Finding URLs to test: looking for sitemap or news feed',
+        'in-progress' => 'Running',
+        'crawling' => 'Finding URLs to test',
+        'failed-no-sitemap' => 'Preparing to find URLs'
     );
     
     private $testStateIconMap = array(
@@ -38,6 +40,8 @@ class TestProgressController extends TestViewController
         'queued' => 'icon-off',
         'queued-for-assignment' => 'icon-off',
         'preparing' => 'icon-search',
+        'crawling' => 'icon-search',        
+        'failed-no-sitemap' => 'icon-search',         
         'in-progress' => 'icon-play-circle'        
     );
     
@@ -56,7 +60,13 @@ class TestProgressController extends TestViewController
         $test = $testRetrievalOutcome->getTest();
         
         if (in_array($test->getState(), $this->testFinishedStates)) {
-            return $this->redirect($this->getResultsUrl($website, $test_id));
+            if ($test->getState() !== 'failed-no-sitemap') {
+                return $this->redirect($this->getResultsUrl($website, $test_id));                
+            }
+            
+            if ($this->getUserService()->isPublicUser($this->getUser())) {
+                return $this->redirect($this->getResultsUrl($website, $test_id));
+            }
         }
         
         if ($test->getWebsite() != $website) {
@@ -66,7 +76,16 @@ class TestProgressController extends TestViewController
             ), true));            
         }        
         
-        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();        
+        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
+        if ($test->getState() == 'failed-no-sitemap' && !isset($remoteTestSummary->crawl)) {
+            $this->getTestService()->startCrawl($test);
+            $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();                
+        }        
+                
+        if ($test->getState() == 'failed-no-sitemap' && isset($remoteTestSummary->crawl)) {
+            $test->setState('crawling');
+        }
+        
         $taskTypes = array();
         foreach ($remoteTestSummary->task_types as $taskTypeObject) {
             $taskTypes[] = $taskTypeObject->name;
@@ -101,10 +120,18 @@ class TestProgressController extends TestViewController
     } 
     
     private function getStateLabel($test, $remoteTestSummary) {
+        if ($test->getState() == 'preparing' && isset($remoteTestSummary->crawl)) {
+            return $this->testStateLabelMap['queued'];
+        }
+        
         $label = $this->testStateLabelMap[$test->getState()];
         
         if ($test->getState() == 'in-progress') {
             $label .= ': ' . $this->getCompletionPercent($remoteTestSummary).'% done';
+        }
+        
+        if ($test->getState() == 'crawling') {
+            $label .= ': '. $remoteTestSummary->crawl->processed_url_count .' checked, ' . $remoteTestSummary->crawl->discovered_url_count.' of '. $remoteTestSummary->crawl->limit .' found';
         }
         
         return $label;
@@ -184,7 +211,15 @@ class TestProgressController extends TestViewController
      * @param \stdClass|array $remoteTestSummary
      * @return int 
      */
-    private function getCompletionPercent($remoteTestSummary) {        
+    private function getCompletionPercent($remoteTestSummary) {
+        if ($remoteTestSummary->state === 'failed-no-sitemap' && isset($remoteTestSummary->crawl)) {
+            if ($remoteTestSummary->crawl->discovered_url_count === 0) {
+                return 0;
+            }
+            
+            return round(($remoteTestSummary->crawl->discovered_url_count / $remoteTestSummary->crawl->limit) * 100);
+        }
+        
         return ($remoteTestSummary instanceof \stdClass) ? $this->getCompletionPercentFromStdClass($remoteTestSummary) : $this->getCompletionPercentFromArray($remoteTestSummary);
     } 
     

@@ -1,4 +1,4 @@
-{% extends 'SimplyTestableWebClientBundle::App/single-page-dialog.html.twig' %}
+{% extends 'SimplyTestableWebClientBundle::App/single-page-dialog-mid.html.twig' %}
 
 {% block title %}No URLs detected for {{website}} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
@@ -6,26 +6,14 @@
 
 {% block content %}
 
-<h1>Couldn't find any URLs to test</h1>
+<h1>No sitemap or news feed, sign in to crawl this site</h1>
 
 <p class="intro">
-    We couldn't find a sitemap or news feed to collect URLs from for
-    testing <strong>{{ website }}</strong>.
+    Demo tests only collect URLs to be tested from your XML sitemap
+    or news feed. As a registered user you can crawl a site to discover URLs to be tested.
 </p>
 
-{% if is_logged_in %}   
-{% else %}
-<p>
-    As a registered user you can crawl a site to discover URLs to be tested.
-</p>   
-{% endif %}
-
 <div class="primary-options">
-    {% if is_logged_in %}
-    <form action="{{ path('crawl_start', {'website': website, 'test_id': test.testId}) }}" method="post">
-        <button  type="submit" class="btn btn-primary btn-large">Crawl this site to find URLs and try again</button>
-    </form>    
-    {% else %}
     <div class="inline-forms">
         <form action="{{ path('sign_in') }}" method="get">
             <button  type="submit" class="btn btn-primary btn-large">Sign in to crawl this site to find URLs</button>
@@ -36,8 +24,7 @@
             <button  type="submit" class="btn btn-large">Create an account</button>
         </form>          
     </div>
-   
-    {% endif %}
+
 
     <div class="test-options-advanced">
         <div class="expandable-control expandable-control-default-closed for-detail-expandable">More detail</div>
@@ -83,15 +70,5 @@
         </div>
     </div>        
 </div>
-
-
-<!--
-<div class="secondary-options">
-    <form action="{{ path('test_clone_and_start', {'website': website, 'test_id': test.testId}) }}" method="post">
-        <button name="full-single" value="single" type="submit" class="btn">Test just the above URL only</button>
-        <button name="full-single" value="full" type="submit" class="btn">Try starting full-site test again</button>
-    </form>    
-</div>
--->
 
 {% endblock %}

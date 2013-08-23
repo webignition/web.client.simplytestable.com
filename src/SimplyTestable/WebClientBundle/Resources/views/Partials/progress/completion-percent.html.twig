@@ -1,4 +1,4 @@
-<div id="completion-percent">
+<div id="completion-percent" class="state-{% if test is defined %}{{test.state}}{% endif %}">
     <h2 class="info"><i id="completion-percent-state-icon" class="{{ state_icon }}"></i>
         <span id="completion-percent-state-label">{{ state_label }}</span>        
     </h2>

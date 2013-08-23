@@ -151,8 +151,12 @@ class TestResultsController extends TestViewController
             return $this->redirect($this->getProgressUrl($website, $test_id));
         }
         
+        if (!$this->getUserService()->isPublicUser($this->getUser())) {            
+            return $this->redirect($this->getProgressUrl($website, $test_id));
+        }
+        
         $redirectParameters = json_encode(array(
-            'route' => 'app_results_failed_no_urls_detected',
+            'route' => 'app_progress',
             'parameters' => array(
                 'website' => $website,
                 'test_id' => $test_id                        

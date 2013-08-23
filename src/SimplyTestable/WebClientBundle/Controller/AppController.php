@@ -282,7 +282,7 @@ class AppController extends TestViewController
             )),
             'remote_test_summary' => $this->getRemoteTestSummaryArray($remoteTestSummary),
             'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
-            'state_label' => $this->testStateLabelMap['queued'].': ',
+            'state_label' => $this->testStateLabelMap['queued'],
             'state_icon' => $this->testStateIconMap['queued'],
             'completion_percent' => 0,
             'public_site' => $this->container->getParameter('public_site'),

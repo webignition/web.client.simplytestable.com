@@ -1,4 +1,4 @@
-<div class="row-fluid state-{{test.state}}" id="test-summary-container">
+<div class="row-fluid state-{% if test is defined %}{{test.state}}{% endif %}" id="test-summary-container">
     <section>                
         <div class="span12" id="test-summary">
             <h2 class="info"><i class="icon-certificate"></i> Summary (<span id="test-summary-url-count">{{ remote_test_summary.url_count }}</span> urls, <span id="test-summary-task-count">{{ remote_test_summary.task_count }}</span> tests)</h2>

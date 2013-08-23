@@ -275,9 +275,19 @@ application.progress.testController = function() {
     var estimatedTimeRemainingIsFirstDisplay = true;
 
     var setCompletionPercentValue = function() {
-        var completionPercentValue = $('#completion-percent-value');
+        var completionPercentValue = $('#completion-percent-value');        
+        
+        if (latestTestData.remote_test_summary.state === 'failed-no-sitemap') {
+            if (!$('.progress').hasClass('progress-success')) {
+                $('.progress').addClass('progress-success');
+            }           
+        } else {
+            if ($('.progress').hasClass('progress-success')) {
+                $('.progress').removeClass('progress-success');
+            }
+        } 
 
-        if (completionPercentValue.text() !== latestTestData.completion_percent) {
+        if (completionPercentValue.text() !== latestTestData.completion_percent) {            
             completionPercentValue.text(latestTestData.completion_percent);
 
             if ($('html.csstransitions').length > 0) {
@@ -289,7 +299,8 @@ application.progress.testController = function() {
                     'width': latestTestData.completion_percent + '%'
                 });
             }
-        }
+        }        
+        
     };
 
     var setCompletionPercentStateLabel = function() {
@@ -519,7 +530,10 @@ application.progress.testController = function() {
                 setUrlCount();
                 setTaskCount();
                 setAmmendments();
-                storeEstimatedTimeRemaining();
+                
+                if (latestTestData.remote_test_summary.state !== 'failed-no-sitemap') {                    
+                    storeEstimatedTimeRemaining();
+                }
 
                 window.setTimeout(function() {
                     refreshTestSummary(10);
@@ -542,7 +556,12 @@ application.progress.testController = function() {
             $('#test-list').css({
                 'display':'none'
             });            
-        }        
+        }  
+        
+        if ($('#completion-percent').hasClass('state-crawling')) {
+            $('.progress').addClass('progress-success');            
+        }
+      
     };
 };
 

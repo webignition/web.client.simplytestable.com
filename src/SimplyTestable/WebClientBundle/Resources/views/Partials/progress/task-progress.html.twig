@@ -1,4 +1,4 @@
-        <div id="test-list" class="state-{{test.state}}">
+        <div id="test-list" class="state-{% if test is defined %}{{test.state}}{% endif %}">
             <div class="row-fluid">
                 <div class="span12">
                     <section id="task-list-container">
