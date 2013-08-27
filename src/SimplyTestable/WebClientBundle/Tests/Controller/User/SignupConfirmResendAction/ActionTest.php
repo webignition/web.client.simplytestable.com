@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Controller\User\SignUpConfirmResendAction;
+namespace SimplyTestable\WebClientBundle\Tests\Controller\User\SignupConfirmResendAction;
 
 use SimplyTestable\WebClientBundle\Tests\Controller\User\ActionTest as BaseActionTest;
 

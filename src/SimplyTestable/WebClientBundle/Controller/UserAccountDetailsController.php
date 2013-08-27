@@ -133,7 +133,7 @@ class UserAccountDetailsController extends AbstractUserAccountController
         return $this->redirect($this->generateUrl('user_account_index', array(), true));
     }
     
-    private function confirmEmailChangeConfirmAction($token) {        
+    private function confirmEmailChangeConfirmAction($token) {                
         $redirectResponse =  $this->redirect($this->generateUrl('user_account_index', array(), true)); 
         
         $token = trim($token);
