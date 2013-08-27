@@ -393,14 +393,25 @@ class TestService extends CoreApplicationService {
      * @return boolean 
      */
     public function cancel(Test $test) {
+        return $this->cancelByTestProperties($test->getTestId(), $test->getWebsite());      
+    }
+    
+    
+    /**
+     * 
+     * @param int $testId
+     * @param string $website
+     * @return boolean
+     */
+    public function cancelByTestProperties($testId, $website) {
         $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_cancel', array(
-            'canonical-url' => urlencode($test->getWebsite()),
-            'test_id' => $test->getTestId()
+            'canonical-url' => urlencode($website),
+            'test_id' => $testId
         )));
         
         $this->addAuthorisationToRequest($httpRequest);
         
-        return $this->webResourceService->get($httpRequest);       
+        return $this->webResourceService->get($httpRequest);          
     }
     
     

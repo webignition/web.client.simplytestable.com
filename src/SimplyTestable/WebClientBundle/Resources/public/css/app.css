@@ -1002,8 +1002,9 @@ body.user-account-index .news-subscriptions label span {
     opacity:0.7;
 }
 
-body.app-progress #cancel-form {
+body.app-progress #cancel-form,
+body.app-progress #cancel-crawl-form {
     position:absolute;
     top:30px;
-    right:30px;
+    right:30px;    
 }

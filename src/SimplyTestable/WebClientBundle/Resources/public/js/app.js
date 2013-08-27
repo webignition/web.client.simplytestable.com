@@ -5,91 +5,6 @@ application.common.isLoggedIn = function () {
     return $('.sign-out-form').prop('tagName') === 'FORM';
 };
 
-application.crawl = {};
-application.crawl.progressController = function () {
-    var latestCrawlData;
-    
-    var setStateLabel = function () {
-        var stateLabel = $('#state_label');        
-        if (stateLabel.get(0) === undefined) {
-            return;
-        }
-        
-        if (latestCrawlData.remote_test_summary.crawl.discovered_url_count === 0) {
-            stateLabel.text(latestCrawlData.state_label);
-        } else {
-            stateLabel.remove();
-        }
-    };
-    
-    var setStateIcon = function () {
-        $('h1 .icon').attr('class', 'icon').addClass(latestCrawlData.state_icon);
-    };
-    
-    var setUrlCounts = function () {
-        var processed_url_count = latestCrawlData.remote_test_summary.crawl.processed_url_count;
-        var discovered_url_count = latestCrawlData.remote_test_summary.crawl.discovered_url_count;
-        var limit = latestCrawlData.remote_test_summary.crawl.limit;
-        
-        if (processed_url_count === 0 && discovered_url_count === 0) {
-            return;
-        } 
-        
-        $('.progress .bar').css({
-            'width': ((discovered_url_count / limit) * 100) + '%'
-        });
-        
-        $('#url_counts p').text('Checked ' + processed_url_count + ' URL' + (processed_url_count !== 1 ? 's' : '') + ', found ' + discovered_url_count + ' URL' + (discovered_url_count !== 1 ? 's' : '') + ' to test.');
-    };   
-    
-    var refreshCrawlProgress = function () {
-        var now = new Date();
-
-        var getProgressUrl = function() {
-            return window.location.href + '?output=json&timestamp=' + now.getTime();
-        };
-
-        jQuery.ajax({
-            complete: function(request, textStatus) {
-                //console.log('complete', request, textStatus);
-            },
-            dataType: 'json',
-            error: function(request, textStatus, errorThrown) {
-                //console.log('error', request, textStatus, request.getAllResponseHeaders());
-            },
-            statusCode: {
-                403: function() {
-                    //console.log('403');
-                },
-                500: function() {
-                    //console.log('500');
-                }
-            },
-            success: function(data, textStatus, request) {
-                if (data.this_url != window.location.href) {
-                    window.location.href = data.this_url;
-                    return;
-                }
-
-                latestCrawlData = data;
-
-                setStateLabel();
-                setStateIcon();
-                setUrlCounts();
-
-                window.setTimeout(function() {
-                    refreshCrawlProgress();
-                }, 3000);
-            },
-            url: getProgressUrl()
-        });
-    };
-    
-    this.initialise = function() {
-        refreshCrawlProgress();
-    };    
-};
-
 application.results = {};
 application.results.preparingController = function() {
 
@@ -284,6 +199,7 @@ application.progress.testController = function() {
         } else {
             if ($('.progress').hasClass('progress-success')) {
                 $('.progress').removeClass('progress-success');
+                $('#cancel-crawl-form').remove();
             }
         } 
 
@@ -481,6 +397,26 @@ application.progress.testController = function() {
 
         return subsetAverageData.mean;
     };
+    
+    var setCancelCrawlButton = function () {
+        if (latestTestData.remote_test_summary.crawl === undefined) {
+            return;
+        }        
+
+        if ($('#cancel-crawl-form').get(0) === undefined) {
+            console.log("cp01");
+
+            var cancelCrawlForm = $('<form />')
+                    .attr('id', 'cancel-crawl-form')
+                    .attr('method', 'post')
+                    .attr('action', $('#cancel-form').attr('action').replace('cancel', 'cancel-crawl'))
+                    .append('<button type="submit" class="btn btn-warning">Stop finding URLs, start testing</button>');
+
+            $('#completion-percent').append(cancelCrawlForm);
+
+            console.log("cp02");
+        }      
+    };
 
     var refreshTestSummary = function() {
         var now = new Date();
@@ -534,6 +470,10 @@ application.progress.testController = function() {
                 if (latestTestData.remote_test_summary.state !== 'failed-no-sitemap') {                    
                     storeEstimatedTimeRemaining();
                 }
+                
+                if (latestTestData.remote_test_summary.state === 'failed-no-sitemap') {
+                    setCancelCrawlButton();
+                }
 
                 window.setTimeout(function() {
                     refreshTestSummary(10);
@@ -559,9 +499,8 @@ application.progress.testController = function() {
         }  
         
         if ($('#completion-percent').hasClass('state-crawling')) {
-            $('.progress').addClass('progress-success');            
-        }
-      
+            $('.progress').addClass('progress-success');        
+        }      
     };
 };
 

@@ -80,6 +80,54 @@ class TestController extends BaseController
     } 
     
     
+    public function cancelCrawlAction() {
+        $this->getTestService()->setUser($this->getUser());
+        
+        try {
+            $test = $this->getTestService()->get($this->getWebsite(), $this->getTestId(), $this->getUser());            
+            $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
+            $this->getTestService()->cancelByTestProperties($remoteTestSummary->crawl->id, $test->getWebsite());
+            return $this->redirect($this->generateUrl(
+                'app_progress',
+                array(
+                    'website' => $test->getWebsite(),
+                    'test_id' => $test->getTestId()
+                ),
+                true
+            ));           
+        } catch (\SimplyTestable\WebClientBundle\Exception\UserServiceException $userServiceException) {
+            return $this->redirect($this->generateUrl(
+                'app',
+                array(),
+                true
+            ));
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {                        
+            $this->getLogger()->err('TestController::cancelAction:webResourceException ['.$webResourceException->getResponse()->getStatusCode().']');            
+            
+            return $this->redirect($this->generateUrl(
+                'app_progress',
+                array(
+                    'website' => $this->getWebsite(),
+                    'test_id' => $this->getTestId()
+                ),
+                true
+            ));             
+
+        } catch (\Guzzle\Http\Exception\CurlException $curlException)  {
+            $this->getLogger()->err('TestController::cancelAction:curlException ['.$curlException->getErrorNo().']');
+            
+            return $this->redirect($this->generateUrl(
+                'app_progress',
+                array(
+                    'website' => $this->getWebsite(),
+                    'test_id' => $this->getTestId()
+                ),
+                true
+            ));
+        }
+    }
+    
+    
     /**
      *
      * @return boolean

@@ -205,6 +205,12 @@ test_cancel:
     requirements:
         website: ".+"
         
+test_cancel_crawl:
+    pattern:  /test/{website}/{test_id}/cancel-crawl/
+    defaults: { _controller: SimplyTestableWebClientBundle:Test:cancelCrawl }  
+    requirements:
+        website: ".+"        
+        
 test_cancel_queued:
     pattern:  /test/{website}/cancel/
     defaults: { _controller: SimplyTestableWebClientBundle:Test:cancelQueued }  
