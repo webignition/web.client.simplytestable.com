@@ -23,6 +23,7 @@ abstract class ActionTest extends BaseTest {
         
         $controller = $this->getCurrentController($postData, $queryData);
         
+        /* @var $response \Symfony\Component\HttpFoundation\Response */
         $response = call_user_func_array(array($controller, $actionName), $methodArguments);
         
         $this->assertEquals($responseProperties['statusCode'], $response->getStatusCode());        
@@ -38,7 +39,32 @@ abstract class ActionTest extends BaseTest {
             }
         }
         
+        if (isset($responseProperties['cookies'])) {
+            foreach ($responseProperties['cookies'] as $name => $properties) {
+                $this->performCookieTest($name, $properties, $response);
+            }
+        }
+        
         return $response;
-    }     
+    }
+    
+    private function performCookieTest($name, $properties, $response) {
+        $cookieIsPresent = false;
+        
+        foreach ($response->headers->getCookies() as $cookie) {
+            if ($cookie->getName() == $name) {
+                $cookieIsPresent = true;
+                
+                if (isset($properties['value'])) {
+                    $this->assertEquals($properties['value'], $cookie->getValue());
+                }                  
+            }
+                                 
+        }        
+        
+        if ($cookieIsPresent === false) {
+            $this->fail('Cookie "'.$name.'" not present');
+        }
+    }
 
 }
