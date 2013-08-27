@@ -6,4 +6,11 @@
         <div id="completion-percent-bar" class="bar" style="width:{{ completion_percent }}%;"></div>
     </div>            
     <div id="completion-time-remaining">&nbsp;</div>
+
+    {% if test.state == 'crawling' %}
+    <form id="cancel-crawl-form" method="post" action="{{ path('test_cancel', {'test_id':test.testId, 'website':test.website}) }}">
+        <button type="submit" class="btn btn-danger">Stop test</button>
+    </form>    
+    {% endif %}
+
 </div> 
