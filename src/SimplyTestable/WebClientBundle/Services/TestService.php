@@ -110,10 +110,22 @@ class TestService extends CoreApplicationService {
      * @param int $limit
      * @return \webignition\WebResource\JsonDocument\JsonDocument
      */
-    public function getList($limit) {
-        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('tests_list', array(
+    public function getList($limit, $excludeTypes = null) {
+        $requestUrl = $this->getUrl('tests_list', array(
             'limit' => $limit
-        )));
+        ));       
+        
+        
+        if (is_array($excludeTypes)) {
+            $excludeTypeParts = array();
+            foreach ($excludeTypes as $excludeType) {
+                $excludeTypeParts[] = 'exclude-types[]=' . $excludeType;
+            }
+            
+            $requestUrl .= '?' . implode('&', $excludeTypeParts);
+        }
+        
+        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
         
         $this->addAuthorisationToRequest($request);
         

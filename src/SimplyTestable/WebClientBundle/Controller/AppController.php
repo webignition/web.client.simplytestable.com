@@ -162,7 +162,7 @@ class AppController extends TestViewController
             return array();
         }
         
-        $jsonResource = $this->getTestService()->getList($limit);
+        $jsonResource = $this->getTestService()->getList($limit, array('crawl'));
         
         if (!$jsonResource instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
             return array();
