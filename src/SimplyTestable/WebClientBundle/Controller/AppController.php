@@ -171,6 +171,10 @@ class AppController extends TestViewController
         $recentTests = json_decode($jsonResource->getContent(), true);
         
         foreach ($recentTests as $testIndex => $test) {            
+            if ($test['state'] == 'failed-no-sitemap' && isset($test['crawl'])) {                
+                $recentTests[$testIndex]['state'] = 'crawling';
+            }
+            
             $recentTests[$testIndex]['website_label'] = $this->getWebsiteLabel($recentTests[$testIndex]['website']);
             $recentTests[$testIndex]['state_icon'] = $this->getTestStateIcon($recentTests[$testIndex]['state']);
             $recentTests[$testIndex]['state_label_class'] = $this->getTestStateLabelClass($recentTests[$testIndex]['state']);
@@ -221,6 +225,9 @@ class AppController extends TestViewController
             
             case 'cancelled':
                 return 'icon-bar-chart';
+                
+            case 'crawling':
+                return 'icon-refresh';
         }       
     }
     
@@ -238,9 +245,10 @@ class AppController extends TestViewController
                 return 'info';
             
             case 'preparing':
+            case 'crawling':
                 return 'warning';
             
-            case 'in-progress':
+            case 'in-progress':            
                 return 'warning';
             
             case 'completed':
@@ -363,6 +371,14 @@ class AppController extends TestViewController
      * @return int
      */
     private function getCompletionPercentFromArray($remoteTestSummary) {
+        if ($remoteTestSummary['state'] == 'failed-no-sitemap' && isset($remoteTestSummary['crawl'])) {
+            if ($remoteTestSummary['crawl']['discovered_url_count'] == 0) {
+                return 0;
+            }  
+
+            return round(($remoteTestSummary['crawl']['discovered_url_count'] / $remoteTestSummary['crawl']['limit']) * 100);               
+        }
+        
         if ($remoteTestSummary['task_count'] === 0) {
             return 0;
         }

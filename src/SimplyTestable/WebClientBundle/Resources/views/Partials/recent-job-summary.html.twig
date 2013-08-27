@@ -7,7 +7,7 @@
     </a>
 </div>
 
-{% if test.type == 'crawl' %}
+{% if test.state == 'crawling' %}
 <div class="row-fluid meta">
     <div class="span4 total">
         <span class="test-count">{{ test.crawl.processed_url_count }}</span><span class="subtext">URLs checked</span>
