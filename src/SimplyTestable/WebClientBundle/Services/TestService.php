@@ -83,10 +83,6 @@ class TestService extends CoreApplicationService {
         )).'?'.http_build_query(array_merge(array(
             'type' => $testType
         ), $testOptions->__toArray())));
-        
-        if (count($queryData)) {
-            $httpRequest->setQueryData($queryData);
-        }
 
         $this->addAuthorisationToRequest($httpRequest);
 
