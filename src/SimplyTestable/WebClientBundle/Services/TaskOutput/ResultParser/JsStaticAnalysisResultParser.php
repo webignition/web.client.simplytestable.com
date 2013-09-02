@@ -18,7 +18,12 @@ class JsStaticAnalysisResultParser extends ResultParser {
             return $result;
         }
         
-        foreach ($rawOutputObject as $jsSourceReference => $analysisOutput) {            
+        if ($this->isFailedOutput($rawOutputObject)) {
+            $result->addMessage($this->getMessageFromFailedOutput($rawOutputObject->messages[0]));
+            return $result;
+        }
+        
+        foreach ($rawOutputObject as $jsSourceReference => $analysisOutput) {
             $context = ($this->isInlineJsOutputKey($jsSourceReference)) ? 'inline' : $jsSourceReference;
             
             if ($this->hasResultEntries($analysisOutput)) {
@@ -35,13 +40,22 @@ class JsStaticAnalysisResultParser extends ResultParser {
         return $result;        
     }
     
+    private function getMessageFromFailedOutput($outputMessage) {        
+        $message = new JsTextFileMessage();
+        $message->setType('error');
+        $message->setMessage($outputMessage->message);
+        $message->setClass($outputMessage->messageId);
+
+        return $message;
+    }
+    
     
     /**
      * 
      * @param \stdClass $rawOutputObject
      * @return boolean
      */
-    private function isErrorFreeOutput($rawOutputObject) {
+    private function isErrorFreeOutput($rawOutputObject) {        
         if (is_array($rawOutputObject)) {
             return true;
         } 
@@ -81,6 +95,16 @@ class JsStaticAnalysisResultParser extends ResultParser {
         return isset($analysisOutput->entries);
     }
     
+
+    /**
+     * 
+     * @param \stdClass $rawOutputObject
+     * @return boolean
+     */
+    private function isFailedOutput(\stdClass $rawOutputObject) {
+        return isset($rawOutputObject->messages) && is_array($rawOutputObject->messages) && $rawOutputObject->messages[0]->type === 'error';      
+    }
+    
     
     /**
      * 
@@ -88,7 +112,11 @@ class JsStaticAnalysisResultParser extends ResultParser {
      * @return boolean
      */
     private function hasErrors(\stdClass $rawOutputObject) {        
-        foreach ($rawOutputObject as $jsSourceReference => $entriesObject) {
+        if ($this->isFailedOutput($rawOutputObject)) {
+            return true;
+        }
+        
+        foreach ($rawOutputObject as $jsSourceReference => $entriesObject) {            
             if (isset($entriesObject->statusLine) && $entriesObject->statusLine == 'failed') {
                 return true;
             }

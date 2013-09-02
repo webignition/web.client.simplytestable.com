@@ -88,7 +88,7 @@ class AppController extends TestViewController
     private $testQueueService;
     
     public function indexAction()
-    {        
+    {           
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }
@@ -192,7 +192,7 @@ class AppController extends TestViewController
             return array();
         }
         
-        $jsonResource = $this->getTestService()->getList($limit);
+        $jsonResource = $this->getTestService()->getList($limit, array('crawl'));
         
         if (!$jsonResource instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
             return array();
@@ -201,6 +201,10 @@ class AppController extends TestViewController
         $recentTests = json_decode($jsonResource->getContent(), true);
         
         foreach ($recentTests as $testIndex => $test) {            
+            if ($test['state'] == 'failed-no-sitemap' && isset($test['crawl'])) {                
+                $recentTests[$testIndex]['state'] = 'crawling';
+            }
+            
             $recentTests[$testIndex]['website_label'] = $this->getWebsiteLabel($recentTests[$testIndex]['website']);
             $recentTests[$testIndex]['state_icon'] = $this->getTestStateIcon($recentTests[$testIndex]['state']);
             $recentTests[$testIndex]['state_label_class'] = $this->getTestStateLabelClass($recentTests[$testIndex]['state']);
@@ -251,6 +255,9 @@ class AppController extends TestViewController
             
             case 'cancelled':
                 return 'icon-bar-chart';
+                
+            case 'crawling':
+                return 'icon-refresh';
         }       
     }
     
@@ -268,9 +275,10 @@ class AppController extends TestViewController
                 return 'info';
             
             case 'preparing':
+            case 'crawling':
                 return 'warning';
             
-            case 'in-progress':
+            case 'in-progress':            
                 return 'warning';
             
             case 'completed':
@@ -312,7 +320,7 @@ class AppController extends TestViewController
             )),
             'remote_test_summary' => $this->getRemoteTestSummaryArray($remoteTestSummary),
             'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
-            'state_label' => $this->testStateLabelMap['queued'].': ',
+            'state_label' => $this->testStateLabelMap['queued'],
             'state_icon' => $this->testStateIconMap['queued'],
             'completion_percent' => 0,
             'public_site' => $this->container->getParameter('public_site'),
@@ -393,6 +401,14 @@ class AppController extends TestViewController
      * @return int
      */
     private function getCompletionPercentFromArray($remoteTestSummary) {
+        if ($remoteTestSummary['state'] == 'failed-no-sitemap' && isset($remoteTestSummary['crawl'])) {
+            if ($remoteTestSummary['crawl']['discovered_url_count'] == 0) {
+                return 0;
+            }  
+
+            return round(($remoteTestSummary['crawl']['discovered_url_count'] / $remoteTestSummary['crawl']['limit']) * 100);               
+        }
+        
         if ($remoteTestSummary['task_count'] === 0) {
             return 0;
         }
@@ -455,8 +471,8 @@ class AppController extends TestViewController
     
     public function prepareResultsAction($website, $test_id)
     {        
-        $this->getTestService()->setUser($this->getUser());
-        
+        $this->getTestService()->setUser($this->getUser());        
+                
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }
@@ -483,7 +499,7 @@ class AppController extends TestViewController
         $completionPercent = round(($localTaskCount / $remoteTaskCount) * 100);
         $remainingTasksToRetrieveCount = $remoteTaskCount - $localTaskCount;
         
-        $this->setTemplate('SimplyTestableWebClientBundle:App:results-preparing.html.twig');
+        $this->setTemplate('SimplyTestableWebClientBundle:App:results-preparing.html.twig');        
         return $this->sendResponse(array(            
             'public_site' => $this->container->getParameter('public_site'),
             'this_url' => $this->getPreparingResultsUrl($website, $test_id),

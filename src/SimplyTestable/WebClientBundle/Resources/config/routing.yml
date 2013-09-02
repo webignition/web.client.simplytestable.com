@@ -54,6 +54,10 @@ user_account_details_update:
     pattern:  /account/details/update/
     defaults: { _controller: SimplyTestableWebClientBundle:UserAccountDetails:update }          
     
+user_subscription_choices_update:
+    pattern:  /account/news-subscriptions/update/
+    defaults: { _controller: SimplyTestableWebClientBundle:UserNewsSubscriptions:update }    
+    
 user_account_details_confirm_email_change:
     pattern:  /account/details/update/confirm-email-change/
     defaults: { _controller: SimplyTestableWebClientBundle:UserAccountDetails:confirmEmailChange }          
@@ -182,12 +186,30 @@ test_clone_and_start:
     defaults: { _controller: SimplyTestableWebClientBundle:TestStart:cloneAndStart }    
     requirements:
         website: ".+"
+        
+crawl_start:
+    pattern:  /test/{website}/{test_id}/crawl/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestStart:crawl }    
+    requirements:
+        website: ".+"        
+        
+crawl_progress:
+    pattern:  /test/{website}/{test_id}/crawling/
+    defaults: { _controller: SimplyTestableWebClientBundle:CrawlProgress:index }    
+    requirements:
+        website: ".+"          
     
 test_cancel:
     pattern:  /test/{website}/{test_id}/cancel/
     defaults: { _controller: SimplyTestableWebClientBundle:Test:cancel }  
     requirements:
         website: ".+"
+        
+test_cancel_crawl:
+    pattern:  /test/{website}/{test_id}/cancel-crawl/
+    defaults: { _controller: SimplyTestableWebClientBundle:Test:cancelCrawl }  
+    requirements:
+        website: ".+"        
         
 test_cancel_queued:
     pattern:  /test/{website}/cancel/

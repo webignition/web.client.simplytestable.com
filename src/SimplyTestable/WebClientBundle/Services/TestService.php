@@ -100,15 +100,37 @@ class TestService extends CoreApplicationService {
     }
     
     
+    public function startCrawl(Test $test) {
+        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_crawl_start', array(
+            'canonical-url' => urlencode($test->getWebsite()),
+            'test_id' => $test->getTestId()
+        )));
+        
+        $this->addAuthorisationToRequest($httpRequest);
+        $this->webResourceService->getHttpClientService()->get()->send($httpRequest);
+    }
+    
     /**
      * 
      * @param int $limit
      * @return \webignition\WebResource\JsonDocument\JsonDocument
      */
-    public function getList($limit) {
-        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('tests_list', array(
+    public function getList($limit, $excludeTypes = null) {
+        $requestUrl = $this->getUrl('tests_list', array(
             'limit' => $limit
-        )));
+        ));       
+        
+        
+        if (is_array($excludeTypes)) {
+            $excludeTypeParts = array();
+            foreach ($excludeTypes as $excludeType) {
+                $excludeTypeParts[] = 'exclude-types[]=' . $excludeType;
+            }
+            
+            $requestUrl .= '?' . implode('&', $excludeTypeParts);
+        }
+        
+        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
         
         $this->addAuthorisationToRequest($request);
         
@@ -376,14 +398,25 @@ class TestService extends CoreApplicationService {
      * @return boolean 
      */
     public function cancel(Test $test) {
+        return $this->cancelByTestProperties($test->getTestId(), $test->getWebsite());      
+    }
+    
+    
+    /**
+     * 
+     * @param int $testId
+     * @param string $website
+     * @return boolean
+     */
+    public function cancelByTestProperties($testId, $website) {
         $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_cancel', array(
-            'canonical-url' => urlencode($test->getWebsite()),
-            'test_id' => $test->getTestId()
+            'canonical-url' => urlencode($website),
+            'test_id' => $testId
         )));
         
         $this->addAuthorisationToRequest($httpRequest);
         
-        return $this->webResourceService->get($httpRequest);       
+        return $this->webResourceService->get($httpRequest);          
     }
     
     

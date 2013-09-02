@@ -1,0 +1,14 @@
+<form class="form-horizontal" method="post" action="{{ path('user_subscription_choices_update') }}">
+    <label class="checkbox">
+        <input type="checkbox" name="announcements" {% if mailchimp_announcements_subscribed %}checked{% endif %}>
+        <strong>Announcements (infrequent)</strong>
+        <span>Service announcements and new feature releases as needed</span>
+    </label>    
+    <label class="checkbox">
+        <input type="checkbox" name="updates" {% if mailchimp_updates_subscribed %}checked{% endif %}>
+        <strong>Behind the Scenes Newsletter (weekly)</strong>
+        <span>On-going development, new feature plans and advance access to new features
+        as they happen</span>        
+    </label>
+    <button name="confirm" value="1" type="submit" class="btn">Save news subscription options</button>    
+</form>

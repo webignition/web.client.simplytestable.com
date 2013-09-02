@@ -133,7 +133,7 @@ class UserAccountDetailsController extends AbstractUserAccountController
         return $this->redirect($this->generateUrl('user_account_index', array(), true));
     }
     
-    private function confirmEmailChangeConfirmAction($token) {        
+    private function confirmEmailChangeConfirmAction($token) {                
         $redirectResponse =  $this->redirect($this->generateUrl('user_account_index', array(), true)); 
         
         $token = trim($token);
@@ -150,7 +150,28 @@ class UserAccountDetailsController extends AbstractUserAccountController
         
         $result = $this->getUserEmailChangeRequestService()->confirmEmailChangeRequest($token);
         
-        if ($result === true) {   
+        if ($result === true) {
+            $oldEmail = $this->getUser()->getUsername();
+            $newEmail = $emailChangeRequest['new_email'];
+            
+            $this->getResqueQueueService()->add(
+                'SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob',
+                'email-list-subscribe',
+                array(
+                    'listId' => 'announcements',
+                    'email' => $newEmail,
+                )
+            );
+
+            $this->getResqueQueueService()->add(
+                'SimplyTestable\WebClientBundle\Resque\Job\EmailListUnsubscribeJob',
+                'email-list-unsubscribe',
+                array(
+                    'listId' => 'announcements',
+                    'email' => $oldEmail,
+                )
+            );                          
+            
             $user = $this->getUser();            
             $user->setUsername($emailChangeRequest['new_email']);            
             $this->getUserService()->setUser($user, true);
@@ -329,5 +350,14 @@ class UserAccountDetailsController extends AbstractUserAccountController
         } catch (\Exception $exception) {
             return false;
         }
+    } 
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\ResqueQueueService
+     */        
+    private function getResqueQueueService() {
+        return $this->container->get('simplytestable.services.resqueQueueService');
     }    
 }

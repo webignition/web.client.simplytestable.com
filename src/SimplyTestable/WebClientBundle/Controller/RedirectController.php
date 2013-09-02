@@ -29,7 +29,7 @@ class RedirectController extends BaseController
      */
     private $testQueueService;    
     
-    public function testAction($website, $test_id = null) {
+    public function testAction($website, $test_id = null) {                
         $this->getTestService()->setUser($this->getUser());
         
         $this->prepareNormalisedWebsiteAndTestId($website, $test_id);   
@@ -104,8 +104,8 @@ class RedirectController extends BaseController
     }
     
     
-    private function prepareNormalisedWebsiteAndTestId($website, $test_id) {        
-        $normalisedWebsite = $this->getNormalisedRequestUrl();        
+    private function prepareNormalisedWebsiteAndTestId($website, $test_id) {                
+        $normalisedWebsite = $this->getNormalisedRequestUrl();                
         if ($normalisedWebsite->hasHost() === false) {
             $normalisedWebsite = new \webignition\NormalisedUrl\NormalisedUrl($website . '/' . $test_id);
             

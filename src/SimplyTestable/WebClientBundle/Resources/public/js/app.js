@@ -190,9 +190,20 @@ application.progress.testController = function() {
     var estimatedTimeRemainingIsFirstDisplay = true;
 
     var setCompletionPercentValue = function() {
-        var completionPercentValue = $('#completion-percent-value');
+        var completionPercentValue = $('#completion-percent-value');        
+        
+        if (latestTestData.remote_test_summary.state === 'failed-no-sitemap') {
+            if (!$('.progress').hasClass('progress-success')) {
+                $('.progress').addClass('progress-success');
+            }           
+        } else {
+            if ($('.progress').hasClass('progress-success')) {
+                $('.progress').removeClass('progress-success');
+                $('#cancel-crawl-form').remove();
+            }
+        } 
 
-        if (completionPercentValue.text() !== latestTestData.completion_percent) {
+        if (completionPercentValue.text() !== latestTestData.completion_percent) {            
             completionPercentValue.text(latestTestData.completion_percent);
 
             if ($('html.csstransitions').length > 0) {
@@ -204,7 +215,8 @@ application.progress.testController = function() {
                     'width': latestTestData.completion_percent + '%'
                 });
             }
-        }
+        }        
+        
     };
 
     var setCompletionPercentStateLabel = function() {
@@ -385,6 +397,26 @@ application.progress.testController = function() {
 
         return subsetAverageData.mean;
     };
+    
+    var setCancelCrawlButton = function () {
+        if (latestTestData.remote_test_summary.crawl === undefined) {
+            return;
+        }        
+
+        if ($('#cancel-crawl-form').get(0) === undefined) {
+            console.log("cp01");
+
+            var cancelCrawlForm = $('<form />')
+                    .attr('id', 'cancel-crawl-form')
+                    .attr('method', 'post')
+                    .attr('action', $('#cancel-form').attr('action').replace('cancel', 'cancel-crawl'))
+                    .append('<button type="submit" class="btn btn-warning">Stop finding URLs, start testing</button>');
+
+            $('#completion-percent').append(cancelCrawlForm);
+
+            console.log("cp02");
+        }      
+    };
 
     var refreshTestSummary = function() {
         var now = new Date();
@@ -416,6 +448,16 @@ application.progress.testController = function() {
                 }
 
                 latestTestData = data;
+                
+                if (latestTestData.remote_test_summary.state === 'in-progress') {                    
+                    $('#test-summary-container').css({
+                        'display':'block'
+                    });                    
+                    
+                    $('#test-list').css({
+                        'display':'block'
+                    });                       
+                }
 
                 setCompletionPercentValue();
                 setCompletionPercentStateLabel();
@@ -424,7 +466,14 @@ application.progress.testController = function() {
                 setUrlCount();
                 setTaskCount();
                 setAmmendments();
-                storeEstimatedTimeRemaining();
+                
+                if (latestTestData.remote_test_summary.state !== 'failed-no-sitemap') {                    
+                    storeEstimatedTimeRemaining();
+                }
+                
+                if (latestTestData.remote_test_summary.state === 'failed-no-sitemap') {
+                    setCancelCrawlButton();
+                }
 
                 window.setTimeout(function() {
                     refreshTestSummary(10);
@@ -436,6 +485,22 @@ application.progress.testController = function() {
 
     this.initialise = function() {
         refreshTestSummary();
+        
+        if (!$('#test-summary-container').hasClass('state-in-progress')) {
+            $('#test-summary-container').css({
+                'display':'none'
+            });            
+        }
+        
+        if (!$('#test-list').hasClass('state-in-progress')) {
+            $('#test-list').css({
+                'display':'none'
+            });            
+        }  
+        
+        if ($('#completion-percent').hasClass('state-crawling')) {
+            $('.progress').addClass('progress-success');        
+        }      
     };
 };
 
@@ -1633,6 +1698,11 @@ application.pages = {
                 resultsPreparingController = new application.results.preparingController();
                 resultsPreparingController.initialise();
             }
+            
+            if ($('body.crawl-progress').length > 0) {
+                crawlProgressController = new application.crawl.progressController();
+                crawlProgressController.initialise();
+            }            
 
             if ($('body.content').length > 0) {
                 getTwitters('footer-tweet', {

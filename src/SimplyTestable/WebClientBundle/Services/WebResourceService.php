@@ -87,7 +87,7 @@ class WebResourceService {
         $resource = new $webResourceClassName;                
         $resource->setContent($response->getBody(true));                              
         $resource->setContentType((string)$contentType);                  
-        $resource->setUrl($response->getRequest()->getUrl());          
+        $resource->setUrl($request->getUrl());          
 
         return $resource;
     }

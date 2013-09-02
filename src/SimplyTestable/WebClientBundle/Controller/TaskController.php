@@ -27,7 +27,7 @@ class TaskController extends TestViewController
     );       
     
    
-    public function collectionAction($website, $test_id) {
+    public function collectionAction($website, $test_id) {        
         $this->getTestService()->setUser($this->getUser());
         
         try {            

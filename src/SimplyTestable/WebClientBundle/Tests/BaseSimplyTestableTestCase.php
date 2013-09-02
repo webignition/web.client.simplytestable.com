@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests;
 use SimplyTestable\WebClientBundle\Model\User;
+use Symfony\Component\BrowserKit\Cookie;
 
 abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     
@@ -37,9 +38,20 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     
     /**
      * 
+     * @return \SimplyTestable\WebClientBundle\Model\User
+     */
+    protected function getUser() {
+        return $this->user;
+    }
+
+
+
+
+    /**
+     * 
      * @return boolean
      */
-    private function hasUser() {
+    protected function hasUser() {
         return !is_null($this->user);
     }
 
@@ -161,7 +173,7 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
      * @param string $methodName
      * @return Symfony\Bundle\FrameworkBundle\Controller\Controller
      */
-    private function getController($controllerName, $methodName, array $postData = array(), array $queryData = array()) {   
+    protected function getController($controllerName, $methodName, array $postData = array(), array $queryData = array()) {   
         $cookieData = array();
         if ($this->hasUser()) {
             $cookieData['simplytestable-user'] = $this->getUserSerializerService()->serializeToString($this->user);
@@ -169,11 +181,34 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
         
         return $this->createController($controllerName, $methodName, $postData, $queryData, $cookieData);
     }
+
+    
+    /**
+     * 
+     * @param string $url
+     * @return \Symfony\Component\DomCrawler\Crawler
+     */
+    protected function getCrawler($url, $method = 'GET') {    
+        /* @var $this->client \Symfony\Bundle\FrameworkBundle\Client */
+        
+        if ($this->hasUser()) {
+            $cookie = new Cookie(
+                    'simplytestable-user',
+                    $this->getUserSerializerService()->serializeToString($this->user)
+            );
+            
+            $this->client->getCookieJar()->set($cookie);
+        }
+        
+        $crawler = $this->client->request($method, $url);
+        
+        return $crawler;
+    }    
     
     
     /**
      *
-     * @return \SimplyTestable\WebClientBundle\Services\HttpClientService
+     * @return \SimplyTestable\WebClientBundle\Services\TestHttpClientService
      */
     protected function getHttpClientService() {
         return $this->container->get('simplytestable.services.httpclientservice');
@@ -262,6 +297,6 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
         $user->setUsername('user@example.com');
         $user->setPassword('password');
         return $user;
-    }
+    }  
 
 }

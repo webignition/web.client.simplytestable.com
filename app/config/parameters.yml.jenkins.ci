@@ -1,0 +1,16 @@
+parameters:
+    database_driver: pdo_mysql
+    database_host: localhost
+    database_port: null
+    database_name: ci_gears_simplytestable_com
+    database_user: root
+    database_password: root
+    locale: en
+    secret: Secret!
+    database_path: null
+    admin_user_username: admin
+    admin_user_password: password1
+    simplytestable_session_savepath: /tmp
+    mailchimp_announcements_list_id: 1224633c43
+    mailchimp_updates_list_id: 311aedc7f4
+    mailchimp_introduction_list_id: e1b78ec47a

@@ -576,7 +576,7 @@ div.input-secondary {
 
 #recent-site-tests .site .detail .figure {
     display:inline-block;
-    width:30px;
+    width:28px;
     text-align: right;
 }
 
@@ -586,10 +586,12 @@ body.app-task-results #task-summary h3 {
     opacity:0.9;
 }
 
-
-
 #test-options {
     margin-top:30px;
+}
+
+body.app-progress #test-options {
+    margin-top:0;
 }
 
 #test-options p.info {
@@ -942,6 +944,7 @@ body.user-account-index .latest-invoice .icon-ok {
     text-decoration: underline;
 }
 
+
 form div.inline-short label {
     display:inline;
 }
@@ -955,4 +958,69 @@ form div.inline-short input {
     color:#333;
     opacity:0.8;
     font-size:14px;
+}
+    
+body.single-page-notification .primary-options {
+    padding-bottom: 20px;
+}
+
+body.single-page-notification .secondary-options {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+}
+
+body.crawl-progress div.logo {
+    display:none;
+}
+
+body.crawl-progress h1 .background {
+    position: absolute;
+    top: 20px;
+    left: -50px;
+    background-color: #eee;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;   
+}
+
+body.crawl-progress h1 .icon {
+    color: #08c;
+    font-size: 80px;
+    margin-top: 33px;
+    margin-left: 21px;
+    display: block;    
+}
+
+body.crawl-progress h1 {
+    overflow:hidden;
+    white-space:nowrap;
+}
+
+body.app-results-failed-no-urls-detected .inline-forms form {
+    display:inline-block;
+}
+
+body.crawl-progress p#subtext {
+    margin-top:-30px;
+}
+
+body.user-account-index .news-subscriptions label {
+    width:auto;
+    margin: 14px auto;
+}
+
+body.user-account-index .news-subscriptions label strong {
+    display:block;
+    font-weight: normal;
+}
+
+body.user-account-index .news-subscriptions label span {
+    opacity:0.7;
+}
+
+body.app-progress #cancel-form,
+body.app-progress #cancel-crawl-form {
+    position:absolute;
+    top:30px;
+    right:30px;    
 }

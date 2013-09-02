@@ -1,24 +1,34 @@
-<table class="test-states">
-    <tbody>
-        <tr class="queued">
-            <th><span class="label label-warning">Queued</span></th>
-            <td class="bar"><span class="label label-warning" style="width:{% if task_count_by_state.queued == 0 %} 2{% else %} {{ (task_count_by_state.queued / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.queued }}</span></td>
-        </tr>
-        <tr class="in_progress">
-            <th><span class="label label-info">In Progress</span></th>
-            <td class="bar"><span class="label label-info" style="width:{% if task_count_by_state.in_progress == 0 %} 2{% else %} {{ (task_count_by_state.in_progress / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.in_progress }}</span></td>
-        </tr>              
-        <tr class="completed">                
-            <th><span class="label label-success">Completed</span></th>
-            <td class="bar"><span class="label label-success" style="width:{% if task_count_by_state.completed == 0 %} 2{% else %} {{ (task_count_by_state.completed / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.completed }}</span></td>
-        </tr>
-        <tr class="skipped">                
-            <th><span class="label">Skipped</span></th>
-            <td class="bar"><span class="label" style="width:{% if task_count_by_state.skipped == 0 %} 2{% else %} {{ (task_count_by_state.skipped / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.skipped }}</span></td>
-        </tr>        
-        <tr class="failed">                
-            <th><span class="label label-important">Failed</span></th>
-            <td class="bar"><span class="label label-important" style="width:{% if task_count_by_state.failed == 0 %} 2{% else %} {{ (task_count_by_state.failed / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.failed }}</span></td>
-        </tr>        
-    </tbody>
-</table>  
+<div class="row-fluid state-{% if test is defined %}{{test.state}}{% endif %}" id="test-summary-container">
+    <section>                
+        <div class="span12" id="test-summary">
+            <h2 class="info"><i class="icon-certificate"></i> Summary (<span id="test-summary-url-count">{{ remote_test_summary.url_count }}</span> urls, <span id="test-summary-task-count">{{ remote_test_summary.task_count }}</span> tests)</h2>
+
+            <table class="test-states">
+                <tbody>
+                    <tr class="queued">
+                        <th><span class="label label-warning">Queued</span></th>
+                        <td class="bar"><span class="label label-warning" style="width:{% if task_count_by_state.queued == 0 %} 2{% else %} {{ (task_count_by_state.queued / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.queued }}</span></td>
+                    </tr>
+                    <tr class="in_progress">
+                        <th><span class="label label-info">In Progress</span></th>
+                        <td class="bar"><span class="label label-info" style="width:{% if task_count_by_state.in_progress == 0 %} 2{% else %} {{ (task_count_by_state.in_progress / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.in_progress }}</span></td>
+                    </tr>              
+                    <tr class="completed">                
+                        <th><span class="label label-success">Completed</span></th>
+                        <td class="bar"><span class="label label-success" style="width:{% if task_count_by_state.completed == 0 %} 2{% else %} {{ (task_count_by_state.completed / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.completed }}</span></td>
+                    </tr>
+                    <tr class="skipped">                
+                        <th><span class="label">Skipped</span></th>
+                        <td class="bar"><span class="label" style="width:{% if task_count_by_state.skipped == 0 %} 2{% else %} {{ (task_count_by_state.skipped / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.skipped }}</span></td>
+                    </tr>        
+                    <tr class="failed">                
+                        <th><span class="label label-important">Failed</span></th>
+                        <td class="bar"><span class="label label-important" style="width:{% if task_count_by_state.failed == 0 %} 2{% else %} {{ (task_count_by_state.failed / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ task_count_by_state.failed }}</span></td>
+                    </tr>        
+                </tbody>
+            </table>  
+
+        </div>
+        <div class="clearfix"></div>
+    </section>
+</div>

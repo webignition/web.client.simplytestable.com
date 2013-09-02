@@ -203,7 +203,7 @@ class UserController extends BaseViewController
 
         $parameters = isset($redirectValues['parameters']) ? $redirectValues['parameters'] : array();
         return $this->redirect($this->generateUrl($redirectValues['route'], $parameters, true));
-    }
+    } 
     
     
     public function resetPasswordAction()
@@ -433,8 +433,8 @@ class UserController extends BaseViewController
         
         $cacheValidatorHeaders->setLastModifiedDate($templateLastModifiedDate);
         $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);
-
-        return $this->getCachableResponse($this->render($templateName, array(            
+        
+        $response = $this->getCachableResponse($this->render($templateName, array(            
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
@@ -442,7 +442,26 @@ class UserController extends BaseViewController
             'user_create_confirmation' => $userCreateConfirmation,
             'email' => $this->getPersistentValue('email'),
             'plan' => $this->getPersistentValue('plan')                
-        )), $cacheValidatorHeaders);        
+        )), $cacheValidatorHeaders); 
+        
+        
+        
+        $redirect = trim($this->get('request')->query->get('redirect'));
+        if ($redirect !== '') {
+            $cookie = new Cookie(
+                'simplytestable-redirect',
+                $redirect,
+                time() + self::ONE_YEAR_IN_SECONDS,
+                '/',
+                '.simplytestable.com',
+                false,
+                true
+            );
+            
+            $response->headers->setCookie($cookie);            
+        }     
+
+        return $response;   
     }
     
     
@@ -579,11 +598,7 @@ class UserController extends BaseViewController
     }    
     
     
-    public function signupConfirmSubmitAction($email) {
-//        $user = new User();
-//        $user->setUsername($email);
-//        $this->getUserService()->setUser($user);
-        
+    public function signupConfirmSubmitAction($email) {       
         if ($this->getUserService()->exists($email) === false) {
             $this->get('session')->setFlash('token_resend_error', 'invalid-user');
             return $this->redirect($this->generateUrl('sign_up_confirm', array('email' => $email), true));          
@@ -606,8 +621,26 @@ class UserController extends BaseViewController
             return $this->redirect($this->generateUrl('sign_up_confirm', array('email' => $email), true));            
         }
         
+        $this->getResqueQueueService()->add(
+            'SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob',
+            'email-list-subscribe',
+            array(
+                'listId' => 'announcements',
+                'email' => $email,
+            )
+        );
+        
         $this->get('session')->setFlash('user_signin_confirmation', 'user-activated');
-        return $this->redirect($this->generateUrl('sign_in', array('email' => $email), true));  
+        
+        $redirectParameters = array(
+            'email' => $email
+        );
+        
+        if (!is_null($this->get('request')->cookies->get('simplytestable-redirect'))) {
+            $redirectParameters['redirect'] = $this->get('request')->cookies->get('simplytestable-redirect');
+        }
+        
+        return $this->redirect($this->generateUrl('sign_in', $redirectParameters, true));  
     }    
 
     /**
@@ -658,4 +691,12 @@ class UserController extends BaseViewController
             return false;
         }
     }
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\ResqueQueueService
+     */        
+    private function getResqueQueueService() {
+        return $this->container->get('simplytestable.services.resqueQueueService');
+    }      
 }

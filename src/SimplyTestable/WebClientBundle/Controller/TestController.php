@@ -21,12 +21,12 @@ class TestController extends BaseController
     }
     
     
-    public function cancelQueuedAction($website) {        
+    public function cancelQueuedAction($website) {                
         $normalisedWebsite = new \webignition\NormalisedUrl\NormalisedUrl($website);        
         if ($this->getTestQueueService()->contains($this->getUser(), (string)$normalisedWebsite)) {
             $this->getTestQueueService()->dequeue($this->getUser(), (string)$normalisedWebsite);
             $this->get('session')->setFlash('test_cancelled_queued_website', (string)$normalisedWebsite);
-        }        
+        }
         
         return $this->redirect($this->generateUrl('app', array(), true));
     }
@@ -37,7 +37,7 @@ class TestController extends BaseController
         $this->getTestService()->setUser($this->getUser());
         
         try {
-            $test = $this->getTestService()->get($this->getWebsite(), $this->getTestId(), $this->getUser());                        
+            $test = $this->getTestService()->get($this->getWebsite(), $this->getTestId(), $this->getUser());                                    
             $this->getTestService()->cancel($test);
             return $this->redirect($this->generateUrl(
                 'app_results',
@@ -53,7 +53,7 @@ class TestController extends BaseController
                 array(),
                 true
             ));
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {                        
             $this->getLogger()->err('TestController::cancelAction:webResourceException ['.$webResourceException->getResponse()->getStatusCode().']');            
             
             return $this->redirect($this->generateUrl(
@@ -78,6 +78,54 @@ class TestController extends BaseController
             ));
         }     
     } 
+    
+    
+    public function cancelCrawlAction() {
+        $this->getTestService()->setUser($this->getUser());
+        
+        try {
+            $test = $this->getTestService()->get($this->getWebsite(), $this->getTestId(), $this->getUser());            
+            $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
+            $this->getTestService()->cancelByTestProperties($remoteTestSummary->crawl->id, $test->getWebsite());
+            return $this->redirect($this->generateUrl(
+                'app_progress',
+                array(
+                    'website' => $test->getWebsite(),
+                    'test_id' => $test->getTestId()
+                ),
+                true
+            ));           
+        } catch (\SimplyTestable\WebClientBundle\Exception\UserServiceException $userServiceException) {
+            return $this->redirect($this->generateUrl(
+                'app',
+                array(),
+                true
+            ));
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {                        
+            $this->getLogger()->err('TestController::cancelAction:webResourceException ['.$webResourceException->getResponse()->getStatusCode().']');            
+            
+            return $this->redirect($this->generateUrl(
+                'app_progress',
+                array(
+                    'website' => $this->getWebsite(),
+                    'test_id' => $this->getTestId()
+                ),
+                true
+            ));             
+
+        } catch (\Guzzle\Http\Exception\CurlException $curlException)  {
+            $this->getLogger()->err('TestController::cancelAction:curlException ['.$curlException->getErrorNo().']');
+            
+            return $this->redirect($this->generateUrl(
+                'app_progress',
+                array(
+                    'website' => $this->getWebsite(),
+                    'test_id' => $this->getTestId()
+                ),
+                true
+            ));
+        }
+    }
     
     
     /**

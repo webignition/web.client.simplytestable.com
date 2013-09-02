@@ -142,6 +142,14 @@ class Result {
         return $this->isOfErrorClass('/document-type-invalid/');         
     }
     
+    /**
+     * 
+     * @return boolean
+     */
+    public function isMarkuplessTextHtmlFailure() {
+        return $this->isOfErrorClass('/document-is-not-markup/');         
+    }    
+    
     
     /**
      *
@@ -216,6 +224,19 @@ class Result {
         return $errors[0]->getMessage() == 'Unknown error';
     }
     
+    /**
+     * 
+     * @return boolean
+     */
+    public function isCssValidationSslExceptionError() {        
+        $errors = $this->getErrors();
+        if (count($errors) === 0) {
+            return false;
+        }        
+        
+        return $errors[0]->getMessage() == 'SSL Error';
+    }    
+    
     
     
     /**
@@ -224,7 +245,7 @@ class Result {
      * @return boolean
      */
     private function isOfErrorClass($errorClassPattern) {
-        foreach ($this->getErrors() as $error) {            
+        foreach ($this->getErrors() as $error) {                        
             if (preg_match($errorClassPattern, $error->getClass()) > 0) {
                 return true;
             }

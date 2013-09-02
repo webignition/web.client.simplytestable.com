@@ -8,27 +8,7 @@ use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 class TestStartController extends TestController
 {
     
-    public function startNewAction()
-    {        
-        $this->getTestService()->setUser($this->getUser());        
-        return $this->startAction($this->getRequestValues(\Guzzle\Http\Message\Request::POST));
-    }
     
-    
-    public function cloneAndStartAction($website, $test_id) {        
-        try {
-            $this->getTestService()->get($website, $test_id, $this->getUser());            
-            $testRequestData = $this->translateRemoteTestSummaryToRequestData($this->getTestService()->getRemoteTestSummary());
-            $testRequestData->add(array(
-                'full-single' => $this->getRequestValue('full-single')
-            ));
-            
-            return $this->startAction($testRequestData);           
-        } catch (UserServiceException $e) {
-            return $this->redirect($this->generateUrl('app', array(), true));
-        }       
-    }
-
     /**
      * Names of inputs where the value should be inverted (boolean)
      * 
@@ -53,7 +33,65 @@ class TestStartController extends TestController
         'js-static-analysis-jslint-option-vars',
         'js-static-analysis-jslint-option-white',
         'js-static-analysis-jslint-option-anon'
-    );    
+    );
+    
+    public function startNewAction()
+    {        
+        $this->getTestService()->setUser($this->getUser());        
+        return $this->startAction($this->getRequestValues(\Guzzle\Http\Message\Request::POST));
+    }
+    
+    
+    public function cloneAndStartAction($website, $test_id) {        
+        try {
+            $this->getTestService()->get($website, $test_id, $this->getUser());            
+            $testRequestData = $this->translateRemoteTestSummaryToRequestData($this->getTestService()->getRemoteTestSummary());
+            $testRequestData->add(array(
+                'full-single' => $this->getRequestValue('full-single')
+            ));
+            
+            return $this->startAction($testRequestData);           
+        } catch (UserServiceException $e) {
+            return $this->redirect($this->generateUrl('app', array(), true));
+        }       
+    }
+
+    
+    public function crawlAction($website, $test_id) {       
+        try {            
+            $this->getTestService()->startCrawl($this->getTestService()->get($website, $test_id, $this->getUser()));
+            
+            return $this->redirect($this->generateUrl(
+                'crawl_progress',
+                array(
+                    'website' => $website,
+                    'test_id' => $test_id
+                ),
+                true
+            ));           
+        } catch (UserServiceException $e) {
+            return $this->redirect($this->generateUrl('app', array(), true));
+        } catch (\Guzzle\Http\Exception\ClientErrorResponseException $clientErrorResponseException) {
+            return $this->redirect($this->generateUrl(
+                'app_results',
+                array(
+                    'website' => $website,
+                    'test_id' => $test_id
+                ),
+                true
+            ));        
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            return $this->redirect($this->generateUrl(
+                'app_results',
+                array(
+                    'website' => $website,
+                    'test_id' => $test_id
+                ),
+                true
+            ));  
+        }        
+    }    
+
     
     private function startAction($requestValues)
 
