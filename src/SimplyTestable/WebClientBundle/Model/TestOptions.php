@@ -123,18 +123,18 @@ class TestOptions {
                 'type' => 'int',
                 'default' => 0
             ),
-            'js-static-analysis-jslint-option-browser' => array(    
-                'type' => 'int',
-                'default' => 1
-            ),
-            'js-static-analysis-jslint-option-devel' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),                        
-            'js-static-analysis-jslint-option-windows' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),               
+//            'js-static-analysis-jslint-option-browser' => array(    
+//                'type' => 'int',
+//                'default' => 1
+//            ),
+//            'js-static-analysis-jslint-option-devel' => array(    
+//                'type' => 'int',
+//                'default' => 0
+//            ),                        
+//            'js-static-analysis-jslint-option-windows' => array(    
+//                'type' => 'int',
+//                'default' => 0
+//            ),               
             'js-static-analysis-jslint-option-maxerr' => array(    
                 'type' => 'int',
                 'default' => 50

@@ -83,6 +83,11 @@ class TestService extends CoreApplicationService {
         )).'?'.http_build_query(array_merge(array(
             'type' => $testType
         ), $testOptions->__toArray())));
+        
+//        ini_set('xdebug.var_display_max_depth', 8);
+//        
+//        var_dump($testOptions->__toArray());
+//        exit();
 
         $this->addAuthorisationToRequest($httpRequest);
 

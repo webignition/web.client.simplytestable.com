@@ -1,5 +1,5 @@
-{% macro persistent_checkbox(label, name, test_options) %}
-    <label class="checkbox">
+{% macro persistent_checkbox(label, name, test_options, hint) %}
+    <label class="checkbox" title="{{ hint }}">
         <input type="checkbox" name="{{ name }}" value="1" {% if (test_options[name] == 1) %} checked {% endif %} />
     {{ label | raw }}
     </label>
@@ -94,152 +94,9 @@
             </label>
                 
         <div class="test-options-advanced">
-            <div class="expandable-control expandable-control-default-closed for-js-static-analysis-options-expandable">Advanced JS static analysis options</div>
+            <div class="expandable-control expandable-control-default-closed for-js-static-analysis-options-expandable">Advanced JS static analysis and JSLint options</div>
             <div id="js-static-analysis-options-expandable">
-                <div class="row-fluid">
-                    <div class="span12 css-validator-option-set validator-option-set js-static-analysis-jslint-options">
-                        <p>JSLint options: <span class="help-block help-block-inline">
-                            Options to use with the JSLint static analyser. Refer to the
-                            <a href="http://www.jslint.com/lint.html#options">JSLint options documentation</a>.
-                        </span></p>
-                        
-                        <div class="jslint-options-container">
-                            
-                        <div class="row-fluid">
-                            <div class="span12 jslint-option-set-group">                            
-                                <h3>Limits:</h3>
-                                <div class="row-fluid">
-                                    <div class="span12">
-                                        {{ form.persistent_checkbox('Stop on first error', 'js-static-analysis-jslint-option-passfail', test_options) }}
-                                    </div>                                            
-                                </div>                                
-                                <div class="row-fluid">                                        
-                                    <div class="span12 jslint-integer-options inline-short">
-                                        <label>
-                                            Stop when reaching
-                                            <input id="js-static-analysis-jslint-option-maxerr"
-                                                   class="inline-short"
-                                                   type="text"
-                                                   name="js-static-analysis-jslint-option-maxerr"
-                                                   value="{{ test_options['js-static-analysis-jslint-option-maxerr'] }}" />
-                                            errors.
-                                        </label>
-                                            Assume an
-                                        <label>
-                                            indentation level of  
-                                            <input id="js-static-analysis-jslint-option-indent"
-                                                   class="inline-short"
-                                                   type="text"
-                                                   name="js-static-analysis-jslint-option-indent"
-                                                   value="{{ test_options['js-static-analysis-jslint-option-indent'] }}" />
-                                            spaces
-                                        </label>
-                                            and a
-                                        <label>
-                                            maximum line length of
-                                            <input id="js-static-analysis-jslint-option-maxlen"
-                                                   class="inline-short"
-                                                   type="text"
-                                                   name="js-static-analysis-jslint-option-maxlen"
-                                                   value="{{ test_options['js-static-analysis-jslint-option-maxlen'] }}" />
-                                            characters.
-                                        </label>                                                 
-                                    </div>  
-                                </div>
-                            </div>
-                        </div>
 
-                         
-
-                        <div class="row-fluid">
-                            <div class="span12 jslint-option-set-group">
-                                <h3>Warn:</h3>
-                                <div class="row-fluid">
-                                    <div class="span12">
-                                        <div class="span3 jslint-option-set">
-<!-- bitwise, continue, debug, evil, eqeq, forin, newcap, nomen, plusplus, regexp, undef, unparam, sloppy, stupid, sub, vars, white, anon -->  
-<!-- bitwise, continue, debug, evil, eqeq, forin -->                                            
-{{ form.persistent_checkbox('When bitwise operators are used', 'js-static-analysis-jslint-option-bitwise', test_options) }}
-{{ form.persistent_checkbox('When <code>continue</code> is used', 'js-static-analysis-jslint-option-continue', test_options) }}
-{{ form.persistent_checkbox('About <code>debugger</code> operations', 'js-static-analysis-jslint-option-debug', test_options) }}
-{{ form.persistent_checkbox('About <code>eval</code>', 'js-static-analysis-jslint-option-evil', test_options) }}
-{{ form.persistent_checkbox('When <code>==</code> or <code>!=</code> is used', 'js-static-analysis-jslint-option-eqeq', test_options) }}
-{{ form.persistent_checkbox('About unfiltered <code>for &hellip; in</code>', 'js-static-analysis-jslint-option-forin', test_options) }}
-                                        </div>
-                                        <div class="span4 jslint-option-set">
-<!-- newcap, nomen, plusplus, regexp, undef, unparam -->
-{{ form.persistent_checkbox('When uncapitalised constructors are used', 'js-static-analysis-jslint-option-newcap', test_options) }}
-{{ form.persistent_checkbox('About dangling <code>_</code> in identifiers', 'js-static-analysis-jslint-option-nomen', test_options) }}
-{{ form.persistent_checkbox('About <code>++</code> and <code>-</code> operations', 'js-static-analysis-jslint-option-plusplus', test_options) }}
-{{ form.persistent_checkbox('About <code>.</code> and <code>[^&hellip;]</code> in <code>/RegExp/</code> literals', 'js-static-analysis-jslint-option-regexp', test_options) }}
-{{ form.persistent_checkbox('When a variable is undefined', 'js-static-analysis-jslint-option-undef', test_options) }}
-{{ form.persistent_checkbox('About unused parameters', 'js-static-analysis-jslint-option-unparam', test_options) }}
-                                        </div>
-                                        <div class="span5 jslint-option-set">
-<!--   sloppy, stupid, sub, vars, white, anon -->
-<!-- 
-*todo (not supported by node-jslint)
-*css (relevant only to CSS linting),
-*on (relevant only to HTML fragment checking),
-*fragment (relevant only to HTML fragment checking)
-*cap (relevant only to HTML fragment checking)
--->
-{{ form.persistent_checkbox('When code is not in strict mode (<code>\'use strict\';</code>)', 'js-static-analysis-jslint-option-sloppy', test_options) }}
-{{ form.persistent_checkbox('About blocking <code>&hellip;Sync</code> methods', 'js-static-analysis-jslint-option-stupid', test_options) }}
-{{ form.persistent_checkbox('When not using dot notation to access properties', 'js-static-analysis-jslint-option-sub', test_options) }}
-{{ form.persistent_checkbox('About multiple var statements per function', 'js-static-analysis-jslint-option-vars', test_options) }}
-{{ form.persistent_checkbox('About messy white space', 'js-static-analysis-jslint-option-white', test_options) }}
-{{ form.persistent_checkbox('When space is omitted in anonymous function declarations', 'js-static-analysis-jslint-option-anon', test_options) }}
-
-                                        </div>                                            
-                                    </div>
-                                </div>
-                            </div>
-                        </div>                        
-                        
-                        <div class="row-fluid">
-                            <div class="span3 jslint-option-set-group">
-                                <h3>Assume:</h3>
-                                <div class="row-fluid">
-                                    <div class="span12 jslint-option-set">
-                                        <!--
-                                        browser
-                                        devel
-                                        *node
-                                        *rhino
-                                        windows
-                                        *safe
-                                        *adsafe
-                                        -->     
-{{ form.persistent_checkbox('Browser', 'js-static-analysis-jslint-option-browser', test_options) }}
-{{ form.persistent_checkbox('ECMAScript 5', 'js-static-analysis-jslint-option-es5', test_options) }}
-{{ form.persistent_checkbox('console,alert,&nbsp;...', 'js-static-analysis-jslint-option-devel', test_options) }}
-{{ form.persistent_checkbox('Windows', 'js-static-analysis-jslint-option-windows', test_options) }}
-                                  
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="span3 jslint-option-set-group">
-                                <h3>Predefined variable names:</h3>
-                                <div class="row-fluid">
-                                    <div class="span12 jslint-option-set">
-                                        <textarea name="js-static-analysis-jslint-option-predef" rows="5" placeholder="NamesOfVariables                                AssumedToBePredefined                     OnePerLine">{% if test_options['js-static-analysis-jslint-option-predef'] != '' %}{{test_options['js-static-analysis-jslint-option-predef']|join('\n')}}{% endif %}</textarea>
-                                    </div>
-                                </div>
-                            </div>                                 
-                            <div class="span6 jslint-option-set-group">
-
-                            </div>                                
-                        </div>
-                            </div>
-
-<!--
-[--properties]
-[--widget]
--->
-                        
-                    </div>                      
-                </div>
                     
                     
                     
@@ -268,7 +125,155 @@
                             </span>
                             <textarea name="js-static-analysis-domains-to-ignore" rows="5" placeholder="example.mycdn.com                                 one-per-line.example.com">{% if test_options['js-static-analysis-domains-to-ignore'] != '' %}{{test_options['js-static-analysis-domains-to-ignore']|join('\n')}}{% endif %}</textarea>
                         </div>                             
-                    </div>                          
+                    </div>   
+                
+                <div class="row-fluid">
+                    <div class="span12 css-validator-option-set validator-option-set js-static-analysis-jslint-options">
+                        <p>JSLint options: <span class="help-block help-block-inline">
+                            Options to use with the JSLint static analyser. Refer to the
+                            <a href="http://www.jslint.com/lint.html#options">JSLint options documentation</a>.
+                        </span></p>
+                        
+                        <div class="jslint-options-container">
+                            
+                        <div class="row-fluid">
+                            <div class="span12 jslint-option-set-group">                            
+                                <h3>Limits:</h3>
+                                <div class="row-fluid">
+                                    <div class="span12">
+                                        {{ form.persistent_checkbox('Stop on first error', 'js-static-analysis-jslint-option-passfail', test_options, 'passfail') }}
+                                    </div>                                            
+                                </div>                                
+                                <div class="row-fluid">                                        
+                                    <div class="span12 jslint-integer-options inline-short">
+                                        <label>
+                                            Stop when reaching
+                                            <input id="js-static-analysis-jslint-option-maxerr"
+                                                   class="inline-short"
+                                                   type="text"
+                                                   name="js-static-analysis-jslint-option-maxerr"
+                                                   value="{{ test_options['js-static-analysis-jslint-option-maxerr'] }}"
+                                                   title="maxerr" />
+                                            errors.
+                                        </label>
+                                            Assume an
+                                        <label>
+                                            indentation level of  
+                                            <input id="js-static-analysis-jslint-option-indent"
+                                                   class="inline-short"
+                                                   type="text"
+                                                   name="js-static-analysis-jslint-option-indent"
+                                                   value="{{ test_options['js-static-analysis-jslint-option-indent'] }}"
+                                                   title="indent" />
+                                            spaces
+                                        </label>
+                                            and a
+                                        <label>
+                                            maximum line length of
+                                            <input id="js-static-analysis-jslint-option-maxlen"
+                                                   class="inline-short"
+                                                   type="text"
+                                                   name="js-static-analysis-jslint-option-maxlen"
+                                                   value="{{ test_options['js-static-analysis-jslint-option-maxlen'] }}"
+                                                   title="maxlen" />
+                                            characters.
+                                        </label>                                                 
+                                    </div>  
+                                </div>
+                            </div>
+                        </div>
+
+                         
+
+                        <div class="row-fluid">
+                            <div class="span12 jslint-option-set-group">
+                                <h3>Warn:</h3>
+                                <div class="row-fluid">
+                                    <div class="span12">
+                                        <div class="span3 jslint-option-set">
+<!-- bitwise, continue, debug, evil, eqeq, forin, newcap, nomen, plusplus, regexp, undef, unparam, sloppy, stupid, sub, vars, white, anon -->  
+<!-- bitwise, continue, debug, evil, eqeq, forin -->                                            
+{{ form.persistent_checkbox('When bitwise operators are used', 'js-static-analysis-jslint-option-bitwise', test_options, 'bitwise') }}
+{{ form.persistent_checkbox('When <code>continue</code> is used', 'js-static-analysis-jslint-option-continue', test_options, 'continue') }}
+{{ form.persistent_checkbox('About <code>debugger</code> operations', 'js-static-analysis-jslint-option-debug', test_options, 'debug') }}
+{{ form.persistent_checkbox('About <code>eval</code>', 'js-static-analysis-jslint-option-evil', test_options, 'evil') }}
+{{ form.persistent_checkbox('When <code>==</code> or <code>!=</code> is used', 'js-static-analysis-jslint-option-eqeq', test_options, 'eqeq') }}
+{{ form.persistent_checkbox('About unfiltered <code>for &hellip; in</code>', 'js-static-analysis-jslint-option-forin', test_options, 'forin') }}
+{{ form.persistent_checkbox('When using ES5 syntax', 'js-static-analysis-jslint-option-es5', test_options, 'es5') }}
+                                        </div>
+                                        <div class="span4 jslint-option-set">
+<!-- newcap, nomen, plusplus, regexp, undef, unparam -->
+{{ form.persistent_checkbox('When uncapitalised constructors are used', 'js-static-analysis-jslint-option-newcap', test_options, 'newcap') }}
+{{ form.persistent_checkbox('About dangling <code>_</code> in identifiers', 'js-static-analysis-jslint-option-nomen', test_options, 'nomen') }}
+{{ form.persistent_checkbox('About <code>++</code> and <code>--</code> operations', 'js-static-analysis-jslint-option-plusplus', test_options, 'plusplus') }}
+{{ form.persistent_checkbox('About <code>.</code> and <code>[^&hellip;]</code> in <code>/RegExp/</code> literals', 'js-static-analysis-jslint-option-regexp', test_options, 'regexp') }}
+{{ form.persistent_checkbox('When a variable is undefined', 'js-static-analysis-jslint-option-undef', test_options, 'undef') }}
+{{ form.persistent_checkbox('About unused parameters', 'js-static-analysis-jslint-option-unparam', test_options, 'unparam') }}
+                                        </div>
+                                        <div class="span5 jslint-option-set">
+<!--   sloppy, stupid, sub, vars, white, anon -->
+<!-- 
+*todo (not supported by node-jslint)
+*css (relevant only to CSS linting),
+*on (relevant only to HTML fragment checking),
+*fragment (relevant only to HTML fragment checking)
+*cap (relevant only to HTML fragment checking)
+-->
+{{ form.persistent_checkbox('When code is not in strict mode (<code>\'use strict\';</code>)', 'js-static-analysis-jslint-option-sloppy', test_options, 'sloppy') }}
+{{ form.persistent_checkbox('About blocking <code>&hellip;Sync</code> methods', 'js-static-analysis-jslint-option-stupid', test_options, 'stupid') }}
+{{ form.persistent_checkbox('When not using dot notation to access properties', 'js-static-analysis-jslint-option-sub', test_options, 'sub') }}
+{{ form.persistent_checkbox('About multiple var statements per function', 'js-static-analysis-jslint-option-vars', test_options, 'vars') }}
+{{ form.persistent_checkbox('About messy white space', 'js-static-analysis-jslint-option-white', test_options, 'white') }}
+{{ form.persistent_checkbox('When space is omitted in anonymous function declarations', 'js-static-analysis-jslint-option-anon', test_options, 'anon') }}
+
+                                        </div>                                            
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                        
+                        
+                        <div class="row-fluid">
+                            <div class="span3 jslint-option-set-group">
+                                <h3>Assume:</h3>
+                                <div class="row-fluid">
+                                    <div class="span12 jslint-option-set">
+                                        <!--
+                                        browser
+                                        devel
+                                        *node
+                                        *rhino
+                                        windows
+                                        *safe
+                                        *adsafe
+                                        -->     
+{{ form.persistent_checkbox('Browser', 'js-static-analysis-jslint-option-browser', test_options, 'browser') }}
+{{ form.persistent_checkbox('console,alert,&nbsp;...', 'js-static-analysis-jslint-option-devel', test_options, 'devel') }}
+{{ form.persistent_checkbox('Windows', 'js-static-analysis-jslint-option-windows', test_options, 'windows') }}
+                                  
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span3 jslint-option-set-group">
+                                <h3>Predefined variable names:</h3>
+                                <div class="row-fluid">
+                                    <div class="span12 jslint-option-set">
+                                        <textarea name="js-static-analysis-jslint-option-predef" rows="5" placeholder="NamesOfVariables                                AssumedToBePredefined                     OnePerLine">{% if test_options['js-static-analysis-jslint-option-predef'] != '' %}{{test_options['js-static-analysis-jslint-option-predef']|join('\n')}}{% endif %}</textarea>
+                                    </div>
+                                </div>
+                            </div>                                 
+                            <div class="span6 jslint-option-set-group">
+
+                            </div>                                
+                        </div>
+                            </div>
+
+<!--
+[--properties]
+[--widget]
+-->
+                        
+                    </div>                      
+                </div>                
                 </div>
             
 <!--

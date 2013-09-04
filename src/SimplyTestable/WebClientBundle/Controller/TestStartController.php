@@ -20,6 +20,7 @@ class TestStartController extends TestController
         'js-static-analysis-jslint-option-debug',
         'js-static-analysis-jslint-option-evil',
         'js-static-analysis-jslint-option-eqeq',
+        'js-static-analysis-jslint-option-es5',        
         'js-static-analysis-jslint-option-forin',
         'js-static-analysis-jslint-option-newcap',
         'js-static-analysis-jslint-option-nomen',
@@ -34,6 +35,31 @@ class TestStartController extends TestController
         'js-static-analysis-jslint-option-white',
         'js-static-analysis-jslint-option-anon'
     );
+    
+    private $jsLintOptionsToInclude = array(
+        'js-static-analysis-jslint-option-passfail',
+        'js-static-analysis-jslint-option-bitwise',
+        'js-static-analysis-jslint-option-continue',
+        'js-static-analysis-jslint-option-debug',
+        'js-static-analysis-jslint-option-evil',
+        'js-static-analysis-jslint-option-eqeq',
+        'js-static-analysis-jslint-option-es5',
+        'js-static-analysis-jslint-option-forin',
+        'js-static-analysis-jslint-option-newcap',
+        'js-static-analysis-jslint-option-nomen',
+        'js-static-analysis-jslint-option-plusplus',
+        'js-static-analysis-jslint-option-regexp',
+        'js-static-analysis-jslint-option-undef',
+        'js-static-analysis-jslint-option-unparam',
+        'js-static-analysis-jslint-option-sloppy',
+        'js-static-analysis-jslint-option-stupid',
+        'js-static-analysis-jslint-option-sub',
+        'js-static-analysis-jslint-option-vars',
+        'js-static-analysis-jslint-option-white',
+        'js-static-analysis-jslint-option-anon'        
+    );
+    
+    
     
     public function startNewAction()
     {        
@@ -90,16 +116,55 @@ class TestStartController extends TestController
                 true
             ));  
         }        
-    }    
+    }
+    
+    private function invertInvestableOptions(\Symfony\Component\HttpFoundation\ParameterBag $requestValues) {
+        foreach ($this->invertOptionKeys as $optionName) {
+            if ($requestValues->has($optionName)) {                
+                $requestValues->set($optionName, ($requestValues->get($optionName) == '1') ? '0' : '1');
+            } else {
+                $requestValues->set($optionName, '1');
+            }
+        }
+    }
+    
+    private function excludeJsLintOptions(\Symfony\Component\HttpFoundation\ParameterBag $requestValues) {
+        foreach ($requestValues as $key => $value) {
+            if (substr_count($key, 'js-static-analysis-jslint-option') && !in_array($key, $this->jsLintOptionsToInclude)) {
+                $requestValues->remove($key);
+            }
+            
+            
+        }
+        
+        //var_dump($requestValues);
+        //exit();
+        
+//        foreach ($this->invertOptionKeys as $optionName) {
+//            if ($requestValues->has($optionName)) {                
+//                $requestValues->set($optionName, ($requestValues->get($optionName) == '1') ? '0' : '1');
+//            }
+//        }
+    }
 
     
     private function startAction($requestValues)
-
-    {        
+    {           
+        ini_set('xdebug.var_display_max_depth', 8);
+        
         $this->getTestService()->setUser($this->getUser());
+        
+        $this->excludeJsLintOptions($requestValues);        
+        $this->invertInvestableOptions($requestValues);
+        
+//        var_dump($requestValues);
+//        exit();        
         
         $this->getTestOptionsRequestParserService()->setRequestData($requestValues);
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
+        
+//        var_dump($testOptions);
+//        exit();
 
         if (!$this->hasWebsite()) {            
             $this->get('session')->setFlash('test_start_error', 'website-blank');
