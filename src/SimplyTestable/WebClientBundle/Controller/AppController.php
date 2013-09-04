@@ -38,47 +38,7 @@ class AppController extends TestViewController
         'queued-for-assignment' => 'icon-off',
         'preparing' => 'icon-search',
         'in-progress' => 'icon-play-circle'        
-    );   
-    
-    private $testOptionNamesAndDefaultValues = array(
-        'html-validation' => 1,
-        'css-validation' => 1,
-        'css-validation-ignore-warnings' => 1,
-        'css-validation-ignore-common-cdns' => 1,
-        'css-validation-vendor-extensions' => "warn",
-        'css-validation-domains-to-ignore' => "",
-        'js-static-analysis' => 1,
-        'js-static-analysis-ignore-common-cdns' => 1,
-        'js-static-analysis-domains-to-ignore' => "",        
-        'js-static-analysis-jslint-option-passfail' => 0,
-        'js-static-analysis-jslint-option-bitwise' => 1,
-        'js-static-analysis-jslint-option-continue' => 1,
-        'js-static-analysis-jslint-option-debug' => 1,
-        'js-static-analysis-jslint-option-evil' => 1,       
-        'js-static-analysis-jslint-option-eqeq' => 1,
-        'js-static-analysis-jslint-option-es5' => 1,
-        'js-static-analysis-jslint-option-forin' => 1,
-        'js-static-analysis-jslint-option-newcap' => 1,
-        'js-static-analysis-jslint-option-nomen' => 1,
-        'js-static-analysis-jslint-option-plusplus' => 1,
-        'js-static-analysis-jslint-option-regexp' => 1,
-        'js-static-analysis-jslint-option-undef' => 1,
-        'js-static-analysis-jslint-option-unparam' => 1,
-        'js-static-analysis-jslint-option-sloppy' => 0,
-        'js-static-analysis-jslint-option-stupid' => 1,
-        'js-static-analysis-jslint-option-sub' => 1,                                            
-        'js-static-analysis-jslint-option-vars' => 1,
-        'js-static-analysis-jslint-option-white' => 1,
-        'js-static-analysis-jslint-option-anon' => 1,
-        'js-static-analysis-jslint-option-browser' => 1,
-        'js-static-analysis-jslint-option-devel' => 0,
-        'js-static-analysis-jslint-option-windows' => 0,
-        'js-static-analysis-jslint-option-maxerr' => 50,
-        'js-static-analysis-jslint-option-indent' => 4,
-        'js-static-analysis-jslint-option-maxlen' => 256,
-        'js-static-analysis-jslint-option-predef' => "",
-        'js-static-analysis-domains-to-ignore' => "",
-    ); 
+    );
     
     
     /**
@@ -96,11 +56,9 @@ class AppController extends TestViewController
         $templateName = 'SimplyTestableWebClientBundle:App:index.html.twig';
         $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);
         
-        $testOptions = $this->getPersistentValues($this->testOptionNamesAndDefaultValues);
-        
-//        var_dump($testOptions);
-//        exit();
-        
+        $testOptionsParameters = $this->container->getParameter('test_options');        
+        $testOptions = $this->getPersistentValues($testOptionsParameters['names_and_default_values']);
+
         $testStartError = $this->getFlash('test_start_error');        
         
         $recentTests = $this->getRecentTests(9);

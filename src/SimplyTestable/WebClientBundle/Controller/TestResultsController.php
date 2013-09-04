@@ -19,46 +19,6 @@ class TestResultsController extends TestViewController
         'failed-no-sitemap',
         'rejected'
     );
-
-    private $testOptionNamesAndDefaultValues = array(
-        'html-validation' => 1,
-        'css-validation' => 1,
-        'css-validation-ignore-warnings' => 1,
-        'css-validation-ignore-common-cdns' => 1,
-        'css-validation-vendor-extensions' => "warn",
-        'css-validation-domains-to-ignore' => "",
-        'js-static-analysis' => 1,
-        'js-static-analysis-ignore-common-cdns' => 1,
-        'js-static-analysis-domains-to-ignore' => "",        
-        'js-static-analysis-jslint-option-passfail' => 0,
-        'js-static-analysis-jslint-option-bitwise' => 1,
-        'js-static-analysis-jslint-option-continue' => 1,
-        'js-static-analysis-jslint-option-debug' => 1,
-        'js-static-analysis-jslint-option-evil' => 1,       
-        'js-static-analysis-jslint-option-eqeq' => 1,
-        'js-static-analysis-jslint-option-es5' => 0,
-        'js-static-analysis-jslint-option-forin' => 1,
-        'js-static-analysis-jslint-option-newcap' => 1,
-        'js-static-analysis-jslint-option-nomen' => 1,
-        'js-static-analysis-jslint-option-plusplus' => 1,
-        'js-static-analysis-jslint-option-regexp' => 1,
-        'js-static-analysis-jslint-option-undef' => 1,
-        'js-static-analysis-jslint-option-unparam' => 1,
-        'js-static-analysis-jslint-option-sloppy' => 1,
-        'js-static-analysis-jslint-option-stupid' => 1,
-        'js-static-analysis-jslint-option-sub' => 1,                                            
-        'js-static-analysis-jslint-option-vars' => 1,
-        'js-static-analysis-jslint-option-white' => 1,
-        'js-static-analysis-jslint-option-anon' => 1,
-        'js-static-analysis-jslint-option-browser' => 1,
-        'js-static-analysis-jslint-option-devel' => 0,
-        'js-static-analysis-jslint-option-windows' => 0,
-        'js-static-analysis-jslint-option-maxerr' => 50,
-        'js-static-analysis-jslint-option-indent' => 4,
-        'js-static-analysis-jslint-option-maxlen' => 256,
-        'js-static-analysis-jslint-option-predef' => "",
-        'js-static-analysis-domains-to-ignore' => "",
-    ); 
     
     
     /**
@@ -406,7 +366,9 @@ class TestResultsController extends TestViewController
             }
         }
         
-        foreach ($this->testOptionNamesAndDefaultValues as $testOptionName => $defaultValue) {
+        $testOptionsParameters = $this->container->getParameter('test_options');              
+        
+        foreach ($this->$testOptionsParameters['names_and_default_values'] as $testOptionName => $defaultValue) {
             if (!isset($testOptions[$testOptionName])) {
                 $testOptions[$testOptionName] = '';
             }
