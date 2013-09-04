@@ -366,9 +366,8 @@ class TestResultsController extends TestViewController
             }
         }
         
-        $testOptionsParameters = $this->container->getParameter('test_options');              
-        
-        foreach ($this->$testOptionsParameters['names_and_default_values'] as $testOptionName => $defaultValue) {
+        $testOptionsParameters = $this->container->getParameter('test_options');                      
+        foreach ($testOptionsParameters['names_and_default_values'] as $testOptionName => $defaultValue) {
             if (!isset($testOptions[$testOptionName])) {
                 $testOptions[$testOptionName] = '';
             }
