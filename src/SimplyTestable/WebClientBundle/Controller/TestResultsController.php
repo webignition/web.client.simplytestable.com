@@ -373,8 +373,22 @@ class TestResultsController extends TestViewController
             }
         }
         
+        $testOptions = $this->invertInvertableOptions($testOptions);        
         return $testOptions;
     }
+    
+    private function invertInvertableOptions($testOptions) {
+        $testOptionsParameters = $this->container->getParameter('test_options');        
+        foreach ($testOptionsParameters['invert_option_keys'] as $optionName) {
+            if (isset($testOptions[$optionName])) {   
+                $testOptions[$optionName] = ($testOptions[$optionName] == '1') ? '0' : '1';
+            } else {
+                $testOptions[$optionName] = '1';
+            }
+        }
+        
+        return $testOptions;
+    }    
     
     
     /**

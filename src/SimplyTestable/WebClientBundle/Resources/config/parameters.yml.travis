@@ -122,7 +122,7 @@ parameters:
         js-static-analysis-jslint-option-es5: 1
         js-static-analysis-jslint-option-forin: 1
         js-static-analysis-jslint-option-newcap: 1
-        js-static-analysis-jslint-option-nomen: 1
+        js-static-analysis-jslint-option-nomen: 0
         js-static-analysis-jslint-option-plusplus: 1
         js-static-analysis-jslint-option-regexp: 1
         js-static-analysis-jslint-option-undef: 1
@@ -130,14 +130,34 @@ parameters:
         js-static-analysis-jslint-option-sloppy: 0
         js-static-analysis-jslint-option-stupid: 0
         js-static-analysis-jslint-option-sub: 1                                            
-        js-static-analysis-jslint-option-vars: 1
-        js-static-analysis-jslint-option-white: 1
+        js-static-analysis-jslint-option-vars: 0
+        js-static-analysis-jslint-option-white: 0
         js-static-analysis-jslint-option-anon: 1
         js-static-analysis-jslint-option-browser: 1
         js-static-analysis-jslint-option-devel: 0
         js-static-analysis-jslint-option-windows: 0
         js-static-analysis-jslint-option-maxerr: 50
         js-static-analysis-jslint-option-indent: 4
-        js-static-analysis-jslint-option-maxlen: 56
+        js-static-analysis-jslint-option-maxlen: 256
         js-static-analysis-jslint-option-predef: ""
         js-static-analysis-domains-to-ignore: ""
+    invert_option_keys:
+        - js-static-analysis-jslint-option-bitwise
+        - js-static-analysis-jslint-option-continue
+        - js-static-analysis-jslint-option-debug
+        - js-static-analysis-jslint-option-evil
+        - js-static-analysis-jslint-option-eqeq
+        - js-static-analysis-jslint-option-es5        
+        - js-static-analysis-jslint-option-forin
+        - js-static-analysis-jslint-option-newcap
+        - js-static-analysis-jslint-option-nomen
+        - js-static-analysis-jslint-option-plusplus
+        - js-static-analysis-jslint-option-regexp
+        - js-static-analysis-jslint-option-undef
+        - js-static-analysis-jslint-option-unparam
+        - js-static-analysis-jslint-option-sloppy
+        - js-static-analysis-jslint-option-stupid
+        - js-static-analysis-jslint-option-sub
+        - js-static-analysis-jslint-option-vars
+        - js-static-analysis-jslint-option-white
+        - js-static-analysis-jslint-option-anon   

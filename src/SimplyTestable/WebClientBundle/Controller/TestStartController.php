@@ -94,8 +94,9 @@ class TestStartController extends TestController
         }        
     }
     
-    private function invertInvestableOptions(\Symfony\Component\HttpFoundation\ParameterBag $requestValues) {
-        foreach ($this->invertOptionKeys as $optionName) {
+    private function invertInvertableOptions(\Symfony\Component\HttpFoundation\ParameterBag $requestValues) {
+        $testOptionsParameters = $this->container->getParameter('test_options');        
+        foreach ($testOptionsParameters['invert_option_keys'] as $optionName) {
             if ($requestValues->has($optionName)) {                
                 $requestValues->set($optionName, ($requestValues->get($optionName) == '1') ? '0' : '1');
             } else {
@@ -110,7 +111,7 @@ class TestStartController extends TestController
         
         $this->getTestService()->setUser($this->getUser());
        
-        $this->invertInvestableOptions($requestValues);
+        $this->invertInvertableOptions($requestValues);
         
         $this->getTestOptionsRequestParserService()->setRequestData($requestValues);
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
