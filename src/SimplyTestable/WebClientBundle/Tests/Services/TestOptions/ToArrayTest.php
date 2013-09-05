@@ -72,7 +72,7 @@ class ToArrayTest extends BaseTestCase {
                     'jslint-option-sub' => 0,
                     'jslint-option-vars' => 0,
                     'jslint-option-white' => 0,
-                    'jslint-option-anon' => 0,
+                    'jslint-option-anon' => 1,
                     'jslint-option-browser' => 1,
                     'jslint-option-devel' => 0,
                     'jslint-option-windows' => 0,
