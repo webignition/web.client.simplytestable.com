@@ -1296,7 +1296,7 @@ application.progress.taskOutputController = function() {
             return warningCount;
         };
 
-        var setErrors = function(newErrors) {
+        var setErrors = function(newErrors) {            
             errors = newErrors;
             errorCount = errors.length;
         };
@@ -1468,16 +1468,18 @@ application.progress.taskOutputController = function() {
                             var message = messages[messageIndex];
 
                             if (message.type == 'error') {
-                                var currentError = new outputMessage['JS static analysis'];
-                                currentError.setType('error');
+                                if (message.message.indexOf('Too many errors. ') === -1 && message.message.indexOf('Stopping') === -1) {
+                                    var currentError = new outputMessage['JS static analysis'];
+                                    currentError.setType('error');
 
-                                currentError.setMessage(message.message);
-                                currentError.setLineNumber(message.line_number);
-                                currentError.setColumnNumber(message.column_number);
-                                currentError.setContext(message.context);
-                                currentError.setFragment(message.fragment);
+                                    currentError.setMessage(message.message);
+                                    currentError.setLineNumber(message.line_number);
+                                    currentError.setColumnNumber(message.column_number);
+                                    currentError.setContext(message.context);
+                                    currentError.setFragment(message.fragment);
 
-                                errors.push(currentError);
+                                    errors.push(currentError);                                    
+                                }
                             }
                         }
                     }
