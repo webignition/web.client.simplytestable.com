@@ -1024,3 +1024,17 @@ body.app-progress #cancel-crawl-form {
     top:30px;
     right:30px;    
 }
+
+.stop-on-errors {
+    
+}
+
+.stop-on-errors label.checkbox {
+
+}
+
+.stop-on-errors label.checkbox input {
+    float:none;
+    width:auto;
+    margin-top: 0px;
+}

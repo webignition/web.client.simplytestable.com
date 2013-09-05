@@ -140,14 +140,11 @@
                             <div class="span12 jslint-option-set-group">                            
                                 <h3>Limits:</h3>
                                 <div class="row-fluid">
-                                    <div class="span12">
+                                    <div class="span12 inline-short stop-on-errors">
                                         {{ form.persistent_checkbox('Stop on first error', 'js-static-analysis-jslint-option-passfail', test_options, 'passfail') }}
-                                    </div>                                            
-                                </div>                                
-                                <div class="row-fluid">                                        
-                                    <div class="span12 jslint-integer-options inline-short">
+                                            or
                                         <label>
-                                            Stop when reaching
+                                            stop when reaching
                                             <input id="js-static-analysis-jslint-option-maxerr"
                                                    class="inline-short"
                                                    type="text"
@@ -155,7 +152,12 @@
                                                    value="{{ test_options['js-static-analysis-jslint-option-maxerr'] }}"
                                                    title="maxerr" />
                                             errors.
-                                        </label>
+                                        </label>                                            
+                                    </div>                                            
+                                </div>                                
+                                <div class="row-fluid">                                        
+                                    <div class="span12 jslint-integer-options inline-short">
+
                                             Assume an
                                         <label>
                                             indentation level of  
