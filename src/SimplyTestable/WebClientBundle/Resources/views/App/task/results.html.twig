@@ -381,9 +381,11 @@
                             <h3><i class="{% if errors[0].isException %}icon icon-ban-circle{% else %}icon icon-file{% endif %}"></i> {% if context == 'inline' %}Inline in your HTML{% else %}{{ context }}{% endif %}:</h3>                            
                             <ul class="errors">
                                 {% for error in errors %}
+                                    {% if ((error.message | replace({'Stopping': ''})) == error.message and (error.message | replace({'Too many errors': ''})) == error.message) %}
                                     <li>
                                         {% include 'SimplyTestableWebClientBundle:Partials:task/js-static-analysis-result.html.twig' %}                               
-                                    </li>
+                                    </li>                                    
+                                    {% endif %}
                                 {% endfor %}
                             </ul>
                         </div>

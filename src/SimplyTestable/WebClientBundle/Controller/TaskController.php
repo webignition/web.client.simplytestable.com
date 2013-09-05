@@ -140,9 +140,9 @@ class TaskController extends TestViewController
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
         $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
-//        if ($response->isNotModified($this->getRequest())) {
-//            return $response;
-//        }        
+        if ($response->isNotModified($this->getRequest())) {
+            return $response;
+        }        
         
         $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
         if ($testRetrievalOutcome->hasResponse()) {
