@@ -949,7 +949,7 @@ form div.inline-short label {
     display:inline;
 }
 
-form div.inline-short input {
+form input.inline-short {
     display:inline;
     width:26px;
 }

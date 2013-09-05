@@ -55,9 +55,6 @@ class AppController extends TestViewController
         
         $templateName = 'SimplyTestableWebClientBundle:App:index.html.twig';
         $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);
-        
-        $testOptionsParameters = $this->container->getParameter('test_options');        
-        $testOptions = $this->getPersistentValues($testOptionsParameters['names_and_default_values']);
 
         $testStartError = $this->getFlash('test_start_error');        
         
@@ -93,7 +90,7 @@ class AppController extends TestViewController
             'recent_tests' => $recentTests,
             'website' => idn_to_utf8($this->getPersistentValue('website')),
             'available_task_types' => $this->getAvailableTaskTypes(),
-            'test_options' => $testOptions,
+            'test_options' => $this->getTestOptions(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'test_options_title' => 'What do you want to check?',
@@ -109,6 +106,26 @@ class AppController extends TestViewController
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
             'recent_tests' => $recentTests
         )), $cacheValidatorHeaders);        
+    }
+    
+    
+    /**
+     * 
+     * @return array
+     */
+    private function getTestOptions() {
+        $testOptionsParameters = $this->container->getParameter('test_options');        
+        $testOptions = $this->getPersistentValues($testOptionsParameters['names_and_default_values']);
+        
+        foreach ($testOptionsParameters['invert_option_keys'] as $optionName) {
+            if (isset($testOptions[$optionName])) {
+                $testOptions[$optionName] = ($testOptions[$optionName] ==='1') ? '0' : '1';
+            } else {
+                $testOptions[$optionName] = '1';
+            }
+        }
+        
+        return $testOptions;
     }
     
     

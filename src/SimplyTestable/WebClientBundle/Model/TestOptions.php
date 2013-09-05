@@ -121,7 +121,7 @@ class TestOptions {
             ),  
             'js-static-analysis-jslint-option-anon' => array(    
                 'type' => 'int',
-                'default' => 0
+                'default' => 1
             ),
             'js-static-analysis-jslint-option-browser' => array(    
                 'type' => 'int',
