@@ -117,14 +117,6 @@ class AppController extends TestViewController
         $testOptionsParameters = $this->container->getParameter('test_options');        
         $testOptions = $this->getPersistentValues($testOptionsParameters['names_and_default_values']);
         
-        foreach ($testOptionsParameters['invert_option_keys'] as $optionName) {
-            if (isset($testOptions[$optionName])) {
-                $testOptions[$optionName] = ($testOptions[$optionName] ==='1') ? '0' : '1';
-            } else {
-                $testOptions[$optionName] = '1';
-            }
-        }
-        
         return $testOptions;
     }
     
