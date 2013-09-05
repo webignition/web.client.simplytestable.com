@@ -118,12 +118,12 @@ parameters:
         js-static-analysis-jslint-option-continue: 1
         js-static-analysis-jslint-option-debug: 1
         js-static-analysis-jslint-option-evil: 1       
-        js-static-analysis-jslint-option-eqeq: 1
+        js-static-analysis-jslint-option-eqeq: 0
         js-static-analysis-jslint-option-es5: 1
         js-static-analysis-jslint-option-forin: 1
-        js-static-analysis-jslint-option-newcap: 1
+        js-static-analysis-jslint-option-newcap: 0
         js-static-analysis-jslint-option-nomen: 0
-        js-static-analysis-jslint-option-plusplus: 1
+        js-static-analysis-jslint-option-plusplus: 0
         js-static-analysis-jslint-option-regexp: 1
         js-static-analysis-jslint-option-undef: 1
         js-static-analysis-jslint-option-unparam: 1
@@ -132,7 +132,7 @@ parameters:
         js-static-analysis-jslint-option-sub: 1                                            
         js-static-analysis-jslint-option-vars: 0
         js-static-analysis-jslint-option-white: 0
-        js-static-analysis-jslint-option-anon: 1
+        js-static-analysis-jslint-option-anon: 0
         js-static-analysis-jslint-option-browser: 1
         js-static-analysis-jslint-option-devel: 0
         js-static-analysis-jslint-option-windows: 0
