@@ -106,9 +106,7 @@ class TestStartController extends TestController
     }
     
     private function startAction($requestValues)
-    {           
-        ini_set('xdebug.var_display_max_depth', 8);
-        
+    {        
         $this->getTestService()->setUser($this->getUser());
        
         $this->invertInvertableOptions($requestValues);
@@ -132,7 +130,7 @@ class TestStartController extends TestController
         }
         
         try {
-            $jsonResponseObject = $this->getTestService()->start($this->getTestUrl(), $testOptions, ($this->isFullTest() ? 'full site' : 'single url'))->getContentObject();
+            $jsonResponseObject = $this->getTestService()->start($this->getTestUrl(), $testOptions, ($this->isFullTest() ? 'full site' : 'single url'))->getContentObject();            
             return $this->redirect($this->generateUrl(
                 'app_progress',
                 array(
