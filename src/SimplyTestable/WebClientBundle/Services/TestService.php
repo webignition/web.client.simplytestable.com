@@ -77,17 +77,12 @@ class TestService extends CoreApplicationService {
     }
     
     
-    public function start($canonicalUrl, TestOptions $testOptions, $testType = 'full site') {        
+    public function start($canonicalUrl, TestOptions $testOptions, $testType = 'full site') {                
         $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_start', array(
-            'canonical-url' => urlencode($canonicalUrl)
+            'canonical-url' => rawurlencode($canonicalUrl)
         )).'?'.http_build_query(array_merge(array(
             'type' => $testType
         ), $testOptions->__toArray())));
-        
-//        ini_set('xdebug.var_display_max_depth', 8);
-//        
-//        var_dump($testOptions->__toArray());
-//        exit();
 
         $this->addAuthorisationToRequest($httpRequest);
 
