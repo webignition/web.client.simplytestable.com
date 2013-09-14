@@ -15,6 +15,7 @@ class FunctionalTest extends BaseFunctionalTest {
     }    
     
     public function testPublicUserContent() {
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         $crawler = $this->getCrawler($this->getCurrentRequestUrl());   
         $this->publicUserNavbarContentTest($crawler);     
     }
