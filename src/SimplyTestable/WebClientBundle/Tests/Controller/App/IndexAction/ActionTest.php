@@ -11,13 +11,8 @@ class ActionTest extends BaseActionTest {
         return 'indexAction';
     }
     
-    protected function getTestMethodHasFixtureMap() {
-        return array(
-            'testWithAuthorisedUser' => true
-        );
-    }
-    
     public function testWithUnauthorisedUser() {        
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         $this->performActionTest(array(
             'statusCode' => 200
         ));
