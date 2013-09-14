@@ -16,6 +16,8 @@ class RedirectTest extends BaseSimplyTestableTestCase {
     }
     
     public function testCommonIE6AndIE7UserAgentsCauseARedirect() {         
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
+        
         $userAgentStrings = array(
             // IE6
             'Mozilla/4.0 (compatible; MSIE 6.1; Windows XP; .NET CLR 1.1.4322; .NET CLR 2.0.50727)',
@@ -53,6 +55,8 @@ class RedirectTest extends BaseSimplyTestableTestCase {
     
     
     public function testUserAgentsContainingOldIECompatibilityDoNotCauseRedirect() { 
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
+        
         $userAgentStrings = array(
             'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; GTB6.5; QQDownload 534; Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1) ; SLCC2; .NET CLR 2.0.50727; Media Center PC 6.0; .NET CLR 3.5.30729; .NET CLR 3.0.30729))',
             'Mozilla/4.0 (compatible; MSIE 6.0; X11; Linux i686; de) Opera 10.10',
