@@ -46,6 +46,16 @@ abstract class BaseController extends Controller
      * 
      * @return boolean
      */
+    public function isUserValid() {
+        $this->getUserService()->setUser($this->getUser());
+        return $this->getUserService()->authenticate();        
+    }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
     public function isEarlyAccessUser() {
         if (!$this->container->hasParameter('early_access_users')) {
             return false;

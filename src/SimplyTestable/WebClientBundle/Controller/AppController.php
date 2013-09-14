@@ -53,6 +53,10 @@ class AppController extends TestViewController
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }
         
+        if (!$this->isUserValid()) {            
+            return $this->redirect($this->generateUrl('sign_out_submit', array(), true));
+        }        
+        
         $templateName = 'SimplyTestableWebClientBundle:App:index.html.twig';
         $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);
 

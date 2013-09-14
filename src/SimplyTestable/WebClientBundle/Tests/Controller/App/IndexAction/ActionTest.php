@@ -31,6 +31,16 @@ class ActionTest extends BaseActionTest {
             'statusCode' => 200
         ));  
     }
+    
+    public function testWithNonExistentUser() {
+        $this->setUser(new User('user@example.com','password'));               
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));      
+        
+        $this->performActionTest(array(
+            'statusCode' => 302,
+            'redirectPath' => '/signout/'
+        ));          
+    }
 
 }
 
