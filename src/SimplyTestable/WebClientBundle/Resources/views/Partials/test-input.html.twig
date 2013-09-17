@@ -1,14 +1,3 @@
-{% if test_cancelled_queued_website is defined and test_cancelled_queued_website != '' %}
-<div class="alert alert-info for:input-website">
-    <button type="button" class="close" data-dismiss="alert">×</button>
-    <strong>Your test of {{ test_cancelled_queued_website }} has 
-    been cancelled</strong>.<br>We can't show you
-    and results as we're in a <strong>read-only</strong> state whilst some 
-    <strong>maintenance</strong> is going on and your test was never
-    started.
-</div>               
-{% endif %} 
-
 <section>
 <div id="input" class="leader">                  
     <form method="post" action="{{ test_input_action_url }}">                
@@ -83,8 +72,6 @@
             
         {% if app.request.attributes.get('_route') == 'app' %}
         {% include 'SimplyTestableWebClientBundle:Partials:test-input-task-type-options.html.twig' %} 
-        {% elseif app.request.attributes.get('_route') == 'app_results' %}
-        {% include 'SimplyTestableWebClientBundle:Partials:test-input-task-type-options.html.twig' %}             
         {% endif %}
             
     </form>

@@ -14,6 +14,17 @@
 
 <div class="row-fluid">
     <div class="span12">
+{% if test_cancelled_queued_website is defined and test_cancelled_queued_website != '' %}
+<div class="alert alert-info for:input-website">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <strong>Your test of {{ test_cancelled_queued_website }} has 
+    been cancelled</strong>.<br>We can't show you
+    and results as we're in a <strong>read-only</strong> state whilst some 
+    <strong>maintenance</strong> is going on and your test was never
+    started.
+</div>               
+{% endif %}         
+        
 {% include 'SimplyTestableWebClientBundle:Partials:test-input.html.twig' %} 
         </div>            
 
