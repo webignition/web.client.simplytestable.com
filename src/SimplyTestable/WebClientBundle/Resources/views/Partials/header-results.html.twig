@@ -1,0 +1,34 @@
+{% if remote_test_summary.state == 'new-queued' %}
+{% set cancel_action %}{{ path('test_cancel_queued', {website: website}) }}{% endset %}
+{% else %}
+{% set cancel_action %}{{ path('test_cancel', {website: website, test_id: test.testId}) }}{% endset %}
+{% endif %}
+
+<section>
+    <div class="leader">                  
+        <h1 class="info">
+            <label for="input-website">
+                <i class="icon-bar-chart"></i> Results for {{ website }}
+                <span id="test-id">(#{{ test.testId }})</span>           
+            </label>
+        </h1>
+
+        <div class="top-right-form">
+            <form  method="post" action="{{ path('test_clone_and_start', {website: website, test_id: test.testId}) }}">
+                <button type="submit" class="btn btn-primary">                    
+                    Re-test
+                    <i class="icon icon-refresh"></i>
+                    <span>Using current setttings</span>
+                </button>
+            </form>
+
+            <form method="post" action="{{ path('app') }}">
+                <button type="submit" class="btn">                    
+                    New test
+                    <i class="icon icon-play-circle"></i>
+                    <span>Lorem ipsum dolor sit amet</span>
+                </button>
+            </form>                
+        </div>
+    </div>    
+</section>

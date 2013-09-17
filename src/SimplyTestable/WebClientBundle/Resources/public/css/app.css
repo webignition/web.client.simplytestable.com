@@ -450,13 +450,8 @@ body.app-progress form .larger input {
     padding: 14px 9px 13px 9px;      
 }
 
-body.app #input .btn-primary,
-body.app-results #input .btn-primary {    
+body.app #input .btn-primary {
     width:20%;
-}
-
-body.app-progress #input .btn-primary {
-    width:30%;
 }
 
 form .larger button {
@@ -1018,11 +1013,10 @@ body.user-account-index .news-subscriptions label span {
     opacity:0.7;
 }
 
-body.app-progress #cancel-form,
-body.app-progress #cancel-crawl-form {
+.top-right-form {
     position:absolute;
     top:30px;
-    right:30px;    
+    right:30px;      
 }
 
 .stop-on-errors {
@@ -1037,4 +1031,21 @@ body.app-progress #cancel-crawl-form {
     float:none;
     width:auto;
     margin-top: 0px;
+}
+
+body.app-results div.top-right-form form {
+    display:inline;
+}
+
+body.app-results div.top-right-form form button {
+    text-align: left;
+}
+
+body.app-results div.top-right-form form button .icon {
+}
+
+body.app-results div.top-right-form form button span {
+    display:block;
+    opacity:0.7;
+    font-size:12px;
 }

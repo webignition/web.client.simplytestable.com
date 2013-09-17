@@ -404,17 +404,14 @@ application.progress.testController = function() {
         }        
 
         if ($('#cancel-crawl-form').get(0) === undefined) {
-            console.log("cp01");
-
             var cancelCrawlForm = $('<form />')
-                    .attr('id', 'cancel-crawl-form')
+                    .attr('id', 'cancel-crawl-form')               
                     .attr('method', 'post')
                     .attr('action', $('#cancel-form').attr('action').replace('cancel', 'cancel-crawl'))
-                    .append('<button type="submit" class="btn btn-warning">Stop finding URLs, start testing</button>');
+                    .append('<button type="submit" class="btn btn-warning">Stop finding URLs, start testing</button>')
+                    .addClass('top-right-form');
 
             $('#completion-percent').append(cancelCrawlForm);
-
-            console.log("cp02");
         }      
     };
 
@@ -426,11 +423,11 @@ application.progress.testController = function() {
         };
 
         jQuery.ajax({
-            complete: function(request, textStatus) {
+            complete: function(request, textStatus) {           
                 //console.log('complete', request, textStatus);
             },
             dataType: 'json',
-            error: function(request, textStatus, errorThrown) {
+            error: function(request, textStatus, errorThrown) {        
                 //console.log('error', request, textStatus, request.getAllResponseHeaders());
             },
             statusCode: {
@@ -441,8 +438,8 @@ application.progress.testController = function() {
                     //console.log('500');
                 }
             },
-            success: function(data, textStatus, request) {
-                if (data.this_url != window.location.href) {
+            success: function(data, textStatus, request) {        
+                if (data.this_url !== window.location.href) {
                     window.location.href = data.this_url;
                     return;
                 }
@@ -483,7 +480,7 @@ application.progress.testController = function() {
         });
     };
 
-    this.initialise = function() {
+    this.initialise = function() {        
         refreshTestSummary();
         
         if (!$('#test-summary-container').hasClass('state-in-progress')) {
