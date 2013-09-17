@@ -12,14 +12,6 @@
                 <span id="test-id">(#{{ test.testId }})</span>           
             </label>
         </h1>
-
-            <!--
-        <div class="top-right-form">
-            <form  method="post" action="{{ path('test_clone_and_start', {website: website, test_id: test.testId}) }}">
-
-            </form>              
-        </div>
-            -->
     </div>
 
     <form id="test-start-form" method="post" action="{{ path('test_start') }}">
@@ -30,7 +22,7 @@
         </button>        
         <input type="hidden" name="website" value="{{ website }}" />
         <div id="test-options">
-            <div class="expandable-control expandable-control-default-closed for-test-options-expandable">Selected test settings</div>
+            <div class="expandable-control expandable-control-default-closed for-test-options-expandable">Change test settings</div>
             <div id="test-options-expandable">
         {% include 'SimplyTestableWebClientBundle:Partials:test-input-task-type-options.html.twig' %} 
                 </div>

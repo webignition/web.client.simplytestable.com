@@ -6,36 +6,7 @@ use SimplyTestable\WebClientBundle\Model\TestOptions;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 
 class TestStartController extends TestController
-{
-    
-    
-    /**
-     * Names of inputs where the value should be inverted
-     * 
-     * @var array
-     */
-    private $invertOptionKeys = array(
-        'js-static-analysis-jslint-option-bitwise',
-        'js-static-analysis-jslint-option-continue',
-        'js-static-analysis-jslint-option-debug',
-        'js-static-analysis-jslint-option-evil',
-        'js-static-analysis-jslint-option-eqeq',
-        'js-static-analysis-jslint-option-es5',        
-        'js-static-analysis-jslint-option-forin',
-        'js-static-analysis-jslint-option-newcap',
-        'js-static-analysis-jslint-option-nomen',
-        'js-static-analysis-jslint-option-plusplus',
-        'js-static-analysis-jslint-option-regexp',
-        'js-static-analysis-jslint-option-undef',
-        'js-static-analysis-jslint-option-unparam',
-        'js-static-analysis-jslint-option-sloppy',
-        'js-static-analysis-jslint-option-stupid',
-        'js-static-analysis-jslint-option-sub',
-        'js-static-analysis-jslint-option-vars',
-        'js-static-analysis-jslint-option-white',
-        'js-static-analysis-jslint-option-anon'
-    );    
-    
+{    
     
     public function startNewAction()
     {        
@@ -107,11 +78,16 @@ class TestStartController extends TestController
     
     private function startAction($requestValues)
     {        
+        $testOptionsParameters = $this->container->getParameter('test_options');
+        $availableTaskTypes = $this->container->getParameter('available_task_types');       
+        
         $this->getTestService()->setUser($this->getUser());
        
         $this->invertInvertableOptions($requestValues);
         
         $this->getTestOptionsRequestParserService()->setRequestData($requestValues);
+        $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
 
         if (!$this->hasWebsite()) {            

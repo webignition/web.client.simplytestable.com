@@ -3,165 +3,30 @@ namespace SimplyTestable\WebClientBundle\Model;
 
 class TestOptions {      
     
-    private $testTypes = array();
+    /**
+     *
+     * @var array
+     */
+    private $availableTaskTypes = array();    
     
-    private $testTypeOptions = array();
+    private $testTypes = array();    
+    private $testTypeOptions = array();    
     
-    
-    private $testTypeMap = array(
-        'html-validation' => 'HTML validation',
-        'css-validation' => 'CSS validation',
-        'js-static-analysis' => 'JS static analysis'
-    );
-    
-    private $testTypeOptionsMap = array(
-        'html-validation' => array(),
-        'css-validation' => array(
-            'css-validation-ignore-warnings' => array(
-                'type' => 'int',
-                'default' => 0
-            ),
-            'css-validation-ignore-common-cdns' => array(
-                'type' => 'int',
-                'default' => 0                
-            ),
-            'css-validation-vendor-extensions' => array(
-                'type' => 'string',
-                'default' => 'warn'               
-            ),
-            'css-validation-domains-to-ignore' => array(
-                'type' => 'array',
-                'default' => array()              
-            ),
-        ),
-        'js-static-analysis' => array(
-            'js-static-analysis-ignore-common-cdns' => array(
-                'type' => 'int',
-                'default' => 0                
-            ),            
-            'js-static-analysis-domains-to-ignore' => array(
-                'type' => 'array',
-                'default' => array()              
-            ),  
-            'js-static-analysis-jslint-option-passfail' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),
-            'js-static-analysis-jslint-option-bitwise' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),            
-            'js-static-analysis-jslint-option-continue' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),               
-            'js-static-analysis-jslint-option-debug' => array(    
-                'type' => 'int',
-                'default' => 0
-            ), 
-            'js-static-analysis-jslint-option-evil' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),             
-            'js-static-analysis-jslint-option-eqeq' => array(    
-                'type' => 'int',
-                'default' => 0
-            ), 
-            'js-static-analysis-jslint-option-es5' => array(    
-                'type' => 'int',
-                'default' => 0
-            ), 
-            'js-static-analysis-jslint-option-forin' => array(    
-                'type' => 'int',
-                'default' => 0
-            ), 
-            'js-static-analysis-jslint-option-newcap' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),
-            'js-static-analysis-jslint-option-nomen' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),            
-            'js-static-analysis-jslint-option-plusplus' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),   
-            'js-static-analysis-jslint-option-regexp' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),   
-            'js-static-analysis-jslint-option-undef' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),   
-            'js-static-analysis-jslint-option-unparam' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),   
-            'js-static-analysis-jslint-option-sloppy' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),   
-            'js-static-analysis-jslint-option-stupid' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),   
-            'js-static-analysis-jslint-option-sub' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),            
-            'js-static-analysis-jslint-option-vars' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),  
-            'js-static-analysis-jslint-option-white' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),  
-            'js-static-analysis-jslint-option-anon' => array(    
-                'type' => 'int',
-                'default' => 1
-            ),
-            'js-static-analysis-jslint-option-browser' => array(    
-                'type' => 'int',
-                'default' => 1
-            ),
-            'js-static-analysis-jslint-option-devel' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),                        
-            'js-static-analysis-jslint-option-windows' => array(    
-                'type' => 'int',
-                'default' => 0
-            ),               
-            'js-static-analysis-jslint-option-maxerr' => array(    
-                'type' => 'int',
-                'default' => 50
-            ),     
-            'js-static-analysis-jslint-option-indent' => array(    
-                'type' => 'int',
-                'default' => 4
-            ),             
-            'js-static-analysis-jslint-option-maxlen' => array(    
-                'type' => 'int',
-                'default' => 256
-            ),  
-            'js-static-analysis-jslint-option-predef' => array(
-                'type' => 'array',
-                'default' => array()              
-            ),              
-        ),
-    );
-    
+    /**
+     * 
+     * @param array $availableTaskTypes
+     */
+    public function setAvailableTaskTypes($availableTaskTypes) {
+        $this->availableTaskTypes = $availableTaskTypes;
+    }    
     
     /**
      * 
      * @param string $testType
      */
-    public function addTestType($testType) {
-        if (!$this->hasTestType($testType)) {
-            $this->testTypes[] = $testType;
+    public function addTestType($testTypeKey, $testType) {
+        if (!array_key_exists($testTypeKey, $this->testTypes)) {
+            $this->testTypes[$testTypeKey] = $testType;
         }
     }
     
@@ -171,18 +36,8 @@ class TestOptions {
      * @param string $testType
      * @param array $testTypeOptions
      */
-    public function addTestTypeOptions($testType, $testTypeOptions) {
+    public function addTestTypeOptions($testType, $testTypeOptions) {        
         $this->testTypeOptions[$testType] = $testTypeOptions;
-    }
-    
-    
-    /**
-     * 
-     * @param string $testType
-     * @return boolean
-     */
-    public function hasTestType($testType) {
-        return in_array($testType, $this->testTypes);
     }
     
     
@@ -200,27 +55,13 @@ class TestOptions {
      * @return array
      */
     public function getTestTypes() {
-        return $this->testTypes;
-    }
-    
-    
-    /**
-     * 
-     * @return array
-     */
-    public function getTestTypeKeys() {
-        $testTypeKeys = array();
-        $testTypes = $this->getTestTypes();
+        $testTypes = array();
         
-        foreach ($testTypes as $testTypeName) {
-            foreach ($this->testTypeMap as $testTypeKey => $testTypeNameValue) {
-                if ($testTypeName == $testTypeNameValue) {
-                    $testTypeKeys[] = $testTypeKey;
-                }
-            }
+        foreach ($this->testTypes as $key => $name) {
+            $testTypes[] = $name;
         }
         
-        return $testTypeKeys;
+        return $testTypes;
     }
     
     
@@ -265,32 +106,9 @@ class TestOptions {
         $absoluteTestTypeOptions = array();
         $testTypeOptions = $this->getTestTypeOptions($testType);
         
-        foreach ($this->testTypeOptionsMap[$testType] as $optionKey => $optionDefinition) {
-            $key = ($useFullOptionKey) ? $optionKey : str_replace($testType.'-', '', $optionKey);            
-            
-            if (isset($testTypeOptions[$optionKey])) {
-                switch ($optionDefinition['type']) {
-                    case 'array':
-                        $optionValue = explode("\n", $testTypeOptions[$optionKey]);
-                        foreach ($optionValue as $index => $value) {
-                            $optionValue[$index] = trim($value);
-                        }
-                        break;
-                        
-                    case 'int':
-                        $optionValue = (int)$testTypeOptions[$optionKey];
-                        break;
-
-                    default:
-                        $optionValue = $testTypeOptions[$optionKey];
-                        break;
-                }                
-            } else {
-                $optionValue = $optionDefinition['default'];
-
-            }
-            
-            $absoluteTestTypeOptions[$key] = $optionValue;                    
+        foreach ($testTypeOptions as $optionKey => $optionValue) {
+            $key = ($useFullOptionKey) ? $optionKey : str_replace($testType.'-', '', $optionKey); 
+            $absoluteTestTypeOptions[$key] = $optionValue;
         }
         
         return $absoluteTestTypeOptions;
@@ -342,16 +160,15 @@ class TestOptions {
         
         if ($this->hasTestTypes()) {
             $optionsAsArray['test-types'] = $this->getTestTypes();
-            $testTypeKeys = $this->getTestTypeKeys();
             
-            foreach ($testTypeKeys as $testTypeKey) {
-                $testType = $this->getNameFromKey($testTypeKey);                
-                
+            foreach ($this->testTypes as $testTypeKey => $testType) {                                            
                 if (!isset($optionsAsArray['test-type-options'])) {
                     $optionsAsArray['test-type-options'] = array();
                 }
-                
-                $optionsAsArray['test-type-options'][$testType] = $this->getAbsoluteTestTypeOptions($testTypeKey, false);
+            }
+            
+            foreach ($this->availableTaskTypes as $taskTypeKey => $taskTypeName) { 
+                $optionsAsArray['test-type-options'][$taskTypeName] = $this->getAbsoluteTestTypeOptions($taskTypeKey, false);
             }
         }
         

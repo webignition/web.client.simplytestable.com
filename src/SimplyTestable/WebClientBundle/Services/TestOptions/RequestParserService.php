@@ -3,13 +3,7 @@ namespace SimplyTestable\WebClientBundle\Services\TestOptions;
 
 use SimplyTestable\WebClientBundle\Model\TestOptions;
 
-class RequestParserService {    
-    
-    private $testTypeMap = array(
-        'html-validation' => 'HTML validation',
-        'css-validation' => 'CSS validation',
-        'js-static-analysis' => 'JS static analysis'
-    );    
+class RequestParserService {
     
     /**
      *
@@ -17,6 +11,20 @@ class RequestParserService {
      */
     private $requestData = array();
     
+    
+    /**
+     *
+     * @var array
+     */
+    private $availableTaskTypes = array();
+    
+    
+    /**
+     *
+     * @var array
+     */
+    private $namesAndDefaultValues= array();
+
     
     /**
      *
@@ -37,6 +45,24 @@ class RequestParserService {
     
     /**
      * 
+     * @param array $namesAndDefaultValues
+     */
+    public function setNamesAndDefaultValues($namesAndDefaultValues) {
+        $this->namesAndDefaultValues = $namesAndDefaultValues;
+    }
+    
+    
+    /**
+     * 
+     * @param array $availableTaskTypes
+     */
+    public function setAvailableTaskTypes($availableTaskTypes) {
+        $this->availableTaskTypes = $availableTaskTypes;
+    }
+    
+    
+    /**
+     * 
      * @return \SimplyTestable\WebClientBundle\Model\TestOptions
      */
     public function getTestOptions() {        
@@ -51,10 +77,15 @@ class RequestParserService {
     
     private function populateTestOptionsFromRequestData() {
         $this->testOptions = new TestOptions();
+        $this->testOptions->setAvailableTaskTypes($this->availableTaskTypes);
        
-        $testTypes = $this->parseTestTypes();        
+        $testTypes = $this->parseTestTypes(); 
+        
         foreach ($testTypes as $testTypeKey => $testTypeName) {
-            $this->testOptions->addTestType($testTypeName);
+            $this->testOptions->addTestType($testTypeKey, $testTypeName);
+        }
+        
+        foreach ($this->availableTaskTypes as $testTypeKey => $testTypeName) {            
             $this->testOptions->addTestTypeOptions($testTypeKey, $this->parseTestTypeOptions($testTypeKey));
         }      
     }    
@@ -67,14 +98,14 @@ class RequestParserService {
     private function parseTestTypes() {        
         $testTypes = array();
         
-        foreach ($this->testTypeMap as $testTypeKey => $testTypeName) {            
+        foreach ($this->availableTaskTypes as $testTypeKey => $testTypeName) {                        
             if ($this->requestData->get($testTypeKey) === "1") {
                 $testTypes[$testTypeKey] = $testTypeName;
             }
         }              
         
         return $testTypes;
-    } 
+    }
     
     
     /**
@@ -86,8 +117,30 @@ class RequestParserService {
         $testTypeOptions = array();
         
         foreach ($this->requestData as $key => $value) {            
-            if ($this->requestKeyMatchesTestTypeKey($key, $testTypeKey)) {
-                $testTypeOptions[$key] = $value;
+            if ($this->requestKeyMatchesTestTypeKey($key, $testTypeKey) && array_key_exists($key, $this->namesAndDefaultValues)) {               
+                
+                switch (gettype($this->namesAndDefaultValues[$key])) {
+                    case 'integer':
+                        $testTypeOptions[$key] = (int)$value;
+                        break;
+                    
+                    case 'array':                        
+                        $rawValues = explode("\n", $value);
+                        $cleanedValues = array();
+                        foreach ($rawValues as $rawValue) {
+                            $rawValue = trim($rawValue);
+                            if ($rawValue != '') {
+                                $cleanedValues[] = $rawValue;
+                            }
+                        }
+                        
+                        $testTypeOptions[$key] = $cleanedValues;
+                        break;
+                        
+                    default:
+                        $testTypeOptions[$key] = $value;
+                        break;
+                }
             }
         }
         
