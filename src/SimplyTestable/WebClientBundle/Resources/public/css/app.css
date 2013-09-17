@@ -1037,15 +1037,18 @@ body.app-results div.top-right-form form {
     display:inline;
 }
 
-body.app-results div.top-right-form form button {
+body.app-results #test-start-form button {
     text-align: left;
 }
 
-body.app-results div.top-right-form form button .icon {
-}
-
-body.app-results div.top-right-form form button span {
+body.app-results #test-start-form button span {
     display:block;
     opacity:0.7;
     font-size:12px;
+}
+
+body.app-results #test-start-form button {
+    position: absolute;
+    right: 30px;
+    top: 30px;
 }
