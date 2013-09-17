@@ -4,13 +4,15 @@
 
 
 {% block main %}
+
+{% if is_logged_in == false %}
 <div class="alert alert-info alert-ammendment alert-from-view">
     <i class="icon icon-warning-sign"></i>
     <span>
 {% include 'SimplyTestableWebClientBundle:Partials:public-user-notification.html.twig' %}
     </span>
 </div> 
-
+{% endif %}
 
 <div class="row-fluid">
     <div class="span12">
