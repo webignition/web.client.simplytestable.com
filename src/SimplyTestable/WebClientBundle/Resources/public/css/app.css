@@ -581,7 +581,7 @@ body.app-task-results #task-summary h3 {
     opacity:0.9;
 }
 
-#test-options {
+body.app #test-options {
     margin-top:30px;
 }
 

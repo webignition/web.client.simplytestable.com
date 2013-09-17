@@ -31,9 +31,11 @@
             </form>                
         </div>
     </div>
-        
-<div id="test-options">
-    <p class="info">Clicky expandy bit</p>
-    {# include 'SimplyTestableWebClientBundle:Partials:test-input-task-type-options.html.twig' #} 
-</div>         
+
+    <div id="test-options">
+        <div class="expandable-control expandable-control-default-closed for-test-options-expandable">Current test options</div>
+        <div id="test-options-expandable">
+        {% include 'SimplyTestableWebClientBundle:Partials:test-input-task-type-options.html.twig' %} 
+        </div>
+    </div>
 </section>
