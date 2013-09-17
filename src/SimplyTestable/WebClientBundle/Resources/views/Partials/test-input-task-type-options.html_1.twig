@@ -7,6 +7,9 @@
     
 {% import _self as form %}
 
+<div id="test-options">
+    <p class="info"><i class="icon-wrench"></i> {{ test_options_title }}</p>    
+
 {% if 'html-validation' in available_task_types|keys %}
 
     <div class="test-options-set" id="html-validation-options">
@@ -273,3 +276,4 @@
         </div>    
 
 {% endif %}
+    </div>

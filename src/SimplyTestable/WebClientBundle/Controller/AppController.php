@@ -85,8 +85,7 @@ class AppController extends TestViewController
         $cacheValidatorHeaders->setLastModifiedDate($templateLastModifiedDate);
         $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);
         
-        return $this->render($templateName, array(            
-            'test_input_action_url' => $this->generateUrl('test_start'),
+        return $this->render($templateName, array(
             'test_start_error' => $testStartError,
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
@@ -97,7 +96,6 @@ class AppController extends TestViewController
             'test_options' => $this->getTestOptions(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
-            'test_options_title' => 'What do you want to check?',
             'test_cancelled_queued_website' => $testCancelledQueuedWebsite
         ));         
 

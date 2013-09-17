@@ -325,8 +325,7 @@ class TestResultsController extends TestViewController
             ),
             'default_js_static_analysis_options' => array(
                 'ignore-common-cdns' => 1                
-            ),            
-            'test_options_title' => 'Re-check:'
+            )
         );
                        
         //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTestSummary->task_count : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));

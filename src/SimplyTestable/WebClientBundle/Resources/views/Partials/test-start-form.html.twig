@@ -1,18 +1,9 @@
 <section>
 <div id="input" class="leader">                  
-    <form method="post" action="{{ test_input_action_url }}">                
+    <form method="post" action="{{ path('test_start') }}">                
         <h1 class="info">
             <label for="input-website">
-                {% if test is defined %}
-                    <i class="icon-bar-chart"></i> Results for 
-                    {{ website }} <span id="test-id">(#{{ test.testId }})</span>
-                {% else %}
-                    {% if app.request.attributes.get('_route') == 'app_queued' %}
-                        <i class="icon-cog"></i> Testing 
-                    {% else %}                
-                        <i class="icon-play-circle"></i> Start new website test
-                    {% endif %}                                        
-                {% endif %}               
+                <i class="icon-play-circle"></i> Start new website test
             </label>
         </h1>           
             
@@ -59,20 +50,16 @@
         {% endif %}          
 
         <div class="fields input-prepend input-append larger">                    
-            <input name="website" id="input-website" type="text" placeholder="Enter website URL &hellip;" {% if app.request.attributes.get('_route') == 'app_queued' %}disabled{% endif %} {% if test is defined %} {% if test.state != 'completed' and test.state != 'cancelled' and test.state != 'failed-no-sitemap' %} disabled {% endif %} {% endif %} {% if website is defined %} value="{{ website }}" {% endif %}>            
-            {% if test is defined %}
-            <button type="submit" class="btn btn-primary btn-large" name="full-single" value="full">Test full site</button>
-            <button type="submit" class="btn btn-large" name="full-single" value="single">Test this URL only</button>          
-            {% else %}
+            <input name="website" id="input-website" type="text" placeholder="Enter website URL &hellip;">
             <button type="submit" class="btn btn-primary btn-large" name="full-single" value="full">Test full site</button>
             <button type="submit" class="btn btn-large" name="full-single" value="single">Test this URL only</button>
             <i class="icon-play icon-large"></i>
-            {% endif %}
-        </div>           
-            
-        {% if app.request.attributes.get('_route') == 'app' %}
-        {% include 'SimplyTestableWebClientBundle:Partials:test-input-task-type-options.html.twig' %} 
-        {% endif %}
+        </div>
+
+<div id="test-options">
+    <p class="info"><i class="icon-wrench"></i> What do you want to check?</p>
+    {% include 'SimplyTestableWebClientBundle:Partials:test-input-task-type-options.html.twig' %} 
+</div> 
             
     </form>
 </div>
