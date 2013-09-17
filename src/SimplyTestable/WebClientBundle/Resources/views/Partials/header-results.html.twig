@@ -24,6 +24,18 @@
         <div id="test-options">
             <div class="expandable-control expandable-control-default-closed for-test-options-expandable">Change test settings</div>
             <div id="test-options-expandable">
+                
+                <div class="test-options-set" id="html-validation-options">
+                    <label class="radio inline">
+                        <input type="radio" name="full-single" value="full" {% if remote_test_summary.type == 'Full site' %}checked{% endif %}> Whole site test
+                        <span class="help-block">Test your entire site by finding URLs<br /> in your sitemap and by crawling your site</span>
+                    </label>        
+                    <label class="radio inline">
+                        <input type="radio" name="full-single" value="single" {% if remote_test_summary.type != 'Full site' %}checked{% endif %}> Single URL test
+                        <span class="help-block">Test just the above URL only<br />&nbsp;</span>
+                    </label>                
+                </div>               
+                
         {% include 'SimplyTestableWebClientBundle:Partials:test-input-task-type-options.html.twig' %} 
                 </div>
         </div>            
