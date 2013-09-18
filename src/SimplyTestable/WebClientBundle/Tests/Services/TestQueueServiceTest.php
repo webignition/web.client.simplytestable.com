@@ -14,7 +14,7 @@ class TestQueueServiceTest extends BaseSimplyTestableTestCase {
         $this->getTestQueueService()->clear();
         
         $testOptions = new \SimplyTestable\WebClientBundle\Model\TestOptions();
-        $testOptions->addTestType('HTML validation');        
+        $testOptions->addTestType('html-validatiom','HTML validation');        
         $this->assertTrue($this->getTestQueueService()->enqueue(
             $this->getUserService()->getPublicUser(),
             self::TEST_CANONICAL_URL,
@@ -32,7 +32,7 @@ class TestQueueServiceTest extends BaseSimplyTestableTestCase {
         $this->getTestQueueService()->clear();
         
         $testOptions = new \SimplyTestable\WebClientBundle\Model\TestOptions();
-        $testOptions->addTestType('HTML validation');
+        $testOptions->addTestType('html-validatiom','HTML validation');  
         
         $this->assertTrue($this->getTestQueueService()->enqueue(
             $this->getUserService()->getPublicUser(),
@@ -47,7 +47,7 @@ class TestQueueServiceTest extends BaseSimplyTestableTestCase {
         $this->getTestQueueService()->clear();
         
         $testOptions = new \SimplyTestable\WebClientBundle\Model\TestOptions();
-        $testOptions->addTestType('HTML validation');
+        $testOptions->addTestType('html-validatiom','HTML validation');  
         
         $this->getTestQueueService()->enqueue(
             $this->getUserService()->getPublicUser(),
@@ -71,7 +71,7 @@ class TestQueueServiceTest extends BaseSimplyTestableTestCase {
         $this->getTestQueueService()->clear();
         
         $testOptions = new \SimplyTestable\WebClientBundle\Model\TestOptions();
-        $testOptions->addTestType('HTML validation');
+        $testOptions->addTestType('html-validatiom','HTML validation');  
         
         $this->getTestQueueService()->enqueue(
             $this->getUserService()->getPublicUser(),

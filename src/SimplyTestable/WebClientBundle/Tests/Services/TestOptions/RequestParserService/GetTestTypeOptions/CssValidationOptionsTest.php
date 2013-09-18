@@ -69,7 +69,7 @@ class GetTestTypeOptionsCssValidationOptionsTest extends AbstractTestOptionsTest
         
         $cssValidationOptions = $this->getCssValidationTestTypeOptions();
         
-        $this->assertEquals('one.example.com', $cssValidationOptions['css-validation-domains-to-ignore']);        
+        $this->assertEquals(array('one.example.com'), $cssValidationOptions['css-validation-domains-to-ignore']);        
     }
 
     public function testCssValidationDomainsToIgnoreOneTwo() {
@@ -78,7 +78,10 @@ class GetTestTypeOptionsCssValidationOptionsTest extends AbstractTestOptionsTest
         
         $cssValidationOptions = $this->getCssValidationTestTypeOptions();
         
-        $this->assertEquals('one.example.com'."\r\n".'two.example.com', $cssValidationOptions['css-validation-domains-to-ignore']);        
+        $this->assertEquals(array(
+            'one.example.com',
+            'two.example.com'
+        ), $cssValidationOptions['css-validation-domains-to-ignore']);        
     }    
     
     public function testCssValidationDomainsToIgnoreUnset() {

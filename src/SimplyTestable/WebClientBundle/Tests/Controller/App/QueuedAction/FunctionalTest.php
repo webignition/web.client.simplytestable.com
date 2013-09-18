@@ -19,7 +19,7 @@ class FunctionalTest extends BaseFunctionalTest {
         $this->setUser(new User('user@example.com','password'));
         
         $testOptions = new \SimplyTestable\WebClientBundle\Model\TestOptions();
-        $testOptions->addTestType('HTML validation');
+        $testOptions->addTestType('html-validation', 'HTML validation');
         
         $this->getTestQueueService()->clear();
         

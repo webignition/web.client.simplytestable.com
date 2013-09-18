@@ -12,7 +12,9 @@ class GetTestTypeOptionsJsStaticAnalysisOptionsTest extends AbstractTestOptionsT
         
         $jsStaticAnalysisOptions = $this->getJsStaticAnalysisTestTypeOptions();
         
-        $this->assertEquals('one.example.com', $jsStaticAnalysisOptions['js-static-analysis-domains-to-ignore']);        
+        $this->assertEquals(array(
+            'one.example.com'
+        ), $jsStaticAnalysisOptions['js-static-analysis-domains-to-ignore']);        
     }
 
     public function testJsStaticAnalysisDomainsToIgnoreOneTwo() {
@@ -21,7 +23,10 @@ class GetTestTypeOptionsJsStaticAnalysisOptionsTest extends AbstractTestOptionsT
         
         $jsStaticAnalysisOptions = $this->getJsStaticAnalysisTestTypeOptions();
         
-        $this->assertEquals('one.example.com'."\r\n".'two.example.com', $jsStaticAnalysisOptions['js-static-analysis-domains-to-ignore']);        
+        $this->assertEquals(array(
+            'one.example.com',
+            'two.example.com'
+        ), $jsStaticAnalysisOptions['js-static-analysis-domains-to-ignore']);      
     }    
     
     public function testJsStaticAnalysisDomainsToIgnoreUnset() {

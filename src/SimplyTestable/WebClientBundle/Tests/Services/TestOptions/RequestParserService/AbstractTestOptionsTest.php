@@ -32,6 +32,13 @@ abstract class AbstractTestOptionsTest extends BaseTestCase {
      */
     protected function getTestOptions() {        
         $this->getTestOptionsRequestParserService()->setRequestData($this->requestData);
+
+        $testOptionsParameters = $this->container->getParameter('test_options');
+        $availableTaskTypes = $this->container->getParameter('available_task_types');       
+
+        $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);        
+        
         return $this->getTestOptionsRequestParserService()->getTestOptions();        
     }
     

@@ -87,7 +87,7 @@ class RequestParserService {
         
         foreach ($this->availableTaskTypes as $testTypeKey => $testTypeName) {            
             $this->testOptions->addTestTypeOptions($testTypeKey, $this->parseTestTypeOptions($testTypeKey));
-        }      
+        }
     }    
     
     
@@ -95,11 +95,11 @@ class RequestParserService {
      * 
      * @return array
      */
-    private function parseTestTypes() {        
+    private function parseTestTypes() {
         $testTypes = array();
         
         foreach ($this->availableTaskTypes as $testTypeKey => $testTypeName) {                        
-            if ($this->requestData->get($testTypeKey) === "1") {
+            if (filter_var($this->requestData->get($testTypeKey), FILTER_VALIDATE_BOOLEAN)) {
                 $testTypes[$testTypeKey] = $testTypeName;
             }
         }              

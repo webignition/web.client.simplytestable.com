@@ -49,6 +49,15 @@ class TestOptions {
         return count($this->testTypes) > 0;
     }
     
+    /**
+     * 
+     * @param string $testType
+     * @return boolean
+     */
+    public function hasTestType($testType) {
+        return in_array($testType, $this->testTypes);
+    }    
+    
     
     /**
      * 
@@ -139,7 +148,7 @@ class TestOptions {
     public function getAbsoluteTestTypes() {
         $absoluteTestTypes = array();
         
-        foreach ($this->testTypeMap as $testTypeKey => $testTypeName) {
+        foreach ($this->availableTaskTypes as $testTypeKey => $testTypeName) {
             if ($this->hasTestType($testTypeName)) {
                 $absoluteTestTypes[$testTypeKey] = 1;
             } else {

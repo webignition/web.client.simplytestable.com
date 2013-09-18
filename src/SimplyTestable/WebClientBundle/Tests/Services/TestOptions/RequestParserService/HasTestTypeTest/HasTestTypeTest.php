@@ -12,7 +12,13 @@ class HasTestTypeTest extends BaseTestCase {
         $requestData->set('css-validation', '0');
         $requestData->set('js-static-analysis', '0');
         
+        $testOptionsParameters = $this->container->getParameter('test_options');
+        $availableTaskTypes = $this->container->getParameter('available_task_types');          
+        
+        $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);
         $this->getTestOptionsRequestParserService()->setRequestData($requestData);
+        
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
         
         $this->assertFalse($testOptions->hasTestType('HTML validation'));
@@ -26,7 +32,13 @@ class HasTestTypeTest extends BaseTestCase {
         $requestData->set('css-validation', '0');
         $requestData->set('js-static-analysis', '1');
         
+        $testOptionsParameters = $this->container->getParameter('test_options');
+        $availableTaskTypes = $this->container->getParameter('available_task_types');          
+        
+        $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);
         $this->getTestOptionsRequestParserService()->setRequestData($requestData);
+        
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
         
         $this->assertFalse($testOptions->hasTestType('HTML validation'));
@@ -40,7 +52,13 @@ class HasTestTypeTest extends BaseTestCase {
         $requestData->set('css-validation', '1');
         $requestData->set('js-static-analysis', '0');
         
+        $testOptionsParameters = $this->container->getParameter('test_options');
+        $availableTaskTypes = $this->container->getParameter('available_task_types');          
+        
+        $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);
         $this->getTestOptionsRequestParserService()->setRequestData($requestData);
+        
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
         
         $this->assertFalse($testOptions->hasTestType('HTML validation'));
@@ -54,7 +72,13 @@ class HasTestTypeTest extends BaseTestCase {
         $requestData->set('css-validation', '1');
         $requestData->set('js-static-analysis', '1');
         
+        $testOptionsParameters = $this->container->getParameter('test_options');
+        $availableTaskTypes = $this->container->getParameter('available_task_types');          
+        
+        $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);
         $this->getTestOptionsRequestParserService()->setRequestData($requestData);
+        
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
         
         $this->assertFalse($testOptions->hasTestType('HTML validation'));
@@ -68,7 +92,13 @@ class HasTestTypeTest extends BaseTestCase {
         $requestData->set('css-validation', '0');
         $requestData->set('js-static-analysis', '0');
         
+        $testOptionsParameters = $this->container->getParameter('test_options');
+        $availableTaskTypes = $this->container->getParameter('available_task_types');          
+        
+        $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);
         $this->getTestOptionsRequestParserService()->setRequestData($requestData);
+        
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
         
         $this->assertTrue($testOptions->hasTestType('HTML validation'));
@@ -82,7 +112,13 @@ class HasTestTypeTest extends BaseTestCase {
         $requestData->set('css-validation', '0');
         $requestData->set('js-static-analysis', '1');
         
+        $testOptionsParameters = $this->container->getParameter('test_options');
+        $availableTaskTypes = $this->container->getParameter('available_task_types');          
+        
+        $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);
         $this->getTestOptionsRequestParserService()->setRequestData($requestData);
+        
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
         
         $this->assertTrue($testOptions->hasTestType('HTML validation'));
@@ -96,7 +132,13 @@ class HasTestTypeTest extends BaseTestCase {
         $requestData->set('css-validation', '1');
         $requestData->set('js-static-analysis', '0');
         
+        $testOptionsParameters = $this->container->getParameter('test_options');
+        $availableTaskTypes = $this->container->getParameter('available_task_types');          
+        
+        $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);
         $this->getTestOptionsRequestParserService()->setRequestData($requestData);
+        
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
         
         $this->assertTrue($testOptions->hasTestType('HTML validation'));
@@ -110,7 +152,13 @@ class HasTestTypeTest extends BaseTestCase {
         $requestData->set('css-validation', '1');
         $requestData->set('js-static-analysis', '1');
         
+        $testOptionsParameters = $this->container->getParameter('test_options');
+        $availableTaskTypes = $this->container->getParameter('available_task_types');          
+        
+        $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);
         $this->getTestOptionsRequestParserService()->setRequestData($requestData);
+        
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
         
         $this->assertTrue($testOptions->hasTestType('HTML validation'));

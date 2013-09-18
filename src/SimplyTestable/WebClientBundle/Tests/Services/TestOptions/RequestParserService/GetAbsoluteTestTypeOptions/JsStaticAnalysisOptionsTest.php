@@ -22,11 +22,6 @@ class GetAbsolutetestTypeOptionsJsStaticAnalysisOptionsTest extends AbstractTest
         $jsStaticAnalysisOptions = $this->getJsStaticAnalysisAbsoluteTestTypeOptions();
         
         $this->assertEquals(array('one.example.com','two.example.com'), $jsStaticAnalysisOptions['domains-to-ignore']);        
-    }    
-    
-    public function testJsStaticAnalysisDomainsToIgnoreUnset() {
-        $jsStaticAnalysisOptions = $this->getJsStaticAnalysisAbsoluteTestTypeOptions();
-        $this->assertEquals(array(), $jsStaticAnalysisOptions['domains-to-ignore']);
     }
     
     public function testJsStaticAnalysisIgnoreCommonCdnsTrue() {
@@ -45,12 +40,7 @@ class GetAbsolutetestTypeOptionsJsStaticAnalysisOptionsTest extends AbstractTest
         $jsStaticAnalysisOptions = $this->getJsStaticAnalysisAbsoluteTestTypeOptions();
         
         $this->assertEquals('0', $jsStaticAnalysisOptions['ignore-common-cdns']);        
-    } 
-    
-    public function testJsStaticAnalysisIgnoreCommonCdnsUnset() {
-        $jsStaticAnalysisOptions = $this->getJsStaticAnalysisAbsoluteTestTypeOptions();
-        $this->assertEquals('0', $jsStaticAnalysisOptions['ignore-common-cdns']);          
-    }    
+    }  
     
     
     /**

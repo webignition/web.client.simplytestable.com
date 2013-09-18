@@ -15,7 +15,7 @@ class ActionTest extends BaseActionTest {
         $website = 'http://example.com/';
         
         $testOptions = new \SimplyTestable\WebClientBundle\Model\TestOptions();
-        $testOptions->addTestType('HTML validation');        
+        $testOptions->addTestType('html-validation', 'HTML validation');        
         $this->assertTrue($this->getTestQueueService()->enqueue(
             $this->getUserService()->getPublicUser(),
             $website,
