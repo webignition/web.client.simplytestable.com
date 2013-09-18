@@ -25,7 +25,7 @@ before_script:
   - php app/console doctrine:migrations:migrate --no-interaction
   
 script:
-  - phpunit -c app src/SimplyTestable/WebClientBundle/Tests/Services/TestOptions/RequestParserService/GetAbsoluteTestTypeOptions/CssValidationOptionsTest.php
+  - phpunit -c app
   
 #after_script:
 #  - php phpcpd.phar --exclude src/SimplyTestable/WebClientBundle/Tests/ src/SimplyTestable/WebClientBundle/ 
