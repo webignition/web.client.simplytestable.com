@@ -84,6 +84,7 @@ class TestService extends CoreApplicationService {
             'type' => $testType
         ), $testOptions->__toArray())));
         
+        ini_set('xdebug.var_display_max_data', 4096);
         var_dump($httpRequest->getUrl());
         exit();
 
