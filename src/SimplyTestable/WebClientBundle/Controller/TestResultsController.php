@@ -347,14 +347,16 @@ class TestResultsController extends TestViewController
     }
     
     
-    private function getTestOptionsFromRemoteTestSummary($remoteTestSummary) {
+    private function getTestOptionsFromRemoteTestSummary($remoteTestSummary) {        
         $testOptions = array();
+        $selectedTaskTypes = array();
         
         foreach ($remoteTestSummary->task_types as $taskType) {
             $taskTypeName = $taskType->name;
             $taskTypeKey = strtolower(str_replace(' ', '-', $taskTypeName));
             
             $testOptions[$taskTypeKey] = 1;
+            $selectedTaskTypes[] = $taskTypeKey;
         }
         
         foreach($remoteTestSummary->task_type_options as $taskTypeName => $taskTypeOptionsSet) {
@@ -366,14 +368,51 @@ class TestResultsController extends TestViewController
         }
         
         $testOptionsParameters = $this->container->getParameter('test_options');                      
-        foreach ($testOptionsParameters['names_and_default_values'] as $testOptionName => $defaultValue) {
-            if (!isset($testOptions[$testOptionName])) {
-                $testOptions[$testOptionName] = '';
+        foreach ($testOptionsParameters['names_and_default_values'] as $testOptionName => $defaultValue) {            
+            if ($this->isTaskType($testOptionName)) {
+                $testOptions[$testOptionName] = (int)isset($testOptions[$testOptionName]);
+            } else {
+                if (!in_array($this->getTaskTypeFromTaskTypeOption($testOptionName), $selectedTaskTypes)) {
+                    $testOptions[$testOptionName] = $defaultValue;
+                    
+                    if ($this->isInvertableOption($testOptionName)) {
+                        $testOptions[$testOptionName] = ($testOptions[$testOptionName]) ? 0 : 1;
+                    }
+                }
+
+                if (!isset($testOptions[$testOptionName])) {
+                    $testOptions[$testOptionName] = '';
+                }                
+            }
+        }        
+        
+        return $this->invertInvertableOptions($testOptions);
+    }
+    
+    private function getTaskTypeFromTaskTypeOption($taskTypeOption) {
+        $availableTaskTypes = $this->container->getParameter('available_task_types'); 
+        
+        foreach ($availableTaskTypes['default'] as $taskTypeKey => $taskTypeName) {
+            $keyLength = strlen($taskTypeKey);
+            
+            if (substr($taskTypeOption, 0, $keyLength) == $taskTypeKey) {
+                return $taskTypeKey;
             }
         }
         
-        $testOptions = $this->invertInvertableOptions($testOptions);        
-        return $testOptions;
+        return null;
+    }
+    
+    private function isTaskType($taskTypeOption) {
+        $availableTaskTypes = $this->container->getParameter('available_task_types'); 
+        
+        foreach ($availableTaskTypes['default'] as $taskTypeKey => $taskTypeName) {
+            if ($taskTypeKey == $taskTypeOption) {
+                return true;
+            }
+        }
+        
+        return false;        
     }
     
     private function invertInvertableOptions($testOptions) {
@@ -387,7 +426,19 @@ class TestResultsController extends TestViewController
         }
         
         return $testOptions;
-    }    
+    }
+    
+    
+    private function isInvertableOption($taskTypeOption) {
+        $testOptionsParameters = $this->container->getParameter('test_options');        
+        foreach ($testOptionsParameters['invert_option_keys'] as $optionName) {
+            if ($optionName == $taskTypeOption) {
+                return true;
+            }
+        }
+        
+        return false;        
+    }
     
     
     /**
