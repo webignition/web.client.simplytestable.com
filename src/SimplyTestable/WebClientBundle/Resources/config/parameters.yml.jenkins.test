@@ -9,7 +9,7 @@ parameters:
     default:
       html-validation: "HTML validation"
       css-validation: "CSS validation"
-      js-static-analysis: "JavaScript static analysis"      
+      js-static-analysis: "JS static analysis"      
     early_access:
   core_application:
     urls:
