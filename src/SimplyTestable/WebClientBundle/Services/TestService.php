@@ -83,6 +83,9 @@ class TestService extends CoreApplicationService {
         )).'?'.http_build_query(array_merge(array(
             'type' => $testType
         ), $testOptions->__toArray())));
+        
+        var_dump($httpRequest->getUrl());
+        exit();
 
         $this->addAuthorisationToRequest($httpRequest);
 
