@@ -8,7 +8,7 @@
     <div id="completion-time-remaining">&nbsp;</div>
 
     {% if test is defined and test.state == 'crawling' %}
-    <form id="cancel-crawl-form" method="post" action="{{ path('test_cancel_crawl', {'test_id':test.testId, 'website':test.website}) }}">
+    <form id="cancel-crawl-form" class="top-right-form" method="post" action="{{ path('test_cancel_crawl', {'test_id':test.testId, 'website':test.website}) }}">
         <button type="submit" class="btn btn-warning">Stop finding URLs, start testing</button>
     </form> 
     {% endif %}
