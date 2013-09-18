@@ -23,7 +23,7 @@ class HasTestTypeTest extends BaseTestCase {
         
         $this->assertFalse($testOptions->hasTestType('HTML validation'));
         $this->assertFalse($testOptions->hasTestType('CSS validation'));
-        $this->assertFalse($testOptions->hasTestType('JS static analysis'));
+        $this->assertFalse($testOptions->hasTestType('JavaScript static analysis'));
     }
     
     public function testHas001() {
@@ -43,7 +43,7 @@ class HasTestTypeTest extends BaseTestCase {
         
         $this->assertFalse($testOptions->hasTestType('HTML validation'));
         $this->assertFalse($testOptions->hasTestType('CSS validation'));
-        $this->assertTrue($testOptions->hasTestType('JS static analysis'));
+        $this->assertTrue($testOptions->hasTestType('JavaScript static analysis'));
     }     
   
     public function testHas010() {
@@ -63,7 +63,7 @@ class HasTestTypeTest extends BaseTestCase {
         
         $this->assertFalse($testOptions->hasTestType('HTML validation'));
         $this->assertTrue($testOptions->hasTestType('CSS validation'));
-        $this->assertFalse($testOptions->hasTestType('JS static analysis'));
+        $this->assertFalse($testOptions->hasTestType('JavaScript static analysis'));
     }     
   
     public function testHas011() {
@@ -83,7 +83,7 @@ class HasTestTypeTest extends BaseTestCase {
         
         $this->assertFalse($testOptions->hasTestType('HTML validation'));
         $this->assertTrue($testOptions->hasTestType('CSS validation'));
-        $this->assertTrue($testOptions->hasTestType('JS static analysis'));
+        $this->assertTrue($testOptions->hasTestType('JavaScript static analysis'));
     }     
 
     public function testHas100() {
@@ -103,7 +103,7 @@ class HasTestTypeTest extends BaseTestCase {
         
         $this->assertTrue($testOptions->hasTestType('HTML validation'));
         $this->assertFalse($testOptions->hasTestType('CSS validation'));
-        $this->assertFalse($testOptions->hasTestType('JS static analysis'));
+        $this->assertFalse($testOptions->hasTestType('JavaScript static analysis'));
     }    
     
     public function testHas101() {
@@ -123,7 +123,7 @@ class HasTestTypeTest extends BaseTestCase {
         
         $this->assertTrue($testOptions->hasTestType('HTML validation'));
         $this->assertFalse($testOptions->hasTestType('CSS validation'));
-        $this->assertTrue($testOptions->hasTestType('JS static analysis'));
+        $this->assertTrue($testOptions->hasTestType('JavaScript static analysis'));
     }     
   
     public function testHas110() {
@@ -143,7 +143,7 @@ class HasTestTypeTest extends BaseTestCase {
         
         $this->assertTrue($testOptions->hasTestType('HTML validation'));
         $this->assertTrue($testOptions->hasTestType('CSS validation'));
-        $this->assertFalse($testOptions->hasTestType('JS static analysis'));
+        $this->assertFalse($testOptions->hasTestType('JavaScript static analysis'));
     }     
   
     public function testHas111() {
@@ -163,7 +163,7 @@ class HasTestTypeTest extends BaseTestCase {
         
         $this->assertTrue($testOptions->hasTestType('HTML validation'));
         $this->assertTrue($testOptions->hasTestType('CSS validation'));
-        $this->assertTrue($testOptions->hasTestType('JS static analysis'));
+        $this->assertTrue($testOptions->hasTestType('JavaScript static analysis'));
     }
     
     /**
