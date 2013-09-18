@@ -83,10 +83,6 @@ class TestService extends CoreApplicationService {
         )).'?'.http_build_query(array_merge(array(
             'type' => $testType
         ), $testOptions->__toArray())));
-        
-        ini_set('xdebug.var_display_max_data', 4096);
-        var_dump($httpRequest->getUrl());
-        exit();
 
         $this->addAuthorisationToRequest($httpRequest);
 
