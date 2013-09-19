@@ -2,7 +2,10 @@
 
 {% block title %}Start a new website test - {{ parent() }}{% endblock %}
 
+{% block body %}
 
+<div class="container main">
+    <div id="main_old">
 {% block main %}
 
 {% if is_logged_in == false %}
@@ -70,3 +73,9 @@
 {% endif %}            
     </div>
 {% endblock %}
+    </div>                       
+</div>
+
+{% endblock %}
+
+

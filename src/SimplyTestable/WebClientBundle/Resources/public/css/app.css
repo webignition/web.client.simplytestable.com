@@ -51,12 +51,15 @@ body {
     margin:0 10%;
 }
 
-#main section {
+#main section,
+div.main section {
     position: relative;
 }
 
 #main section h1,
-#main section h1 label {
+#main section h1 label,
+div.main section h1,
+div.main section h1 label {
     font-size: 28px;
     line-height: 32px; 
     font-weight: normal;
@@ -70,7 +73,8 @@ section .info i {
     margin-top:-4px;   
 }
 
-#main section .info i {
+#main section .info i,
+div.main section .info i {
     background: url('/bundles/simplytestablewebclient/images/circle54.png') transparent no-repeat top left;
     width:56px;
     height:56px;
@@ -81,11 +85,13 @@ section .info i {
     margin-top:-12px;
 }
 
-#main section p.info i {
+#main section p.info i,
+div.main section p.info i {
     margin-top: -16px;    
 }
 
-#main .leader h1 .sub-state {
+#main .leader h1 .sub-state,
+div.main .leader h1 .sub-state {
     font-size:16px;
     opacity:0.4;
 }
@@ -94,21 +100,25 @@ section.top {
     height:110px;
 }
 
-#main section {
+#main section,
+div.main section {
     background-color: #eee;
     padding:20px 30px;
     margin-bottom: 30px;
 }
 
-#main #input .fields input {
+#main #input .fields input,
+div.main #input .fields input {
     width:60%;
 }
 
-#main #input .fields button i {
+#main #input .fields button i,
+div.main #input .fields button i {
     margin-left:4px;
 }
 
-#main #progress p.info {
+#main #progress p.info,
+div.main #progress p.info {
     font-size:20px;
     line-height: 22px;
     margin:0;
@@ -312,7 +322,9 @@ section h2 {
 }
 
 body.app-task-results #main h1 i,
-body.app-results #main h1 i {
+body.app-results #main h1 i,
+body.app-task-results div.main h1 i,
+body.app-results div.main h1 i {
     font-size: 38px;
     line-height: 48px;        
 }
@@ -370,23 +382,22 @@ body.app-task-results .errors div.message {
     font-weight: normal;
 }
 
-#main .notification-panel {
-    
-}
-
-#main .notification-panel .intro {
+#main .notification-panel .intro,
+div.main .notification-panel .intro {
     margin-bottom: 30px;
     border-bottom: 1px solid #DDD;
     padding-bottom:30px;
     margin-bottom:30px;
 }
 
-#main .notification-panel .intro p {
+#main .notification-panel .intro p,
+div.main .notification-panel .intro p {
     font-size: 18px;
     line-height: 26px;
 }
 
 body.app-task-results section .notification h3,
+div.main .notification-panel h3,
 #main .notification-panel h3 {
     font-weight: normal;
 }
@@ -415,7 +426,8 @@ body.single-page-dialog .intro p {
     font-size:15px;
 }
 
-body.single-page-dialog #main section {
+body.single-page-dialog #main section,
+body.single-page-dialog div.main section {
     margin-top:80px;  
 }
 
@@ -423,19 +435,23 @@ body.single-page-dialog section .content {
     margin-left:30px;
 }
 
-body.single-page-dialog #main form {
+body.single-page-dialog #main form,
+body.single-page-dialog div.main form {
     margin:20px 0;
 }
 
-body.single-page-dialog #main input {
+body.single-page-dialog #main input,
+body.single-page-dialog div.main input {
     width:94%;
 }
 
-body.single-page-dialog #main .input-append input {
+body.single-page-dialog #main .input-append input,
+body.single-page-dialog div.main .input-append input {
     width:70%;
 }
 
-body.single-page-dialog #main button.submit {
+body.single-page-dialog #main button.submit,
+body.single-page-dialog div.main button.submit {
     margin-top:20px;
 }
 
@@ -764,11 +780,13 @@ body.app-results-preparing #completion-percent {
 }
 
 @media (min-width: 1200px) {
-    body.single-page-dialog #main input {
+    body.single-page-dialog #main input,
+    body.single-page-dialog div.main input {
         width:96%;
     }    
     
-    body.single-page-dialog #main .input-append input {
+    body.single-page-dialog #main .input-append input,
+    body.single-page-dialog div.main .input-append input {
         width:76%;
     }
     
