@@ -11,7 +11,7 @@
 
     <div class="test-options-set" id="html-validation-options">
         <label class="checkbox">
-            <input type="checkbox" value="1" name="html-validation" {% if (test_options['html-validation'] == 1) %} checked {% endif %} /> HTML validation
+            <input type="checkbox" value="1" name="html-validation" {% if (test_options['html-validation'] == 1) %} checked {% endif %} /> <span class="task-type-name">HTML validation</span>
             <span class="help-block">Examine whether the HTML markup for all your pages is valid</span>
         </label>                
     </div>
@@ -22,7 +22,7 @@
 
     <div class="test-options-set" id="css-validation-options">
         <label class="checkbox">
-            <input type="checkbox" value="1" name="css-validation" {% if (test_options['css-validation'] == 1) %} checked {% endif %} /> CSS validation
+            <input type="checkbox" value="1" name="css-validation" {% if (test_options['css-validation'] == 1) %} checked {% endif %} /> <span class="task-type-name">CSS validation</span>
             <span class="help-block">Check CSS rules defined in linked stylesheets and inline</span>
         </label>
 
@@ -89,7 +89,7 @@
             <div class="row-fluid">                                                                               
                 <div class="span4">
                     <label class="checkbox">
-                        <input type="checkbox" value="1" name="js-static-analysis" {% if (test_options['js-static-analysis'] == 1) %} checked {% endif %} /> JavaScript static analysis
+                        <input type="checkbox" value="1" name="js-static-analysis" {% if (test_options['js-static-analysis'] == 1) %} checked {% endif %} /> <span class="task-type-name">JavaScript static analysis</span>
                         <span class="help-block">Analyse the quality of your JavaScript with <a href="http://www.jslint.com/lint.html">JSLint</a></span>
                     </label>
                 </div>                                 

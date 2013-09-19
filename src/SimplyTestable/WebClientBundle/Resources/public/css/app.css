@@ -92,11 +92,6 @@ div.main section .fields i
     margin-top:-12px;
 }
 
-#main section p.info i,
-div.main section p.info i {
-    margin-top: -16px;    
-}
-
 #main .leader h1 .sub-state,
 div.main .leader h1 .sub-state {
     font-size:16px;
@@ -610,10 +605,6 @@ body.app #test-options {
 
 body.app-progress #test-options {
     margin-top:0;
-}
-
-#test-options p.info {
-    font-weight: bold;
 }
 
 #test-options .test-options-set {
