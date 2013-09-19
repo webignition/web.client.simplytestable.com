@@ -2,29 +2,39 @@
 
 {% block title %}Start a new website test - {{ parent() }}{% endblock %}
 
+{% block body_class %}full-width{% endblock %}
+
 {% block body %}
+
+<div class="full-width-container">
+    <div class="container main">
+        {% if is_logged_in == false %}
+        <div class="alert alert-info alert-ammendment alert-from-view">
+            <i class="icon icon-warning-sign"></i>
+            <span>
+        {% include 'SimplyTestableWebClientBundle:Partials:public-user-notification.html.twig' %}
+            </span>
+        </div> 
+        {% endif %}
+            
+        <div class="row-fluid">
+            <div class="span12">
+                {% if test_cancelled_queued_website is defined and test_cancelled_queued_website != '' %}
+                    {% include 'SimplyTestableWebClientBundle:Partials:cancelled-queued-notification.html.twig' %}              
+                {% endif %} 
+                    
+                {% include 'SimplyTestableWebClientBundle:Partials:test-start-form.html.twig' %} 
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <div class="container main">
 
 {% block main %}
-
-{% if is_logged_in == false %}
-<div class="alert alert-info alert-ammendment alert-from-view">
-    <i class="icon icon-warning-sign"></i>
-    <span>
-{% include 'SimplyTestableWebClientBundle:Partials:public-user-notification.html.twig' %}
-    </span>
-</div> 
-{% endif %}
-
-<div class="row-fluid">
-    <div class="span12">
-{% if test_cancelled_queued_website is defined and test_cancelled_queued_website != '' %}
-    {% include 'SimplyTestableWebClientBundle:Partials:cancelled-queued-notification.html.twig' %}              
-{% endif %}         
-        
-{% include 'SimplyTestableWebClientBundle:Partials:test-start-form.html.twig' %} 
-        </div>            
+          
 
 {% if is_logged_in %}
         <div class="row-fluid" id="recent-site-tests">
@@ -71,7 +81,7 @@
 
         </div>        
 {% endif %}            
-    </div>
+
 {% endblock %}
                      
 </div>

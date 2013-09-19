@@ -1070,3 +1070,12 @@ body.app-results #test-start-form button {
     right: 30px;
     top: 30px;
 }
+
+.full-width-container {
+    background-color: #eee;
+    padding: 40px 0;
+}
+
+body.full-width {
+    margin-top: 40px;
+}
