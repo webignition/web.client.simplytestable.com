@@ -65,6 +65,7 @@ div.main section h1 label {
     font-weight: normal;
 }
 
+section .fields i,
 section .info i {   
     color:#08c;    
     position: absolute;
@@ -73,8 +74,14 @@ section .info i {
     margin-top:-4px;   
 }
 
+body.app div.main section .fields i {
+    margin-top: -4px;
+}
+
 #main section .info i,
-div.main section .info i {
+div.main section .info i,
+div.main section .fields i
+{
     background: url('/bundles/simplytestablewebclient/images/circle54.png') transparent no-repeat top left;
     width:56px;
     height:56px;
@@ -1079,3 +1086,15 @@ body.app-results #test-start-form button {
 body.full-width {
     margin-top: 40px;
 }
+
+/*body.app form h1 {
+    display:inline;
+}
+
+body.app form h1 label {
+    display:inline;
+}
+
+body.app form div.fields {
+    display:inline;
+}*/

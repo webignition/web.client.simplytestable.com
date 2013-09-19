@@ -1671,6 +1671,36 @@ application.account.cardController = function() {
     this.initialise = initialise;
 };
 
+application.root = {};
+application.root.testStartFormController = function () {
+    
+    var getForm = function () {
+        return $('#test-start-form');
+    };
+    
+    var getTextField = function () {
+        return $('input[name=website]', getForm());
+    };
+    
+    var getHeader = function () {
+        return $('h1', getForm());
+    };  
+    
+    var getFieldsContainer = function () {
+        return $('.fields', getForm());
+    };
+  
+    this.initialise = function () {
+        if (Modernizr.input.placeholder) {
+            var headerIcon = $('i', getHeader()).clone();
+            getHeader().remove();
+
+            getFieldsContainer().prepend(headerIcon);            
+            getTextField().attr('placeholder', 'Enter website URL to start new test ...');
+        }
+    };
+};
+
 
 application.pages = {
     '/*': {
@@ -1701,7 +1731,12 @@ application.pages = {
             if ($('body.crawl-progress').length > 0) {
                 crawlProgressController = new application.crawl.progressController();
                 crawlProgressController.initialise();
-            }            
+            }
+            
+            if ($('body.app').length > 0) {
+                testStartFormController = new application.root.testStartFormController();
+                testStartFormController.initialise();
+            }
 
             if ($('body.content').length > 0) {
                 getTwitters('footer-tweet', {

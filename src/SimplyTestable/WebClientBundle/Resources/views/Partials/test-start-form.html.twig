@@ -1,11 +1,13 @@
 <section>
 <div id="input" class="leader">                  
-    <form method="post" action="{{ path('test_start') }}">                
+    <form method="post" action="{{ path('test_start') }}" id="test-start-form">                
+
         <h1 class="info">
             <label for="input-website">
-                <i class="icon-play-circle"></i> Start new website test
+                <i class="icon-play-circle"></i> New website test
             </label>
-        </h1>           
+        </h1>
+
             
         {% if test_start_error is defined and test_start_error != '' %}
             {% if test_start_error == 'website-blank' %}
@@ -53,7 +55,6 @@
             <input name="website" id="input-website" type="text" placeholder="Enter website URL &hellip;">
             <button type="submit" class="btn btn-primary btn-large" name="full-single" value="full">Test full site</button>
             <button type="submit" class="btn btn-large" name="full-single" value="single">Test this URL only</button>
-            <i class="icon-play icon-large"></i>
         </div>
 
 <div id="test-options">
