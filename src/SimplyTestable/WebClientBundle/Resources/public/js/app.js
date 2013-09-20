@@ -1689,6 +1689,77 @@ application.root.testStartFormController = function () {
     var getFieldsContainer = function () {
         return $('.fields', getForm());
     };
+    
+    var getTestOptions = function () {
+        return $('#test-options');
+    };
+    
+    var getTaskTypeSelection = function () {
+        var taskTypeSelection = {};
+        
+        $('.test-options-set').each(function () {
+            var testOptionsSet = $(this);
+            var label = $('label', testOptionsSet).first();
+            var checkbox = $('input[type=checkbox]', label);
+            
+            taskTypeSelection[$('span.task-type-name', label).text()] = checkbox.is(':checked');
+        });
+        
+        return taskTypeSelection;        
+    };
+    
+    var getTaskTypeCheckboxes = function () {
+        return $('input.task-type', getTestOptions());
+    };
+    
+    var getTaskTypeCount = function () {
+        var taskTypeCount = 0;
+        var taskTypeSelection = getTaskTypeSelection();
+        
+        for (var taskTypeName in taskTypeSelection) {
+            if (taskTypeSelection.hasOwnProperty(taskTypeName)) {
+                taskTypeCount = taskTypeCount + 1;
+            }
+        }        
+        
+        return taskTypeCount;
+    };
+    
+    var getTaskTypeSelectionString = function () {
+        var taskTypeSelectionString = 'Testing ';
+        
+        var taskTypeSelection = getTaskTypeSelection();
+        var taskTypeCount = getTaskTypeCount();
+        var taskTypeIndex = 0;
+        
+        for (var taskTypeName in taskTypeSelection) {
+            if (taskTypeSelection.hasOwnProperty(taskTypeName)) {
+                taskTypeIndex = taskTypeIndex + 1;                
+                
+                taskTypeSelectionString = taskTypeSelectionString + '<span class="' + (taskTypeSelection[taskTypeName] ? 'selected' : 'not-selected') + '">' + taskTypeName + '</span>';
+                
+                if (taskTypeIndex === taskTypeCount - 1) {
+                    taskTypeSelectionString = taskTypeSelectionString + ' and ';
+                } else {
+                    if (taskTypeIndex < taskTypeCount) {
+                        taskTypeSelectionString = taskTypeSelectionString + ', ';
+                    }                    
+                }                
+            }
+        }
+        
+        taskTypeSelectionString = taskTypeSelectionString + '.';        
+        return taskTypeSelectionString;
+    };
+    
+    var getIntro = function () {
+        return $('.intro', getForm());
+    };
+    
+    var setIntroContent = function () {
+        $('p', getIntro()).remove();
+        getIntro().append($('<p />').html(getTaskTypeSelectionString()));
+    };
   
     this.initialise = function () {
         if (Modernizr.input.placeholder) {
@@ -1698,6 +1769,13 @@ application.root.testStartFormController = function () {
             getFieldsContainer().prepend(headerIcon);            
             getTextField().attr('placeholder', 'Enter website URL to start new test ...');
         }
+        
+        getTaskTypeCheckboxes().each(function () {
+            var checkbox = $(this);
+            checkbox.change(function () {
+                setIntroContent();
+            });
+        });
     };
 };
 
@@ -1864,8 +1942,8 @@ var applicationController = function() {
         var initialisationMethods = [];
 
         for (var initialisationPathIndex = 0; initialisationPathIndex < pageInitialisationPaths.length; initialisationPathIndex++) {
-            if (typeof application.pages[pageInitialisationPaths[initialisationPathIndex]] == 'object') {
-                if (typeof application.pages[pageInitialisationPaths[initialisationPathIndex]]['initialise'] == 'function') {
+            if (typeof application.pages[pageInitialisationPaths[initialisationPathIndex]] === 'object') {
+                if (typeof application.pages[pageInitialisationPaths[initialisationPathIndex]]['initialise'] === 'function') {
                     initialisationMethods.push(application.pages[pageInitialisationPaths[initialisationPathIndex]]['initialise']);
                 }
             }

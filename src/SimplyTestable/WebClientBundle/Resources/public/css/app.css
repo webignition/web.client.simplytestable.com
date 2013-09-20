@@ -1078,14 +1078,7 @@ body.full-width {
     margin-top: 40px;
 }
 
-/*body.app form h1 {
-    display:inline;
+body.app #test-options .not-selected {
+    text-decoration: line-through;
+    opacity: 0.7;
 }
-
-body.app form h1 label {
-    display:inline;
-}
-
-body.app form div.fields {
-    display:inline;
-}*/

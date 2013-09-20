@@ -58,7 +58,13 @@
         </div>
 
 <div id="test-options">
-    <p>Choose what you want to test:</p>
+    <div class="intro">
+        <p>{% autoescape false %}{{ test_options_introduction }}{% endautoescape %}</p>
+    </div>
+        
+        
+    
+    
     {% include 'SimplyTestableWebClientBundle:Partials:test-input-task-type-options.html.twig' %} 
 </div> 
             

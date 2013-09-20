@@ -85,6 +85,10 @@ class AppController extends TestViewController
         $cacheValidatorHeaders->setLastModifiedDate($templateLastModifiedDate);
         $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);
         
+        $testOptions = $this->getTestOptions();
+        
+        $this->getTestOptionsIntroduction($testOptions);
+        
         return $this->render($templateName, array(
             'test_start_error' => $testStartError,
             'public_site' => $this->container->getParameter('public_site'),
@@ -93,10 +97,11 @@ class AppController extends TestViewController
             'recent_tests' => $recentTests,
             'website' => idn_to_utf8($this->getPersistentValue('website')),
             'available_task_types' => $this->getAvailableTaskTypes(),
-            'test_options' => $this->getTestOptions(),
+            'test_options' => $testOptions,
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
-            'test_cancelled_queued_website' => $testCancelledQueuedWebsite
+            'test_cancelled_queued_website' => $testCancelledQueuedWebsite,
+            'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions)
         ));         
 
         return $this->getCachableResponse($this->render($templateName, array(            
@@ -108,6 +113,34 @@ class AppController extends TestViewController
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
             'recent_tests' => $recentTests
         )), $cacheValidatorHeaders);        
+    }
+    
+    private function getTestOptionsIntroduction($testOptions) {
+        $testOptionsIntroduction = 'Testing ';
+        
+        $allAvailableTaskTypes = $this->container->getParameter('available_task_types');
+        $availableTaskTypes = $allAvailableTaskTypes['default'];        
+        
+        $taskTypeIndex = 0;
+        foreach ($availableTaskTypes as $taskTypeKey => $taskTypeName) {
+            $taskTypeName = str_replace('JS ', 'JavaScript ', $taskTypeName);
+            
+            $taskTypeIndex++;
+            
+            $testOptionsIntroduction .= '<span class="' . (isset($testOptions[$taskTypeKey]) && $testOptions[$taskTypeKey] ? 'selected' : 'not-selected') . '">' . $taskTypeName . '</span>';
+            
+            if ($taskTypeIndex === count($availableTaskTypes) - 1) {
+                $testOptionsIntroduction .= ' and ';
+            } else {
+                if ($taskTypeIndex < count($availableTaskTypes)) {
+                    $testOptionsIntroduction .= ', ';
+                }                
+            }
+        }
+        
+        $testOptionsIntroduction .= '.';
+        
+        return $testOptionsIntroduction;
     }
     
     
