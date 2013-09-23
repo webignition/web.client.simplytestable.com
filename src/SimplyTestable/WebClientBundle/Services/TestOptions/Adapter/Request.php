@@ -1,9 +1,9 @@
 <?php
-namespace SimplyTestable\WebClientBundle\Services\TestOptions;
+namespace SimplyTestable\WebClientBundle\Services\TestOptions\Adapter;
 
 use SimplyTestable\WebClientBundle\Model\TestOptions;
 
-class RequestParserService {
+class Request {
     
     /**
      *
@@ -24,6 +24,19 @@ class RequestParserService {
      * @var array
      */
     private $namesAndDefaultValues= array();
+    
+    
+    /**
+     *
+     * @var array
+     */
+    private $invertOptionKeys = array();
+    
+    /**
+     *
+     * @var boolean
+     */
+    private $invertInvertableOptions = false;
 
     
     /**
@@ -60,18 +73,66 @@ class RequestParserService {
         $this->availableTaskTypes = $availableTaskTypes;
     }
     
+
+    /**
+     * 
+     * @param array $invertOptionKeys
+     */
+    public function setInvertOptionKeys($invertOptionKeys) {
+        $this->invertOptionKeys = $invertOptionKeys;
+    } 
+    
+    
+    /**
+     * 
+     * @param boolean $invertInvertableOptions
+     */
+    public function setInvertInvertableOptions($invertInvertableOptions) {
+        $this->invertInvertableOptions = $invertInvertableOptions;
+    }
+    
     
     /**
      * 
      * @return \SimplyTestable\WebClientBundle\Model\TestOptions
      */
-    public function getTestOptions() {        
+    public function getTestOptions() {                
         if (is_null($this->testOptions)) {            
             $this->populateTestOptionsFromRequestData();
         }
         
+        if ($this->invertInvertableOptions) {
+            $this->invertInvertableOptions();
+        }
+        
         return $this->testOptions;
     }
+    
+    private function invertInvertableOptions() {
+        foreach ($this->invertOptionKeys as $invertOptionKey) {
+            $taskTypeKey = $this->getTaskTypeKeyFromTaskTypeOption($invertOptionKey);
+            $testTypeOptions = $this->testOptions->getTestTypeOptions($taskTypeKey);
+            
+            if (isset($testTypeOptions[$invertOptionKey])) {
+                $testTypeOptions[$invertOptionKey] = ($testTypeOptions[$invertOptionKey]) ? 0 : 1;
+            } else {
+                $testTypeOptions[$invertOptionKey] = 1;
+            }
+            
+            $this->testOptions->addTestTypeOptions($taskTypeKey, $testTypeOptions);
+        }
+    }
+    
+    private function getTaskTypeKeyFromTaskTypeOption($taskTypeOption) {
+        foreach ($this->availableTaskTypes as $taskTypeKey => $taskTypeName) {
+            if (substr($taskTypeOption, 0, strlen($taskTypeKey)) == $taskTypeKey) {
+                return $taskTypeKey;
+            }
+        }
+        
+        return null;
+    }
+    
     
     
     
@@ -95,10 +156,10 @@ class RequestParserService {
      * 
      * @return array
      */
-    private function parseTestTypes() {
+    private function parseTestTypes() {        
         $testTypes = array();
         
-        foreach ($this->availableTaskTypes as $testTypeKey => $testTypeName) {                        
+        foreach ($this->availableTaskTypes as $testTypeKey => $testTypeName) {                                    
             if (filter_var($this->requestData->get($testTypeKey), FILTER_VALIDATE_BOOLEAN)) {
                 $testTypes[$testTypeKey] = $testTypeName;
             }
@@ -124,8 +185,8 @@ class RequestParserService {
                         $testTypeOptions[$key] = (int)$value;
                         break;
                     
-                    case 'array':                        
-                        $rawValues = explode("\n", $value);
+                    case 'array':
+                        $rawValues = (is_string($value)) ? explode("\n", $value) : $value;
                         $cleanedValues = array();
                         foreach ($rawValues as $rawValue) {
                             $rawValue = trim($rawValue);

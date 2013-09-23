@@ -18,7 +18,7 @@ class TestOptions {
      */
     public function setAvailableTaskTypes($availableTaskTypes) {
         $this->availableTaskTypes = $availableTaskTypes;
-    }    
+    }
     
     /**
      * 
@@ -182,6 +182,23 @@ class TestOptions {
         }
         
         return $optionsAsArray;   
+    }
+    
+    
+    public function __toKeyArray() {
+        $optionsAsArray = array();
+        
+        foreach ($this->testTypes as $testTypeKey => $testType) {
+            $optionsAsArray[$testTypeKey] = 1;
+        }
+        
+        foreach ($this->testTypeOptions as $testTypeKey => $testTypeOptions) {
+            foreach ($testTypeOptions as $optionKey => $optionValue) {
+                $optionsAsArray[$optionKey] = $optionValue;
+            }
+        }
+        
+        return $optionsAsArray;
     }
 
     

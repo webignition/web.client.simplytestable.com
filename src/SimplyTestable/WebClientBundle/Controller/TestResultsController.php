@@ -13,6 +13,12 @@ class TestResultsController extends TestViewController
     const RESULTS_PAGE_LENGTH = 100;
     const RESULTS_PREPARATION_THRESHOLD = 100;
     
+    /**
+     *
+     * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     */
+    private $testOptionsAdapter = null;        
+    
     private $testFinishedStates = array(
         'cancelled',
         'completed',
@@ -227,7 +233,7 @@ class TestResultsController extends TestViewController
     }    
     
     
-    public function indexAction($website, $test_id) {        
+    public function indexAction($website, $test_id) {                
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }
@@ -250,7 +256,7 @@ class TestResultsController extends TestViewController
         $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
         if ($testRetrievalOutcome->hasResponse()) {
             return $testRetrievalOutcome->getResponse();
-        }
+        }      
         
         $test = $testRetrievalOutcome->getTest();                
         if ($test->getState() == 'failed-no-sitemap') {            
@@ -272,7 +278,7 @@ class TestResultsController extends TestViewController
                 'website' => $test->getWebsite(),
                 'test_id' => $test_id
             ), true));            
-        }       
+        }        
         
         if (!in_array($test->getState(), $this->testFinishedStates)) {
             return $this->redirect($this->getProgressUrl($website, $test_id));
@@ -303,7 +309,8 @@ class TestResultsController extends TestViewController
             }                      
         }
         
-        $testOptions = $this->getTestOptionsFromRemoteTestSummary($remoteTestSummary);
+        $this->getTestOptionsAdapter()->setRequestData($this->remoteTestSummaryTestOptionsToParameterBag($remoteTestSummary));
+        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();  
         
         $viewData = array(
             'website' => idn_to_utf8($website),
@@ -318,7 +325,7 @@ class TestResultsController extends TestViewController
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),    
             'task_types' => $taskTypes,
             'available_task_types' => $this->getAvailableTaskTypes(),
-            'test_options' => $testOptions,
+            'test_options' => $testOptions->__toKeyArray(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'default_css_validation_options' => array(
                 'ignore-warnings' => 1,
@@ -349,19 +356,17 @@ class TestResultsController extends TestViewController
         ); 
     }
     
-    private function getTestOptionsIntroduction($testOptions) {
+    private function getTestOptionsIntroduction(\SimplyTestable\WebClientBundle\Model\TestOptions $testOptions) {        
         $testOptionsIntroduction = 'Testing ';
         
         $allAvailableTaskTypes = $this->container->getParameter('available_task_types');
         $availableTaskTypes = $allAvailableTaskTypes['default'];        
         
         $taskTypeIndex = 0;
-        foreach ($availableTaskTypes as $taskTypeKey => $taskTypeName) {
-            $taskTypeName = str_replace('JS ', 'JavaScript ', $taskTypeName);
-            
+        foreach ($availableTaskTypes as $taskTypeKey => $taskTypeName) {            
             $taskTypeIndex++;
             
-            $testOptionsIntroduction .= '<span class="' . (isset($testOptions[$taskTypeKey]) && $testOptions[$taskTypeKey] ? 'selected' : 'not-selected') . '">' . $taskTypeName . '</span>';
+            $testOptionsIntroduction .= '<span class="' . ($testOptions->hasTestType($taskTypeName) ? 'selected' : 'not-selected') . '">' . str_replace('JS ', 'JavaScript ', $taskTypeName) . '</span>';
             
             if ($taskTypeIndex === count($availableTaskTypes) - 1) {
                 $testOptionsIntroduction .= ' and ';
@@ -542,6 +547,51 @@ class TestResultsController extends TestViewController
      */
     private function getTaskService() {
         return $this->container->get('simplytestable.services.taskservice');
-    }   
+    }
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     */
+    private function getTestOptionsAdapter() {
+        if (is_null($this->testOptionsAdapter)) {
+            $testOptionsParameters = $this->container->getParameter('test_options');
+            $availableTaskTypes = $this->container->getParameter('available_task_types');             
+            
+            $this->testOptionsAdapter = $this->container->get('simplytestable.services.testoptions.adapter.request');
+        
+            $this->testOptionsAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
+            $this->testOptionsAdapter->setAvailableTaskTypes($availableTaskTypes['default']);
+            $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
+            $this->testOptionsAdapter->setInvertInvertableOptions(true);
+        }
+        
+        return $this->testOptionsAdapter;
+    } 
+    
+    
+    /**
+     * 
+     * @param \stdClass $remoteTestSummary
+     * @return \Symfony\Component\HttpFoundation\ParameterBag
+     */
+    private function remoteTestSummaryTestOptionsToParameterBag(\stdClass $remoteTestSummary) {
+        $parameterBag = new \Symfony\Component\HttpFoundation\ParameterBag();
+        
+        foreach ($remoteTestSummary->task_types as $taskType) {
+            $parameterBag->set(strtolower(str_replace(' ', '-', $taskType->name)), 1);
+        }
+        
+        foreach ($remoteTestSummary->task_type_options as $taskType => $taskTypeOptions) {
+            $taskTypeKey = strtolower(str_replace(' ', '-', $taskType));
+            
+            foreach ($taskTypeOptions as $taskTypeOptionKey => $taskTypeOptionValue) {
+                $parameterBag->set($taskTypeKey . '-' . $taskTypeOptionKey, $taskTypeOptionValue);
+            }
+        }
+        
+        return $parameterBag;
+    }    
 
 }

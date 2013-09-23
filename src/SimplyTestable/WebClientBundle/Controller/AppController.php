@@ -10,6 +10,13 @@ use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 
 class AppController extends TestViewController
 {       
+    /**
+     *
+     * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     */
+    private $testOptionsAdapter = null;    
+    
+    
     private $testFinishedStates = array(
         'cancelled',
         'completed',
@@ -83,9 +90,13 @@ class AppController extends TestViewController
         }
         
         $cacheValidatorHeaders->setLastModifiedDate($templateLastModifiedDate);
-        $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);
+        $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);;
         
-        $testOptions = $this->getTestOptions();
+        $this->getTestOptionsAdapter()->setRequestData($this->defaultAndPersistentTestOptionsToParameterBag());
+        if ($testStartError != '') {
+            $this->getTestOptionsAdapter()->setInvertInvertableOptions(true);
+        }        
+        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
         
         $this->getTestOptionsIntroduction($testOptions);
         
@@ -97,7 +108,7 @@ class AppController extends TestViewController
             'recent_tests' => $recentTests,
             'website' => idn_to_utf8($this->getPersistentValue('website')),
             'available_task_types' => $this->getAvailableTaskTypes(),
-            'test_options' => $testOptions,
+            'test_options' => $testOptions->__toKeyArray(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'test_cancelled_queued_website' => $testCancelledQueuedWebsite,
@@ -115,19 +126,17 @@ class AppController extends TestViewController
         )), $cacheValidatorHeaders);        
     }
     
-    private function getTestOptionsIntroduction($testOptions) {
+    private function getTestOptionsIntroduction(\SimplyTestable\WebClientBundle\Model\TestOptions $testOptions) {        
         $testOptionsIntroduction = 'Testing ';
         
         $allAvailableTaskTypes = $this->container->getParameter('available_task_types');
         $availableTaskTypes = $allAvailableTaskTypes['default'];        
         
         $taskTypeIndex = 0;
-        foreach ($availableTaskTypes as $taskTypeKey => $taskTypeName) {
-            $taskTypeName = str_replace('JS ', 'JavaScript ', $taskTypeName);
-            
+        foreach ($availableTaskTypes as $taskTypeKey => $taskTypeName) {            
             $taskTypeIndex++;
             
-            $testOptionsIntroduction .= '<span class="' . (isset($testOptions[$taskTypeKey]) && $testOptions[$taskTypeKey] ? 'selected' : 'not-selected') . '">' . $taskTypeName . '</span>';
+            $testOptionsIntroduction .= '<span class="' . ($testOptions->hasTestType($taskTypeName) ? 'selected' : 'not-selected') . '">' . str_replace('JS ', 'JavaScript ', $taskTypeName) . '</span>';
             
             if ($taskTypeIndex === count($availableTaskTypes) - 1) {
                 $testOptionsIntroduction .= ' and ';
@@ -143,14 +152,26 @@ class AppController extends TestViewController
         return $testOptionsIntroduction;
     }
     
+
+    /**
+     * 
+     * @return \Symfony\Component\HttpFoundation\ParameterBag
+     */
+    private function defaultAndPersistentTestOptionsToParameterBag() {
+        $testOptionsParameters = $this->container->getParameter('test_options');
+        return new \Symfony\Component\HttpFoundation\ParameterBag($this->getPersistentValues($testOptionsParameters['names_and_default_values']));
+    }    
+    
     
     /**
      * 
      * @return array
      */
     private function getTestOptions() {
-        $testOptionsParameters = $this->container->getParameter('test_options');        
+        $testOptionsParameters = $this->container->getParameter('test_options');
         $testOptions = $this->getPersistentValues($testOptionsParameters['names_and_default_values']);
+        
+        
         
         return $testOptions;
     }
@@ -546,5 +567,25 @@ class AppController extends TestViewController
         $publicSiteParameters = $this->container->getParameter('public_site');        
         return $this->redirect($publicSiteParameters['urls']['home']);
     }
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     */
+    private function getTestOptionsAdapter() {
+        if (is_null($this->testOptionsAdapter)) {
+            $testOptionsParameters = $this->container->getParameter('test_options');
+            $availableTaskTypes = $this->container->getParameter('available_task_types');             
+            
+            $this->testOptionsAdapter = $this->container->get('simplytestable.services.testoptions.adapter.request');
+        
+            $this->testOptionsAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
+            $this->testOptionsAdapter->setAvailableTaskTypes($availableTaskTypes['default']);
+            $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);           
+        }
+        
+        return $this->testOptionsAdapter;
+    }    
 
 }

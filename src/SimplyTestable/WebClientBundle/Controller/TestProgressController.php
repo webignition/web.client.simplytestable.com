@@ -9,7 +9,14 @@ use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 
 class TestProgressController extends TestViewController
-{        
+{       
+    /**
+     *
+     * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     */
+    private $testOptionsAdapter = null;    
+    
+    
     private $testFinishedStates = array(
         'cancelled',
         'completed',
@@ -76,7 +83,7 @@ class TestProgressController extends TestViewController
             ), true));            
         }      
         
-        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
+        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();        
         if ($test->getState() == 'failed-no-sitemap' && !isset($remoteTestSummary->crawl)) {
             $this->getTestService()->startCrawl($test);
             $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();                
@@ -91,8 +98,9 @@ class TestProgressController extends TestViewController
             $taskTypes[] = $taskTypeObject->name;
         }
         
-        $testOptions = $this->getTestOptionsFromRemoteTestSummary($remoteTestSummary);
-        
+        $this->getTestOptionsAdapter()->setRequestData($this->remoteTestSummaryTestOptionsToParameterBag($remoteTestSummary));
+        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();     
+
         $viewData = array(
             'website' => idn_to_utf8($website),
             'this_url' => $this->getProgressUrl($website, $test_id),
@@ -112,7 +120,7 @@ class TestProgressController extends TestViewController
             'task_types' => $taskTypes,
             'test_cancel_error' => $this->getFlash('test_cancel_error'),
             'available_task_types' => $this->getAvailableTaskTypes(),
-            'test_options' => $testOptions,
+            'test_options' => $testOptions->__toKeyArray(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'default_css_validation_options' => array(
                 'ignore-warnings' => 1,
@@ -459,5 +467,50 @@ class TestProgressController extends TestViewController
      */
     private function getCoreApplicationStatusService() {
         return $this->container->get('simplytestable.services.coreapplicationstatusservice');
+    }
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     */
+    private function getTestOptionsAdapter() {
+        if (is_null($this->testOptionsAdapter)) {
+            $testOptionsParameters = $this->container->getParameter('test_options');
+            $availableTaskTypes = $this->container->getParameter('available_task_types');             
+            
+            $this->testOptionsAdapter = $this->container->get('simplytestable.services.testoptions.adapter.request');
+        
+            $this->testOptionsAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
+            $this->testOptionsAdapter->setAvailableTaskTypes($availableTaskTypes['default']);
+            $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
+            $this->testOptionsAdapter->setInvertInvertableOptions(true);
+        }
+        
+        return $this->testOptionsAdapter;
+    }
+    
+    
+    /**
+     * 
+     * @param \stdClass $remoteTestSummary
+     * @return \Symfony\Component\HttpFoundation\ParameterBag
+     */
+    private function remoteTestSummaryTestOptionsToParameterBag(\stdClass $remoteTestSummary) {
+        $parameterBag = new \Symfony\Component\HttpFoundation\ParameterBag();
+        
+        foreach ($remoteTestSummary->task_types as $taskType) {
+            $parameterBag->set(strtolower(str_replace(' ', '-', $taskType->name)), 1);
+        }
+        
+        foreach ($remoteTestSummary->task_type_options as $taskType => $taskTypeOptions) {
+            $taskTypeKey = strtolower(str_replace(' ', '-', $taskType));
+            
+            foreach ($taskTypeOptions as $taskTypeOptionKey => $taskTypeOptionValue) {
+                $parameterBag->set($taskTypeKey . '-' . $taskTypeOptionKey, $taskTypeOptionValue);
+            }
+        }
+        
+        return $parameterBag;
     }
 }

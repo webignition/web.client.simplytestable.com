@@ -6,7 +6,14 @@ use SimplyTestable\WebClientBundle\Model\TestOptions;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 
 class TestStartController extends TestController
-{    
+{  
+    
+    /**
+     *
+     * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     */
+    private $testOptionsAdapter = null;
+    
     
     public function startNewAction()
     {        
@@ -65,30 +72,12 @@ class TestStartController extends TestController
         }        
     }
     
-    private function invertInvertableOptions(\Symfony\Component\HttpFoundation\ParameterBag $requestValues) {
-        $testOptionsParameters = $this->container->getParameter('test_options');        
-        foreach ($testOptionsParameters['invert_option_keys'] as $optionName) {
-            if ($requestValues->has($optionName)) {                
-                $requestValues->set($optionName, ($requestValues->get($optionName) == '1') ? '0' : '1');
-            } else {
-                $requestValues->set($optionName, '1');
-            }
-        }
-    }
-    
     private function startAction($requestValues)
     {        
-        $testOptionsParameters = $this->container->getParameter('test_options');
-        $availableTaskTypes = $this->container->getParameter('available_task_types');       
-        
         $this->getTestService()->setUser($this->getUser());
-       
-        $this->invertInvertableOptions($requestValues);
         
-        $this->getTestOptionsRequestParserService()->setRequestData($requestValues);
-        $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);
-        $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
+        $this->getTestOptionsAdapter()->setRequestData($requestValues);
+        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
 
         if (!$this->hasWebsite()) {            
             $this->get('session')->setFlash('test_start_error', 'website-blank');
@@ -235,9 +224,21 @@ class TestStartController extends TestController
     
     /**
      *
-     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\RequestParserService
+     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
      */
-    private function getTestOptionsRequestParserService() {
-        return $this->container->get('simplytestable.services.testoptions.requestparserservice');
+    private function getTestOptionsAdapter() {
+        if (is_null($this->testOptionsAdapter)) {
+            $testOptionsParameters = $this->container->getParameter('test_options');
+            $availableTaskTypes = $this->container->getParameter('available_task_types');             
+            
+            $this->testOptionsAdapter = $this->container->get('simplytestable.services.testoptions.adapter.request');
+        
+            $this->testOptionsAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
+            $this->testOptionsAdapter->setAvailableTaskTypes($availableTaskTypes['default']);
+            $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
+            $this->testOptionsAdapter->setInvertInvertableOptions(true);
+        }
+        
+        return $this->testOptionsAdapter;
     }  
 }

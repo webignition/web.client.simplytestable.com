@@ -168,9 +168,9 @@ class HasTestTypeTest extends BaseTestCase {
     
     /**
      *
-     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\RequestParserService
+     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
      */
     private function getTestOptionsRequestParserService() {
-        return $this->container->get('simplytestable.services.testoptions.requestparserservice');
+        return $this->container->get('simplytestable.services.testoptions.adapter.request');
     }    
 }

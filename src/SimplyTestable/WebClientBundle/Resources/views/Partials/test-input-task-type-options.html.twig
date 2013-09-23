@@ -1,6 +1,6 @@
 {% macro persistent_checkbox(label, name, test_options, hint, is_disabled) %}
-    <label class="checkbox {% if (test_options[name] == 0 and is_disabled) %}disabled{% endif %}" title="{{ hint }}">
-        <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" name="{{ name }}" value="1" {% if (test_options[name] == 1) %} checked {% endif %} />
+    <label class="checkbox {% if ((test_options[name] is not defined or test_options[name] == 0) and is_disabled) %}disabled{% endif %}" title="{{ hint }}">
+        <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" name="{{ name }}" value="1" {% if (test_options[name] is defined and test_options[name] == 1) %} checked {% endif %} />
     {{ label | raw }}
     </label>
 {% endmacro %}
@@ -78,7 +78,7 @@
                                 You might be linking to third-party CSS resources that you don't control and that you
                                 want the validator to ignore.
                             </span>
-                            <textarea {% if (is_disabled) %}disabled{% endif %} name="css-validation-domains-to-ignore" rows="5" {% if (is_enabled) %} placeholder="example.mycdn.com                                 one-per-line.example.com"{% endif %}>{% if test_options['css-validation-domains-to-ignore'] != '' %}{{test_options['css-validation-domains-to-ignore']|join('\n')}}{% endif %}</textarea>
+                            <textarea {% if (is_disabled) %}disabled{% endif %} name="css-validation-domains-to-ignore" rows="5" {% if (is_enabled) %} placeholder="example.mycdn.com                                 one-per-line.example.com"{% endif %}>{% if test_options['css-validation-domains-to-ignore'] is defined and test_options['css-validation-domains-to-ignore'] != '' %}{{test_options['css-validation-domains-to-ignore']|join('\n')}}{% endif %}</textarea>
                         </div>                             
                     </div>                          
                 </div>
@@ -134,7 +134,7 @@
                                 You might be linking to third-party JavaScript resources that you don't control and that you
                                 want the validator to ignore.
                             </span>
-                            <textarea {% if (is_disabled) %}disabled{% endif %} name="js-static-analysis-domains-to-ignore" rows="5" {% if (is_enabled) %}placeholder="example.mycdn.com                                 one-per-line.example.com"{% endif %}>{% if test_options['js-static-analysis-domains-to-ignore'] != '' %}{{test_options['js-static-analysis-domains-to-ignore']|join('\n')}}{% endif %}</textarea>
+                            <textarea {% if (is_disabled) %}disabled{% endif %} name="js-static-analysis-domains-to-ignore" rows="5" {% if (is_enabled) %}placeholder="example.mycdn.com                                 one-per-line.example.com"{% endif %}>{% if test_options['js-static-analysis-domains-to-ignore'] is defined and test_options['js-static-analysis-domains-to-ignore'] != '' %}{{test_options['js-static-analysis-domains-to-ignore']|join('\n')}}{% endif %}</textarea>
                         </div>                             
                     </div>   
                 
@@ -247,7 +247,7 @@
                                 <h3>Predefined variable names:</h3>
                                 <div class="row-fluid">
                                     <div class="span12 jslint-option-set">
-                                        <textarea {% if (is_disabled) %}disabled{% endif %} name="js-static-analysis-jslint-option-predef" rows="5" {% if (is_enabled) %}placeholder="NamesOfVariables                                AssumedToBePredefined                     OnePerLine"{% endif %}>{% if test_options['js-static-analysis-jslint-option-predef'] != '' %}{{test_options['js-static-analysis-jslint-option-predef']|join('\n')}}{% endif %}</textarea>
+                                        <textarea {% if (is_disabled) %}disabled{% endif %} name="js-static-analysis-jslint-option-predef" rows="5" {% if (is_enabled) %}placeholder="NamesOfVariables                                AssumedToBePredefined                     OnePerLine"{% endif %}>{% if test_options['js-static-analysis-jslint-option-predef'] is defined and test_options['js-static-analysis-jslint-option-predef'] != '' %}{{test_options['js-static-analysis-jslint-option-predef']|join('\n')}}{% endif %}</textarea>
                                     </div>
                                 </div>
                             </div>                                
