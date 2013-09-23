@@ -20,73 +20,34 @@
         </form>
             
         <div id="test-options">
-            <p class="expandable-control{% if remote_test_summary.task_type_options|length == 0 %}-disabled{% endif %} for-test-options-expandable expandable-control-default-closed">
-                Checking                 
-                {% for task_type in task_types %}
-                    <span class="test-type">{{ task_type }}</span>{% if loop.length > 1 %}{% if loop.index == loop.length - 1 %} and {% else %}{% if loop.index != loop.length %},{% endif %}{% endif %}{% endif %}
-                {% endfor %}
-            </p>
+            <div class="intro">
+                <p>
+                    Testing                 
+                    {% for task_type in task_types %}
+                        <span class="selected">{{ task_type }}</span>{% if loop.length > 1 %}{% if loop.index == loop.length - 1 %} and {% else %}{% if loop.index != loop.length %},{% else %}.{% endif %}{% endif %}{% endif %}
+                    {% endfor %}
+
+                <span class="expandable-control{% if remote_test_summary.task_type_options|length == 0 %}-disabled{% endif %} for-test-options-expandable expandable-control-default-closed">
+                    See test options
+                </span>                    
+                </p>
+            </div>            
+            
             <div id="test-options-expandable">
-                {% for task_type,task_type_options in remote_test_summary.task_type_options %}                    
-                    <div class="test-options-advanced">
-                        <div class="title">Selected <span class="test-type">{{ task_type }}</span> options:</div>                                        
-                    
-                        <ul>
-                            {% if ((task_type_options['ignore-warnings'] is defined) and (task_type_options['ignore-warnings'] == 1)) %}
-                                <li>
-                                    <strong>Warnings</strong> are being <strong>ignored</strong>
-                                </li>
-                            {% endif %}
-                            {% if ((task_type_options['vendor-extensions'] is defined) and (task_type_options['vendor-extensions'] == 'ignore')) %}
-                                <li>
-                                    <strong>Vendor extension messages</strong> are being <strong>ignored</strong>
-                                </li>
-                            {% endif %}                            
-                            {% if ((task_type_options['vendor-extensions'] is defined) and (task_type_options['vendor-extensions'] == 'error')) %}
-                                <li>                                
-                                    <strong>Vendor extension issues</strong> are being treated as <strong>errors</strong>
-                                </li>
-                            {% endif %}                             
-                            {% if ((task_type_options['vendor-extensions'] is defined) and (task_type_options['vendor-extensions'] == 'warn')) %}
-                                <li>                                
-                                    <strong>Vendor extension issues</strong> are being treated as <strong>warnings</strong>
-                                    {% if ((task_type_options['ignore-warnings'] is defined) and (task_type_options['ignore-warnings'] == 1)) %}
-                                    and subsequently <strong>ignored</strong>
-                                    {% endif %}
-                                </li>
-                            {% endif %}                               
-                            {% if ((task_type_options['ignore-common-cdns'] is defined) and (task_type_options['ignore-common-cdns'] == 1)) %}
-                                <li>
-                                    {% if task_type == 'CSS validation' %}
-                                        CSS
-                                    {% elseif task_type == 'JS static analysis' %}
-                                        JavaScript
-                                    {% else %}
-                                        Content
-                                    {% endif %}                                    
-                                    served from <strong>common CDN domains</strong> is being <strong>ignored</strong>
-                                </li>
-                            {% endif %}
-                            {% if ((task_type_options['domains-to-ignore'] is defined) and (task_type_options['domains-to-ignore']|length > 0) and (task_type_options['domains-to-ignore'][0] != '')) %}
-                                <li>
-                                    {% if task_type == 'CSS validation' %}
-                                        CSS
-                                    {% elseif task_type == 'JS static analysis' %}
-                                        JavaScript
-                                    {% else %}
-                                        Content
-                                    {% endif %}                                    
-                                    served from <strong>these chosen domains</strong> is being ignored:
-                                    {% for domain in task_type_options['domains-to-ignore'] %}
-                                    <strong>{{domain}}</strong>{% if ((loop.index == loop.length - 1) and loop.length > 1) %} and {% endif %}{% if ((loop.index != loop.length - 1) and (not loop.last)) %}, {% endif %}
-                                    {% endfor %}
-                                </li>
-                            {% endif %}                            
-                        </ul>
-                    </div>
-                    
-                {% endfor %}                
-            </div>
-        </div>               
+                
+                <div class="test-options-set">
+                    <label class="radio inline {% if remote_test_summary.type != 'Full site' %}disabled{% endif %}">
+                        <input type="radio" name="full-single" value="full" {% if remote_test_summary.type == 'Full site' %}checked{% endif %} disabled> Whole site test
+                        <span class="help-block">Test your entire site by finding URLs<br /> in your sitemap and by crawling your site</span>
+                    </label>        
+                    <label class="radio inline {% if remote_test_summary.type == 'Full site' %}disabled{% endif %}">
+                        <input type="radio" name="full-single" value="single" {% if remote_test_summary.type != 'Full site' %}checked{% endif %} disabled> Single URL test
+                        <span class="help-block">Test just the above URL only<br />&nbsp;</span>
+                    </label>                
+                </div>               
+                
+        {% include 'SimplyTestableWebClientBundle:Partials:test-input-task-type-options.html.twig' %} 
+                </div>
+        </div>            
     </div>
 </section>

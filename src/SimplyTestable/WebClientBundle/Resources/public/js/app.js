@@ -1697,7 +1697,7 @@ application.root.testStartFormController = function () {
     var getTaskTypeSelection = function () {
         var taskTypeSelection = {};
         
-        $('.test-options-set').each(function () {
+        $('.task-type-option').each(function () {
             var testOptionsSet = $(this);
             var label = $('label', testOptionsSet).first();
             var checkbox = $('input[type=checkbox]', label);
@@ -1728,7 +1728,7 @@ application.root.testStartFormController = function () {
     var getTaskTypeSelectionString = function () {
         var taskTypeSelectionString = 'Testing ';
         
-        var taskTypeSelection = getTaskTypeSelection();
+        var taskTypeSelection = getTaskTypeSelection();        
         var taskTypeCount = getTaskTypeCount();
         var taskTypeIndex = 0;
         
@@ -1757,8 +1757,7 @@ application.root.testStartFormController = function () {
     };
     
     var setIntroContent = function () {
-        $('p', getIntro()).remove();
-        getIntro().append($('<p />').html(getTaskTypeSelectionString()));
+        $('.task-type-selection', getIntro()).html(getTaskTypeSelectionString());
     };
   
     this.initialise = function () {
@@ -1815,6 +1814,11 @@ application.pages = {
                 testStartFormController = new application.root.testStartFormController();
                 testStartFormController.initialise();
             }
+            
+            if ($('body.app-results').length > 0) {
+                testStartFormController = new application.root.testStartFormController();
+                testStartFormController.initialise();
+            }            
 
             if ($('body.content').length > 0) {
                 getTwitters('footer-tweet', {

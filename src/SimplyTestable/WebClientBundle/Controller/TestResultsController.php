@@ -303,6 +303,8 @@ class TestResultsController extends TestViewController
             }                      
         }
         
+        $testOptions = $this->getTestOptionsFromRemoteTestSummary($remoteTestSummary);
+        
         $viewData = array(
             'website' => idn_to_utf8($website),
             'this_url' => $this->getResultsUrl($website, $test_id),
@@ -316,7 +318,7 @@ class TestResultsController extends TestViewController
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),    
             'task_types' => $taskTypes,
             'available_task_types' => $this->getAvailableTaskTypes(),
-            'test_options' => $this->getTestOptionsFromRemoteTestSummary($remoteTestSummary),
+            'test_options' => $testOptions,
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'default_css_validation_options' => array(
                 'ignore-warnings' => 1,
@@ -325,7 +327,8 @@ class TestResultsController extends TestViewController
             ),
             'default_js_static_analysis_options' => array(
                 'ignore-common-cdns' => 1                
-            )
+            ),
+            'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions)
         );
                        
         //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTestSummary->task_count : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));
@@ -345,6 +348,34 @@ class TestResultsController extends TestViewController
                 $cacheValidatorHeaders
         ); 
     }
+    
+    private function getTestOptionsIntroduction($testOptions) {
+        $testOptionsIntroduction = 'Testing ';
+        
+        $allAvailableTaskTypes = $this->container->getParameter('available_task_types');
+        $availableTaskTypes = $allAvailableTaskTypes['default'];        
+        
+        $taskTypeIndex = 0;
+        foreach ($availableTaskTypes as $taskTypeKey => $taskTypeName) {
+            $taskTypeName = str_replace('JS ', 'JavaScript ', $taskTypeName);
+            
+            $taskTypeIndex++;
+            
+            $testOptionsIntroduction .= '<span class="' . (isset($testOptions[$taskTypeKey]) && $testOptions[$taskTypeKey] ? 'selected' : 'not-selected') . '">' . $taskTypeName . '</span>';
+            
+            if ($taskTypeIndex === count($availableTaskTypes) - 1) {
+                $testOptionsIntroduction .= ' and ';
+            } else {
+                if ($taskTypeIndex < count($availableTaskTypes)) {
+                    $testOptionsIntroduction .= ', ';
+                }                
+            }
+        }
+        
+        $testOptionsIntroduction .= '.';
+        
+        return $testOptionsIntroduction;
+    }    
     
     
     private function getTestOptionsFromRemoteTestSummary($remoteTestSummary) {        

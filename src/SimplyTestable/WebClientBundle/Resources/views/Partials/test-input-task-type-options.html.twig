@@ -1,17 +1,20 @@
-{% macro persistent_checkbox(label, name, test_options, hint) %}
-    <label class="checkbox" title="{{ hint }}">
-        <input type="checkbox" name="{{ name }}" value="1" {% if (test_options[name] == 1) %} checked {% endif %} />
+{% macro persistent_checkbox(label, name, test_options, hint, is_disabled) %}
+    <label class="checkbox {% if (test_options[name] == 0 and is_disabled) %}disabled{% endif %}" title="{{ hint }}">
+        <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" name="{{ name }}" value="1" {% if (test_options[name] == 1) %} checked {% endif %} />
     {{ label | raw }}
     </label>
 {% endmacro %}
     
 {% import _self as form %}
 
+{% set is_disabled = app.request.get('_route') == 'app_progress' %}
+{% set is_enabled = (is_disabled == false) %}
+
 {% if 'html-validation' in available_task_types|keys %}
 
-    <div class="test-options-set" id="html-validation-options">
-        <label class="checkbox">
-            <input class="task-type" type="checkbox" value="1" name="html-validation" {% if (test_options['html-validation'] == 1) %} checked {% endif %} /> <span class="task-type-name">HTML validation</span>
+    <div class="test-options-set task-type-option {% if (is_disabled) and test_options['html-validation'] == 0 %}test-options-set-disabled{% endif %}" id="html-validation-options">
+        <label class="checkbox {% if (is_disabled) and test_options['html-validation'] == 0 %}disabled{% endif %}">
+            <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="html-validation" {% if (test_options['html-validation'] == 1) %} checked {% endif %} /> <span class="task-type-name">HTML validation</span>
             <span class="help-block">Examine whether the HTML markup for all your pages is valid</span>
         </label>                
     </div>
@@ -20,11 +23,13 @@
 
 {% if 'css-validation' in available_task_types|keys %}
 
-    <div class="test-options-set" id="css-validation-options">
-        <label class="checkbox">
-            <input class="task-type" type="checkbox" value="1" name="css-validation" {% if (test_options['css-validation'] == 1) %} checked {% endif %} /> <span class="task-type-name">CSS validation</span>
+    <div class="test-options-set task-type-option {% if (is_disabled) and test_options['css-validation'] == 0 %}test-options-set-disabled{% endif %}" id="css-validation-options">
+        <label class="checkbox {% if (is_disabled) and test_options['css-validation'] == 0 %}disabled{% endif %}">
+            <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="css-validation" {% if (test_options['css-validation'] == 1) %} checked {% endif %} /> <span class="task-type-name">CSS validation</span>
             <span class="help-block">Check CSS rules defined in linked stylesheets and inline</span>
         </label>
+            
+        {% if is_enabled or (is_disabled and test_options['css-validation'] == 1) %}
 
         <div class="test-options-advanced">
             <div class="expandable-control expandable-control-default-closed for-css-validation-options-expandable">Advanced CSS validation options</div>
@@ -32,30 +37,30 @@
                 <div class="row-fluid">                            
                     <div class="span2 css-validator-option-set validator-option-set css-general">
                         <p>Handling warnings:</p>
-                        <label class="checkbox">
-                            <input type="checkbox" value="1" name="css-validation-ignore-warnings" {% if (test_options['css-validation-ignore-warnings'] == 1 or (test_options['css-validation'] == '' and default_css_validation_options['ignore-warnings'] == 1)) %} checked {% endif %}> Ignore warnings (report errors only)
+                        <label class="checkbox {% if (is_disabled) and test_options['css-validation-ignore-warnings'] == 0 %}disabled{% endif %}">
+                            <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" value="1" name="css-validation-ignore-warnings" {% if (test_options['css-validation-ignore-warnings'] == 1 or (test_options['css-validation'] == '' and default_css_validation_options['ignore-warnings'] == 1)) %} checked {% endif %}> Ignore warnings (report errors only)
                         </label>
                     </div>
                     <div class="span2 css-validator-option-set validator-option-set css-vendor-extensions">                                
                         <p>Vendor extension issues:</p>
-                        <label class="radio">
-                            <input type="radio" name="css-validation-vendor-extensions" value="ignore" {% if test_options['css-validation-vendor-extensions'] == 'ignore' or (test_options['css-validation'] == '' and default_css_validation_options['vendor-extensions'] == 'ignore') %} checked {% endif %}>
+                        <label class="radio {% if (is_disabled) and test_options['css-validation-vendor-extensions'] != 'ignore' %}disabled{% endif %}">
+                            <input {% if (is_disabled) %}disabled{% endif %} type="radio" name="css-validation-vendor-extensions" value="ignore" {% if test_options['css-validation-vendor-extensions'] == 'ignore' or (test_options['css-validation'] == '' and default_css_validation_options['vendor-extensions'] == 'ignore') %} checked {% endif %}>
                             Ignore
                         </label>
-                        <label class="radio">
-                            <input type="radio" name="css-validation-vendor-extensions" value="warn" {% if test_options['css-validation-vendor-extensions'] == 'warn' or (test_options['css-validation'] == '' and default_css_validation_options['vendor-extensions'] == 'warn') %} checked {% endif %}>
+                        <label class="radio {% if (is_disabled) and test_options['css-validation-vendor-extensions'] != 'warn' %}disabled{% endif %}">
+                            <input {% if (is_disabled) %}disabled{% endif %} type="radio" name="css-validation-vendor-extensions" value="warn" {% if test_options['css-validation-vendor-extensions'] == 'warn' or (test_options['css-validation'] == '' and default_css_validation_options['vendor-extensions'] == 'warn') %} checked {% endif %}>
                             Report as warnings
                         </label>                         
-                        <label class="radio">
-                            <input type="radio" name="css-validation-vendor-extensions" value="error" {% if test_options['css-validation-vendor-extensions'] == 'error' or (test_options['css-validation'] == '' and default_css_validation_options['vendor-extensions'] == 'error') %} checked {% endif %}>
+                        <label class="radio {% if (is_disabled) and test_options['css-validation-vendor-extensions'] != 'error' %}disabled{% endif %}">
+                            <input {% if (is_disabled) %}disabled{% endif %} type="radio" name="css-validation-vendor-extensions" value="error" {% if test_options['css-validation-vendor-extensions'] == 'error' or (test_options['css-validation'] == '' and default_css_validation_options['vendor-extensions'] == 'error') %} checked {% endif %}>
                             Report as errors
                         </label> 
                     </div>                                
                     <div class="span3 css-validator-option-set validator-option-set css-common-cdn-domains">
                         <p>Common <a href="http://en.wikipedia.org/wiki/Content_delivery_network">CDN</a> domains:</p>
 
-                        <label class="checkbox ignore-common-cdn-domains">
-                            <input type="checkbox" value="1" name="css-validation-ignore-common-cdns"  {% if (test_options['css-validation-ignore-common-cdns'] == 1) or (test_options['css-validation'] == '' and default_css_validation_options['ignore-common-cdns'] == 1) %} checked {% endif %} /> Ignore CSS from common CDNs:
+                        <label class="checkbox ignore-common-cdn-domains {% if (is_disabled) and test_options['css-validation-ignore-common-cdns'] == 0 %}disabled{% endif %}">
+                            <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" value="1" name="css-validation-ignore-common-cdns"  {% if (test_options['css-validation-ignore-common-cdns'] == 1) or (test_options['css-validation'] == '' and default_css_validation_options['ignore-common-cdns'] == 1) %} checked {% endif %} /> Ignore CSS from common CDNs:
 
                                     {% if css_validation_ignore_common_cdns|length > 0 %}
                             <ul>
@@ -73,23 +78,26 @@
                                 You might be linking to third-party CSS resources that you don't control and that you
                                 want the validator to ignore.
                             </span>
-                            <textarea name="css-validation-domains-to-ignore" rows="5" placeholder="example.mycdn.com                                 one-per-line.example.com">{% if test_options['css-validation-domains-to-ignore'] != '' %}{{test_options['css-validation-domains-to-ignore']|join('\n')}}{% endif %}</textarea>
+                            <textarea {% if (is_disabled) %}disabled{% endif %} name="css-validation-domains-to-ignore" rows="5" {% if (is_enabled) %} placeholder="example.mycdn.com                                 one-per-line.example.com"{% endif %}>{% if test_options['css-validation-domains-to-ignore'] != '' %}{{test_options['css-validation-domains-to-ignore']|join('\n')}}{% endif %}</textarea>
                         </div>                             
                     </div>                          
                 </div>
             </div>
+            
+            {% endif %}
+            
         </div>
 
 {% endif %}
 
 {% if 'js-static-analysis' in available_task_types|keys %}
 
-        <div class="test-options-set" id="js-static-analysis-validation-options">
+        <div class="test-options-set task-type-option {% if (is_disabled) and test_options['js-static-analysis'] == 0 %}test-options-set-disabled{% endif %}" id="js-static-analysis-validation-options">
             
             <div class="row-fluid">                                                                               
                 <div class="span4">
-                    <label class="checkbox">
-                        <input class="task-type" type="checkbox" value="1" name="js-static-analysis" {% if (test_options['js-static-analysis'] == 1) %} checked {% endif %} /> <span class="task-type-name">JavaScript static analysis</span>
+                    <label class="checkbox {% if (is_disabled) and test_options['js-static-analysis'] == 0 %}disabled{% endif %}">
+                        <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="js-static-analysis" {% if (test_options['js-static-analysis'] == 1) %} checked {% endif %} /> <span class="task-type-name">JavaScript static analysis</span>
                         <span class="help-block">Analyse the quality of your JavaScript with <a href="http://www.jslint.com/lint.html">JSLint</a></span>
                     </label>
                 </div>                                 
@@ -97,7 +105,7 @@
                 </div>
            </div>
 
-
+        {% if is_enabled or (is_disabled and test_options['js-static-analysis'] == 1) %}
                 
         <div class="test-options-advanced">
             <div class="expandable-control expandable-control-default-closed for-js-static-analysis-options-expandable">Advanced JS static analysis and JSLint options</div>
@@ -107,8 +115,8 @@
                     <div class="span3 validator-option-set js-static-analysis-common-cdn-domains">
                         <p>Common <a href="http://en.wikipedia.org/wiki/Content_delivery_network">CDN</a> domains:</p>
 
-                        <label class="checkbox ignore-common-cdn-domains">
-                            <input type="checkbox" value="1" name="js-static-analysis-ignore-common-cdns"  {% if (test_options['js-static-analysis-ignore-common-cdns'] == 1) or (test_options['js-static-analysis'] == '' and default_js_static_analysis_options['ignore-common-cdns'] == 1) %} checked {% endif %} /> Ignore JS from common CDNs:
+                        <label class="checkbox ignore-common-cdn-domains {% if (is_disabled) and test_options['js-static-analysis-ignore-common-cdns'] == 0 %}disabled{% endif %}">
+                            <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" value="1" name="js-static-analysis-ignore-common-cdns"  {% if (test_options['js-static-analysis-ignore-common-cdns'] == 1) or (test_options['js-static-analysis'] == '' and default_js_static_analysis_options['ignore-common-cdns'] == 1) %} checked {% endif %} /> Ignore JS from common CDNs:
 
                                     {% if css_validation_ignore_common_cdns|length > 0 %}
                             <ul>
@@ -126,7 +134,7 @@
                                 You might be linking to third-party JavaScript resources that you don't control and that you
                                 want the validator to ignore.
                             </span>
-                            <textarea name="js-static-analysis-domains-to-ignore" rows="5" placeholder="example.mycdn.com                                 one-per-line.example.com">{% if test_options['js-static-analysis-domains-to-ignore'] != '' %}{{test_options['js-static-analysis-domains-to-ignore']|join('\n')}}{% endif %}</textarea>
+                            <textarea {% if (is_disabled) %}disabled{% endif %} name="js-static-analysis-domains-to-ignore" rows="5" {% if (is_enabled) %}placeholder="example.mycdn.com                                 one-per-line.example.com"{% endif %}>{% if test_options['js-static-analysis-domains-to-ignore'] != '' %}{{test_options['js-static-analysis-domains-to-ignore']|join('\n')}}{% endif %}</textarea>
                         </div>                             
                     </div>   
                 
@@ -146,43 +154,32 @@
                                 <div class="row-fluid">
                                     <div class="span12">
                                         <div class="span3 jslint-option-set">
-<!-- bitwise, continue, debug, evil, eqeq, forin, newcap, nomen, plusplus, regexp, undef, unparam, sloppy, stupid, sub, vars, white, anon -->  
-<!-- bitwise, continue, debug, evil, eqeq, forin -->                                            
-{{ form.persistent_checkbox('When a variable is undefined', 'js-static-analysis-jslint-option-undef', test_options, 'undef') }}
-{{ form.persistent_checkbox('About unused parameters', 'js-static-analysis-jslint-option-unparam', test_options, 'unparam') }}
-{{ form.persistent_checkbox('When <code>continue</code> is used', 'js-static-analysis-jslint-option-continue', test_options, 'continue') }}
-{{ form.persistent_checkbox('About <code>debugger</code> operations', 'js-static-analysis-jslint-option-debug', test_options, 'debug') }}
-{{ form.persistent_checkbox('About <code>eval</code>', 'js-static-analysis-jslint-option-evil', test_options, 'evil') }}
-{{ form.persistent_checkbox('About unfiltered <code>for &hellip; in</code>', 'js-static-analysis-jslint-option-forin', test_options, 'forin') }}
+                                         
+{{ form.persistent_checkbox('When a variable is undefined', 'js-static-analysis-jslint-option-undef', test_options, 'undef', is_disabled) }}
+{{ form.persistent_checkbox('About unused parameters', 'js-static-analysis-jslint-option-unparam', test_options, 'unparam', is_disabled) }}
+{{ form.persistent_checkbox('When <code>continue</code> is used', 'js-static-analysis-jslint-option-continue', test_options, 'continue', is_disabled) }}
+{{ form.persistent_checkbox('About <code>debugger</code> operations', 'js-static-analysis-jslint-option-debug', test_options, 'debug', is_disabled) }}
+{{ form.persistent_checkbox('About <code>eval</code>', 'js-static-analysis-jslint-option-evil', test_options, 'evil', is_disabled) }}
+{{ form.persistent_checkbox('About unfiltered <code>for &hellip; in</code>', 'js-static-analysis-jslint-option-forin', test_options, 'forin', is_disabled) }}
 
                                         </div>
                                         <div class="span4 jslint-option-set">
-<!-- newcap, nomen, plusplus, regexp, undef, unparam -->
-{{ form.persistent_checkbox('When not using dot notation to access properties', 'js-static-analysis-jslint-option-sub', test_options, 'sub') }}
-{{ form.persistent_checkbox('When using ES5 syntax', 'js-static-analysis-jslint-option-es5', test_options, 'es5') }}
-{{ form.persistent_checkbox('About <code>.</code> and <code>[^&hellip;]</code> in <code>/RegExp/</code> literals', 'js-static-analysis-jslint-option-regexp', test_options, 'regexp') }}
-{{ form.persistent_checkbox('When bitwise operators are used', 'js-static-analysis-jslint-option-bitwise', test_options, 'bitwise') }}
-{{ form.persistent_checkbox('About dangling <code>_</code> in identifiers', 'js-static-analysis-jslint-option-nomen', test_options, 'nomen') }}
-{{ form.persistent_checkbox('About <code>++</code> and <code>--</code> operations', 'js-static-analysis-jslint-option-plusplus', test_options, 'plusplus') }}
+{{ form.persistent_checkbox('When not using dot notation to access properties', 'js-static-analysis-jslint-option-sub', test_options, 'sub', is_disabled) }}
+{{ form.persistent_checkbox('When using ES5 syntax', 'js-static-analysis-jslint-option-es5', test_options, 'es5', is_disabled) }}
+{{ form.persistent_checkbox('About <code>.</code> and <code>[^&hellip;]</code> in <code>/RegExp/</code> literals', 'js-static-analysis-jslint-option-regexp', test_options, 'regexp', is_disabled) }}
+{{ form.persistent_checkbox('When bitwise operators are used', 'js-static-analysis-jslint-option-bitwise', test_options, 'bitwise', is_disabled) }}
+{{ form.persistent_checkbox('About dangling <code>_</code> in identifiers', 'js-static-analysis-jslint-option-nomen', test_options, 'nomen', is_disabled) }}
+{{ form.persistent_checkbox('About <code>++</code> and <code>--</code> operations', 'js-static-analysis-jslint-option-plusplus', test_options, 'plusplus', is_disabled) }}
 
 
                                         </div>
                                         <div class="span5 jslint-option-set">
-<!--   sloppy, stupid, sub, vars, white, anon -->
-<!-- 
-*todo (not supported by node-jslint)
-*css (relevant only to CSS linting),
-*on (relevant only to HTML fragment checking),
-*fragment (relevant only to HTML fragment checking)
-*cap (relevant only to HTML fragment checking)
--->
-{{ form.persistent_checkbox('When uncapitalised constructors are used', 'js-static-analysis-jslint-option-newcap', test_options, 'newcap') }}
-{{ form.persistent_checkbox('When code is not in strict mode (<code>\'use strict\';</code>)', 'js-static-analysis-jslint-option-sloppy', test_options, 'sloppy') }}
-{{ form.persistent_checkbox('About blocking <code>&hellip;Sync</code> methods', 'js-static-analysis-jslint-option-stupid', test_options, 'stupid') }}
-{{ form.persistent_checkbox('About multiple var statements per function', 'js-static-analysis-jslint-option-vars', test_options, 'vars') }}
-{{ form.persistent_checkbox('About messy white space', 'js-static-analysis-jslint-option-white', test_options, 'white') }}
-{# form.persistent_checkbox('When space is omitted in anonymous function declarations', 'js-static-analysis-jslint-option-anon', test_options, 'anon') #}
-{{ form.persistent_checkbox('When <code>==</code> or <code>!=</code> is used', 'js-static-analysis-jslint-option-eqeq', test_options, 'eqeq') }}
+{{ form.persistent_checkbox('When uncapitalised constructors are used', 'js-static-analysis-jslint-option-newcap', test_options, 'newcap', is_disabled) }}
+{{ form.persistent_checkbox('When code is not in strict mode (<code>\'use strict\';</code>)', 'js-static-analysis-jslint-option-sloppy', test_options, 'sloppy', is_disabled) }}
+{{ form.persistent_checkbox('About blocking <code>&hellip;Sync</code> methods', 'js-static-analysis-jslint-option-stupid', test_options, 'stupid', is_disabled) }}
+{{ form.persistent_checkbox('About multiple var statements per function', 'js-static-analysis-jslint-option-vars', test_options, 'vars', is_disabled) }}
+{{ form.persistent_checkbox('About messy white space', 'js-static-analysis-jslint-option-white', test_options, 'white', is_disabled) }}
+{{ form.persistent_checkbox('When <code>==</code> or <code>!=</code> is used', 'js-static-analysis-jslint-option-eqeq', test_options, 'eqeq', is_disabled) }}
 
                                         </div>                                            
                                     </div>
@@ -194,19 +191,10 @@
                             <div class="span3 jslint-option-set-group">
                                 <h3>Assume:</h3>
                                 <div class="row-fluid">
-                                    <div class="span12 jslint-option-set">
-                                        <!--
-                                        browser
-                                        devel
-                                        *node
-                                        *rhino
-                                        windows
-                                        *safe
-                                        *adsafe
-                                        -->     
-{{ form.persistent_checkbox('Browser', 'js-static-analysis-jslint-option-browser', test_options, 'browser') }}
-{{ form.persistent_checkbox('console,alert,&nbsp;...', 'js-static-analysis-jslint-option-devel', test_options, 'devel') }}
-{{ form.persistent_checkbox('Windows', 'js-static-analysis-jslint-option-windows', test_options, 'windows') }}
+                                    <div class="span12 jslint-option-set">   
+{{ form.persistent_checkbox('Browser', 'js-static-analysis-jslint-option-browser', test_options, 'browser', is_disabled) }}
+{{ form.persistent_checkbox('console,alert,&nbsp;...', 'js-static-analysis-jslint-option-devel', test_options, 'devel', is_disabled) }}
+{{ form.persistent_checkbox('Windows', 'js-static-analysis-jslint-option-windows', test_options, 'windows', is_disabled) }}
                                   
                                     </div>
                                 </div>
@@ -215,11 +203,11 @@
                                 <h3>Limits:</h3>
                                 <div class="row-fluid">
                                     <div class="span12 inline-short stop-on-errors">
-                                        {{ form.persistent_checkbox('Stop on first error', 'js-static-analysis-jslint-option-passfail', test_options, 'passfail') }}
+                                        {{ form.persistent_checkbox('Stop on first error', 'js-static-analysis-jslint-option-passfail', test_options, 'passfail', is_disabled) }}
                                             or
                                         <label id="stop-when-reaching">
                                             when reaching
-                                            <input id="js-static-analysis-jslint-option-maxerr"
+                                            <input {% if (is_disabled) %}disabled{% endif %} id="js-static-analysis-jslint-option-maxerr"
                                                    class="inline-short"
                                                    type="text"
                                                    name="js-static-analysis-jslint-option-maxerr"
@@ -233,7 +221,7 @@
                                     <div class="span12 jslint-integer-options">
                                         <label>
                                             indentation level:   
-                                            <input id="js-static-analysis-jslint-option-indent"
+                                            <input {% if (is_disabled) %}disabled{% endif %} id="js-static-analysis-jslint-option-indent"
                                                    class="inline-short"
                                                    type="text"
                                                    name="js-static-analysis-jslint-option-indent"
@@ -244,7 +232,7 @@
 
                                         <label>
                                             maximum line length: 
-                                            <input id="js-static-analysis-jslint-option-maxlen"
+                                            <input {% if (is_disabled) %}disabled{% endif %} id="js-static-analysis-jslint-option-maxlen"
                                                    class="inline-short"
                                                    type="text"
                                                    name="js-static-analysis-jslint-option-maxlen"
@@ -259,7 +247,7 @@
                                 <h3>Predefined variable names:</h3>
                                 <div class="row-fluid">
                                     <div class="span12 jslint-option-set">
-                                        <textarea name="js-static-analysis-jslint-option-predef" rows="5" placeholder="NamesOfVariables                                AssumedToBePredefined                     OnePerLine">{% if test_options['js-static-analysis-jslint-option-predef'] != '' %}{{test_options['js-static-analysis-jslint-option-predef']|join('\n')}}{% endif %}</textarea>
+                                        <textarea {% if (is_disabled) %}disabled{% endif %} name="js-static-analysis-jslint-option-predef" rows="5" {% if (is_enabled) %}placeholder="NamesOfVariables                                AssumedToBePredefined                     OnePerLine"{% endif %}>{% if test_options['js-static-analysis-jslint-option-predef'] != '' %}{{test_options['js-static-analysis-jslint-option-predef']|join('\n')}}{% endif %}</textarea>
                                     </div>
                                 </div>
                             </div>                                
@@ -269,7 +257,9 @@
                 </div>                
                 </div>
 
-            </div>                
+            </div>
+            
+            {% endif %}
         </div>    
 
 {% endif %}

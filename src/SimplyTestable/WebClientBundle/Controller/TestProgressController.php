@@ -91,6 +91,8 @@ class TestProgressController extends TestViewController
             $taskTypes[] = $taskTypeObject->name;
         }
         
+        $testOptions = $this->getTestOptionsFromRemoteTestSummary($remoteTestSummary);
+        
         $viewData = array(
             'website' => idn_to_utf8($website),
             'this_url' => $this->getProgressUrl($website, $test_id),
@@ -108,7 +110,15 @@ class TestProgressController extends TestViewController
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
             'task_types' => $taskTypes,
-            'test_cancel_error' => $this->getFlash('test_cancel_error')
+            'test_cancel_error' => $this->getFlash('test_cancel_error'),
+            'available_task_types' => $this->getAvailableTaskTypes(),
+            'test_options' => $testOptions,
+            'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
+            'default_css_validation_options' => array(
+                'ignore-warnings' => 1,
+                'vendor-extensions' => 'warn',
+                'ignore-common-cdns' => 1                
+            ),            
         );  
         
         if ($this->isJsonResponseRequired()) {
@@ -117,7 +127,128 @@ class TestProgressController extends TestViewController
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
         return $this->sendResponse($viewData);
+    }
+    
+    /**
+     * 
+     * @return array
+     */
+    private function getCssValidationCommonCdnsToIgnore() {
+        if (!$this->container->hasParameter('css-validation-ignore-common-cdns')) {
+            return array();
+        }
+        
+        return $this->container->getParameter('css-validation-ignore-common-cdns');
+    }    
+    
+    private function getTestOptionsFromRemoteTestSummary($remoteTestSummary) {        
+        $testOptions = array();
+        $selectedTaskTypes = array();
+        
+        foreach ($remoteTestSummary->task_types as $taskType) {
+            $taskTypeName = $taskType->name;
+            $taskTypeKey = strtolower(str_replace(' ', '-', $taskTypeName));
+            
+            $testOptions[$taskTypeKey] = 1;
+            $selectedTaskTypes[] = $taskTypeKey;
+        }
+        
+        foreach($remoteTestSummary->task_type_options as $taskTypeName => $taskTypeOptionsSet) {
+            $taskTypeKey = strtolower(str_replace(' ', '-', $taskTypeName));            
+            
+            foreach ($taskTypeOptionsSet as $taskTypeOptionKey => $taskTypeOptionValue) {
+                $testOptions[$taskTypeKey.'-'.$taskTypeOptionKey] = $taskTypeOptionValue;
+            }
+        }
+        
+        $testOptionsParameters = $this->container->getParameter('test_options');                      
+        foreach ($testOptionsParameters['names_and_default_values'] as $testOptionName => $defaultValue) {            
+            if ($this->isTaskType($testOptionName)) {
+                $testOptions[$testOptionName] = (int)isset($testOptions[$testOptionName]);
+            } else {
+                if (!in_array($this->getTaskTypeFromTaskTypeOption($testOptionName), $selectedTaskTypes)) {
+                    $testOptions[$testOptionName] = $defaultValue;
+                    
+                    if ($this->isInvertableOption($testOptionName)) {
+                        $testOptions[$testOptionName] = ($testOptions[$testOptionName]) ? 0 : 1;
+                    }
+                }
+
+                if (!isset($testOptions[$testOptionName])) {
+                    $testOptions[$testOptionName] = '';
+                }                
+            }
+        }        
+        
+        return $this->invertInvertableOptions($testOptions);
+    }
+    
+    private function getTaskTypeFromTaskTypeOption($taskTypeOption) {
+        $availableTaskTypes = $this->container->getParameter('available_task_types'); 
+        
+        foreach ($availableTaskTypes['default'] as $taskTypeKey => $taskTypeName) {
+            $keyLength = strlen($taskTypeKey);
+            
+            if (substr($taskTypeOption, 0, $keyLength) == $taskTypeKey) {
+                return $taskTypeKey;
+            }
+        }
+        
+        return null;
+    }    
+    
+    private function isTaskType($taskTypeOption) {
+        $availableTaskTypes = $this->container->getParameter('available_task_types'); 
+        
+        foreach ($availableTaskTypes['default'] as $taskTypeKey => $taskTypeName) {
+            if ($taskTypeKey == $taskTypeOption) {
+                return true;
+            }
+        }
+        
+        return false;        
     } 
+    
+    private function invertInvertableOptions($testOptions) {
+        $testOptionsParameters = $this->container->getParameter('test_options');        
+        foreach ($testOptionsParameters['invert_option_keys'] as $optionName) {
+            if (isset($testOptions[$optionName])) {   
+                $testOptions[$optionName] = ($testOptions[$optionName] == '1') ? '0' : '1';
+            } else {
+                $testOptions[$optionName] = '1';
+            }
+        }
+        
+        return $testOptions;
+    }   
+    
+
+    private function isInvertableOption($taskTypeOption) {
+        $testOptionsParameters = $this->container->getParameter('test_options');        
+        foreach ($testOptionsParameters['invert_option_keys'] as $optionName) {
+            if ($optionName == $taskTypeOption) {
+                return true;
+            }
+        }
+        
+        return false;        
+    }    
+    
+    
+    /**
+     * 
+     * @return array
+     */
+    private function getAvailableTaskTypes() {
+        $allAvailableTaskTypes = $this->container->getParameter('available_task_types');
+        $availableTaskTypes = $allAvailableTaskTypes['default'];
+        
+        if ($this->isEarlyAccessUser() && is_array($allAvailableTaskTypes['early_access'])) {
+            $availableTaskTypes = array_merge($availableTaskTypes, $allAvailableTaskTypes['early_access']);
+        }
+        
+        return $availableTaskTypes;
+    }    
     
     private function getStateLabel($test, $remoteTestSummary) {
         if ($test->getState() == 'preparing' && isset($remoteTestSummary->crawl)) {

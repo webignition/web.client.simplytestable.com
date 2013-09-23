@@ -600,7 +600,7 @@ body.app-task-results #task-summary h3 {
 }
 
 body.app #test-options {
-    margin-top:30px;
+    margin-top:10px;
 }
 
 body.app-progress #test-options {
@@ -616,12 +616,9 @@ body.app-progress #test-options {
     background-color:#e7e7e7;
 }
 
-#test-options .test-type {
-    font-weight: bold;
-    opacity: 0.9;
+#test-options .test-options-set-disabled:hover {
+    background-color:transparent;
 }
-
-
 
 #input form {
     margin-bottom: 0;
@@ -693,10 +690,6 @@ padding: 0;
 
 #test-options .test-options-advanced {
     margin-left: 18px;
-}
-
-body.app-progress #test-options .test-options-advanced {
-    margin-left:0;
 }
 
 
@@ -956,11 +949,11 @@ body.user-account-index .latest-invoice .icon-ok {
 }
 
 
-form div.inline-short label {
+div.inline-short label {
     display:inline;
 }
 
-form input.inline-short {
+input.inline-short {
     display:inline;
     width:26px;
 }
@@ -1072,13 +1065,27 @@ body.app-results #test-start-form button {
 .full-width-container {
     background-color: #eee;
     padding: 40px 0;
+    margin-bottom: 30px;
 }
 
 body.full-width {
     margin-top: 40px;
 }
 
-body.app #test-options .not-selected {
+#test-options .not-selected {
     text-decoration: line-through;
     opacity: 0.7;
+}
+
+body.app section.start-new-test {
+    padding-bottom:0;
+    margin-bottom: 0;
+}
+
+.full-width-container div.main section {
+    background-color: transparent;
+}
+
+#test-options .test-options-set label.disabled {
+    opacity: 0.4
 }
