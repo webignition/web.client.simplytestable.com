@@ -1080,12 +1080,23 @@ body.full-width {
 body.app section.start-new-test {
     padding-bottom:0;
     margin-bottom: 0;
+    padding-top:0;
 }
 
 .full-width-container div.main section {
-    background-color: transparent;
+    background-color: transparent;    
 }
 
 #test-options .test-options-set label.disabled {
     opacity: 0.4
+}
+
+.full-width-container .alert {
+    margin-left:30px;
+    margin-right:30px;
+}
+
+.full-width-container section .alert {
+    margin-left: auto;
+    margin-right:auto;
 }
