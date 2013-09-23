@@ -1764,9 +1764,7 @@ application.root.testStartFormController = function () {
         if (Modernizr.input.placeholder) {
             var headerIcon = $('i', getHeader()).clone();
             getHeader().remove();
-
             getFieldsContainer().prepend(headerIcon);            
-            getTextField().attr('placeholder', 'Enter website URL to start new test ...');
         }
         
         getTaskTypeCheckboxes().each(function () {
