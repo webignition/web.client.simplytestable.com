@@ -19,6 +19,8 @@
             <button type="submit" class="btn btn-danger">Stop test</button>
         </form>
             
+        {% if app.request.attributes.get('_route') == 'app_progress' %}   
+            
         <div id="test-options">
             <div class="intro">
                 <p>
@@ -44,10 +46,11 @@
                         <input type="radio" name="full-single" value="single" {% if remote_test_summary.type != 'Full site' %}checked{% endif %} disabled> Single URL test
                         <span class="help-block">Test just the above URL only<br />&nbsp;</span>
                     </label>                
-                </div>               
-                
+                </div>                
         {% include 'SimplyTestableWebClientBundle:Partials:test-input-task-type-options.html.twig' %} 
                 </div>
-        </div>            
+        </div>
+            
+        {% endif %}
     </div>
 </section>

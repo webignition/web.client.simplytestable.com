@@ -332,7 +332,7 @@ class AppController extends TestViewController
             'reason' => $queuedTest['reason']
         ); 
         
-        $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
+        $this->setTemplate('SimplyTestableWebClientBundle:App:progress-queued.html.twig');
         return $this->sendResponse($viewData);
     }
 
