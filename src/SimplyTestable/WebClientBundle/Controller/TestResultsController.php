@@ -357,7 +357,7 @@ class TestResultsController extends TestViewController
     }
     
     private function getTestOptionsIntroduction(\SimplyTestable\WebClientBundle\Model\TestOptions $testOptions) {        
-        $testOptionsIntroduction = 'Testing ';
+        $testOptionsIntroduction = 'Tested ';
         
         $allAvailableTaskTypes = $this->container->getParameter('available_task_types');
         $availableTaskTypes = $allAvailableTaskTypes['default'];        

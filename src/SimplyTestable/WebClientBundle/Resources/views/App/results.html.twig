@@ -2,9 +2,14 @@
 
 {% block title %}Results {{website}} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
-{% block main %}        
-<div class="row-fluid">
-    <div class="span12">
+{% block body_class %}full-width {{ parent() }}{% endblock %}
+
+{% block body %}
+
+<div class="full-width-container">
+    <div class="container main">            
+        <div class="row-fluid">
+            <div class="span12">
         {% if remote_test_summary.ammendments is defined %}
             {% if remote_test_summary.ammendments[0].constraint is defined %}
 <div class="alert alert-info alert-ammendment alert-from-view">
@@ -15,12 +20,16 @@
 </div>                
             {% endif %}         
         {% endif %}
-            
-    
-{% include 'SimplyTestableWebClientBundle:Partials:header-results.html.twig' %}        
+                    
+{% include 'SimplyTestableWebClientBundle:Partials:header-results.html.twig' %}                     
+            </div>
         </div>
     </div>
+</div>
 
+<div class="container">
+    <div id="main">
+{% block main %}
     <div class="row-fluid">
         <section>                
             <div class="span12" id="test-summary">                
@@ -151,4 +160,8 @@
                         </div>        
 
         {% endif %}
+{% endblock %}
+    </div>                       
+</div>
+
 {% endblock %}
