@@ -269,7 +269,7 @@ application.progress.testController = function() {
         $('#test-summary-task-count').text(latestTestData.remote_test_summary.task_count);
     };
 
-    var displayAmmendment = function(messageContent) {
+    var displayAmmendment = function(messageContent) {        
         var ammendmentNotification = $('<div class="alert alert-info alert-ammendment">').append(
                 '<i class="icon icon-warning-sign"></i>'
                 ).append(
@@ -282,7 +282,7 @@ application.progress.testController = function() {
             'opacity': 0
         });
 
-        $($('#main .span12').get(0)).prepend(ammendmentNotificationClone);
+        $($('.main .span12').get(0)).prepend(ammendmentNotificationClone);
         ammendmentNotificationClone.slideDown(function() {
             ammendmentNotificationClone.remove();
 
@@ -290,7 +290,7 @@ application.progress.testController = function() {
                 'opacity': 0
             });
 
-            $($('#main .span12').get(0)).prepend(ammendmentNotification);
+            $($('.main .span12').get(0)).prepend(ammendmentNotification);
 
             ammendmentNotification.animate({
                 'opacity': 1
@@ -298,7 +298,7 @@ application.progress.testController = function() {
         });
     };
 
-    var setAmmendments = function() {
+    var setAmmendments = function() {        
         if ($('.alert-ammendment').length > 0) {
             return;
         }
@@ -330,7 +330,7 @@ application.progress.testController = function() {
             return;
         }
 
-        var timeRemainingString = 'About ' + formatEstimatedTimeRemaining(calculateEstimatedTimeRemaining()) + ' remaining';
+        var timeRemainingString = ', about ' + formatEstimatedTimeRemaining(calculateEstimatedTimeRemaining()) + ' remaining';
 
         if (estimatedTimeRemainingIsFirstDisplay === true) {
             estimatedTimeRemainingIsFirstDisplay = false;

@@ -34,10 +34,9 @@ class TestProgressController extends TestViewController
     );    
     
     private $testStateLabelMap = array(
-        'new' => 'New (waiting to start)',
-        'queued' => 'Waiting for first test to begin',
+        'new' => 'New, waiting to start',
+        'queued' => 'Queued, waiting for first test to begin',
         'preparing' => 'Finding URLs to test: looking for sitemap or news feed',
-        'in-progress' => 'Running',
         'crawling' => 'Finding URLs to test',
         'failed-no-sitemap' => 'Finding URLs to test: preparing to crawl'
     );
@@ -263,10 +262,10 @@ class TestProgressController extends TestViewController
             return $this->testStateLabelMap['queued'];
         }
         
-        $label = $this->testStateLabelMap[$test->getState()];
+        $label = (isset($this->testStateLabelMap[$test->getState()])) ? $this->testStateLabelMap[$test->getState()] : '';
         
         if ($test->getState() == 'in-progress') {
-            $label .= ': ' . $this->getCompletionPercent($remoteTestSummary).'% done';
+            $label = $this->getCompletionPercent($remoteTestSummary).'% done';
         }
         
         if ($test->getState() == 'crawling') {

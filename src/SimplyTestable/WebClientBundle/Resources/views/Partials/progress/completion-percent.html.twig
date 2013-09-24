@@ -1,12 +1,10 @@
 <div id="completion-percent" class="state-{% if test is defined %}{{test.state}}{% endif %}">
-    <h2 class="info"><i id="completion-percent-state-icon" class="{{ state_icon }}"></i>
-        <span id="completion-percent-state-label">{{ state_label }}</span>        
-    </h2>
     <div class="progress progress-striped active">
         <div id="completion-percent-bar" class="bar" style="width:{{ completion_percent }}%;"></div>
-    </div>            
-    <div id="completion-time-remaining">&nbsp;</div>
-
+    </div>
+    <p>
+        <span id="completion-percent-state-label">{{ state_label }}</span><span id="completion-time-remaining">&nbsp;</span>        
+    </p>
     {% if test is defined and test.state == 'crawling' %}
     <form id="cancel-crawl-form" class="top-right-form" method="post" action="{{ path('test_cancel_crawl', {'test_id':test.testId, 'website':test.website}) }}">
         <button type="submit" class="btn btn-warning">Stop finding URLs, start testing</button>

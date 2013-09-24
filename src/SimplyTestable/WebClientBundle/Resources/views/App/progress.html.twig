@@ -16,54 +16,39 @@ Testing {{website}} - {{ parent() }}
 <script type="text/javascript" src="/bundles/simplytestablewebclient/js/moment.min.js"></script>
 {% endblock %} 
 
-{% block body_class %}{{ parent() }} app-progress {% endblock %}
+{% block body_class %}full-width {{ parent() }}{% endblock %}
 
+{% block body %}
+
+<div class="full-width-container">
+    <div class="container main">            
+        <div class="row-fluid">
+            <div class="span12">
+                {% if remote_test_summary.ammendments is defined %}
+                    {% if remote_test_summary.ammendments[0].constraint is defined %}
+                    <div class="alert alert-info alert-ammendment alert-from-view">
+                        <i class="icon icon-warning-sign"></i>
+                        <span>
+        {% include 'SimplyTestableWebClientBundle:Partials:test-url-limit-notification.html.twig' %}
+                        </span>
+                    </div>                
+                    {% endif %}         
+                {% endif %}
+
+                {% include 'SimplyTestableWebClientBundle:Partials:header-progress.html.twig' %}     
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div id="main">
 {% block main %}         
 <div class="row-fluid">
     <div class="span12">
-        {% if test_cancel_error is defined and test_cancel_error != '' %}           
-            {% if test_cancel_error == 503 %}
-            <div class="alert alert-error">   
-                Oops. We're in a <strong>read-only</strong> state whilst some 
-                <strong>maintenance</strong> is going on. You can cancel
-                this test right now.
-            </div> 
-            {% endif %}        
-        {% endif %}
-
-        {% if remote_test_summary.ammendments is defined %}
-            {% if remote_test_summary.ammendments[0].constraint is defined %}
-            <div class="alert alert-info alert-ammendment alert-from-view">
-                <i class="icon icon-warning-sign"></i>
-                <span>
-{% include 'SimplyTestableWebClientBundle:Partials:test-url-limit-notification.html.twig' %}
-                    </span>
-                </div>                
-            {% endif %}         
-        {% endif %}
-
-        {% if remote_test_summary.crawl is defined and remote_test_summary.crawl.limit and remote_test_summary.crawl.discovered_url_count == remote_test_summary.crawl.limit  %}
-                <div class="alert alert-info alert-ammendment alert-from-view">
-                    <i class="icon icon-warning-sign"></i>
-                    <span>
-{% include 'SimplyTestableWebClientBundle:Partials:crawl-url-limit-notification.html.twig' %}
-                        </span>
-                    </div>       
-        {% endif %}            
-
-                {% include 'SimplyTestableWebClientBundle:Partials:header-progress.html.twig' %}
-                </div>
-            </div>
-
-
-            <section>
-                <div class="row-fluid">
-                    <div class="span12">
-                    {% include 'SimplyTestableWebClientBundle:Partials/progress:completion-percent.html.twig' %}
-                    </div>                
-                </div>          
-            </section>
-
+                
+    </div>
+</div>
 
     {% include 'SimplyTestableWebClientBundle:Partials:progress/task-states.html.twig' %}
     {% include 'SimplyTestableWebClientBundle:Partials:progress/task-progress.html.twig' %}
@@ -71,6 +56,7 @@ Testing {{website}} - {{ parent() }}
 
 
 {% endblock %}
+    </div>                       
+</div>
 
-{% block latest %}
 {% endblock %}

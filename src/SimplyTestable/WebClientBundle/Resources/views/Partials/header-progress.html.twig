@@ -8,7 +8,7 @@
     <div id="input" class="leader">                  
         <h1 class="info">
             <label for="input-website">
-                <i class="icon-cog"></i> Testing {{ website }}
+                <i id="completion-percent-state-icon" class="{{ state_icon }}"></i> Testing {{ website }}
                 {% if remote_test_summary.state != 'new-queued' %}
                 <span id="test-id">(#{{ test.testId }})</span>           
                 {% endif %}
@@ -52,5 +52,7 @@
         </div>
             
         {% endif %}
+            
+        {% include 'SimplyTestableWebClientBundle:Partials/progress:completion-percent.html.twig' %}            
     </div>
 </section>
