@@ -43,18 +43,9 @@ Testing {{website}} - {{ parent() }}
 
 <div class="container">
     <div id="main">
-{% block main %}         
-<div class="row-fluid">
-    <div class="span12">
-                
-    </div>
-</div>
-
+{% block main %}
     {% include 'SimplyTestableWebClientBundle:Partials:progress/task-states.html.twig' %}
     {% include 'SimplyTestableWebClientBundle:Partials:progress/task-progress.html.twig' %}
-   
-
-
 {% endblock %}
     </div>                       
 </div>
