@@ -189,7 +189,34 @@ class TaskRepository extends EntityRepository
         $queryBuilder->setParameter('ErrorCount', 0);  
         
         return $this->getTaskIdsFromQueryResult($queryBuilder->getQuery()->getResult());    
-    }  
+    } 
+    
+    
+    public function getWarningedRemoteIdByTest(Test $test, $excludeStates = null) {
+        $queryBuilder = $this->createQueryBuilder('Task');
+        $queryBuilder->join('Task.output', 'TaskOutput');
+        $queryBuilder->select('Task.taskId');
+        
+        $where = 'Task.test = :Test AND TaskOutput.warningCount > :WarningCount';
+        
+        if (is_array(($excludeStates))) {
+            $stateConditions = array();
+
+            foreach ($excludeStates as $stateIndex => $state) {
+                $stateConditions[] = '(Task.state != :State'.$stateIndex.') ';
+                $queryBuilder->setParameter('State'.$stateIndex, $state);
+            } 
+            
+            $where .= ' AND ('.implode('AND', $stateConditions).')';
+        }
+        
+        $queryBuilder->where($where);
+        $queryBuilder->setParameter('Test', $test);        
+        $queryBuilder->setParameter('WarningCount', 0);  
+        
+        return $this->getTaskIdsFromQueryResult($queryBuilder->getQuery()->getResult());    
+    }    
+    
     
     public function findUsedTaskOutputIds() {
         $queryBuilder = $this->createQueryBuilder('Task');

@@ -548,5 +548,55 @@ class Test {
     public function getType()
     {
         return $this->type;
+    }  
+
+
+    /**
+     * 
+     * @return int
+     */
+    public function getErrorCount() {
+        $errorCount = 0;
+        
+        foreach ($this->getTasks() as $task) {
+            /* @var $task \SimplyTestable\WebClientBundle\Entity\Task\Task */
+            if ($task->hasOutput()) {
+                $errorCount += $task->getOutput()->getErrorCount();
+            }            
+        }
+        
+        return $errorCount;
     }    
+    
+    
+    /**
+     * 
+     * @return int
+     */
+    public function getWarningCount() {
+        $warningCount = 0;
+        
+        foreach ($this->getTasks() as $task) {
+            /* @var $task \SimplyTestable\WebClientBundle\Entity\Task\Task */
+            if ($task->hasOutput()) {
+                $warningCount += $task->getOutput()->getWarningCount();
+            }            
+        }
+        
+        return $warningCount;
+    }
+    
+    
+    public function getErrorCountByTaskType($type = '') {
+        $errorCount = 0;
+        
+        foreach ($this->getTasks() as $task) {
+            /* @var $task \SimplyTestable\WebClientBundle\Entity\Task\Task */
+            if ($task->hasOutput() && $task->getType() == $type) {                
+                $errorCount += $task->getOutput()->getErrorCount();
+            }            
+        }
+        
+        return $errorCount;
+    }
 }

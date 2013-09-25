@@ -55,7 +55,7 @@ class TestResultsController extends TestViewController
         return $availableTaskTypes;
     }
         
-    private function getRemoteTestSummaryArray($remoteTestSummary) {        
+    private function getRemoteTestSummaryArray($remoteTestSummary) {
         $remoteTestSummaryArray = (array)$remoteTestSummary;
         
         foreach ($remoteTestSummaryArray as $key => $value) {            
@@ -310,7 +310,7 @@ class TestResultsController extends TestViewController
         }
         
         $this->getTestOptionsAdapter()->setRequestData($this->remoteTestSummaryTestOptionsToParameterBag($remoteTestSummary));
-        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();  
+        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
         
         $viewData = array(
             'website' => idn_to_utf8($website),
@@ -438,6 +438,10 @@ class TestResultsController extends TestViewController
         if ($filter == 'with-errors') {
             return $this->getTaskService()->getEntityRepository()->getErroredRemoteIdByTest($test, array('skipped', 'cancelled', 'in-progress', 'awaiting-cancellation'));
         }  
+        
+        if ($filter == 'with-warnings') {
+            return $this->getTaskService()->getEntityRepository()->getWarningedRemoteIdByTest($test, array('skipped', 'cancelled', 'in-progress', 'awaiting-cancellation'));
+        }          
         
         if ($filter == 'skipped') {
             return $this->getTaskService()->getEntityRepository()->getRemoteIdByTestAndState($test, array('skipped'));

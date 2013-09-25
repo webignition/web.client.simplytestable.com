@@ -1,3 +1,5 @@
+{% set error_free_task_count = remote_test_summary.task_count - remote_test_summary.errored_task_count - remote_test_summary.cancelled_task_count - remote_test_summary.skipped_task_count %}
+
 {% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
 
 {% block title %}Results {{website}} (#{{test.testId}}) - {{ parent() }}{% endblock %}
@@ -30,20 +32,6 @@
 <div class="container">
     <div id="main">
 {% block main %}
-    <div class="row-fluid">
-        <section>                
-            <div class="span12" id="test-summary">                
-                
-                <h2 class="info">
-                    <i class="icon-certificate"></i>
-                    Summary (<span id="test-summary-url-count">{{ remote_test_summary.url_count }}</span> urls, <span id="test-summary-task-count">{{ remote_test_summary.task_count }}</span> tests)
-                </h2>
-{% include 'SimplyTestableWebClientBundle:Partials:results/task-states.html.twig' %}
-            </div>
-            <div class="clearfix"></div>
-        </section>
-    </div>
-
         {% if remote_test_summary.task_count > 0 %}
 
     <div id="test-list">
@@ -54,11 +42,12 @@
 
                         {% if tasks is defined %}
                     <ul class="nav nav-tabs">
-                        <li class="{% if (filter == 'all') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=all">All ({{ remote_test_summary.task_count }})</a></li>
-                        <li class="{% if (filter == 'with-errors') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=with-errors">Tests with errors ({{ remote_test_summary.errored_task_count }})</a></li>
-                        <li class="{% if (filter == 'without-errors') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=without-errors">Tests without errors ({{ remote_test_summary.task_count - remote_test_summary.errored_task_count - remote_test_summary.cancelled_task_count - remote_test_summary.skipped_task_count }})</a></li>                            
-                        <li class="{% if (filter == 'skipped') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=skipped">Skipped tests ({{ remote_test_summary.skipped_task_count }})</a></li>
-                        <li class="{% if (filter == 'cancelled') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=cancelled">Cancelled tests ({{ remote_test_summary.cancelled_task_count }})</a></li>
+                        <li class="tasks-all {% if (filter == 'all') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=all#test-list">All ({{ remote_test_summary.task_count }})</a></li>
+                        <li class="tasks-with-errors {% if (filter == 'with-errors') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=with-errors#test-list"><i class="icon icon-ban-circle"></i> Tests with errors ({{ remote_test_summary.errored_task_count }})</a></li>
+                        <li class="tasks-with-warnings {% if (filter == 'with-warnings') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=with-warnings#test-list"><i class="icon icon-text">!</i> Tests with warnings ({{ remote_test_summary.warninged_task_count }})</a></li>
+                        <li class="tasks-without-errors {% if (filter == 'without-errors') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=without-errors#test-list"><i class="icon icon-ok"></i> Tests without errors ({{ remote_test_summary.task_count - remote_test_summary.errored_task_count - remote_test_summary.cancelled_task_count - remote_test_summary.skipped_task_count }})</a></li>                            
+                        {% if remote_test_summary.skipped_task_count > 0 %}<li class="tasks-skipped {% if (filter == 'skipped') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=skipped#test-list"><i class="icon icon-random"></i> Skipped tests ({{ remote_test_summary.skipped_task_count }})</a></li>{% endif %}
+                        {% if remote_test_summary.cancelled_task_count > 0 %}<li class="tasks-cancelled {% if (filter == 'cancelled') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=cancelled#test-list"><i class="icon icon-remove"></i> Cancelled tests ({{ remote_test_summary.cancelled_task_count }})</a></li>{% endif %}
                     </ul>
 
                         {% if tasks|length > 0 %}
@@ -78,7 +67,7 @@
                                                     {% elseif task.state == 'skipped' %}
                                                 <i class="icon-random"></i>
                                                     {% elseif task.state == 'cancelled' or task.state == 'failed' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-available' or task.state == 'failed-retry-limit-reached' %}
-                                                <i class="icon-ban-circle"></i>                                
+                                                <i class="icon-remove-circle"></i>                                
                                                     {% else %}
                                                 <i class="icon-bar-chart"></i>
                                                     {% endif %}

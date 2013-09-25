@@ -43,6 +43,31 @@
                 </div>
         </div>            
     </form>
+        
+    <div class="row-fluid" id="summary-stats">
+        <div class="span2 summary-container summary-figure error-container">
+            <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=with-errors#test-list"><span class="count">{{ test.errorCount }}</span> <span class="stat-label">error{% if test.errorCount != 1 %}s{% endif %}</span><i class="icon icon-caret-down"></i></a>
+        </div>            
+        <div class="span2 summary-container summary-figure warning-container">
+            <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=with-warnings#test-list"><span class="count">{{ test.warningCount }}</span> <span class="stat-label">warning{% if test.warningCount != 1 %}s{% endif %}</span><i class="icon icon-caret-down"></i></a>
+        </div>      
+       
+        <div class="span2 summary-container summary-figure success-container">
+            <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=without-errors#test-list"><span class="count">{{ error_free_task_count }}</span> <span class="stat-label">test{% if error_free_task_count != 1 %}s{% endif %} without errors</span><i class="icon icon-caret-down"></i></a>
+        </div>           
+        <div class="span6 summary-container summary-prose">
+            {% if test.errorCount > 0 %}
+                <ul>
+                {% for task_type in task_types %}
+                    {% set task_error_count = test.getErrorCountByTaskType(task_type | replace({'JavaScript static analysis': "JS static analysis"})) %}
+                        
+                    <li>{{ task_error_count }} {{ task_type }} error{% if task_error_count != 1 %}s{% endif %}</li>
+                {% endfor %}                    
+                </ul>
+            {% endif %}
+        </div>  
+        
+    </div>
 
 
 </section>

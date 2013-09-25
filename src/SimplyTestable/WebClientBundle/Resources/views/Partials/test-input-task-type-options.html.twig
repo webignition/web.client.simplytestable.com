@@ -37,8 +37,8 @@
                 <div class="row-fluid">                            
                     <div class="span2 css-validator-option-set validator-option-set css-general">
                         <p>Handling warnings:</p>
-                        <label class="checkbox {% if (is_disabled) and test_options['css-validation-ignore-warnings'] == 0 %}disabled{% endif %}">
-                            <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" value="1" name="css-validation-ignore-warnings" {% if (test_options['css-validation-ignore-warnings'] == 1 or (test_options['css-validation'] == '' and default_css_validation_options['ignore-warnings'] == 1)) %} checked {% endif %}> Ignore warnings (report errors only)
+                        <label class="checkbox {% if (is_disabled) and (test_options['css-validation-ignore-warnings'] is not defined or test_options['css-validation-ignore-warnings'] == 0) %}disabled{% endif %}">
+                            <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" value="1" name="css-validation-ignore-warnings" {% if ((test_options['css-validation-ignore-warnings'] is defined and test_options['css-validation-ignore-warnings'] == 1) or (test_options['css-validation'] == '' and default_css_validation_options['ignore-warnings'] == 1)) %} checked {% endif %}> Ignore warnings (report errors only)
                         </label>
                     </div>
                     <div class="span2 css-validator-option-set validator-option-set css-vendor-extensions">                                
