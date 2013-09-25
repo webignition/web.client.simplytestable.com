@@ -37,6 +37,7 @@ Content-Type: application/json
    "errored_task_count":0,
    "cancelled_task_count":0,
    "skipped_task_count":0,
+   "warninged_task_count":0,
    "task_type_options":{
       "CSS validation":{
          "ignore-warnings":"1",
