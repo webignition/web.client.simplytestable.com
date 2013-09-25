@@ -333,7 +333,10 @@ class TestResultsController extends TestViewController
                 'ignore-common-cdns' => 1                
             ),
             'default_js_static_analysis_options' => array(
-                'ignore-common-cdns' => 1                
+                'ignore-common-cdns' => 1,
+                'jslint-option-maxerr' => 50,
+                'jslint-option-indent' => 4,
+                'jslint-option-maxlen' => 256
             ),
             'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions)
         );
@@ -499,8 +502,8 @@ class TestResultsController extends TestViewController
             foreach ($taskTypeOptions as $taskTypeOptionKey => $taskTypeOptionValue) {
                 $parameterBag->set($taskTypeKey . '-' . $taskTypeOptionKey, $taskTypeOptionValue);
             }
-        }
-        
+        }       
+
         return $parameterBag;
     }    
 

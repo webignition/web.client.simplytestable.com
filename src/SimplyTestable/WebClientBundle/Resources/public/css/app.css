@@ -1109,11 +1109,11 @@ body.app-progress .progress {
     margin-top: 20px;
 }
 
-body.app-results #summary-stats .summary-container {
+#summary-stats .summary-container {
     margin-top:20px;
 }
 
-body.app-results #summary-stats .summary-figure {
+#summary-stats .summary-figure {
     text-align: center;
     border-radius: 60px;
     width:120px;
@@ -1123,48 +1123,44 @@ body.app-results #summary-stats .summary-figure {
     color:#fff;
 }
 
-body.app-results #summary-stats .summary-figure .count,
-body.app-results #summary-stats .summary-figure .stat-label {
-    /*opacity: 0.8;*/
-}
-
-body.app-results #summary-stats .summary-figure .count {
-    
-}
-
-body.app-results #summary-stats .summary-figure .stat-label {
+#summary-stats .summary-figure .stat-label {
     font-size: 12px;    
 }
 
-body.app-results #summary-stats .summary-figure .icon {
+#summary-stats .summary-figure .icon {
     display:block;
     font-size:20px;
 }
 
-body.app-results #summary-stats .summary-figure a {
+#summary-stats .summary-figure a,
+#summary-stats .summary-figure .anchor {
     color:#fff;
     opacity:0.8;
     display: block;
 }
 
-body.app-results #summary-stats .summary-figure a:hover {
+#summary-stats .summary-figure a:hover {
     text-decoration: none;
     opacity: 1;
 }
 
-body.app-results #summary-stats .error-container {
+#summary-stats .error-container {
     background-color: #b94a48;
 }
 
-body.app-results #summary-stats .warning-container {
+#summary-stats .warning-container {
     background-color: #0088cc;
 }
 
-body.app-results #summary-stats .success-container {
+#summary-stats .success-container {
     background-color: #468847;
 }
 
-body.app-results #summary-stats .count {
+#summary-stats .fix-container {
+    background-color:#f89406;
+}
+
+#summary-stats .count {
     font-size:40px;
     line-height: 40px;
     display: block;
@@ -1201,4 +1197,12 @@ body.app-results #summary-stats .count {
 .borderradius body.app-results #task-list-container .nav-tabs li.tasks-skipped i,
 .borderradius body.app-results #task-list-container .nav-tabs li.tasks-cancelled i {
     background-color: #999;
+}
+
+body.app-task-results .issue-list .icon-ban-circle {
+    color: #b94a48;
+}
+
+body.app-task-results .issue-list .icon-heart {
+    color: #f89406;
 }

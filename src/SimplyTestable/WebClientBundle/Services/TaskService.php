@@ -168,13 +168,17 @@ class TaskService extends CoreApplicationService {
  
         
         if (count($tasksToPersist)) {
-            foreach ($tasksToPersist as $task) {
+            foreach ($tasksToPersist as $task) {                
+                if (!$test->getTasks()->contains($task)) {
+                    $test->addTask($task);
+                }
+                
                 /* @var $task Task */
                 $this->entityManager->persist($task);
             }            
             
             $this->entityManager->flush();
-        }         
+        }
         
         if ($test->getState() == 'completed' || $test->getState() == 'cancelled') {
             foreach ($tasks as $task) {

@@ -14,7 +14,7 @@
 
     <div class="test-options-set task-type-option {% if (is_disabled) and test_options['html-validation'] == 0 %}test-options-set-disabled{% endif %}" id="html-validation-options">
         <label class="checkbox {% if (is_disabled) and test_options['html-validation'] == 0 %}disabled{% endif %}">
-            <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="html-validation" {% if (test_options['html-validation'] == 1) %} checked {% endif %} /> <span class="task-type-name">HTML validation</span>
+            <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="html-validation" {% if (test_options['html-validation'] is defined and test_options['html-validation'] == 1) %} checked {% endif %} /> <span class="task-type-name">HTML validation</span>
             <span class="help-block">Examine whether the HTML markup for all your pages is valid</span>
         </label>                
     </div>
@@ -25,7 +25,7 @@
 
     <div class="test-options-set task-type-option {% if (is_disabled) and test_options['css-validation'] == 0 %}test-options-set-disabled{% endif %}" id="css-validation-options">
         <label class="checkbox {% if (is_disabled) and test_options['css-validation'] == 0 %}disabled{% endif %}">
-            <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="css-validation" {% if (test_options['css-validation'] == 1) %} checked {% endif %} /> <span class="task-type-name">CSS validation</span>
+            <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="css-validation" {% if (test_options['css-validation'] is defined and test_options['css-validation'] == 1) %} checked {% endif %} /> <span class="task-type-name">CSS validation</span>
             <span class="help-block">Check CSS rules defined in linked stylesheets and inline</span>
         </label>
             
@@ -38,29 +38,29 @@
                     <div class="span2 css-validator-option-set validator-option-set css-general">
                         <p>Handling warnings:</p>
                         <label class="checkbox {% if (is_disabled) and (test_options['css-validation-ignore-warnings'] is not defined or test_options['css-validation-ignore-warnings'] == 0) %}disabled{% endif %}">
-                            <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" value="1" name="css-validation-ignore-warnings" {% if ((test_options['css-validation-ignore-warnings'] is defined and test_options['css-validation-ignore-warnings'] == 1) or (test_options['css-validation'] == '' and default_css_validation_options['ignore-warnings'] == 1)) %} checked {% endif %}> Ignore warnings (report errors only)
+                            <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" value="1" name="css-validation-ignore-warnings" {% if ((test_options['css-validation-ignore-warnings'] is defined and test_options['css-validation-ignore-warnings'] == 1) or ((test_options['css-validation'] is defined and test_options['css-validation'] != 1) and default_css_validation_options['ignore-warnings'] == 1)) %} checked {% endif %}> Ignore warnings (report errors only)
                         </label>
                     </div>
                     <div class="span2 css-validator-option-set validator-option-set css-vendor-extensions">                                
                         <p>Vendor extension issues:</p>
                         <label class="radio {% if (is_disabled) and test_options['css-validation-vendor-extensions'] != 'ignore' %}disabled{% endif %}">
-                            <input {% if (is_disabled) %}disabled{% endif %} type="radio" name="css-validation-vendor-extensions" value="ignore" {% if test_options['css-validation-vendor-extensions'] == 'ignore' or (test_options['css-validation'] == '' and default_css_validation_options['vendor-extensions'] == 'ignore') %} checked {% endif %}>
+                            <input {% if (is_disabled) %}disabled{% endif %} type="radio" name="css-validation-vendor-extensions" value="ignore" {% if test_options['css-validation-vendor-extensions'] is defined and test_options['css-validation-vendor-extensions'] == 'ignore' or ((test_options['css-validation'] is not defined or test_options['css-validation'] == '') and default_css_validation_options['vendor-extensions'] == 'ignore') %} checked {% endif %}>
                             Ignore
                         </label>
                         <label class="radio {% if (is_disabled) and test_options['css-validation-vendor-extensions'] != 'warn' %}disabled{% endif %}">
-                            <input {% if (is_disabled) %}disabled{% endif %} type="radio" name="css-validation-vendor-extensions" value="warn" {% if test_options['css-validation-vendor-extensions'] == 'warn' or (test_options['css-validation'] == '' and default_css_validation_options['vendor-extensions'] == 'warn') %} checked {% endif %}>
+                            <input {% if (is_disabled) %}disabled{% endif %} type="radio" name="css-validation-vendor-extensions" value="warn" {% if test_options['css-validation-vendor-extensions'] is defined and test_options['css-validation-vendor-extensions'] == 'warn' or ((test_options['css-validation'] is not defined or test_options['css-validation'] == '') and default_css_validation_options['vendor-extensions'] == 'warn') %} checked {% endif %}>
                             Report as warnings
                         </label>                         
                         <label class="radio {% if (is_disabled) and test_options['css-validation-vendor-extensions'] != 'error' %}disabled{% endif %}">
-                            <input {% if (is_disabled) %}disabled{% endif %} type="radio" name="css-validation-vendor-extensions" value="error" {% if test_options['css-validation-vendor-extensions'] == 'error' or (test_options['css-validation'] == '' and default_css_validation_options['vendor-extensions'] == 'error') %} checked {% endif %}>
+                            <input {% if (is_disabled) %}disabled{% endif %} type="radio" name="css-validation-vendor-extensions" value="error" {% if test_options['css-validation-vendor-extensions'] is defined and test_options['css-validation-vendor-extensions'] == 'error' or ((test_options['css-validation'] is not defined or test_options['css-validation'] == '') and default_css_validation_options['vendor-extensions'] == 'error') %} checked {% endif %}>
                             Report as errors
                         </label> 
                     </div>                                
                     <div class="span3 css-validator-option-set validator-option-set css-common-cdn-domains">
                         <p>Common <a href="http://en.wikipedia.org/wiki/Content_delivery_network">CDN</a> domains:</p>
 
-                        <label class="checkbox ignore-common-cdn-domains {% if (is_disabled) and test_options['css-validation-ignore-common-cdns'] == 0 %}disabled{% endif %}">
-                            <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" value="1" name="css-validation-ignore-common-cdns"  {% if (test_options['css-validation-ignore-common-cdns'] == 1) or (test_options['css-validation'] == '' and default_css_validation_options['ignore-common-cdns'] == 1) %} checked {% endif %} /> Ignore CSS from common CDNs:
+                        <label class="checkbox ignore-common-cdn-domains {% if (is_disabled) and (test_options['css-validation-ignore-common-cdns'] is not defined or test_options['css-validation-ignore-common-cdns'] == 0) %}disabled{% endif %}">
+                            <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" value="1" name="css-validation-ignore-common-cdns"  {% if (test_options['css-validation-ignore-common-cdns'] is defined and test_options['css-validation-ignore-common-cdns'] == 1) or ((test_options['css-validation'] is not defined or test_options['css-validation'] == '') and default_css_validation_options['ignore-common-cdns'] == 1) %} checked {% endif %} /> Ignore CSS from common CDNs:
 
                                     {% if css_validation_ignore_common_cdns|length > 0 %}
                             <ul>
@@ -97,7 +97,7 @@
             <div class="row-fluid">                                                                               
                 <div class="span4">
                     <label class="checkbox {% if (is_disabled) and test_options['js-static-analysis'] == 0 %}disabled{% endif %}">
-                        <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="js-static-analysis" {% if (test_options['js-static-analysis'] == 1) %} checked {% endif %} /> <span class="task-type-name">JavaScript static analysis</span>
+                        <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="js-static-analysis" {% if (test_options['js-static-analysis'] is defined and test_options['js-static-analysis'] == 1) %} checked {% endif %} /> <span class="task-type-name">JavaScript static analysis</span>
                         <span class="help-block">Analyse the quality of your JavaScript with <a href="http://www.jslint.com/lint.html">JSLint</a></span>
                     </label>
                 </div>                                 
@@ -116,7 +116,7 @@
                         <p>Common <a href="http://en.wikipedia.org/wiki/Content_delivery_network">CDN</a> domains:</p>
 
                         <label class="checkbox ignore-common-cdn-domains {% if (is_disabled) and test_options['js-static-analysis-ignore-common-cdns'] == 0 %}disabled{% endif %}">
-                            <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" value="1" name="js-static-analysis-ignore-common-cdns"  {% if (test_options['js-static-analysis-ignore-common-cdns'] == 1) or (test_options['js-static-analysis'] == '' and default_js_static_analysis_options['ignore-common-cdns'] == 1) %} checked {% endif %} /> Ignore JS from common CDNs:
+                            <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" value="1" name="js-static-analysis-ignore-common-cdns" {% if (test_options['js-static-analysis-ignore-common-cdns'] is defined and test_options['js-static-analysis-ignore-common-cdns'] == 1) or ((test_options['js-static-analysis'] is not defined or test_options['js-static-analysis'] == '') and default_js_static_analysis_options['ignore-common-cdns'] == 1) %} checked {% endif %} /> Ignore JS from common CDNs:
 
                                     {% if css_validation_ignore_common_cdns|length > 0 %}
                             <ul>
@@ -211,7 +211,7 @@
                                                    class="inline-short"
                                                    type="text"
                                                    name="js-static-analysis-jslint-option-maxerr"
-                                                   value="{{ test_options['js-static-analysis-jslint-option-maxerr'] }}"
+                                                   value="{% if (test_options['js-static-analysis-jslint-option-maxerr'] is defined) %}{{ test_options['js-static-analysis-jslint-option-maxerr'] }}{% else %}{{ default_js_static_analysis_options['jslint-option-maxerr'] }}{% endif %}"
                                                    title="maxerr" />
                                             errors
                                         </label>                                            
@@ -225,7 +225,7 @@
                                                    class="inline-short"
                                                    type="text"
                                                    name="js-static-analysis-jslint-option-indent"
-                                                   value="{{ test_options['js-static-analysis-jslint-option-indent'] }}"
+                                                   value="{% if (test_options['js-static-analysis-jslint-option-indent'] is defined) %}{{ test_options['js-static-analysis-jslint-option-indent'] }}{% else %}{{ default_js_static_analysis_options['jslint-option-indent'] }}{% endif %}"
                                                    title="indent" />
                                             spaces
                                         </label>
@@ -236,7 +236,7 @@
                                                    class="inline-short"
                                                    type="text"
                                                    name="js-static-analysis-jslint-option-maxlen"
-                                                   value="{{ test_options['js-static-analysis-jslint-option-maxlen'] }}"
+                                                   value="{% if (test_options['js-static-analysis-jslint-option-maxlen'] is defined) %}{{ test_options['js-static-analysis-jslint-option-maxlen'] }}{% else %}{{ default_js_static_analysis_options['jslint-option-maxlen'] }}{% endif %}"
                                                    title="maxlen" />
                                             characters
                                         </label>                                                 
