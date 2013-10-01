@@ -1,8 +1,8 @@
-<div class="test-options-set task-type-option {% if (is_disabled) and test_options['js-static-analysis'] == 0 %}test-options-set-disabled{% endif %}" id="js-static-analysis-validation-options">
+<div class="test-options-set task-type-option {% if (is_disabled) and (test_options['js-static-analysis'] is not defined or test_options['js-static-analysis'] == 0) %}test-options-set-disabled{% endif %}" id="js-static-analysis-validation-options">
 
     <div class="row-fluid">                                                                               
         <div class="span4">
-            <label class="checkbox {% if (is_disabled) and test_options['js-static-analysis'] == 0 %}disabled{% endif %}">
+            <label class="checkbox {% if (is_disabled) and (test_options['js-static-analysis'] is not defined or test_options['js-static-analysis'] == 0) %}disabled{% endif %}">
                 <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="js-static-analysis" {% if (test_options['js-static-analysis'] is defined and test_options['js-static-analysis'] == 1) %} checked {% endif %} /> <span class="task-type-name">JavaScript static analysis</span>
                 <span class="help-block">Analyse the quality of your JavaScript with <a href="http://www.jslint.com/lint.html">JSLint</a></span>
             </label>
@@ -11,7 +11,7 @@
         </div>
    </div>
 
-{% if is_enabled or (is_disabled and test_options['js-static-analysis'] == 1) %}
+{% if is_enabled or (is_disabled and test_options['js-static-analysis'] is defined and test_options['js-static-analysis'] == 1) %}
 
 <div class="test-options-advanced">
     <div class="expandable-control expandable-control-default-closed for-js-static-analysis-options-expandable">Advanced JS static analysis and JSLint options</div>

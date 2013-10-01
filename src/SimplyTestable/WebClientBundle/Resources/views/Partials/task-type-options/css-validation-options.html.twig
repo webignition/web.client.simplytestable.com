@@ -1,10 +1,10 @@
-<div class="test-options-set task-type-option {% if (is_disabled) and test_options['css-validation'] == 0 %}test-options-set-disabled{% endif %}" id="css-validation-options">
-    <label class="checkbox {% if (is_disabled) and test_options['css-validation'] == 0 %}disabled{% endif %}">
+<div class="test-options-set task-type-option {% if (is_disabled) and (test_options['css-validation'] is not defined or test_options['css-validation'] == 0) %}test-options-set-disabled{% endif %}" id="css-validation-options">
+    <label class="checkbox {% if (is_disabled) and (test_options['css-validation'] is not defined or test_options['css-validation'] == 0) %}disabled{% endif %}">
         <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="css-validation" {% if (test_options['css-validation'] is defined and test_options['css-validation'] == 1) %} checked {% endif %} /> <span class="task-type-name">CSS validation</span>
         <span class="help-block">Check CSS rules defined in linked stylesheets and inline</span>
     </label>
 
-    {% if is_enabled or (is_disabled and test_options['css-validation'] == 1) %}
+    {% if is_enabled or (is_disabled and test_options['css-validation'] is defined and test_options['css-validation'] == 1) %}
 
     <div class="test-options-advanced">
         <div class="expandable-control expandable-control-default-closed for-css-validation-options-expandable">Advanced CSS validation options</div>
