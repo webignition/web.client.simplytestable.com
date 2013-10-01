@@ -96,9 +96,7 @@ class AppController extends TestViewController
         if ($testStartError != '') {
             $this->getTestOptionsAdapter()->setInvertInvertableOptions(true);
         }        
-        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
-        
-        $this->getTestOptionsIntroduction($testOptions);
+        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();        
         
         return $this->render($templateName, array(
             'test_start_error' => $testStartError,

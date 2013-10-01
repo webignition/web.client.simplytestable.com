@@ -1,0 +1,64 @@
+<div class="test-options-set task-type-option {% if (is_disabled) and test_options['css-validation'] == 0 %}test-options-set-disabled{% endif %}" id="css-validation-options">
+    <label class="checkbox {% if (is_disabled) and test_options['css-validation'] == 0 %}disabled{% endif %}">
+        <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="css-validation" {% if (test_options['css-validation'] is defined and test_options['css-validation'] == 1) %} checked {% endif %} /> <span class="task-type-name">CSS validation</span>
+        <span class="help-block">Check CSS rules defined in linked stylesheets and inline</span>
+    </label>
+
+    {% if is_enabled or (is_disabled and test_options['css-validation'] == 1) %}
+
+    <div class="test-options-advanced">
+        <div class="expandable-control expandable-control-default-closed for-css-validation-options-expandable">Advanced CSS validation options</div>
+        <div id="css-validation-options-expandable">
+            <div class="row-fluid">                            
+                <div class="span2 css-validator-option-set validator-option-set css-general">
+                    <p>Handling warnings:</p>
+                    <label class="checkbox {% if (is_disabled) and (test_options['css-validation-ignore-warnings'] is not defined or test_options['css-validation-ignore-warnings'] == 0) %}disabled{% endif %}">
+                        <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" value="1" name="css-validation-ignore-warnings" {% if ((test_options['css-validation-ignore-warnings'] is defined and test_options['css-validation-ignore-warnings'] == 1) or ((test_options['css-validation'] is defined and test_options['css-validation'] != 1) and default_css_validation_options['ignore-warnings'] == 1)) %} checked {% endif %}> Ignore warnings (report errors only)
+                    </label>
+                </div>
+                <div class="span2 css-validator-option-set validator-option-set css-vendor-extensions">                                
+                    <p>Vendor extension issues:</p>
+                    <label class="radio {% if (is_disabled) and test_options['css-validation-vendor-extensions'] != 'ignore' %}disabled{% endif %}">
+                        <input {% if (is_disabled) %}disabled{% endif %} type="radio" name="css-validation-vendor-extensions" value="ignore" {% if test_options['css-validation-vendor-extensions'] is defined and test_options['css-validation-vendor-extensions'] == 'ignore' or ((test_options['css-validation'] is not defined or test_options['css-validation'] == '') and default_css_validation_options['vendor-extensions'] == 'ignore') %} checked {% endif %}>
+                        Ignore
+                    </label>
+                    <label class="radio {% if (is_disabled) and test_options['css-validation-vendor-extensions'] != 'warn' %}disabled{% endif %}">
+                        <input {% if (is_disabled) %}disabled{% endif %} type="radio" name="css-validation-vendor-extensions" value="warn" {% if test_options['css-validation-vendor-extensions'] is defined and test_options['css-validation-vendor-extensions'] == 'warn' or ((test_options['css-validation'] is not defined or test_options['css-validation'] == '') and default_css_validation_options['vendor-extensions'] == 'warn') %} checked {% endif %}>
+                        Report as warnings
+                    </label>                         
+                    <label class="radio {% if (is_disabled) and test_options['css-validation-vendor-extensions'] != 'error' %}disabled{% endif %}">
+                        <input {% if (is_disabled) %}disabled{% endif %} type="radio" name="css-validation-vendor-extensions" value="error" {% if test_options['css-validation-vendor-extensions'] is defined and test_options['css-validation-vendor-extensions'] == 'error' or ((test_options['css-validation'] is not defined or test_options['css-validation'] == '') and default_css_validation_options['vendor-extensions'] == 'error') %} checked {% endif %}>
+                        Report as errors
+                    </label> 
+                </div>                                
+                <div class="span3 css-validator-option-set validator-option-set css-common-cdn-domains">
+                    <p>Common <a href="http://en.wikipedia.org/wiki/Content_delivery_network">CDN</a> domains:</p>
+
+                    <label class="checkbox ignore-common-cdn-domains {% if (is_disabled) and (test_options['css-validation-ignore-common-cdns'] is not defined or test_options['css-validation-ignore-common-cdns'] == 0) %}disabled{% endif %}">
+                        <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" value="1" name="css-validation-ignore-common-cdns"  {% if (test_options['css-validation-ignore-common-cdns'] is defined and test_options['css-validation-ignore-common-cdns'] == 1) or ((test_options['css-validation'] is not defined or test_options['css-validation'] == '') and default_css_validation_options['ignore-common-cdns'] == 1) %} checked {% endif %} /> Ignore CSS from common CDNs:
+
+                                {% if css_validation_ignore_common_cdns|length > 0 %}
+                        <ul>
+                                    {% for cdn_domain_to_ignore in css_validation_ignore_common_cdns %}                                        
+                                <li>&ndash; {{ cdn_domain_to_ignore }}</li>                                        
+                                    {% endfor %}
+                            </ul>                                        
+                                {% endif %}                                    
+                        </label> 
+                    </div>                                 
+                    <div class="span5 css-validator-option-set validator-option-set css-domains-to-ignore">
+                        <p>Linked CSS domains to ignore:</p>
+
+                        <span class="help-block">
+                            You might be linking to third-party CSS resources that you don't control and that you
+                            want the validator to ignore.
+                        </span>
+                        <textarea {% if (is_disabled) %}disabled{% endif %} name="css-validation-domains-to-ignore" rows="5" {% if (is_enabled) %} placeholder="example.mycdn.com                                 one-per-line.example.com"{% endif %}>{% if test_options['css-validation-domains-to-ignore'] is defined and test_options['css-validation-domains-to-ignore'] != '' %}{{test_options['css-validation-domains-to-ignore']|join('\n')}}{% endif %}</textarea>
+                    </div>                             
+                </div>                          
+            </div>
+        </div>
+
+        {% endif %}
+
+    </div>

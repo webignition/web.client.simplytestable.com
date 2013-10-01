@@ -1,0 +1,27 @@
+{% macro persistent_checkbox(label, name, test_options, hint, is_disabled) %}
+    <label class="checkbox {% if ((test_options[name] is not defined or test_options[name] == 0) and is_disabled) %}disabled{% endif %}" title="{{ hint }}">
+        <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" name="{{ name }}" value="1" {% if (test_options[name] is defined and test_options[name] == 1) %} checked {% endif %} />
+    {{ label | raw }}
+    </label>
+{% endmacro %}
+    
+{% import _self as form %}
+
+{% set is_disabled = app.request.get('_route') == 'app_progress' %}
+{% set is_enabled = (is_disabled == false) %}
+
+{% if 'html-validation' in available_task_types|keys %}
+    {% include 'SimplyTestableWebClientBundle:Partials:/task-type-options/html-validation-options.html.twig' %} 
+{% endif %}
+
+{% if 'css-validation' in available_task_types|keys %}
+    {% include 'SimplyTestableWebClientBundle:Partials:/task-type-options/css-validation-options.html.twig' %} 
+{% endif %}
+
+{% if 'js-static-analysis' in available_task_types|keys %}
+    {% include 'SimplyTestableWebClientBundle:Partials:/task-type-options/js-static-analysis-options.html.twig' %}
+{% endif %}
+
+{% if 'link-integrity' in available_task_types|keys %}
+    {% include 'SimplyTestableWebClientBundle:Partials:/task-type-options/link-integrity-options.html.twig' %}
+{% endif %}

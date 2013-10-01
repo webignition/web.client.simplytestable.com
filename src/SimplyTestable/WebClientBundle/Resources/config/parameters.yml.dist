@@ -10,7 +10,7 @@ parameters:
       html-validation: "HTML validation"
       css-validation: "CSS validation"
       js-static-analysis: "JS static analysis"     
-      link-verification: "Link verification"
+      link-integrity: "Link integrity"
     early_access:
   core_application:
     urls:
@@ -144,7 +144,7 @@ parameters:
           - ""
         js-static-analysis-domains-to-ignore:
           - ""
-        link-verification: 1
+        link-integrity: 1
     invert_option_keys:
         - js-static-analysis-jslint-option-bitwise
         - js-static-analysis-jslint-option-continue
