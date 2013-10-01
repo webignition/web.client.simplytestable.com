@@ -143,6 +143,7 @@ parameters:
           - ""
         js-static-analysis-domains-to-ignore:
           - ""
+        link-verification: 1
     invert_option_keys:
         - js-static-analysis-jslint-option-bitwise
         - js-static-analysis-jslint-option-continue
