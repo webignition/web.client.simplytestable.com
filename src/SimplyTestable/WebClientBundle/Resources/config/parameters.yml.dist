@@ -10,6 +10,7 @@ parameters:
       html-validation: "HTML validation"
       css-validation: "CSS validation"
       js-static-analysis: "JS static analysis"     
+      link-verification: "Link verification"
     early_access:
   core_application:
     urls:
