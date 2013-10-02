@@ -1271,13 +1271,44 @@ application.progress.taskOutputController = function() {
             this.setFragment = setFragment;
             this.getFragment = getFragment;
             this.toString = toString;
-        }
+        },
+        'Link integrity': function() {
+            var context;
+            var url;
+            
+            var setContext = function (newContext) {
+                context = newContext;
+            };
+            
+            var getContext = function () {
+                return context;
+            };
+            
+            var setUrl = function (newUrl) {
+                url = newUrl;
+            };
+            
+            var getUrl = function () {
+                return url;
+            };
+
+            var toString = function() {
+                return this.getMessage();
+            };
+
+            this.setContext = setContext;
+            this.getContext = getContext;
+            this.setUrl = setUrl;
+            this.getUrl = getUrl;
+            this.toString = toString;
+        },                
     };
 
     outputMessage['abstract'].prototype = new outputMessage['abstract'];
     outputMessage['HTML validation'].prototype = new outputMessage['abstract'];
     outputMessage['CSS validation'].prototype = new outputMessage['abstract'];
     outputMessage['JS static analysis'].prototype = new outputMessage['abstract'];
+    outputMessage['Link integrity'].prototype = new outputMessage['abstract'];
 
     var outputResult = function() {
         var errorCount = 0;
@@ -1490,10 +1521,58 @@ application.progress.taskOutputController = function() {
 
                 this.getErrors = getErrors;
                 this.getWarnings = getWarnings;
-            }
+            },
+            'Link integrity': function(taskOutput) {
+                var getMessages = function() {
+                    if (taskOutput.content == undefined) {
+                        return [];
+                    }
+
+                    if (taskOutput.content.messages == undefined) {
+                        return [];
+                    }
+
+                    return taskOutput.content.messages;
+                };
+
+                var messages = getMessages();
+                var messageCount = messages.length;
+                var errors;
+
+                var getErrors = function() {                    
+                    if (errors == undefined) {
+                        errors = [];
+
+                        for (var messageIndex = 0; messageIndex < messageCount; messageIndex++) {
+                            var message = messages[messageIndex];
+
+                            if (message.type == 'error') {
+                                var currentError = new outputMessage['Link integrity'];
+                                
+                                currentError.setContext(message.context);
+                                currentError.setUrl(message.url);
+                                currentError.setClass(message.class);
+                                currentError.setMessage(message.message);
+
+                                currentError.setType('error');
+                                errors.push(currentError);
+                            }
+                        }
+                    }
+
+                    return errors;
+                };
+
+                var getWarnings = function() {
+                    return [];
+                };
+
+                this.getErrors = getErrors;
+                this.getWarnings = getWarnings;
+            },                    
         };
 
-        var getResults = function(taskOutput) {
+        var getResults = function(taskOutput) {            
             var results = new outputResult();
             var parser = new parsers[taskOutput.type](taskOutput);
 
