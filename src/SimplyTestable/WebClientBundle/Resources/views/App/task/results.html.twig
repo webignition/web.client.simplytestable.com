@@ -22,6 +22,10 @@
                         <span id="task-id">#{{task.taskId}}</span>
                     </h1>
                         
+                    <p>
+                        URL tested: <a href="{{ task.url }}">{{ task.url }}</a>
+                    </p>
+                        
     <div class="row-fluid" id="summary-stats">
         {% if task.state == 'completed' %}
         <div class="span2 summary-container summary-figure {% if task.output.errorCount > 0 %}error-container{% else %}success-container{% endif %}">
@@ -332,6 +336,24 @@
                             </ul>
                         </div>
                         {% endfor %}
+                    {% elseif task.type == 'Link integrity' %}
+                        {% if task.output.hasErrors and not task.output.result.hasErrors %}
+                    <div class="span12 notification" id="task-summary">
+                        <p>
+                            Detailed results from this test are no longer available.
+                        </p>
+                    </div>
+                        {% endif %}    
+                    
+                    <ul class="errors">
+                        {% for error in task.output.result.getErrors %}
+                            <li>
+{% include 'SimplyTestableWebClientBundle:Partials:task/link-integrity-result.html.twig' %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    
+                  
                     {% else %}
                         {% if task.output.hasErrors and not task.output.result.hasErrors %}
                     <div class="span12 notification" id="task-summary">
@@ -341,9 +363,7 @@
                     </div>
                         {% endif %}                    
                     
-                    <ul class="errors">
-
-                        
+                    <ul class="errors">                        
                         {% for error in task.output.result.getErrors %}
                             <li>
                                 {% if task.type == 'HTML validation' %}
