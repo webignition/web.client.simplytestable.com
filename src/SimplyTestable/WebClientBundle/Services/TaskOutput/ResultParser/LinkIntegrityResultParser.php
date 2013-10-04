@@ -20,7 +20,9 @@ class LinkIntegrityResultParser extends ResultParser {
         }      
         
         foreach ($rawOutputObject as $rawMessageObject) {
-            $result->addMessage($this->getMessageFromOutput($rawMessageObject));
+            if ($this->isError($rawMessageObject)) {
+                $result->addMessage($this->getMessageFromOutput($rawMessageObject));
+            }            
         }
         
         return $result;
@@ -41,6 +43,24 @@ class LinkIntegrityResultParser extends ResultParser {
         $message->setUrl($rawMessageObject->url);
         
         return $message;
+    }
+    
+    
+    /**
+     * 
+     * @param \stdClass $rawMessageObject
+     * @return boolean
+     */
+    private function isError(\stdClass $rawMessageObject) {
+        if ($rawMessageObject->type == 'curl') {
+            return true;
+        }
+        
+        if ($rawMessageObject->state != 200) {
+            return true;
+        }
+        
+        return false;
     }
     
 }
