@@ -187,6 +187,26 @@ class TaskController extends TestViewController
             $viewData['errors_by_js_context'] = $this->getJsStaticAnalysisErrorsGroupedByContext($task);
         }
         
+        if ($task->getType() == 'Link integrity') {
+            $viewData['errors_by_link_state'] = $this->getLinkIntegrityErrorsGroupedByLinkState($task);
+            $viewData['link_class_labels'] = array(
+                'curl' => 'Network-Level (curl)',
+                'http' => 'HTTP'
+            );
+            $viewData['link_state_descriptions'] = array(
+                'curl' => array(
+                    6 => 'Couldn\'t resolve host.'."\n\n".'Are the domain names in the given links still valid and working?',
+                    56 => 'Failure with receiving network data.'."\n\n".'Whatever lives at the given domains isn\'t talking back.'
+                ),
+                'http' => array(
+                    404 => 'Not found.',
+                    302 => 'Too many redirects.',
+                    500 => "Internal server error.\n\nThe application serving the given content failed.",
+                    403 => "Access denied.\n\nAre these a password-protected pages?"
+                )
+            );
+        }
+        
         return $this->getCachableResponse($this->render(
             'SimplyTestableWebClientBundle:App:task/results.html.twig',
             $viewData
@@ -323,7 +343,6 @@ class TaskController extends TestViewController
         return $errorsGroupedByRef;        
     }
     
-    
     private function getJsStaticAnalysisErrorsGroupedByContext(Task $task) {
         if ($task->getType() != 'JS static analysis') {
             return array();
@@ -342,6 +361,31 @@ class TaskController extends TestViewController
         }
         
         return $errorsGroupedByContext;
+    }    
+    
+    
+    private function getLinkIntegrityErrorsGroupedByLinkState(Task $task) {
+        if ($task->getType() != 'Link integrity') {
+            return array();
+        }
+        
+        $errorsGroupedByLinkState = array();
+        $errors = $task->getOutput()->getResult()->getErrors();
+        
+        foreach ($errors as $error) {
+            /* @var $error \SimplyTestable\WebClientBundle\Model\TaskOutput\LinkIntegrityMessage */
+            if (!isset($errorsGroupedByLinkState[$error->getClass()])) {
+                $errorsGroupedByLinkState[$error->getClass()] = array();
+            }
+            
+            if (!isset($errorsGroupedByLinkState[$error->getClass()][$error->getState()])) {
+                $errorsGroupedByLinkState[$error->getClass()][$error->getState()] = array();
+            }
+            
+            $errorsGroupedByLinkState[$error->getClass()][$error->getState()][] = $error;
+        }
+        
+        return $errorsGroupedByLinkState;
     }    
     
     

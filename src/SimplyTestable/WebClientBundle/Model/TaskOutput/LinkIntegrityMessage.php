@@ -18,6 +18,13 @@ class LinkIntegrityMessage extends Message {
     
     
     /**
+     *
+     * @var string
+     */
+    private $state;
+    
+    
+    /**
      * 
      * @param string $context
      */
@@ -49,5 +56,23 @@ class LinkIntegrityMessage extends Message {
      */
     public function getUrl() {
         return $this->url;
+    }
+    
+    
+    /**
+     * 
+     * @param string $state
+     */
+    public function setState($state) {
+        $this->state = $state;
+    }
+    
+    
+    /**
+     * 
+     * @return string
+     */
+    public function getState() {
+        return $this->state;
     }
 }

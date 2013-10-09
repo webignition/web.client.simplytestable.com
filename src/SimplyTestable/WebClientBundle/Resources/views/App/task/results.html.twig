@@ -343,16 +343,18 @@
                             Detailed results from this test are no longer available.
                         </p>
                     </div>
-                        {% endif %}    
+                        {% endif %}                        
                     
-                    <ul class="errors">
-                        {% for error in task.output.result.getErrors %}
-                            <li>
-{% include 'SimplyTestableWebClientBundle:Partials:task/link-integrity-result.html.twig' %}
-                            </li>
+                        {% for class,errors_by_class in errors_by_link_state %}
+
+                            <ul class="errors">
+                                {% for state,errors in errors_by_class %}
+                                <li>
+                                    {% include 'SimplyTestableWebClientBundle:Partials:task/link-integrity-class-results.html.twig' %}
+                                </li>                                
+                                {% endfor %}
+                            </ul>                            
                         {% endfor %}
-                    </ul>
-                    
                   
                     {% else %}
                         {% if task.output.hasErrors and not task.output.result.hasErrors %}

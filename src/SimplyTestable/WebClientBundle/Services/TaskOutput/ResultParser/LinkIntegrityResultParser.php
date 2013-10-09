@@ -41,6 +41,7 @@ class LinkIntegrityResultParser extends ResultParser {
         $message->setClass($rawMessageObject->type);
         $message->setContext($rawMessageObject->context);
         $message->setUrl($rawMessageObject->url);
+        $message->setState($rawMessageObject->state);
         
         return $message;
     }
@@ -56,11 +57,7 @@ class LinkIntegrityResultParser extends ResultParser {
             return true;
         }
         
-        if ($rawMessageObject->state != 200) {
-            return true;
-        }
-        
-        return false;
+        return in_array(substr($rawMessageObject->state, 0, 1), array('3', '4', '5'));
     }
     
 }

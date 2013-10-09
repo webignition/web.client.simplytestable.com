@@ -1206,3 +1206,9 @@ body.app-task-results .issue-list .icon-ban-circle {
 body.app-task-results .issue-list .icon-heart {
     color: #f89406;
 }
+
+body.app-task-results h3 {
+    font-weight: normal;
+    font-size: 18px;
+    line-height: 20px;    
+}
