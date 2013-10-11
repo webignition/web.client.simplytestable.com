@@ -17,7 +17,12 @@ class LinkIntegrityResultParser extends ResultParser {
         
         if (count($rawOutputObject) === 0) {
             return $result;
-        }      
+        } 
+        
+        if ($this->isFailedOutput($rawOutputObject)) {
+            $result->addMessage($this->getMessageFromFailedOutput($rawOutputObject->messages[0]));
+            return $result;
+        }        
         
         foreach ($rawOutputObject as $rawMessageObject) {
             if ($this->isError($rawMessageObject)) {
@@ -59,5 +64,24 @@ class LinkIntegrityResultParser extends ResultParser {
         
         return in_array(substr($rawMessageObject->state, 0, 1), array('3', '4', '5'));
     }
+    
+    /**
+     * 
+     * @param \stdClass $rawOutputObject
+     * @return boolean
+     */
+    private function isFailedOutput($rawOutputObject) {        
+        return isset($rawOutputObject->messages) && is_array($rawOutputObject->messages) && $rawOutputObject->messages[0]->type === 'error';      
+    }  
+    
+    
+    private function getMessageFromFailedOutput($outputMessage) {        
+        $message = new LinkIntegrityMessage();
+        $message->setType('error');
+        $message->setMessage($outputMessage->message);
+        $message->setClass($outputMessage->messageId);
+
+        return $message;
+    }    
     
 }
