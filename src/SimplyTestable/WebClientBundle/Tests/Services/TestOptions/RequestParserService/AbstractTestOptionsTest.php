@@ -55,10 +55,7 @@ abstract class AbstractTestOptionsTest extends BaseTestCase {
      * 
      * @return array
      */
-    private function getAvailableTaskTypes() {
-        $this->getAvailableTaskTypeService()->setUser($this->getUser());
-        $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
-        
+    private function getAvailableTaskTypes() {        
         return $this->getAvailableTaskTypeService()->get();    
     }    
     
@@ -69,5 +66,14 @@ abstract class AbstractTestOptionsTest extends BaseTestCase {
      */
     private function getAvailableTaskTypeService() {
         return $this->container->get('simplytestable.services.availabletasktypeservice');
+    }        
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\UserService
+     */
+    private function getUserService() {
+        return $this->container->get('simplytestable.services.userservice');
     }     
 }

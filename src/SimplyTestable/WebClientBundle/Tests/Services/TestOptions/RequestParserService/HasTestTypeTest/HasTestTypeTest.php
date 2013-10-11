@@ -179,10 +179,7 @@ class HasTestTypeTest extends BaseTestCase {
      * 
      * @return array
      */
-    private function getAvailableTaskTypes() {
-        $this->getAvailableTaskTypeService()->setUser($this->getUser());
-        $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
-        
+    private function getAvailableTaskTypes() {        
         return $this->getAvailableTaskTypeService()->get();    
     }    
     
