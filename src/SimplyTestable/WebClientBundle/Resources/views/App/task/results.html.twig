@@ -69,7 +69,7 @@
             {% if task.state == 'failed' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-limit-reached' %}
             <section>                
                 <div class="span12 notification" id="task-summary">                    
-                    {% if task.output.result.isHttpClientErrorFailure %} 
+                    {% if task.output.result.isHttpClientOrServerErrorFailure %}                         
                         <h2 class="info"><i class="icon-exclamation-sign"></i>
                             {{ task.output.result.firstError.class|replace({'http-retrieval-': ''}) }}
                             {{ task.output.result.firstError }}                            
@@ -108,6 +108,11 @@
                         <p>
                             If GET requests are wrong I don't want to be right.
                         </p>
+                        {% elseif statusCode == '500' %}
+                        <p>
+                            The application serving this URL encountered
+                            an internal error and failed to return an acceptable response.
+                        </p>                       
                         {% else %}
                         <p>
                             That's a pretty uncommon HTTP response error there.

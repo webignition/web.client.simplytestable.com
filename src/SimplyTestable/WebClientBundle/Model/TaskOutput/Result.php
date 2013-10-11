@@ -215,6 +215,24 @@ class Result {
      * 
      * @return boolean
      */
+    public function isHttpServerErrorFailure() {
+        return $this->isOfErrorClass('/http-retrieval-5\d\d/');
+    }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function isHttpClientOrServerErrorFailure() {
+        return $this->isHttpClientErrorFailure() || $this->isHttpServerErrorFailure();
+    }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
     public function isCssValidationUnknownExceptionError() {        
         $errors = $this->getErrors();
         if (count($errors) === 0) {
