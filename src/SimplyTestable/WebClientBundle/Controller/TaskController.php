@@ -196,11 +196,13 @@ class TaskController extends TestViewController
             $viewData['link_state_descriptions'] = array(
                 'curl' => array(
                     6 => 'Couldn\'t resolve host.'."\n\n".'Are the domain names in the given links still valid and working?',
-                    56 => 'Failure with receiving network data.'."\n\n".'Whatever lives at the given domains isn\'t talking back.'
+                    7 => "Failed to connect() to host or proxy.\n\nThis could be temporary issue.",
+                    56 => 'Failure with receiving network data.'."\n\n".'Whatever lives at the given domains isn\'t talking back.',
+                    60 => "Peer certificate cannot be authenticated with known CA certificates.\n\nThere is a problem with the SSL certificates these domains are using."
                 ),
                 'http' => array(
-                    404 => 'Not found.',
-                    302 => 'Too many redirects.',
+                    404 => "Not found.\n\nThese resources appear to no longer exist at the given URLs.",
+                    302 => "Too many redirects.",
                     500 => "Internal server error.\n\nThe application serving the given content failed.",
                     403 => "Access denied.\n\nAre these a password-protected pages?"
                 )
