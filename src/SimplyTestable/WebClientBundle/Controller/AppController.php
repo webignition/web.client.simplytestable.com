@@ -127,8 +127,7 @@ class AppController extends TestViewController
     private function getTestOptionsIntroduction(\SimplyTestable\WebClientBundle\Model\TestOptions $testOptions) {        
         $testOptionsIntroduction = 'Testing ';
         
-        $allAvailableTaskTypes = $this->container->getParameter('available_task_types');
-        $availableTaskTypes = $allAvailableTaskTypes['default'];        
+        $availableTaskTypes = $this->getAvailableTaskTypes();
         
         $taskTypeIndex = 0;
         foreach ($availableTaskTypes as $taskTypeKey => $taskTypeName) {            
@@ -192,15 +191,11 @@ class AppController extends TestViewController
      * 
      * @return array
      */
-    private function getAvailableTaskTypes() {
-        $allAvailableTaskTypes = $this->container->getParameter('available_task_types');
-        $availableTaskTypes = $allAvailableTaskTypes['default'];
+    private function getAvailableTaskTypes() {        
+        $this->getAvailableTaskTypeService()->setUser($this->getUser());
+        $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
         
-        if ($this->isEarlyAccessUser() && is_array($allAvailableTaskTypes['early_access'])) {
-            $availableTaskTypes = array_merge($availableTaskTypes, $allAvailableTaskTypes['early_access']);
-        }
-        
-        return $availableTaskTypes;
+        return $this->getAvailableTaskTypeService()->get();
     }
     
     
@@ -538,6 +533,15 @@ class AppController extends TestViewController
     
     /**
      *
+     * @return \SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
+     */
+    private function getAvailableTaskTypeService() {
+        return $this->container->get('simplytestable.services.availabletasktypeservice');
+    }      
+    
+    
+    /**
+     *
      * @return \SimplyTestable\WebClientBundle\Services\TaskService 
      */
     private function getTaskService() {
@@ -573,13 +577,12 @@ class AppController extends TestViewController
      */
     private function getTestOptionsAdapter() {
         if (is_null($this->testOptionsAdapter)) {
-            $testOptionsParameters = $this->container->getParameter('test_options');
-            $availableTaskTypes = $this->container->getParameter('available_task_types');             
+            $testOptionsParameters = $this->container->getParameter('test_options');            
             
             $this->testOptionsAdapter = $this->container->get('simplytestable.services.testoptions.adapter.request');
         
             $this->testOptionsAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-            $this->testOptionsAdapter->setAvailableTaskTypes($availableTaskTypes['default']);
+            $this->testOptionsAdapter->setAvailableTaskTypes($this->getAvailableTaskTypes());
             $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);           
         }
         

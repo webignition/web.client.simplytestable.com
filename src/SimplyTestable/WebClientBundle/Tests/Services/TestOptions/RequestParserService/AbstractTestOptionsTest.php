@@ -33,11 +33,10 @@ abstract class AbstractTestOptionsTest extends BaseTestCase {
     protected function getTestOptions() {        
         $this->getTestOptionsRequestParserService()->setRequestData($this->requestData);
 
-        $testOptionsParameters = $this->container->getParameter('test_options');
-        $availableTaskTypes = $this->container->getParameter('available_task_types');       
+        $testOptionsParameters = $this->container->getParameter('test_options');     
 
         $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);        
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($this->getAvailableTaskTypes());        
         
         return $this->getTestOptionsRequestParserService()->getTestOptions();        
     }
@@ -50,4 +49,25 @@ abstract class AbstractTestOptionsTest extends BaseTestCase {
     private function getTestOptionsRequestParserService() {
         return $this->container->get('simplytestable.services.testoptions.adapter.request');
     }  
+    
+    
+    /**
+     * 
+     * @return array
+     */
+    private function getAvailableTaskTypes() {
+        $this->getAvailableTaskTypeService()->setUser($this->getUser());
+        $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
+        
+        return $this->getAvailableTaskTypeService()->get();    
+    }    
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
+     */
+    private function getAvailableTaskTypeService() {
+        return $this->container->get('simplytestable.services.availabletasktypeservice');
+    }     
 }

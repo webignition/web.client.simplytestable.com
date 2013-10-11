@@ -146,100 +146,7 @@ class TestProgressController extends TestViewController
         }
         
         return $this->container->getParameter('css-validation-ignore-common-cdns');
-    }    
-    
-    private function getTestOptionsFromRemoteTestSummary($remoteTestSummary) {        
-        $testOptions = array();
-        $selectedTaskTypes = array();
-        
-        foreach ($remoteTestSummary->task_types as $taskType) {
-            $taskTypeName = $taskType->name;
-            $taskTypeKey = strtolower(str_replace(' ', '-', $taskTypeName));
-            
-            $testOptions[$taskTypeKey] = 1;
-            $selectedTaskTypes[] = $taskTypeKey;
-        }
-        
-        foreach($remoteTestSummary->task_type_options as $taskTypeName => $taskTypeOptionsSet) {
-            $taskTypeKey = strtolower(str_replace(' ', '-', $taskTypeName));            
-            
-            foreach ($taskTypeOptionsSet as $taskTypeOptionKey => $taskTypeOptionValue) {
-                $testOptions[$taskTypeKey.'-'.$taskTypeOptionKey] = $taskTypeOptionValue;
-            }
-        }
-        
-        $testOptionsParameters = $this->container->getParameter('test_options');                      
-        foreach ($testOptionsParameters['names_and_default_values'] as $testOptionName => $defaultValue) {            
-            if ($this->isTaskType($testOptionName)) {
-                $testOptions[$testOptionName] = (int)isset($testOptions[$testOptionName]);
-            } else {
-                if (!in_array($this->getTaskTypeFromTaskTypeOption($testOptionName), $selectedTaskTypes)) {
-                    $testOptions[$testOptionName] = $defaultValue;
-                    
-                    if ($this->isInvertableOption($testOptionName)) {
-                        $testOptions[$testOptionName] = ($testOptions[$testOptionName]) ? 0 : 1;
-                    }
-                }
-
-                if (!isset($testOptions[$testOptionName])) {
-                    $testOptions[$testOptionName] = '';
-                }                
-            }
-        }        
-        
-        return $this->invertInvertableOptions($testOptions);
-    }
-    
-    private function getTaskTypeFromTaskTypeOption($taskTypeOption) {
-        $availableTaskTypes = $this->container->getParameter('available_task_types'); 
-        
-        foreach ($availableTaskTypes['default'] as $taskTypeKey => $taskTypeName) {
-            $keyLength = strlen($taskTypeKey);
-            
-            if (substr($taskTypeOption, 0, $keyLength) == $taskTypeKey) {
-                return $taskTypeKey;
-            }
-        }
-        
-        return null;
-    }    
-    
-    private function isTaskType($taskTypeOption) {
-        $availableTaskTypes = $this->container->getParameter('available_task_types'); 
-        
-        foreach ($availableTaskTypes['default'] as $taskTypeKey => $taskTypeName) {
-            if ($taskTypeKey == $taskTypeOption) {
-                return true;
-            }
-        }
-        
-        return false;        
     } 
-    
-    private function invertInvertableOptions($testOptions) {
-        $testOptionsParameters = $this->container->getParameter('test_options');        
-        foreach ($testOptionsParameters['invert_option_keys'] as $optionName) {
-            if (isset($testOptions[$optionName])) {   
-                $testOptions[$optionName] = ($testOptions[$optionName] == '1') ? '0' : '1';
-            } else {
-                $testOptions[$optionName] = '1';
-            }
-        }
-        
-        return $testOptions;
-    }   
-    
-
-    private function isInvertableOption($taskTypeOption) {
-        $testOptionsParameters = $this->container->getParameter('test_options');        
-        foreach ($testOptionsParameters['invert_option_keys'] as $optionName) {
-            if ($optionName == $taskTypeOption) {
-                return true;
-            }
-        }
-        
-        return false;        
-    }    
     
     
     /**
@@ -247,14 +154,10 @@ class TestProgressController extends TestViewController
      * @return array
      */
     private function getAvailableTaskTypes() {
-        $allAvailableTaskTypes = $this->container->getParameter('available_task_types');
-        $availableTaskTypes = $allAvailableTaskTypes['default'];
+        $this->getAvailableTaskTypeService()->setUser($this->getUser());
+        $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
         
-        if ($this->isEarlyAccessUser() && is_array($allAvailableTaskTypes['early_access'])) {
-            $availableTaskTypes = array_merge($availableTaskTypes, $allAvailableTaskTypes['early_access']);
-        }
-        
-        return $availableTaskTypes;
+        return $this->getAvailableTaskTypeService()->get();        
     }    
     
     private function getStateLabel($test, $remoteTestSummary) {
@@ -475,13 +378,12 @@ class TestProgressController extends TestViewController
      */
     private function getTestOptionsAdapter() {
         if (is_null($this->testOptionsAdapter)) {
-            $testOptionsParameters = $this->container->getParameter('test_options');
-            $availableTaskTypes = $this->container->getParameter('available_task_types');             
+            $testOptionsParameters = $this->container->getParameter('test_options');        
             
             $this->testOptionsAdapter = $this->container->get('simplytestable.services.testoptions.adapter.request');
         
             $this->testOptionsAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-            $this->testOptionsAdapter->setAvailableTaskTypes($availableTaskTypes['default']);
+            $this->testOptionsAdapter->setAvailableTaskTypes($this->getAvailableTaskTypes());
             $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
             $this->testOptionsAdapter->setInvertInvertableOptions(true);
         }
@@ -512,4 +414,13 @@ class TestProgressController extends TestViewController
         
         return $parameterBag;
     }
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
+     */
+    private function getAvailableTaskTypeService() {
+        return $this->container->get('simplytestable.services.availabletasktypeservice');
+    }     
 }

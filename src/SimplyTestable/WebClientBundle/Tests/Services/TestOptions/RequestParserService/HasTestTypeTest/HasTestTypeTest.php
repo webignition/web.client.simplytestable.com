@@ -16,7 +16,7 @@ class HasTestTypeTest extends BaseTestCase {
         $availableTaskTypes = $this->container->getParameter('available_task_types');          
         
         $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($this->getAvailableTaskTypes());
         $this->getTestOptionsRequestParserService()->setRequestData($requestData);
         
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
@@ -36,7 +36,7 @@ class HasTestTypeTest extends BaseTestCase {
         $availableTaskTypes = $this->container->getParameter('available_task_types');          
         
         $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($this->getAvailableTaskTypes());
         $this->getTestOptionsRequestParserService()->setRequestData($requestData);
         
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
@@ -56,7 +56,7 @@ class HasTestTypeTest extends BaseTestCase {
         $availableTaskTypes = $this->container->getParameter('available_task_types');          
         
         $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($this->getAvailableTaskTypes());
         $this->getTestOptionsRequestParserService()->setRequestData($requestData);
         
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
@@ -76,7 +76,7 @@ class HasTestTypeTest extends BaseTestCase {
         $availableTaskTypes = $this->container->getParameter('available_task_types');          
         
         $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($this->getAvailableTaskTypes());
         $this->getTestOptionsRequestParserService()->setRequestData($requestData);
         
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
@@ -96,7 +96,7 @@ class HasTestTypeTest extends BaseTestCase {
         $availableTaskTypes = $this->container->getParameter('available_task_types');          
         
         $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($this->getAvailableTaskTypes());
         $this->getTestOptionsRequestParserService()->setRequestData($requestData);
         
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
@@ -116,7 +116,7 @@ class HasTestTypeTest extends BaseTestCase {
         $availableTaskTypes = $this->container->getParameter('available_task_types');          
         
         $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($this->getAvailableTaskTypes());
         $this->getTestOptionsRequestParserService()->setRequestData($requestData);
         
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
@@ -136,7 +136,7 @@ class HasTestTypeTest extends BaseTestCase {
         $availableTaskTypes = $this->container->getParameter('available_task_types');          
         
         $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($this->getAvailableTaskTypes());
         $this->getTestOptionsRequestParserService()->setRequestData($requestData);
         
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
@@ -156,7 +156,7 @@ class HasTestTypeTest extends BaseTestCase {
         $availableTaskTypes = $this->container->getParameter('available_task_types');          
         
         $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($availableTaskTypes['default']);
+        $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($this->getAvailableTaskTypes());
         $this->getTestOptionsRequestParserService()->setRequestData($requestData);
         
         $testOptions = $this->getTestOptionsRequestParserService()->getTestOptions();
@@ -172,5 +172,26 @@ class HasTestTypeTest extends BaseTestCase {
      */
     private function getTestOptionsRequestParserService() {
         return $this->container->get('simplytestable.services.testoptions.adapter.request');
+    }   
+    
+    
+    /**
+     * 
+     * @return array
+     */
+    private function getAvailableTaskTypes() {
+        $this->getAvailableTaskTypeService()->setUser($this->getUser());
+        $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
+        
+        return $this->getAvailableTaskTypeService()->get();    
     }    
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
+     */
+    private function getAvailableTaskTypeService() {
+        return $this->container->get('simplytestable.services.availabletasktypeservice');
+    }     
 }
