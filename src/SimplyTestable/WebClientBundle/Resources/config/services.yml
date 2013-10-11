@@ -132,3 +132,9 @@ services:
             updates: %mailchimp_updates_list_id%
             announcements: %mailchimp_announcements_list_id%
             introduction: %mailchimp_introduction_list_id%   
+            
+  simplytestable.services.availabletasktypeservice:
+    class:   SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
+    arguments: 
+        allTaskTypes: "%available_task_types%"           
+        earlyAccessUsers: "%early_access_users%"
