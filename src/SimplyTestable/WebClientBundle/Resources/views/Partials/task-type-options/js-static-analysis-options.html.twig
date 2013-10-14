@@ -60,8 +60,6 @@
                         <div class="row-fluid">
                             <div class="span12">
                                 <div class="span3 jslint-option-set">
-
-{{ form.persistent_checkbox('When a variable is undefined', 'js-static-analysis-jslint-option-undef', test_options, 'undef', is_disabled) }}
 {{ form.persistent_checkbox('About unused parameters', 'js-static-analysis-jslint-option-unparam', test_options, 'unparam', is_disabled) }}
 {{ form.persistent_checkbox('When <code>continue</code> is used', 'js-static-analysis-jslint-option-continue', test_options, 'continue', is_disabled) }}
 {{ form.persistent_checkbox('About <code>debugger</code> operations', 'js-static-analysis-jslint-option-debug', test_options, 'debug', is_disabled) }}
@@ -71,16 +69,12 @@
                                 </div>
                                 <div class="span4 jslint-option-set">
 {{ form.persistent_checkbox('When not using dot notation to access properties', 'js-static-analysis-jslint-option-sub', test_options, 'sub', is_disabled) }}
-{{ form.persistent_checkbox('When using ES5 syntax', 'js-static-analysis-jslint-option-es5', test_options, 'es5', is_disabled) }}
-{{ form.persistent_checkbox('About <code>.</code> and <code>[^&hellip;]</code> in <code>/RegExp/</code> literals', 'js-static-analysis-jslint-option-regexp', test_options, 'regexp', is_disabled) }}
 {{ form.persistent_checkbox('When bitwise operators are used', 'js-static-analysis-jslint-option-bitwise', test_options, 'bitwise', is_disabled) }}
 {{ form.persistent_checkbox('About dangling <code>_</code> in identifiers', 'js-static-analysis-jslint-option-nomen', test_options, 'nomen', is_disabled) }}
 {{ form.persistent_checkbox('About <code>++</code> and <code>--</code> operations', 'js-static-analysis-jslint-option-plusplus', test_options, 'plusplus', is_disabled) }}
-
-
+{{ form.persistent_checkbox('When uncapitalised constructors are used', 'js-static-analysis-jslint-option-newcap', test_options, 'newcap', is_disabled) }}
                                 </div>
                                 <div class="span5 jslint-option-set">
-{{ form.persistent_checkbox('When uncapitalised constructors are used', 'js-static-analysis-jslint-option-newcap', test_options, 'newcap', is_disabled) }}
 {{ form.persistent_checkbox('When code is not in strict mode (<code>\'use strict\';</code>)', 'js-static-analysis-jslint-option-sloppy', test_options, 'sloppy', is_disabled) }}
 {{ form.persistent_checkbox('About blocking <code>&hellip;Sync</code> methods', 'js-static-analysis-jslint-option-stupid', test_options, 'stupid', is_disabled) }}
 {{ form.persistent_checkbox('About multiple var statements per function', 'js-static-analysis-jslint-option-vars', test_options, 'vars', is_disabled) }}
