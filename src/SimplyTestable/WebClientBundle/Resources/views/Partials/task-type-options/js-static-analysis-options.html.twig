@@ -21,7 +21,7 @@
             <div class="span3 validator-option-set js-static-analysis-common-cdn-domains">
                 <p>Common <a href="http://en.wikipedia.org/wiki/Content_delivery_network">CDN</a> domains:</p>
 
-                <label class="checkbox ignore-common-cdn-domains {% if (is_disabled) and test_options['js-static-analysis-ignore-common-cdns'] == 0 %}disabled{% endif %}">
+                <label class="checkbox ignore-common-cdn-domains {% if (is_disabled) and test_options['js-static-analysis-ignore-common-cdns'] is not defined or (test_options['js-static-analysis-ignore-common-cdns'] is defined and test_options['js-static-analysis-ignore-common-cdns'] == 0) %}disabled{% endif %}">
                     <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" value="1" name="js-static-analysis-ignore-common-cdns" {% if (test_options['js-static-analysis-ignore-common-cdns'] is defined and test_options['js-static-analysis-ignore-common-cdns'] == 1) or ((test_options['js-static-analysis'] is not defined or test_options['js-static-analysis'] == '') and default_js_static_analysis_options['ignore-common-cdns'] == 1) %} checked {% endif %} /> Ignore JS from common CDNs:
 
                             {% if css_validation_ignore_common_cdns|length > 0 %}
