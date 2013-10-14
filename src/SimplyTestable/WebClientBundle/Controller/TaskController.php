@@ -195,6 +195,7 @@ class TaskController extends TestViewController
             );
             $viewData['link_state_descriptions'] = array(
                 'curl' => array(
+                    3 => 'The URL was not properly formatted.'."\n\n".'These URLs (or ones these redirect to) are not formed correctly.',
                     6 => 'Couldn\'t resolve host.'."\n\n".'Are the domain names in the given links still valid and working?',
                     7 => "Failed to connect() to host or proxy.\n\nThis could be temporary issue.",
                     35 => "A problem occurred somewhere in the SSL/TLS handshake.",
