@@ -205,7 +205,8 @@ class TaskController extends TestViewController
                 'http' => array(
                     302 => "Too many redirects.",
                     403 => "Access denied.\n\nAre these a password-protected pages?",
-                    404 => "Not found.\n\nThese resources appear to no longer exist at the given URLs.",                    
+                    404 => "Not found.\n\nThese resources appear to no longer exist at the given URLs.",
+                    410 => "Gone.\n\nThese resources are no longer at the given URLs.",
                     500 => "Internal server error.\n\nThe application serving the given content failed.",
                     503 => "Service Unavailable.\n\nThe application serving the content is not available right now."
                 )
