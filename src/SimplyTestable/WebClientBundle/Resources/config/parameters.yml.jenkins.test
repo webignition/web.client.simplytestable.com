@@ -145,6 +145,8 @@ parameters:
         js-static-analysis-domains-to-ignore:
           - ""
         link-integrity: 1
+        link-integrity-excluded-domains:
+          - ""
     invert_option_keys:
         - js-static-analysis-jslint-option-bitwise
         - js-static-analysis-jslint-option-continue
@@ -163,3 +165,5 @@ parameters:
         - js-static-analysis-jslint-option-vars
         - js-static-analysis-jslint-option-white
         - js-static-analysis-jslint-option-anon   
+  link-integrity-exclude-domains:
+   - instagram.com    

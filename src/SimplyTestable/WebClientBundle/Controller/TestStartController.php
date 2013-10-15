@@ -17,8 +17,15 @@ class TestStartController extends TestController
     
     public function startNewAction()
     {        
-        $this->getTestService()->setUser($this->getUser());        
-        return $this->startAction($this->getRequestValues(\Guzzle\Http\Message\Request::POST));
+        $this->getTestService()->setUser($this->getUser());
+        
+        $requestValues = $this->getRequestValues(\Guzzle\Http\Message\Request::POST);
+        
+        if (!$requestValues->has('link-integrity-excluded-domains') && $this->container->hasParameter('link-integrity-excluded-domains')) {
+            $requestValues->set('link-integrity-excluded-domains', $this->container->getParameter('link-integrity-excluded-domains'));
+        }        
+        
+        return $this->startAction($requestValues);
     }
     
     

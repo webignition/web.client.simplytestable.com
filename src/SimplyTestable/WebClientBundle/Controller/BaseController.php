@@ -117,7 +117,7 @@ abstract class BaseController extends Controller
     /**
      *
      * @param int $httpMethod
-     * @return type 
+     * @return \Symfony\Component\HttpFoundation\ParameterBag 
      */
     protected function getRequestValues($httpMethod = \Guzzle\Http\Message\Request::GET) {
         return ($httpMethod == \Guzzle\Http\Message\Request::POST) ? $this->getRequest()->request : $this->getRequest()->query;            
