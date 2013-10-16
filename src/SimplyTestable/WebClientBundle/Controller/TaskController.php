@@ -199,6 +199,7 @@ class TaskController extends TestViewController
                     6 => 'Couldn\'t resolve host.'."\n\n".'Are the domain names in the given links still valid and working?',
                     7 => "Failed to connect() to host or proxy.\n\nThis could be temporary issue.",
                     35 => "A problem occurred somewhere in the SSL/TLS handshake.",
+                    52 => "Nothing was returned from the server, and under the circumstances, getting nothing is considered an error.",
                     56 => 'Failure with receiving network data.'."\n\n".'Whatever lives at the given domains isn\'t talking back.',
                     60 => "Peer certificate cannot be authenticated with known CA certificates.\n\nThere is a problem with the SSL certificates these domains are using."
                 ),
