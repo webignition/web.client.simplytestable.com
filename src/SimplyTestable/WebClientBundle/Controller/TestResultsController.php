@@ -485,8 +485,12 @@ class TestResultsController extends TestViewController
         
         $this->getTaskCollectionFilterService()->setOutcomeFilter('without-errors');
         $filteredTaskCounts['without_errors'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
-        $filteredTaskCounts['skipped'] = 0;
-        $filteredTaskCounts['cancelled'] = 0;
+        
+        $this->getTaskCollectionFilterService()->setOutcomeFilter('skipped');
+        $filteredTaskCounts['skipped'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+        
+        $this->getTaskCollectionFilterService()->setOutcomeFilter('cancelled');
+        $filteredTaskCounts['cancelled'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
         
         return $filteredTaskCounts;
     }    
