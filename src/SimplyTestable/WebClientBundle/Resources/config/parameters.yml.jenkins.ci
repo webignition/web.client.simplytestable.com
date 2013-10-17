@@ -42,7 +42,7 @@ parameters:
       user_list_stripe_events: /user/{email}/stripe-events/{type}/   
   public_site:
     urls:
-      home: http://ci.simplytestable.com
+      home: http://ci.simplytestable.com/
       plans_and_pricing: plans/
       features: features/
   content_type_web_resource_map:
