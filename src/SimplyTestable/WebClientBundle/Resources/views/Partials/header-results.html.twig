@@ -70,7 +70,14 @@
                 {% for task_type in task_types %}
                     {% set task_error_count = test.getErrorCountByTaskType(task_type | replace({'JavaScript static analysis': "JS static analysis"})) %}
                         
-                    <li>{{ task_error_count }} {{ task_type }} error{% if task_error_count != 1 %}s{% endif %}</li>
+                    {% if (task_type | lower == type) %}
+                        <li>{{ task_error_count }} {{ task_type }} error{% if task_error_count != 1 %}s{% endif %}</li>
+                    {% else %}
+                        <li>
+                            <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter={{ filter }}&type={{ task_type | lower }}">{{ task_error_count }} {{ task_type }} error{% if task_error_count != 1 %}s{% endif %}</a>
+                        </li>
+                    {% endif %}                       
+                    
                 {% endfor %}                    
                 </ul>
             {% endif %}

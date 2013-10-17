@@ -319,6 +319,8 @@ class TestResultsController extends TestViewController
             'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
             'public_site' => $this->container->getParameter('public_site'),
             'filter' => $taskOutcomeFilter,
+            'type' => $taskTypeFilter,
+            'type_label' => ucwords($taskTypeFilter),
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),    
             'task_types' => $taskTypes,
