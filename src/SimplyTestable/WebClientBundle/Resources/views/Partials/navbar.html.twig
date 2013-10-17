@@ -44,13 +44,13 @@
                         {% if is_logged_in %}
                         {% else %}
                         <li>                            
-                            <a href="//simplytestable.com/features/">
+                            <a href="{{ public_site['urls']['home'] }}{{ public_site['urls']['features'] }}">
                                 <i class="icon icon-signal"></i>
                                 Features
                             </a>
                         </li>           
                         <li>                            
-                            <a href="//simplytestable.com/plans/">
+                            <a href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">
                                 <i class="icon icon-dashboard"></i>
                                 Pricing and plans
                             </a>

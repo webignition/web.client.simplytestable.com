@@ -44,6 +44,7 @@ parameters:
     urls:
       home: http://travis.simplytestable.com
       plans_and_pricing: plans/
+      features: features/
   content_type_web_resource_map:
     default: webignition\WebResource\WebResource
     application/json: webignition\WebResource\JsonDocument\JsonDocument
