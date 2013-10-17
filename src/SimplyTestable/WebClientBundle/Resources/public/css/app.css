@@ -1212,3 +1212,7 @@ body.app-task-results h3 {
     font-size: 18px;
     line-height: 20px;    
 }
+
+body.app-results h2 a {
+    font-size:14px;
+}

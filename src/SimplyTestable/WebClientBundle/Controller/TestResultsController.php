@@ -236,6 +236,9 @@ class TestResultsController extends TestViewController
         
         $taskOutcomeFilter = $this->getRequestValue('filter', 'with-errors');
         $taskTypeFilter = $this->getRequestValue('type', null);
+        if (trim($taskTypeFilter) == '') {
+            $taskTypeFilter = null;
+        }
         
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
         $cacheValidatorIdentifier->setParameter('website', $website);
@@ -319,8 +322,9 @@ class TestResultsController extends TestViewController
             'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
             'public_site' => $this->container->getParameter('public_site'),
             'filter' => $taskOutcomeFilter,
+            'filter_label' => ucwords(str_replace('-', ' ', $taskOutcomeFilter)),
             'type' => $taskTypeFilter,
-            'type_label' => ucwords($taskTypeFilter),
+            'type_label' => (is_null($taskTypeFilter)) ? 'All' : ucwords($taskTypeFilter),
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),    
             'task_types' => $taskTypes,
@@ -338,7 +342,8 @@ class TestResultsController extends TestViewController
                 'jslint-option-indent' => 4,
                 'jslint-option-maxlen' => 256
             ),
-            'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions)
+            'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions),
+            'filtered_task_counts' => $this->getFilteredTaskCounts($test, $taskTypeFilter)
         );
                        
         //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTestSummary->task_count : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));
@@ -437,13 +442,44 @@ class TestResultsController extends TestViewController
     }
     
     
-    private function getFilteredTaskCollectionRemoteIds(Test $test, $taskOutcomeFilter, $taskTypeFilter) {        
+    private function getFilteredTaskCollectionRemoteIds(Test $test, $taskOutcomeFilter, $taskTypeFilter) {
+        if ($taskTypeFilter == 'javascript static analysis') {
+            $taskTypeFilter = 'js static analysis';
+        }
+        
         $this->getTaskCollectionFilterService()->setTest($test);
         $this->getTaskCollectionFilterService()->setOutcomeFilter($taskOutcomeFilter);
         $this->getTaskCollectionFilterService()->setTypeFilter($taskTypeFilter);
         
         return $this->getTaskCollectionFilterService()->getRemoteIds();    
     }
+    
+    
+    private function getFilteredTaskCounts(Test $test, $taskTypeFilter) {        
+        if ($taskTypeFilter == 'javascript static analysis') {
+            $taskTypeFilter = 'js static analysis';
+        }        
+        
+        $this->getTaskCollectionFilterService()->setTest($test);
+        $this->getTaskCollectionFilterService()->setTypeFilter($taskTypeFilter);
+
+        $filteredTaskCounts = array();        
+        
+        $filteredTaskCounts['all'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+        
+        $this->getTaskCollectionFilterService()->setOutcomeFilter('with-errors');
+        $filteredTaskCounts['with_errors'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+        
+        $this->getTaskCollectionFilterService()->setOutcomeFilter('with-warnings');
+        $filteredTaskCounts['with_warnings'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+        
+        $this->getTaskCollectionFilterService()->setOutcomeFilter('without-errors');
+        $filteredTaskCounts['without_errors'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+        $filteredTaskCounts['skipped'] = 0;
+        $filteredTaskCounts['cancelled'] = 0;
+        
+        return $filteredTaskCounts;
+    }    
     
     
     /**

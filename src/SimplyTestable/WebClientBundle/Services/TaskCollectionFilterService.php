@@ -75,6 +75,48 @@ class TaskCollectionFilterService extends TaskService {
         return $this->typeFilter;
     }
     
+    /**
+     * 
+     * @return array
+     */
+    public function getRemoteIdCount() {        
+        if ($this->getOutcomeFilter() == self::OUTCOME_FILTER_SKIPPED || $this->getOutcomeFilter() == self::OUTCOME_FILTER_CANCELLED) {
+            return $this->getEntityRepository()->getRemoteIdCountByTestAndTaskTypeIncludingStates(
+                    $this->test,
+                    $this->getTypeFilter(),
+                    array($this->getOutcomeFilter())
+            );
+        }
+        
+        $issueCount = null;
+        $issueType = null;
+        
+        switch ($this->getOutcomeFilter()) {
+            case 'without-errors':
+                $issueCount = '= 0';
+                $issueType = 'error';
+                break;
+            
+            case 'with-errors':
+                $issueCount = '> 0';
+                $issueType = 'error';
+                break;                
+            
+            case 'with-warnings':
+                $issueCount = '> 0';
+                $issueType = 'warning';
+                break;             
+        }
+        
+        return $this->getEntityRepository()->getRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStates(
+                $this->test,
+                $issueCount,
+                $issueType,
+                $this->getTypeFilter(),
+                array('skipped', 'cancelled', 'in-progress', 'awaiting-cancellation')
+        );      
+    }    
+    
     
     /**
      * 
@@ -88,6 +130,9 @@ class TaskCollectionFilterService extends TaskService {
                     array($this->getOutcomeFilter())
             );
         }
+        
+        $issueCount = null;
+        $issueType = null;
         
         switch ($this->getOutcomeFilter()) {
             case 'without-errors':
@@ -113,6 +158,11 @@ class TaskCollectionFilterService extends TaskService {
                 $this->getTypeFilter(),
                 array('skipped', 'cancelled', 'in-progress', 'awaiting-cancellation')
         );      
-    }  
+    }
+    
+    
+    public function getCount() {
+        return 0;
+    }
     
 }
