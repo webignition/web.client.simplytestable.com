@@ -234,12 +234,14 @@ class TestResultsController extends TestViewController
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }
         
-        $taskListFilter = $this->getRequestValue('filter', 'with-errors');
+        $taskOutcomeFilter = $this->getRequestValue('filter', 'with-errors');
+        $taskTypeFilter = $this->getRequestValue('type', null);
         
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
         $cacheValidatorIdentifier->setParameter('website', $website);
         $cacheValidatorIdentifier->setParameter('test_id', $test_id);
-        $cacheValidatorIdentifier->setParameter('filter', $taskListFilter);
+        $cacheValidatorIdentifier->setParameter('filter', $taskOutcomeFilter);
+        $cacheValidatorIdentifier->setParameter('type', $taskTypeFilter);
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
@@ -316,7 +318,7 @@ class TestResultsController extends TestViewController
             'remote_test_summary' => $this->getRemoteTestSummaryArray($remoteTestSummary),
             'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
             'public_site' => $this->container->getParameter('public_site'),
-            'filter' => $taskListFilter,
+            'filter' => $taskOutcomeFilter,
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),    
             'task_types' => $taskTypes,
@@ -339,8 +341,16 @@ class TestResultsController extends TestViewController
                        
         //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTestSummary->task_count : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));
 
-        //if ($taskCollectionLength > 0 && $taskCollectionLength <= self::RESULTS_PAGE_LENGTH) {
-            $remoteTaskIds = ($taskListFilter == 'all') ? null : $this->getFilteredTaskCollectionRemoteIds($test, $this->getRequestValue('filter', $taskListFilter));           
+        //if ($taskCollectionLength > 0 && $taskCollectionLength <= self::RESULTS_PAGE_LENGTH) {        
+        
+            $remoteTaskIds = ($taskOutcomeFilter == 'all' && is_null($taskTypeFilter))
+                    ? null
+                    : $this->getFilteredTaskCollectionRemoteIds(
+                            $test,
+                            $taskOutcomeFilter,
+                            $taskTypeFilter
+                      );           
+            
             $tasks = $this->getTaskService()->getCollection($test, $remoteTaskIds); 
        
             $viewData['tasks'] = $this->getTasksGroupedByUrl($tasks);
@@ -425,29 +435,22 @@ class TestResultsController extends TestViewController
     }
     
     
-    private function getFilteredTaskCollectionRemoteIds(Test $test, $filter) {        
-        if ($filter == 'cancelled') {
-            return $this->getTaskService()->getEntityRepository()->getRemoteIdByTestAndState($test, array('cancelled'));
-        }
+    private function getFilteredTaskCollectionRemoteIds(Test $test, $taskOutcomeFilter, $taskTypeFilter) {        
+        $this->getTaskCollectionFilterService()->setTest($test);
+        $this->getTaskCollectionFilterService()->setOutcomeFilter($taskOutcomeFilter);
+        $this->getTaskCollectionFilterService()->setTypeFilter($taskTypeFilter);
         
-        if ($filter == 'without-errors') {
-            return $this->getTaskService()->getEntityRepository()->getErrorFreeRemoteIdByTest($test, array('skipped', 'cancelled', 'in-progress', 'awaiting-cancellation'));
-        }  
-        
-        if ($filter == 'with-errors') {
-            return $this->getTaskService()->getEntityRepository()->getErroredRemoteIdByTest($test, array('skipped', 'cancelled', 'in-progress', 'awaiting-cancellation'));
-        }  
-        
-        if ($filter == 'with-warnings') {
-            return $this->getTaskService()->getEntityRepository()->getWarningedRemoteIdByTest($test, array('skipped', 'cancelled', 'in-progress', 'awaiting-cancellation'));
-        }          
-        
-        if ($filter == 'skipped') {
-            return $this->getTaskService()->getEntityRepository()->getRemoteIdByTestAndState($test, array('skipped'));
-        }         
-        
-        return null;      
+        return $this->getTaskCollectionFilterService()->getRemoteIds();    
     }
+    
+    
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService 
+     */
+    private function getTaskCollectionFilterService() {
+        return $this->container->get('simplytestable.services.taskcollectionfilterservice');
+    }    
     
     
     /**
