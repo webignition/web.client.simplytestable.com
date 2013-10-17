@@ -324,7 +324,7 @@ class TestResultsController extends TestViewController
             'filter' => $taskOutcomeFilter,
             'filter_label' => ucwords(str_replace('-', ' ', $taskOutcomeFilter)),
             'type' => $taskTypeFilter,
-            'type_label' => (is_null($taskTypeFilter)) ? 'All' : ucwords($taskTypeFilter),
+            'type_label' => $this->getTaskTypeLabel($taskTypeFilter),
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),    
             'task_types' => $taskTypes,
@@ -370,6 +370,16 @@ class TestResultsController extends TestViewController
                 $this->sendResponse($viewData),
                 $cacheValidatorHeaders
         ); 
+    }
+    
+    private function getTaskTypeLabel($taskTypeFilter) {
+        if (is_null($taskTypeFilter)) {
+            return 'All';
+        }
+        
+        $taskTypeLabel = str_replace(array('Css', 'Html'), array('CSS', 'HTML'), ucwords($taskTypeFilter));
+        
+        return $taskTypeLabel;
     }
     
     private function getTestOptionsIntroduction(\SimplyTestable\WebClientBundle\Model\TestOptions $testOptions) {        

@@ -1216,3 +1216,7 @@ body.app-task-results h3 {
 body.app-results h2 a {
     font-size:14px;
 }
+
+body.app-results .summary-prose .icon-ok {
+    color: #51A351;
+}
