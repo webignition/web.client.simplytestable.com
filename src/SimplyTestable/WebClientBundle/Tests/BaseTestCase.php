@@ -159,7 +159,11 @@ abstract class BaseTestCase extends WebTestCase {
         $plugin = new \Guzzle\Plugin\Mock\MockPlugin();
         
         foreach ($fixtures as $fixture) {
-            $plugin->addResponse($fixture);
+            if ($fixture instanceof \Exception) {
+                $plugin->addException($fixture);
+            } else {
+                $plugin->addResponse($fixture);
+            }  
         }
         
         if (is_null($client)) {
@@ -184,8 +188,20 @@ abstract class BaseTestCase extends WebTestCase {
         
         sort($fixturePathnames);
         
-        foreach ($fixturePathnames as $fixturePathname) {
-                $fixtures[] = \Guzzle\Http\Message\Response::fromMessage(file_get_contents($fixturePathname));            
+        foreach ($fixturePathnames as $fixturePathname) {                        
+            $fixtureContent = trim(file_get_contents($fixturePathname));
+            
+            switch (substr($fixtureContent, 0, 4)) {
+                case 'CURL':
+                    $curlException = new \Guzzle\Http\Exception\CurlException();
+                    $curlException->setError('', (int)  str_replace('CURL/', '', $fixtureContent));
+                    $fixtures[] = $curlException;
+                    break;
+                
+                case 'HTTP':
+                    $fixtures[] = \Guzzle\Http\Message\Response::fromMessage($fixtureContent);            
+                    break;
+            }
         }
         
         return $fixtures;
