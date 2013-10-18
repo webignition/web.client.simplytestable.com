@@ -2,6 +2,7 @@
 namespace SimplyTestable\WebClientBundle\Services;
 
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Model\User;
 
 class TestAuthenticationService extends CoreApplicationService {
     
