@@ -10,8 +10,9 @@ parameters:
       html-validation: "HTML validation"
       css-validation: "CSS validation"
       js-static-analysis: "JS static analysis"     
-      link-integrity: "Link integrity"
-    early_access:
+    early_access:       
+    authenticated:      
+      link-integrity: "Link integrity"  
   core_application:
     urls:
       base: http://travis.app.simplytestable.com      
