@@ -147,12 +147,12 @@ class TestService extends CoreApplicationService {
      * @param int $testId
      * @return boolean
      */
-    public function has($canonicalUrl, $testId, User $user) {        
+    public function has($canonicalUrl, $testId) {        
         if ($this->hasEntity($testId)) {
             return true;
         }       
         
-        return $this->get($canonicalUrl, $testId, $user) instanceof Test;
+        return $this->get($canonicalUrl, $testId) instanceof Test;
     }
     
     
@@ -162,7 +162,7 @@ class TestService extends CoreApplicationService {
      * @param int $testId
      * @return Test
      */
-    public function get($canonicalUrl, $testId, User $user) {
+    public function get($canonicalUrl, $testId) {        
         if ($this->hasEntity($testId)) {           
             /* @var $test Test */
             $this->currentTest = $this->fetchEntity($testId);          
@@ -178,11 +178,11 @@ class TestService extends CoreApplicationService {
             if (!$this->create()) {
                 return false;
             }
-        }        
-        
-        if ($this->currentTest->getUser() != $user->getUsername() && $this->currentTest->getUser() != 'public') {
-            throw new UserServiceException(403);
         }
+        
+//        if ($this->currentTest->getUser() != $user->getUsername() && $this->currentTest->getUser() != 'public') {
+//            throw new UserServiceException(403);
+//        }
         
         $this->entityManager->persist($this->currentTest);
         $this->entityManager->flush();
