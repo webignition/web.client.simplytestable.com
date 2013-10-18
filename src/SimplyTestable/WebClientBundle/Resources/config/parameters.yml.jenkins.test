@@ -41,6 +41,7 @@ parameters:
       user_plan_subscribe: /user/{email}/{plan}/subscribe/  
       user_card_associate: /user/{email}/card/{stripe_card_token}/associate/  
       user_list_stripe_events: /user/{email}/stripe-events/{type}/   
+      test_is_public: /job/{canonical-url}/{test_id}/is_public/
   public_site:
     urls:
       home: http://simplytestable.com/
