@@ -15,12 +15,21 @@
         {% if remote_test_summary.ammendments is defined %}
             {% if remote_test_summary.ammendments[0].constraint is defined %}
 <div class="alert alert-info alert-ammendment alert-from-view">
-    <i class="icon icon-warning-sign"></i>
+    <i class="icon icon-exclamation-sign"></i>
     <span>
 {% include 'SimplyTestableWebClientBundle:Partials:test-url-limit-notification.html.twig' %}
     </span>
 </div>                
             {% endif %}         
+        {% endif %}
+                    
+        {% if is_owner == false %}
+<div class="alert alert-info alert-ammendment alert-from-view">
+    <i class="icon icon-exclamation-sign"></i>
+    <span>
+This is a <strong>read-only version</strong> of this test.
+    </span>
+</div>             
         {% endif %}
                     
 {% include 'SimplyTestableWebClientBundle:Partials:header-results.html.twig' %}                     

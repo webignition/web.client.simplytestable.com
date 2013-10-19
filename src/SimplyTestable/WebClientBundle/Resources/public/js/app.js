@@ -274,7 +274,7 @@ application.progress.testController = function() {
 
     var displayAmmendment = function(messageContent) {        
         var ammendmentNotification = $('<div class="alert alert-info alert-ammendment">').append(
-                '<i class="icon icon-warning-sign"></i>'
+                '<i class="icon icon-exclamation-sign"></i>'
                 ).append(
                 messageContent
                 );
