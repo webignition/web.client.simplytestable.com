@@ -15,9 +15,13 @@
             </label>
         </h1>    
 
+        {% if is_owner %}
+            
         <form id="cancel-form" class="top-right-form" method="post" action="{{ cancel_action }}">
             <button type="submit" class="btn btn-danger">Stop test</button>
         </form>
+            
+        {% endif %}
             
         {% if app.request.attributes.get('_route') == 'app_progress' %}   
             
