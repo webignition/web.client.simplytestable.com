@@ -7,7 +7,7 @@
     
 {% import _self as form %}
 
-{% set is_disabled = app.request.get('_route') == 'app_progress' %}
+{% set is_disabled = app.request.get('_route') == 'app_progress' or is_owner == false %}
 {% set is_enabled = (is_disabled == false) %}
 
 {% if 'html-validation' in available_task_types|keys %}

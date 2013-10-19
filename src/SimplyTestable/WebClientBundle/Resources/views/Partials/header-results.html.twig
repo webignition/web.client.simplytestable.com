@@ -23,7 +23,11 @@
         <input type="hidden" name="website" value="{{ website }}" />
         <div id="test-options">
             <div class="intro">
-                <p><span class="task-type-selection">{% autoescape false %}{{ test_options_introduction }}{% endautoescape %}</span> <span class="expandable-control expandable-control-default-closed for-test-options-expandable">Change test options</span></p>
+                <p>
+                    <span class="task-type-selection">{% autoescape false %}{{ test_options_introduction }}{% endautoescape %}</span> <span class="expandable-control expandable-control-default-closed for-test-options-expandable">
+                        {% if is_owner %}Change{% else %}View{% endif %} test options                        
+                    </span>
+                </p>
             </div>            
             
             <div id="test-options-expandable">

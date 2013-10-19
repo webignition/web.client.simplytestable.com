@@ -260,6 +260,8 @@ class TestResultsController extends TestViewController
         }      
         
         $test = $testRetrievalOutcome->getTest();                
+        $isOwner = $this->getTestService()->owns();
+        
         if ($test->getState() == 'failed-no-sitemap') {            
             return $this->redirect($this->generateUrl('app_results_failed_no_urls_detected', array(
                 'website' => $test->getWebsite(),
@@ -327,6 +329,7 @@ class TestResultsController extends TestViewController
             'type_label' => $this->getTaskTypeLabel($taskTypeFilter),
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),    
+            'is_owner' => $isOwner,
             'task_types' => $taskTypes,
             'available_task_types' => $this->getAvailableTaskTypes(),
             'test_options' => $testOptions->__toKeyArray(),
