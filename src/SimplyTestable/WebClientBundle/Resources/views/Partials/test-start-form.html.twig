@@ -51,8 +51,15 @@
             {% endif %}            
         {% endif %}          
 
-        <div class="fields input-prepend input-append larger">                    
-            <input name="website" id="input-website" type="text" placeholder="Enter website URL to start new test &hellip;">
+        <div class="fields input-prepend input-append larger">            
+            <input name="website"
+                   id="input-website"
+                   type="text"
+                   placeholder="Enter website URL to start new test &hellip;"
+                   {% if website is defined and website != '' %}
+                   value="{{ website }}"
+                   {% endif %}
+                   >
             <button type="submit" class="btn btn-primary btn-large" name="full-single" value="full">Test full site</button>
             <button type="submit" class="btn btn-large" name="full-single" value="single">Test this URL only</button>
         </div>
