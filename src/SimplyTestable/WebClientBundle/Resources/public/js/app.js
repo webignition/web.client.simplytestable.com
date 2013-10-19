@@ -199,7 +199,10 @@ application.progress.testController = function() {
         } else {
             if ($('.progress').hasClass('progress-success')) {
                 $('.progress').removeClass('progress-success');
-                $('#cancel-crawl-form').remove();
+                
+                if (latestTestData.is_owner) {
+                    $('#cancel-crawl-form').remove();
+                }                              
             }
         } 
 
@@ -444,7 +447,7 @@ application.progress.testController = function() {
                     return;
                 }
 
-                latestTestData = data;
+                latestTestData = data;                
                 
                 if (latestTestData.remote_test_summary.state === 'in-progress') {                    
                     $('#test-summary-container').css({
@@ -468,7 +471,7 @@ application.progress.testController = function() {
                     storeEstimatedTimeRemaining();
                 }
                 
-                if (latestTestData.remote_test_summary.state === 'failed-no-sitemap') {
+                if (latestTestData.remote_test_summary.state === 'failed-no-sitemap' && latestTestData.is_owner === true) {
                     setCancelCrawlButton();
                 }
 
