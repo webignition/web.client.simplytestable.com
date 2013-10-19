@@ -1,9 +1,17 @@
-{% if is_logged_in %}
-    This test has been limited to only the first <strong>{{remote_test_summary.ammendments[0].constraint.limit}}</strong>
+{% if is_public_user_test %}
+    {% if is_logged_in %}
+    This <strong>free demo</strong> has been limited to only the first <strong>{{remote_test_summary.ammendments[0].constraint.limit}}</strong>
     URLs of the <strong>{{ remote_test_summary.ammendments[0].reason|replace({'plan-url-limit-reached:discovered-url-count-': ''}) }}</strong> that were discovered.
     Start a new test or <a href="{{ path('user_account_index') }}">upgrade your plan</a> to allow larger sites to be tested. 
-{% else %}
+    {% else %}
     This <strong>free demo</strong> has been limited to only the first <strong>{{remote_test_summary.ammendments[0].constraint.limit}}</strong>
     URLs of the <strong>{{ remote_test_summary.ammendments[0].reason|replace({'plan-url-limit-reached:discovered-url-count-': ''}) }}</strong> that were discovered.
     <a href="{{ path('sign_up') }}">Create an account</a> or <a href="{{ path('sign_in') }}">sign in</a> to start a new test without this limit.
+    {% endif %}
+
+
+{% else %}
+    This test has been limited to only the first <strong>{{remote_test_summary.ammendments[0].constraint.limit}}</strong>
+    URLs of the <strong>{{ remote_test_summary.ammendments[0].reason|replace({'plan-url-limit-reached:discovered-url-count-': ''}) }}</strong> that were discovered.
+    Start a new test or <a href="{{ path('user_account_index') }}">upgrade your plan</a> to allow larger sites to be tested. 
 {% endif %}
