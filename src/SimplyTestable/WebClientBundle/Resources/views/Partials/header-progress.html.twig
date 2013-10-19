@@ -15,7 +15,7 @@
             </label>
         </h1>    
 
-        {% if is_owner %}
+        {% if (is_owner is not defined) or (is_owner is defined and is_owner) %}
             
         <form id="cancel-form" class="top-right-form" method="post" action="{{ cancel_action }}">
             <button type="submit" class="btn btn-danger">Stop test</button>
