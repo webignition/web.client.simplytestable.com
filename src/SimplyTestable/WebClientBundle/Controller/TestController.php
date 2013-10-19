@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use webignition\IsHttpStatusCode\IsHttpStatusCode;
 
 class TestController extends BaseController
@@ -37,7 +38,23 @@ class TestController extends BaseController
         $this->getTestService()->setUser($this->getUser());
         
         try {
-            $test = $this->getTestService()->get($this->getWebsite(), $this->getTestId(), $this->getUser());                                    
+            if (!$this->getTestService()->has($this->getWebsite(), $this->getTestId())) {
+                return $this->redirect($this->generateUrl(
+                    'app',
+                    array(),
+                    true
+                ));
+            }            
+            
+            $test = $this->getTestService()->get($this->getWebsite(), $this->getTestId());            
+            if (!$this->getTestService()->authenticate()) {           
+                return $this->redirect($this->generateUrl(
+                    'app',
+                    array(),
+                    true
+                ));
+            }
+            
             $this->getTestService()->cancel($test);
             return $this->redirect($this->generateUrl(
                 'app_results',
@@ -46,14 +63,17 @@ class TestController extends BaseController
                     'test_id' => $test->getTestId()
                 ),
                 true
-            ));           
-        } catch (\SimplyTestable\WebClientBundle\Exception\UserServiceException $userServiceException) {
-            return $this->redirect($this->generateUrl(
-                'app',
-                array(),
-                true
             ));
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {                        
+           
+        } catch (WebResourceException $webResourceException) {            
+            if ($webResourceException->getResponse()->getStatusCode() == 403) {
+                return $this->redirect($this->generateUrl(
+                    'app',
+                    array(),
+                    true
+                ));                
+            }
+            
             $this->getLogger()->err('TestController::cancelAction:webResourceException ['.$webResourceException->getResponse()->getStatusCode().']');            
             
             return $this->redirect($this->generateUrl(
@@ -63,8 +83,7 @@ class TestController extends BaseController
                     'test_id' => $this->getTestId()
                 ),
                 true
-            ));             
-
+            )); 
         } catch (\Guzzle\Http\Exception\CurlException $curlException)  {
             $this->getLogger()->err('TestController::cancelAction:curlException ['.$curlException->getErrorNo().']');
             
