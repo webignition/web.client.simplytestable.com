@@ -15,11 +15,13 @@
     </div>
 
     <form id="test-start-form" method="post" action="{{ path('test_start') }}">
+        {% if is_owner %}        
         <button type="submit" class="btn btn-primary">                    
             Re-test
             <i class="icon icon-refresh"></i>
             <span>Using selected settings</span>
-        </button>        
+        </button>
+        {% endif %}
         <input type="hidden" name="website" value="{{ website }}" />
         <div id="test-options">
             <div class="intro">
