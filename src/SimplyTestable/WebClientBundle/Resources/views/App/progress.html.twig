@@ -35,7 +35,7 @@ Testing {{website}} - {{ parent() }}
                     {% endif %}         
                 {% endif %}
                     
-        {% if is_owner == false %}
+        {% if is_owner == false and is_public_user_test == false %}
 <div class="alert alert-info alert-from-view">
     <i class="icon icon-exclamation-sign"></i>
     <span>

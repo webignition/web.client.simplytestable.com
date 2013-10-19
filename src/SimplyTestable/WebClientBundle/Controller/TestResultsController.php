@@ -249,6 +249,7 @@ class TestResultsController extends TestViewController
         $test = $testRetrievalOutcome->getTest();                
         $isOwner = $this->getTestService()->owns();        
         $isPublic = $this->getTestService()->isPublic();
+        $isPublicUserTest = $test->getUser() == $this->getUserService()->getPublicUser()->getUsername();
         
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
         $cacheValidatorIdentifier->setParameter('website', $website);
@@ -257,6 +258,7 @@ class TestResultsController extends TestViewController
         $cacheValidatorIdentifier->setParameter('type', $taskTypeFilter);
         $cacheValidatorIdentifier->setParameter('isOwner', $isOwner);
         $cacheValidatorIdentifier->setParameter('isPublic', $isPublic);
+        $cacheValidatorIdentifier->setParameter('isPublicUserTest', $isPublicUserTest);
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
@@ -334,6 +336,7 @@ class TestResultsController extends TestViewController
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),    
             'is_owner' => $isOwner,
             'is_public' => $isPublic,
+            'is_public_user_test' => $isPublicUserTest,
             'task_types' => $taskTypes,
             'available_task_types' => $this->getAvailableTaskTypes(),
             'test_options' => $testOptions->__toKeyArray(),
