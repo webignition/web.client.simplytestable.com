@@ -23,7 +23,8 @@ class TestViewController extends BaseViewController
         }
         
         $test = $this->getTestService()->get($website, $test_id);
-        if ($this->getTestAuthenticationService()->authenticate($test, $this->getUser())) {
+        
+        if ($this->getTestService()->authenticate($test, $this->getUser())) {
             $outcome->setTest($this->getTestService()->get($website, $test_id));
             return $outcome;
         }        
@@ -63,13 +64,13 @@ class TestViewController extends BaseViewController
         return $outcome;
     }  
     
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TestAuthenticationService 
-     */
-    protected function getTestAuthenticationService() {
-        return $this->container->get('simplytestable.services.testauthenticationservice');
-    }     
+//    /**
+//     *
+//     * @return \SimplyTestable\WebClientBundle\Services\TestAuthenticationService 
+//     */
+//    protected function getTestAuthenticationService() {
+//        return $this->container->get('simplytestable.services.testauthenticationservice');
+//    }     
     
     
     /**

@@ -16,12 +16,6 @@ services:
         webResourceService: "@simplytestable.services.webresourceservice"
         logger: "@logger"
         taskService: "@simplytestable.services.taskservice" 
-        
-  simplytestable.services.testauthenticationservice:
-    class:   SimplyTestable\WebClientBundle\Services\TestAuthenticationService  
-    arguments:
-        parameters: %core_application%
-        webResourceService: "@simplytestable.services.webresourceservice"     
 
   simplytestable.services.taskservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskService  

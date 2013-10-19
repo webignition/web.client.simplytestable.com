@@ -449,4 +449,49 @@ class TestService extends CoreApplicationService {
     }
     
     
+    /**
+     * 
+     * @return boolean
+     * @throws \SimplyTestable\WebClientBundle\Services\WebResourceException
+     * @throws \SimplyTestable\WebClientBundle\Services\CurlException
+     */
+    public function authenticate() {
+        if ($this->owns()) {
+            return true;
+        }
+        
+        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_is_public', array(
+            'canonical-url' => urlencode($this->currentTest->getWebsite()),
+            'test_id' => $this->currentTest->getTestId()
+        )));
+        
+        $this->addAuthorisationToRequest($request);
+        
+        try {
+            $this->webResourceService->get($request);
+            return true;
+        } catch (WebResourceException $webResourceException) {
+            if ($webResourceException->getCode() == 404) {
+                return false;
+            }
+            
+            throw $webResourceException;
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            throw $curlException;
+        }     
+    } 
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function owns() {
+        if ($this->getUser()->getUsername() == $this->currentTest->getUser()) {
+            return true;
+        }
+        
+        return $this->getUser()->getUsername() == $this->getRemoteTestSummary()->user;         
+    }
+    
+    
 }
