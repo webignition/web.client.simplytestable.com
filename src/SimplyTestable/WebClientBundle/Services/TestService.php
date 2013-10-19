@@ -463,27 +463,31 @@ class TestService extends CoreApplicationService {
      * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
      * @throws \SimplyTestable\WebClientBundle\Services\CurlException
      */
-    public function isPublic() {
+    public function isPublic() {        
         if (!isset($this->currentTestIsPublic)) {
-            $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_is_public', array(
-                'canonical-url' => urlencode($this->currentTest->getWebsite()),
-                'test_id' => $this->currentTest->getTestId()
-            )));
+            if (isset($this->remoteTestSummary)) {
+                $this->currentTestIsPublic = $this->remoteTestSummary->is_public;
+            } else {
+                $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_is_public', array(
+                    'canonical-url' => urlencode($this->currentTest->getWebsite()),
+                    'test_id' => $this->currentTest->getTestId()
+                )));
 
-            $this->addAuthorisationToRequest($request);
+                $this->addAuthorisationToRequest($request);
 
-            try {
-                $this->webResourceService->get($request);
-                return true;
-            } catch (WebResourceException $webResourceException) {
-                if ($webResourceException->getCode() == 404) {
-                    return false;
-                }
+                try {
+                    $this->webResourceService->get($request);
+                    return true;
+                } catch (WebResourceException $webResourceException) {
+                    if ($webResourceException->getCode() == 404) {
+                        return false;
+                    }
 
-                throw $webResourceException;
-            } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-                throw $curlException;
-            }             
+                    throw $webResourceException;
+                } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+                    throw $curlException;
+                }                 
+            }            
         }
         
         return $this->currentTestIsPublic;

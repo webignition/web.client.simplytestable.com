@@ -61,8 +61,7 @@ class TestController extends BaseController
             'app_results',
             array(
                 'website' => $this->getWebsite(),
-                'test_id' => $this->getTestId(),
-                'was-'.$action.'ed' => 1
+                'test_id' => $this->getTestId()
             ),
             true
         ));        

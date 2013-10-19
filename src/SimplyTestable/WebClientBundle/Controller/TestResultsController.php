@@ -240,28 +240,30 @@ class TestResultsController extends TestViewController
             $taskTypeFilter = null;
         }
         
+        $this->getTestService()->setUser($this->getUser());        
+        $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
+        if ($testRetrievalOutcome->hasResponse()) {
+            return $testRetrievalOutcome->getResponse();
+        }
+        
+        $test = $testRetrievalOutcome->getTest();                
+        $isOwner = $this->getTestService()->owns();        
+        $isPublic = $this->getTestService()->isPublic();
+        
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
         $cacheValidatorIdentifier->setParameter('website', $website);
         $cacheValidatorIdentifier->setParameter('test_id', $test_id);
         $cacheValidatorIdentifier->setParameter('filter', $taskOutcomeFilter);
         $cacheValidatorIdentifier->setParameter('type', $taskTypeFilter);
+        $cacheValidatorIdentifier->setParameter('isOwner', $isOwner);
+        $cacheValidatorIdentifier->setParameter('isPublic', $isPublic);
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
         $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
-//        if ($response->isNotModified($this->getRequest())) {
-//            return $response;
-//        }
-        
-        $this->getTestService()->setUser($this->getUser());        
-        $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
-        if ($testRetrievalOutcome->hasResponse()) {
-            return $testRetrievalOutcome->getResponse();
-        }      
-        
-        $test = $testRetrievalOutcome->getTest();                
-        $isOwner = $this->getTestService()->owns();        
-        $isPublic = $this->getTestService()->isPublic();
+        if ($response->isNotModified($this->getRequest())) {
+            return $response;
+        }        
         
         if ($test->getState() == 'failed-no-sitemap') {            
             return $this->redirect($this->generateUrl('app_results_failed_no_urls_detected', array(

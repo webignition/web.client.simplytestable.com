@@ -86,6 +86,7 @@ abstract class BaseViewController extends BaseController
         $response->setPublic();
         $response->setEtag($cacheValidatorHeaders->getETag());
         $response->setLastModified($cacheValidatorHeaders->getLastModifiedDate());        
+        $response->headers->addCacheControlDirective('must-revalidate', true);
         
         return $response;
     }
