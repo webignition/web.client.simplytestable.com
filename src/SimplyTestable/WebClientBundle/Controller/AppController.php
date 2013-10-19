@@ -80,13 +80,10 @@ class AppController extends TestViewController
             'test_cancelled_queued_website' => $testCancelledQueuedWebsite
         ));
         
-        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
-        
-        if ($this->isProduction() && $cacheValidatorHeaders->getLastModifiedDate() == $templateLastModifiedDate) {            
-            $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
-            if ($response->isNotModified($this->getRequest())) {
-                return $response;
-            }
+        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);        
+        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
+        if ($response->isNotModified($this->getRequest())) {
+            return $response;
         }
         
         $cacheValidatorHeaders->setLastModifiedDate($templateLastModifiedDate);
