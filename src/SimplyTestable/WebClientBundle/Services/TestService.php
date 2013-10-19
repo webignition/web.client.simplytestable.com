@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Entity\TimePeriod;
 use Symfony\Component\HttpKernel\Log\LoggerInterface as Logger;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\TestOptions;
 
 use webignition\NormalisedUrl\NormalisedUrl;
@@ -490,7 +491,17 @@ class TestService extends CoreApplicationService {
             return true;
         }
         
-        return $this->getUser()->getUsername() == $this->getRemoteTestSummary()->user;         
+        try {
+            return $this->getUser()->getUsername() == $this->getRemoteTestSummary()->user;         
+        } catch (WebResourceException $webResourceException) {            
+            if ($webResourceException->getCode() == 403) {
+                return false;
+            }
+            
+            throw $webResourceException;
+        }
+        
+        
     }
     
     
