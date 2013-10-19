@@ -25,6 +25,20 @@ class ActionTest extends BaseActionTest {
         ));
     } 
     
+    public function testWithPublicTestAccessedByNonOwner() {
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
+        
+        $this->performActionTest(array(
+            'statusCode' => 200
+        ), array(
+            'methodArguments' => array(
+                'http://example.com/',
+                1,
+                1
+            )
+        ));
+    }       
+    
     
     public function testWithAuthorisedUserWithValidTestAndInvalidTask() {
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
@@ -55,9 +69,6 @@ class ActionTest extends BaseActionTest {
             )
         ));
     }
-
-    
-
 
 }
 
