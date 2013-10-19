@@ -9,7 +9,7 @@
     </div>
 
     <form id="test-start-form" method="post" action="{{ path('test_start') }}">
-        {% if is_owner %}        
+        {% if is_owner or is_public_user_test %}        
         <button type="submit" class="btn btn-primary">                    
             Re-test
             <i class="icon icon-refresh"></i>
