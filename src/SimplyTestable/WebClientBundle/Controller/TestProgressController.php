@@ -64,13 +64,14 @@ class TestProgressController extends TestViewController
         }
         
         $test = $testRetrievalOutcome->getTest();
+        $isOwner = $this->getTestService()->owns();
         
         if (in_array($test->getState(), $this->testFinishedStates)) {            
             if ($test->getState() !== 'failed-no-sitemap') {
                 return $this->redirect($this->getResultsUrl($website, $test_id));                
             }
             
-            if ($this->getUserService()->isPublicUser($this->getUser()) && $this->getTestService()->owns()) {
+            if ($this->getUserService()->isPublicUser($this->getUser()) && $isOwner) {
                 return $this->redirect($this->getResultsUrl($website, $test_id));
             }
         }       
@@ -112,6 +113,7 @@ class TestProgressController extends TestViewController
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+            'is_owner' => $isOwner,
             'task_types' => $taskTypes,
             'test_cancel_error' => $this->getFlash('test_cancel_error'),
             'available_task_types' => $this->getAvailableTaskTypes(),

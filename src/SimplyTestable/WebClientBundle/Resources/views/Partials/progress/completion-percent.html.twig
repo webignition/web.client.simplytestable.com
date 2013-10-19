@@ -5,7 +5,7 @@
     <p>
         <span id="completion-percent-state-label">{{ state_label }}</span><span id="completion-time-remaining">&nbsp;</span>        
     </p>
-    {% if test is defined and test.state == 'crawling' %}
+    {% if test is defined and test.state == 'crawling' and is_owner %}
     <form id="cancel-crawl-form" class="top-right-form" method="post" action="{{ path('test_cancel_crawl', {'test_id':test.testId, 'website':test.website}) }}">
         <button type="submit" class="btn btn-warning">Stop finding URLs, start testing</button>
     </form> 
