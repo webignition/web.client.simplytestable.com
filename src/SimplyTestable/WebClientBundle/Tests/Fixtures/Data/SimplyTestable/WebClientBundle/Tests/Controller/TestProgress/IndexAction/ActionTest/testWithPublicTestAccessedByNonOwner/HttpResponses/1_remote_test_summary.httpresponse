@@ -1,0 +1,39 @@
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+   "id":1,
+   "user":"user@example.com",
+   "website":"http:\/\/example.com\/",
+   "state":"queued",
+   "time_period":{
+      "start_date_time":"2013-04-15T12:32:19+0100",
+      "end_date_time":"2013-04-15T12:32:49+0100"
+   },
+   "url_count":10,
+   "task_count":10,
+   "task_count_by_state":{
+      "cancelled":0,
+      "queued":0,
+      "in-progress":0,
+      "completed":10,
+      "awaiting-cancellation":0,
+      "queued-for-assignment":0,
+      "failed-no-retry-available":0,
+      "failed-retry-available":0,
+      "failed-retry-limit-reached":0,
+      "skipped":0
+   },
+   "task_types":[
+      {
+         "name":"HTML validation"
+      }
+   ],
+   "errored_task_count":0,
+   "cancelled_task_count":0,
+   "skipped_task_count":0,
+   "task_type_options":[
+
+   ],
+   "type":"Full site"
+}
