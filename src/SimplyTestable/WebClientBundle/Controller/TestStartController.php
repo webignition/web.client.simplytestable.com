@@ -42,42 +42,6 @@ class TestStartController extends TestController
             return $this->redirect($this->generateUrl('app', array(), true));
         }       
     }
-
-    
-    public function crawlAction($website, $test_id) {       
-        try {            
-            $this->getTestService()->startCrawl($this->getTestService()->get($website, $test_id, $this->getUser()));
-            
-            return $this->redirect($this->generateUrl(
-                'crawl_progress',
-                array(
-                    'website' => $website,
-                    'test_id' => $test_id
-                ),
-                true
-            ));           
-        } catch (UserServiceException $e) {
-            return $this->redirect($this->generateUrl('app', array(), true));
-        } catch (\Guzzle\Http\Exception\ClientErrorResponseException $clientErrorResponseException) {
-            return $this->redirect($this->generateUrl(
-                'app_results',
-                array(
-                    'website' => $website,
-                    'test_id' => $test_id
-                ),
-                true
-            ));        
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-            return $this->redirect($this->generateUrl(
-                'app_results',
-                array(
-                    'website' => $website,
-                    'test_id' => $test_id
-                ),
-                true
-            ));  
-        }        
-    }
     
     private function startAction($requestValues)
     {        
