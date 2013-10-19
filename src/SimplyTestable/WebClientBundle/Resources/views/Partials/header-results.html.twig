@@ -44,7 +44,7 @@
         </div>            
     </form>
         
-    {% if is_owner %}
+    {% if is_owner and is_public_user_test == false %}
         {% if is_public %}
     <form id="lock-unlock" action="{{ path('app_test_lock', { 'website': test.website, 'test_id': test.testId }) }}">
         <p>
