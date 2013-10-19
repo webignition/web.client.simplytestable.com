@@ -181,10 +181,6 @@ class TestService extends CoreApplicationService {
             }
         }
         
-//        if ($this->currentTest->getUser() != $user->getUsername() && $this->currentTest->getUser() != 'public') {
-//            throw new UserServiceException(403);
-//        }
-        
         $this->entityManager->persist($this->currentTest);
         $this->entityManager->flush();
         
@@ -219,16 +215,7 @@ class TestService extends CoreApplicationService {
      * @return boolean
      */
     private function create() {
-        try {
-            $remoteTestSummary = $this->getRemoteTestSummary();  
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
-            if ($webResourceException->getResponse()->getStatusCode() === 403) {                
-                throw new UserServiceException(403);
-            }
-            
-            throw $webResourceException;
-        }        
-                    
+        $remoteTestSummary = $this->getRemoteTestSummary();                    
         if (!$remoteTestSummary) {
             return false;
         }
