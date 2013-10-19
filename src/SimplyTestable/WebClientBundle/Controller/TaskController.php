@@ -150,6 +150,8 @@ class TaskController extends TestViewController
         }
         
         $test = $testRetrievalOutcome->getTest();        
+        $isOwner = $this->getTestService()->owns();
+        
         $task = $this->getTaskService()->get($test, $task_id);
         
         if (is_null($task)) {
@@ -166,7 +168,8 @@ class TaskController extends TestViewController
                 'task' => $task,
                 'public_site' => $this->container->getParameter('public_site'),
                 'user' => $this->getUser(),
-                'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),                        
+                'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+                'is_owner' => $isOwner,
         );
         
         if ($task->getType() == 'HTML validation') {

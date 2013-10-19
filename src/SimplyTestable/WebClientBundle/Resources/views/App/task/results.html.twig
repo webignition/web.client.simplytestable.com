@@ -10,6 +10,16 @@
     <div class="container main">            
         <div class="row-fluid">
             <div class="span12">
+                
+        {% if is_owner == false %}
+<div class="alert alert-info alert-from-view">
+    <i class="icon icon-exclamation-sign"></i>
+    <span>
+This is a <strong>read-only version</strong> of this test.
+    </span>
+</div>             
+        {% endif %}                
+                
                 <section>
                     <h1 class="info">
                         <i class="icon-bar-chart"></i>
