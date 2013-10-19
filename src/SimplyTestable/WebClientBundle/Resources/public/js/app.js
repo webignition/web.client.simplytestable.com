@@ -1882,11 +1882,6 @@ application.pages = {
                 resultsPreparingController.initialise();
             }
             
-            if ($('body.crawl-progress').length > 0) {
-                crawlProgressController = new application.crawl.progressController();
-                crawlProgressController.initialise();
-            }
-            
             if ($('body.app').length > 0) {
                 testStartFormController = new application.root.testStartFormController();
                 testStartFormController.initialise();
