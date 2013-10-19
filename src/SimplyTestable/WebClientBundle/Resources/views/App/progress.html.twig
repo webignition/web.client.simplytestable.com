@@ -34,6 +34,15 @@ Testing {{website}} - {{ parent() }}
                     </div>                
                     {% endif %}         
                 {% endif %}
+                    
+        {% if is_owner == false %}
+<div class="alert alert-info alert-from-view">
+    <i class="icon icon-exclamation-sign"></i>
+    <span>
+This is a <strong>read-only version</strong> of this test.
+    </span>
+</div>             
+        {% endif %}                    
 
                 {% include 'SimplyTestableWebClientBundle:Partials:header-progress.html.twig' %}     
             </div>
