@@ -160,7 +160,7 @@ class TaskController extends TestViewController
             'task_id' => $task_id
         ));
         
-        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
+        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);        
         
         $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
         if ($response->isNotModified($this->getRequest())) {
@@ -174,6 +174,7 @@ class TaskController extends TestViewController
         
         $test = $testRetrievalOutcome->getTest();        
         $isOwner = $this->getTestService()->owns();
+        $isPublicUserTest = $test->getUser() == $this->getUserService()->getPublicUser()->getUsername();
         
         $task = $this->getTaskService()->get($test, $task_id);
         
@@ -193,6 +194,7 @@ class TaskController extends TestViewController
                 'user' => $this->getUser(),
                 'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
                 'is_owner' => $isOwner,
+                'is_public_user_test' => $isPublicUserTest,
         );
         
         if ($task->getType() == 'HTML validation') {
