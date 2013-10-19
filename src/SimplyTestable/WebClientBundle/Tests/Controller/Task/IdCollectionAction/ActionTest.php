@@ -36,8 +36,22 @@ class ActionTest extends BaseActionTest {
                 1
             )
         ));
-
     } 
+    
+    public function testWithPublicTestAccessedByNonOwner() {
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
+        
+        $response = $this->performActionTest(array(
+            'statusCode' => 200
+        ), array(
+            'methodArguments' => array(
+                'http://example.com/',
+                1
+            )
+        ));          
+
+        $this->assertEquals(array(1,2,3,4,5,6,7,8,9,10), json_decode($response->getContent()));        
+    }    
     
     public function testGetWithHttpClientErrorRetrievingRemoteIds() {
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));

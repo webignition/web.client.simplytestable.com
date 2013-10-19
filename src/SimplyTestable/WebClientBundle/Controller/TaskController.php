@@ -69,19 +69,30 @@ class TaskController extends TestViewController
     }
     
     
-    public function idCollectionAction($website, $test_id) {        
+    public function idCollectionAction($website, $test_id) {                
         $this->getTestService()->setUser($this->getUser());
         
-        try {            
-            $test = $this->getTestService()->get($website, $test_id, $this->getUser());        
+        try {
+            if (!$this->getTestService()->has($website, $test_id)) {
+                return $this->sendNotFoundResponse(); 
+            }            
+            
+            $test = $this->getTestService()->get($website, $test_id); 
+            if (!$this->getTestService()->authenticate()) {           
+                return $this->sendNotFoundResponse(); 
+            }
+            
             $taskIds = $this->getTaskService()->getRemoteTaskIds($test);
 
-            return new Response($this->getSerializer()->serialize($taskIds, 'json'));          
-        } catch (\SimplyTestable\WebClientBundle\Exception\UserServiceException $userServiceException) {
-            return $this->sendNotFoundResponse();            
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
+            return new Response($this->getSerializer()->serialize($taskIds, 'json'));
+           
+        } catch (WebResourceException $webResourceException) {            
+            if ($webResourceException->getCode() == 403) {
+                return $this->sendNotFoundResponse();
+            }
+            
             return new Response($this->getSerializer()->serialize(null, 'json'));
-        } catch (\Guzzle\Http\Exception\RequestException $requestException)  {
+        } catch (\Guzzle\Http\Exception\RequestException $requestException)  {         
             return new Response($this->getSerializer()->serialize(null, 'json'));
         }
     }    
