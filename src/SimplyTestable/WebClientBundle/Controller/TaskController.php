@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 
 class TaskController extends TestViewController
 {  
@@ -27,11 +28,19 @@ class TaskController extends TestViewController
     );       
     
    
-    public function collectionAction($website, $test_id) {        
+    public function collectionAction($website, $test_id) {                
         $this->getTestService()->setUser($this->getUser());
         
-        try {            
-            $test = $this->getTestService()->get($website, $test_id, $this->getUser());        
+        try {
+            if (!$this->getTestService()->has($website, $test_id)) {
+                return $this->sendNotFoundResponse(); 
+            }            
+            
+            $test = $this->getTestService()->get($website, $test_id); 
+            if (!$this->getTestService()->authenticate()) {           
+                return $this->sendNotFoundResponse(); 
+            }
+            
             $taskIds = $this->getRequestTaskIds();               
             $tasks = $this->getTaskService()->getCollection($test, $taskIds);
 
@@ -44,16 +53,19 @@ class TaskController extends TestViewController
                         $task->getOutput()->setResult($parser->getResult());
                     }
                 }
+            }  
+            
+            return new Response($this->getSerializer()->serialize($tasks, 'json'));
+           
+        } catch (WebResourceException $webResourceException) {            
+            if ($webResourceException->getCode() == 403) {
+                return $this->sendNotFoundResponse();
             }
-
-            return new Response($this->getSerializer()->serialize($tasks, 'json'));        
-        } catch (\SimplyTestable\WebClientBundle\Exception\UserServiceException $userServiceException) {
-            return $this->sendNotFoundResponse();            
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
+            
             return new Response($this->getSerializer()->serialize(null, 'json'));
-        } catch (\Guzzle\Http\Exception\RequestException $requestException)  {
+        } catch (\Guzzle\Http\Exception\RequestException $requestException)  {         
             return new Response($this->getSerializer()->serialize(null, 'json'));
-        }
+        }      
     }
     
     
