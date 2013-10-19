@@ -21,7 +21,7 @@
             <div class="intro">
                 <p>
                     <span class="task-type-selection">{% autoescape false %}{{ test_options_introduction }}{% endautoescape %}</span> <span class="expandable-control expandable-control-default-closed for-test-options-expandable">
-                        {% if is_owner %}Change{% else %}View{% endif %} test options                        
+                        {% if is_owner or is_public_user_test %}Change{% else %}View{% endif %} test options                        
                     </span>
                 </p>
             </div>            
