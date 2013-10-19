@@ -3,7 +3,7 @@ Content-Type: application/json
 
 {
    "id":1,
-   "user":"public",
+   "user":"user@example.com",
    "website":"http:\/\/example.com\/",
    "state":"queued",
    "time_period":{
