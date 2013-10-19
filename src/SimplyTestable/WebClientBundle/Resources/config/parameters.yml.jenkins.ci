@@ -15,7 +15,7 @@ parameters:
       link-integrity: "Link integrity"  
   core_application:
     urls:
-      base: http://ci.app.simplytestable.com      
+      base: http://null      
       test_start: /job/{canonical-url}/start/
       test_status: /job/{canonical-url}/{test_id}/
       test_cancel: /job/{canonical-url}/{test_id}/cancel/
