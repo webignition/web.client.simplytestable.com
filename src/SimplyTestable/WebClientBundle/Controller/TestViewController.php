@@ -2,6 +2,8 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+
 class TestViewController extends BaseViewController
 {
 
@@ -11,7 +13,7 @@ class TestViewController extends BaseViewController
      * @param int $test_id
      * @return \SimplyTestable\WebClientBundle\Model\ControllerTestRetrievalOutcome
      */
-    protected function getTestRetrievalOutcome($website, $test_id) {
+    protected function getTestRetrievalOutcome($website, $test_id) {        
         $outcome = new \SimplyTestable\WebClientBundle\Model\ControllerTestRetrievalOutcome();
         
         if (!$this->getTestService()->has($website, $test_id)) {
@@ -22,11 +24,18 @@ class TestViewController extends BaseViewController
             return $outcome;
         }
         
-        $test = $this->getTestService()->get($website, $test_id);        
-        if ($this->getTestService()->authenticate()) {           
-            $outcome->setTest($test);
-            return $outcome;
-        }        
+        try {
+            $test = $this->getTestService()->get($website, $test_id); 
+            if ($this->getTestService()->authenticate()) {           
+                $outcome->setTest($test);
+                return $outcome;
+            }             
+            
+        } catch (WebResourceException $webResourceException) {
+            if ($webResourceException->getCode() != 403) {
+                throw $webResourceException;
+            }
+        }
 
         if ($this->isLoggedIn()) {
             $this->setTemplate('SimplyTestableWebClientBundle:App:test-not-authorised.html.twig');
@@ -61,15 +70,7 @@ class TestViewController extends BaseViewController
         ), true)));
         
         return $outcome;
-    }  
-    
-//    /**
-//     *
-//     * @return \SimplyTestable\WebClientBundle\Services\TestAuthenticationService 
-//     */
-//    protected function getTestAuthenticationService() {
-//        return $this->container->get('simplytestable.services.testauthenticationservice');
-//    }     
+    }    
     
     
     /**
