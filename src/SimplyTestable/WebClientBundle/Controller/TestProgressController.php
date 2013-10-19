@@ -65,12 +65,12 @@ class TestProgressController extends TestViewController
         
         $test = $testRetrievalOutcome->getTest();
         
-        if (in_array($test->getState(), $this->testFinishedStates)) {
+        if (in_array($test->getState(), $this->testFinishedStates)) {            
             if ($test->getState() !== 'failed-no-sitemap') {
                 return $this->redirect($this->getResultsUrl($website, $test_id));                
             }
             
-            if ($this->getUserService()->isPublicUser($this->getUser())) {
+            if ($this->getUserService()->isPublicUser($this->getUser()) && $this->getTestService()->owns()) {
                 return $this->redirect($this->getResultsUrl($website, $test_id));
             }
         }       
@@ -83,11 +83,7 @@ class TestProgressController extends TestViewController
         }      
         
         $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();        
-        if ($test->getState() == 'failed-no-sitemap' && !isset($remoteTestSummary->crawl)) {
-            $this->getTestService()->startCrawl($test);
-            $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();                
-        }        
-                
+         
         if ($test->getState() == 'failed-no-sitemap' && isset($remoteTestSummary->crawl)) {
             $test->setState('crawling');
         }
