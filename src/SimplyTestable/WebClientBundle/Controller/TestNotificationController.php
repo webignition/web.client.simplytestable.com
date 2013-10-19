@@ -10,6 +10,8 @@ class TestNotificationController extends TestViewController
             return $this->sendNotFoundResponse();
         }
         
+        $this->getTestService()->setUser($this->getUser());
+        
         $this->setTemplate('SimplyTestableWebClientBundle:Partials:test-url-limit-notification.html.twig');
         return $this->sendResponse(array(
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
