@@ -1,6 +1,6 @@
 imports:
     - { resource: config_dev.yml }
-#    - { resource: "@SimplyTestableWebClientBundle/Resources/config/parameters_test.yml" }    
+    - { resource: "@SimplyTestableWebClientBundle/Resources/config/parameters_test.yml" }    
     - { resource: "@SimplyTestableWebClientBundle/Resources/config/services_test.yml" }      
 
 framework:
