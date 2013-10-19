@@ -1220,3 +1220,10 @@ body.app-results h2 a {
 body.app-results .summary-prose .icon-ok {
     color: #51A351;
 }
+
+body.app-results #lock-unlock {
+    position:absolute;
+    right:30px;
+    width:156px;
+    top:100px;
+}
