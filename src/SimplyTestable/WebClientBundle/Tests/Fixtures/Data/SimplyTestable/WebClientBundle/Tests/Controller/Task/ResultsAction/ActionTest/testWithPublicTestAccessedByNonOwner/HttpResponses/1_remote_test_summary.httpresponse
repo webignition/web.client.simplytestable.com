@@ -35,5 +35,6 @@ Content-Type: application/json
    "task_type_options":[
 
    ],
-   "type":"Full site"
+   "type":"Full site",
+   "is_public":"true"
 }

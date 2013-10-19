@@ -71,5 +71,6 @@ Content-Type: application/json
          "jslint-option-anon":"1"
       }
    },
-   "type":"Single URL"
+   "type":"Single URL",
+   "is_public":"true"
 }

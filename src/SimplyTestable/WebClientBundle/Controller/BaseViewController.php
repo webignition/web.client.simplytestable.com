@@ -123,7 +123,7 @@ abstract class BaseViewController extends BaseController
         $identifier = new CacheValidatorIdentifier();
         $identifier->setParameter('route', $this->container->get('request')->get('_route'));
         $identifier->setParameter('user', $this->getUser()->getUsername());
-        $identifier->setParameter('is_logged_in', $this->getUserService()->isPublicUser($this->getUser()) ? 'false' : 'true');
+        $identifier->setParameter('is_logged_in', !$this->getUserService()->isPublicUser($this->getUser()));
         
         foreach ($parameters as $key => $value) {
             $identifier->setParameter($key, $value);
