@@ -58,7 +58,7 @@ class ActionTest extends BaseActionTest {
     public function testWithPublicTestAccessedByNonOwner() {
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         
-        $response =  $this->performActionTest(array(
+        $this->performActionTest(array(
             'statusCode' => 200
         ), array(
             'methodArguments' => array(
