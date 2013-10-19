@@ -33,6 +33,42 @@ class TestController extends BaseController
     }
     
     
+    public function lockAction() {
+        return $this->lockUnlock('lock');        
+    }
+    
+    public function unlockAction() {
+        return $this->lockUnlock('unlock');
+    } 
+    
+    
+    private function lockUnlock($action) {
+        $this->getTestService()->setUser($this->getUser());
+        
+        try {
+            if ($this->getTestService()->has($this->getWebsite(), $this->getTestId())) {
+                $test = $this->getTestService()->get($this->getWebsite(), $this->getTestId()); 
+                
+                if ($this->getTestService()->authenticate()) {           
+                    $this->getTestService()->$action($test);
+                }                 
+            }                        
+        } catch (\Exception $e) {            
+            // We already redirect back to test results regardless of if this action succeeds
+        }
+        
+        return $this->redirect($this->generateUrl(
+            'app_results',
+            array(
+                'website' => $this->getWebsite(),
+                'test_id' => $this->getTestId(),
+                'was-'.$action.'ed' => 1
+            ),
+            true
+        ));        
+    }
+    
+    
     public function cancelAction()
     {
         $this->getTestService()->setUser($this->getUser());

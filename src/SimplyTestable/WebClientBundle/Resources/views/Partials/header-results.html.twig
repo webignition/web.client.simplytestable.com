@@ -43,13 +43,25 @@
                 </div>
         </div>            
     </form>
-       
-    <form id="lock-unlock">
+        
+    {% if is_owner %}
+        {% if is_public %}
+    <form id="lock-unlock" action="{{ path('app_test_lock', { 'website': test.website, 'test_id': test.testId }) }}">
         <p>
-            <i class="icon icon-lock"></i> This test is locked and can be viewed
-            only by you. <button type="submit" class="btn btn-mini">Unlock</button>
+            This test is unlocked and can be viewed by anyone. <button type="submit" class="btn btn-mini"><i class="icon icon-lock"></i> Lock</button>
         </p>
-    </form>
+    </form>         
+        {% else %}
+    <form id="lock-unlock" action="{{ path('app_test_unlock', { 'website': test.website, 'test_id': test.testId }) }}">
+        <p>
+            This test is locked and can be viewed
+            only by you. <button type="submit" class="btn btn-mini"><i class="icon icon-unlock"></i> Unlock</button>
+        </p>
+    </form>         
+        {% endif %}
+    {% endif %}
+       
+
 
         
     <div class="row-fluid" id="summary-stats">

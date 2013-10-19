@@ -249,9 +249,9 @@ class TestResultsController extends TestViewController
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
         $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
-        if ($response->isNotModified($this->getRequest())) {
-            return $response;
-        }
+//        if ($response->isNotModified($this->getRequest())) {
+//            return $response;
+//        }
         
         $this->getTestService()->setUser($this->getUser());        
         $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
@@ -260,7 +260,8 @@ class TestResultsController extends TestViewController
         }      
         
         $test = $testRetrievalOutcome->getTest();                
-        $isOwner = $this->getTestService()->owns();
+        $isOwner = $this->getTestService()->owns();        
+        $isPublic = $this->getTestService()->isPublic();
         
         if ($test->getState() == 'failed-no-sitemap') {            
             return $this->redirect($this->generateUrl('app_results_failed_no_urls_detected', array(
@@ -330,6 +331,7 @@ class TestResultsController extends TestViewController
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),    
             'is_owner' => $isOwner,
+            'is_public' => $isPublic,
             'task_types' => $taskTypes,
             'available_task_types' => $this->getAvailableTaskTypes(),
             'test_options' => $testOptions->__toKeyArray(),

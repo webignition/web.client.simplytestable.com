@@ -58,6 +58,13 @@ class TestService extends CoreApplicationService {
     private $currentTest = null;
     
     
+    /**
+     *
+     * @var boolean
+     */
+    private $currentTestIsPublic = null;
+    
+    
     public function __construct(
         EntityManager $entityManager,
         $parameters,
@@ -440,34 +447,48 @@ class TestService extends CoreApplicationService {
     /**
      * 
      * @return boolean
-     * @throws \SimplyTestable\WebClientBundle\Services\WebResourceException
-     * @throws \SimplyTestable\WebClientBundle\Services\CurlException
      */
     public function authenticate() {
         if ($this->owns()) {
             return true;
         }
         
-        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_is_public', array(
-            'canonical-url' => urlencode($this->currentTest->getWebsite()),
-            'test_id' => $this->currentTest->getTestId()
-        )));
+        return $this->isPublic();
+    }    
+    
+    
+    /**
+     * 
+     * @return boolean
+     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
+     * @throws \SimplyTestable\WebClientBundle\Services\CurlException
+     */
+    public function isPublic() {
+        if (!isset($this->currentTestIsPublic)) {
+            $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_is_public', array(
+                'canonical-url' => urlencode($this->currentTest->getWebsite()),
+                'test_id' => $this->currentTest->getTestId()
+            )));
+
+            $this->addAuthorisationToRequest($request);
+
+            try {
+                $this->webResourceService->get($request);
+                return true;
+            } catch (WebResourceException $webResourceException) {
+                if ($webResourceException->getCode() == 404) {
+                    return false;
+                }
+
+                throw $webResourceException;
+            } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+                throw $curlException;
+            }             
+        }
         
-        $this->addAuthorisationToRequest($request);
-        
-        try {
-            $this->webResourceService->get($request);
-            return true;
-        } catch (WebResourceException $webResourceException) {
-            if ($webResourceException->getCode() == 404) {
-                return false;
-            }
-            
-            throw $webResourceException;
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-            throw $curlException;
-        }     
-    } 
+        return $this->currentTestIsPublic;
+    }
+    
     
     /**
      * 
@@ -489,6 +510,30 @@ class TestService extends CoreApplicationService {
         }
         
         
+    }
+    
+    
+    public function lock() {
+        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_set_private', array(
+            'canonical-url' => urlencode($this->currentTest->getWebsite()),
+            'test_id' => $this->currentTest->getTestId()
+        )));
+        
+        $this->addAuthorisationToRequest($request);
+        $this->webResourceService->get($request);       
+        return true;
+    }
+    
+    
+    public function unlock() {
+        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_set_public', array(
+            'canonical-url' => urlencode($this->currentTest->getWebsite()),
+            'test_id' => $this->currentTest->getTestId()
+        )));
+        
+        $this->addAuthorisationToRequest($request);
+        $this->webResourceService->get($request);       
+        return true;        
     }
     
     

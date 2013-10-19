@@ -129,6 +129,18 @@ app_results:
     requirements:
        website: ".+"
        
+app_test_lock:
+    pattern:  /{website}/{test_id}/lock/
+    defaults: { _controller: SimplyTestableWebClientBundle:Test:lock }  
+    requirements:
+       website: ".+"       
+       
+app_test_unlock:
+    pattern:  /{website}/{test_id}/unlock/
+    defaults: { _controller: SimplyTestableWebClientBundle:Test:unlock }  
+    requirements:
+       website: ".+"         
+       
 app_results_failed_no_urls_detected:
     pattern:  /{website}/{test_id}/results/failed/no-urls-detected/
     defaults: { _controller: SimplyTestableWebClientBundle:TestResults:failedNoUrlsDetected }  
