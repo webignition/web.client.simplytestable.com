@@ -24,6 +24,15 @@ Testing {{website}} - {{ parent() }}
     <div class="container main">            
         <div class="row-fluid">
             <div class="span12">
+        {% if is_owner == false and is_public_user_test == false %}
+<div class="alert alert-info alert-from-view">
+    <i class="icon icon-exclamation-sign"></i>
+    <span>
+        You're viewing a <strong>read-only version</strong> of this test. <a href="{{ path('sign_in') }}">Sign in</a> if you're the test owner to manage this test.
+    </span>
+</div>             
+        {% endif %}                 
+                
                 {% if remote_test_summary.ammendments is defined %}
                     {% if remote_test_summary.ammendments[0].constraint is defined %}
                     <div class="alert alert-info alert-ammendment alert-from-view">
@@ -33,16 +42,7 @@ Testing {{website}} - {{ parent() }}
                         </span>
                     </div>                
                     {% endif %}         
-                {% endif %}
-                    
-        {% if is_owner == false and is_public_user_test == false %}
-<div class="alert alert-info alert-from-view">
-    <i class="icon icon-exclamation-sign"></i>
-    <span>
-        You're viewing a <strong>read-only version</strong> of this test. <a href="{{ path('sign_in') }}">Sign in</a> if you're the test owner to manage this test.
-    </span>
-</div>             
-        {% endif %}                    
+                {% endif %}                   
 
                 {% include 'SimplyTestableWebClientBundle:Partials:header-progress.html.twig' %}     
             </div>

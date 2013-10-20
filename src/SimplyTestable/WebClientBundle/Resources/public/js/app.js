@@ -1910,6 +1910,10 @@ application.pages = {
                     }
                 });
             }
+            
+            $('.full-width-container .alert:last').css({
+                'margin-bottom':'20px'
+            });
 
             $('.expandable-control').each(function() {
                 var getExpandableArea = function(expandableControlClass) {
