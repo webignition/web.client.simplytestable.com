@@ -31,8 +31,10 @@
             <button type="button" class="close" data-dismiss="alert">×</button>
             <p><strong>Slow down!</strong></p>
             <p>
-                You'll need to choose something to test. Tick <strong>HTML validation</strong>,
-                <strong>CSS validation</strong> or <strong>JavaScript static analysis</strong>
+                You'll need to choose something to test. Tick 
+                {% for task_type in available_task_types %}
+                    <strong>{{ task_type }}</strong>{% if loop.revindex == 2 %} or {% else %}{% if loop.last == false %}, {% else %}{% endif %}{% endif %}                    
+                {% endfor %}
                 as required.
             </p>            
         </div>             
@@ -43,8 +45,7 @@
             <p>
                 You'll need to choose something to test. Tick <strong>HTML validation</strong>
                 or <strong>CSS validation</strong> as required.
-            </p>            
-        </div>            
+            </p></div>            
             {% endif %}
             
             
@@ -75,6 +76,7 @@
     </div>
 </div> 
             
-    </form>
+    </form>        
+       
 </div>
 </section>
