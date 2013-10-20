@@ -69,7 +69,7 @@
             {% if test.errorCount > 0 %}
                 <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=with-errors#test-list"><span class="count">{{ test.errorCount }}</span> <span class="stat-label">error{% if test.errorCount != 1 %}s{% endif %}</span><i class="icon icon-caret-down"></i></a>
             {% else %}
-                <span class="anchor"><span class="count">{{ test.errorCount }}</span> <span class="stat-label">error{% if test.errorCount != 1 %}s{% endif %}</span><i class="icon icon-ok"></i></span>
+                <span class="anchor"><span class="count">{{ test.errorCount }}</span> <span class="stat-label">errors</span><i class="icon icon-ok"></i></span>
             {% endif %}
             
         </div>            
@@ -77,12 +77,16 @@
             {% if test.warningCount > 0 %}
                 <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=with-warnings#test-list"><span class="count">{{ test.warningCount }}</span> <span class="stat-label">warning{% if test.warningCount != 1 %}s{% endif %}</span><i class="icon icon-caret-down"></i></a>
             {% else %}
-                <span class="anchor"><span class="count">{{ test.warningCount }}</span> <span class="stat-label">warning{% if test.warningCount != 1 %}s{% endif %}</span><i class="icon icon-ok"></i></span>
+                <span class="anchor"><span class="count">{{ test.warningCount }}</span> <span class="stat-label">warnings</span><i class="icon icon-ok"></i></span>
             {% endif %}
         </div>      
        
-        <div class="span2 summary-container summary-figure success-container">
-            <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=without-errors#test-list"><span class="count">{{ error_free_task_count }}</span> <span class="stat-label">test{% if error_free_task_count != 1 %}s{% endif %} without errors</span><i class="icon icon-caret-down"></i></a>
+        <div class="span2 summary-container summary-figure {% if test.errorCount > 0 %}error-container{% else %}success-container{% endif %}">
+            {% if error_free_task_count > 0 %}
+                <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=without-errors#test-list"><span class="count">{{ error_free_task_count }}</span> <span class="stat-label">test{% if error_free_task_count != 1 %}s{% endif %} without errors</span><i class="icon icon-caret-down"></i></a>
+            {% else %}
+                <span class="anchor"><span class="count">{{ error_free_task_count }}</span> <span class="stat-label">tests without errors</span><i class="icon icon-{% if test.errorCount > 0 %}remove{% else %}ok{% endif %}"></i></span>                    
+            {% endif %}            
         </div>           
         <div class="span6 summary-container summary-prose">
             {% if test.errorCount > 0 %}
