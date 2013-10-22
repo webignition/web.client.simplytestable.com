@@ -33,7 +33,7 @@
                         <span class="selected">{{ task_type }}</span>{% if loop.length > 1 %}{% if loop.index == loop.length - 1 %} and {% else %}{% if loop.index != loop.length %},{% else %}.{% endif %}{% endif %}{% endif %}
                     {% endfor %}
 
-                <span class="expandable-control{% if remote_test_summary.task_type_options|length == 0 %}-disabled{% endif %} for-test-options-expandable expandable-control-default-closed">
+                <span class="expandable-control for-test-options-expandable expandable-control-default-closed">
                     See test options
                 </span>                    
                 </p>
