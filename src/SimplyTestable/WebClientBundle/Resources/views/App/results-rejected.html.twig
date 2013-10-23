@@ -1,20 +1,36 @@
 {% extends 'SimplyTestableWebClientBundle::App/single-page-dialog.html.twig' %}
 
-{% block title %}Free test limit reached {{website}} (#{{test.testId}}) - {{ parent() }}{% endblock %}
+{% block title %}
+{% if remote_test_summary.rejection.constraint is defined %}
+    {% if is_logged_in %}
+        Plan limit reached 
+    {% else %}
+        Free test limit reached
+    {% endif %}
+{% else %}
+    Oops, I can't do that
+{% endif %}
+{% endblock %}
 
 {% block body_class %} single-page-notification {{ parent() }} {% endblock %}
 
 {% block content %}
 
+
+
 <h1>
-{% if is_logged_in %}
-        Plan limit reached        
-{% else %}
+{% if remote_test_summary.rejection.constraint is defined %}
+    {% if is_logged_in %}
+        Plan limit reached 
+    {% else %}
         Free test limit reached
+    {% endif %}
+{% else %}
+    Oops, I can't do that
 {% endif %}
 </h1>
 
-{% if remote_test_summary.rejection.constraint.name == 'credits_per_month' %}
+{% if remote_test_summary.rejection.constraint.name is defined and remote_test_summary.rejection.constraint.name == 'credits_per_month' %}
 
 {% if userSummary.user_plan.plan.name == 'basic' %}
     {% set next_plan = 'personal' %}
@@ -47,7 +63,7 @@
 </div>
 {% endif %}
 
-{% if remote_test_summary.rejection.constraint.name == 'full_site_jobs_per_site' %}
+{% if remote_test_summary.rejection.constraint.name is defined and remote_test_summary.rejection.constraint.name == 'full_site_jobs_per_site' %}
 <p class="intro">    
     We allow <strong>{{ remote_test_summary.rejection.constraint.limit }}</strong> full-site 
     tests for free per month per website for those who don't have an account.
@@ -69,7 +85,7 @@
 </div>
 {% endif %}
 
-{% if remote_test_summary.rejection.constraint.name == 'single_url_jobs_per_url' %}
+{% if remote_test_summary.rejection.constraint.name is defined and remote_test_summary.rejection.constraint.name == 'single_url_jobs_per_url' %}
 <p class="intro">    
     We allow <strong>{{ remote_test_summary.rejection.constraint.limit }}</strong> single-URL 
     tests for free per month per URL for those who don't have an account.
@@ -88,6 +104,33 @@
     <a href="{{ path('sign_up') }}" class="btn btn-primary btn-large"><i class="icon icon-user"></i> Create account</a>
     or
     <a href="{{ path('sign_in') }}" class="btn">Sign in</a>
+</div>
+{% endif %}
+
+{% if remote_test_summary.rejection.constraint is not defined and remote_test_summary.rejection.reason == 'unroutable' %}
+<p class="intro">    
+Sorry, I can't test <a href="{{ website }}">{{ website }}</a> because it can't be accessed over the Internet.
+</p>
+
+<p class="intro">
+    This happens if you try to test a website:
+</p>
+
+<ul>
+    <li>
+        <p class="intro">
+            that's accessed by IP address and where the IP address is not routable
+        </p>
+    </li>    
+    <li>
+        <p class="intro">
+            that contains an invalid domain name (such as <a href="http://example/">http://example/</a>)
+        </p>
+    </li>
+</ul>
+
+<div class="cta">
+    <a href="{{ path('app') }}" class="btn btn-primary btn-large"><i class="icon icon-caret-left"></i> Try testing a different site</a>
 </div>
 {% endif %}
 

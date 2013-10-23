@@ -206,9 +206,11 @@ class TestResultsController extends TestViewController
         }
         
         $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();         
-        $userSummary = ($remoteTestSummary->rejection->constraint->name == 'credits_per_month')
-                ? $this->getUserService()->getSummary($this->getUser())->getContentObject()
-                : null;
+        
+        $userSummary = null;
+        if (isset($remoteTestSummary->rejection->constraint) && $remoteTestSummary->rejection->constraint->name == 'credits_per_month') {
+            $userSummary = $this->getUserService()->getSummary($this->getUser())->getContentObject();
+        }
         
         $viewData = array(
             'website' => idn_to_utf8($website),
