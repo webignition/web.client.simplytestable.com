@@ -55,11 +55,6 @@ class TestStartController extends TestController
             return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));
         }
         
-        if ($this->getWebsiteBlockListService()->contains($this->getWebsite())) {
-            $this->get('session')->setFlash('test_start_error', 'website-blocked');
-            return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));            
-        }
-        
         if ($testOptions->hasTestTypes() === false) {
             $this->get('session')->setFlash('test_start_error', 'no-test-types-selected');
             return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));                
@@ -180,18 +175,7 @@ class TestStartController extends TestController
         }
         
         return $redirectValues;
-    }
-    
-    /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Services\WebsiteBlockListService
-     */
-    private function getWebsiteBlockListService() {
-        $websiteBlockListService = $this->get('simplytestable.services.websiteblocklistservice');
-        $websiteBlockListService->setBlockListResourcePath($this->container->get('kernel')->locateResource('@SimplyTestableWebClientBundle/Resources/config/WebsiteBlockList.txt'));
-        
-        return $websiteBlockListService;
-    }    
+    } 
     
     /**
      *
