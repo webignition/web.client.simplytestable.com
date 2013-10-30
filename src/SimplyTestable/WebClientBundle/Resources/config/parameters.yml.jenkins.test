@@ -25,6 +25,7 @@ parameters:
       task_status: /tasks/{canonical-url}/{test_id}/{task_id}/status/
       task_collection_status: /tasks/{canonical-url}/{test_id}/status/collection/
       tests_list: /jobs/list/{limit}/
+      tests_current: /jobs/current/{limit}/
       user_create: /user/create/
       user_get_token: /user/{email}/token/
       user_activate: /user/activate/{token}/
