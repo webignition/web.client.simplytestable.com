@@ -511,7 +511,7 @@ div.input-secondary {
     margin:0 0 0 6px;
 }
 
-#recent-site-tests h3 {        
+/*#recent-site-tests h3 {        
     margin: 0 0 0 -30px;
     padding: 10px 0 10px 30px;       
 }
@@ -526,71 +526,79 @@ div.input-secondary {
     padding-right:3%;  
 }
 
-#recent-site-tests .site .wrapper {
-    padding: 20px 0;    
+*/#current-tests .site .wrapper {
+/*    padding: 20px 0;    */
+position:relative;
 }
 
-#recent-site-tests .site .icon {
+#current-tests .site .icon {
     font-size:20px;
+    position: absolute;
+    top: 7px;
+/*    width: 20px;
+    height: 20px;*/
 }
 
-#recent-site-tests .site .state-icon {
-    margin-right:4px;
+#current-tests .site .state-icon {
+/*    margin-right:4px;*/
+left: 6px;
 }
 
-#recent-site-tests .site .action-icon {
-    margin-left:4px;
-}
+#current-tests .site .action-icon {
+/*    margin-left:4px;*/
+right: 6px;
+}/*
+ 
 
-#recent-site-tests .badge {
-    padding: 4px 4px 4px 8px;
+*/#current-tests .badge {
+    padding: 6px 23px 6px 30px;
     display:inline-block;
-}
+    position:relative;
+}/*
 
 #recent-site-tests .site .url {
     text-decoration: none;
     font-size:16px;
 }
 
-#recent-site-tests .site .results {
+*/#current-tests .site .results {
     position: absolute;
-    right: 10%;   
-    top:20px;
+    right: 0;   
+    top:0;
 }
 
-#recent-site-tests .site .results a {
+#current-tests .site .results a {
     text-decoration: none;
 }
 
-#recent-site-tests .site .total .test-count {
+#current-tests .site .total .test-count {
     color: #666;
-    font-size: 40px;
-    line-height: 40px;
+    font-size: 30px;
+    line-height: 30px;
     display: block;    
+    margin-top: 10px;
 }
 
-#recent-site-tests .site .total .subtext {
-    color:#aaa;
-}
-
-#recent-site-tests .site .total .percent {
-    font-size:14px;
-    line-height:14px;
-    font-weight: normal;
-}
-
-#recent-site-tests .site .detail {
+#current-tests .site .detail {
     font-size: 12px;
     line-height: 15px;
     text-align: right;
-    padding-right: 3px;
-    margin-top: 5px;    
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
-#recent-site-tests .site .detail .figure {
+#current-tests .site .detail .figure {
     display:inline-block;
     width:28px;
     text-align: right;
+}
+
+#current-tests .progress {
+    height: 5px;
+}
+
+#current-tests .site {
+    margin-bottom: 20px;
 }
 
 body.app-task-results #task-summary h3 {

@@ -122,7 +122,7 @@ class TestService extends CoreApplicationService {
     public function getList($limit, $excludeTypes = null) {
         $requestUrl = $this->getUrl('tests_list', array(
             'limit' => $limit
-        ));       
+        ));      
         
         
         if (is_array($excludeTypes)) {
@@ -146,6 +146,24 @@ class TestService extends CoreApplicationService {
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
             
         }        
+    }
+    
+    
+    public function getCurrent() {
+        $requestUrl = $this->getUrl('tests_current');   
+        
+        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
+        
+        $this->addAuthorisationToRequest($request);
+        
+        /* @var $response \webignition\WebResource\JsonDocument\JsonDocument */
+        try {
+            return $this->webResourceService->get($request);
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
+            
+        }          
     }
     
     

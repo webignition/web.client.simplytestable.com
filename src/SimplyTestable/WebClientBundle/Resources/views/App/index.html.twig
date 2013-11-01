@@ -37,48 +37,41 @@
           
 
 {% if is_logged_in %}
-        <div class="row-fluid" id="recent-site-tests">
-            <div class="span12">
-                <section>
-                    <div>            
-                        <h1 class="info">
-                            <i class="icon-cog"></i> Recent tests
-                        </h1>
+        <div class="row-fluid">
+            <div class="span4" id="current-tests">
+                <section>          
+                        <h2 class="info">
+                            <i class="icon-cog"></i> Running tests
+                        </h2>
 
-                        <div class="inner" id="recent-site-tests-list">
-                            
-                            {% if recent_tests|length == 0 %}
+                        {% if current_tests|length == 0 %}
                             <p>
-                                You haven't started any tests yet. When you have, you'll see a summary of 
-                                your recent tests here.
-                            </p>
-                                
-                            {% endif %}
-
-                            {% for test in recent_tests %}
-                            
-                            {% if loop.index0 % 3 == 0 %}
-                            <div class="row-fluid">
-                            {% endif %}
-                                    
-                            <div class="site span4">
-                                <div class="wrapper">
-{% include 'SimplyTestableWebClientBundle:Partials:recent-job-summary.html.twig' %}                                     
+                                {% if is_logged_in %}
+                                    You're not running any tests at the moment.
+                                {% else %}
+                                    No free demo tests are running at the moment.
+                                {% endif %}
+                            </p>                            
+                        {% else %}
+                            {% for test in current_tests %}
+                                     
+                            <div class="site">
+                                <div class="wrapper">                                  
+{% include 'SimplyTestableWebClientBundle:Partials:current-job-summary.html.twig' %}
                                 </div>
-                            </div>                                    
-                                    
-                            {% if loop.last or loop.index % 3 == 0 %}
                             </div>
-                            {% endif %}
                             
-                            {% endfor %}                                
-                                
-                        <div class="clearfix"></div>
-
-                    </div>
+                            {% endfor %}
+                        {% endif %}
+                </section> 
+            </div>            
+            <div class="span8">
+                <section>            
+                        <h1 class="info">
+                            <i class="icon-cog"></i> Finished tests
+                        </h1>
                 </section> 
             </div>
-
         </div>        
 {% endif %}            
 

@@ -69,14 +69,18 @@ class AppController extends TestViewController
 
         $testStartError = $this->getFlash('test_start_error');        
         
-        $recentTests = $this->getRecentTests(9);
-        $recentTestsHash = md5(json_encode($recentTests));        
+        $currentTests = $this->getCurrentTests();
+        $currentTestsHash = md5(json_encode($currentTests));
+        
+//        $recentTests = $this->getRecentTests(9);
+//        $recentTestsHash = md5(json_encode($recentTests));        
         
         $testCancelledQueuedWebsite = $this->getFlash('test_cancelled_queued_website');
         
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
             'test_start_error' => $testStartError,
-            'recent_tests_hash' => $recentTestsHash,
+            'current_tests_hash' => $currentTestsHash,
+//            'recent_tests_hash' => $recentTestsHash,            
             'test_cancelled_queued_website' => $testCancelledQueuedWebsite
         ));
         
@@ -100,7 +104,8 @@ class AppController extends TestViewController
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'recent_tests' => $recentTests,
+            'current_tests' => $currentTests,            
+//            'recent_tests' => $recentTests,
             'website' => idn_to_utf8($this->getPersistentValue('website')),
             'available_task_types' => $this->getAvailableTaskTypes(),
             'test_options' => $testOptions->__toKeyArray(),
@@ -225,6 +230,34 @@ class AppController extends TestViewController
         }
         
         return $recentTests;
+    }
+    
+    
+    private function getCurrentTests() {
+        $jsonResource = $this->getTestService()->getCurrent();
+        
+        if (!$jsonResource instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
+            return array();
+        }        
+        
+        $currentTests = json_decode($jsonResource->getContent(), true);
+        
+        if (count($currentTests) === 0) {
+            return $currentTests;
+        }
+        
+        foreach ($currentTests as $testIndex => $test) {            
+            if ($currentTests[0]['state'] == 'failed-no-sitemap' && isset($test['crawl'])) {                
+                $currentTests[$testIndex]['state'] = 'crawling';
+            }
+            
+            $currentTests[$testIndex]['website_label'] = $this->getWebsiteLabel($currentTests[$testIndex]['website']);
+            $currentTests[$testIndex]['state_icon'] = $this->getTestStateIcon($currentTests[$testIndex]['state']);
+            $currentTests[$testIndex]['state_label_class'] = $this->getTestStateLabelClass($currentTests[$testIndex]['state']);
+            $currentTests[$testIndex]['completion_percent'] = $this->getCompletionPercent($test);
+        }    
+        
+        return $currentTests;
     }
     
     
@@ -372,7 +405,7 @@ class AppController extends TestViewController
      * @param \stdClass|array $remoteTestSummary
      * @return int 
      */
-    private function getCompletionPercent($remoteTestSummary) {        
+    private function getCompletionPercent($remoteTestSummary) {
         return ($remoteTestSummary instanceof \stdClass) ? $this->getCompletionPercentFromStdClass($remoteTestSummary) : $this->getCompletionPercentFromArray($remoteTestSummary);
     } 
     
@@ -413,8 +446,8 @@ class AppController extends TestViewController
      * @param array $remoteTestSummary
      * @return int
      */
-    private function getCompletionPercentFromArray($remoteTestSummary) {
-        if ($remoteTestSummary['state'] == 'failed-no-sitemap' && isset($remoteTestSummary['crawl'])) {
+    private function getCompletionPercentFromArray($remoteTestSummary) {        
+        if (isset($remoteTestSummary['crawl']) && $remoteTestSummary['state'] == 'failed-no-sitemap') {
             if ($remoteTestSummary['crawl']['discovered_url_count'] == 0) {
                 return 0;
             }  
