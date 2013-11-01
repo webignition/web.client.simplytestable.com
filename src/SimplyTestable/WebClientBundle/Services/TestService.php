@@ -122,18 +122,19 @@ class TestService extends CoreApplicationService {
     public function getList($limit, $excludeTypes = null) {
         $requestUrl = $this->getUrl('tests_list', array(
             'limit' => $limit
-        ));      
+        ));
         
+        $queryParts = array();               
         
         if (is_array($excludeTypes)) {
-            $excludeTypeParts = array();
             foreach ($excludeTypes as $excludeType) {
-                $excludeTypeParts[] = 'exclude-types[]=' . $excludeType;
+                $queryParts[] = 'exclude-types[]=' . $excludeType;
             }
-            
-            $requestUrl .= '?' . implode('&', $excludeTypeParts);
         }
         
+        $queryParts[] = 'exclude-current=1';
+        
+        $requestUrl .= '?' . implode('&', $queryParts);        
         $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
         
         $this->addAuthorisationToRequest($request);

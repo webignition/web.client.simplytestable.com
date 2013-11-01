@@ -72,15 +72,15 @@ class AppController extends TestViewController
         $currentTests = $this->getCurrentTests();
         $currentTestsHash = md5(json_encode($currentTests));
         
-//        $recentTests = $this->getRecentTests(9);
-//        $recentTestsHash = md5(json_encode($recentTests));        
+        $recentTests = $this->getRecentTests(10);
+        $recentTestsHash = md5(json_encode($recentTests));        
         
         $testCancelledQueuedWebsite = $this->getFlash('test_cancelled_queued_website');
         
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
             'test_start_error' => $testStartError,
             'current_tests_hash' => $currentTestsHash,
-//            'recent_tests_hash' => $recentTestsHash,            
+            'recent_tests_hash' => $recentTestsHash,            
             'test_cancelled_queued_website' => $testCancelledQueuedWebsite
         ));
         
@@ -99,13 +99,29 @@ class AppController extends TestViewController
         }        
         $testOptions = $this->getTestOptionsAdapter()->getTestOptions();        
         
-        return $this->render($templateName, array(
+//        return $this->render($templateName, array(
+//            'test_start_error' => $testStartError,
+//            'public_site' => $this->container->getParameter('public_site'),
+//            'user' => $this->getUser(),
+//            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+//            'current_tests' => $currentTests,            
+//            'recent_tests' => $recentTests,
+//            'website' => idn_to_utf8($this->getPersistentValue('website')),
+//            'available_task_types' => $this->getAvailableTaskTypes(),
+//            'test_options' => $testOptions->__toKeyArray(),
+//            'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
+//            'js_static_analysis_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
+//            'test_cancelled_queued_website' => $testCancelledQueuedWebsite,
+//            'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions)
+//        ));         
+
+        return $this->getCachableResponse($this->render($templateName, array(            
             'test_start_error' => $testStartError,
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
             'current_tests' => $currentTests,            
-//            'recent_tests' => $recentTests,
+            'recent_tests' => $recentTests,
             'website' => idn_to_utf8($this->getPersistentValue('website')),
             'available_task_types' => $this->getAvailableTaskTypes(),
             'test_options' => $testOptions->__toKeyArray(),
@@ -113,16 +129,6 @@ class AppController extends TestViewController
             'js_static_analysis_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'test_cancelled_queued_website' => $testCancelledQueuedWebsite,
             'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions)
-        ));         
-
-        return $this->getCachableResponse($this->render($templateName, array(            
-            'test_input_action_url' => $this->generateUrl('test_start'),
-            'test_start_error' => $hasTestStartError,
-            'test_start_error_blocked_website' => $hasTestStartBlockedWebsiteError,
-            'public_site' => $this->container->getParameter('public_site'),
-            'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'recent_tests' => $recentTests
         )), $cacheValidatorHeaders);        
     }
     
