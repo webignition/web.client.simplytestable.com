@@ -158,12 +158,6 @@ test_start:
     pattern:  /test/start/
     defaults: { _controller: SimplyTestableWebClientBundle:TestStart:startNew }
     
-test_clone_and_start:
-    pattern:  /test/start/clone/{website}/{test_id}/
-    defaults: { _controller: SimplyTestableWebClientBundle:TestStart:cloneAndStart }    
-    requirements:
-        website: ".+"
-    
 test_cancel:
     pattern:  /test/{website}/{test_id}/cancel/
     defaults: { _controller: SimplyTestableWebClientBundle:Test:cancel }  

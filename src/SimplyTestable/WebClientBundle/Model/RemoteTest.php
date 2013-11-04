@@ -396,4 +396,14 @@ class RemoteTest {
         return $this->getRemoteTestProperty('ammendments');
     }
     
+    
+    
+    /**
+     * 
+     * @return \stdClass
+     */
+    public function getRejection() {
+        return $this->getRemoteTestProperty('rejection');
+    }
+    
 }

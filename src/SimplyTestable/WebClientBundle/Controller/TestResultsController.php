@@ -50,60 +50,6 @@ class TestResultsController extends TestViewController
         
         return $this->getAvailableTaskTypeService()->get();    
     }
-        
-    private function getRemoteTestSummaryArray($remoteTestSummary) {
-        $remoteTestSummaryArray = (array)$remoteTestSummary;
-        
-        foreach ($remoteTestSummaryArray as $key => $value) {            
-            if ($value instanceof \stdClass){
-                $remoteTestSummaryArray[$key] = get_object_vars($value);
-            }
-        }
-        
-        if (isset($remoteTestSummaryArray['task_type_options'])) {
-            foreach ($remoteTestSummaryArray['task_type_options'] as $testType => $testTypeOptions) {
-                $remoteTestSummaryArray['task_type_options'][$testType] = get_object_vars($testTypeOptions);
-            }
-        }
-        
-        return $remoteTestSummaryArray;
-    }
-    
-    
-    /**
-     *
-     * @param \stdClass $remoteTestSummary
-     * @return array 
-     */
-    private function getTaskCountByState(\stdClass $remoteTestSummary) {        
-        $taskStates = array(
-            'in-progress' => 'in_progress',
-            'queued' => 'queued',
-            'queued-for-assignment' => 'queued',
-            'completed' => 'completed',
-            'cancelled' => 'cancelled',
-            'awaiting-cancellation' => 'cancelled',
-            'failed' => 'failed',
-            'failed-no-retry-available' => 'failed',
-            'failed-retry-available' => 'failed',
-            'failed-retry-limit-reached' => 'failed',
-            'skipped' => 'skipped'
-        );
-        
-        $taskCountByState = array();        
-        
-        foreach ($taskStates as $taskState => $translatedState) {
-            if (!isset($taskCountByState[$translatedState])) {
-                $taskCountByState[$translatedState] = 0;
-            }
-            
-            if (isset($remoteTestSummary->task_count_by_state->$taskState)) {
-                $taskCountByState[$translatedState] += $remoteTestSummary->task_count_by_state->$taskState;
-            }            
-        }
-        
-        return $taskCountByState;
-    }
     
     
     public function failedNoUrlsDetectedAction($website, $test_id) {
@@ -122,7 +68,7 @@ class TestResultsController extends TestViewController
             return $response;
         }
         
-        $this->getTestService()->setUser($this->getUser());        
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());        
         $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
         if ($testRetrievalOutcome->hasResponse()) {
             return $testRetrievalOutcome->getResponse();
@@ -186,7 +132,7 @@ class TestResultsController extends TestViewController
             return $response;
         }
         
-        $this->getTestService()->setUser($this->getUser());        
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());        
         $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
         if ($testRetrievalOutcome->hasResponse()) {
             return $testRetrievalOutcome->getResponse();
@@ -205,10 +151,9 @@ class TestResultsController extends TestViewController
             return $this->redirect($this->getProgressUrl($website, $test_id));
         }
         
-        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();         
-        
+        $remoteTest = $this->getTestService()->getRemoteTestService()->get();
         $userSummary = null;
-        if (isset($remoteTestSummary->rejection->constraint) && $remoteTestSummary->rejection->constraint->name == 'credits_per_month') {
+        if (isset($remoteTest->getRejection()->constraint) && $remoteTest->getRejection()->constraint->name == 'credits_per_month') {
             $userSummary = $this->getUserService()->getSummary($this->getUser())->getContentObject();
         }
         
@@ -219,7 +164,7 @@ class TestResultsController extends TestViewController
             'user' => $this->getUser(),
             'userSummary' => $userSummary,
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'remote_test_summary' => $remoteTestSummary
+            'remote_test' => $remoteTest
         );
 
             
@@ -326,7 +271,6 @@ class TestResultsController extends TestViewController
             'test_input_action_url' => $this->generateUrl('test_start'),
             'test' => $test,
             'remote_test' => $remoteTest,
-            //'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
             'public_site' => $this->container->getParameter('public_site'),
             'filter' => $taskOutcomeFilter,
             'filter_label' => ucwords(str_replace('-', ' ', $taskOutcomeFilter)),
@@ -356,7 +300,7 @@ class TestResultsController extends TestViewController
             'filtered_task_counts' => $this->getFilteredTaskCounts($test, $taskTypeFilter)
         );
                        
-        //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTestSummary->task_count : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));
+        //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTest->getTaskCount() : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));
 
         //if ($taskCollectionLength > 0 && $taskCollectionLength <= self::RESULTS_PAGE_LENGTH) {        
         
@@ -541,31 +485,7 @@ class TestResultsController extends TestViewController
         }
         
         return $this->testOptionsAdapter;
-    } 
-    
-    
-    /**
-     * 
-     * @param \stdClass $remoteTestSummary
-     * @return \Symfony\Component\HttpFoundation\ParameterBag
-     */
-    private function remoteTestSummaryTestOptionsToParameterBag(\stdClass $remoteTestSummary) {
-        $parameterBag = new \Symfony\Component\HttpFoundation\ParameterBag();
-        
-        foreach ($remoteTestSummary->task_types as $taskType) {
-            $parameterBag->set(strtolower(str_replace(' ', '-', $taskType->name)), 1);
-        }
-        
-        foreach ($remoteTestSummary->task_type_options as $taskType => $taskTypeOptions) {
-            $taskTypeKey = strtolower(str_replace(' ', '-', $taskType));
-            
-            foreach ($taskTypeOptions as $taskTypeOptionKey => $taskTypeOptionValue) {
-                $parameterBag->set($taskTypeKey . '-' . $taskTypeOptionKey, $taskTypeOptionValue);
-            }
-        }       
-
-        return $parameterBag;
-    }  
+    }
     
     
     /**

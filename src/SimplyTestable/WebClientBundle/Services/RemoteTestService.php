@@ -136,9 +136,9 @@ class RemoteTestService extends CoreApplicationService {
      */
     public function get() {
         if (is_null($this->remoteTest)) {
-            $remoteTestSummaryJsonDocument = $this->retrieve();
-            if ($remoteTestSummaryJsonDocument instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
-                $this->remoteTest = new RemoteTest($remoteTestSummaryJsonDocument->getContentObject());
+            $remoteJsonDocument = $this->retrieve();
+            if ($remoteJsonDocument instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
+                $this->remoteTest = new RemoteTest($remoteJsonDocument->getContentObject());
             } else {
                 $this->remoteTest = false;
             }
@@ -193,5 +193,30 @@ class RemoteTestService extends CoreApplicationService {
         
         return $this->webResourceService->get($httpRequest);          
     }    
+    
+    
+    
+    public function lock() {
+        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_set_private', array(
+            'canonical-url' => urlencode($this->getTest()->getWebsite()),
+            'test_id' => $this->getTest()->getTestId()
+        )));
+        
+        $this->addAuthorisationToRequest($request);
+        $this->webResourceService->get($request);       
+        return true;
+    }
+    
+    
+    public function unlock() {
+        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_set_public', array(
+            'canonical-url' => urlencode($this->getTest()->getWebsite()),
+            'test_id' => $this->getTest()->getTestId()
+        )));
+        
+        $this->addAuthorisationToRequest($request);
+        $this->webResourceService->get($request);       
+        return true;        
+    }     
     
 }

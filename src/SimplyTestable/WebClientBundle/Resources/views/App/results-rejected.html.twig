@@ -1,7 +1,7 @@
 {% extends 'SimplyTestableWebClientBundle::App/single-page-dialog.html.twig' %}
 
-{% block title %}
-{% if remote_test_summary.rejection.constraint is defined %}
+{% set title %}
+{% if remote_test.rejection.constraint is defined %}
     {% if is_logged_in %}
         Plan limit reached 
     {% else %}
@@ -10,27 +10,17 @@
 {% else %}
     Oops, I can't do that
 {% endif %}
-{% endblock %}
+{% endset %}
+
+{% block title %}{{ title }}{% endblock %}
 
 {% block body_class %} single-page-notification {{ parent() }} {% endblock %}
 
 {% block content %}
 
+<h1>{{ title }}</h1>
 
-
-<h1>
-{% if remote_test_summary.rejection.constraint is defined %}
-    {% if is_logged_in %}
-        Plan limit reached 
-    {% else %}
-        Free test limit reached
-    {% endif %}
-{% else %}
-    Oops, I can't do that
-{% endif %}
-</h1>
-
-{% if remote_test_summary.rejection.constraint.name is defined and remote_test_summary.rejection.constraint.name == 'credits_per_month' %}
+{% if remote_test.rejection.constraint.name is defined and remote_test.rejection.constraint.name == 'credits_per_month' %}
 
 {% if userSummary.user_plan.plan.name == 'basic' %}
     {% set next_plan = 'personal' %}
@@ -39,7 +29,7 @@
 {% endif %}
 
 <p class="intro">    
-    You reached your plan's monthly limit of <strong>{{ remote_test_summary.rejection.constraint.limit }}</strong>
+    You reached your plan's monthly limit of <strong>{{ remote_test.rejection.constraint.limit }}</strong>
     credits.
 </p>
 
@@ -54,23 +44,18 @@
     <form method="post" action="{{ path('user_account_plan_subscribe') }}">
         <input type="hidden" name="plan" value="{{ next_plan }}" />
         <button type="submit" class="btn btn-primary btn-large">Upgrade to the {{ next_plan }} plan now <i class="icon icon-caret-right"></i></button>
-    </form>
-    <hr>
-    <form action="{{ path('test_clone_and_start', {'website': website, 'test_id': test.testId}) }}" method="post">
-        <input type="hidden" name="plan" value="{{ next_plan }}" />
-        <button type="submit" class="btn">Try again</button>
-    </form>    
+    </form>   
 </div>
 {% endif %}
 
-{% if remote_test_summary.rejection.constraint.name is defined and remote_test_summary.rejection.constraint.name == 'full_site_jobs_per_site' %}
+{% if remote_test.rejection.constraint.name is defined and remote_test.rejection.constraint.name == 'full_site_jobs_per_site' %}
 <p class="intro">    
-    We allow <strong>{{ remote_test_summary.rejection.constraint.limit }}</strong> full-site 
+    We allow <strong>{{ remote_test.rejection.constraint.limit }}</strong> full-site 
     tests for free per month per website for those who don't have an account.
 </p>
 
 <p class="intro">
-    There have already been <strong>{{ remote_test_summary.rejection.constraint.limit }}</strong> free full-site tests
+    There have already been <strong>{{ remote_test.rejection.constraint.limit }}</strong> free full-site tests
     this month for <strong>{{ website }}</strong>.
 </p>
         
@@ -85,14 +70,14 @@
 </div>
 {% endif %}
 
-{% if remote_test_summary.rejection.constraint.name is defined and remote_test_summary.rejection.constraint.name == 'single_url_jobs_per_url' %}
+{% if remote_test.rejection.constraint.name is defined and remote_test.rejection.constraint.name == 'single_url_jobs_per_url' %}
 <p class="intro">    
-    We allow <strong>{{ remote_test_summary.rejection.constraint.limit }}</strong> single-URL 
+    We allow <strong>{{ remote_test.rejection.constraint.limit }}</strong> single-URL 
     tests for free per month per URL for those who don't have an account.
 </p>
 
 <p class="intro">
-    There have already been <strong>{{ remote_test_summary.rejection.constraint.limit }}</strong> free single-URL tests
+    There have already been <strong>{{ remote_test.rejection.constraint.limit }}</strong> free single-URL tests
     this month for <strong>{{ website }}</strong>.
 </p>
         
@@ -107,7 +92,7 @@
 </div>
 {% endif %}
 
-{% if remote_test_summary.rejection.constraint is not defined and remote_test_summary.rejection.reason == 'unroutable' %}
+{% if remote_test.rejection.constraint is not defined and remote_test.rejection.reason == 'unroutable' %}
 <p class="intro">    
 Sorry, I can't test <a href="{{ website }}">{{ website }}</a> because it can't be accessed over the Internet.
 </p>

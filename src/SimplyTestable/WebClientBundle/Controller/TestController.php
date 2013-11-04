@@ -43,14 +43,14 @@ class TestController extends BaseController
     
     
     private function lockUnlock($action) {
-        $this->getTestService()->setUser($this->getUser());
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
         try {
             if ($this->getTestService()->has($this->getWebsite(), $this->getTestId())) {
                 $test = $this->getTestService()->get($this->getWebsite(), $this->getTestId()); 
                 
-                if ($this->getTestService()->authenticate()) {           
-                    $this->getTestService()->$action($test);
+                if ($this->getTestService()->getRemoteTestService()->authenticate()) {           
+                    $this->getTestService()->getRemoteTestService()->$action($test);
                 }                 
             }                        
         } catch (\Exception $e) {            

@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\Controller;
 
 use SimplyTestable\WebClientBundle\Model\TestOptions;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
+use SimplyTestable\WebClientBundle\Model\RemoteTest;
 
 class TestStartController extends TestController
 {  
@@ -26,22 +27,7 @@ class TestStartController extends TestController
         return $this->startAction($requestValues);
     }
     
-    
-    public function cloneAndStartAction($website, $test_id) {        
-        try {
-            $this->getTestService()->get($website, $test_id, $this->getUser());            
-            $testRequestData = $this->translateRemoteTestSummaryToRequestData($this->getTestService()->getRemoteTestSummary());
-            $testRequestData->add(array(
-                'full-single' => $this->getRequestValue('full-single')
-            ));
-            
-            return $this->startAction($testRequestData);           
-        } catch (UserServiceException $e) {
-            return $this->redirect($this->generateUrl('app', array(), true));
-        }       
-    }
-    
-    private function startAction($requestValues)
+    private function startAction(\Symfony\Component\HttpFoundation\ParameterBag $requestValues)
     {        
         $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
@@ -82,31 +68,6 @@ class TestStartController extends TestController
                 true
             ));
         }
-    }    
-    
-    
-    /**
-     * 
-     * @param array $remoteTestSummary
-     * @return \Symfony\Component\HttpFoundation\ParameterBag
-     */
-    private function translateRemoteTestSummaryToRequestData($remoteTestSummary) {    
-        $requestData = array(
-            'website' => $remoteTestSummary->website
-        );
-        
-        foreach ($remoteTestSummary->task_types as $taskType) {
-            $requestData[strtolower(str_replace(' ', '-', $taskType->name))] = "1";
-        }
-
-        foreach ($remoteTestSummary->task_type_options as $taskType => $taskTypeOptionSet) {
-            foreach ($taskTypeOptionSet as $key => $value) {
-                $requestData[strtolower(str_replace(' ', '-', $taskType)) . '-' . $key] = (is_array($value)) ? implode("\r\n", $value) : $value;
-            }            
-
-        }
-        
-        return new \Symfony\Component\HttpFoundation\ParameterBag($requestData); 
     }
     
     

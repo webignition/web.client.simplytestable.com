@@ -172,43 +172,12 @@ class TestProgressController extends TestViewController
             $label .= ': '. $remoteTest->getCrawl()->processed_url_count .' checked, ' . $remoteTest->getCrawl()->discovered_url_count.' of '. $remoteTest->getCrawl()->limit .' found';        }
         
         return $label;
-    }  
-        
-//    private function getRemoteTestSummaryArray($remoteTestSummary) {        
-//        $remoteTestSummaryArray = (array)$remoteTestSummary;
-//        
-//        foreach ($remoteTestSummaryArray as $key => $value) {            
-//            if ($value instanceof \stdClass){
-//                $remoteTestSummaryArray[$key] = get_object_vars($value);
-//            }
-//        }
-//        
-//        if (isset($remoteTestSummaryArray['task_type_options'])) {
-//            foreach ($remoteTestSummaryArray['task_type_options'] as $testType => $testTypeOptions) {
-//                $remoteTestSummaryArray['task_type_options'][$testType] = get_object_vars($testTypeOptions);
-//            }
-//        }
-//        
-//        if (isset($remoteTestSummaryArray['ammendments'])) {
-//            $remoteTestSummaryArray['ammendments'] = array();
-//            
-//            foreach ($remoteTestSummary->ammendments as $ammendment) {
-//                $ammendmentArray = (array)$ammendment;                
-//                if (isset($ammendment->constraint)) {
-//                    $ammendmentArray['constraint'] = (array)$ammendment->constraint;
-//                }                
-//                
-//                $remoteTestSummaryArray['ammendments'][] = $ammendmentArray;
-//            }
-//        }
-//        
-//        return $remoteTestSummaryArray;
-//    }
+    }
     
     
     /**
      * 
-     * @param RemoteTest $remoteTestSummary
+     * @param RemoteTest $remoteTest
      * @return int
      */
     private function getEstimatedSecondsRemaining(RemoteTest $remoteTest) {
@@ -247,71 +216,6 @@ class TestProgressController extends TestViewController
     }
     
     
-//    /**
-//     * 
-//     * @param \stdClass $remoteTestSummary
-//     * @return int
-//     */
-//    private function getCompletionPercentFromStdClass($remoteTestSummary) {
-//        if ($remoteTestSummary->task_count === 0) {
-//            return 0;
-//        }
-//        
-//        $finishedCount = 0;
-//        foreach ($remoteTestSummary->task_count_by_state as $stateName => $taskCount) {
-//            if (in_array($stateName, $this->taskFinishedStates)) {
-//                $finishedCount += $taskCount;
-//            }
-//        }
-//        
-//        if ($finishedCount ==  $remoteTestSummary->task_count) {
-//            return 100;
-//        }   
-//        
-//        $requiredPrecision = floor(log10($remoteTestSummary->task_count)) - 1;
-//        
-//        if ($requiredPrecision == 0) {
-//            return floor(($finishedCount / $remoteTestSummary->task_count) * 100);
-//        }        
-//        
-//        return round(($finishedCount / $remoteTestSummary->task_count) * 100, $requiredPrecision);        
-//    }
-    
-    
-//    /**
-//     * 
-//     * @param array $remoteTestSummary
-//     * @return int
-//     */
-//    private function getCompletionPercentFromArray($remoteTestSummary) {
-//        if ($remoteTestSummary['task_count'] === 0) {
-//            return 0;
-//        }
-//        
-//        $finishedCount = 0;
-//        foreach ($remoteTestSummary['task_count_by_state'] as $stateName => $taskCount) {
-//            if (in_array($stateName, $this->taskFinishedStates)) {
-//                $finishedCount += $taskCount;
-//            }
-//        }
-//        
-//        if ($finishedCount ==  $remoteTestSummary['task_count']) {
-//            return 100;
-//        }   
-//        
-//        $requiredPrecision = floor(log10($remoteTestSummary['task_count'])) - 1;
-//        
-//        if ($requiredPrecision == 0) {
-//            return floor(($finishedCount / $remoteTestSummary['task_count']) * 100);
-//        }        
-//        
-//        return round(($finishedCount / $remoteTestSummary['task_count']) * 100, $requiredPrecision);        
-//    }
-//    
-    
-
-    
-    
     /**
      *
      * @return \SimplyTestable\WebClientBundle\Services\CoreApplicationStatusService
@@ -339,30 +243,6 @@ class TestProgressController extends TestViewController
         
         return $this->testOptionsAdapter;
     }
-    
-    
-//    /**
-//     * 
-//     * @param \stdClass $remoteTestSummary
-//     * @return \Symfony\Component\HttpFoundation\ParameterBag
-//     */
-//    private function remoteTestSummaryTestOptionsToParameterBag(\stdClass $remoteTestSummary) {
-//        $parameterBag = new \Symfony\Component\HttpFoundation\ParameterBag();
-//        
-//        foreach ($remoteTestSummary->task_types as $taskType) {
-//            $parameterBag->set(strtolower(str_replace(' ', '-', $taskType->name)), 1);
-//        }
-//        
-//        foreach ($remoteTestSummary->task_type_options as $taskType => $taskTypeOptions) {
-//            $taskTypeKey = strtolower(str_replace(' ', '-', $taskType));
-//            
-//            foreach ($taskTypeOptions as $taskTypeOptionKey => $taskTypeOptionValue) {
-//                $parameterBag->set($taskTypeKey . '-' . $taskTypeOptionKey, $taskTypeOptionValue);
-//            }
-//        }
-//        
-//        return $parameterBag;
-//    }
     
     
     /**
