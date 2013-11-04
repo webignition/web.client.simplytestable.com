@@ -16,9 +16,7 @@ class TestStartController extends TestController
     
     
     public function startNewAction()
-    {        
-        $this->getTestService()->setUser($this->getUser());
-        
+    {  
         $requestValues = $this->getRequestValues(\Guzzle\Http\Message\Request::POST);
         
         if (!$requestValues->has('link-integrity-excluded-domains') && $this->container->hasParameter('link-integrity-excluded-domains')) {
@@ -45,7 +43,7 @@ class TestStartController extends TestController
     
     private function startAction($requestValues)
     {        
-        $this->getTestService()->setUser($this->getUser());
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
         $this->getTestOptionsAdapter()->setRequestData($requestValues);
         $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
@@ -61,7 +59,7 @@ class TestStartController extends TestController
         }
         
         try {
-            $jsonResponseObject = $this->getTestService()->start($this->getTestUrl(), $testOptions, ($this->isFullTest() ? 'full site' : 'single url'))->getContentObject();            
+            $jsonResponseObject = $this->getTestService()->getRemoteTestService()->start($this->getTestUrl(), $testOptions, ($this->isFullTest() ? 'full site' : 'single url'))->getContentObject();            
             return $this->redirect($this->generateUrl(
                 'app_progress',
                 array(

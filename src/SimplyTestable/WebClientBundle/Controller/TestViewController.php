@@ -25,8 +25,8 @@ class TestViewController extends BaseViewController
                 return $outcome;
             }            
             
-            $test = $this->getTestService()->get($website, $test_id); 
-            if ($this->getTestService()->authenticate()) {           
+            $test = $this->getTestService()->get($website, $test_id);
+            if ($this->getTestService()->getRemoteTestService()->authenticate()) {           
                 $outcome->setTest($test);
                 return $outcome;
             }             

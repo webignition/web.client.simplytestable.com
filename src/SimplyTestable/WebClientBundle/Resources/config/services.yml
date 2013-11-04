@@ -11,11 +11,16 @@ services:
   simplytestable.services.testservice:
     class:   SimplyTestable\WebClientBundle\Services\TestService  
     arguments:
-        entityManager: "@doctrine.orm.entity_manager"  
-        parameters: %core_application%
-        webResourceService: "@simplytestable.services.webresourceservice"
+        entityManager: "@doctrine.orm.entity_manager"
         logger: "@logger"
         taskService: "@simplytestable.services.taskservice" 
+        remoteTestService: "@simplytestable.services.remotetestservice" 
+        
+  simplytestable.services.remotetestservice:
+    class:   SimplyTestable\WebClientBundle\Services\RemoteTestService  
+    arguments:
+        parameters: %core_application%
+        webResourceService: "@simplytestable.services.webresourceservice"      
 
   simplytestable.services.taskservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskService  

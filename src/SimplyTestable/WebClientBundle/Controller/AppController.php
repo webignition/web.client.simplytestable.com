@@ -214,6 +214,8 @@ class AppController extends TestViewController
      * @return array
      */
     private function getRecentTests($limit = 3) {        
+        return array();
+        
         if (!$this->isLoggedIn()) {
             return array();
         }
@@ -263,6 +265,8 @@ class AppController extends TestViewController
     
     
     private function getCurrentTests() {
+        return array();
+        
         $jsonResource = $this->getTestService()->getCurrent();
         
         if (!$jsonResource instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
@@ -546,7 +550,7 @@ class AppController extends TestViewController
     
     public function prepareResultsAction($website, $test_id)
     {        
-        $this->getTestService()->setUser($this->getUser());        
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());        
                 
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
@@ -567,12 +571,11 @@ class AppController extends TestViewController
             $this->getTaskService()->getRemoteTaskIds($test);
         }
         
-        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
+        $remoteTest = $this->getTestService()->getRemoteTestService()->get();
         
-        $localTaskCount = $test->getTaskCount();
-        $remoteTaskCount = $remoteTestSummary->task_count;        
-        $completionPercent = round(($localTaskCount / $remoteTaskCount) * 100);
-        $remainingTasksToRetrieveCount = $remoteTaskCount - $localTaskCount;
+        $localTaskCount = $test->getTaskCount();      
+        $completionPercent = round(($localTaskCount / $remoteTest->getTaskCount()) * 100);
+        $remainingTasksToRetrieveCount = $remoteTest->getTaskCount() - $localTaskCount;
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:results-preparing.html.twig');        
         return $this->sendResponse(array(            
@@ -585,7 +588,7 @@ class AppController extends TestViewController
             'completion_percent' => $completionPercent,
             'remaining_tasks_to_retrieve_count' => $remainingTasksToRetrieveCount,
             'local_task_count' => $localTaskCount,
-            'remote_task_count' => $remoteTaskCount
+            'remote_task_count' => $remoteTest->getTaskCount()
         ));     
     }
     

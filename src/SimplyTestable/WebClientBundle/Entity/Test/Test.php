@@ -394,7 +394,7 @@ class Test {
     /**
      * Get timePeriod
      *
-     * @return SimplyTestable\WebClientBundle\Entity\TimePeriod 
+     * @return \SimplyTestable\WebClientBundle\Entity\TimePeriod 
      */
     public function getTimePeriod()
     {

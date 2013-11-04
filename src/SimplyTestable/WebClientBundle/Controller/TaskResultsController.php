@@ -41,18 +41,17 @@ class TaskResultsController extends TaskController
             return $this->sendNotFoundResponse();            
         }
         
-        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
+        $remoteTest = $this->getTestService()->getRemoteTestService()->get();
         
         $localTaskCount = $test->getTaskCount();
-        $remoteTaskCount = $remoteTestSummary->task_count;        
-        $completionPercent = round(($localTaskCount / $remoteTaskCount) * 100, $this->getCompletionPercentPrecision($remoteTaskCount));
-        $remainingTasksToRetrieveCount = $remoteTaskCount - $localTaskCount;
+        $completionPercent = round(($localTaskCount / $remoteTest->getTaskCount()) * 100, $this->getCompletionPercentPrecision($remoteTest->getTaskCount()));
+        $remainingTasksToRetrieveCount = $remoteTest->getTaskCount() - $localTaskCount;
         
         return new Response($this->getSerializer()->serialize(array(
             'completion-percent' => $completionPercent,
             'remaining-tasks-to-retrieve-count' => $remainingTasksToRetrieveCount,
             'local-task-count' => $localTaskCount,
-            'remote-task-count' => $remoteTaskCount            
+            'remote-task-count' => $remoteTest->getTaskCount()            
         ), 'json'));
         
         exit();

@@ -1,4 +1,4 @@
-{% set error_free_task_count = remote_test_summary.task_count - remote_test_summary.errored_task_count - remote_test_summary.cancelled_task_count - remote_test_summary.skipped_task_count %}
+{% set error_free_task_count = remote_test.errorfreetaskcount %}
 
 {% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
 
@@ -41,7 +41,7 @@
 <div class="container">
     <div id="main">
 {% block main %}
-        {% if remote_test_summary.task_count > 0 %}
+        {% if remote_test.taskcount > 0 %}
 
     <div id="test-list">
         <div class="row-fluid">

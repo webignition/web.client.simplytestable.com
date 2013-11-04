@@ -33,8 +33,8 @@ Testing {{website}} - {{ parent() }}
 </div>             
         {% endif %}                 
                 
-                {% if remote_test_summary.ammendments is defined %}
-                    {% if remote_test_summary.ammendments[0].constraint is defined %}
+                {% if remote_test.ammendments is defined %}
+                    {% if remote_test.ammendments[0].constraint is defined %}
                     <div class="alert alert-info alert-ammendment alert-from-view">
                         <i class="icon icon-exclamation-sign"></i>
                         <span>

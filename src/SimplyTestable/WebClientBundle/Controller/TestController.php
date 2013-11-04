@@ -70,7 +70,7 @@ class TestController extends BaseController
     
     public function cancelAction()
     {
-        $this->getTestService()->setUser($this->getUser());
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
         try {
             if (!$this->getTestService()->has($this->getWebsite(), $this->getTestId())) {
@@ -82,7 +82,7 @@ class TestController extends BaseController
             }            
             
             $test = $this->getTestService()->get($this->getWebsite(), $this->getTestId());            
-            if (!$this->getTestService()->authenticate()) {           
+            if (!$this->getTestService()->getRemoteTestService()->authenticate()) {           
                 return $this->redirect($this->generateUrl(
                     'app',
                     array(),
@@ -90,7 +90,7 @@ class TestController extends BaseController
                 ));
             }
             
-            $this->getTestService()->cancel($test);
+            $this->getTestService()->getRemoteTestService()->cancel();
             return $this->redirect($this->generateUrl(
                 'app_results',
                 array(
@@ -135,12 +135,13 @@ class TestController extends BaseController
     
     
     public function cancelCrawlAction() {
-        $this->getTestService()->setUser($this->getUser());
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
         try {
             $test = $this->getTestService()->get($this->getWebsite(), $this->getTestId(), $this->getUser());            
-            $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();
-            $this->getTestService()->cancelByTestProperties($remoteTestSummary->crawl->id, $test->getWebsite());
+            $remoteTest = $this->getTestService()->getRemoteTestService()->get();
+           
+            $this->getTestService()->getRemoteTestService()->cancelByTestProperties($remoteTest->getCrawl()->id, $test->getWebsite());
             return $this->redirect($this->generateUrl(
                 'app_progress',
                 array(

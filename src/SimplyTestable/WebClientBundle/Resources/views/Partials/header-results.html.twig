@@ -30,11 +30,11 @@
                 
                 <div class="test-options-set">
                     <label class="radio inline">
-                        <input type="radio" name="full-single" value="full" {% if remote_test_summary.type == 'Full site' %}checked{% endif %}> Whole site test
+                        <input type="radio" name="full-single" value="full" {% if remote_test.type == 'Full site' %}checked{% endif %}> Whole site test
                         <span class="help-block">Test your entire site by finding URLs<br /> in your sitemap and by crawling your site</span>
                     </label>        
                     <label class="radio inline">
-                        <input type="radio" name="full-single" value="single" {% if remote_test_summary.type != 'Full site' %}checked{% endif %}> Single URL test
+                        <input type="radio" name="full-single" value="single" {% if remote_test.type != 'Full site' %}checked{% endif %}> Single URL test
                         <span class="help-block">Test just the above URL only<br />&nbsp;</span>
                     </label>                
                 </div>               

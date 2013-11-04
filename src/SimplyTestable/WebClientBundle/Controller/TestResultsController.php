@@ -242,15 +242,15 @@ class TestResultsController extends TestViewController
             $taskTypeFilter = null;
         }
         
-        $this->getTestService()->setUser($this->getUser());        
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
         if ($testRetrievalOutcome->hasResponse()) {
             return $testRetrievalOutcome->getResponse();
         }
         
         $test = $testRetrievalOutcome->getTest();                
-        $isOwner = $this->getTestService()->owns();        
-        $isPublic = $this->getTestService()->isPublic();
+        $isOwner = $this->getTestService()->getRemoteTestService()->owns($test);        
+        $isPublic = $this->getTestService()->getRemoteTestService()->isPublic();
         $isPublicUserTest = $test->getUser() == $this->getUserService()->getPublicUser()->getUsername();
         
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
@@ -294,8 +294,8 @@ class TestResultsController extends TestViewController
             return $this->redirect($this->getProgressUrl($website, $test_id));
         }
         
-        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();        
-        if (($remoteTestSummary->task_count - self::RESULTS_PREPARATION_THRESHOLD) > $test->getTaskCount()) {            
+        $remoteTest = $this->getTestService()->getRemoteTestService()->get();        
+        if (($remoteTest->getTaskCount() - self::RESULTS_PREPARATION_THRESHOLD) > $test->getTaskCount()) {            
             $urlParameters = array(
                 'website' => $test->getWebsite(),
                 'test_id' => $test_id                
@@ -310,25 +310,23 @@ class TestResultsController extends TestViewController
             $this->getTaskService()->getCollection($test);
         }      
         
-        $taskTypes = array();
-        foreach ($remoteTestSummary->task_types as $taskTypeObject) {
-            if ($taskTypeObject->name == 'JS static analysis') {
-                $taskTypes[] = 'JavaScript static analysis';
-            } else {
-                $taskTypes[] = $taskTypeObject->name;
-            }                      
+        $taskTypes = $remoteTest->getTaskTypes();
+        foreach ($taskTypes as $taskTypeIndex => $taskType) {
+            if ($taskType == 'JS static analysis') {
+                $taskTypes[$taskTypeIndex] = 'JavaScript static analysis';
+            }                  
         }
         
-        $this->getTestOptionsAdapter()->setRequestData($this->remoteTestSummaryTestOptionsToParameterBag($remoteTestSummary));
-        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
+        $this->getTestOptionsAdapter()->setRequestData($remoteTest->getOptions());
+        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();   
         
         $viewData = array(
             'website' => idn_to_utf8($website),
             'this_url' => $this->getResultsUrl($website, $test_id),
             'test_input_action_url' => $this->generateUrl('test_start'),
             'test' => $test,
-            'remote_test_summary' => $this->getRemoteTestSummaryArray($remoteTestSummary),
-            'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
+            'remote_test' => $remoteTest,
+            //'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
             'public_site' => $this->container->getParameter('public_site'),
             'filter' => $taskOutcomeFilter,
             'filter_label' => ucwords(str_replace('-', ' ', $taskOutcomeFilter)),

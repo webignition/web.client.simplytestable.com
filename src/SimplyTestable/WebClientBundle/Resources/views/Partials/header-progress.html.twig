@@ -1,4 +1,4 @@
-{% if remote_test_summary.state == 'new-queued' %}
+{% if remote_test.state == 'new-queued' %}
 {% set cancel_action %}{{ path('test_cancel_queued', {website: website}) }}{% endset %}
 {% else %}
 {% set cancel_action %}{{ path('test_cancel', {website: website, test_id: test.testId}) }}{% endset %}
@@ -9,7 +9,7 @@
         <h1 class="info">
             <label for="input-website">
                 <i id="completion-percent-state-icon" class="{{ state_icon }}"></i> Testing {{ website }}
-                {% if remote_test_summary.state != 'new-queued' %}
+                {% if remote_test.state != 'new-queued' %}
                 <span id="test-id">(#{{ test.testId }})</span>           
                 {% endif %}
             </label>
@@ -42,12 +42,12 @@
             <div id="test-options-expandable">
                 
                 <div class="test-options-set">
-                    <label class="radio inline {% if remote_test_summary.type != 'Full site' %}disabled{% endif %}">
-                        <input type="radio" name="full-single" value="full" {% if remote_test_summary.type == 'Full site' %}checked{% endif %} disabled> Whole site test
+                    <label class="radio inline {% if remote_test.type != 'Full site' %}disabled{% endif %}">
+                        <input type="radio" name="full-single" value="full" {% if remote_test.type == 'Full site' %}checked{% endif %} disabled> Whole site test
                         <span class="help-block">Test your entire site by finding URLs<br /> in your sitemap and by crawling your site</span>
                     </label>        
-                    <label class="radio inline {% if remote_test_summary.type == 'Full site' %}disabled{% endif %}">
-                        <input type="radio" name="full-single" value="single" {% if remote_test_summary.type != 'Full site' %}checked{% endif %} disabled> Single URL test
+                    <label class="radio inline {% if remote_test.type == 'Full site' %}disabled{% endif %}">
+                        <input type="radio" name="full-single" value="single" {% if remote_test.type != 'Full site' %}checked{% endif %} disabled> Single URL test
                         <span class="help-block">Test just the above URL only<br />&nbsp;</span>
                     </label>                
                 </div>                

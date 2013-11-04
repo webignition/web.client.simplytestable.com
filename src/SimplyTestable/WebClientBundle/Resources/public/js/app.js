@@ -190,9 +190,9 @@ application.progress.testController = function() {
     var estimatedTimeRemainingIsFirstDisplay = true;
 
     var setCompletionPercentValue = function() {
-        var completionPercentValue = $('#completion-percent-value');        
+        var completionPercentValue = $('#completion-percent-value');
         
-        if (latestTestData.remote_test_summary.state === 'failed-no-sitemap') {
+        if (latestTestData.remote_test.state === 'failed-no-sitemap') {
             if (!$('.progress').hasClass('progress-success')) {
                 $('.progress').addClass('progress-success');
             }           
@@ -206,16 +206,16 @@ application.progress.testController = function() {
             }
         } 
 
-        if (completionPercentValue.text() !== latestTestData.completion_percent) {            
-            completionPercentValue.text(latestTestData.completion_percent);
+        if (completionPercentValue.text() !== latestTestData.remote_test.completion_percent) {            
+            completionPercentValue.text(latestTestData.remote_test.completion_percent);
 
             if ($('html.csstransitions').length > 0) {
                 $('#completion-percent-bar').css({
-                    'width': latestTestData.completion_percent + '%'
+                    'width': latestTestData.remote_test.completion_percent + '%'
                 });
             } else {
                 $('#completion-percent-bar').animate({
-                    'width': latestTestData.completion_percent + '%'
+                    'width': latestTestData.remote_test.completion_percent + '%'
                 });
             }
         }        
@@ -237,11 +237,11 @@ application.progress.testController = function() {
     var getTestQueueWidth = function(queueName) {
         var minimumQueueWidth = 2;
 
-        if (latestTestData.task_count_by_state[queueName] === 0) {
+        if (latestTestData.remote_test.task_count_by_state[queueName] === 0) {
             return minimumQueueWidth;
         }
 
-        var queueWidth = (latestTestData.task_count_by_state[queueName] / latestTestData.remote_test_summary.task_count) * 100;
+        var queueWidth = (latestTestData.remote_test.task_count_by_state[queueName] / latestTestData.remote_test.task_count) * 100;
 
         return (queueWidth < minimumQueueWidth) ? minimumQueueWidth : queueWidth;
     };
@@ -259,17 +259,17 @@ application.progress.testController = function() {
                     'width': getTestQueueWidth(queueName) + '%'
                 });
 
-                bar.text(latestTestData.task_count_by_state[queueName]);
+                bar.text(latestTestData.remote_test.task_count_by_state[queueName]);
             });
         }
     };
 
     var setUrlCount = function() {
-        $('#test-summary-url-count').text(latestTestData.remote_test_summary.url_count);
+        $('#test-summary-url-count').text(latestTestData.remote_test.url_count);
     };
 
     var setTaskCount = function() {
-        $('#test-summary-task-count').text(latestTestData.remote_test_summary.task_count);
+        $('#test-summary-task-count').text(latestTestData.remote_test.task_count);
     };
 
     var displayAmmendment = function(messageContent) {        
@@ -306,8 +306,8 @@ application.progress.testController = function() {
             return;
         }
 
-        if (latestTestData.remote_test_summary.ammendments && latestTestData.remote_test_summary.ammendments[0]) {
-            if (latestTestData.remote_test_summary.ammendments[0].reason.indexOf('plan-url-limit-reached:') !== -1) {                
+        if (latestTestData.remote_test.ammendments && latestTestData.remote_test.ammendments[0]) {
+            if (latestTestData.remote_test.ammendments[0].reason.indexOf('plan-url-limit-reached:') !== -1) {                
                 $.get(window.location.href.replace('progress', 'url-limit-notification'), function(data) {
                     displayAmmendment(data);
                 });
@@ -402,7 +402,7 @@ application.progress.testController = function() {
     };
     
     var setCancelCrawlButton = function () {
-        if (latestTestData.remote_test_summary.crawl === undefined) {
+        if (latestTestData.remote_test.crawl === undefined) {
             return;
         }        
 
@@ -447,9 +447,9 @@ application.progress.testController = function() {
                     return;
                 }
 
-                latestTestData = data;                
+                latestTestData = data;
                 
-                if (latestTestData.remote_test_summary.state === 'in-progress') {                    
+                if (latestTestData.remote_test.state === 'in-progress') {                    
                     $('#test-summary-container').css({
                         'display':'block'
                     });                    
@@ -467,11 +467,11 @@ application.progress.testController = function() {
                 setTaskCount();
                 setAmmendments();
                 
-                if (latestTestData.remote_test_summary.state !== 'failed-no-sitemap') {                    
+                if (latestTestData.remote_test.state !== 'failed-no-sitemap') {                    
                     storeEstimatedTimeRemaining();
                 }
                 
-                if (latestTestData.remote_test_summary.state === 'failed-no-sitemap' && latestTestData.is_owner === true) {
+                if (latestTestData.remote_test.state === 'failed-no-sitemap' && latestTestData.is_owner === true) {
                     setCancelCrawlButton();
                 }
 
@@ -576,7 +576,7 @@ application.progress.taskController = function() {
                 },
                 dataType: 'json',
                 error: function(request, textStatus, errorThrown) {
-                    console.log('error', request, textStatus, request.getAllResponseHeaders());
+                    console.log('error', request, textStatus, request.getAllResponseHeaders(), getTaskIdsUrl());
                 },
                 statusCode: {
                     403: function() {

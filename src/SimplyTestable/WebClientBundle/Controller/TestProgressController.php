@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
+use SimplyTestable\WebClientBundle\Model\RemoteTest;
 
 class TestProgressController extends TestViewController
 {       
@@ -51,8 +52,8 @@ class TestProgressController extends TestViewController
         'in-progress' => 'icon-play-circle'        
     );
     
-    public function indexAction($website, $test_id) {                
-        $this->getTestService()->setUser($this->getUser());
+    public function indexAction($website, $test_id) {                        
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
@@ -64,7 +65,7 @@ class TestProgressController extends TestViewController
         }
         
         $test = $testRetrievalOutcome->getTest();
-        $isOwner = $this->getTestService()->owns();
+        $isOwner = $this->getTestService()->getRemoteTestService()->owns();
         $isPublicUserTest = $test->getUser() == $this->getUserService()->getPublicUser()->getUsername();
         
         if (in_array($test->getState(), $this->testFinishedStates)) {            
@@ -84,18 +85,15 @@ class TestProgressController extends TestViewController
             ), true));            
         }      
         
-        $remoteTestSummary = $this->getTestService()->getRemoteTestSummary();        
+        $remoteTest = $this->getTestService()->getRemoteTestService()->get();        
          
-        if ($test->getState() == 'failed-no-sitemap' && isset($remoteTestSummary->crawl)) {
+        if ($test->getState() == 'failed-no-sitemap' && isset($remoteTest->crawl)) {
             $test->setState('crawling');
         }
         
-        $taskTypes = array();
-        foreach ($remoteTestSummary->task_types as $taskTypeObject) {
-            $taskTypes[] = $taskTypeObject->name;
-        }
+        $taskTypes = $remoteTest->getTaskTypes();
         
-        $this->getTestOptionsAdapter()->setRequestData($this->remoteTestSummaryTestOptionsToParameterBag($remoteTestSummary));
+        $this->getTestOptionsAdapter()->setRequestData($remoteTest->getOptions());
         $testOptions = $this->getTestOptionsAdapter()->getTestOptions();     
 
         $viewData = array(
@@ -106,11 +104,9 @@ class TestProgressController extends TestViewController
                 'test_id' => $test_id
             )),
             'test' => $test,
-            'remote_test_summary' => $this->getRemoteTestSummaryArray($remoteTestSummary),
-            'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
-            'state_label' => $this->getStateLabel($test, $remoteTestSummary),
+            'remote_test' => $remoteTest,
+            'state_label' => $this->getStateLabel($test, $remoteTest),
             'state_icon' => $this->testStateIconMap[$test->getState()],
-            'completion_percent' => $this->getCompletionPercent($remoteTestSummary),
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
@@ -129,7 +125,8 @@ class TestProgressController extends TestViewController
         );  
         
         if ($this->isJsonResponseRequired()) {
-            $viewData['estimated_seconds_remaining'] = $this->getEstimatedSecondsRemaining($remoteTestSummary);
+            $viewData['estimated_seconds_remaining'] = $this->getEstimatedSecondsRemaining($remoteTest);
+            $viewData['remote_test'] = $remoteTest->__toArray();
         }
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
@@ -160,62 +157,61 @@ class TestProgressController extends TestViewController
         return $this->getAvailableTaskTypeService()->get();        
     }    
     
-    private function getStateLabel($test, $remoteTestSummary) {
-        if ($test->getState() == 'preparing' && isset($remoteTestSummary->crawl)) {
+    private function getStateLabel(Test $test, RemoteTest $remoteTest) {        
+        if ($test->getState() == 'preparing') {
             return $this->testStateLabelMap['queued'];
         }
         
         $label = (isset($this->testStateLabelMap[$test->getState()])) ? $this->testStateLabelMap[$test->getState()] : '';
         
         if ($test->getState() == 'in-progress') {
-            $label = $this->getCompletionPercent($remoteTestSummary).'% done';
+            $label = $remoteTest->getCompletionPercent().'% done';
         }
         
         if ($test->getState() == 'crawling') {
-            $label .= ': '. $remoteTestSummary->crawl->processed_url_count .' checked, ' . $remoteTestSummary->crawl->discovered_url_count.' of '. $remoteTestSummary->crawl->limit .' found';
-        }
+            $label .= ': '. $remoteTest->getCrawl()->processed_url_count .' checked, ' . $remoteTest->getCrawl()->discovered_url_count.' of '. $remoteTest->getCrawl()->limit .' found';        }
         
         return $label;
     }  
         
-    private function getRemoteTestSummaryArray($remoteTestSummary) {        
-        $remoteTestSummaryArray = (array)$remoteTestSummary;
-        
-        foreach ($remoteTestSummaryArray as $key => $value) {            
-            if ($value instanceof \stdClass){
-                $remoteTestSummaryArray[$key] = get_object_vars($value);
-            }
-        }
-        
-        if (isset($remoteTestSummaryArray['task_type_options'])) {
-            foreach ($remoteTestSummaryArray['task_type_options'] as $testType => $testTypeOptions) {
-                $remoteTestSummaryArray['task_type_options'][$testType] = get_object_vars($testTypeOptions);
-            }
-        }
-        
-        if (isset($remoteTestSummaryArray['ammendments'])) {
-            $remoteTestSummaryArray['ammendments'] = array();
-            
-            foreach ($remoteTestSummary->ammendments as $ammendment) {
-                $ammendmentArray = (array)$ammendment;                
-                if (isset($ammendment->constraint)) {
-                    $ammendmentArray['constraint'] = (array)$ammendment->constraint;
-                }                
-                
-                $remoteTestSummaryArray['ammendments'][] = $ammendmentArray;
-            }
-        }
-        
-        return $remoteTestSummaryArray;
-    }
+//    private function getRemoteTestSummaryArray($remoteTestSummary) {        
+//        $remoteTestSummaryArray = (array)$remoteTestSummary;
+//        
+//        foreach ($remoteTestSummaryArray as $key => $value) {            
+//            if ($value instanceof \stdClass){
+//                $remoteTestSummaryArray[$key] = get_object_vars($value);
+//            }
+//        }
+//        
+//        if (isset($remoteTestSummaryArray['task_type_options'])) {
+//            foreach ($remoteTestSummaryArray['task_type_options'] as $testType => $testTypeOptions) {
+//                $remoteTestSummaryArray['task_type_options'][$testType] = get_object_vars($testTypeOptions);
+//            }
+//        }
+//        
+//        if (isset($remoteTestSummaryArray['ammendments'])) {
+//            $remoteTestSummaryArray['ammendments'] = array();
+//            
+//            foreach ($remoteTestSummary->ammendments as $ammendment) {
+//                $ammendmentArray = (array)$ammendment;                
+//                if (isset($ammendment->constraint)) {
+//                    $ammendmentArray['constraint'] = (array)$ammendment->constraint;
+//                }                
+//                
+//                $remoteTestSummaryArray['ammendments'][] = $ammendmentArray;
+//            }
+//        }
+//        
+//        return $remoteTestSummaryArray;
+//    }
     
     
     /**
      * 
-     * @param \stdClass $remoteTestSummary
+     * @param RemoteTest $remoteTestSummary
      * @return int
      */
-    private function getEstimatedSecondsRemaining(\stdClass $remoteTestSummary) {
+    private function getEstimatedSecondsRemaining(RemoteTest $remoteTest) {
         /**
          * Estimated minutes remaining = remaining task count / (current tasks per minute / current active jobs)
          * Estimated seconds remaining = estimated minutes remaining * 60
@@ -223,144 +219,97 @@ class TestProgressController extends TestViewController
         
         $incompleteTaskStates = array(
             'queued',
-            'in-progress',
+            'in_progress',
             'queued-for-assignment'
         );
         
-        $remainingTaskCount = 0;
-        foreach ($incompleteTaskStates as $incompleteTaskState) {
-            $remainingTaskCount += $remoteTestSummary->task_count_by_state->$incompleteTaskState;
+        $remainingTaskCount = 0;        
+        $taskCountByState = $remoteTest->getTaskCountByState();
+        
+        foreach ($incompleteTaskStates as $incompleteTaskState) {            
+            if (isset($taskCountByState[$incompleteTaskState])) {
+                $remainingTaskCount += $taskCountByState[$incompleteTaskState];
+            }            
         }
         
-        $tasksPerMinute = $this->getCoreApplicationStatusService()->getTaskThroughputPerMinute();        
+        $tasksPerMinute = $this->getCoreApplicationStatusService()->getTaskThroughputPerMinute();
         if ($tasksPerMinute === 0) {
             return -1;
         }
         
-        $inProgressJobCount = $this->getCoreApplicationStatusService()->getInProgressJobCount();        
+        $inProgressJobCount = $this->getCoreApplicationStatusService()->getInProgressJobCount();
         if ($inProgressJobCount === 0) {
             return -1;
-        }        
+        }
 
-        $estimatedMinutesRemaining = $remainingTaskCount / ($tasksPerMinute / $inProgressJobCount);
+        $estimatedMinutesRemaining = $remainingTaskCount / ($tasksPerMinute / $inProgressJobCount);        
         return (int)ceil($estimatedMinutesRemaining * 60);               
-    }  
-    
-    
-    /**
-     *
-     * @param \stdClass|array $remoteTestSummary
-     * @return int 
-     */
-    private function getCompletionPercent($remoteTestSummary) {
-        if ($remoteTestSummary->state === 'failed-no-sitemap' && isset($remoteTestSummary->crawl)) {
-            if ($remoteTestSummary->crawl->discovered_url_count === 0) {
-                return 0;
-            }
-            
-            return round(($remoteTestSummary->crawl->discovered_url_count / $remoteTestSummary->crawl->limit) * 100);
-        }
-        
-        return ($remoteTestSummary instanceof \stdClass) ? $this->getCompletionPercentFromStdClass($remoteTestSummary) : $this->getCompletionPercentFromArray($remoteTestSummary);
-    } 
-    
-    
-    /**
-     * 
-     * @param \stdClass $remoteTestSummary
-     * @return int
-     */
-    private function getCompletionPercentFromStdClass($remoteTestSummary) {
-        if ($remoteTestSummary->task_count === 0) {
-            return 0;
-        }
-        
-        $finishedCount = 0;
-        foreach ($remoteTestSummary->task_count_by_state as $stateName => $taskCount) {
-            if (in_array($stateName, $this->taskFinishedStates)) {
-                $finishedCount += $taskCount;
-            }
-        }
-        
-        if ($finishedCount ==  $remoteTestSummary->task_count) {
-            return 100;
-        }   
-        
-        $requiredPrecision = floor(log10($remoteTestSummary->task_count)) - 1;
-        
-        if ($requiredPrecision == 0) {
-            return floor(($finishedCount / $remoteTestSummary->task_count) * 100);
-        }        
-        
-        return round(($finishedCount / $remoteTestSummary->task_count) * 100, $requiredPrecision);        
     }
     
     
-    /**
-     * 
-     * @param array $remoteTestSummary
-     * @return int
-     */
-    private function getCompletionPercentFromArray($remoteTestSummary) {
-        if ($remoteTestSummary['task_count'] === 0) {
-            return 0;
-        }
-        
-        $finishedCount = 0;
-        foreach ($remoteTestSummary['task_count_by_state'] as $stateName => $taskCount) {
-            if (in_array($stateName, $this->taskFinishedStates)) {
-                $finishedCount += $taskCount;
-            }
-        }
-        
-        if ($finishedCount ==  $remoteTestSummary['task_count']) {
-            return 100;
-        }   
-        
-        $requiredPrecision = floor(log10($remoteTestSummary['task_count'])) - 1;
-        
-        if ($requiredPrecision == 0) {
-            return floor(($finishedCount / $remoteTestSummary['task_count']) * 100);
-        }        
-        
-        return round(($finishedCount / $remoteTestSummary['task_count']) * 100, $requiredPrecision);        
-    }
+//    /**
+//     * 
+//     * @param \stdClass $remoteTestSummary
+//     * @return int
+//     */
+//    private function getCompletionPercentFromStdClass($remoteTestSummary) {
+//        if ($remoteTestSummary->task_count === 0) {
+//            return 0;
+//        }
+//        
+//        $finishedCount = 0;
+//        foreach ($remoteTestSummary->task_count_by_state as $stateName => $taskCount) {
+//            if (in_array($stateName, $this->taskFinishedStates)) {
+//                $finishedCount += $taskCount;
+//            }
+//        }
+//        
+//        if ($finishedCount ==  $remoteTestSummary->task_count) {
+//            return 100;
+//        }   
+//        
+//        $requiredPrecision = floor(log10($remoteTestSummary->task_count)) - 1;
+//        
+//        if ($requiredPrecision == 0) {
+//            return floor(($finishedCount / $remoteTestSummary->task_count) * 100);
+//        }        
+//        
+//        return round(($finishedCount / $remoteTestSummary->task_count) * 100, $requiredPrecision);        
+//    }
     
     
-    /**
-     *
-     * @param \stdClass $remoteTestSummary
-     * @return array 
-     */
-    private function getTaskCountByState(\stdClass $remoteTestSummary) {        
-        $taskStates = array(
-            'in-progress' => 'in_progress',
-            'queued' => 'queued',
-            'queued-for-assignment' => 'queued',
-            'completed' => 'completed',
-            'cancelled' => 'cancelled',
-            'awaiting-cancellation' => 'cancelled',
-            'failed' => 'failed',
-            'failed-no-retry-available' => 'failed',
-            'failed-retry-available' => 'failed',
-            'failed-retry-limit-reached' => 'failed',
-            'skipped' => 'skipped'
-        );
-        
-        $taskCountByState = array();        
-        
-        foreach ($taskStates as $taskState => $translatedState) {
-            if (!isset($taskCountByState[$translatedState])) {
-                $taskCountByState[$translatedState] = 0;
-            }
-            
-            if (isset($remoteTestSummary->task_count_by_state->$taskState)) {
-                $taskCountByState[$translatedState] += $remoteTestSummary->task_count_by_state->$taskState;
-            }            
-        }
-        
-        return $taskCountByState;
-    }
+//    /**
+//     * 
+//     * @param array $remoteTestSummary
+//     * @return int
+//     */
+//    private function getCompletionPercentFromArray($remoteTestSummary) {
+//        if ($remoteTestSummary['task_count'] === 0) {
+//            return 0;
+//        }
+//        
+//        $finishedCount = 0;
+//        foreach ($remoteTestSummary['task_count_by_state'] as $stateName => $taskCount) {
+//            if (in_array($stateName, $this->taskFinishedStates)) {
+//                $finishedCount += $taskCount;
+//            }
+//        }
+//        
+//        if ($finishedCount ==  $remoteTestSummary['task_count']) {
+//            return 100;
+//        }   
+//        
+//        $requiredPrecision = floor(log10($remoteTestSummary['task_count'])) - 1;
+//        
+//        if ($requiredPrecision == 0) {
+//            return floor(($finishedCount / $remoteTestSummary['task_count']) * 100);
+//        }        
+//        
+//        return round(($finishedCount / $remoteTestSummary['task_count']) * 100, $requiredPrecision);        
+//    }
+//    
+    
+
     
     
     /**
@@ -392,28 +341,28 @@ class TestProgressController extends TestViewController
     }
     
     
-    /**
-     * 
-     * @param \stdClass $remoteTestSummary
-     * @return \Symfony\Component\HttpFoundation\ParameterBag
-     */
-    private function remoteTestSummaryTestOptionsToParameterBag(\stdClass $remoteTestSummary) {
-        $parameterBag = new \Symfony\Component\HttpFoundation\ParameterBag();
-        
-        foreach ($remoteTestSummary->task_types as $taskType) {
-            $parameterBag->set(strtolower(str_replace(' ', '-', $taskType->name)), 1);
-        }
-        
-        foreach ($remoteTestSummary->task_type_options as $taskType => $taskTypeOptions) {
-            $taskTypeKey = strtolower(str_replace(' ', '-', $taskType));
-            
-            foreach ($taskTypeOptions as $taskTypeOptionKey => $taskTypeOptionValue) {
-                $parameterBag->set($taskTypeKey . '-' . $taskTypeOptionKey, $taskTypeOptionValue);
-            }
-        }
-        
-        return $parameterBag;
-    }
+//    /**
+//     * 
+//     * @param \stdClass $remoteTestSummary
+//     * @return \Symfony\Component\HttpFoundation\ParameterBag
+//     */
+//    private function remoteTestSummaryTestOptionsToParameterBag(\stdClass $remoteTestSummary) {
+//        $parameterBag = new \Symfony\Component\HttpFoundation\ParameterBag();
+//        
+//        foreach ($remoteTestSummary->task_types as $taskType) {
+//            $parameterBag->set(strtolower(str_replace(' ', '-', $taskType->name)), 1);
+//        }
+//        
+//        foreach ($remoteTestSummary->task_type_options as $taskType => $taskTypeOptions) {
+//            $taskTypeKey = strtolower(str_replace(' ', '-', $taskType));
+//            
+//            foreach ($taskTypeOptions as $taskTypeOptionKey => $taskTypeOptionValue) {
+//                $parameterBag->set($taskTypeKey . '-' . $taskTypeOptionKey, $taskTypeOptionValue);
+//            }
+//        }
+//        
+//        return $parameterBag;
+//    }
     
     
     /**

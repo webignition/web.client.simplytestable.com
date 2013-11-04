@@ -1,6 +1,6 @@
 <div id="completion-percent" class="state-{% if test is defined %}{{test.state}}{% endif %}">
     <div class="progress progress-striped active">
-        <div id="completion-percent-bar" class="bar" style="width:{{ completion_percent }}%;"></div>
+        <div id="completion-percent-bar" class="bar" style="width:{{ remote_test.completionpercent }}%;"></div>
     </div>
     <p>
         <span id="completion-percent-state-label">{{ state_label }}</span><span id="completion-time-remaining">&nbsp;</span>        

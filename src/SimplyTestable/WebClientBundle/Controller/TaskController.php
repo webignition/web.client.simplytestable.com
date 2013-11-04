@@ -29,7 +29,7 @@ class TaskController extends TestViewController
     
    
     public function collectionAction($website, $test_id) {                
-        $this->getTestService()->setUser($this->getUser());
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
         try {
             if (!$this->getTestService()->has($website, $test_id)) {
@@ -37,7 +37,7 @@ class TaskController extends TestViewController
             }            
             
             $test = $this->getTestService()->get($website, $test_id); 
-            if (!$this->getTestService()->authenticate()) {           
+            if (!$this->getTestService()->getRemoteTestService()->authenticate()) {           
                 return $this->sendNotFoundResponse(); 
             }
             
@@ -70,7 +70,7 @@ class TaskController extends TestViewController
     
     
     public function idCollectionAction($website, $test_id) {                
-        $this->getTestService()->setUser($this->getUser());
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
         try {
             if (!$this->getTestService()->has($website, $test_id)) {
@@ -78,7 +78,7 @@ class TaskController extends TestViewController
             }            
             
             $test = $this->getTestService()->get($website, $test_id); 
-            if (!$this->getTestService()->authenticate()) {           
+            if (!$this->getTestService()->getRemoteTestService()->authenticate()) {           
                 return $this->sendNotFoundResponse(); 
             }
             
@@ -99,7 +99,7 @@ class TaskController extends TestViewController
     
     
     public function unretrievedIdCollectionAction($website, $test_id, $limit = null) {
-        $this->getTestService()->setUser($this->getUser());
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
         if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
             return $this->sendNotFoundResponse();
