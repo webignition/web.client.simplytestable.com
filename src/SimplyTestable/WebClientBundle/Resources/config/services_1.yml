@@ -1,0 +1,145 @@
+services:
+  simplytestable.services.httpClientService:
+    class:  SimplyTestable\WebClientBundle\Services\HttpClientService
+
+  simplytestable.services.webresourceservice:
+    class:   SimplyTestable\WebClientBundle\Services\WebResourceService
+    arguments:
+        httpClientService: "@simplytestable.services.httpClientService"
+        contentTypeWebResourceMap: %content_type_web_resource_map%    
+
+  simplytestable.services.testservice:
+    class:   SimplyTestable\WebClientBundle\Services\TestService  
+    arguments:
+        entityManager: "@doctrine.orm.entity_manager"  
+        parameters: %core_application%
+        webResourceService: "@simplytestable.services.webresourceservice"
+        logger: "@logger"
+        taskService: "@simplytestable.services.taskservice" 
+
+  simplytestable.services.taskservice:
+    class:   SimplyTestable\WebClientBundle\Services\TaskService  
+    arguments:
+        entityManager: "@doctrine.orm.entity_manager"  
+        parameters: %core_application%
+        webResourceService: "@simplytestable.services.webresourceservice"            
+        taskOutputResultParserService: "@simplytestable.services.taskoutputresultparserfactoryservice"
+        
+  simplytestable.services.taskcollectionfilterservice:
+    class:   SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService  
+    arguments:
+        entityManager: "@doctrine.orm.entity_manager"  
+        parameters: %core_application%
+        webResourceService: "@simplytestable.services.webresourceservice"            
+        taskOutputResultParserService: "@simplytestable.services.taskoutputresultparserfactoryservice"        
+
+  simplytestable.services.taskoutputresultparserfactoryservice:
+    class:   SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory
+    arguments:
+      drivers: %task-output-result-parsers%
+      
+  simplytestable.services.cachevalidatorheadersservice:
+    class:   SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService  
+    arguments:
+        entityManager: "@doctrine.orm.entity_manager"      
+        
+  simplytestable.services.resqueQueueService:
+    class:   SimplyTestable\WebClientBundle\Services\ResqueQueueService
+    arguments:
+      queueManager: "@glit_resque.queue_manager"
+      logger: "@logger"
+      resquePrefix: "%glit_resque.prefix%"                      
+    
+  simplytestable.services.userservice:
+    class:  SimplyTestable\WebClientBundle\Services\UserService        
+    arguments:
+        parameters: %core_application%
+        webResourceService: "@simplytestable.services.webresourceservice"   
+        adminUserUsername: %admin_user_username%
+        adminUserPassword: %admin_user_password%
+        session: "@session"
+        userSerializerService: "@simplytestable.services.userserializerservice"
+        
+  simplytestable.services.useremailchangerequestservice:
+    class:  SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService        
+    arguments:
+        parameters: %core_application%
+        webResourceService: "@simplytestable.services.webresourceservice"   
+        adminUserUsername: %admin_user_username%
+        adminUserPassword: %admin_user_password%
+        session: "@session"
+        userSerializerService: "@simplytestable.services.userserializerservice"        
+        
+  simplytestable.services.userserializerservice:
+    class:  SimplyTestable\WebClientBundle\Services\UserSerializerService        
+    arguments:
+        key: %secret%       
+        
+  simplytestable.services.testoptions.adapter.request:
+    class:  SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+    
+  simplytestable.services.testqueueservice:
+    class:  SimplyTestable\WebClientBundle\Services\TestQueueService
+    arguments:
+        userSerializerService: "@simplytestable.services.userserializerservice"    
+        
+  simplytestable.services.coreapplicationstatusservice:
+    class:  SimplyTestable\WebClientBundle\Services\CoreApplicationStatusService          
+    arguments:
+        parameters: %core_application%
+        webResourceService: "@simplytestable.services.webresourceservice"       
+        
+  simplytestable.services.userplansubscriptionservice:
+    class:  SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService        
+    arguments:
+        parameters: %core_application%
+        webResourceService: "@simplytestable.services.webresourceservice"   
+        adminUserUsername: %admin_user_username%
+        adminUserPassword: %admin_user_password%
+        session: "@session"
+        userSerializerService: "@simplytestable.services.userserializerservice"         
+        
+  simplytestable.services.useraccountcardservice:
+    class:  SimplyTestable\WebClientBundle\Services\UserAccountCardService        
+    arguments:
+        parameters: %core_application%
+        webResourceService: "@simplytestable.services.webresourceservice"   
+        adminUserUsername: %admin_user_username%
+        adminUserPassword: %admin_user_password%
+        session: "@session"
+        userSerializerService: "@simplytestable.services.userserializerservice"              
+        
+  simplytestable.services.userstripeeventservice:
+    class:  SimplyTestable\WebClientBundle\Services\UserStripeEventService
+    arguments:
+        parameters: %core_application%
+        webResourceService: "@simplytestable.services.webresourceservice"   
+        adminUserUsername: %admin_user_username%
+        adminUserPassword: %admin_user_password%
+        session: "@session"
+        userSerializerService: "@simplytestable.services.userserializerservice"            
+        
+  simplytestable.services.urlcheckerservice:
+    class:  SimplyTestable\WebClientBundle\Services\UrlCheckerService
+    arguments:
+        webResourceService: "@simplytestable.services.webresourceservice"
+
+  simplytestable.services.documentationurlcheckerservice:
+    class:  SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService
+    arguments:
+        webResourceService: "@simplytestable.services.webresourceservice"          
+
+  simplytestable.services.mailchimpservice:
+    class:   SimplyTestable\WebClientBundle\Services\MailchimpService
+    arguments: 
+        apiKey: %mailchimp_api_key%
+        lists:
+            updates: %mailchimp_updates_list_id%
+            announcements: %mailchimp_announcements_list_id%
+            introduction: %mailchimp_introduction_list_id%   
+            
+  simplytestable.services.availabletasktypeservice:
+    class:   SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
+    arguments: 
+        allTaskTypes: "%available_task_types%"           
+        earlyAccessUsers: "%early_access_users%"

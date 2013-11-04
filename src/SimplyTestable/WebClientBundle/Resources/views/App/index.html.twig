@@ -65,7 +65,7 @@
                         {% endif %}
                 </section> 
             </div>            
-            <div class="span8">
+            <div class="span8" id="finished-tests">
                 <section>            
                         <h2 class="info">
                             <i class="icon-cog"></i> Finished tests
@@ -96,15 +96,22 @@
                             </p>                            
                             {% endif %}
                         {% else %}
+
+                            
                             {% for test in recent_tests %}
-                                     
+                            
+
+                                    
                             <div class="site">
-                                <div class="wrapper">                                  
-{% include 'SimplyTestableWebClientBundle:Partials:recent-job-summary.html.twig' %}
+                                <div class="wrapper">
+{% include 'SimplyTestableWebClientBundle:Partials:recent-job-summary.html.twig' %}                                     
                                 </div>
-                            </div>
+                            </div>                                    
+                                    
+ 
                             
                             {% endfor %}
+
                         {% endif %}                        
                 </section> 
             </div>

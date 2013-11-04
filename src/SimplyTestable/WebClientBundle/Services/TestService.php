@@ -557,7 +557,6 @@ class TestService extends CoreApplicationService {
         $this->addAuthorisationToRequest($request);
         $this->webResourceService->get($request);       
         return true;        
-    }
-    
+    }    
     
 }

@@ -55,14 +55,16 @@ class AppController extends TestViewController
     private $testQueueService;
     
     public function indexAction()
-    {           
+    {                   
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }
         
-        if (!$this->isUserValid()) {            
-            return $this->redirect($this->generateUrl('sign_out_submit', array(), true));
-        }        
+        $this->getUserService()->setUser($this->getUser());
+        
+//        if (!$this->isUserValid()) {            
+//            return $this->redirect($this->generateUrl('sign_out_submit', array(), true));
+//        }        
         
         $templateName = 'SimplyTestableWebClientBundle:App:index.html.twig';
         $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);
@@ -86,9 +88,9 @@ class AppController extends TestViewController
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);        
         $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
-        if ($response->isNotModified($this->getRequest())) {
-            return $response;
-        }
+//        if ($response->isNotModified($this->getRequest())) {
+//            return $response;
+//        }
         
         $cacheValidatorHeaders->setLastModifiedDate($templateLastModifiedDate);
         $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);;
@@ -211,7 +213,7 @@ class AppController extends TestViewController
      * 
      * @return array
      */
-    private function getRecentTests($limit = 3) {
+    private function getRecentTests($limit = 3) {        
         if (!$this->isLoggedIn()) {
             return array();
         }
@@ -222,19 +224,40 @@ class AppController extends TestViewController
             return array();
         }
         
-        $recentTests = json_decode($jsonResource->getContent(), true);
+        $recentTestRemoteSummaries = json_decode($jsonResource->getContent());
+        $recentTests = array();
         
-        foreach ($recentTests as $testIndex => $test) {            
-            if ($test['state'] == 'failed-no-sitemap' && isset($test['crawl'])) {                
-                $recentTests[$testIndex]['state'] = 'crawling';
-            }
+        foreach ($recentTestRemoteSummaries as $remoteTestSummary) {                        
+            $test = $this->getTestService()->get($remoteTestSummary->website, $remoteTestSummary->id);
             
-            $recentTests[$testIndex]['website_label'] = $this->getWebsiteLabel($recentTests[$testIndex]['website']);
-            $recentTests[$testIndex]['state_icon'] = $this->getTestStateIcon($recentTests[$testIndex]['state']);
-            $recentTests[$testIndex]['state_label_class'] = $this->getTestStateLabelClass($recentTests[$testIndex]['state']);
-            $recentTests[$testIndex]['completion_percent'] = $this->getCompletionPercent($test);
+            if ($remoteTestSummary->task_count != $test->getTaskCount()) {
+                var_dump("need to get results for " . $test->getTestId());
+                exit();
+            } 
+            
+
+            
+//            var_dump($test);
+//            exit();
+//            
+//            if ($test['state'] == 'failed-no-sitemap' && isset($test['crawl'])) {                
+//                $recentTestRemoteSummaries[$testIndex]['state'] = 'crawling';
+//            }
+//            
+            $remoteTestSummary->website_label = $this->getWebsiteLabel($remoteTestSummary->website);
+//            $recentTestRemoteSummaries[$testIndex]['state_icon'] = $this->getTestStateIcon($recentTestRemoteSummaries[$testIndex]['state']);
+//            $recentTestRemoteSummaries[$testIndex]['state_label_class'] = $this->getTestStateLabelClass($recentTestRemoteSummaries[$testIndex]['state']);
+//            $recentTestRemoteSummaries[$testIndex]['completion_percent'] = $this->getCompletionPercent($test);
+
+            $currentTest['test'] = $test;
+            $currentTest['remote_test_summary'] = $remoteTestSummary;            
+            
+            $recentTests[] = $currentTest;
         }
         
+//        var_dump($recentTestRemoteSummaries);
+//        exit();
+//        
         return $recentTests;
     }
     
