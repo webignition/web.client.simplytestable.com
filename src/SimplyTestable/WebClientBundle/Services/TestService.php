@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Log\LoggerInterface as Logger;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
-use SimplyTestable\WebClientBundle\Model\RemoteTest;
+use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 
 use webignition\NormalisedUrl\NormalisedUrl;
 
@@ -93,61 +93,6 @@ class TestService {
         $this->entityManager->persist($test);
         $this->entityManager->flush();
     }
-
-    
-    /**
-     * 
-     * @param int $limit
-     * @return \webignition\WebResource\JsonDocument\JsonDocument
-     */
-    public function getList($limit, $excludeTypes = null) {
-        $requestUrl = $this->getUrl('tests_list', array(
-            'limit' => $limit
-        ));
-        
-        $queryParts = array();               
-        
-        if (is_array($excludeTypes)) {
-            foreach ($excludeTypes as $excludeType) {
-                $queryParts[] = 'exclude-types[]=' . $excludeType;
-            }
-        }
-        
-        $queryParts[] = 'exclude-current=1';
-        
-        $requestUrl .= '?' . implode('&', $queryParts);        
-        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
-        
-        $this->addAuthorisationToRequest($request);
-        
-        /* @var $response \webignition\WebResource\JsonDocument\JsonDocument */
-        try {
-            return $this->webResourceService->get($request);
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-            
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-            
-        }        
-    }
-    
-    
-    public function getCurrent() {
-        $requestUrl = $this->getUrl('tests_current');   
-        
-        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
-        
-        $this->addAuthorisationToRequest($request);
-        
-        /* @var $response \webignition\WebResource\JsonDocument\JsonDocument */
-        try {
-            return $this->webResourceService->get($request);
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-            
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-            
-        }          
-    }
-    
     
     /**
      *
@@ -171,13 +116,12 @@ class TestService {
      * @return Test
      */
     public function get($canonicalUrl, $testId) {        
-        if ($this->hasEntity($testId)) {           
+        if ($this->hasEntity($testId)) {                  
             /* @var $test Test */
             $this->test = $this->fetchEntity($testId);          
             $this->getRemoteTestService()->setTest($this->getTest());
             
-            if (($this->getTest()->getState() != 'completed' && $this->getTest()->getState() != 'cancelled')) {
-                
+            if (!in_array($this->getTest()->getState() , array('completed', 'cancelled', 'rejected'))) {              
                 $this->update();             
             }          
         } else {            
@@ -225,7 +169,7 @@ class TestService {
      * @return boolean
      */
     private function create() {        
-        $remoteTest = $this->getRemoteTestService()->get();                    
+        $remoteTest = $this->getRemoteTestService()->get();        
         if (!$remoteTest) {
             return false;
         }

@@ -36,7 +36,7 @@
 {% block main %}
           
 
-{% if is_logged_in %}
+
         <div class="row-fluid">
             <div class="span4" id="current-tests">
                 <section>          
@@ -99,16 +99,12 @@
 
                             
                             {% for test in recent_tests %}
-                            
-
                                     
                             <div class="site">
                                 <div class="wrapper">
 {% include 'SimplyTestableWebClientBundle:Partials:recent-job-summary.html.twig' %}                                     
                                 </div>
-                            </div>                                    
-                                    
- 
+                            </div>
                             
                             {% endfor %}
 
@@ -116,7 +112,7 @@
                 </section> 
             </div>
         </div>        
-{% endif %}            
+        
 
 {% endblock %}
                      

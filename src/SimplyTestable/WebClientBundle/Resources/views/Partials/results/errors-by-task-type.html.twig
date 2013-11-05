@@ -1,20 +1,27 @@
-<table class="test-states">
-    <tbody>
-        <tr class="with-errrors">                
-            <th><span class="label label-important">Tests with errors</span></th>
-            <td class="bar"><span class="label label-important" style="width:{% if remote_test_summary.errored_task_count == 0 %} 2{% else %} {{ (remote_test_summary.errored_task_count / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ remote_test_summary.errored_task_count }}</span></td>
-        </tr>         
-        <tr class="without-errors">                
-            <th><span class="label label-success">Tests without errors</span></th>
-            <td class="bar"><span class="label label-success" style="width:{% if remote_test_summary.task_count - remote_test_summary.errored_task_count - remote_test_summary.cancelled_task_count - remote_test_summary.skipped_task_count == 0 %} 2{% else %} {{ ((remote_test_summary.task_count - remote_test_summary.errored_task_count - remote_test_summary.cancelled_task_count - remote_test_summary.skipped_task_count) / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ error_free_task_count }}</span></td>
-        </tr>         
-        <tr class="skipped">                
-            <th><span class="label">Skipped tests</span></th>
-            <td class="bar"><span class="label" style="width:{% if remote_test_summary.skipped_task_count == 0 %} 2{% else %} {{ (remote_test_summary.skipped_task_count / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ remote_test_summary.skipped_task_count }}</span></td>
-        </tr>          
-        <tr class="cancelled">                
-            <th><span class="label">Cancelled tests</span></th>
-            <td class="bar"><span class="label" style="width:{% if remote_test_summary.cancelled_task_count == 0 %} 2{% else %} {{ (remote_test_summary.cancelled_task_count / remote_test_summary.task_count) * 100}}{% endif %}%;">{{ remote_test_summary.cancelled_task_count }}</span></td>
-        </tr>      
-    </tbody>
-</table>  
+{% set span_width %}{% if app.request.attributes.get('_route') == 'app' %}4{% else %}6{% endif %}{% endset %}
+
+<div class="span{{span_width}} summary-container summary-prose">
+    {% if test.errorCount > 0 %}
+        <ul>
+        {% for task_type in remote_test.tasktypes %}
+            {% set task_error_count = test.getErrorCountByTaskType(task_type | replace({'JavaScript static analysis': "JS static analysis"})) %}
+
+            {% if (task_type | lower == type) %}
+                <li>
+                    {{ task_error_count }} {{ task_type }} error{% if task_error_count != 1 %}s{% endif %}
+                    {% if (task_error_count == 0) %}
+                    <i class="icon icon-ok"></i>
+                    {% endif %}
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter={{ filter }}&type={{ task_type | lower }}">
+                        {{ task_error_count }} {{ task_type }} error{% if task_error_count != 1 %}s{% endif %}{% if (task_error_count == 0) %}<i class="icon icon-ok"></i>{% endif %}
+                    </a>
+                </li>
+            {% endif %}                       
+
+        {% endfor %}                    
+        </ul>
+    {% endif %}
+</div> 

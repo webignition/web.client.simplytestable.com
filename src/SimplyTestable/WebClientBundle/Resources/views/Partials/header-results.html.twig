@@ -64,59 +64,11 @@
 
 
         
-    <div class="row-fluid" id="summary-stats">
-        <div class="span2 summary-container summary-figure {% if test.errorCount > 0 %}error-container{% else %}success-container{% endif %}">
-            {% if test.errorCount > 0 %}
-                <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=with-errors#test-list"><span class="count">{{ test.errorCount }}</span> <span class="stat-label">error{% if test.errorCount != 1 %}s{% endif %}</span><i class="icon icon-caret-down"></i></a>
-            {% else %}
-                <span class="anchor"><span class="count">{{ test.errorCount }}</span> <span class="stat-label">errors</span><i class="icon icon-ok"></i></span>
-            {% endif %}
-            
-        </div>            
-        <div class="span2 summary-container summary-figure {% if test.warningCount > 0 %}warning-container{% else %}success-container{% endif %}">
-            {% if test.warningCount > 0 %}
-                <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=with-warnings#test-list"><span class="count">{{ test.warningCount }}</span> <span class="stat-label">warning{% if test.warningCount != 1 %}s{% endif %}</span><i class="icon icon-caret-down"></i></a>
-            {% else %}
-                <span class="anchor"><span class="count">{{ test.warningCount }}</span> <span class="stat-label">warnings</span><i class="icon icon-ok"></i></span>
-            {% endif %}
-        </div>      
-       
-        <div class="span2 summary-container summary-figure {% if test.errorCount > 0 %}success-container{% else %}error-container{% endif %}">
-            {% if error_free_task_count > 0 %}
-                <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=without-errors#test-list"><span class="count">{{ error_free_task_count }}</span> <span class="stat-label">test{% if error_free_task_count != 1 %}s{% endif %} without errors</span><i class="icon icon-caret-down"></i></a>
-            {% else %}
-                <span class="anchor"><span class="count">{{ error_free_task_count }}</span> <span class="stat-label">tests without errors</span><i class="icon icon-{% if test.errorCount > 0 %}remove{% else %}ok{% endif %}"></i></span>                    
-            {% endif %}            
-        </div>           
-        <div class="span6 summary-container summary-prose">
-            {% if test.errorCount > 0 %}
-                <ul>
-                {% for task_type in task_types %}
-                    {% set task_error_count = test.getErrorCountByTaskType(task_type | replace({'JavaScript static analysis': "JS static analysis"})) %}
-                        
-                    {% if (task_type | lower == type) %}
-                        <li>
-                            {{ task_error_count }} {{ task_type }} error{% if task_error_count != 1 %}s{% endif %}
-                            {% if (task_error_count == 0) %}
-                            <i class="icon icon-ok"></i>
-                            {% endif %}
-                        </li>
-                    {% else %}
-                        <li>
-                            <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter={{ filter }}&type={{ task_type | lower }}">
-                                {{ task_error_count }} {{ task_type }} error{% if task_error_count != 1 %}s{% endif %}
-                                {% if (task_error_count == 0) %}
-                                <i class="icon icon-ok"></i>
-                                {% endif %}                                
-                            </a>
-                        </li>
-                    {% endif %}                       
-                    
-                {% endfor %}                    
-                </ul>
-            {% endif %}
-        </div>  
-        
+    <div class="row-fluid summary-stats">
+        {% include 'SimplyTestableWebClientBundle:Partials:/results/error-count.html.twig' %}
+        {% include 'SimplyTestableWebClientBundle:Partials:/results/warning-count.html.twig' %}
+        {% include 'SimplyTestableWebClientBundle:Partials:/results/error-free-task-count.html.twig' %}          
+        {% include 'SimplyTestableWebClientBundle:Partials:/results/errors-by-task-type.html.twig' %}                  
     </div>
 
 

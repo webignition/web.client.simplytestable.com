@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
+use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 
 class AppController extends TestViewController
 {       
@@ -213,28 +214,26 @@ class AppController extends TestViewController
      * 
      * @return array
      */
-    private function getRecentTests($limit = 3) {        
-        return array();
+    private function getRecentTests($limit = 5) {                
+//        if (!$this->isLoggedIn()) {
+//            return array();
+//        }
         
-        if (!$this->isLoggedIn()) {
-            return array();
-        }
-        
-        $jsonResource = $this->getTestService()->getList($limit, array('crawl'));
-        
-        if (!$jsonResource instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
-            return array();
-        }
-        
-        $recentTestRemoteSummaries = json_decode($jsonResource->getContent());
+        $recentRemoteTests = $this->getTestService()->getRemoteTestService()->getList($limit, array('crawl'), array('rejected'));                
         $recentTests = array();
         
-        foreach ($recentTestRemoteSummaries as $remoteTestSummary) {                        
-            $test = $this->getTestService()->get($remoteTestSummary->website, $remoteTestSummary->id);
+//        $recentRemoteTests = array_slice($recentRemoteTests, 0, 2);
+
+        
+        foreach ($recentRemoteTests as $remoteTest) {                        
+            /* @var $remoteTest RemoteTest */           
+            $currentTest = array();
             
-            if ($remoteTestSummary->task_count != $test->getTaskCount()) {
-                var_dump("need to get results for " . $test->getTestId());
-                exit();
+            $this->getTestService()->getRemoteTestService()->set($remoteTest);
+            $test = $this->getTestService()->get($remoteTest->getWebsite(), $remoteTest->getId(), $remoteTest);
+            
+            if ($remoteTest->getTaskCount() != $test->getTaskCount()) {
+                $currentTest['requires_results'] = true;
             } 
             
 
@@ -246,13 +245,20 @@ class AppController extends TestViewController
 //                $recentTestRemoteSummaries[$testIndex]['state'] = 'crawling';
 //            }
 //            
-            $remoteTestSummary->website_label = $this->getWebsiteLabel($remoteTestSummary->website);
+            //$remoteTestSummary->website_label = $this->getWebsiteLabel($remoteTestSummary->website);
 //            $recentTestRemoteSummaries[$testIndex]['state_icon'] = $this->getTestStateIcon($recentTestRemoteSummaries[$testIndex]['state']);
 //            $recentTestRemoteSummaries[$testIndex]['state_label_class'] = $this->getTestStateLabelClass($recentTestRemoteSummaries[$testIndex]['state']);
 //            $recentTestRemoteSummaries[$testIndex]['completion_percent'] = $this->getCompletionPercent($test);
 
             $currentTest['test'] = $test;
-            $currentTest['remote_test_summary'] = $remoteTestSummary;            
+            $currentTest['remote_test'] = $remoteTest;            
+            
+            if ($remoteTest->hasRejection()) {
+                //$recentTests[] = $currentTest;
+                
+//                var_dump($remoteTest->getRejection()->getReason());
+//                exit();
+            }            
             
             $recentTests[] = $currentTest;
         }
@@ -264,10 +270,8 @@ class AppController extends TestViewController
     }
     
     
-    private function getCurrentTests() {
-        return array();
-        
-        $jsonResource = $this->getTestService()->getCurrent();
+    private function getCurrentTests() {        
+        $jsonResource = $this->getTestService()->getRemoteTestService()->getCurrent();
         
         if (!$jsonResource instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
             return array();

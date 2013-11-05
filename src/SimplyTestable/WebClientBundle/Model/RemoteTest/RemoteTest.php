@@ -1,10 +1,10 @@
 <?php
-namespace SimplyTestable\WebClientBundle\Model;
+namespace SimplyTestable\WebClientBundle\Model\RemoteTest;
 
 use SimplyTestable\WebClientBundle\Entity\TimePeriod;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class RemoteTest {
+class RemoteTest extends AbstractStandardObject {
     
     
     /**
@@ -16,32 +16,7 @@ class RemoteTest {
         'completed',
         'failed',
         'skipped'
-    );      
-    
-    
-    /**
-     *
-     * @var \stdClass
-     */
-    private $rawRemoteTest;
-    
-    
-    /**
-     * 
-     * @param \stdClass $rawRemoteTest
-     */
-    public function __construct(\stdClass $rawRemoteTest) {
-        $this->rawRemoteTest = $rawRemoteTest;
-    }
-    
-    
-    /**
-     * 
-     * @return \stdClass
-     */
-    public function getRaw() {
-        return $this->rawRemoteTest;
-    }
+    );
     
     
     /**
@@ -49,7 +24,7 @@ class RemoteTest {
      * @return string
      */
     public function getState() {
-        $state = $this->getRemoteTestProperty('state');
+        $state = $this->getProperty('state');
         
         if ($state == 'failed-no-sitemap' && $this->hasCrawl()) {
             return 'crawling';
@@ -64,7 +39,7 @@ class RemoteTest {
      * @return string
      */
     public function getType() {
-        return $this->getRemoteTestProperty('type');
+        return $this->getProperty('type');
     }
     
     /**
@@ -72,7 +47,7 @@ class RemoteTest {
      * @return int|null
      */
     public function getUrlCount() {
-        return $this->getRemoteTestProperty('url_count');
+        return $this->getProperty('url_count');
     }
     
     
@@ -82,7 +57,7 @@ class RemoteTest {
      * @return int|null
      */
     public function getTaskCount() {
-        return $this->getRemoteTestProperty('task_count');      
+        return $this->getProperty('task_count');      
     }
     
     
@@ -91,11 +66,11 @@ class RemoteTest {
      * @return \SimplyTestable\WebClientBundle\Entity\TimePeriod|null
      */
     public function getTimePeriod() {
-        if (!$this->hasRemoteTestProperty('time_period')) {
+        if (!$this->hasProperty('time_period')) {
             return null;
         }
         
-        $remoteTimePeriod = $this->getRemoteTestProperty('time_period');
+        $remoteTimePeriod = $this->getProperty('time_period');
         
         $timePeriod = new TimePeriod();
         
@@ -117,7 +92,7 @@ class RemoteTest {
      */
     public function getTaskTypes() {
         $taskTypes = array();
-        foreach ($this->getRaw()->task_types as $taskTypeObject) {
+        foreach ($this->getSource()->task_types as $taskTypeObject) {
             $taskTypes[] = $taskTypeObject->name;
         }        
         
@@ -137,7 +112,7 @@ class RemoteTest {
             $parameterBag->set(strtolower(str_replace(' ', '-', $taskType)), 1);
         }
         
-        foreach ($this->getRaw()->task_type_options as $taskType => $taskTypeOptions) {
+        foreach ($this->getSource()->task_type_options as $taskType => $taskTypeOptions) {
             $taskTypeKey = strtolower(str_replace(' ', '-', $taskType));
             
             foreach ($taskTypeOptions as $taskTypeOptionKey => $taskTypeOptionValue) {
@@ -175,8 +150,8 @@ class RemoteTest {
                 $taskCountByState[$translatedState] = 0;
             }
             
-            if (isset($this->getRaw()->task_count_by_state->$taskState)) {
-                $taskCountByState[$translatedState] += $this->getRaw()->task_count_by_state->$taskState;
+            if (isset($this->getSource()->task_count_by_state->$taskState)) {
+                $taskCountByState[$translatedState] += $this->getSource()->task_count_by_state->$taskState;
             }            
         }
         
@@ -190,7 +165,7 @@ class RemoteTest {
      * @return \stdClass|null
      */
     public function getCrawl() {
-        return $this->getRemoteTestProperty('crawl');
+        return $this->getProperty('crawl');
     }
     
     
@@ -242,28 +217,7 @@ class RemoteTest {
     }    
     
     
-    /**
-     * 
-     * @param string $name
-     * @return mixed
-     */
-    private function getRemoteTestProperty($name) {
-        if (!$this->hasRemoteTestProperty($name)) {
-            return null;
-        }
-        
-        return $this->rawRemoteTest->$name;
-    }
-    
-    
-    /**
-     * 
-     * @param string $name
-     * @return boolean
-     */
-    private function hasRemoteTestProperty($name) {
-        return isset($this->rawRemoteTest->$name);
-    }
+
     
     
     
@@ -272,7 +226,7 @@ class RemoteTest {
      * @return array
      */
     public function __toArray() {        
-        $remoteTestArray = (array)$this->getRaw();
+        $remoteTestArray = (array)$this->getSource();
         
         foreach ($remoteTestArray as $key => $value) {            
             if ($value instanceof \stdClass){
@@ -292,7 +246,7 @@ class RemoteTest {
         if (isset($remoteTestArray['ammendments'])) {
             $remoteTestArray['ammendments'] = array();
             
-            foreach ($this->getRaw()->ammendments as $ammendment) {
+            foreach ($this->getSource()->ammendments as $ammendment) {
                 $ammendmentArray = (array)$ammendment;                
                 if (isset($ammendment->constraint)) {
                     $ammendmentArray['constraint'] = (array)$ammendment->constraint;
@@ -311,7 +265,7 @@ class RemoteTest {
      * @return string
      */
     public function getUser() {
-        return $this->getRemoteTestProperty('user');
+        return $this->getProperty('user');
     }
     
     
@@ -320,7 +274,7 @@ class RemoteTest {
      * @return boolean
      */
     public function getIsPublic() {        
-        return $this->getRemoteTestProperty('is_public');
+        return $this->getProperty('is_public');
     }
     
     
@@ -330,7 +284,7 @@ class RemoteTest {
      * @return int
      */
     public function getErroredTaskCount() {
-        return $this->getRemoteTestProperty('errored_task_count');
+        return $this->getProperty('errored_task_count');
     }
     
     
@@ -339,7 +293,7 @@ class RemoteTest {
      * @return int
      */
     public function getCancelledTaskCount() {
-        return $this->getRemoteTestProperty('cancelled_task_count');
+        return $this->getProperty('cancelled_task_count');
     }
     
 
@@ -348,7 +302,7 @@ class RemoteTest {
      * @return int
      */
     public function getSkippedTaskCount() {
-        return $this->getRemoteTestProperty('skipped_task_count');
+        return $this->getProperty('skipped_task_count');
     }
     
     
@@ -357,7 +311,7 @@ class RemoteTest {
      * @return int
      */
     public function getWarningedTaskCount() {
-        return $this->getRemoteTestProperty('warninged_task_count');
+        return $this->getProperty('warninged_task_count');
     }
     
     
@@ -375,7 +329,7 @@ class RemoteTest {
      * @return string
      */
     public function getWebsite() {
-        return $this->getRemoteTestProperty('website');
+        return $this->getProperty('website');
     }
     
     
@@ -384,7 +338,7 @@ class RemoteTest {
      * @return int
      */
     public function getId() {
-        return $this->getRemoteTestProperty('id');
+        return $this->getProperty('id');
     }
     
     
@@ -393,7 +347,7 @@ class RemoteTest {
      * @return array
      */
     public function getAmmendments() {
-        return $this->getRemoteTestProperty('ammendments');
+        return $this->getProperty('ammendments');
     }
     
     
@@ -403,7 +357,20 @@ class RemoteTest {
      * @return \stdClass
      */
     public function getRejection() {
-        return $this->getRemoteTestProperty('rejection');
+        if (!$this->hasProperty('rejection')) {
+            return null;
+        }
+        
+        return new Rejection($this->getProperty('rejection'));
+    }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function hasRejection() {
+        return !is_null($this->getRejection());
     }
     
 }

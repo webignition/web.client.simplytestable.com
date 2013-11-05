@@ -4,7 +4,7 @@ namespace SimplyTestable\WebClientBundle\Controller;
 
 use SimplyTestable\WebClientBundle\Model\TestOptions;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
-use SimplyTestable\WebClientBundle\Model\RemoteTest;
+use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 
 class TestStartController extends TestController
 {  

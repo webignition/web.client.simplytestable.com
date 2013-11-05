@@ -1,31 +1,21 @@
-<!--
-type summary?
-test total?
-url total?
-
-total error count
-total warning count
-
-X html validation errors
-X css validation errors
-X js errors
-X link errors
-
-view results
-re-test
--->
 
 
-<a href="{{ path('app_results', {'website': test.test.website, 'test_id':test.test.testId}) }}">{{ test.remote_test_summary.website_label }} (#{{ test.test.testId }})</a>
 
-<div class="row-fluid">
-    <div class="span2">
-        {{ test.test.errorCount }}
-    </div>
+
+{% if test.test.state == 'rejected' %}
+{{ test.remote_test.rejection }}
+{% else %}
+<div class="row-fluid summary-stats">
+        {% if test.requires_results is defined and test.requires_results == true %}
+            results needed
+        {% else %}
+            {% include 'SimplyTestableWebClientBundle:Partials:/results/error-count.html.twig' with {'test': test.test} %}
+        {% endif %}
     <div class="span2">
         {{ test.test.warningCount }}
     </div>        
-    <div class="span8">
-        {{ dump(test) }}
+    <div class="span6">
+        {# dump(test) #}
     </div>       
 </div>
+{% endif %}

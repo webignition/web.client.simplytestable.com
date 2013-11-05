@@ -7,7 +7,7 @@ use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
-use SimplyTestable\WebClientBundle\Model\RemoteTest;
+use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 
 class TestProgressController extends TestViewController
 {       

@@ -1,3 +1,15 @@
+{% set state_icon %}
+    {% if test.test.state == 'rejected' %}
+icon-remove
+    {% else %}
+icon-bar-chart
+    {% endif %}
+{% endset %}
+
+<div class="state-{{ test.test.state }}">
+    
+
+
 <!--
 type summary?
 test total?
@@ -15,17 +27,29 @@ view results
 re-test
 -->
 
+<a class="url" href="{{ path('app_results', {'website': test.test.website, 'test_id':test.test.testId}) }}">
+    <i class="icon {{state_icon}}"></i>{{ test.remote_test.website }} (#{{ test.test.testId }})    
+</a>
 
-<a href="{{ path('app_results', {'website': test.test.website, 'test_id':test.test.testId}) }}">{{ test.remote_test_summary.website_label }} (#{{ test.test.testId }})</a>
+<div class="row-fluid summary-stats">
+        {% if test.requires_results is defined and test.requires_results == true %}
+            results needed
+        {% else %}
+            {% include 'SimplyTestableWebClientBundle:Partials:/results/error-count.html.twig' with {'test': test.test} %}
+            {% include 'SimplyTestableWebClientBundle:Partials:/results/warning-count.html.twig' with {'test': test.test} %}
+            {% include 'SimplyTestableWebClientBundle:Partials:/results/errors-by-task-type.html.twig' with {'test': test.test, 'remote_test':test.remote_test, 'type':null, 'filter':null} %}           
+        {% endif %}
+</div>
+<div class="row-fluid summary-actions">
+        {% if test.requires_results is defined and test.requires_results == true %}
+            results needed
+        {% else %}
+            <div class="span4"></div>
+            <div class="span4 actions">
+                <a class="btn btn-primary btn-small" href="{{ path('app_results', { 'website': test.test.website, 'test_id': test.test.testId }) }}?filter=with-errors#test-list">View full results <i class="icon icon-caret-right"></i></a>
+            </div>
+        {% endif %}
+</div>
 
-<div class="row-fluid">
-    <div class="span2">
-        {{ test.test.errorCount }}
-    </div>
-    <div class="span2">
-        {{ test.test.warningCount }}
-    </div>        
-    <div class="span8">
-        {{ dump(test) }}
-    </div>       
+
 </div>

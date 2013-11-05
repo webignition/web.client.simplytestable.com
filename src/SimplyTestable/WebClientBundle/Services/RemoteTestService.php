@@ -1,19 +1,9 @@
 <?php
 namespace SimplyTestable\WebClientBundle\Services;
 
-//use Doctrine\ORM\EntityManager;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-//use SimplyTestable\WebClientBundle\Entity\Task\Task;
-//use SimplyTestable\WebClientBundle\Entity\TimePeriod;
-//use Symfony\Component\HttpKernel\Log\LoggerInterface as Logger;
-//use SimplyTestable\WebClientBundle\Model\User;
-//use SimplyTestable\WebClientBundle\Exception\UserServiceException;
-//use SimplyTestable\WebClientBundle\Exception\WebResourceException;
-use SimplyTestable\WebClientBundle\Model\RemoteTest;
+use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\TestOptions;
-
-use webignition\NormalisedUrl\NormalisedUrl;
-
 
 class RemoteTestService extends CoreApplicationService {
     
@@ -22,20 +12,6 @@ class RemoteTestService extends CoreApplicationService {
      * @var RemoteTest
      */
     private $remoteTest = null;
-    
-    
-    /**
-     *
-     * @var int
-     */
-    private $remoteTestId = null;
-    
-    
-    /**
-     *
-     * @var string
-     */
-    private $remoteTestCanonicalUrl = null;
     
     
     /**
@@ -51,6 +27,9 @@ class RemoteTestService extends CoreApplicationService {
      */
     public function setTest(Test $test) {
         $this->test = $test;
+        if ($this->get()->getId() != $test->getTestId()) {
+            $this->remoteTest = null;
+        }
     }
     
     
@@ -134,7 +113,7 @@ class RemoteTestService extends CoreApplicationService {
      *
      * @return \stdClass|boolean 
      */
-    public function get() {
+    public function get() {        
         if (is_null($this->remoteTest)) {
             $remoteJsonDocument = $this->retrieve();
             if ($remoteJsonDocument instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
@@ -145,7 +124,16 @@ class RemoteTestService extends CoreApplicationService {
         }
         
         return $this->remoteTest;
-    }    
+    } 
+    
+    
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest $remoteTest
+     */
+    public function set(RemoteTest $remoteTest) {
+        $this->remoteTest = $remoteTest;
+    }
     
     
     /**
@@ -154,7 +142,7 @@ class RemoteTestService extends CoreApplicationService {
      * @throws WebResourceException
      * @throws \Guzzle\Http\Exception\CurlException
      */
-    private function retrieve() {        
+    private function retrieve() {
         $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_status', array(
             'canonical-url' => urlencode($this->getTest()->getWebsite()),
             'test_id' => $this->getTest()->getTestId()
@@ -217,6 +205,74 @@ class RemoteTestService extends CoreApplicationService {
         $this->addAuthorisationToRequest($request);
         $this->webResourceService->get($request);       
         return true;        
-    }     
+    } 
+    
+    
+    public function getCurrent() {
+        $requestUrl = $this->getUrl('tests_current');   
+        
+        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
+        
+        $this->addAuthorisationToRequest($request);
+        
+        /* @var $response \webignition\WebResource\JsonDocument\JsonDocument */
+        try {
+            return $this->webResourceService->get($request);
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
+            
+        }          
+    }  
+    
+    
+    /**
+     * 
+     * @param int $limit
+     * @return \webignition\WebResource\JsonDocument\JsonDocument
+     */
+    public function getList($limit, $excludeTypes = null, $excludeStates = null) {
+        $requestUrl = $this->getUrl('tests_list', array(
+            'limit' => $limit
+        ));
+        
+        $queryParts = array();               
+        
+        if (is_array($excludeTypes)) {
+            foreach ($excludeTypes as $excludeType) {
+                $queryParts[] = 'exclude-types[]=' . $excludeType;
+            }
+        }
+        
+        if (is_array($excludeStates)) {
+            foreach ($excludeStates as $excludeState) {
+                $queryParts[] = 'exclude-states[]=' . $excludeState;
+            }
+        }
+        
+        $queryParts[] = 'exclude-current=1';
+        
+        $requestUrl .= '?' . implode('&', $queryParts);        
+        
+        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
+        
+        $this->addAuthorisationToRequest($request);
+        
+        $tests = array();
+        
+        /* @var $response \webignition\WebResource\JsonDocument\JsonDocument */
+        try {
+            $responseDocument = $this->webResourceService->get($request);
+            foreach ($responseDocument->getContentObject() as $remoteTestData) {
+                $tests[] = new RemoteTest($remoteTestData);
+            }
+            
+            return $tests;
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
+            
+        }        
+    }    
     
 }
