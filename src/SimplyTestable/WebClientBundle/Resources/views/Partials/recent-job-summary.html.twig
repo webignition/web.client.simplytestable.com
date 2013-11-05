@@ -38,16 +38,9 @@ re-test
             {% include 'SimplyTestableWebClientBundle:Partials:/results/error-count.html.twig' with {'test': test.test} %}
             {% include 'SimplyTestableWebClientBundle:Partials:/results/warning-count.html.twig' with {'test': test.test} %}
             {% include 'SimplyTestableWebClientBundle:Partials:/results/errors-by-task-type.html.twig' with {'test': test.test, 'remote_test':test.remote_test, 'type':null, 'filter':null} %}           
-        {% endif %}
-</div>
-<div class="row-fluid summary-actions">
-        {% if test.requires_results is defined and test.requires_results == true %}
-            results needed
-        {% else %}
-            <div class="span4"></div>
             <div class="span4 actions">
                 <a class="btn btn-primary btn-small" href="{{ path('app_results', { 'website': test.test.website, 'test_id': test.test.testId }) }}?filter=with-errors#test-list">View full results <i class="icon icon-caret-right"></i></a>
-            </div>
+            </div>            
         {% endif %}
 </div>
 
