@@ -148,7 +148,7 @@ class TaskController extends TestViewController
     }    
   
     public function resultsAction($website, $test_id, $task_id) {        
-        $this->getTestService()->setUser($this->getUser());
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
@@ -173,7 +173,7 @@ class TaskController extends TestViewController
         }
         
         $test = $testRetrievalOutcome->getTest();        
-        $isOwner = $this->getTestService()->owns();
+        $isOwner = $this->getTestService()->getRemoteTestService()->owns();
         $isPublicUserTest = $test->getUser() == $this->getUserService()->getPublicUser()->getUsername();
         
         $task = $this->getTaskService()->get($test, $task_id);

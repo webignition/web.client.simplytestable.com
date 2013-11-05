@@ -1192,7 +1192,8 @@ body.app .summary-stats .summary-figure .anchor {
     padding-top: 20px;
 }
 
-body.app-results .summary-stats .span2 {
+body.app-results .summary-stats .span2,
+body.app-task-results .summary-stats .span2 {
     width:120px;
 }
 

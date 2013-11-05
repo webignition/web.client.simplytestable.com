@@ -35,35 +35,20 @@
                     <p>
                         URL tested: <a href="{{ task.url }}">{{ task.url }}</a>
                     </p>
+                    
                         
-    <div class="row-fluid" id="summary-stats">
-        {% if task.state == 'completed' %}
-        <div class="span2 summary-container summary-figure {% if task.output.errorCount > 0 %}error-container{% else %}success-container{% endif %}">
-            {% if task.output.errorCount > 0 %}
-                <a href="#error-list"><span class="count">{{ task.output.errorCount }}</span> <span class="stat-label">error{% if test.errorCount != 1 %}s{% endif %}</span><i class="icon icon-caret-down"></i></a>
-            {% else %}
-                <span class="anchor"><span class="count">{{ task.output.errorCount }}</span> <span class="stat-label">error{% if test.errorCount != 1 %}s{% endif %}</span><i class="icon icon-ok"></i></span>                    
-            {% endif %}            
-        </div>            
-        <div class="span2 summary-container summary-figure {% if task.output.warningCount > 0 %}warning-container{% else %}success-container{% endif %}">
-            {% if task.output.warningCount > 0 %}
-                <a href="#warning-list"><span class="count">{{ task.output.warningCount }}</span> <span class="stat-label">warning{% if test.warningCount != 1 %}s{% endif %}</span><i class="icon icon-caret-down"></i></a>
-            {% else %}
-                <span class="anchor"><span class="count">{{ task.output.warningCount }}</span> <span class="stat-label">warning{% if test.warningCount != 1 %}s{% endif %}</span><i class="icon icon-ok"></i></span>
-            {% endif %}
-        </div>
-        {% if distinct_fixes is defined and distinct_fixes | length > 0 %}
-        <div class="span2 summary-container summary-figure fix-container">
-            <a href="#fix-list"><span class="count">{{ distinct_fixes | length }}</span> <span class="stat-label">fix{% if distinct_fixes | length != 1 %}es{% endif %}</span><i class="icon icon-heart"></i></a>
-        </div>
-        {% endif %}             
+    <div class="row-fluid summary-stats">
+        {% if task.state == 'completed' %}        
+            {% include 'SimplyTestableWebClientBundle:Partials:/task/error-count.html.twig' %}                    
+            {% include 'SimplyTestableWebClientBundle:Partials:/task/warning-count.html.twig' %}                    
+            {% if distinct_fixes is defined and distinct_fixes | length > 0 %}
+                {% include 'SimplyTestableWebClientBundle:Partials:/task/fix-count.html.twig' %}
+            {% endif %}             
         {% else %}
         <div class="span2 summary-container summary-figure error-container">
             <span class="anchor"><span class="count">1</span> <span class="stat-label">error</span><i class="icon icon-caret-down"></i></span>
         </div>  
         {% endif %}
-        
-           
     </div>                        
                 </section>              
             </div>
