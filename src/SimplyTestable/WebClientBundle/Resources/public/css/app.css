@@ -1142,8 +1142,13 @@ body.app-progress .progress {
     margin-top: 20px;
 }
 
-body.app-results .summary-stats .summary-container {
+body.app-results .summary-stats .summary-container,
+body.app-task-results .summary-stats .summary-container {
     margin-top:20px;
+}
+
+body.app-results #test-start-form {
+    margin-bottom: 0;
 }
 
 body.app .summary-stats .summary-container {
