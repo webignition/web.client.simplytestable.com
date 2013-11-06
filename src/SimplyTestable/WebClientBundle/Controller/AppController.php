@@ -634,5 +634,12 @@ class AppController extends TestViewController
         
         return $this->testOptionsAdapter;
     }    
+    
+    
+    
+    public function currentAction() {
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
+        return new Response($this->getSerializer()->serialize($this->getCurrentTests(), 'json'));        
+    }
 
 }

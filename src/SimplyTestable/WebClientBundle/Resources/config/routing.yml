@@ -82,6 +82,10 @@ app:
     pattern:  /
     defaults: { _controller: SimplyTestableWebClientBundle:App:index }
     
+app_current:    
+    pattern:  /current/
+    defaults: { _controller: SimplyTestableWebClientBundle:App:current }
+    
 app_task_results:
     pattern:  /{website}/{test_id}/{task_id}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:Task:results }  
