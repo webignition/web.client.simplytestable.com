@@ -135,6 +135,10 @@ class TestService {
             }
         }
         
+        if ($this->getRemoteTestService()->has()) {
+            $this->getTest()->setUrlCount($this->getRemoteTestService()->get()->getUrlCount());
+        }
+                
         $this->entityManager->persist($this->getTest());
         $this->entityManager->flush();
         

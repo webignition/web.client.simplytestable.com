@@ -10,7 +10,9 @@ use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 
 class AppController extends TestViewController
-{       
+{   
+    const RESULTS_PREPARATION_THRESHOLD = 100;    
+    
     /**
      *
      * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
@@ -75,7 +77,7 @@ class AppController extends TestViewController
         $currentTests = $this->getCurrentTests();
         $currentTestsHash = md5(json_encode($currentTests));
         
-        $recentTests = $this->getRecentTests(10);
+        $recentTests = $this->getRecentTests(3);
         $recentTestsHash = md5(json_encode($recentTests));        
         
         $testCancelledQueuedWebsite = $this->getFlash('test_cancelled_queued_website');
@@ -233,7 +235,12 @@ class AppController extends TestViewController
             $test = $this->getTestService()->get($remoteTest->getWebsite(), $remoteTest->getId(), $remoteTest);
             
             if ($remoteTest->getTaskCount() != $test->getTaskCount()) {
-                $currentTest['requires_results'] = true;
+                $remoteTest = $this->getTestService()->getRemoteTestService()->get();        
+                if (($remoteTest->getTaskCount() - self::RESULTS_PREPARATION_THRESHOLD) > $test->getTaskCount()) {            
+                    $currentTest['requires_results'] = true;
+                } else {
+                    $this->getTaskService()->getCollection($test);
+                }
             } 
             
 

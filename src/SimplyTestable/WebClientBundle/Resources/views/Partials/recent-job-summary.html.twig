@@ -29,18 +29,26 @@ re-test
 
 <a class="url" href="{{ path('app_results', {'website': test.test.website, 'test_id':test.test.testId}) }}">
     <i class="icon {{state_icon}}"></i>{{ test.remote_test.website }} (#{{ test.test.testId }})    
+    <span class="btn-wrapper">
+        <span class="btn-spacer"></span>
+        <span class="btn btn-primary btn-small">View full results <i class="icon icon-caret-right"></i></span>   
+    </span>    
 </a>
 
 <div class="row-fluid summary-stats">
         {% if test.requires_results is defined and test.requires_results == true %}
             results needed
         {% else %}
+            {% include 'SimplyTestableWebClientBundle:Partials:/results/url-count.html.twig' with {'test': test.test, 'remote_test':test.remote_test} %}
+            {% include 'SimplyTestableWebClientBundle:Partials:/results/task-count.html.twig' with {'test': test.test, 'remote_test':test.remote_test} %}            
             {% include 'SimplyTestableWebClientBundle:Partials:/results/error-count.html.twig' with {'test': test.test} %}
             {% include 'SimplyTestableWebClientBundle:Partials:/results/warning-count.html.twig' with {'test': test.test} %}
             {% include 'SimplyTestableWebClientBundle:Partials:/results/errors-by-task-type.html.twig' with {'test': test.test, 'remote_test':test.remote_test, 'type':null, 'filter':null} %}           
+            <!--
             <div class="span4 actions">
                 <a class="btn btn-primary btn-small" href="{{ path('app_results', { 'website': test.test.website, 'test_id': test.test.testId }) }}?filter=with-errors#test-list">View full results <i class="icon icon-caret-right"></i></a>
-            </div>            
+            </div>
+            -->
         {% endif %}
 </div>
 

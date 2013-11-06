@@ -46,7 +46,7 @@ class RemoteTest extends AbstractStandardObject {
      * 
      * @return int|null
      */
-    public function getUrlCount() {
+    public function getUrlCount() {        
         return $this->getProperty('url_count');
     }
     
@@ -320,7 +320,7 @@ class RemoteTest extends AbstractStandardObject {
      * @return int
      */
     public function getErrorFreeTaskCount() {        
-        return $this->getTaskCount() - $this->getErroredTaskCount() - $this->getCancelledTaskCount() - $this->getWarningedTaskCount();
+        return $this->getTaskCount() - $this->getErroredTaskCount() - $this->getCancelledTaskCount();
     }
     
     

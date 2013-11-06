@@ -1,30 +1,12 @@
-<!--
-<div class="results">
-    <a href="{{ path('app_test_redirector', {'website': test['website'], 'test_id':test['id']}) }}">
-        <span class="badge badge-{{ test['state_label_class'] }}">
-            <i class="icon state-icon {{ test['state_icon'] }}"></i>  #{{ test['id'] }} <i class="icon action-icon icon-caret-right"></i>
-        </span>
-    </a>
-</div>
--->
-
 <div class="address">
 <a href="{{ path('app_progress', {'website': test['website'], 'test_id':test['id']}) }}">
     <span class="badge badge-{{ test['state_label_class'] }}"><i class="icon state-icon {{ test['state_icon'] }}"></i></span>{{ test['website_label'] }}        
     <span class="btn-wrapper">
         <span class="btn-spacer"></span>
         <span class="btn btn-mini">View progress <i class="icon icon-caret-right"></i></span>   
-    </span>        
-        
-        <!--
-        <span class="badge badge-{{ test['state_label_class'] }}">
-            <i class="icon state-icon {{ test['state_icon'] }}"></i>  #{{ test['id'] }} <i class="icon action-icon icon-caret-right"></i>
-        </span>
-        -->
+    </span>
 </a>    
 </div>
-
-
 
 {% if test.state == 'crawling' %}
 <div class="row-fluid meta">
@@ -53,8 +35,11 @@
 </div>
 {% else %}
 <div class="row-fluid meta">
-    <div class="span6 total">
-        <span class="test-count">{{ test['task_count'] }}</span><span class="subtext">tests</span>
+    <div class="span3 total">
+        <span class="test-count">{{ test['url_count'] }}</span><span class="subtext">url{% if test['url_count'] != 1 %}s{% endif %}</span>
+    </div>      
+    <div class="span3 total">
+        <span class="test-count">{{ test['task_count'] }}</span><span class="subtext">test{% if test['task_count'] != 1 %}s{% endif %}</span>
     </div>       
     <div class="span6 detail">
         <div>

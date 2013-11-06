@@ -555,23 +555,6 @@ div.input-secondary {
     padding-right: 4px;
 }
 
-/*#current-tests .site .action-icon {
-    right: 6px;
-}
-
-#current-tests .badge {
-    padding: 6px 23px 6px 30px;
-    display:inline-block;
-    position:absolute;
-    right:0px;
-}
-
-#current-tests .site .results {
-    position: absolute;
-    right: 0;   
-    top:0;
-}*/
-
 #current-tests .site .results a {
     text-decoration: none;
 }
@@ -622,7 +605,41 @@ div.input-secondary {
 }
 
 #finished-tests .site {
-    margin-bottom: 60px;
+    padding-bottom: 40px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid #ddd;
+}
+
+body.app .site {
+    overflow:hidden;
+}
+
+body.app .site .wrapper {
+    position:relative;
+}
+
+body.app .site .url {
+    white-space: nowrap;
+    display:inline-block;
+    margin-bottom: 20px;
+}
+
+body.app .site .url .btn-spacer {
+    border-left: 2px solid #eee;
+}
+
+
+body.app .site .url .btn-wrapper {
+    position:absolute;
+    right: 0px;
+    background-color: rgba(238, 238, 238, 0.5);
+    padding-left: 14px;
+}
+
+body.app .site .url .badge {    
+    margin-right:6px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 body.app-task-results #task-summary h3 {
@@ -1160,7 +1177,7 @@ body.app .summary-stats .summary-container {
     border-radius: 60px;
     width:120px;
     height:120px;   
-    background-color: #666;
+    background-color: #ddd;
     color:#fff;
 }
 
@@ -1169,6 +1186,10 @@ body.app .summary-figure {
     width:80px;
     height:80px;     
     position:relative;
+}
+
+body.app .summary-stats .outline-container {
+
 }
 
 .summary-stats .summary-figure .stat-label {
@@ -1189,7 +1210,11 @@ body.app .summary-stats .summary-figure .icon {
     color:#fff;
     opacity:0.8;
     display: block;
-    padding-top: 26px;
+    padding-top: 24px;
+}
+
+.summary-stats .outline-container .anchor {
+    color:#222;
 }
 
 body.app .summary-stats .summary-figure a,
@@ -1337,3 +1362,14 @@ body.app-results #lock-unlock {
     width:156px;
     top:100px;
 }
+
+/*body.app .summary-stats .outline-container {
+    background-color: rgba(0,136,204,0.4);
+    background-color: transparent;
+    border: 1px solid #08c;
+    border-radius: 42px;
+}
+
+.summary-stats .outline-container .anchor {
+    color:#222;
+}*/
