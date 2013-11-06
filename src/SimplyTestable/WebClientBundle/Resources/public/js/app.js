@@ -2093,6 +2093,184 @@ application.root.currentTestController = function () {
     };
 };
 
+application.root.finishedTestsPreparingController = function () {
+    var getContainer = function () {
+        return $('#finished-tests');
+    };
+    
+    var getTestsRequiringResults = function () {
+        return $('.requires-results', getContainer());
+    };
+    
+    var getSummary = function (localTaskCount, remoteTaskCount) {        
+        if (localTaskCount === undefined && remoteTaskCount === undefined) {
+            return 'Preparing summary &hellip;';
+        }
+        
+        return 'Preparing summary &hellip; retrieved <strong>'+ localTaskCount +'</strong> results of <strong>'+ remoteTaskCount +'</strong>';
+    };
+    
+    var getUnretrievedRemoteTaskIdsUrl = function(test) {
+        return window.location.href + $('.website', test).text() + '/' + test.attr('data-test-id') + '/tasks/ids/unretrieved/100/';
+    };
+
+    var getTaskResultsRetrieveUrl = function(test) {
+        return window.location.href + $('.website', test).text() + '/' + test.attr('data-test-id') + '/results/retrieve/';
+    };  
+    
+    var displayTestSummary = function (test) {
+        var getTestSummaryUrl = function () {
+            return window.location.href + $('.website', test).text() + '/' + test.attr('data-test-id') + '/finished-summary/';
+        };
+        
+        jQuery.ajax({
+            complete: function(request, textStatus) {
+                //console.log('complete', request, textStatus);
+            },
+            dataType: 'html',
+            error: function(request, textStatus, errorThrown) {
+                //console.log(' retrieveNextRemoteTaskIdCollection error', request, textStatus, errorThrown, request.getAllResponseHeaders());
+            },
+            statusCode: {
+                403: function() {
+                    //console.log('403');
+                },
+                500: function() {
+                    //console.log('500');
+                }
+            },
+            success: function(data, textStatus, request) {
+                var newTest = $(data);
+                $('.summary-stats', newTest).hide();
+                newTest.addClass('replacing');
+                
+                $('.summary-stats', test).slideUp(function () {
+                    test.replaceWith(newTest);
+                    $('.summary-stats', newTest).slideDown(function () {
+                        newTest.animate({
+                            'padding-bottom': '40px',
+                            'margin-bottom': '40px',                          
+                        }, function () {
+                            newTest.removeClass('replacing');
+                        });
+                    });
+                });
+        
+                //test.replaceWith(data);
+            },
+            url: getTestSummaryUrl(test)
+        });        
+    };
+    
+    var retrieveNextRemoteTaskIdCollection = function(test, taskIds) {        
+        jQuery.ajax({
+            type: 'POST',
+            complete: function(request, textStatus) {
+                //console.log('complete', request, textStatus);
+            },
+            dataType: 'json',
+            error: function(request, textStatus, errorThrown) {
+                //console.log(' retrieveNextRemoteTaskIdCollection error', request, textStatus, errorThrown, request.getAllResponseHeaders());
+            },
+            statusCode: {
+                403: function() {
+                    //console.log('403');
+                },
+                500: function() {
+                    //console.log('500');
+                }
+            },
+            data: {
+                'remoteTaskIds': taskIds.join(',')
+            },
+            success: function(data, textStatus, request) {
+                checkStatus(test, function (data) {
+                    $('.bar', test).css({
+                        'width':data.completion_percent + '%'
+                    });
+                    
+                    if (data.completion_percent === 100) {
+                        displayTestSummary(test);
+                    } else {
+                        getNextRemoteTaskIdCollection(test);
+                    }
+                });
+            },
+            url: getTaskResultsRetrieveUrl(test)
+        });
+    };    
+    
+    var getNextRemoteTaskIdCollection = function(test) {
+        jQuery.ajax({
+            complete: function(request, textStatus) {
+                //console.log('complete', request, textStatus);
+            },
+            dataType: 'json',
+            error: function(request, textStatus, errorThrown) {
+                //console.log('getNextRemoteTaskIdCollection error');
+            },
+            statusCode: {
+                403: function() {
+                    //console.log('403');
+                },
+                500: function() {
+                    //console.log('500');
+                }
+            },
+            success: function(data, textStatus, request) {
+                retrieveNextRemoteTaskIdCollection(test, data);
+            },
+            url: getUnretrievedRemoteTaskIdsUrl(test)
+        });
+    };
+    
+    var checkStatus = function (test, callback) {
+        var getPreparingStatsUrl = function () {
+            return window.location.href + $('.website', test).text() + '/' + test.attr('data-test-id') + '/results/preparing/stats/';
+        };        
+        
+        jQuery.ajax({
+            complete: function(request, textStatus) {           
+                //console.log('complete', request, textStatus);              
+            },
+            dataType: 'json',
+            error: function(request, textStatus, errorThrown) {        
+                //console.log('error', request, textStatus, request.getAllResponseHeaders());             
+            },
+            statusCode: {
+                403: function() {
+                    //console.log('403');
+                },
+                500: function() {
+                    //console.log('500');
+                }
+            },
+            success: function(data, textStatus, request) {        
+                callback(data);
+            },
+            url: getPreparingStatsUrl()
+        });        
+    };
+    
+    var initialiseTest = function (test) {        
+        checkStatus(test, function (data) {
+            $('.summary-stats .summary', test).html(getSummary(data.local_task_count, data.remote_task_count));
+            getNextRemoteTaskIdCollection(test);            
+        });
+        
+       $('.summary-stats', test).html('<p class="summary">' + getSummary() + '</p><div class="progress progress-striped active"><div class="bar" style="width:0%;"></div></div>');
+        
+
+    };
+    
+    this.initialise = function () {
+        getTestsRequiringResults().each(function () {
+            initialiseTest($(this));
+        });
+        
+        //console.log("cp01", getTestsRequiringResults().length);
+    };
+};
 
 application.pages = {
     '/*': {
@@ -2126,6 +2304,9 @@ application.pages = {
                 
                 currentTestController = new application.root.currentTestController();
                 currentTestController.initialise();
+                
+                finishedTestsPreparingController = new application.root.finishedTestsPreparingController();
+                finishedTestsPreparingController.initialise();                
             }
             
             if ($('body.app-results').length > 0) {

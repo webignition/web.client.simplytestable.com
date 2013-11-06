@@ -94,6 +94,13 @@ app_finished_content:
     pattern:  /finished-content/
     defaults: { _controller: SimplyTestableWebClientBundle:App:finishedContent }      
     
+app_test_finished_summary:
+    pattern:  /{website}/{test_id}/finished-summary/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestResults:finishedSummary }     
+    requirements:
+        website: ".+"
+        test_id: "\d+"
+    
 app_task_results:
     pattern:  /{website}/{test_id}/{task_id}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:Task:results }  
@@ -170,6 +177,12 @@ app_results_preparing:
     defaults: { _controller: SimplyTestableWebClientBundle:App:prepareResults }  
     requirements:
        website: ".+"       
+       
+app_results_preparing_stats:
+    pattern:  /{website}/{test_id}/results/preparing/stats/
+    defaults: { _controller: SimplyTestableWebClientBundle:App:prepareResultsStats, _format: json }  
+    requirements:
+       website: ".+"        
        
 task_results_retrieve:
     pattern:  /{website}/{test_id}/results/retrieve/

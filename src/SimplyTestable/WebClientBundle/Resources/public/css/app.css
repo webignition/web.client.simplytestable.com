@@ -611,6 +611,13 @@ div.input-secondary {
     border-bottom: 1px solid #ddd;
 }
 
+#finished-tests .requires-results,
+#finished-tests .replacing {
+    padding-bottom: 26px;
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
 body.app .site {
     overflow:hidden;
 }
@@ -1364,13 +1371,10 @@ body.app-results #lock-unlock {
     top:100px;
 }
 
-/*body.app .summary-stats .outline-container {
-    background-color: rgba(0,136,204,0.4);
-    background-color: transparent;
-    border: 1px solid #08c;
-    border-radius: 42px;
+#finished-tests .requires-results p {
+    margin: -4px 0 4px 0;
 }
 
-.summary-stats .outline-container .anchor {
-    color:#222;
-}*/
+#finished-tests .requires-results .progress {
+    height: 4px;
+}

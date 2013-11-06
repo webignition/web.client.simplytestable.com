@@ -1,23 +1,16 @@
-{% set state_icon %}
-    {% if test.test.state == 'rejected' %}
-icon-remove
-    {% else %}
-icon-bar-chart
-    {% endif %}
-{% endset %}
-
-<div class="state-{{ test.test.state }}">
+    <div data-test-id="{{test.test.testId}}" class="site state-{{ test.test.state }} {% if test.requires_results is defined and test.requires_results == true %}requires-results{% endif %}">
+        <div class="wrapper">
+<div>
     <a class="url" href="{{ path('app_results', {'website': test.test.website, 'test_id':test.test.testId}) }}">
-        <i class="icon {{state_icon}}"></i>{{ test.remote_test.website }} (#{{ test.test.testId }})    
+        <i class="icon icon-bar-chart"></i><span class="website">{{ test.remote_test.website }}</span> (#{{ test.test.testId }})
         <span class="btn-wrapper">
             <span class="btn-spacer"></span>
-            <span class="btn btn-primary btn-small">View full results <i class="icon icon-caret-right"></i></span>   
+            <span class="btn btn-small">View full results <i class="icon icon-caret-right"></i></span>   
         </span>    
     </a>
 
     <div class="row-fluid summary-stats">
-        {% if test.requires_results is defined and test.requires_results == true %}
-            results needed
+        {% if test.requires_results is defined and test.requires_results == true %}           
         {% else %}
             {% include 'SimplyTestableWebClientBundle:Partials:/results/url-count.html.twig' with {'test': test.test, 'remote_test':test.remote_test} %}
             {% include 'SimplyTestableWebClientBundle:Partials:/results/task-count.html.twig' with {'test': test.test, 'remote_test':test.remote_test} %}            
@@ -27,3 +20,6 @@ icon-bar-chart
         {% endif %}
     </div>
 </div>
+        </div>
+    </div>
+

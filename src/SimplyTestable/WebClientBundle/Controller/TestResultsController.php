@@ -491,6 +491,41 @@ class TestResultsController extends TestViewController
      */
     private function getAvailableTaskTypeService() {
         return $this->container->get('simplytestable.services.availabletasktypeservice');
-    }        
+    } 
+    
+    
+    public function finishedSummaryAction($website, $test_id) {
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
+        $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
+        if ($testRetrievalOutcome->hasResponse()) {
+            return $testRetrievalOutcome->getResponse();
+        }
+        
+        $test = $testRetrievalOutcome->getTest();                
+        
+        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
+        $cacheValidatorIdentifier->setParameter('website', $website);
+        $cacheValidatorIdentifier->setParameter('test_id', $test_id);
+        
+        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
+        
+        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
+        if ($response->isNotModified($this->getRequest())) {
+            return $response;
+        }       
+        
+        $viewData = array(
+            'test' => array(
+                'test' => $test,
+                'remote_test' => $this->getTestService()->getRemoteTestService()->get(),
+            )
+        );
+
+        $this->setTemplate('SimplyTestableWebClientBundle:Partials:recent-job-summary.html.twig');  
+        return $this->getCachableResponse(
+                $this->sendResponse($viewData),
+                $cacheValidatorHeaders
+        ); 
+    }
 
 }
