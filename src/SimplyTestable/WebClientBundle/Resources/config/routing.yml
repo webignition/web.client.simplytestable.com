@@ -90,6 +90,10 @@ app_current_content:
     pattern:  /current-content/
     defaults: { _controller: SimplyTestableWebClientBundle:App:currentContent }    
     
+app_finished_content:    
+    pattern:  /finished-content/
+    defaults: { _controller: SimplyTestableWebClientBundle:App:finishedContent }      
+    
 app_task_results:
     pattern:  /{website}/{test_id}/{task_id}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:Task:results }  

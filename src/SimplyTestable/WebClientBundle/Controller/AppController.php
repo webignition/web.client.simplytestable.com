@@ -77,7 +77,7 @@ class AppController extends TestViewController
         $currentTests = $this->getCurrentTests();
         $currentTestsHash = md5(json_encode($currentTests));
         
-        $recentTests = $this->getRecentTests(3);
+        $recentTests = $this->getRecentTests();
         $recentTestsHash = md5(json_encode($recentTests));        
         
         $testCancelledQueuedWebsite = $this->getFlash('test_cancelled_queued_website');
@@ -216,7 +216,7 @@ class AppController extends TestViewController
      * 
      * @return array
      */
-    private function getRecentTests($limit = 5) {                        
+    private function getRecentTests($limit = 3) {                        
         $recentRemoteTests = $this->getTestService()->getRemoteTestService()->getList($limit, array('crawl'), array('rejected'));                
         $recentTests = array();
         
@@ -652,5 +652,15 @@ class AppController extends TestViewController
             'current_tests' => $this->getCurrentTests()
         ));         
     }
+    
+    public function finishedContentAction() {        
+        $this->getUserService()->setUser($this->getUser());           
+        
+        $this->setTemplate('SimplyTestableWebClientBundle:Partials:finished-content.html.twig');        
+        return $this->sendResponse(array(            
+            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+            'recent_tests' => $this->getRecentTests()
+        ));         
+    }    
 
 }

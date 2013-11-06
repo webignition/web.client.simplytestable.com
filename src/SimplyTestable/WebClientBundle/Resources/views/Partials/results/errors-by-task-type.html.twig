@@ -1,4 +1,4 @@
-{% set span_width %}{% if app.request.attributes.get('_route') == 'app' %}4{% else %}6{% endif %}{% endset %}
+{% set span_width %}{% if app.request.attributes.get('_route') == 'app_results' %}6{% else %}4{% endif %}{% endset %}
 
 <div class="span{{span_width}} summary-container summary-prose">
     {% if test.errorCount > 0 %}

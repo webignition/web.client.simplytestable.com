@@ -34,9 +34,6 @@
 <div class="container main">
 
 {% block main %}
-          
-
-
         <div class="row-fluid">
             <div class="span4" id="current-tests">
                 <section>          
@@ -55,49 +52,12 @@
                             <i class="icon-cog"></i>3 Most Recent Finished tests
                         </h2>
                         
-                        {% if recent_tests|length == 0 %}
-                            {% if current_tests|length == 0 %}
-                            <p>
-                                {% if is_logged_in %}
-                                You haven't started any tests yet. When you have,
-                                and when that have finshed, you'll see a summary of 
-                                your recent tests here.
-                                {% else %}
-                                You haven't started any tests yet. When you have,
-                                and when that have finshed, you'll see a summary of 
-                                your recent tests here.
-                                {% endif %}
-                            </p>                        
-                            {% else %}                        
-                            <p>
-                                {% if is_logged_in %}
-                                None of your tests have finished running. When 
-                                they have, you'll see a summary of your recent tests here.
-                                {% else %}
-                                None of your tests have finished running. When 
-                                they have, you'll see a summary of your recent tests here.
-                                {% endif %}
-                            </p>                            
-                            {% endif %}
-                        {% else %}
-
-                            
-                            {% for test in recent_tests %}
-                                    
-                            <div class="site">
-                                <div class="wrapper">
-{% include 'SimplyTestableWebClientBundle:Partials:recent-job-summary.html.twig' %}                                     
-                                </div>
-                            </div>
-                            
-                            {% endfor %}
-
-                        {% endif %}                        
+                        <div id="finished-tests-content">
+                            {% include 'SimplyTestableWebClientBundle:Partials:finished-content.html.twig' %}
+                        </div>
                 </section> 
             </div>
         </div>        
-        
-
 {% endblock %}
                      
 </div>

@@ -2005,8 +2005,35 @@ application.root.currentTestController = function () {
                 }
             },
             success: function(data, textStatus, request) {        
+                var currentTestCount = getSites().length;
+        
                 remoteTests = data;
                 updateList();
+                
+                if (currentTestCount > getSites().length) {
+                    jQuery.ajax({
+                        complete: function(request, textStatus) {           
+                            //console.log('complete', request, textStatus);              
+                        },
+                        dataType: 'html',
+                        error: function(request, textStatus, errorThrown) {        
+                            //console.log('error', request, textStatus, request.getAllResponseHeaders());             
+                        },
+                        statusCode: {
+                            403: function() {
+                                //console.log('403');
+                            },
+                            500: function() {
+                                //console.log('500');
+                            }
+                        },
+                        success: function(data, textStatus, request) {
+                            $('#finished-tests-content').html(data);                
+                        },
+                        url: window.location.href + 'finished-content/'
+                    });
+                }                
+                
                 window.setTimeout(function() {
                     refresh();
                 }, 3000); 
@@ -2047,11 +2074,15 @@ application.root.currentTestController = function () {
         });        
     };
     
-    var refresh = function () {
+    var refresh = function (callback) {
         if (hasCurrentTests()) {
             retrieve();
         } else {
             getNoCurrentTestContent();
+        }
+        
+        if (typeof callback === 'function') {
+            callback();
         }
     };
     
