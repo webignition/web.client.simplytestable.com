@@ -2,10 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
-//use SimplyTestable\WebClientBundle\Entity\Test\Test;
-//use SimplyTestable\WebClientBundle\Entity\Task\Task;
-//use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-//use Symfony\Component\HttpFoundation\Response;
+use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 
 /**
  * Redirects valid-looking URLs to those that match actual controller actions
@@ -30,7 +27,7 @@ class RedirectController extends BaseController
     private $testQueueService;    
     
     public function testAction($website, $test_id = null) {                
-        $this->getTestService()->setUser($this->getUser());
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
         $this->prepareNormalisedWebsiteAndTestId($website, $test_id);   
         
@@ -45,13 +42,13 @@ class RedirectController extends BaseController
                 ));               
             }            
             
-            $latestRemoteTestSummary = $this->getTestService()->getLatestRemoteSummary($this->website);
-            if (!is_null($latestRemoteTestSummary)) {
+            $latestRemoteTest = $this->getTestService()->getRemoteTestService()->retrieveLatest($this->website);                        
+            if ($latestRemoteTest instanceof RemoteTest) {
                 return $this->redirect($this->generateUrl(
                     'app_test_redirector',
                     array(
-                        'website' => $latestRemoteTestSummary->website,
-                        'test_id' => $latestRemoteTestSummary->id
+                        'website' => $latestRemoteTest->getWebsite(),
+                        'test_id' => $latestRemoteTest->getId()
                     ),
                     true
                 ));                 

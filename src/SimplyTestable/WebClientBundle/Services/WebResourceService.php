@@ -63,14 +63,6 @@ class WebResourceService {
             $response = $clientErrorResponseException->getResponse();
         }
         
-//        if ($request->getUrl() == 'http://ci.app.simplytestable.com/jobs/list/10/?exclude-types%5B0%5D=crawl&exclude-states%5B0%5D=rejected&exclude-current=1') {
-//            echo $response;
-//            exit();
-//        }
-//        
-//        var_dump($request->getUrl());
-//        //exit();
-        
         if ($response->isInformational()) {
             // Interesting to see what makes this happen
             return;

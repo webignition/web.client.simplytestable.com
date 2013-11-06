@@ -217,30 +217,6 @@ class TestService {
         }   
     }
     
-
-    
-    public function getLatestRemoteSummary($canonicalUrl) {
-        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_latest', array(
-            'canonical-url' => urlencode($canonicalUrl)
-        )));
-        
-        $this->addAuthorisationToRequest($request);
-        
-        /* @var $testJsonDocument \webignition\WebResource\JsonDocument\JsonDocument */
-        try {
-            return $this->webResourceService->get($request)->getContentObject();            
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-            return null;
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
-            if ($webResourceException->getCode() == 403) {
-                return false;
-            }
-        }
-        
-        return null;         
-    }
-
-    
     
     /**
      *
