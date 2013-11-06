@@ -1945,7 +1945,7 @@ application.root.currentTestController = function () {
         $('.url-count', test).text(testData.url_count);
         
         $('.bar', test).css({
-            'width':testData.completion_percent + '%'
+            'width':Math.ceil(testData.completion_percent) + '%'
         });
         
         setStateIcon();
@@ -2107,7 +2107,7 @@ application.root.finishedTestsPreparingController = function () {
             return 'Preparing summary &hellip;';
         }
         
-        return 'Preparing summary &hellip; retrieved <strong>'+ localTaskCount +'</strong> results of <strong>'+ remoteTaskCount +'</strong>';
+        return 'Preparing summary &hellip; retrieved <strong class="local-task-count">'+ localTaskCount +'</strong> results of <strong class="remote-task-count">'+ remoteTaskCount +'</strong>';
     };
     
     var getUnretrievedRemoteTaskIdsUrl = function(test) {
@@ -2146,17 +2146,9 @@ application.root.finishedTestsPreparingController = function () {
                 
                 $('.summary-stats', test).slideUp(function () {
                     test.replaceWith(newTest);
-                    $('.summary-stats', newTest).slideDown(function () {
-                        newTest.animate({
-                            'padding-bottom': '40px',
-                            'margin-bottom': '40px',                          
-                        }, function () {
-                            newTest.removeClass('replacing');
-                        });
-                    });
+                    $('.summary-stats', newTest).slideDown();
+                    newTest.removeClass('replacing');
                 });
-        
-                //test.replaceWith(data);
             },
             url: getTestSummaryUrl(test)
         });        
@@ -2186,12 +2178,13 @@ application.root.finishedTestsPreparingController = function () {
             success: function(data, textStatus, request) {
                 checkStatus(test, function (data) {
                     $('.bar', test).css({
-                        'width':data.completion_percent + '%'
+                        'width':Math.ceil(data.completion_percent) + '%'
                     });
                     
                     if (data.completion_percent === 100) {
                         displayTestSummary(test);
                     } else {
+                        $('.local-task-count', test).text(data.local_task_count);                        
                         getNextRemoteTaskIdCollection(test);
                     }
                 });

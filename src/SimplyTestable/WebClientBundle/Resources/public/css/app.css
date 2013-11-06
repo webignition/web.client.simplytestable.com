@@ -582,10 +582,6 @@ div.input-secondary {
     text-align: right;
 }
 
-#current-tests .progress {
-    height: 5px;
-}
-
 #current-tests .site {
     margin-bottom: 20px;
 }
@@ -613,9 +609,7 @@ div.input-secondary {
 
 #finished-tests .requires-results,
 #finished-tests .replacing {
-    padding-bottom: 26px;
-    border-bottom: none;
-    margin-bottom: 0;
+    border-bottom-color: transparent;
 }
 
 body.app .site {
@@ -1375,6 +1369,7 @@ body.app-results #lock-unlock {
     margin: -4px 0 4px 0;
 }
 
-#finished-tests .requires-results .progress {
-    height: 4px;
+body.app .progress {
+    height:4px;
+    margin-bottom:0;
 }
