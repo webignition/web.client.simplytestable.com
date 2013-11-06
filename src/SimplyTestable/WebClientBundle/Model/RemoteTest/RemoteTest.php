@@ -373,4 +373,22 @@ class RemoteTest extends AbstractStandardObject {
         return !is_null($this->getRejection());
     }
     
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function isFullSite() {
+        return $this->getType() == 'Full site';
+    }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function isSingleUrl() {
+        return $this->getType() == 'Single URL';
+    }
+    
 }

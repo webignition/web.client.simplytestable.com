@@ -11,7 +11,7 @@ use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 
 class AppController extends TestViewController
 {   
-    const RESULTS_PREPARATION_THRESHOLD = 100;    
+    const RESULTS_PREPARATION_THRESHOLD = 40;    
     
     /**
      *
@@ -216,16 +216,9 @@ class AppController extends TestViewController
      * 
      * @return array
      */
-    private function getRecentTests($limit = 5) {                
-//        if (!$this->isLoggedIn()) {
-//            return array();
-//        }
-        
+    private function getRecentTests($limit = 5) {                        
         $recentRemoteTests = $this->getTestService()->getRemoteTestService()->getList($limit, array('crawl'), array('rejected'));                
         $recentTests = array();
-        
-//        $recentRemoteTests = array_slice($recentRemoteTests, 0, 2);
-
         
         foreach ($recentRemoteTests as $remoteTest) {                        
             /* @var $remoteTest RemoteTest */           
@@ -235,44 +228,24 @@ class AppController extends TestViewController
             $test = $this->getTestService()->get($remoteTest->getWebsite(), $remoteTest->getId(), $remoteTest);
             
             if ($remoteTest->getTaskCount() != $test->getTaskCount()) {
-                $remoteTest = $this->getTestService()->getRemoteTestService()->get();        
-                if (($remoteTest->getTaskCount() - self::RESULTS_PREPARATION_THRESHOLD) > $test->getTaskCount()) {            
-                    $currentTest['requires_results'] = true;
-                } else {
+                if ($remoteTest->isSingleUrl()) {
                     $this->getTaskService()->getCollection($test);
+                } else {
+                    $remoteTest = $this->getTestService()->getRemoteTestService()->get();        
+                    if (($remoteTest->getTaskCount() - self::RESULTS_PREPARATION_THRESHOLD) > $test->getTaskCount()) {            
+                        $currentTest['requires_results'] = true;
+                    } else {
+                        $this->getTaskService()->getCollection($test);
+                    }                    
                 }
             } 
-            
-
-            
-//            var_dump($test);
-//            exit();
-//            
-//            if ($test['state'] == 'failed-no-sitemap' && isset($test['crawl'])) {                
-//                $recentTestRemoteSummaries[$testIndex]['state'] = 'crawling';
-//            }
-//            
-            //$remoteTestSummary->website_label = $this->getWebsiteLabel($remoteTestSummary->website);
-//            $recentTestRemoteSummaries[$testIndex]['state_icon'] = $this->getTestStateIcon($recentTestRemoteSummaries[$testIndex]['state']);
-//            $recentTestRemoteSummaries[$testIndex]['state_label_class'] = $this->getTestStateLabelClass($recentTestRemoteSummaries[$testIndex]['state']);
-//            $recentTestRemoteSummaries[$testIndex]['completion_percent'] = $this->getCompletionPercent($test);
 
             $currentTest['test'] = $test;
-            $currentTest['remote_test'] = $remoteTest;            
-            
-            if ($remoteTest->hasRejection()) {
-                //$recentTests[] = $currentTest;
-                
-//                var_dump($remoteTest->getRejection()->getReason());
-//                exit();
-            }            
+            $currentTest['remote_test'] = $remoteTest;                      
             
             $recentTests[] = $currentTest;
         }
-        
-//        var_dump($recentTestRemoteSummaries);
-//        exit();
-//        
+      
         return $recentTests;
     }
     
