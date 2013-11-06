@@ -559,7 +559,8 @@ div.input-secondary {
     text-decoration: none;
 }
 
-#current-tests .site .total .test-count {
+#current-tests .site .total .task-count,
+#current-tests .site .total .url-count {
     color: #666;
     font-size: 30px;
     line-height: 30px;

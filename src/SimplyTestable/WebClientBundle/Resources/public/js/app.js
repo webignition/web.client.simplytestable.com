@@ -1859,6 +1859,210 @@ application.root.testStartFormController = function () {
 };
 
 
+application.root.currentTestController = function () {
+    var remoteTests = null;
+    
+    var getContainer = function () {
+        return $('#current-tests');
+    };
+    
+    var getSites = function () {
+        return $('.site', getContainer());
+    };
+    
+    var hasCurrentTests = function () {
+        return getSites().length > 0;
+    };
+    
+    var getTest = function (id) {                
+        var test = $("[data-test-id='"+id+"']", getContainer());
+        return (test.is('.site')) ? test : null;
+    };
+    
+    var updateTest = function (testData) {
+        var test = getTest(testData.id);
+        if (test === null) {
+            return;
+        }
+        
+        var getQueuedCount = function () {
+            return getCountByState('queued') + getCountByState('queued-for-assignment');
+        };
+        
+        var getInProgressCount = function () {
+            return getCountByState('in-progress');
+        };        
+        
+        var getCountByState = function (state) {
+            for (var stateName in testData.task_count_by_state) {
+                if (testData.task_count_by_state.hasOwnProperty(stateName)) {
+                    if (stateName === state) {
+                        return testData.task_count_by_state[state];
+                    }
+                }
+            }
+            
+            return 0;
+        };
+        
+        var getFinishedCount = function () {
+            return Math.max(testData.task_count - getQueuedCount() - getInProgressCount(), 0);
+        };
+        
+        var getCompletionPercent = function () {
+            return testData.completion_percent + 0;
+        };
+        
+        var setStateIcon = function () {
+            var stateIcon = $('.state-icon', test);
+            var iconClasses = stateIcon.attr('class').split(' ');            
+            for (var iconIndex = 0; iconIndex < iconClasses.length; iconIndex++) {
+                if (/icon-/.test(iconClasses[iconIndex])) {
+                    stateIcon.removeClass(iconClasses[iconIndex]);
+                }
+            }
+            
+            stateIcon.addClass(testData.state_icon);
+        };
+        
+        var setBadgeState = function () {
+            var badge = $('.badge', test);
+            var badgeClasses = badge.attr('class').split(' ');            
+            for (var index = 0; index < badgeClasses.length; index++) {
+                if (/badge-/.test(badgeClasses[index])) {
+                    badge.removeClass(badgeClasses[index]);
+                }
+            }
+            
+            badge.addClass('badge-' + testData.state_label_class);
+        };
+        
+        
+        $('.queued-count', test).text(getQueuedCount());
+        $('.in-progress-count', test).text(getInProgressCount());
+        $('.finished-count', test).text(getFinishedCount());
+        $('.task-count', test).text(testData.task_count);
+        $('.url-count', test).text(testData.url_count);
+        
+        $('.bar', test).css({
+            'width':testData.completion_percent + '%'
+        });
+        
+        setStateIcon();
+        setBadgeState();
+    };
+    
+    var testIsStillCurrent = function (id) {
+        for (var testIndex = 0; testIndex < remoteTests.length; testIndex++) {            
+            if (remoteTests[testIndex].id === id) {                
+                return true;
+            }
+        }        
+
+        return false;
+    };
+    
+    var updateList = function () {
+        for (var testIndex = 0; testIndex < remoteTests.length; testIndex++) {
+            updateTest(remoteTests[testIndex]);
+        } 
+        
+        if (remoteTests.length === 0) {
+            getSites().each(function () {
+                $(this).remove();
+            });            
+        }
+        
+        getSites().each(function () {
+            var site = $(this);            
+            for (var testIndex = 0; testIndex < remoteTests.length; testIndex++) {
+                if (testIsStillCurrent(parseInt(site.attr('data-test-id'), 10)) === false) {
+                    site.remove();
+                }
+            }
+        });
+    };
+    
+    var retrieve = function () {
+        var getUrl = function () {
+            return window.location.href + 'current/';
+        };
+
+        jQuery.ajax({
+            complete: function(request, textStatus) {           
+                //console.log('complete', request, textStatus);
+            },
+            dataType: 'json',
+            error: function(request, textStatus, errorThrown) {        
+                //console.log('error', request, textStatus, request.getAllResponseHeaders());
+            },
+            statusCode: {
+                403: function() {
+                    //console.log('403');
+                },
+                500: function() {
+                    //console.log('500');
+                }
+            },
+            success: function(data, textStatus, request) {        
+                remoteTests = data;
+                updateList();
+                window.setTimeout(function() {
+                    refresh();
+                }, 3000); 
+            },
+            url: getUrl()
+        });        
+    };
+    
+    var getNoCurrentTestContent = function () {        
+        jQuery.ajax({
+            complete: function(request, textStatus) {           
+                //console.log('complete', request, textStatus);              
+            },
+            dataType: 'html',
+            error: function(request, textStatus, errorThrown) {        
+                //console.log('error', request, textStatus, request.getAllResponseHeaders());             
+            },
+            statusCode: {
+                403: function() {
+                    //console.log('403');
+                },
+                500: function() {
+                    //console.log('500');
+                }
+            },
+            success: function(data, textStatus, request) {
+                $('#current-tests-content').html(data);
+                
+                window.setTimeout(function() {
+                    if (hasCurrentTests()) {
+                        refresh();
+                    } else {
+                        getNoCurrentTestContent();
+                    }
+                }, 3000);                  
+            },
+            url: window.location.href + 'current-content/'
+        });        
+    };
+    
+    var refresh = function () {
+        if (hasCurrentTests()) {
+            retrieve();
+        } else {
+            getNoCurrentTestContent();
+        }
+    };
+    
+    this.initialise = function () {
+        window.setTimeout(function() {
+            refresh();
+        }, 3000);            
+    };
+};
+
+
 application.pages = {
     '/*': {
         'initialise': function() {
@@ -1888,6 +2092,9 @@ application.pages = {
             if ($('body.app').length > 0) {
                 testStartFormController = new application.root.testStartFormController();
                 testStartFormController.initialise();
+                
+                currentTestController = new application.root.currentTestController();
+                currentTestController.initialise();
             }
             
             if ($('body.app-results').length > 0) {
@@ -1970,8 +2177,7 @@ application.pages = {
         }
     },
     '/': {
-        'initialise': function() {
-        }
+        'initialise': function() {}
     },
 };
 

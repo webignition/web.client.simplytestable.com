@@ -36,10 +36,10 @@
 {% else %}
 <div class="row-fluid meta">
     <div class="span3 total">
-        <span class="test-count">{{ test['url_count'] }}</span><span class="subtext">url{% if test['url_count'] != 1 %}s{% endif %}</span>
+        <span class="url-count">{{ test['url_count'] }}</span><span class="subtext">url{% if test['url_count'] != 1 %}s{% endif %}</span>
     </div>      
     <div class="span3 total">
-        <span class="test-count">{{ test['task_count'] }}</span><span class="subtext">test{% if test['task_count'] != 1 %}s{% endif %}</span>
+        <span class="task-count">{{ test['task_count'] }}</span><span class="subtext">test{% if test['task_count'] != 1 %}s{% endif %}</span>
     </div>       
     <div class="span6 detail">
         <div>

@@ -641,5 +641,16 @@ class AppController extends TestViewController
         $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         return new Response($this->getSerializer()->serialize($this->getCurrentTests(), 'json'));        
     }
+    
+    
+    public function currentContentAction() {        
+        $this->getUserService()->setUser($this->getUser());           
+        
+        $this->setTemplate('SimplyTestableWebClientBundle:Partials:current-content.html.twig');        
+        return $this->sendResponse(array(            
+            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+            'current_tests' => $this->getCurrentTests()
+        ));         
+    }
 
 }

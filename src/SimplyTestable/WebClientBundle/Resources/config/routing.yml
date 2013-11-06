@@ -84,7 +84,11 @@ app:
     
 app_current:    
     pattern:  /current/
-    defaults: { _controller: SimplyTestableWebClientBundle:App:current }
+    defaults: { _controller: SimplyTestableWebClientBundle:App:current, _format: json  }
+    
+app_current_content:    
+    pattern:  /current-content/
+    defaults: { _controller: SimplyTestableWebClientBundle:App:currentContent }    
     
 app_task_results:
     pattern:  /{website}/{test_id}/{task_id}/results/

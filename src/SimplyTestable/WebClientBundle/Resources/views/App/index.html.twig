@@ -43,26 +43,10 @@
                         <h2 class="info">
                             <i class="icon-cog"></i> Running tests
                         </h2>
-
-                        {% if current_tests|length == 0 %}
-                            <p>
-                                {% if is_logged_in %}
-                                    You're not running any tests at the moment.
-                                {% else %}
-                                    No free demo tests are running at the moment.
-                                {% endif %}
-                            </p>                            
-                        {% else %}
-                            {% for test in current_tests %}
-                                     
-                            <div class="site">
-                                <div class="wrapper">                                  
-{% include 'SimplyTestableWebClientBundle:Partials:current-job-summary.html.twig' %}
-                                </div>
-                            </div>
-                            
-                            {% endfor %}
-                        {% endif %}
+                        
+                        <div id="current-tests-content">
+                            {% include 'SimplyTestableWebClientBundle:Partials:current-content.html.twig' %}
+                        </div>                        
                 </section> 
             </div>            
             <div class="span8" id="finished-tests">
