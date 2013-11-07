@@ -23,6 +23,13 @@
     color:#eee;
 }
 
+.navbar-inverse .nav .active>a,
+.navbar-inverse .nav .active>a:hover,
+.navbar-inverse .nav .active>a:focus {
+    color:#ffffff;
+    background-color:transparent;
+}
+
 body {
     margin-top:80px;
 }
@@ -1391,4 +1398,29 @@ body.app .progress {
 
 #finished-tests .summary-stats .span2 {
     width:80px;
+}
+
+.full-width-notification {
+    padding:20px 0 10px 0;
+    margin:0;
+    
+    background-color: #d9edf7;
+    color: #3a87ad; 
+    
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    
+    padding-left:60px;
+    
+    border-bottom: 1px solid #bce8f1;
+}
+
+.full-width-notification a {
+    text-decoration: underline;
+}
+
+.ammendment-clone,
+.ammendment-clone a {
+    background-color: #eee;
+    color: transparent;
+    border-color: transparent;
 }

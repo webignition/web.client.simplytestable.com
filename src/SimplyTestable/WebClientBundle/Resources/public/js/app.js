@@ -225,27 +225,47 @@ application.progress.testController = function() {
     };
 
     var displayAmmendment = function(messageContent) {        
-        var ammendmentNotification = $('<div class="alert alert-info alert-ammendment">').append(
-                '<i class="icon icon-exclamation-sign"></i>'
-                ).append(
-                messageContent
-                );
-
+        console.log(messageContent);
+        
+/**
+<div class="full-width-container full-width-notification alert-ammendment">
+    <div class="container main">
+        <div class="row-fluid">
+            <div class="span12">
+{% include 'SimplyTestableWebClientBundle:Partials:test-url-limit-notification.html.twig' %}
+            </div>
+        </div>
+    </div>
+</div>
+ */        
+        
+        var ammendmentNotification = $('<div class="full-width-container full-width-notification alert-ammendment">').append(
+            $('<div class="container main">').append(
+                $('<div class="row-fluid">').append(
+                    $('<div class="span12">').append(
+                        messageContent
+                    )
+                )
+            )
+        );
+            
         var ammendmentNotificationClone = ammendmentNotification.clone(ammendmentNotification);
+        ammendmentNotificationClone.addClass('ammendment-clone');
         ammendmentNotificationClone.css({
-            'display': 'none',
-            'opacity': 0
-        });
+            'display': 'none'
+        });            
+            
+        $('.progress-header').before(ammendmentNotificationClone);
 
-        $($('.main .span12').get(0)).prepend(ammendmentNotificationClone);
         ammendmentNotificationClone.slideDown(function() {
             ammendmentNotificationClone.remove();
 
             ammendmentNotification.css({
                 'opacity': 0
+
             });
 
-            $($('.main .span12').get(0)).prepend(ammendmentNotification);
+            $('.progress-header').before(ammendmentNotification);
 
             ammendmentNotification.animate({
                 'opacity': 1

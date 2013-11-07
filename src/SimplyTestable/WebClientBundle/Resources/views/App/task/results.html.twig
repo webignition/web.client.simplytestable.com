@@ -6,20 +6,24 @@
 
 {% block body %}
 
-<div class="full-width-container">
-    <div class="container main">            
+        {% if is_owner == false and is_public_user_test == false %}
+<div class="full-width-container full-width-notification">
+    <div class="container main">
         <div class="row-fluid">
             <div class="span12">
-                
-        {% if is_owner == false and is_public_user_test == false %}
-<div class="alert alert-info alert-from-view">
-    <i class="icon icon-exclamation-sign"></i>
     <span>
         You're viewing a <strong>read-only version</strong> of this test. <a href="{{ path('sign_in') }}">Sign in</a> if you're the test owner to modify options and re-test.
     </span>
+            </div>
+        </div>
+    </div>
 </div>             
-        {% endif %}                
-                
+        {% endif %}
+
+<div class="full-width-container">
+    <div class="container main">            
+        <div class="row-fluid">
+            <div class="span12">                
                 <section>
                     <h1 class="info">
                         <i class="icon-bar-chart"></i>

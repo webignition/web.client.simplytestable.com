@@ -6,17 +6,23 @@
 
 {% block body %}
 
-<div class="full-width-container">
-    <div class="container main">        
-        {% if is_logged_in == false %}
-        <div class="alert alert-info alert-ammendment alert-from-view">
-            <i class="icon icon-exclamation-sign"></i>
-            <span>
-        {% include 'SimplyTestableWebClientBundle:Partials:public-user-notification.html.twig' %}
-            </span>
+{% if is_logged_in == false %}
+<div class="full-width-container full-width-notification">
+    <div class="container main">
+        <div class="row-fluid">
+            <div class="span12">
+                <strong>Hi there!</strong> This is a free demo to introduce
+                you to the service. The demo is a bit limited, so why not
+                <a href="">create a free account</a>. Don't forget to
+                <a href="">sign in</a> if you have an account!
+            </div>
         </div>
-        {% endif %}
-            
+    </div>
+</div>
+{% endif %}
+
+<div class="full-width-container">
+    <div class="container main">
         <div class="row-fluid">
             <div class="span12">
                 {% if test_cancelled_queued_website is defined and test_cancelled_queued_website != '' %}

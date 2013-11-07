@@ -20,7 +20,21 @@ Testing {{website}} - {{ parent() }}
 
 {% block body %}
 
-<div class="full-width-container">
+        {% if remote_test.ammendments is defined %}
+            {% if remote_test.ammendments[0].constraint is defined %}
+<div class="full-width-container full-width-notification alert-ammendment">
+    <div class="container main">
+        <div class="row-fluid">
+            <div class="span12">
+{% include 'SimplyTestableWebClientBundle:Partials:test-url-limit-notification.html.twig' %}
+            </div>
+        </div>
+    </div>
+</div>
+            {% endif %}         
+        {% endif %}
+
+<div class="full-width-container progress-header">
     <div class="container main">            
         <div class="row-fluid">
             <div class="span12">
@@ -31,18 +45,7 @@ Testing {{website}} - {{ parent() }}
         You're viewing a <strong>read-only version</strong> of this test. <a href="{{ path('sign_in') }}">Sign in</a> if you're the test owner to manage this test.
     </span>
 </div>             
-        {% endif %}                 
-                
-                {% if remote_test.ammendments is defined %}
-                    {% if remote_test.ammendments[0].constraint is defined %}
-                    <div class="alert alert-info alert-ammendment alert-from-view">
-                        <i class="icon icon-exclamation-sign"></i>
-                        <span>
-        {% include 'SimplyTestableWebClientBundle:Partials:test-url-limit-notification.html.twig' %}
-                        </span>
-                    </div>                
-                    {% endif %}         
-                {% endif %}                   
+        {% endif %}
 
                 {% include 'SimplyTestableWebClientBundle:Partials:header-progress.html.twig' %}     
             </div>
