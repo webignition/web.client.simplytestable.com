@@ -26,7 +26,7 @@
                     {% else %}                        
                     <p class="navbar-text pull-right">
                         <a href="{{ path('sign_in') }}" class="btn btn-small "><i class="icon icon-caret-right"></i> Sign in</a>                        
-                        <a href="{{ path('sign_up') }}" class="btn btn-primary btn-small"><i class="icon icon-user"></i> Create account</a>                        
+                        <a href="{{ path('sign_up') }}" class="btn btn-small"><i class="icon icon-user"></i> Create account</a>                        
                     </p>                    
                     {% endif %}
 
@@ -37,7 +37,7 @@
                                 {% if is_logged_in %}
                                 Dashboard
                                 {% else %}
-                                Demo dashboard
+                                Demo dashboard <span class="btn btn-mini btn-danger">Try me out!</span>
                                 {% endif %}
                             </a>
                         </li>

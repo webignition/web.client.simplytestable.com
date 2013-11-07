@@ -2249,13 +2249,17 @@ application.root.finishedTestsUpdateController = function () {
         });
     };
     
-    var addNewTests = function (currentTests, newTests) {        
+    var addNewTests = function (currentTests, newTests) {
         newTests.each(function () {
             var test = $(this);
             
             if (test.is('.site')) {
                 var testId = test.attr('data-test-id');            
                 if (!testSetContainsId(currentTests, testId)) {
+                    if ($('p.info', getContainer()).is('.info')) {
+                        $('p.info').remove();
+                    }
+                    
                     test.hide();
                     getContainer().prepend(test);
                     test.slideDown(function () {

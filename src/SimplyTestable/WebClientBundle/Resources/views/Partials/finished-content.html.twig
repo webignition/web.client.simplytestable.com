@@ -1,32 +1,15 @@
-{% if recent_tests|length == 0 %}
-    {% if current_tests|length == 0 %}
-    <p>
-        {% if is_logged_in %}
-        You haven't started any tests yet. When you have,
-        and when that have finshed, you'll see a summary of 
-        your recent tests here.
-        {% else %}
-        You haven't started any tests yet. When you have,
-        and when that have finshed, you'll see a summary of 
-        your recent tests here.
-        {% endif %}
-    </p>                        
-    {% else %}                        
-    <p>
+{% if recent_tests|length == 0 %}                       
+    <p class="info">
         {% if is_logged_in %}
         None of your tests have finished running. When 
         they have, you'll see a summary of your recent tests here.
         {% else %}
-        None of your tests have finished running. When 
+        No demo tests have finished running. When 
         they have, you'll see a summary of your recent tests here.
         {% endif %}
-    </p>                            
-    {% endif %}
+    </p>
 {% else %}
-
-
     {% for test in recent_tests %}
         {% include 'SimplyTestableWebClientBundle:Partials:recent-job-summary.html.twig' %}
     {% endfor %}
-
 {% endif %} 
