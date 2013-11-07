@@ -624,7 +624,7 @@ body.app .site .wrapper {
 body.app .site .url {
     white-space: nowrap;
     display:inline-block;
-    margin-bottom: 20px;
+/*    margin-bottom: 20px;*/
 }
 
 body.app .site .url .btn-spacer {
@@ -1377,4 +1377,18 @@ body.app .progress {
 
 #current-tests .subtext {
     font-size: 12px;
+}
+
+#finished-tests .re-test {
+    position: absolute;
+    right: 0;
+    top: 30px;    
+}
+
+#finished-tests .summary-stats {
+    margin-top: 8px;
+}
+
+#finished-tests .summary-stats .span2 {
+    width:80px;
 }

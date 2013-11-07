@@ -44,6 +44,7 @@ parameters:
       test_is_public: /job/{canonical-url}/{test_id}/is_public/
       test_set_public: /job/{canonical-url}/{test_id}/set-public/
       test_set_private: /job/{canonical-url}/{test_id}/set-private/
+      test_retest: /job/{canonical-url}/{test_id}/re-test/
   public_site:
     urls:
       home: http://simplytestable.com/

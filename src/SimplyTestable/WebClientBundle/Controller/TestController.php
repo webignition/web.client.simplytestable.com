@@ -238,4 +238,18 @@ class TestController extends BaseController
         return $this->testQueueService;
 
     }
+    
+    public function retestAction($website, $test_id) {
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
+        $response = $this->getTestService()->getRemoteTestService()->retest($test_id, $website);
+
+        return $this->redirect($this->generateUrl(
+            'app_progress',
+            array(
+                'website' => $response->getContentObject()->website,
+                'test_id' => $response->getContentObject()->id
+            ),
+            true
+        ));      
+    }     
 }

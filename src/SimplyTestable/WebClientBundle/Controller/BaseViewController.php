@@ -25,8 +25,8 @@ abstract class BaseViewController extends BaseController
             $response = new Response($this->getSerializer()->serialize($viewData, 'json'));
             $response->headers->set('Content-Type', 'application/json');
             return $response;
-        }
-        
+        }        
+
         return $this->render($this->template, $viewData);
     }
     

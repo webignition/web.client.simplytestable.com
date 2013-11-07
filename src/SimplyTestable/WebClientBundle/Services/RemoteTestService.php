@@ -181,7 +181,7 @@ class RemoteTestService extends CoreApplicationService {
         return $this->cancelByTestProperties($this->getTest()->getTestId(), $this->getTest()->getWebsite());      
     }
     
-    
+
     /**
      * 
      * @param int $testId
@@ -190,6 +190,24 @@ class RemoteTestService extends CoreApplicationService {
      */
     public function cancelByTestProperties($testId, $website) {
         $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_cancel', array(
+            'canonical-url' => urlencode($website),
+            'test_id' => $testId
+        )));
+        
+        $this->addAuthorisationToRequest($httpRequest);
+        
+        return $this->webResourceService->get($httpRequest);          
+    }     
+    
+    
+    /**
+     * 
+     * @param int $testId
+     * @param string $website
+     * @return boolean
+     */
+    public function retest($testId, $website) {
+        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_retest', array(
             'canonical-url' => urlencode($website),
             'test_id' => $testId
         )));

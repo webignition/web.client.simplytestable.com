@@ -160,6 +160,12 @@ app_test_unlock:
     requirements:
        website: ".+"         
        
+app_test_retest:
+    pattern:  /{website}/{test_id}/re-test/
+    defaults: { _controller: SimplyTestableWebClientBundle:Test:retest }  
+    requirements:
+       website: ".+"        
+       
 app_results_failed_no_urls_detected:
     pattern:  /{website}/{test_id}/results/failed/no-urls-detected/
     defaults: { _controller: SimplyTestableWebClientBundle:TestResults:failedNoUrlsDetected }  

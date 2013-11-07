@@ -696,6 +696,6 @@ class AppController extends TestViewController
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
             'recent_tests' => $this->getRecentTests()
         ));         
-    }    
+    }
 
 }

@@ -2304,7 +2304,7 @@ application.pages = {
                 currentTestController.initialise();
                 
                 finishedTestsPreparingController = new application.root.finishedTestsPreparingController();
-                finishedTestsPreparingController.initialise();                
+                finishedTestsPreparingController.initialise();
             }
             
             if ($('body.app-results').length > 0) {

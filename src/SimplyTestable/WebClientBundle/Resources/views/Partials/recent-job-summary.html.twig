@@ -8,6 +8,8 @@
             <span class="btn btn-small">View full results <i class="icon icon-caret-right"></i></span>   
         </span>    
     </a>
+        
+    <!--<a href="{{ path('app_test_retest', {'website': test.test.website, 'test_id':test.test.testId}) }}" class="btn btn-mini re-test">Re-test <i class="icon icon-refresh"></i></a>-->
 
     <div class="row-fluid summary-stats">
         {% if test.requires_results is defined and test.requires_results == true %}           
