@@ -28,20 +28,8 @@ application.results.preparingController = function() {
 
     var getRetrievalStatus = function() {
         jQuery.ajax({
-            complete: function(request, textStatus) {
-                //console.log('complete', request, textStatus);
-            },
             dataType: 'json',
             error: function(request, textStatus, errorThrown) {
-                //console.log('error', request, textStatus, request.getAllResponseHeaders());
-            },
-            statusCode: {
-                403: function() {
-                    //console.log('403');
-                },
-                500: function() {
-                    //console.log('500');
-                }
             },
             success: function(data, textStatus, request) {
                 $('#completion-percent-value').text(data['completion-percent']);
@@ -63,20 +51,8 @@ application.results.preparingController = function() {
     var retrieveNextRemoteTaskIdCollection = function() {
         jQuery.ajax({
             type: 'POST',
-            complete: function(request, textStatus) {
-                //console.log('complete', request, textStatus);
-            },
             dataType: 'json',
             error: function(request, textStatus, errorThrown) {
-                //console.log(' retrieveNextRemoteTaskIdCollection error', request, textStatus, errorThrown, request.getAllResponseHeaders());
-            },
-            statusCode: {
-                403: function() {
-                    //console.log('403');
-                },
-                500: function() {
-                    //console.log('500');
-                }
             },
             data: {
                 'remoteTaskIds': nextTaskIdCollection.join(',')
@@ -92,20 +68,8 @@ application.results.preparingController = function() {
 //        return;
 
         jQuery.ajax({
-            complete: function(request, textStatus) {
-                //console.log('complete', request, textStatus);
-            },
             dataType: 'json',
             error: function(request, textStatus, errorThrown) {
-                //console.log('getNextRemoteTaskIdCollection error');
-            },
-            statusCode: {
-                403: function() {
-                    //console.log('403');
-                },
-                500: function() {
-                    //console.log('500');
-                }
             },
             success: function(data, textStatus, request) {
                 nextTaskIdCollection = data;
@@ -149,20 +113,8 @@ application.progress.queuedTestController = function() {
         };
 
         jQuery.ajax({
-            complete: function(request, textStatus) {
-                //console.log('complete', request, textStatus);
-            },
             dataType: 'json',
             error: function(request, textStatus, errorThrown) {
-                //console.log('error', request, textStatus, request.getAllResponseHeaders());
-            },
-            statusCode: {
-                403: function() {
-                    //console.log('403');
-                },
-                500: function() {
-                    //console.log('500');
-                }
             },
             success: function(data, textStatus, request) {
                 if (data === 'not queued') {
@@ -387,17 +339,6 @@ application.progress.testController = function() {
 
         var subsetAverageData = average(subset);
 
-//        console.log(estimatedTimeRemainingHistory);
-//        console.log(subset);
-//        console.log(averageData);
-//        console.log(averageData.mean);
-//        console.log(subsetAverageData);
-//        console.log(subsetAverageData.mean);        
-//        
-//        console.log('from latest', formatEstimatedTimeRemaining(estimatedTimeRemainingHistory[0]));
-//        console.log('from mean', formatEstimatedTimeRemaining(averageData.mean));
-//        console.log('from subset mean', formatEstimatedTimeRemaining(subsetAverageData.mean));
-
         return subsetAverageData.mean;
     };
     
@@ -426,20 +367,8 @@ application.progress.testController = function() {
         };
 
         jQuery.ajax({
-            complete: function(request, textStatus) {           
-                //console.log('complete', request, textStatus);
-            },
             dataType: 'json',
             error: function(request, textStatus, errorThrown) {        
-                //console.log('error', request, textStatus, request.getAllResponseHeaders());
-            },
-            statusCode: {
-                403: function() {
-                    //console.log('403');
-                },
-                500: function() {
-                    //console.log('500');
-                }
             },
             success: function(data, textStatus, request) {        
                 if (data.this_url !== window.location.href) {
@@ -571,20 +500,8 @@ application.progress.taskController = function() {
     var getTaskIds = function() {
         if (taskIds === null) {
             jQuery.ajax({
-                complete: function(request, textStatus) {
-                    //console.log('complete', request, textStatus);
-                },
                 dataType: 'json',
                 error: function(request, textStatus, errorThrown) {
-                    console.log('error', request, textStatus, request.getAllResponseHeaders(), getTaskIdsUrl());
-                },
-                statusCode: {
-                    403: function() {
-                        console.log('403');
-                    },
-                    500: function() {
-                        console.log('500');
-                    }
                 },
                 success: function(data, textStatus, request) {
                     if (data.length > 0) {
@@ -664,20 +581,8 @@ application.progress.taskController = function() {
                 data: {
                     'taskIds': tasksToRetrieve.join(',')
                 },
-                complete: function(request, textStatus) {
-                    //console.log('complete', request, textStatus);
-                },
                 dataType: 'json',
                 error: function(request, textStatus, errorThrown) {
-                    //console.log('error', request, textStatus, request.getAllResponseHeaders());
-                },
-                statusCode: {
-                    403: function() {
-                        //console.log('403');
-                    },
-                    500: function() {
-                        //console.log('500');
-                    }
                 },
                 success: function(data, textStatus, request) {
                     for (var taskId in data) {
@@ -1703,12 +1608,8 @@ application.account.cardController = function() {
                 
                 jQuery.ajax({
                     type:'POST',                    
-                    dataType: 'json',
-                    complete: function(request, textStatus) {
-                        //console.log('complete', request, textStatus);
-                    },                    
+                    dataType: 'json',                    
                     error: function(request, textStatus, errorThrown) {
-                       //console.log('error', request.responseText);
                     }, 
                     success: function(data, textStatus, request) {
                         if (data.hasOwnProperty('this_url')) {
@@ -1733,14 +1634,6 @@ application.account.cardController = function() {
                         form.find('button').prop('disabled', false);
                         return false;
                     },                            
-                    statusCode: {                
-                        403: function() {
-                            //console.log('403');
-                        },
-                        500: function() {
-                            //console.log('500');
-                        }
-                    },
                     url: window.location + response.id + '/associate/?output=json'
                 });
             });
@@ -2118,20 +2011,8 @@ application.root.currentTestController = function () {
         };
 
         jQuery.ajax({
-            complete: function(request, textStatus) {           
-                //console.log('complete', request, textStatus);
-            },
             dataType: 'json',
             error: function(request, textStatus, errorThrown) {        
-                //console.log('error', request, textStatus, request.getAllResponseHeaders());
-            },
-            statusCode: {
-                403: function() {
-                    //console.log('403');
-                },
-                500: function() {
-                    //console.log('500');
-                }
             },
             success: function(data, textStatus, request) {                
                 previousRemoteTests = remoteTests;
@@ -2140,20 +2021,8 @@ application.root.currentTestController = function () {
                 
                 if (hasCurrentTestBeenRemovedFromList()) {
                     jQuery.ajax({
-                        complete: function(request, textStatus) {           
-                            //console.log('complete', request, textStatus);              
-                        },
                         dataType: 'html',
-                        error: function(request, textStatus, errorThrown) {        
-                            //console.log('error', request, textStatus, request.getAllResponseHeaders());             
-                        },
-                        statusCode: {
-                            403: function() {
-                                //console.log('403');
-                            },
-                            500: function() {
-                                //console.log('500');
-                            }
+                        error: function(request, textStatus, errorThrown) {             
                         },
                         success: function(data, textStatus, request) {                    
                             var finishedTestsUpdateController = new application.root.finishedTestsUpdateController();
@@ -2173,20 +2042,8 @@ application.root.currentTestController = function () {
     
     var getCurrentTestContent = function (callback) {        
         jQuery.ajax({
-            complete: function(request, textStatus) {           
-                //console.log('complete', request, textStatus);              
-            },
             dataType: 'html',
-            error: function(request, textStatus, errorThrown) {        
-                //console.log('error', request, textStatus, request.getAllResponseHeaders());             
-            },
-            statusCode: {
-                403: function() {
-                    //console.log('403');
-                },
-                500: function() {
-                    //console.log('500');
-                }
+            error: function(request, textStatus, errorThrown) {                    
             },
             success: function(data, textStatus, request) {
                 if (typeof callback === 'function') {
@@ -2255,20 +2112,8 @@ application.root.finishedTestsPreparingController = function () {
         };
         
         jQuery.ajax({
-            complete: function(request, textStatus) {
-                //console.log('complete', request, textStatus);
-            },
             dataType: 'html',
-            error: function(request, textStatus, errorThrown) {
-                //console.log(' retrieveNextRemoteTaskIdCollection error', request, textStatus, errorThrown, request.getAllResponseHeaders());
-            },
-            statusCode: {
-                403: function() {
-                    //console.log('403');
-                },
-                500: function() {
-                    //console.log('500');
-                }
+            error: function(request, textStatus, errorThrown) {                
             },
             success: function(data, textStatus, request) {
                 var newTest = $(data);
@@ -2288,20 +2133,8 @@ application.root.finishedTestsPreparingController = function () {
     var retrieveNextRemoteTaskIdCollection = function(test, taskIds) {        
         jQuery.ajax({
             type: 'POST',
-            complete: function(request, textStatus) {
-                //console.log('complete', request, textStatus);
-            },
             dataType: 'json',
-            error: function(request, textStatus, errorThrown) {
-                //console.log(' retrieveNextRemoteTaskIdCollection error', request, textStatus, errorThrown, request.getAllResponseHeaders());
-            },
-            statusCode: {
-                403: function() {
-                    //console.log('403');
-                },
-                500: function() {
-                    //console.log('500');
-                }
+            error: function(request, textStatus, errorThrown) {                
             },
             data: {
                 'remoteTaskIds': taskIds.join(',')
@@ -2326,20 +2159,8 @@ application.root.finishedTestsPreparingController = function () {
     
     var getNextRemoteTaskIdCollection = function(test) {
         jQuery.ajax({
-            complete: function(request, textStatus) {
-                //console.log('complete', request, textStatus);
-            },
             dataType: 'json',
             error: function(request, textStatus, errorThrown) {
-                //console.log('getNextRemoteTaskIdCollection error');
-            },
-            statusCode: {
-                403: function() {
-                    //console.log('403');
-                },
-                500: function() {
-                    //console.log('500');
-                }
             },
             success: function(data, textStatus, request) {
                 retrieveNextRemoteTaskIdCollection(test, data);
@@ -2354,20 +2175,8 @@ application.root.finishedTestsPreparingController = function () {
         };        
         
         jQuery.ajax({
-            complete: function(request, textStatus) {           
-                //console.log('complete', request, textStatus);              
-            },
             dataType: 'json',
-            error: function(request, textStatus, errorThrown) {        
-                //console.log('error', request, textStatus, request.getAllResponseHeaders());             
-            },
-            statusCode: {
-                403: function() {
-                    //console.log('403');
-                },
-                500: function() {
-                    //console.log('500');
-                }
+            error: function(request, textStatus, errorThrown) {                 
             },
             success: function(data, textStatus, request) {        
                 callback(data);
