@@ -1861,17 +1861,18 @@ application.root.testStartFormController = function () {
 
 application.root.currentTestController = function () {
     var remoteTests = null;
+    var previousRemoteTests = null;
     
     var getContainer = function () {
         return $('#current-tests');
     };
     
-    var getSites = function () {
+    var getTests = function () {
         return $('.site', getContainer());
     };
     
     var hasCurrentTests = function () {
-        return getSites().length > 0;
+        return getTests().length > 0;
     };
     
     var getTest = function (id) {                
@@ -1935,8 +1936,7 @@ application.root.currentTestController = function () {
             }
             
             badge.addClass('badge-' + testData.state_label_class);
-        };
-        
+        };        
         
         $('.queued-count', test).text(getQueuedCount());
         $('.in-progress-count', test).text(getInProgressCount());
@@ -1962,25 +1962,66 @@ application.root.currentTestController = function () {
         return false;
     };
     
+    var removeCompletedTest = function (test) {        
+        updateTest({
+            'id':parseInt(test.attr('data-test-id'), 10),
+            'task_count_by_state': {
+                'queued':0,
+                'queued-for-assignment':0,
+                'in-progress':0
+            },
+            'completion_percent':100,
+            'task_count':$('.task-count', test).text(),
+            'state_icon':'icon-play-circle',
+            'state_label_class':'success'
+        });
+        
+        test.slideUp(function () {
+            test.remove();
+        });
+
+    };
+    
     var updateList = function () {
         for (var testIndex = 0; testIndex < remoteTests.length; testIndex++) {
             updateTest(remoteTests[testIndex]);
         } 
         
         if (remoteTests.length === 0) {
-            getSites().each(function () {
-                $(this).remove();
+            getTests().each(function () {
+                var test = $(this);         
+                removeCompletedTest(test);
             });            
         }
-        
-        getSites().each(function () {
-            var site = $(this);            
+
+        getTests().each(function () {
+            var test = $(this);            
+            var testId = parseInt(test.attr('data-test-id'), 10);
+            
             for (var testIndex = 0; testIndex < remoteTests.length; testIndex++) {
-                if (testIsStillCurrent(parseInt(site.attr('data-test-id'), 10)) === false) {
-                    site.remove();
+                if (testIsStillCurrent(testId) === false) {                    
+                    removeCompletedTest(test);
                 }
             }
         });
+    };
+    
+    var hasCurrentTestBeenRemovedFromList = function () {
+        if (previousRemoteTests === null) {
+            return false;
+        }
+        
+        if (remoteTests.length === 0 && previousRemoteTests.length !== 0) {
+            return true;
+        }
+        
+        for (var previousIndex = 0; previousIndex < previousRemoteTests.length; previousIndex++) {
+            if (!testIsStillCurrent(previousRemoteTests[previousIndex].id)) {
+                return true;
+            }
+        }
+        
+        return false;
     };
     
     var retrieve = function () {
@@ -2004,13 +2045,14 @@ application.root.currentTestController = function () {
                     //console.log('500');
                 }
             },
-            success: function(data, textStatus, request) {        
-                var currentTestCount = getSites().length;
-        
+            success: function(data, textStatus, request) {                
+                previousRemoteTests = remoteTests;
                 remoteTests = data;
                 updateList();
                 
-                if (currentTestCount > getSites().length) {
+                console.log(hasCurrentTestBeenRemovedFromList());
+                
+                if (hasCurrentTestBeenRemovedFromList()) {
                     jQuery.ajax({
                         complete: function(request, textStatus) {           
                             //console.log('complete', request, textStatus);              
@@ -2027,8 +2069,9 @@ application.root.currentTestController = function () {
                                 //console.log('500');
                             }
                         },
-                        success: function(data, textStatus, request) {
-                            $('#finished-tests-content').html(data);                
+                        success: function(data, textStatus, request) {                    
+                            var finishedTestsUpdateController = new application.root.finishedTestsUpdateController();
+                            finishedTestsUpdateController.initialise($(data));                            
                         },
                         url: window.location.href + 'finished-content/'
                     });
@@ -2256,12 +2299,77 @@ application.root.finishedTestsPreparingController = function () {
 
     };
     
-    this.initialise = function () {
+    this.initialise = function () {        
         getTestsRequiringResults().each(function () {
             initialiseTest($(this));
         });
+    };
+};
+
+application.root.finishedTestsUpdateController = function () {
+    var getContainer = function () {
+        return $('#finished-tests-content');
+    };
+    
+    var getTests = function () {
+        return $('.site', getContainer());
+    };
+    
+    var testSetContainsId = function (tests, id) {
+        var contains = false;
         
-        //console.log("cp01", getTestsRequiringResults().length);
+        tests.each(function () {
+            var test = $(this);
+            if (test.is('.site')) {
+                var testId = test.attr('data-test-id');
+
+                if (testId === id) {
+                    contains = true;
+                }
+            }            
+        });
+        
+        return contains;
+    };
+    
+    var remove = function (test) {
+        test.slideUp(function () {
+            test.remove();
+        });
+    };
+    
+    var removePreviousTests = function (currentTests, newTests) {
+        currentTests.each(function () {
+            var test = $(this);
+            var testId = test.attr('data-test-id');
+            
+            if (!testSetContainsId(newTests, testId)) {
+                remove(test);
+            }
+        });
+    };
+    
+    var addNewTests = function (currentTests, newTests) {        
+        newTests.each(function () {
+            var test = $(this);
+            
+            if (test.is('.site')) {
+                var testId = test.attr('data-test-id');            
+                if (!testSetContainsId(currentTests, testId)) {
+                    test.hide();
+                    getContainer().prepend(test);
+                    test.slideDown(function () {
+                        finishedTestsPreparingController = new application.root.finishedTestsPreparingController();
+                        finishedTestsPreparingController.initialise();                        
+                    });
+                }
+            }
+        });
+    };
+    
+    this.initialise = function (newTests) {        
+        removePreviousTests(getTests(), newTests);      
+        addNewTests(getTests(), newTests);
     };
 };
 
