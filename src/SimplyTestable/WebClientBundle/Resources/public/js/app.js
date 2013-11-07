@@ -1880,7 +1880,7 @@ application.root.currentTestController = function () {
         return (test.is('.site')) ? test : null;
     };
     
-    var updateTest = function (testData) {
+    var updateTest = function (testData) {        
         if (!testIsInCurrentList(testData.id)) {
             getCurrentTestContent(function (data) {
                 $(data).each(function () {
@@ -1947,20 +1947,55 @@ application.root.currentTestController = function () {
             }
             
             badge.addClass('badge-' + testData.state_label_class);
-        };        
+        };
         
-        $('.queued-count', test).text(getQueuedCount());
-        $('.in-progress-count', test).text(getInProgressCount());
-        $('.finished-count', test).text(getFinishedCount());
-        $('.task-count', test).text(testData.task_count);
-        $('.url-count', test).text(testData.url_count);
+        var hasSwitchedToOrFromCrawling = function () {
+            if (testData.state === 'crawling' && test.attr('data-state') !== 'crawling') {
+                return true;
+            }
+            
+            if (testData.state !== 'crawling' && test.attr('data-state') === 'crawling') {
+                return true;
+            }
+            
+            return false;            
+        };
+        
+        if (hasSwitchedToOrFromCrawling()) {
+            getCurrentTestContent(function (data) {
+                var tests = $(data);                
+                tests.each(function () {
+                    var currentTest = $(this);
+                    
+                    if (currentTest.is('.site')) {
+                        if (testData.id === parseInt(currentTest.attr('data-test-id'), 10)) {
+                            switchTest(currentTest);
+                        }
+                    }
+                });
+            });
+            
+            return;
+        }
+        
+        if (testData.state === 'crawling') {
+            $('.processed-url-count', test).text(testData.crawl.processed_url_count);
+            $('.discovered-url-count', test).text(testData.crawl.discovered_url_count);
+            
+        } else {
+            $('.queued-count', test).text(getQueuedCount());
+            $('.in-progress-count', test).text(getInProgressCount());
+            $('.finished-count', test).text(getFinishedCount());
+            $('.task-count', test).text(testData.task_count);
+            $('.url-count', test).text(testData.url_count);
+
+            setStateIcon();
+            setBadgeState();            
+        }
         
         $('.bar', test).css({
             'width':Math.ceil(testData.completion_percent) + '%'
-        });
-        
-        setStateIcon();
-        setBadgeState();
+        });        
     };
     
     var testIsInRemoteList = function (id) {
@@ -2023,6 +2058,18 @@ application.root.currentTestController = function () {
         }
     };
     
+    var switchTest = function (newTest) {
+        var currentTest = getTest(newTest.attr('data-test-id'));
+        
+        newTest.hide();
+        getContainer().prepend(newTest);
+        currentTest.slideUp(function () {
+            newTest.slideDown(function () {
+                currentTest.remove();
+            });
+        });
+    };
+    
     var updateList = function () {
         for (var testIndex = 0; testIndex < remoteTests.length; testIndex++) {
             updateTest(remoteTests[testIndex]);
@@ -2065,7 +2112,7 @@ application.root.currentTestController = function () {
         return false;
     };
     
-    var retrieve = function () {
+    var retrieve = function () {        
         var getUrl = function () {
             return window.location.href + 'current/';
         };
@@ -2155,17 +2202,17 @@ application.root.currentTestController = function () {
             retrieve();
         } else {
             getCurrentTestContent(function (data) {
-                if ($($(data).get(0)).is('.site')) {
+                if ($($(data).get(0)).is('.site')) {                    
                     $(data).each(function () {
                         addNewTest($(this));
-                    });
+                    });                    
                 } else {
-                    $('#current-tests-content').html(data);
-
-                    window.setTimeout(function() {
-                        refresh();
-                    }, 3000);                                    
+                    $('#current-tests-content').html(data);                                 
                 }
+                
+                window.setTimeout(function() {
+                    refresh();
+                }, 3000);                   
             });
         }
     };

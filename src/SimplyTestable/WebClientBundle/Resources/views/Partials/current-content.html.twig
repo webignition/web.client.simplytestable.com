@@ -9,7 +9,7 @@
 {% else %}
     {% for test in current_tests %}
 
-    <div class="site" data-test-id="{{ test.id }}">
+    <div class="site" data-test-id="{{ test.id }}" data-state="{{ test.state }}">
         <div class="wrapper">                                  
 {% include 'SimplyTestableWebClientBundle:Partials:current-job-summary.html.twig' %}
         </div>

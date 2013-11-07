@@ -1374,3 +1374,7 @@ body.app .progress {
     height:4px;
     margin-bottom:0;
 }
+
+#current-tests .subtext {
+    font-size: 12px;
+}

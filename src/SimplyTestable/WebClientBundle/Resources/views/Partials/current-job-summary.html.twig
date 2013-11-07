@@ -11,18 +11,14 @@
 {% if test.state == 'crawling' %}
 <div class="row-fluid meta">
     <div class="span4 total">
-        <span class="test-count">{{ test.crawl.processed_url_count }}</span><span class="subtext">pages checked</span>
+        <span class="test-count processed-url-count">{{ test.crawl.processed_url_count }}</span><span class="subtext">page{% if test.crawl.processed_url_count != 1 %}s{% endif %} checked</span>
     </div>
     <div class="span4 total">
-        <span class="test-count">{{ test.crawl.discovered_url_count }}</span><span class="subtext">urls found</span>
+        <span class="test-count discovered-url-count">{{ test.crawl.discovered_url_count }}</span><span class="subtext">url{% if test.crawl.discovered_url_count != 1 %}s{% endif %} found</span>
     </div>
     <div class="span4 detail">        
         <div>
-            {% if test.crawl.state == 'completed' or test.crawl.state == 'cancelled' %}
-                <span class="caption">crawled</span>
-            {% else %}
-                <span class="caption">crawling &hellip;</span>
-            {% endif %}
+            <span class="caption">crawling &hellip;</span>
         </div>
     </div>        
 </div>
