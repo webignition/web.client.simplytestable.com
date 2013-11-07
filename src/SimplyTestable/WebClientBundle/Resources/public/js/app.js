@@ -1864,7 +1864,7 @@ application.root.currentTestController = function () {
     var previousRemoteTests = null;
     
     var getContainer = function () {
-        return $('#current-tests');
+        return $('#current-tests-content');
     };
     
     var getTests = function () {
@@ -1881,6 +1881,17 @@ application.root.currentTestController = function () {
     };
     
     var updateTest = function (testData) {
+        if (!testIsInCurrentList(testData.id)) {
+            getCurrentTestContent(function (data) {
+                $(data).each(function () {
+                    var test = $(this);
+                    if (test.is('.site') && parseInt(test.attr('data-test-id'), 10) === parseInt(testData.id, 10)) {
+                        addNewTest(test);
+                    }                    
+                });
+            });
+        }        
+        
         var test = getTest(testData.id);
         if (test === null) {
             return;
@@ -1952,7 +1963,7 @@ application.root.currentTestController = function () {
         setBadgeState();
     };
     
-    var testIsStillCurrent = function (id) {
+    var testIsInRemoteList = function (id) {
         for (var testIndex = 0; testIndex < remoteTests.length; testIndex++) {            
             if (remoteTests[testIndex].id === id) {                
                 return true;
@@ -1960,6 +1971,20 @@ application.root.currentTestController = function () {
         }        
 
         return false;
+    };    
+    
+    var testIsInCurrentList = function (id) {
+        id = parseInt(id, 10);
+        
+        var is = false;
+        
+        getTests().each(function () {            
+            if (parseInt($(this).attr('data-test-id'), 10) === id) {
+                is = true;
+            }
+        });
+        
+        return is;
     };
     
     var removeCompletedTest = function (test) {        
@@ -1982,6 +2007,26 @@ application.root.currentTestController = function () {
 
     };
     
+    var addNewTest = function (test) {
+        var addCallback = function () {
+            test.hide();            
+            getContainer().prepend(test);
+            test.slideDown();            
+        };
+        
+        if ($('p.info', getContainer()).is('.info')) {        
+            $('p.info', getContainer()).slideUp(function () {
+                addCallback();
+            });            
+        } else {
+            addCallback();
+        }
+        
+//        $('p.info', getContainer()).slideUp(function () {
+//
+//        });
+    };
+    
     var updateList = function () {
         for (var testIndex = 0; testIndex < remoteTests.length; testIndex++) {
             updateTest(remoteTests[testIndex]);
@@ -1999,7 +2044,7 @@ application.root.currentTestController = function () {
             var testId = parseInt(test.attr('data-test-id'), 10);
             
             for (var testIndex = 0; testIndex < remoteTests.length; testIndex++) {
-                if (testIsStillCurrent(testId) === false) {                    
+                if (testIsInRemoteList(testId) === false) {                    
                     removeCompletedTest(test);
                 }
             }
@@ -2016,7 +2061,7 @@ application.root.currentTestController = function () {
         }
         
         for (var previousIndex = 0; previousIndex < previousRemoteTests.length; previousIndex++) {
-            if (!testIsStillCurrent(previousRemoteTests[previousIndex].id)) {
+            if (!testIsInRemoteList(previousRemoteTests[previousIndex].id)) {
                 return true;
             }
         }
@@ -2050,7 +2095,7 @@ application.root.currentTestController = function () {
                 remoteTests = data;
                 updateList();
                 
-                console.log(hasCurrentTestBeenRemovedFromList());
+                //console.log(hasCurrentTestBeenRemovedFromList());
                 
                 if (hasCurrentTestBeenRemovedFromList()) {
                     jQuery.ajax({
@@ -2085,7 +2130,7 @@ application.root.currentTestController = function () {
         });        
     };
     
-    var getNoCurrentTestContent = function () {        
+    var getCurrentTestContent = function (callback) {        
         jQuery.ajax({
             complete: function(request, textStatus) {           
                 //console.log('complete', request, textStatus);              
@@ -2103,29 +2148,31 @@ application.root.currentTestController = function () {
                 }
             },
             success: function(data, textStatus, request) {
-                $('#current-tests-content').html(data);
-                
-                window.setTimeout(function() {
-                    if (hasCurrentTests()) {
-                        refresh();
-                    } else {
-                        getNoCurrentTestContent();
-                    }
-                }, 3000);                  
+                if (typeof callback === 'function') {
+                    callback(data);
+                }               
             },
             url: window.location.href + 'current-content/'
         });        
     };
     
-    var refresh = function (callback) {
+    var refresh = function () {
         if (hasCurrentTests()) {
             retrieve();
         } else {
-            getNoCurrentTestContent();
-        }
-        
-        if (typeof callback === 'function') {
-            callback();
+            getCurrentTestContent(function (data) {
+                if ($($(data).get(0)).is('.site')) {
+                    $(data).each(function () {
+                        addNewTest($(this));
+                    });
+                } else {
+                    $('#current-tests-content').html(data);
+
+                    window.setTimeout(function() {
+                        refresh();
+                    }, 3000);                                    
+                }
+            });
         }
     };
     
