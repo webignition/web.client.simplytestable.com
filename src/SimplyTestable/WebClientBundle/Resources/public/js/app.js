@@ -1736,10 +1736,13 @@ application.root.testStartFormController = function () {
     };
   
     this.initialise = function () {
-        if (Modernizr.input.placeholder) {
-            var headerIcon = $('i', getHeader()).clone();
-            getHeader().remove();
-            getFieldsContainer().prepend(headerIcon);            
+        try {
+            if (Modernizr.input.placeholder) {
+                var headerIcon = $('i', getHeader()).clone();
+                getHeader().remove();
+                getFieldsContainer().prepend(headerIcon);            
+            }
+        } catch (ReferenceError) {
         }
         
         getTaskTypeCheckboxes().each(function () {
