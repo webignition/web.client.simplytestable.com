@@ -2021,10 +2021,6 @@ application.root.currentTestController = function () {
         } else {
             addCallback();
         }
-        
-//        $('p.info', getContainer()).slideUp(function () {
-//
-//        });
     };
     
     var updateList = function () {
@@ -2094,8 +2090,6 @@ application.root.currentTestController = function () {
                 previousRemoteTests = remoteTests;
                 remoteTests = data;
                 updateList();
-                
-                //console.log(hasCurrentTestBeenRemovedFromList());
                 
                 if (hasCurrentTestBeenRemovedFromList()) {
                     jQuery.ajax({
