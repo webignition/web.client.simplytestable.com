@@ -33,11 +33,11 @@
                     <ul class="nav pull-right">                        
                         <li class="{% if app.request.get('_route') == 'app' %}active{% endif %}">                            
                             <a href="{{ path('app') }}">
-                                <i class="icon icon-play-circle "></i>
+                                <i class="icon icon-dashboard"></i>                                
                                 {% if is_logged_in %}
-                                Start a new website test
+                                Dashboard
                                 {% else %}
-                                Try a demo
+                                Demo dashboard
                                 {% endif %}
                             </a>
                         </li>
@@ -51,7 +51,7 @@
                         </li>           
                         <li>                            
                             <a href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">
-                                <i class="icon icon-dashboard"></i>
+                                <i class="icon icon-calendar"></i>
                                 Pricing and plans
                             </a>
                         </li> 
