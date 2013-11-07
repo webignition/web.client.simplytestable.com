@@ -38,7 +38,7 @@
             <div class="span4" id="current-tests">
                 <section>          
                         <h2 class="info">
-                            <i class="icon-cog"></i> Running tests
+                            <i class="icon-cog"></i> Running {% if is_logged_in == false %}demo{% endif %} tests
                         </h2>
                         
                         <div id="current-tests-content">
@@ -49,7 +49,7 @@
             <div class="span8" id="finished-tests">
                 <section>            
                         <h2 class="info">
-                            <i class="icon-cog"></i>3 Most Recent Finished tests
+                            <i class="icon-cog"></i>Recent finished {% if is_logged_in == false %}demo{% endif %} tests
                         </h2>
                         
                         <div id="finished-tests-content">
