@@ -49,13 +49,7 @@ class AppController extends TestViewController
         'preparing' => 'icon-search',
         'in-progress' => 'icon-play-circle'        
     );
-    
-    
-    /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Services\TestQueueService
-     */
-    private $testQueueService;
+
     
     public function indexAction()
     {                   
@@ -78,15 +72,12 @@ class AppController extends TestViewController
         $currentTestsHash = md5(json_encode($currentTests));
         
         $recentTests = $this->getRecentTests();
-        $recentTestsHash = md5(json_encode($recentTests));        
-        
-        $testCancelledQueuedWebsite = $this->getFlash('test_cancelled_queued_website');
+        $recentTestsHash = md5(json_encode($recentTests));
         
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
             'test_start_error' => $testStartError,
             'current_tests_hash' => $currentTestsHash,
-            'recent_tests_hash' => $recentTestsHash,            
-            'test_cancelled_queued_website' => $testCancelledQueuedWebsite
+            'recent_tests_hash' => $recentTestsHash
         ));
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);        
@@ -103,22 +94,6 @@ class AppController extends TestViewController
             $this->getTestOptionsAdapter()->setInvertInvertableOptions(true);
         }        
         $testOptions = $this->getTestOptionsAdapter()->getTestOptions();        
-        
-//        return $this->render($templateName, array(
-//            'test_start_error' => $testStartError,
-//            'public_site' => $this->container->getParameter('public_site'),
-//            'user' => $this->getUser(),
-//            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-//            'current_tests' => $currentTests,            
-//            'recent_tests' => $recentTests,
-//            'website' => idn_to_utf8($this->getPersistentValue('website')),
-//            'available_task_types' => $this->getAvailableTaskTypes(),
-//            'test_options' => $testOptions->__toKeyArray(),
-//            'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
-//            'js_static_analysis_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
-//            'test_cancelled_queued_website' => $testCancelledQueuedWebsite,
-//            'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions)
-//        ));         
 
         return $this->getCachableResponse($this->render($templateName, array(            
             'test_start_error' => $testStartError,
@@ -132,7 +107,6 @@ class AppController extends TestViewController
             'test_options' => $testOptions->__toKeyArray(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
-            'test_cancelled_queued_website' => $testCancelledQueuedWebsite,
             'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions)
         )), $cacheValidatorHeaders);        
     }
@@ -351,52 +325,6 @@ class AppController extends TestViewController
                 return 'success';
         }        
     }
-    
-    
-    public function queuedAction($website) {
-        if ($this->isUsingOldIE()) {
-            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        } 
-        
-        $normalisedWebsite = new \webignition\NormalisedUrl\NormalisedUrl($website);
-        
-        if (!$this->getTestQueueService()->contains($this->getUser(), (string)$normalisedWebsite)) {
-            return $this->redirect($this->generateUrl('app_website', array(
-                'website' => (string)$normalisedWebsite,
-            ), true));            
-        }
-        
-        $queuedTest = $this->getTestQueueService()->retrieve($this->getUser(), (string)$normalisedWebsite);
-        
-        $remoteTestSummary = $this->getTestQueueService()->getRemoteTestSummary($this->getUser(), (string)$normalisedWebsite);
-        $taskTypes = array();
-        foreach ($remoteTestSummary->task_types as $taskTypeObject) {
-            $taskTypes[] = $taskTypeObject->name;
-        }
-        
-        $viewData = array(
-            'website' => idn_to_utf8($website),
-            'this_url' => $this->getQueuedUrl($website),
-            'test_input_action_url' => $this->generateUrl('test_cancel', array(
-                'website' => $website,
-                'test_id' => null
-            )),
-            'remote_test_summary' => $this->getRemoteTestSummaryArray($remoteTestSummary),
-            'task_count_by_state' => $this->getTaskCountByState($remoteTestSummary),
-            'state_label' => $this->testStateLabelMap['queued'],
-            'state_icon' => $this->testStateIconMap['queued'],
-            'completion_percent' => 0,
-            'public_site' => $this->container->getParameter('public_site'),
-            'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'task_types' => $taskTypes,
-            'reason' => $queuedTest['reason']
-        ); 
-        
-        $this->setTemplate('SimplyTestableWebClientBundle:App:progress-queued.html.twig');
-        return $this->sendResponse($viewData);
-    }
-
         
     private function getRemoteTestSummaryArray($remoteTestSummary) {        
         $remoteTestSummaryArray = (array)$remoteTestSummary;
@@ -627,22 +555,6 @@ class AppController extends TestViewController
      */
     private function getTaskService() {
         return $this->container->get('simplytestable.services.taskservice');
-    }    
-    
-    
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TestQueueService
-     */
-    private function getTestQueueService() {
-        if (is_null($this->testQueueService)) {
-            $this->testQueueService = $this->container->get('simplytestable.services.testqueueservice');
-            $this->testQueueService->setApplicationRootDirectory($this->container->get('kernel')->getRootDir());
-                    
-        }
-        
-        return $this->testQueueService;
-
     }
     
     

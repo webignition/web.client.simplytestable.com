@@ -17,8 +17,6 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     const USER_ACCOUNT_PLAN_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\UserAccountPlanController';
     const REDIRECT_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\RedirectController';
     
-    private $testQueueService;
-    
     
     /**
      *
@@ -229,20 +227,7 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
      */    
     protected function getTestService() {
         return $this->container->get('simplytestable.services.testservice');
-    }    
-    
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TestQueueService
-     */    
-    protected function getTestQueueService() {
-        if (is_null($this->testQueueService)) {
-            $this->testQueueService = $this->container->get('simplytestable.services.testqueueservice');
-            $this->testQueueService->setApplicationRootDirectory($this->container->get('kernel')->getRootDir());
-        }
-        
-        return $this->testQueueService;
-    }    
+    }   
     
     
     /**

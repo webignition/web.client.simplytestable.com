@@ -32,7 +32,7 @@ class TestStartController extends TestController
         $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
         $this->getTestOptionsAdapter()->setRequestData($requestValues);
-        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
+        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();           
 
         if (!$this->hasWebsite()) {            
             $this->get('session')->setFlash('test_start_error', 'website-blank');
@@ -59,14 +59,9 @@ class TestStartController extends TestController
             $this->get('session')->setFlash('curl_error_code', $curlException->getErrorNo());
             return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {                            
-            $this->getTestQueueService()->enqueue($this->getUser(), $this->getTestUrl(), $testOptions, ($this->isFullTest() ? 'full site' : 'single url'), $webResourceException->getResponse()->getStatusCode());
-            return $this->redirect($this->generateUrl(
-                'app_website',
-                array(
-                    'website' => $this->getTestUrl()                        
-                ),
-                true
-            ));
+            $this->get('session')->setFlash('test_start_error', 'web_resource_exception');
+            
+            return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));
         }
     }
     

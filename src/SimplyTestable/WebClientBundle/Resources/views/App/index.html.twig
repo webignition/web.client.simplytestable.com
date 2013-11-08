@@ -24,11 +24,7 @@
 <div class="full-width-container">
     <div class="container main">
         <div class="row-fluid">
-            <div class="span12">
-                {% if test_cancelled_queued_website is defined and test_cancelled_queued_website != '' %}
-                    {% include 'SimplyTestableWebClientBundle:Partials:cancelled-queued-notification.html.twig' %}              
-                {% endif %} 
-                    
+            <div class="span12">                    
                 {% include 'SimplyTestableWebClientBundle:Partials:test-start-form.html.twig' %} 
             </div>
         </div>

@@ -1,9 +1,3 @@
-{% if remote_test.state == 'new-queued' %}
-{% set cancel_action %}{{ path('test_cancel_queued', {website: website}) }}{% endset %}
-{% else %}
-{% set cancel_action %}{{ path('test_cancel', {website: website, test_id: test.testId}) }}{% endset %}
-{% endif %}
-
 <section>
     <div id="input" class="leader">                  
         <h1 class="info">
@@ -17,7 +11,7 @@
 
         {% if (is_public_user_test is not defined or (is_public_user_test is defined and is_public_user_test == true) or is_owner) %}
             
-        <form id="cancel-form" class="top-right-form" method="post" action="{{ cancel_action }}">
+        <form id="cancel-form" class="top-right-form" method="post" action="{{ path('test_cancel', {website: website, test_id: test.testId}) }}">
             <button type="submit" class="btn btn-danger">Stop test</button>
         </form>
             

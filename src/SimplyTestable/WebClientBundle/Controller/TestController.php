@@ -6,32 +6,7 @@ use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use webignition\IsHttpStatusCode\IsHttpStatusCode;
 
 class TestController extends BaseController
-{    
-    /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Services\TestQueueService
-     */
-    private $testQueueService;
-    
-    
-    public function queuedStatusAction($website) {        
-        $normalisedWebsite = new \webignition\NormalisedUrl\NormalisedUrl($website);        
-        $result = ($this->getTestQueueService()->contains($this->getUser(), (string)$normalisedWebsite)) ? 'queued' : 'not queued';
-        
-        return new \Symfony\Component\HttpFoundation\Response('"'.$result.'"');       
-    }
-    
-    
-    public function cancelQueuedAction($website) {                
-        $normalisedWebsite = new \webignition\NormalisedUrl\NormalisedUrl($website);        
-        if ($this->getTestQueueService()->contains($this->getUser(), (string)$normalisedWebsite)) {
-            $this->getTestQueueService()->dequeue($this->getUser(), (string)$normalisedWebsite);
-            $this->get('session')->setFlash('test_cancelled_queued_website', (string)$normalisedWebsite);
-        }
-        
-        return $this->redirect($this->generateUrl('app', array(), true));
-    }
-    
+{
     
     public function lockAction() {
         return $this->lockUnlock('lock');        
@@ -222,22 +197,6 @@ class TestController extends BaseController
     protected function getTestService() {
         return $this->container->get('simplytestable.services.testservice');
     } 
-    
-    
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TestQueueService
-     */
-    protected function getTestQueueService() {
-        if (is_null($this->testQueueService)) {
-            $this->testQueueService = $this->container->get('simplytestable.services.testqueueservice');
-            $this->testQueueService->setApplicationRootDirectory($this->container->get('kernel')->getRootDir());
-                    
-        }
-        
-        return $this->testQueueService;
-
-    }
     
     public function retestAction($website, $test_id) {
         $this->getTestService()->getRemoteTestService()->setUser($this->getUser());

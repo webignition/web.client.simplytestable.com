@@ -16,12 +16,11 @@
             <strong>Slow down!</strong> You're going to have to enter a website URL if we're going to get anything done here.
         </div>            
             {% endif %}            
-            
-            {% if test_start_error == 'website-blocked' %}
+        
+            {% if test_start_error == 'web_resource_exception' %}
         <div class="alert alert-error for:input-website">
             <button type="button" class="close" data-dismiss="alert">×</button>
-            <p><strong>Ouch!</strong></p>
-            <p><strong>{{ website }}</strong>  is too large for me to test just yet. I'm still new. Do you have a website you made that you'd like to test?</p>
+            Sorry, looks like my testing system is in <strong>read-only</strong> mode whilst some maintenance is happening. Can you try again in a short while?
         </div>            
             {% endif %}
             

@@ -114,19 +114,7 @@ app_test_url_limit_notification:
     defaults: { _controller: SimplyTestableWebClientBundle:TestNotification:urlLimit }  
     requirements:
         website: ".+"
-        test_id: "\d+"  
-        
-app_queued:
-  pattern: /{website}/queued/
-  defaults: { _controller: SimplyTestableWebClientBundle:App:queued } 
-  requirements:
-      website: ".+" 
-      
-test_queued_status:
-  pattern: /{website}/queued/status/
-  defaults: { _controller: SimplyTestableWebClientBundle:Test:queuedStatus, _format: json  } 
-  requirements:
-      website: ".+"
+        test_id: "\d+"
       
 app_task_results_redirector:
     pattern:  /{website}/{test_id}/{task_id}/
@@ -234,13 +222,7 @@ test_cancel_crawl:
     pattern:  /test/{website}/{test_id}/cancel-crawl/
     defaults: { _controller: SimplyTestableWebClientBundle:Test:cancelCrawl }  
     requirements:
-        website: ".+"        
-        
-test_cancel_queued:
-    pattern:  /test/{website}/cancel/
-    defaults: { _controller: SimplyTestableWebClientBundle:Test:cancelQueued }  
-    requirements:
-        website: ".+"        
+        website: ".+"               
         
 app_test_redirector:
     pattern:  /{website}/{test_id}/

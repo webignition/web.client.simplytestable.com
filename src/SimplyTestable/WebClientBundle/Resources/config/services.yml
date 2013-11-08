@@ -82,11 +82,6 @@ services:
         
   simplytestable.services.testoptions.adapter.request:
     class:  SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
-    
-  simplytestable.services.testqueueservice:
-    class:  SimplyTestable\WebClientBundle\Services\TestQueueService
-    arguments:
-        userSerializerService: "@simplytestable.services.userserializerservice"    
         
   simplytestable.services.coreapplicationstatusservice:
     class:  SimplyTestable\WebClientBundle\Services\CoreApplicationStatusService          

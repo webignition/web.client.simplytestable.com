@@ -99,42 +99,6 @@ application.results.preparingController = function() {
 
 application.progress = {};
 
-application.progress.queuedTestController = function() {
-
-    var checkState = function() {
-        var now = new Date();
-
-        var getStatusUrl = function() {
-            return window.location.href + 'status/?timestamp=' + now.getTime();
-        };
-
-        var getNotQueuedRedirectUrl = function() {
-            return window.location.href.replace('/queued/', '/');
-        };
-
-        jQuery.ajax({
-            dataType: 'json',
-            error: function(request, textStatus, errorThrown) {
-            },
-            success: function(data, textStatus, request) {
-                if (data === 'not queued') {
-                    window.location.href = getNotQueuedRedirectUrl();
-                    return;
-                }
-
-                window.setTimeout(function() {
-                    checkState();
-                }, 3000);
-            },
-            url: getStatusUrl()
-        });
-    };
-
-    this.initialise = function() {
-        checkState();
-    };
-};
-
 application.progress.testController = function() {
     var latestTestData = {};
     var estimatedTimeRemainingHistory = [];
@@ -1776,6 +1740,10 @@ application.root.testStartFormController = function () {
 
 
 application.root.currentTestController = function () {
+    var getBaseUrl = function () {
+        return window.location.protocol + "//" + window.location.hostname + window.location.pathname;
+    };    
+    
     var remoteTests = null;
     var previousRemoteTests = null;
     
@@ -2029,10 +1997,6 @@ application.root.currentTestController = function () {
     };
     
     var retrieve = function () {        
-        var getUrl = function () {
-            return window.location.href + 'current/';
-        };
-
         jQuery.ajax({
             dataType: 'json',
             error: function(request, textStatus, errorThrown) {        
@@ -2051,7 +2015,7 @@ application.root.currentTestController = function () {
                             var finishedTestsUpdateController = new application.root.finishedTestsUpdateController();
                             finishedTestsUpdateController.initialise($(data));                            
                         },
-                        url: window.location.href + 'finished-content/'
+                        url: getBaseUrl() + 'finished-content/'
                     });
                 }                
                 
@@ -2059,11 +2023,11 @@ application.root.currentTestController = function () {
                     refresh();
                 }, 3000); 
             },
-            url: getUrl()
+            url: getBaseUrl() + 'current/'
         });        
     };
     
-    var getCurrentTestContent = function (callback) {        
+    var getCurrentTestContent = function (callback) {                
         jQuery.ajax({
             dataType: 'html',
             error: function(request, textStatus, errorThrown) {                    
@@ -2073,7 +2037,7 @@ application.root.currentTestController = function () {
                     callback(data);
                 }               
             },
-            url: window.location.href + 'current-content/'
+            url: getBaseUrl() + 'current-content/'
         });        
     };
     
@@ -2105,6 +2069,10 @@ application.root.currentTestController = function () {
 };
 
 application.root.finishedTestsPreparingController = function () {
+    var getBaseUrl = function () {
+        return window.location.protocol + "//" + window.location.hostname + window.location.pathname;
+    };        
+    
     var getContainer = function () {
         return $('#finished-tests');
     };
@@ -2122,16 +2090,16 @@ application.root.finishedTestsPreparingController = function () {
     };
     
     var getUnretrievedRemoteTaskIdsUrl = function(test) {
-        return window.location.href + $('.website', test).text() + '/' + test.attr('data-test-id') + '/tasks/ids/unretrieved/100/';
+        return getBaseUrl() + $('.website', test).text() + '/' + test.attr('data-test-id') + '/tasks/ids/unretrieved/100/';
     };
 
     var getTaskResultsRetrieveUrl = function(test) {
-        return window.location.href + $('.website', test).text() + '/' + test.attr('data-test-id') + '/results/retrieve/';
+        return getBaseUrl() + $('.website', test).text() + '/' + test.attr('data-test-id') + '/results/retrieve/';
     };  
     
     var displayTestSummary = function (test) {
         var getTestSummaryUrl = function () {
-            return window.location.href + $('.website', test).text() + '/' + test.attr('data-test-id') + '/finished-summary/';
+            return getBaseUrl() + $('.website', test).text() + '/' + test.attr('data-test-id') + '/finished-summary/';
         };
         
         jQuery.ajax({
@@ -2194,7 +2162,7 @@ application.root.finishedTestsPreparingController = function () {
     
     var checkStatus = function (test, callback) {
         var getPreparingStatsUrl = function () {
-            return window.location.href + $('.website', test).text() + '/' + test.attr('data-test-id') + '/results/preparing/stats/';
+            return getBaseUrl() + $('.website', test).text() + '/' + test.attr('data-test-id') + '/results/preparing/stats/';
         };        
         
         jQuery.ajax({
@@ -2303,11 +2271,6 @@ application.pages = {
             if ($('body.user-account-card').length > 0) {
                 accountCardController = new application.account.cardController();
                 accountCardController.initialise();
-            }
-
-            if ($('body.app-queued').length > 0) {
-                queuedTestController = new application.progress.queuedTestController();
-                queuedTestController.initialise();
             }
 
             if ($('body.app-progress').length > 0 && $('body.app-queued').length === 0) {
