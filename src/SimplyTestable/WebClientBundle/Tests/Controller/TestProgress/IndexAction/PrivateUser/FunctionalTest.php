@@ -25,8 +25,8 @@ class FunctionalTest extends BaseFunctionalTest {
         $this->privateUserNavbarContainsSignOutButtonTest($this->getScopedCrawler());          
     }
     
-    public function privateUserNavbarSignOutFormUrlTest() {
-        $this->privateUserNavbarSignOutButtonUrlTest($this->getScopedCrawler());          
+    public function testNavbarSignoutFormUrl() {
+        $this->privateUserNavbarSignOutFormUrlTest($this->getScopedCrawler());          
     }
     
     /**
