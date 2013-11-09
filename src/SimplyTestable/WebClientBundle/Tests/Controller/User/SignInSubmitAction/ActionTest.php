@@ -5,6 +5,14 @@ namespace SimplyTestable\WebClientBundle\Tests\Controller\User\SignInSubmitActio
 use SimplyTestable\WebClientBundle\Tests\Controller\User\ActionTest as BaseActionTest;
 
 class ActionTest extends BaseActionTest {
+    
+    public function setUp() {
+        parent::setUp();
+        
+        if ($this->hasCustomFixturesDataPath($this->getName())) {
+            $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath($this->getName())));
+        }
+    }       
 
     protected function getActionName() {
         return 'signInSubmitAction';
@@ -66,8 +74,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithInvalidUser() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signin/',
@@ -84,8 +90,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithInvalidCredentials() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signin/',
@@ -102,8 +106,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithInvalidUserThatIsNotEnabled() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signin/',
@@ -119,8 +121,6 @@ class ActionTest extends BaseActionTest {
     }    
     
     public function testWithValidUserThatIsNotEnabled() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signin/',
@@ -137,8 +137,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithValidUserThatIsEnabled() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/'

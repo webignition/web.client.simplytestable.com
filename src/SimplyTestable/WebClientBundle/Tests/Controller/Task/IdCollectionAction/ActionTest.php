@@ -6,13 +6,16 @@ use SimplyTestable\WebClientBundle\Tests\Controller\Task\ActionTest as BaseActio
 
 class ActionTest extends BaseActionTest {      
     
+    public function setUp() {
+        parent::setUp();
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath($this->getName())));
+    }    
+    
     protected function getActionName() {
         return 'idCollectionAction';
     }       
     
-    public function testGetWithAuthorisedUser() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
+    public function testGetWithAuthorisedUser() {        
         $response = $this->performActionTest(array(
             'statusCode' => 200
         ), array(
@@ -25,9 +28,7 @@ class ActionTest extends BaseActionTest {
         $this->assertEquals(array(1,2,3,4,5,6,7,8,9,10), json_decode($response->getContent()));
     }
     
-    public function testGetWithUnauthorisedUser() {    
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
+    public function testGetWithUnauthorisedUser() {            
         $this->performActionTest(array(
             'statusCode' => 404
         ), array(
@@ -38,9 +39,7 @@ class ActionTest extends BaseActionTest {
         ));
     } 
     
-    public function testWithPublicTestAccessedByNonOwner() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
+    public function testWithPublicTestAccessedByNonOwner() {        
         $response = $this->performActionTest(array(
             'statusCode' => 200
         ), array(
@@ -53,9 +52,7 @@ class ActionTest extends BaseActionTest {
         $this->assertEquals(array(1,2,3,4,5,6,7,8,9,10), json_decode($response->getContent()));        
     }    
     
-    public function testGetWithHttpClientErrorRetrievingRemoteIds() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
+    public function testGetWithHttpClientErrorRetrievingRemoteIds() {        
         $response = $this->performActionTest(array(
             'statusCode' => 200
         ), array(
@@ -68,9 +65,7 @@ class ActionTest extends BaseActionTest {
         $this->assertNull(json_decode($response->getContent()));        
     }    
     
-    public function testGetWithHttpServerErrorRetrievingRemoteIds() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
+    public function testGetWithHttpServerErrorRetrievingRemoteIds() {        
         $response = $this->performActionTest(array(
             'statusCode' => 200
         ), array(
@@ -83,9 +78,7 @@ class ActionTest extends BaseActionTest {
         $this->assertNull(json_decode($response->getContent()));        
     }  
     
-    public function testGetWithCurlExceptionRetrievingRemoteIds() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));       
-        
+    public function testGetWithCurlExceptionRetrievingRemoteIds() {        
         $response = $this->performActionTest(array(
             'statusCode' => 200
         ), array(

@@ -59,9 +59,9 @@ class AppController extends TestViewController
         
         $this->getUserService()->setUser($this->getUser());
         
-//        if (!$this->isUserValid()) {            
-//            return $this->redirect($this->generateUrl('sign_out_submit', array(), true));
-//        }        
+        if (!$this->isUserValid()) {            
+            return $this->redirect($this->generateUrl('sign_out_submit', array(), true));
+        }        
         
         $templateName = 'SimplyTestableWebClientBundle:App:index.html.twig';
         $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);
@@ -71,7 +71,7 @@ class AppController extends TestViewController
         $currentTests = $this->getCurrentTests();
         $currentTestsHash = md5(json_encode($currentTests));
         
-        $recentTests = $this->getRecentTests();
+        $recentTests = $this->getFinishedTests();
         $recentTestsHash = md5(json_encode($recentTests));
         
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
@@ -190,11 +190,11 @@ class AppController extends TestViewController
      * 
      * @return array
      */
-    private function getRecentTests($limit = 3) {                        
-        $recentRemoteTests = $this->getTestService()->getRemoteTestService()->getList($limit, array('crawl'), array('rejected'));                
-        $recentTests = array();
+    private function getFinishedTests($limit = 3) {                        
+        $remoteTests = $this->getTestService()->getRemoteTestService()->getList($limit, array('crawl'), array('rejected'));                        
+        $tests = array();
         
-        foreach ($recentRemoteTests as $remoteTest) {                        
+        foreach ($remoteTests as $remoteTest) {                        
             /* @var $remoteTest RemoteTest */           
             $currentTest = array();
             
@@ -217,10 +217,10 @@ class AppController extends TestViewController
             $currentTest['test'] = $test;
             $currentTest['remote_test'] = $remoteTest;                      
             
-            $recentTests[] = $currentTest;
+            $tests[] = $currentTest;
         }
       
-        return $recentTests;
+        return $tests;
     }
     
     
@@ -461,12 +461,12 @@ class AppController extends TestViewController
     }    
     
     public function prepareResultsAction($website, $test_id)
-    {        
-        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());        
-                
+    {              
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        }
+        }        
+        
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
         $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
         if ($testRetrievalOutcome->hasResponse()) {
@@ -606,7 +606,7 @@ class AppController extends TestViewController
         $this->setTemplate('SimplyTestableWebClientBundle:Partials:finished-content.html.twig');        
         return $this->sendResponse(array(            
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'recent_tests' => $this->getRecentTests()
+            'recent_tests' => $this->getFinishedTests()
         ));         
     }
 

@@ -25,8 +25,9 @@ class RemoteTestService extends CoreApplicationService {
      * 
      * @param \SimplyTestable\WebClientBundle\Entity\Test\Test $test
      */
-    public function setTest(Test $test) {
+    public function setTest(Test $test) {        
         $this->test = $test;
+        
         if ($this->get()->getId() != $test->getTestId()) {
             $this->remoteTest = null;
         }
@@ -114,8 +115,9 @@ class RemoteTestService extends CoreApplicationService {
      * @return \stdClass|boolean 
      */
     public function get() {        
-        if (is_null($this->remoteTest)) {
+        if (is_null($this->remoteTest)) {            
             $remoteJsonDocument = $this->retrieve();
+            
             if ($remoteJsonDocument instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
                 $this->remoteTest = new RemoteTest($remoteJsonDocument->getContentObject());
             } else {
@@ -301,13 +303,11 @@ class RemoteTestService extends CoreApplicationService {
             foreach ($responseDocument->getContentObject() as $remoteTestData) {
                 $tests[] = new RemoteTest($remoteTestData);
             }
-            
-            return $tests;
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-            
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {            
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-            
         }        
+        
+        return $tests;        
     }    
     
     

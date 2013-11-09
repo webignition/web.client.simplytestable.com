@@ -6,12 +6,16 @@ use SimplyTestable\WebClientBundle\Tests\Controller\TestProgress\ActionTest as B
 
 class ActionTest extends BaseActionTest {    
     
+    public function setUp() {
+        parent::setUp();
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath($this->getName())));
+    }     
+    
     protected function getActionName() {
         return 'indexAction';
     }
     
     public function testWithAuthorisedUser() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         $this->performActionTest(array(
             'statusCode' => 200
         ), array(
@@ -23,7 +27,6 @@ class ActionTest extends BaseActionTest {
     }
     
     public function testWithUnauthorisedUser() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signin/'
@@ -36,7 +39,6 @@ class ActionTest extends BaseActionTest {
     } 
     
     public function testWithPublicTestAccessedByNonOwner() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         $this->performActionTest(array(
             'statusCode' => 200
         ), array(
@@ -49,7 +51,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithNonExistentTest() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signin/'
@@ -63,7 +64,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithFinishedTest() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/http://example.com//1/results/'
@@ -77,7 +77,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithAuthorisedUserAsJson() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         $this->performActionTest(array(
             'statusCode' => 200
         ), array(
@@ -94,8 +93,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithHttpClientErrorRetrievingRemoteSummary() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->container->enterScope('request');
         
         try {
@@ -113,8 +110,6 @@ class ActionTest extends BaseActionTest {
     }    
     
     public function testWithHttpServerErrorRetrievingRemoteSummary() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         try {
             $this->performActionTest(array(), array(
                 'methodArguments' => array(
@@ -131,8 +126,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithCurlErrorRetrievingRemoteSummary() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         try {
             $this->performActionTest(array(), array(
                 'methodArguments' => array(

@@ -6,6 +6,14 @@ use SimplyTestable\WebClientBundle\Tests\Controller\User\ActionTest as BaseActio
 
 class ActionTest extends BaseActionTest {     
     
+    public function setUp() {
+        parent::setUp();
+        
+        if ($this->hasCustomFixturesDataPath($this->getName())) {
+            $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath($this->getName())));
+        }
+    }     
+    
     protected function getActionName() {
         return 'resetPasswordChooseSubmitAction';
     }    
@@ -31,8 +39,6 @@ class ActionTest extends BaseActionTest {
     }    
     
     public function testWithNonExistentUserAndNonBlankToken() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/reset-password/'
@@ -45,8 +51,6 @@ class ActionTest extends BaseActionTest {
     }    
     
     public function testWithInvalidTokenPreReset() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/reset-password/nonexistent-user@example.com/non-blank-token/',
@@ -62,8 +66,6 @@ class ActionTest extends BaseActionTest {
     }    
     
     public function testWithBlankPassword() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/reset-password/user@example.com/valid-token/',
@@ -80,8 +82,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithValidEmailAndValidTokenAndFailedDueToReadOnly() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/reset-password/user@example.com/valid-token/',
@@ -98,8 +98,6 @@ class ActionTest extends BaseActionTest {
     }  
     
     public function testWithInvalidTokenAtResetTime() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $response = $this->getUserController('resetPasswordChooseSubmitAction', array(
             'email' => 'user@example.com',
             'password' => 'non-blank-password',
@@ -113,8 +111,6 @@ class ActionTest extends BaseActionTest {
     }
     
     public function testWithValidEmailAndValidToken() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $response = $this->getUserController('resetPasswordChooseSubmitAction', array(
             'email' => 'user@example.com',
             'token' => 'valid-token',

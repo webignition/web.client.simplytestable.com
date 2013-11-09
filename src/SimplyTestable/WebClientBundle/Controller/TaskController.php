@@ -19,18 +19,11 @@ class TaskController extends TestViewController
         'failed-no-retry-available',
         'failed-retry-available',
         'failed-retry-limit-reached'      
-    );     
-    
-    private $failedStates = array(
-        'failed-no-retry-available',
-        'failed-retry-available',
-        'failed-retry-limit-reached'      
-    );       
-    
+    );    
    
     public function collectionAction($website, $test_id) {                
         $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
-        
+
         try {
             if (!$this->getTestService()->has($website, $test_id)) {
                 return $this->sendNotFoundResponse(); 

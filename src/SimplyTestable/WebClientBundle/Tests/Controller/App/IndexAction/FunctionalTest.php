@@ -4,7 +4,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Controller\App\IndexAction;
 
 use SimplyTestable\WebClientBundle\Tests\Controller\App\FunctionalTest as BaseFunctionalTest;
 
-class FunctionalTest extends BaseFunctionalTest {    
+abstract class FunctionalTest extends BaseFunctionalTest {
     
     protected function getActionName() {
         return 'indexAction';
@@ -14,12 +14,8 @@ class FunctionalTest extends BaseFunctionalTest {
         return 'app';
     }    
     
-    public function testPublicUserContent() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        $crawler = $this->getCrawler($this->getCurrentRequestUrl());   
-        $this->publicUserNavbarContentTest($crawler);     
-    }
-
+    protected function getControllerName() {        
+        return self::APP_CONTROLLER_NAME;
+    }    
+    
 }
-
-

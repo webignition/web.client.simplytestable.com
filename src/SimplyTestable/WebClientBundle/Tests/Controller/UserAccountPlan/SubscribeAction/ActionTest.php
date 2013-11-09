@@ -6,6 +6,14 @@ use SimplyTestable\WebClientBundle\Tests\Controller\UserAccountPlan\ActionTest a
 
 class ActionTest extends BaseActionTest {    
     
+    public function setUp() {
+        parent::setUp();
+        
+        if ($this->hasCustomFixturesDataPath($this->getName())) {
+            $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath($this->getName())));
+        }
+    }     
+    
     protected function getActionName() {
         return 'subscribeAction';
     } 
@@ -19,7 +27,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWhenCoreApplicationHasInvalidStripeApiKey() {        
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         $this->setUser($this->makeUser());
         
         $this->performActionTest(array(
@@ -37,7 +44,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testBasicToPersonal() {        
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         $this->setUser($this->makeUser());
         
         $this->performActionTest(array(

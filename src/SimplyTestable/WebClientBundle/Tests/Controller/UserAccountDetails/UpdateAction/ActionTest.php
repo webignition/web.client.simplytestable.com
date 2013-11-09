@@ -6,6 +6,14 @@ use SimplyTestable\WebClientBundle\Tests\Controller\UserAccountDetails\ActionTes
 
 class ActionTest extends BaseActionTest {    
     
+    public function setUp() {
+        parent::setUp();
+        
+        if ($this->hasCustomFixturesDataPath($this->getName())) {
+            $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath($this->getName())));
+        }
+    }     
+    
     protected function getActionName() {
         return 'updateAction';
     } 
@@ -67,7 +75,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithEmailAlreadyInUse() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));        
         $user = $this->makeUser();        
         $this->setUser($user);         
         $newEmail = 'user2@example.com';
@@ -87,7 +94,6 @@ class ActionTest extends BaseActionTest {
     }
     
     public function testWithUnknownErrorCommunicatingWithCoreApplication() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));        
         $user = $this->makeUser();        
         $this->setUser($user);        
         $newEmail = 'user2@example.com';
@@ -106,7 +112,6 @@ class ActionTest extends BaseActionTest {
     }    
     
     public function testWithSuccessfulEmailChangeRequestCreation() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));        
         $user = $this->makeUser();        
         $this->setUser($user);        
         $newEmail = 'user2@example.com';
@@ -177,7 +182,6 @@ class ActionTest extends BaseActionTest {
     }   
     
     public function testWithCurrentPasswordAndNewPassword() {        
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));        
         $user = $this->makeUser();        
         $this->setUser($user); 
         

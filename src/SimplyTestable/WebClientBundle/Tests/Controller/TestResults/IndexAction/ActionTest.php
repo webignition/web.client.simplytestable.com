@@ -5,6 +5,11 @@ namespace SimplyTestable\WebClientBundle\Tests\Controller\TestResults\IndexActio
 use SimplyTestable\WebClientBundle\Tests\Controller\TestResults\ActionTest as BaseActionTest;
 
 class ActionTest extends BaseActionTest {       
+    
+    public function setUp() {
+        parent::setUp();
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath($this->getName())));
+    }     
 
     protected function getActionName() {
         return 'indexAction';
@@ -12,7 +17,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithAuthorisedUser() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         $this->performActionTest(array(
             'statusCode' => 200
         ), array(
@@ -24,7 +28,6 @@ class ActionTest extends BaseActionTest {
     }
     
     public function testWithAuthorisedUserWhereTasksNeedToBeRetrieved() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/http://example.com//1/results/preparing/'
@@ -37,7 +40,6 @@ class ActionTest extends BaseActionTest {
     }    
     
     public function testWithUnauthorisedUser() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signin/'
@@ -50,7 +52,6 @@ class ActionTest extends BaseActionTest {
     } 
     
     public function testWithPublicTestAccessedByNonOwner() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         $this->performActionTest(array(
             'statusCode' => 200
         ), array(
@@ -63,7 +64,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithNonExistentTest() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signin/'
@@ -77,7 +77,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithUnfinishedTest() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/http://example.com//1/progress/'
@@ -92,8 +91,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithHttpClientErrorRetrievingRemoteSummary() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-
         try {
             $this->performActionTest(array(), array(
                 'methodArguments' => array(
@@ -109,8 +106,6 @@ class ActionTest extends BaseActionTest {
     }    
     
     public function testWithHttpServerErrorRetrievingRemoteSummary() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         try {
             $this->performActionTest(array(), array(
                 'methodArguments' => array(
@@ -127,8 +122,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithCurlErrorRetrievingRemoteSummary() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         try {
             $this->performActionTest(array(), array(
                 'methodArguments' => array(

@@ -6,6 +6,14 @@ use SimplyTestable\WebClientBundle\Tests\Controller\FunctionalTest as Controller
 
 abstract class FunctionalTest extends ControllerFunctionalTest {
     
+    protected function getActionName() {
+        return 'indexAction';
+    }
+
+    protected function getRoute() {
+        return 'app_results';
+    }    
+    
     protected function getControllerName() {
         return self::TEST_RESULTS_CONTROLLER_NAME;
     }    

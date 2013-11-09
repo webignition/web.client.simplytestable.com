@@ -6,6 +6,14 @@ use SimplyTestable\WebClientBundle\Tests\Controller\User\ActionTest as BaseActio
 
 class ActionTest extends BaseActionTest {    
     
+    public function setUp() {
+        parent::setUp();
+        
+        if ($this->hasCustomFixturesDataPath($this->getName())) {
+            $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath($this->getName())));
+        }
+    }     
+    
     protected function getActionName() {
         return 'signUpSubmitAction';
     }    
@@ -55,8 +63,6 @@ class ActionTest extends BaseActionTest {
     }    
     
     public function testWithPreExistingUser() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signup/',
@@ -72,8 +78,6 @@ class ActionTest extends BaseActionTest {
     }
 
     public function testWithFailedDueToReadOnly() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signup/',
@@ -90,8 +94,6 @@ class ActionTest extends BaseActionTest {
 
     
     public function testWithFailedDueToHttpServerError() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signup/',
@@ -108,8 +110,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithFailedDueToHttpClientError() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signup/',
@@ -126,8 +126,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithInvalidAdminCredentials() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         try {
             $this->performActionTest(array(), array(            
                 'postData' => array(
@@ -144,8 +142,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testSuccess() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signup/confirm/user@example.com/'

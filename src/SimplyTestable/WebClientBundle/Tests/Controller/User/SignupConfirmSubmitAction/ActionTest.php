@@ -6,13 +6,16 @@ use SimplyTestable\WebClientBundle\Tests\Controller\User\ActionTest as BaseActio
 
 class ActionTest extends BaseActionTest {    
     
+    public function setUp() {
+        parent::setUp();
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath($this->getName())));
+    }     
+    
     protected function getActionName() {
         return 'signupConfirmSubmitAction';
     }    
     
     public function testWithNonExistentUser() {        
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signup/confirm/user@example.com/',
@@ -28,8 +31,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithBlankToken() {        
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signup/confirm/user@example.com/',
@@ -48,8 +49,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithFailedDueToReadOnly() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signup/confirm/user@example.com/',
@@ -68,8 +67,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testWithInvalidToken() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signup/confirm/user@example.com/',
@@ -87,8 +84,6 @@ class ActionTest extends BaseActionTest {
     }  
     
     public function testWithInvalidAdminCredentials() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         try {
             $this->performActionTest(array(), array(            
                 'methodArguments' => array(
@@ -106,8 +101,6 @@ class ActionTest extends BaseActionTest {
     }
     
     public function testSuccess() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/signin/'

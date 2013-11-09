@@ -74,6 +74,16 @@ class WebResourceService {
             return;
         }
         
+//        echo $request->getUrl() . "\n\n";
+////        
+////        if ($request->getUrl() == 'http://ci.app.simplytestable.com/jobs/list/3/?exclude-types%5B0%5D=crawl&exclude-states%5B0%5D=rejected&exclude-current=1') {
+//        echo $request . "\n\n";
+//        echo $response;
+//        exit();            
+////        }
+        
+
+        
         if ($response->isClientError() || $response->isServerError()) {
             throw new WebResourceException($response, $request); 
         }

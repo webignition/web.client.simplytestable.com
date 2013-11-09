@@ -53,8 +53,6 @@ class TaskResultsController extends TaskController
             'local-task-count' => $localTaskCount,
             'remote-task-count' => $remoteTest->getTaskCount()            
         ), 'json'));
-        
-        exit();
     }
     
     

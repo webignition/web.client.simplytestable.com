@@ -6,6 +6,14 @@ use SimplyTestable\WebClientBundle\Tests\Controller\UserAccountDetails\ActionTes
 
 class ActionTest extends BaseActionTest {    
     
+    public function setUp() {
+        parent::setUp();
+        
+        if ($this->hasCustomFixturesDataPath($this->getName())) {
+            $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath($this->getName())));
+        }
+    }    
+    
     protected function getActionName() {
         return 'confirmEmailChangeAction';
     } 
@@ -19,7 +27,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testResendAction() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
         $this->setUser($this->makeUser());
         
         $this->performActionTest(array(
@@ -69,7 +76,6 @@ class ActionTest extends BaseActionTest {
     }
     
     public function testConfirmActionWithInvalidToken() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));        
         $this->setUser($this->makeUser());
         
         $this->performActionTest(array(
@@ -87,7 +93,6 @@ class ActionTest extends BaseActionTest {
     }    
     
     public function testConfirmActionWhenEmailHasSinceBeenTaken() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));        
         $this->setUser($this->makeUser());
         
         $this->performActionTest(array(
@@ -107,7 +112,6 @@ class ActionTest extends BaseActionTest {
     
     
     public function testConfirmActionWithUnknownErrorCommunicatingWithCoreApplication() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));        
         $this->setUser($this->makeUser());
         
         $this->performActionTest(array(
@@ -125,7 +129,6 @@ class ActionTest extends BaseActionTest {
     } 
     
     public function testConfirmActionSuccess() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));        
         $user = $this->makeUser();
         $this->setUser($user);
         

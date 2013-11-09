@@ -6,6 +6,14 @@ use SimplyTestable\WebClientBundle\Tests\Controller\TestStart\ActionTest as Base
 
 class ActionTest extends BaseActionTest {      
     
+    public function setUp() {
+        parent::setUp();
+        
+        if ($this->hasCustomFixturesDataPath($this->getName())) {
+            $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath($this->getName())));
+        }
+    }      
+    
     protected function getActionName() {
         return 'startNewAction';
     }  
@@ -35,8 +43,6 @@ class ActionTest extends BaseActionTest {
     }     
     
     public function testStartActionWithWebsiteAndTestType() {          
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/http://example.com//1/progress/'
@@ -49,11 +55,12 @@ class ActionTest extends BaseActionTest {
     }     
     
     public function testStartActionReceives503FromCoreApplication() {          
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
-            'redirectPath' => '/http://example.com//'
+            'redirectPath' => '/',
+            'flash' => array(
+                'test_start_error' => 'web_resource_exception'
+            )            
         ), array(
             'postData' => array(
                 'website' => 'http://example.com',
@@ -63,36 +70,36 @@ class ActionTest extends BaseActionTest {
     }    
     
     public function testStartActionReceives404FromCoreApplication() {          
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
-            'redirectPath' => '/http://example.com//'
+            'redirectPath' => '/',
+            'flash' => array(
+                'test_start_error' => 'web_resource_exception'
+            )            
         ), array(
             'postData' => array(
                 'website' => 'http://example.com',
                 'html-validation' => '1'
             )
-        ));
+        ));  
     }     
     
     public function testStartActionReceives500FromCoreApplication() {          
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
-            'redirectPath' => '/http://example.com//'
+            'redirectPath' => '/',
+            'flash' => array(
+                'test_start_error' => 'web_resource_exception'
+            )            
         ), array(
             'postData' => array(
                 'website' => 'http://example.com',
                 'html-validation' => '1'
             )
-        ));
+        ));  
     }
     
     public function testStartRaisesCurlErrorCommunicatingWithCoreApplication() {       
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        
         $this->performActionTest(array(
             'statusCode' => 302,
             'redirectPath' => '/',

@@ -186,7 +186,7 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
      * @param string $url
      * @return \Symfony\Component\DomCrawler\Crawler
      */
-    protected function getCrawler($url, $method = 'GET') {    
+    protected function getCrawler($url, $method = 'GET') {            
         /* @var $this->client \Symfony\Bundle\FrameworkBundle\Client */
         
         if ($this->hasUser()) {
@@ -198,8 +198,7 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
             $this->client->getCookieJar()->set($cookie);
         }
         
-        $crawler = $this->client->request($method, $url);
-        
+        $crawler = $this->client->request($method, $url);        
         return $crawler;
     }    
     

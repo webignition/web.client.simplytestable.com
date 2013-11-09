@@ -151,11 +151,52 @@ abstract class BaseTestCase extends WebTestCase {
      * @return string
      */
     protected function getFixturesDataPath($testName) {
+        $fixturesPath = $this->getCustomFixturesDataPath($testName);        
+        
+        while (!$this->directoryContainsFiles($fixturesPath) && $fixturesPath != __DIR__ . '/Fixtures') {
+            $pathParts = explode(DIRECTORY_SEPARATOR, $fixturesPath);
+            array_pop($pathParts);
+            $fixturesPath = implode(DIRECTORY_SEPARATOR, $pathParts);
+        }
+        
+        return $fixturesPath;
+    }
+    
+    protected function directoryContainsFiles($path) {
+        if (realpath($path) === false) {
+            return false;
+        }
+        
+        $directoryIterator = new \DirectoryIterator($path);
+        $containsFiles = false;
+        
+        foreach ($directoryIterator as $item) {
+            if ($containsFiles === true) {
+                continue;
+            }
+            
+            /* @var $item \DirectoryIterator */
+            if ($item->isFile() && !$item->isDot() && $item->isReadable()) {
+                $containsFiles = true;
+            }
+        }
+        
+        return $containsFiles;
+    }
+    
+    protected function getCustomFixturesDataPath($testName) {
         return __DIR__ . self::FIXTURES_DATA_RELATIVE_PATH . '/' . str_replace('\\', DIRECTORY_SEPARATOR, get_class($this)) . '/' . $testName;
-    }  
+    } 
     
+    protected function hasCustomFixturesDataPath($testName) {
+        return realpath($this->getCustomFixturesDataPath($testName)) !== false;
+    } 
     
-    protected function setHttpFixtures($fixtures, $client = null) {
+    protected function setHttpFixtures($fixtures, $client = null) {        
+        if (count($fixtures) === 0) {            
+            $this->fail('HTTP fixtures path empty or incorrect ('.$this->getFixturesDataPath($this->getName()).')');
+        }
+        
         $plugin = new \Guzzle\Plugin\Mock\MockPlugin();
         
         foreach ($fixtures as $fixture) {
@@ -174,14 +215,14 @@ abstract class BaseTestCase extends WebTestCase {
     }
     
     
-    protected function getHttpFixtures($path) {
+    protected function getHttpFixtures($path) {                
         $fixtures = array();        
         $fixturesDirectory = new \DirectoryIterator($path);
         
         $fixturePathnames = array();
         
-        foreach ($fixturesDirectory as $directoryItem) {
-            if ($directoryItem->isFile()) { 
+        foreach ($fixturesDirectory as $directoryItem) {            
+            if ($directoryItem->isFile()) {                
                 $fixturePathnames[] = $directoryItem->getPathname();
             }
         }

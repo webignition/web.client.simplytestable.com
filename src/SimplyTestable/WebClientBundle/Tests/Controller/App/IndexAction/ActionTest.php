@@ -7,20 +7,17 @@ use SimplyTestable\WebClientBundle\Model\User;
 
 class ActionTest extends BaseActionTest {
     
+    public function setUp() {
+        parent::setUp();
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath($this->getName())));
+    }    
+    
     protected function getActionName() {
         return 'indexAction';
-    }
-    
-    public function testWithUnauthorisedUser() {        
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));
-        $this->performActionTest(array(
-            'statusCode' => 200
-        ));
-    }
+    }   
     
     public function testWithAuthorisedUser() {     
-        $this->setUser(new User('user@example.com','password'));
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));      
+        $this->setUser(new User('user@example.com','password'));   
         
         $this->performActionTest(array(
             'statusCode' => 200
@@ -28,8 +25,7 @@ class ActionTest extends BaseActionTest {
     }
     
     public function testWithNonExistentUser() {
-        $this->setUser(new User('user@example.com','password'));               
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__FUNCTION__ . '/HttpResponses')));      
+        $this->setUser(new User('user@example.com','password'));                  
         
         $this->performActionTest(array(
             'statusCode' => 302,
