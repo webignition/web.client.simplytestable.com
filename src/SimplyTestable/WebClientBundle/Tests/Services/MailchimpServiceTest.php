@@ -8,7 +8,11 @@ class MailchimpServiceTest extends BaseSimplyTestableTestCase {
     
     public function setUp() {
         parent::setUp();
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath($this->getName())));
+        $this->setHttpFixtures(
+            $this->getHttpFixtures($this->getFixturesDataPath($this->getName())),
+            $this->getMailchimpService()->getClient()
+        );
+        
     }
     
     public function testListDoesContain() {        
