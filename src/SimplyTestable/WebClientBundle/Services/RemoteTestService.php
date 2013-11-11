@@ -246,7 +246,10 @@ class RemoteTestService extends CoreApplicationService {
     
     
     public function getCurrent() {
-        $requestUrl = $this->getUrl('tests_current');   
+        $requestUrl = $this->getUrl('tests_list', array(
+            'limit' => 100,
+            'offset' => 0
+        )) . '?exclude-finished=1';
         
         $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
         
@@ -266,20 +269,16 @@ class RemoteTestService extends CoreApplicationService {
     /**
      * 
      * @param int $limit
+     * @param int $offset 
      * @return \webignition\WebResource\JsonDocument\JsonDocument
      */
-    public function getList($limit, $excludeTypes = null, $excludeStates = null) {
+    public function getList($limit, $offset, $excludeStates = null) {
         $requestUrl = $this->getUrl('tests_list', array(
-            'limit' => $limit
+            'limit' => $limit,
+            'offset' => $offset
         ));
         
         $queryParts = array();               
-        
-        if (is_array($excludeTypes)) {
-            foreach ($excludeTypes as $excludeType) {
-                $queryParts[] = 'exclude-types[]=' . $excludeType;
-            }
-        }
         
         if (is_array($excludeStates)) {
             foreach ($excludeStates as $excludeState) {

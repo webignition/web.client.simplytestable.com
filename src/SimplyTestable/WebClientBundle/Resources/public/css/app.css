@@ -96,7 +96,7 @@ div.main section .fields i
     left: -28px;
     font-size: 48px;
     line-height: 48px;     
-    margin-top:-12px;
+    margin-top:-8px;
 }
 
 #main .leader h1 .sub-state,
@@ -613,6 +613,7 @@ div.input-secondary {
     padding-bottom: 40px;
     margin-bottom: 40px;
     border-bottom: 1px solid #ddd;
+    margin-top: 40px;
 }
 
 #finished-tests .requires-results,
@@ -1424,3 +1425,25 @@ body.app .progress {
     color: transparent;
     border-color: transparent;
 }
+
+#finished-tests .header {
+    position:relative;
+}
+
+#finished-tests .header a {
+    position:absolute;
+    right:0;
+    top:6px;
+}
+
+#finished-tests section .icon-cog {
+    left: -58px;
+}
+
+/*#finished-tests a i {
+    color:inherit;
+    position: static;
+    width:auto;
+    height:auto;
+    line-height: inherit;
+}*/

@@ -190,8 +190,8 @@ class AppController extends TestViewController
      * 
      * @return array
      */
-    private function getFinishedTests($limit = 3) {                        
-        $remoteTests = $this->getTestService()->getRemoteTestService()->getList($limit, array('crawl'), array('rejected'));                        
+    private function getFinishedTests($limit = 3, $offset = 0) {                        
+        $remoteTests = $this->getTestService()->getRemoteTestService()->getList($limit, $offset, array('rejected'));                        
         $tests = array();
         
         foreach ($remoteTests as $remoteTest) {                        
