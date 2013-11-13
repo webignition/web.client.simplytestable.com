@@ -77,9 +77,12 @@ class TestProgressController extends TestViewController
         }      
         
         $remoteTest = $this->getTestService()->getRemoteTestService()->get();        
-         
-        if ($test->getState() == 'failed-no-sitemap' && isset($remoteTest->crawl)) {
-            $test->setState('crawling');
+        
+        if ($test->getState() == 'failed-no-sitemap' && is_null($remoteTest->getCrawl())) {
+            return $this->forward('SimplyTestableWebClientBundle:Test:retest', array(
+                'website' => $website,
+                'test_id' => $test_id
+            ));
         }
         
         $taskTypes = $remoteTest->getTaskTypes();
