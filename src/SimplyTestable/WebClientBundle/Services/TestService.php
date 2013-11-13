@@ -121,7 +121,7 @@ class TestService {
             $this->test = $this->fetchEntity($testId);          
             $this->getRemoteTestService()->setTest($this->getTest());
             
-            if (!in_array($this->getTest()->getState() , array('completed', 'cancelled', 'rejected'))) {              
+            if (!in_array($this->getTest()->getState() , array('completed', 'rejected'))) {              
                 $this->update();             
             }          
         } else {            

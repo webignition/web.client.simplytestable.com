@@ -1,4 +1,4 @@
-{% if recent_tests|length == 0 %}                       
+{% if test_list.length == 0 %}                       
     <p class="info">
         {% if is_logged_in %}
         None of your tests have finished running. When 
@@ -9,7 +9,7 @@
         {% endif %}
     </p>
 {% else %}
-    {% for test in recent_tests %}
-        {% include 'SimplyTestableWebClientBundle:Partials:recent-job-summary.html.twig' %}
+    {% for test in test_list.get %}
+        {% include 'SimplyTestableWebClientBundle:Partials:finished-job-summary.html.twig' %}
     {% endfor %}
 {% endif %} 

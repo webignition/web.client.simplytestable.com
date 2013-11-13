@@ -23,16 +23,7 @@ class TestProgressController extends TestViewController
         'completed',
         'failed-no-sitemap',
         'rejected'
-    );
-    
-    private $taskFinishedStates = array(
-        'cancelled',
-        'completed',
-        'failed-no-retry-available',
-        'failed-retry-available',
-        'failed-retry-limit-reached',
-        'skipped'
-    );    
+    );   
     
     private $testStateLabelMap = array(
         'new' => 'New, waiting to start',

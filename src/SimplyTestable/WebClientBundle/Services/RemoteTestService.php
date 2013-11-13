@@ -3,6 +3,7 @@ namespace SimplyTestable\WebClientBundle\Services;
 
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
+use SimplyTestable\WebClientBundle\Model\TestList;
 use SimplyTestable\WebClientBundle\Model\TestOptions;
 
 class RemoteTestService extends CoreApplicationService {
@@ -245,6 +246,10 @@ class RemoteTestService extends CoreApplicationService {
     } 
     
     
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Model\TestList
+     */
     public function getCurrent() {
         $requestUrl = $this->getUrl('tests_list', array(
             'limit' => 100,
@@ -253,16 +258,7 @@ class RemoteTestService extends CoreApplicationService {
         
         $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
         
-        $this->addAuthorisationToRequest($request);
-        
-        /* @var $response \webignition\WebResource\JsonDocument\JsonDocument */
-        try {
-            return $this->webResourceService->get($request);
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-            
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-            
-        }          
+        return $this->getList($request);        
     }  
     
     
@@ -270,20 +266,19 @@ class RemoteTestService extends CoreApplicationService {
      * 
      * @param int $limit
      * @param int $offset 
-     * @return \webignition\WebResource\JsonDocument\JsonDocument
+     * @return \SimplyTestable\WebClientBundle\Model\TestList
      */
-    public function getList($limit, $offset, $excludeStates = null) {
+    public function getFinished($limit, $offset) {
         $requestUrl = $this->getUrl('tests_list', array(
             'limit' => $limit,
             'offset' => $offset
         ));
         
-        $queryParts = array();               
-        
-        if (is_array($excludeStates)) {
-            foreach ($excludeStates as $excludeState) {
-                $queryParts[] = 'exclude-states[]=' . $excludeState;
-            }
+        $queryParts = array(); 
+        $excludeStates = array('rejected');        
+
+        foreach ($excludeStates as $excludeState) {
+            $queryParts[] = 'exclude-states[]=' . $excludeState;
         }
         
         $queryParts[] = 'exclude-current=1';
@@ -292,22 +287,36 @@ class RemoteTestService extends CoreApplicationService {
         
         $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
         
+        return $this->getList($request);        
+    } 
+    
+    
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Model\TestList
+     */
+    private function getList(\Guzzle\Http\Message\Request $request) {        
         $this->addAuthorisationToRequest($request);
         
-        $tests = array();
+        $list = new TestList();
         
-        /* @var $response \webignition\WebResource\JsonDocument\JsonDocument */
         try {
+            /* @var $responseDocument \webignition\WebResource\JsonDocument\JsonDocument */
             $responseDocument = $this->webResourceService->get($request);
-            foreach ($responseDocument->getContentObject() as $remoteTestData) {
-                $tests[] = new RemoteTest($remoteTestData);
+            
+            $list->setMaxResults($responseDocument->getContentObject()->max_results);
+            $list->setLimit($responseDocument->getContentObject()->limit);
+            $list->setOffset($responseDocument->getContentObject()->offset);
+            
+            foreach ($responseDocument->getContentObject()->jobs as $remoteTestData) {
+                $list->addRemoteTest(new RemoteTest($remoteTestData));
             }
         } catch (\Guzzle\Http\Exception\CurlException $curlException) {            
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
         }        
         
-        return $tests;        
-    }    
+        return $list;          
+    }     
     
     
     

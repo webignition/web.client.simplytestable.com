@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+use SimplyTestable\WebClientBundle\Model\TestList;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -11,7 +12,7 @@ use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 
 class AppController extends TestViewController
 {   
-    const RESULTS_PREPARATION_THRESHOLD = 0;    
+    const RESULTS_PREPARATION_THRESHOLD = 10;    
     
     /**
      *
@@ -26,31 +27,6 @@ class AppController extends TestViewController
         'failed-no-sitemap',
     );
     
-    private $taskFinishedStates = array(
-        'cancelled',
-        'completed',
-        'failed-no-retry-available',
-        'failed-retry-available',
-        'failed-retry-limit-reached',
-        'skipped'
-    );    
-    
-    private $testStateLabelMap = array(
-        'new' => 'New',
-        'queued' => 'Queued',
-        'preparing' => 'Discovering URLs to test',
-        'in-progress' => 'Running'        
-    );
-    
-    private $testStateIconMap = array(
-        'new' => 'icon-off',
-        'queued' => 'icon-off',
-        'queued-for-assignment' => 'icon-off',
-        'preparing' => 'icon-search',
-        'in-progress' => 'icon-play-circle'        
-    );
-
-    
     public function indexAction()
     {                   
         if ($this->isUsingOldIE()) {
@@ -61,32 +37,28 @@ class AppController extends TestViewController
         
         if (!$this->isUserValid()) {            
             return $this->redirect($this->generateUrl('sign_out_submit', array(), true));
-        }        
+        }
+
+        $testStartError = $this->getFlash('test_start_error');                
+        $currentTests = $this->getCurrentTests();               
+        $finishedTests = $this->getFinishedTests();      
         
         $templateName = 'SimplyTestableWebClientBundle:App:index.html.twig';
-        $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);
-
-        $testStartError = $this->getFlash('test_start_error');        
-        
-        $currentTests = $this->getCurrentTests();
-        $currentTestsHash = md5(json_encode($currentTests));
-        
-        $recentTests = $this->getFinishedTests();
-        $recentTestsHash = md5(json_encode($recentTests));
         
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
+            'template_last_modified_date' => $this->getTemplateLastModifiedDate($templateName)->format('Y-m-d H:i:s'),
             'test_start_error' => $testStartError,
-            'current_tests_hash' => $currentTestsHash,
-            'recent_tests_hash' => $recentTestsHash
+            'current_tests_hash' => md5(json_encode($currentTests)),
+            'finished_tests_hash' => $finishedTests->getHash()
         ));
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);        
         $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
-//        if ($response->isNotModified($this->getRequest())) {
-//            return $response;
-//        }
+        if ($response->isNotModified($this->getRequest())) {
+            return $response;
+        }
         
-        $cacheValidatorHeaders->setLastModifiedDate($templateLastModifiedDate);
+        $cacheValidatorHeaders->setLastModifiedDate(new \DateTime());
         $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);;
         
         $this->getTestOptionsAdapter()->setRequestData($this->defaultAndPersistentTestOptionsToParameterBag());
@@ -101,7 +73,7 @@ class AppController extends TestViewController
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
             'current_tests' => $currentTests,            
-            'recent_tests' => $recentTests,
+            'test_list' => $finishedTests,
             'website' => idn_to_utf8($this->getPersistentValue('website')),
             'available_task_types' => $this->getAvailableTaskTypes(),
             'test_options' => $testOptions->__toKeyArray(),
@@ -188,67 +160,60 @@ class AppController extends TestViewController
     
     /**
      * 
-     * @return array
+     * @return TestList
      */
     private function getFinishedTests($limit = 3, $offset = 0) {                        
-        $remoteTests = $this->getTestService()->getRemoteTestService()->getList($limit, $offset, array('rejected'));                        
-        $tests = array();
+        $testList = $this->getTestService()->getRemoteTestService()->getFinished($limit, $offset);
         
-        foreach ($remoteTests as $remoteTest) {                        
-            /* @var $remoteTest RemoteTest */           
-            $currentTest = array();
+        foreach ($testList->get() as $testObject) {
+            /* @var $remoteTest RemoteTest */
+            $remoteTest = $testObject['remote_test'];
             
             $this->getTestService()->getRemoteTestService()->set($remoteTest);
             $test = $this->getTestService()->get($remoteTest->getWebsite(), $remoteTest->getId(), $remoteTest);
             
-            if ($remoteTest->getTaskCount() != $test->getTaskCount()) {
+            $testList->addTest($test);
+            
+            if ($testList->requiresResults($test)) {
                 if ($remoteTest->isSingleUrl()) {
                     $this->getTaskService()->getCollection($test);
                 } else {
-                    $remoteTest = $this->getTestService()->getRemoteTestService()->get();        
-                    if (($remoteTest->getTaskCount() - self::RESULTS_PREPARATION_THRESHOLD) > $test->getTaskCount()) {            
-                        $currentTest['requires_results'] = true;
-                    } else {
+                    if (($remoteTest->getTaskCount() - self::RESULTS_PREPARATION_THRESHOLD) - $test->getTaskCount()) {
                         $this->getTaskService()->getCollection($test);
-                    }                    
+                    }                   
                 }
-            } 
-
-            $currentTest['test'] = $test;
-            $currentTest['remote_test'] = $remoteTest;                      
-            
-            $tests[] = $currentTest;
+            }
         }
-      
-        return $tests;
+        
+        return $testList;
     }
     
     
-    private function getCurrentTests() {        
-        $jsonResource = $this->getTestService()->getRemoteTestService()->getCurrent();
-        
-        if (!$jsonResource instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
+    private function getCurrentTests() {
+        $testList = $this->getTestService()->getRemoteTestService()->getCurrent();
+        if ($testList->isEmpty()) {
             return array();
-        }        
-        
-        $currentTests = json_decode($jsonResource->getContent(), true);
-        
-        if (count($currentTests) === 0) {
-            return $currentTests;
         }
         
-        foreach ($currentTests as $testIndex => $test) {            
-            if ($currentTests[0]['state'] == 'failed-no-sitemap' && isset($test['crawl'])) {                
-                $currentTests[$testIndex]['state'] = 'crawling';
-            }
+        $tests = array();
+        foreach ($testList->get() as $testObject) {
+            /* @var $remoteTest RemoteTest */
+            $remoteTest = $testObject['remote_test'];            
+            $currentTest = $remoteTest->getArraySource();
             
-            $currentTests[$testIndex]['website_label'] = $this->getWebsiteLabel($currentTests[$testIndex]['website']);
-            $currentTests[$testIndex]['state_icon'] = $this->getTestStateIcon($currentTests[$testIndex]['state']);
-            $currentTests[$testIndex]['state_label_class'] = $this->getTestStateLabelClass($currentTests[$testIndex]['state']);
-            $currentTests[$testIndex]['completion_percent'] = $this->getCompletionPercent($test);
-        }    
+            if ($currentTest['state'] == 'failed-no-sitemap' && isset($currentTest['crawl'])) {                
+                $currentTest['state'] = 'crawling';
+            }            
+
+            $currentTest['state_label_class'] = $this->getTestStateLabelClass($currentTest['state']);
+            $currentTest['state_icon'] = $this->getTestStateIcon($currentTest['state']);
+            $currentTest['website_label'] = $this->getWebsiteLabel($currentTest['website']);
+            $currentTest['completion_percent'] = $remoteTest->getCompletionPercent();
+            
+            $tests[] = $currentTest;
+        }
         
-        return $currentTests;
+        return $tests;
     }
     
     
@@ -325,140 +290,7 @@ class AppController extends TestViewController
                 return 'success';
         }        
     }
-        
-    private function getRemoteTestSummaryArray($remoteTestSummary) {        
-        $remoteTestSummaryArray = (array)$remoteTestSummary;
-        
-        foreach ($remoteTestSummaryArray as $key => $value) {            
-            if ($value instanceof \stdClass){
-                $remoteTestSummaryArray[$key] = get_object_vars($value);
-            }
-        }
-        
-        if (isset($remoteTestSummaryArray['task_type_options'])) {
-            foreach ($remoteTestSummaryArray['task_type_options'] as $testType => $testTypeOptions) {
-                $remoteTestSummaryArray['task_type_options'][$testType] = get_object_vars($testTypeOptions);
-            }
-        }
-        
-        return $remoteTestSummaryArray;
-    } 
     
-    
-    /**
-     *
-     * @param \stdClass|array $remoteTestSummary
-     * @return int 
-     */
-    private function getCompletionPercent($remoteTestSummary) {
-        return ($remoteTestSummary instanceof \stdClass) ? $this->getCompletionPercentFromStdClass($remoteTestSummary) : $this->getCompletionPercentFromArray($remoteTestSummary);
-    } 
-    
-    
-    /**
-     * 
-     * @param \stdClass $remoteTestSummary
-     * @return int
-     */
-    private function getCompletionPercentFromStdClass($remoteTestSummary) {
-        if ($remoteTestSummary->task_count === 0) {
-            return 0;
-        }
-        
-        $finishedCount = 0;
-        foreach ($remoteTestSummary->task_count_by_state as $stateName => $taskCount) {
-            if (in_array($stateName, $this->taskFinishedStates)) {
-                $finishedCount += $taskCount;
-            }
-        }
-        
-        if ($finishedCount ==  $remoteTestSummary->task_count) {
-            return 100;
-        }   
-        
-        $requiredPrecision = floor(log10($remoteTestSummary->task_count)) - 1;
-        
-        if ($requiredPrecision == 0) {
-            return floor(($finishedCount / $remoteTestSummary->task_count) * 100);
-        }        
-        
-        return round(($finishedCount / $remoteTestSummary->task_count) * 100, $requiredPrecision);        
-    }
-    
-    
-    /**
-     * 
-     * @param array $remoteTestSummary
-     * @return int
-     */
-    private function getCompletionPercentFromArray($remoteTestSummary) {        
-        if (isset($remoteTestSummary['crawl']) && $remoteTestSummary['state'] == 'failed-no-sitemap') {
-            if ($remoteTestSummary['crawl']['discovered_url_count'] == 0) {
-                return 0;
-            }  
-
-            return round(($remoteTestSummary['crawl']['discovered_url_count'] / $remoteTestSummary['crawl']['limit']) * 100);               
-        }
-        
-        if ($remoteTestSummary['task_count'] === 0) {
-            return 0;
-        }
-        
-        $finishedCount = 0;
-        foreach ($remoteTestSummary['task_count_by_state'] as $stateName => $taskCount) {
-            if (in_array($stateName, $this->taskFinishedStates)) {
-                $finishedCount += $taskCount;
-            }
-        }
-        
-        if ($finishedCount ==  $remoteTestSummary['task_count']) {
-            return 100;
-        }   
-        
-        $requiredPrecision = floor(log10($remoteTestSummary['task_count'])) - 1;
-        
-        if ($requiredPrecision == 0) {
-            return floor(($finishedCount / $remoteTestSummary['task_count']) * 100);
-        }        
-        
-        return round(($finishedCount / $remoteTestSummary['task_count']) * 100, $requiredPrecision);        
-    }
-    
-    
-    /**
-     *
-     * @param \stdClass $remoteTestSummary
-     * @return array 
-     */
-    private function getTaskCountByState(\stdClass $remoteTestSummary) {        
-        $taskStates = array(
-            'in-progress' => 'in_progress',
-            'queued' => 'queued',
-            'queued-for-assignment' => 'queued',
-            'completed' => 'completed',
-            'cancelled' => 'cancelled',
-            'awaiting-cancellation' => 'cancelled',
-            'failed' => 'failed',
-            'failed-no-retry-available' => 'failed',
-            'failed-retry-available' => 'failed',
-            'failed-retry-limit-reached' => 'failed',
-            'skipped' => 'skipped'
-        );
-        
-        $taskCountByState = array();        
-        
-        foreach ($taskStates as $taskState => $translatedState) {
-            if (!isset($taskCountByState[$translatedState])) {
-                $taskCountByState[$translatedState] = 0;
-            }
-            
-            if (isset($remoteTestSummary->task_count_by_state->$taskState)) {
-                $taskCountByState[$translatedState] += $remoteTestSummary->task_count_by_state->$taskState;
-            }            
-        }
-        
-        return $taskCountByState;
-    }    
     
     public function prepareResultsAction($website, $test_id)
     {              
@@ -585,7 +417,7 @@ class AppController extends TestViewController
     
     
     public function currentAction() {
-        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());        
         return new Response($this->getSerializer()->serialize($this->getCurrentTests(), 'json'));        
     }
     
@@ -603,10 +435,10 @@ class AppController extends TestViewController
     public function finishedContentAction() {        
         $this->getUserService()->setUser($this->getUser());           
         
-        $this->setTemplate('SimplyTestableWebClientBundle:Partials:finished-content.html.twig');        
+        $this->setTemplate('SimplyTestableWebClientBundle:Partials:finished-test-list.html.twig');        
         return $this->sendResponse(array(            
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'recent_tests' => $this->getFinishedTests()
+            'test_list' => $this->getFinishedTests()
         ));         
     }
 

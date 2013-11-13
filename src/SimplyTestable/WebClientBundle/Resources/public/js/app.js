@@ -2187,8 +2187,8 @@ application.root.finishedTestsPreparingController = function () {
 
     };
     
-    this.initialise = function () {        
-        getTestsRequiringResults().each(function () {
+    this.initialise = function () {                
+        getTestsRequiringResults().each(function () {            
             initialiseTest($(this));
         });
     };
@@ -2300,6 +2300,11 @@ application.pages = {
             if ($('body.app-results').length > 0) {
                 testStartFormController = new application.root.testStartFormController();
                 testStartFormController.initialise();
+            }            
+            
+            if ($('body.app-history').length > 0 || $('body.app-history-all').length > 0) {                                
+                finishedTestsPreparingController = new application.root.finishedTestsPreparingController();
+                finishedTestsPreparingController.initialise();
             }            
 
             if ($('body.content').length > 0) {

@@ -1,6 +1,6 @@
 {% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
 
-{% block title %}Start a new website test - {{ parent() }}{% endblock %}
+{% block title %}{% if is_logged_in == false %}Demo{% endif %} Dashboard (Start Test, Test History) - {{ parent() }}{% endblock %}
 
 {% block body_class %}full-width {{ parent() }}{% endblock %}
 
@@ -49,13 +49,16 @@
                 </section> 
             </div>            
             <div class="span8" id="finished-tests">
-                <section>            
+                <section>
+                    <div class="header">
                         <h2 class="info">
                             <i class="icon-cog"></i>Recent finished {% if is_logged_in == false %}demo{% endif %} tests
-                        </h2>                        
+                        </h2>
+                        <a href="{{ path('app_history_all') }}">Full test history <i class="icon icon-caret-right"></i></a>   
+                    </div>
                         
                         <div id="finished-tests-content">
-                            {% include 'SimplyTestableWebClientBundle:Partials:finished-content.html.twig' %}
+                            {% include 'SimplyTestableWebClientBundle:Partials:finished-test-list.html.twig' %}
                         </div>
                 </section> 
             </div>

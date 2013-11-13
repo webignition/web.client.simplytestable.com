@@ -94,6 +94,14 @@ app_finished_content:
     pattern:  /finished-content/
     defaults: { _controller: SimplyTestableWebClientBundle:App:finishedContent }      
     
+app_history_all:
+    pattern:  /history/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestHistory:index, page_number: 1 }        
+    
+app_history:
+    pattern:  /history/{page_number}/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestHistory:index }      
+    
 app_test_finished_summary:
     pattern:  /{website}/{test_id}/finished-summary/
     defaults: { _controller: SimplyTestableWebClientBundle:TestResults:finishedSummary }     

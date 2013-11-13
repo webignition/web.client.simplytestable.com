@@ -29,7 +29,7 @@ class FunctionalTest extends BaseFunctionalTest {
     
     public function testFreeDemoNotificationIsPresent() {        
         /* @var $navbar \Symfony\Component\DomCrawler\Crawler */
-        $crawler = $this->getCrawler($this->getCurrentRequestUrl());           
+        $crawler = $this->getCrawler($this->getCurrentRequestUrl());
         
         $fullWidthNotifications = $crawler->filter('.full-width-notification');
         
@@ -37,7 +37,7 @@ class FunctionalTest extends BaseFunctionalTest {
         
         $hasFreeDemoNotification = false;
         foreach ($fullWidthNotifications as $fullWidthNotification) {
-            if (substr_count($this->domNodeToHtml($fullWidthNotification), 'This is a free demo')) {
+            if (substr_count($this->domNodeToHtml($fullWidthNotification), 'limited free demo')) {
                 $hasFreeDemoNotification = true;
             }
         }

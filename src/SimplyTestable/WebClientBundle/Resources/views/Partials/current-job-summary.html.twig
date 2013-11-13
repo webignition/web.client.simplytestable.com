@@ -1,6 +1,6 @@
 <div class="address">
-<a href="{{ path('app_progress', {'website': test['website'], 'test_id':test['id']}) }}">
-    <span class="badge badge-{{ test['state_label_class'] }}"><i class="icon state-icon {{ test['state_icon'] }}"></i></span>{{ test['website_label'] }}        
+<a href="{{ path('app_progress', {'website': test.website, 'test_id':test.id}) }}">
+    <span class="badge badge-{{ test.state_label_class }}"><i class="icon state-icon {{ test.state_icon }}"></i></span>{{ test.website_label }}        
     <span class="btn-wrapper">
         <span class="btn-spacer"></span>
         <span class="btn btn-mini">View progress <i class="icon icon-caret-right"></i></span>   
@@ -32,22 +32,22 @@
 {% else %}
 <div class="row-fluid meta">
     <div class="span3 total">
-        <span class="url-count">{{ test['url_count'] }}</span><span class="subtext">url{% if test['url_count'] != 1 %}s{% endif %}</span>
+        <span class="url-count">{{ test.url_count }}</span><span class="subtext">url{% if test.url_count != 1 %}s{% endif %}</span>
     </div>      
     <div class="span3 total">
-        <span class="task-count">{{ test['task_count'] }}</span><span class="subtext">test{% if test['task_count'] != 1 %}s{% endif %}</span>
+        <span class="task-count">{{ test.task_count }}</span><span class="subtext">test{% if test.task_count != 1 %}s{% endif %}</span>
     </div>       
     <div class="span6 detail">
         <div>
-            <span class="queued-count figure">{{ test['task_count_by_state']['queued'] + test['task_count_by_state']['queued-for-assignment'] }}</span>
+            <span class="queued-count figure">{{ test.task_count_by_state.queued + attribute(test.task_count_by_state, 'queued-for-assignment') }}</span>
             <span class="caption">queued</span>
         </div>
         <div>
-            <span class="in-progress-count figure">{{ test['task_count_by_state']['in-progress'] }}</span>
+            <span class="in-progress-count figure">{{ attribute(test.task_count_by_state, 'in-progress') }}</span>
             <span class="caption">in progress</span>
         </div>
         <div>
-            <span class="finished-count figure">{{ test['task_count_by_state']['cancelled'] + test['task_count_by_state']['completed'] + test['task_count_by_state']['awaiting-cancellation'] + test['task_count_by_state']['failed-no-retry-available'] + test['task_count_by_state']['failed-retry-available'] + test['task_count_by_state']['failed-retry-limit-reached'] + test['task_count_by_state']['skipped'] }}</span>
+            <span class="finished-count figure">{{ test.task_count - test.task_count_by_state.queued - attribute(test.task_count_by_state, 'queued-for-assignment') - attribute(test.task_count_by_state, 'in-progress') }}</span>
             <span class="caption">finished</span>
         </div>
     </div>
@@ -56,7 +56,7 @@
 <div class="row-fluid">
     <div class="span12">
         <div class="progress progress-striped active">
-            <div class="bar" style="width:{{ test['completion_percent'] }}%;"></div>
+            <div class="bar" style="width:{{ test.completion_percent }}%;"></div>
         </div>
     </div>
 </div>

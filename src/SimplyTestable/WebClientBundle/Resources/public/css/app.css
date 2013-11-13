@@ -616,38 +616,42 @@ div.input-secondary {
     margin-top: 40px;
 }
 
+#finished-tests .not-started {
+    padding-bottom:16px;
+}
+
 #finished-tests .requires-results,
 #finished-tests .replacing {
     border-bottom-color: transparent;
 }
 
-body.app .site {
+#finished-tests .site {
     overflow:hidden;
 }
 
-body.app .site .wrapper {
+#finished-tests .site .wrapper {
     position:relative;
 }
 
-body.app .site .url {
+#finished-tests .site .url {
     white-space: nowrap;
     display:inline-block;
 /*    margin-bottom: 20px;*/
 }
 
-body.app .site .url .btn-spacer {
+#finished-tests .site .url .btn-spacer {
     border-left: 2px solid #eee;
 }
 
 
-body.app .site .url .btn-wrapper {
+#finished-tests .site .url .btn-wrapper {
     position:absolute;
     right: 0px;
     background-color: rgba(238, 238, 238, 0.5);
     padding-left: 14px;
 }
 
-body.app .site .url .badge {    
+#finished-tests .site .url .badge {    
     margin-right:6px;
     padding-left: 4px;
     padding-right: 4px;
@@ -1135,10 +1139,6 @@ body.full-width {
     opacity: 0.7;
 }
 
-body.app section.start-new-test {
-
-}
-
 .full-width-container div.main section {
     padding-top:0;    
     padding-bottom:0;
@@ -1179,7 +1179,7 @@ body.app-results #test-start-form {
     margin-bottom: 0;
 }
 
-body.app .summary-stats .summary-container {
+#finished-tests .summary-stats .summary-container {
     margin-top:8px;
 }
 
@@ -1192,15 +1192,11 @@ body.app .summary-stats .summary-container {
     color:#fff;
 }
 
-body.app .summary-figure {
+#finished-tests .summary-figure {
     border-radius: 40px;
     width:80px;
     height:80px;     
     position:relative;
-}
-
-body.app .summary-stats .outline-container {
-
 }
 
 .summary-stats .summary-figure .stat-label {
@@ -1212,7 +1208,7 @@ body.app .summary-stats .outline-container {
     font-size:20px;
 }
 
-body.app .summary-stats .summary-figure .icon {
+#finished-tests .summary-stats .summary-figure .icon {
     display:none;
 }
 
@@ -1228,8 +1224,8 @@ body.app .summary-stats .summary-figure .icon {
     color:#222;
 }
 
-body.app .summary-stats .summary-figure a,
-body.app .summary-stats .summary-figure .anchor {
+#finished-tests .summary-stats .summary-figure a,
+#finished-tests .summary-stats .summary-figure .anchor {
     padding-top: 20px;
 }
 
@@ -1238,11 +1234,11 @@ body.app-task-results .summary-stats .span2 {
     width:120px;
 }
 
-body.app .summary-actions .actions {
+#finished-tests .summary-actions .actions {
     margin-top:12px;
 }
 
-body.app .summary-actions .actions .icon {
+#finished-tests .summary-actions .actions .icon {
     margin-left: 4px;
 }
 
@@ -1273,11 +1269,11 @@ body.app .summary-actions .actions .icon {
     display: block;
 }
 
-body.app .summary-prose {
+#finished-tests .summary-prose {
     font-size: 12px;
 }
 
-body.app .summary-stats .count {
+#finished-tests .summary-stats .count {
     font-size:20px;
     line-height: 20px;        
 }
@@ -1362,7 +1358,7 @@ body.app-results h2 a {
     list-style: none;    
 }
 
-body.app .summary-prose ul {
+#finished-tests .summary-prose ul {
     margin:0;
     padding:0;
 }
@@ -1378,7 +1374,9 @@ body.app-results #lock-unlock {
     margin: -4px 0 4px 0;
 }
 
-body.app .progress {
+body.app .progress,
+body.app-history .progress,
+body.app-history-all .progress {
     height:4px;
     margin-bottom:0;
 }
@@ -1440,10 +1438,26 @@ body.app .progress {
     left: -58px;
 }
 
-/*#finished-tests a i {
-    color:inherit;
-    position: static;
-    width:auto;
-    height:auto;
-    line-height: inherit;
-}*/
+.pagination i {
+    height:20px;
+}
+
+body.app-history .full-width-header,
+body.app-history-all .full-width-header {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+body.app-history .no-tests,
+body.app-history-all .no-tests {
+    padding-bottom: 30px;
+}
+
+.pagination ul li a:hover {
+    background-color: #08c;
+    color:#fff;
+}
+
+.pagination ul li a:hover span {
+    opacity: 0.9;
+}

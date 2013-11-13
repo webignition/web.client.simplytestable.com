@@ -24,8 +24,17 @@ class AbstractStandardObject {
      * 
      * @return \stdClass
      */
-    protected function getSource() {
+    public function getSource() {
         return $this->source;
+    }
+    
+    
+    /**
+     * 
+     * @return array
+     */
+    public function getArraySource() {
+        return json_decode(json_encode($this->getSource()), true);
     }
     
     

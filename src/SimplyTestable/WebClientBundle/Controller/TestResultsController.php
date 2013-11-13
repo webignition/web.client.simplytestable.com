@@ -521,7 +521,7 @@ class TestResultsController extends TestViewController
             )
         );
 
-        $this->setTemplate('SimplyTestableWebClientBundle:Partials:recent-job-summary.html.twig');  
+        $this->setTemplate('SimplyTestableWebClientBundle:Partials:finished-job-summary.html.twig');  
         return $this->getCachableResponse(
                 $this->sendResponse($viewData),
                 $cacheValidatorHeaders

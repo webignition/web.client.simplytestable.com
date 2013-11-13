@@ -1,0 +1,41 @@
+{% set previous_page_number = test_list.pagenumber - 1 %}
+{% set has_previous_page = previous_page_number > 0 %}
+
+{% set next_page_number = test_list.pagenumber + 1 %}
+{% set has_next_page = test_list.pagenumber != test_list.pagecount %}
+
+<div class="pagination">
+    <ul>
+        {% if has_previous_page %}
+            <li>
+                <a href="{{ path('app_history', {'page_number': previous_page_number}) }}">
+                    <span><i class="icon icon-caret-left"></i> Newer</span>
+                </a>
+            </li>
+        {% else %}
+            <li class="disabled"><span><i class="icon icon-caret-left"></i> Newer</span></li>
+        {% endif %}       
+
+        {% for page_number in pagination_page_numbers %}
+            {% if test_list.pagenumber == page_number %}
+            <li class="disabled"><span>{{ page_number }}</span></li>  
+            {% else %}
+            <li>
+                <a href="{{ path('app_history', {'page_number': page_number}) }}">
+                    <span>{{ page_number }}</span>
+                </a>
+            </li>  
+            {% endif %}
+        {% endfor %}
+                
+        {% if has_next_page %}
+        <li>
+            <a href="{{ path('app_history', {'page_number': next_page_number}) }}">
+                <span>Older <i class="icon icon-caret-right"></i></span>
+            </a>
+        </li>
+        {% else %}
+        <li class="disabled"><span>Older <i class="icon icon-caret-right"></i></span></li>
+        {% endif %}
+    </ul>
+</div>
