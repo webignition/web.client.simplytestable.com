@@ -93,6 +93,21 @@ abstract class BaseViewController extends BaseController
     
     
     /**
+     * 
+     * @param \Symfony\Component\HttpFoundation\Response $response
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function getUncacheableResponse(Response $response) {
+        $response->setPublic();
+        $response->setMaxAge(0);
+        $response->headers->addCacheControlDirective('must-revalidate', true);
+        $response->headers->addCacheControlDirective('no-cache', true);
+        
+        return $response;
+    }
+    
+    
+    /**
      *
      * @param string $templateName
      * @return \DateTime 

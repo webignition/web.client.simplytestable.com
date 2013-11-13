@@ -362,14 +362,14 @@ class AppController extends TestViewController
         $completionPercent = round(($localTaskCount / $remoteTest->getTaskCount()) * 100);
         $remainingTasksToRetrieveCount = $remoteTest->getTaskCount() - $localTaskCount;        
         
-        return new Response($this->getSerializer()->serialize(array(
+        return $this->getUncacheableResponse(new Response($this->getSerializer()->serialize(array(
             'id' => $test->getTestId(),
             'completion_percent' => $completionPercent,
             'remaining_tasks_to_retrieve_count' => $remainingTasksToRetrieveCount,
             'local_task_count' => $localTaskCount,
             'remote_task_count' => $remoteTest->getTaskCount()            
-        ), 'json'));    
-    }    
+        ), 'json')));
+    }
     
     
     /**
@@ -417,8 +417,8 @@ class AppController extends TestViewController
     
     
     public function currentAction() {
-        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());        
-        return new Response($this->getSerializer()->serialize($this->getCurrentTests(), 'json'));        
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());                
+        return $this->getUncacheableResponse(new Response($this->getSerializer()->serialize($this->getCurrentTests(), 'json')));       
     }
     
     
@@ -426,10 +426,11 @@ class AppController extends TestViewController
         $this->getUserService()->setUser($this->getUser());           
         
         $this->setTemplate('SimplyTestableWebClientBundle:Partials:current-content.html.twig');        
-        return $this->sendResponse(array(            
+        return $this->getUncacheableResponse($this->render('SimplyTestableWebClientBundle:Partials:current-content.html.twig', array(            
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'current_tests' => $this->getCurrentTests()
-        ));         
+             'current_tests' => $this->getCurrentTests()
+         )));
+       
     }
     
     public function finishedContentAction() {        
