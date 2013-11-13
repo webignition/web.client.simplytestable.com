@@ -1443,7 +1443,7 @@ application.progress.taskOutputController = function() {
                                 
                                 currentError.setContext(message.context);
                                 currentError.setUrl(message.url);
-                                currentError.setClass(message.class);
+                                currentError.setClass(message['class']);
                                 currentError.setMessage(message.message);
 
                                 currentError.setType('error');
@@ -2267,7 +2267,7 @@ application.root.finishedTestsUpdateController = function () {
 
 application.pages = {
     '/*': {
-        'initialise': function() {
+        'initialise': function() {            
             if ($('body.user-account-card').length > 0) {
                 accountCardController = new application.account.cardController();
                 accountCardController.initialise();
