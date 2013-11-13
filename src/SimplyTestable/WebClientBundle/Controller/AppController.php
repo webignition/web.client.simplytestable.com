@@ -78,7 +78,7 @@ class AppController extends TestViewController
             'available_task_types' => $this->getAvailableTaskTypes(),
             'test_options' => $testOptions->__toKeyArray(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
-            'js_static_analysis_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
+            'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
             'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions)
         )), $cacheValidatorHeaders);        
     }
@@ -143,6 +143,21 @@ class AppController extends TestViewController
         }
         
         return $this->container->getParameter('css-validation-ignore-common-cdns');
+    }    
+    
+    
+    /**
+     * 
+     * @return array
+     */
+    private function getJsStaticAnalysisCommonCdnsToIgnore() {
+        
+        
+        if (!$this->container->hasParameter('js-static-analysis-ignore-common-cdns')) {
+            return array();
+        }
+        
+        return $this->container->getParameter('js-static-analysis-ignore-common-cdns');
     }
     
     

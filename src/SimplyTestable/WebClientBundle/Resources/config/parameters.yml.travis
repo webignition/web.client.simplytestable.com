@@ -79,6 +79,13 @@ parameters:
    - cdnjs.cloudflare.com
    - netdna.bootstrapcdn.com
    - static.nrelate.com
+  js-static-analysis-ignore-common-cdns:
+   - ajax.aspnetcdn.com
+   - ajax.googleapis.com
+   - cdnjs.cloudflare.com
+   - netdna.bootstrapcdn.com
+   - static.nrelate.com
+   - connect.facebook.net
   stripe:
    payment_retry_limit: 3,
    payment_retry_periods:

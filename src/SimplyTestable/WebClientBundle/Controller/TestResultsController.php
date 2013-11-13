@@ -44,6 +44,19 @@ class TestResultsController extends TestViewController
      * 
      * @return array
      */
+    private function getJsStaticAnalysisCommonCdnsToIgnore() {
+        if (!$this->container->hasParameter('js-static-analysis-ignore-common-cdns')) {
+            return array();
+        }
+        
+        return $this->container->getParameter('js-static-analysis-ignore-common-cdns');
+    }        
+    
+    
+    /**
+     * 
+     * @return array
+     */
     private function getAvailableTaskTypes() {
         $this->getAvailableTaskTypeService()->setUser($this->getUser());
         $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
@@ -282,6 +295,7 @@ class TestResultsController extends TestViewController
             'available_task_types' => $this->getAvailableTaskTypes(),
             'test_options' => $testOptions->__toKeyArray(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
+            'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
             'default_css_validation_options' => array(
                 'ignore-warnings' => 1,
                 'vendor-extensions' => 'warn',
