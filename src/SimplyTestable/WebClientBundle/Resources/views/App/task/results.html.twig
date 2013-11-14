@@ -68,7 +68,14 @@
             {% if task.state == 'failed' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-limit-reached' %}
             <section>                
                 <div class="span12 notification" id="task-summary">                    
-                    {% if task.output.result.isHttpClientOrServerErrorFailure %}                         
+                    {% if task.output.result.isValidatorServerErrorFailure %}
+                        
+                        <h2 class="info"><i class="icon-exclamation-sign"></i> Internal error!</h2>                        
+                        <p>
+                            Sorry, the HTML validator went bang trying to validate <a href="{{ task.url }}">{{ task.url }}</a>.
+                        </p>                                               
+                    
+                    {% elseif task.output.result.isHttpClientOrServerErrorFailure %}                         
                         <h2 class="info"><i class="icon-exclamation-sign"></i>
                             {{ task.output.result.firstError.class|replace({'http-retrieval-': ''}) }}
                             {{ task.output.result.firstError }}                            

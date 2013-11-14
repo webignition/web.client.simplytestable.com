@@ -233,6 +233,20 @@ class Result {
      * 
      * @return boolean
      */
+    public function isValidatorServerErrorFailure() {
+        $errors = $this->getErrors();
+        if (count($errors) === 0) {
+            return false;
+        }       
+        
+        return $errors[0]->getClass() == 'validator-internal-server-error';
+    }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
     public function isCssValidationUnknownExceptionError() {        
         $errors = $this->getErrors();
         if (count($errors) === 0) {
