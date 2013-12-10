@@ -97,6 +97,9 @@ class Request {
      * @return \SimplyTestable\WebClientBundle\Model\TestOptions
      */
     public function getTestOptions() {                
+        var_dump($this->requestData);
+        exit();
+        
         if (is_null($this->testOptions)) {            
             $this->populateTestOptionsFromRequestData();
         }

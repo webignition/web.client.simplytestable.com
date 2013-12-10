@@ -1671,6 +1671,10 @@ application.root.testStartFormController = function () {
         return $('input.task-type', getTestOptions());
     };
     
+    var getAuthenticationCheckbox = function () {
+        return $('#authentication-options input[type=checkbox]');
+    };
+    
     var getTaskTypeCount = function () {
         var taskTypeCount = 0;
         var taskTypeSelection = getTaskTypeSelection();
@@ -1718,6 +1722,20 @@ application.root.testStartFormController = function () {
     var setIntroContent = function () {
         $('.task-type-selection', getIntro()).html(getTaskTypeSelectionString());
     };
+    
+    var getAuthenticationSelectionString = function () {
+        if (getAuthenticationCheckbox().is(':checked')) {
+            return 'This site or page requires authentication.';
+        } else {
+            return 'This site or page does not require authentication.';
+        }
+        
+        return 'foo';
+    };
+    
+    var setAuthenticationContent = function () {
+        $('.authentication-selection', getTestOptions()).html(getAuthenticationSelectionString());
+    };
   
     this.initialise = function () {
         try {
@@ -1733,6 +1751,12 @@ application.root.testStartFormController = function () {
             var checkbox = $(this);
             checkbox.change(function () {
                 setIntroContent();
+            });
+        });
+        
+        getAuthenticationCheckbox().each(function () {
+            $(this).change(function () {
+                setAuthenticationContent();
             });
         });
     };
@@ -2354,7 +2378,7 @@ application.pages = {
                 var defaultState = (expandableControl.is('.expandable-control-default-closed ')) ? 'closed' : 'open';
                 var controlLinkIconName = (defaultState == 'closed') ? 'icon-caret-down' : 'icon-caret-up';
 
-                var controlLink = $('<a href="#">' + expandableControl.html() + ' <i class="icon ' + controlLinkIconName + '"></i></a>');
+                var controlLink = $('<a href="#" class="expandable-control-action">' + expandableControl.html() + ' <i class="icon ' + controlLinkIconName + '"></i></a>');
                 expandableControl.replaceWith(controlLink);
 
                 if (defaultState == 'closed') {

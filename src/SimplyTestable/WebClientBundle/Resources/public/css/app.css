@@ -1461,3 +1461,12 @@ body.app-history-all .no-tests {
 .pagination ul li a:hover span {
     opacity: 0.9;
 }
+
+#test-options h3 {
+    margin:0;
+    padding:0;
+}
+
+.expandable-control-action {
+    margin-left:8px;
+}

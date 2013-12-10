@@ -66,6 +66,8 @@ class AppController extends TestViewController
             $this->getTestOptionsAdapter()->setInvertInvertableOptions(true);
         }        
         $testOptions = $this->getTestOptionsAdapter()->getTestOptions();        
+        var_dump($testOptions);
+        exit();
 
         return $this->getCachableResponse($this->render($templateName, array(            
             'test_start_error' => $testStartError,
@@ -79,7 +81,8 @@ class AppController extends TestViewController
             'test_options' => $testOptions->__toKeyArray(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
-            'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions)
+            'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions),
+            'test_authentication_introduction' => $this->getTestAuthenticationIntroduction()
         )), $cacheValidatorHeaders);        
     }
     
@@ -106,6 +109,11 @@ class AppController extends TestViewController
         $testOptionsIntroduction .= '.';
         
         return $testOptionsIntroduction;
+    }
+    
+    
+    private function getTestAuthenticationIntroduction() {
+        return 'This site or page does not require authentication.';
     }
     
 

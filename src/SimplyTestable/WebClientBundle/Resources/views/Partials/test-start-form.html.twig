@@ -62,17 +62,38 @@
                    >
             <button type="submit" class="btn btn-primary btn-large" name="full-single" value="full">Test full site</button>
             <button type="submit" class="btn btn-large" name="full-single" value="single">Test this URL only</button>
-        </div>
+        </div>       
 
 <div id="test-options">
     <div class="intro">
-        <p><span class="task-type-selection">{% autoescape false %}{{ test_options_introduction }}{% endautoescape %}</span> <span class="expandable-control expandable-control-default-closed for-test-options-expandable">Change test options</span></p>
+        <p>
+            <span class="task-type-selection">{% autoescape false %}{{ test_options_introduction }}{% endautoescape %}</span>
+            <span class="expandable-control expandable-control-default-closed for-test-options-expandable">Choose what to test</span>            
+        </p>        
     </div>        
     
-    <div id="test-options-expandable">
-    
-    {% include 'SimplyTestableWebClientBundle:Partials:/task-type-options/task-type-options.html.twig' %} 
+    <div id="test-options-expandable">    
+        <h3>What to test</h3>        
+{% include 'SimplyTestableWebClientBundle:Partials:/task-type-options/task-type-options.html.twig' %}         
     </div>
+        
+    <div>       
+        <p>
+            <span class="authentication-selection">{% autoescape false %}{{ test_authentication_introduction }}{% endautoescape %}</span>
+            <span class="expandable-control expandable-control-default-open for-authentication-options-expandable">Set authentication options</span>
+        </p>
+    </div>         
+        
+    <div id="authentication-options-expandable">
+        <h3>Authentication options</h3>
+        
+<div class="test-options-set" id="authentication-options">
+    <label class="checkbox ">
+        <input type="checkbox" value="1" name="requires-authentication"> <span class="task-type-name">This site or page requires HTTP authentication</span>
+        <span class="help-block">Choose this if your site or page uses HTTP authentication (either <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">basic</a> or <a href="http://en.wikipedia.org/wiki/Digest_access_authentication">digest</a> authentication; commonly used for public staging sites)</span>
+    </label>                
+</div>        
+    </div>        
 </div> 
             
     </form>        

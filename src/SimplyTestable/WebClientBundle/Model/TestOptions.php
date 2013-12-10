@@ -9,8 +9,23 @@ class TestOptions {
      */
     private $availableTaskTypes = array();    
     
+    /**
+     *
+     * @var array
+     */
     private $testTypes = array();    
+    
+    /**
+     *
+     * @var array
+     */
     private $testTypeOptions = array();    
+    
+    /**
+     *
+     * @var array
+     */
+    private $globalOptions = array();
     
     /**
      * 
