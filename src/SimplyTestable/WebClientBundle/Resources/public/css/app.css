@@ -1467,6 +1467,11 @@ body.app-history-all .no-tests {
     padding:0;
 }
 
-.expandable-control-action {
-    margin-left:8px;
+#authentication-options .checkbox-lined {
+    margin-left: 20px;
+}
+
+#authentication-options .checkbox-lined span {
+    width: 70px;
+    display:inline-block;
 }

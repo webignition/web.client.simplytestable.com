@@ -123,13 +123,43 @@ class TestStartController extends TestController
         }
         
         $absoluteTestTypes = $testOptions->getAbsoluteTestTypes();        
+        
         foreach ($absoluteTestTypes as $testTypeKey => $selectedValue) {
             $redirectValues[$testTypeKey] = $selectedValue;
             $redirectValues = array_merge($redirectValues, $testOptions->getAbsoluteTestTypeOptions($testTypeKey));
         }
         
+        $absoluteFeatures = $testOptions->getAbsoluteFeatures();
+        foreach ($absoluteFeatures as $featureKey => $selectedValue) {            
+            $featureOptions = $testOptions->getAbsoluteFeatureOptions($featureKey);
+            
+            foreach ($featureOptions as $optionKey => $optionValue) {
+                if (!$this->isIgnoredOnRedirect($optionKey)) {
+                    $redirectValues[$optionKey] = $optionValue;   
+                }                 
+            }                       
+        }
+        
         return $redirectValues;
-    } 
+    }
+    
+    
+    /**
+     * 
+     * @param string $formKey
+     * @return boolean
+     */
+    private function isIgnoredOnRedirect($formKey) {
+        $testOptionsParameters = $this->container->getParameter('test_options'); 
+        if (!isset($testOptionsParameters['ignore_on_error'])) {
+            return false;
+        }
+        
+        //var_dump("cp01", $formKey, $testOptionsParameters['ignore_on_error']);
+        
+        return in_array($formKey, $testOptionsParameters['ignore_on_error']);
+    }
+    
     
     /**
      *
@@ -145,6 +175,10 @@ class TestStartController extends TestController
             $this->testOptionsAdapter->setAvailableTaskTypes($this->getAvailableTaskTypes());
             $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
             $this->testOptionsAdapter->setInvertInvertableOptions(true);
+            
+            if (isset($testOptionsParameters['features'])) {
+                $this->testOptionsAdapter->setAvailableFeatures($testOptionsParameters['features']);
+            }            
         }
         
         return $this->testOptionsAdapter;

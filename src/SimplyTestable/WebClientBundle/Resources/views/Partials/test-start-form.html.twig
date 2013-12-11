@@ -72,11 +72,11 @@
         </p>        
     </div>        
     
-    <div id="test-options-expandable">    
-        <h3>What to test</h3>        
+    <div id="test-options-expandable">        
 {% include 'SimplyTestableWebClientBundle:Partials:/task-type-options/task-type-options.html.twig' %}         
     </div>
         
+{% if test_options['requires-authentication'] is defined %}       
     <div>       
         <p>
             <span class="authentication-selection">{% autoescape false %}{{ test_authentication_introduction }}{% endautoescape %}</span>
@@ -84,16 +84,20 @@
         </p>
     </div>         
         
-    <div id="authentication-options-expandable">
-        <h3>Authentication options</h3>
-        
-<div class="test-options-set" id="authentication-options">
-    <label class="checkbox ">
-        <input type="checkbox" value="1" name="requires-authentication"> <span class="task-type-name">This site or page requires HTTP authentication</span>
-        <span class="help-block">Choose this if your site or page uses HTTP authentication (either <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">basic</a> or <a href="http://en.wikipedia.org/wiki/Digest_access_authentication">digest</a> authentication; commonly used for public staging sites)</span>
-    </label>                
-</div>        
+    <div id="authentication-options-expandable">        
+        <div class="test-options-set" id="authentication-options">
+            <label class="checkbox ">
+                <input type="checkbox" value="1" name="requires-authentication" {% if test_options['requires-authentication'] == 1 %}checked{% endif %}> <span class="task-type-name">This site or page requires HTTP authentication</span>
+                <span class="help-block">Choose this if your site or page uses HTTP authentication (either <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">basic</a> or <a href="http://en.wikipedia.org/wiki/Digest_access_authentication">digest</a> authentication; commonly used for public staging sites)</span>
+            </label>
+                
+            <label class="checkbox-lined"><span>Username</span><input name="requires-authentication-username" class="credential" type="text" placeholder="Enter required username" {% if test_options['requires-authentication-username'] is defined and test_options['requires-authentication-username'] != '' %}value="{{ test_options['requires-authentication-username'] }}"{% endif %}></label>
+            <label class="checkbox-lined"><span>Password</span><input name="requires-authentication-password" class="credential" type="password" placeholder="Enter required password"></label>
+        </div>        
     </div>        
+{% endif %}
+        
+        
 </div> 
             
     </form>        

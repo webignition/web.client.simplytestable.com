@@ -37,6 +37,7 @@ abstract class AbstractTestOptionsTest extends BaseTestCase {
 
         $this->getTestOptionsRequestParserService()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
         $this->getTestOptionsRequestParserService()->setAvailableTaskTypes($this->getAvailableTaskTypes());        
+        $this->getTestOptionsRequestParserService()->setAvailableFeatures($this->getAvailableFeatures());
         
         return $this->getTestOptionsRequestParserService()->getTestOptions();        
     }
@@ -57,7 +58,17 @@ abstract class AbstractTestOptionsTest extends BaseTestCase {
      */
     private function getAvailableTaskTypes() {        
         return $this->getAvailableTaskTypeService()->get();    
-    }    
+    } 
+    
+    
+    /**
+     * 
+     * @return array
+     */
+    private function getAvailableFeatures() {
+        $testOptionsParameters = $this->container->getParameter('test_options');  
+        return $testOptionsParameters['features'];        
+    }
     
     
     /**

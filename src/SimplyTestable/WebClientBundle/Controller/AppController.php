@@ -66,8 +66,6 @@ class AppController extends TestViewController
             $this->getTestOptionsAdapter()->setInvertInvertableOptions(true);
         }        
         $testOptions = $this->getTestOptionsAdapter()->getTestOptions();        
-        var_dump($testOptions);
-        exit();
 
         return $this->getCachableResponse($this->render($templateName, array(            
             'test_start_error' => $testStartError,
@@ -82,7 +80,7 @@ class AppController extends TestViewController
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
             'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions),
-            'test_authentication_introduction' => $this->getTestAuthenticationIntroduction()
+            'test_authentication_introduction' => $this->getTestAuthenticationIntroduction($testOptions)
         )), $cacheValidatorHeaders);        
     }
     
@@ -112,8 +110,15 @@ class AppController extends TestViewController
     }
     
     
-    private function getTestAuthenticationIntroduction() {
-        return 'This site or page does not require authentication.';
+    private function getTestAuthenticationIntroduction(\SimplyTestable\WebClientBundle\Model\TestOptions $testOptions) {
+        if (!$testOptions->hasFeatureOptions('http-authentication')) {
+            return 'This site or page does not require authentication.';
+        }
+        
+        $httpAuthenticationOptions = $testOptions->getFeatureOptions('http-authentication');
+        return (isset($httpAuthenticationOptions['requires-authentication']) && $httpAuthenticationOptions['requires-authentication'])
+            ? 'This site or page requires authentication.'
+            : 'This site or page does not require authentication.';
     }
     
 
@@ -122,23 +127,23 @@ class AppController extends TestViewController
      * @return \Symfony\Component\HttpFoundation\ParameterBag
      */
     private function defaultAndPersistentTestOptionsToParameterBag() {
-        $testOptionsParameters = $this->container->getParameter('test_options');
+        $testOptionsParameters = $this->container->getParameter('test_options');        
         return new \Symfony\Component\HttpFoundation\ParameterBag($this->getPersistentValues($testOptionsParameters['names_and_default_values']));
     }    
     
     
-    /**
-     * 
-     * @return array
-     */
-    private function getTestOptions() {
-        $testOptionsParameters = $this->container->getParameter('test_options');
-        $testOptions = $this->getPersistentValues($testOptionsParameters['names_and_default_values']);
-        
-        
-        
-        return $testOptions;
-    }
+//    /**
+//     * 
+//     * @return array
+//     */
+//    private function getTestOptions() {
+//        $testOptionsParameters = $this->container->getParameter('test_options');
+//        $testOptions = $this->getPersistentValues($testOptionsParameters['names_and_default_values']);
+//        
+//        
+//        
+//        return $testOptions;
+//    }
     
     
     /**
@@ -432,6 +437,10 @@ class AppController extends TestViewController
             $this->testOptionsAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
             $this->testOptionsAdapter->setAvailableTaskTypes($this->getAvailableTaskTypes());
             $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);           
+            
+            if (isset($testOptionsParameters['features'])) {
+                $this->testOptionsAdapter->setAvailableFeatures($testOptionsParameters['features']);
+            }
         }
         
         return $this->testOptionsAdapter;

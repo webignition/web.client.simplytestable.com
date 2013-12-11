@@ -1729,12 +1729,14 @@ application.root.testStartFormController = function () {
         } else {
             return 'This site or page does not require authentication.';
         }
-        
-        return 'foo';
     };
     
     var setAuthenticationContent = function () {
         $('.authentication-selection', getTestOptions()).html(getAuthenticationSelectionString());
+    };
+    
+    var getAuthenticationCredentialInputs = function () {        
+        return $('input.credential', $('#authentication-options '));
     };
   
     this.initialise = function () {
@@ -1757,6 +1759,25 @@ application.root.testStartFormController = function () {
         getAuthenticationCheckbox().each(function () {
             $(this).change(function () {
                 setAuthenticationContent();
+            });
+        });
+        
+        getAuthenticationCredentialInputs().each(function () {
+            $(this).keyup(function () {
+                var hasNonBlankCredential = false;
+                getAuthenticationCredentialInputs().each(function () {
+                    if ($(this).val() !== '') {
+                        hasNonBlankCredential = true;
+                    }
+                });
+                
+                if (hasNonBlankCredential === true && !getAuthenticationCheckbox().is(':checked')) {
+                    getAuthenticationCheckbox().click();
+                }
+                
+                if (hasNonBlankCredential === false && getAuthenticationCheckbox().is(':checked')) {
+                    getAuthenticationCheckbox().click();
+                }
             });
         });
     };

@@ -23,6 +23,13 @@ class Request {
      *
      * @var array
      */
+    private $availableFeatures = array();
+    
+    
+    /**
+     *
+     * @var array
+     */
     private $namesAndDefaultValues= array();
     
     
@@ -73,6 +80,15 @@ class Request {
         $this->availableTaskTypes = $availableTaskTypes;
     }
     
+    
+    /**
+     * 
+     * @param array $featuresDefinition
+     */
+    public function setAvailableFeatures($featuresDefinition) {
+        $this->availableFeatures = $featuresDefinition;
+    }
+    
 
     /**
      * 
@@ -96,10 +112,7 @@ class Request {
      * 
      * @return \SimplyTestable\WebClientBundle\Model\TestOptions
      */
-    public function getTestOptions() {                
-        var_dump($this->requestData);
-        exit();
-        
+    public function getTestOptions() {        
         if (is_null($this->testOptions)) {            
             $this->populateTestOptionsFromRequestData();
         }
@@ -142,8 +155,14 @@ class Request {
     private function populateTestOptionsFromRequestData() {
         $this->testOptions = new TestOptions();
         $this->testOptions->setAvailableTaskTypes($this->availableTaskTypes);
-       
-        $testTypes = $this->parseTestTypes(); 
+        $this->testOptions->setAvailableFeatures($this->availableFeatures);
+        
+        $features = $this->parseFeatures();
+        foreach ($features as $featureKey => $featureOptions) {
+            $this->testOptions->addFeatureOptions($featureKey, $this->parseFeatureOptions($this->getFormKeyFromFeatureKey($featureKey)));
+        }        
+        
+        $testTypes = $this->parseTestTypes();
         
         foreach ($testTypes as $testTypeKey => $testTypeName) {
             $this->testOptions->addTestType($testTypeKey, $testTypeName);
@@ -152,7 +171,15 @@ class Request {
         foreach ($this->availableTaskTypes as $testTypeKey => $testTypeName) {            
             $this->testOptions->addTestTypeOptions($testTypeKey, $this->parseTestTypeOptions($testTypeKey));
         }
-    }    
+    } 
+    
+    private function getFormKeyFromFeatureKey($featureKey) {
+        if (!isset($this->availableFeatures[$featureKey])) {
+            return null;
+        }
+        
+        return $this->availableFeatures[$featureKey]['form_key'];
+    }
     
     
     /**
@@ -169,6 +196,23 @@ class Request {
         }              
         
         return $testTypes;
+    }
+    
+    
+    /**
+     * 
+     * @return array
+     */
+    private function parseFeatures() {
+        $features = array();
+        
+        foreach ($this->availableFeatures as $featureKey => $featureOptions) {            
+            if (isset($featureOptions['enabled']) && $featureOptions['enabled'] === true) {
+                $features[$featureKey] = $featureOptions;
+            }
+        }
+        
+        return $features;
     }
     
     
@@ -212,6 +256,46 @@ class Request {
     }
     
     
+    private function parseFeatureOptions($featureFormKey) {
+        $featureOptions = array();
+       
+        // only handles parsing out feature options when at least something (the parent key) is present in the request data
+        // how to handle default feature options that are missing entirely from the request data?
+        
+        foreach ($this->requestData as $key => $value) {            
+            //var_dump($key, $featureFormKey, $this->requestKeyMatchesFeatureKey($key, $featureFormKey), array_key_exists($key, $this->namesAndDefaultValues));
+            
+            if ($this->requestKeyMatchesFeatureKey($key, $featureFormKey) && array_key_exists($key, $this->namesAndDefaultValues)) {               
+                
+                switch (gettype($this->namesAndDefaultValues[$key])) {
+                    case 'integer':
+                        $featureOptions[$key] = (int)$value;
+                        break;
+                    
+                    case 'array':
+                        $rawValues = (is_string($value)) ? explode("\n", $value) : $value;
+                        $cleanedValues = array();
+                        foreach ($rawValues as $rawValue) {
+                            $rawValue = trim($rawValue);
+                            if ($rawValue != '') {
+                                $cleanedValues[] = $rawValue;
+                            }
+                        }
+                        
+                        $featureOptions[$key] = $cleanedValues;
+                        break;
+                        
+                    default:
+                        $featureOptions[$key] = $value;
+                        break;
+                }
+            }
+        }
+        
+        return $featureOptions;
+    }    
+    
+    
     /**
      * 
      * @param string $requestKey
@@ -224,6 +308,17 @@ class Request {
         }
         
         return substr($requestKey, 0, strlen($testTypeKey)) == $testTypeKey;
+    }
+    
+    
+    /**
+     * 
+     * @param string $requestKey
+     * @param string $featureFormKey
+     * @return boolean
+     */
+    private function requestKeyMatchesFeatureKey($requestKey, $featureFormKey) {        
+        return substr($requestKey, 0, strlen($featureFormKey)) == $featureFormKey;
     }
         
 }

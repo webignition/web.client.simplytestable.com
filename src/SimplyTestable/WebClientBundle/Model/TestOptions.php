@@ -9,6 +9,13 @@ class TestOptions {
      */
     private $availableTaskTypes = array();    
     
+    
+    /**
+     *
+     * @var array
+     */    
+    private $availableFeatures = array();
+    
     /**
      *
      * @var array
@@ -25,7 +32,7 @@ class TestOptions {
      *
      * @var array
      */
-    private $globalOptions = array();
+    private $features = array();
     
     /**
      * 
@@ -35,14 +42,33 @@ class TestOptions {
         $this->availableTaskTypes = $availableTaskTypes;
     }
     
+    
+    /**
+     * 
+     * @param array $availableFeatures
+     */
+    public function setAvailableFeatures($availableFeatures) {
+        $this->availableFeatures = $availableFeatures;
+    }
+    
     /**
      * 
      * @param string $testType
      */
-    public function addTestType($testTypeKey, $testType) {
+    public function addTestType($testTypeKey, $testType) {        
         if (!array_key_exists($testTypeKey, $this->testTypes)) {
             $this->testTypes[$testTypeKey] = $testType;
         }
+    }
+    
+    
+    /**
+     * 
+     * @param string $featureKey
+     * @param array $featureOptions
+     */
+    public function addFeatureOptions($featureKey, $featureOptions) {
+        $this->features[$featureKey] = $featureOptions;
     }
     
     
@@ -63,6 +89,17 @@ class TestOptions {
     public function hasTestTypes() {
         return count($this->testTypes) > 0;
     }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function hasFeatures() {
+        return count($this->features) > 0;
+    }
+    
+    
     
     /**
      * 
@@ -86,6 +123,21 @@ class TestOptions {
         }
         
         return $testTypes;
+    }
+    
+    
+    /**
+     * 
+     * @return array
+     */
+    public function getFeatures() {
+        $features = array();
+        
+        foreach ($this->features as $featureKey => $featureOptions) {
+            $features[] = $featureKey;
+        }
+        
+        return $features;
     }
     
     
@@ -120,6 +172,39 @@ class TestOptions {
         return array();
     }
     
+
+    /**
+     * 
+     * @param string $feature
+     * @return boolean
+     */
+    public function hasFeatureOptions($feature) {
+        if (!isset($this->features[$feature])) {
+            return false;
+        }
+        
+        if (!is_array($this->features[$feature])) {
+            return false;
+        }
+        
+        return count($this->features[$feature]) > 0;
+    }     
+    
+    
+    
+    /**
+     * 
+     * @param string $feature
+     * @return array
+     */
+    public function getFeatureOptions($feature) {
+        if ($this->hasFeatureOptions($feature)) {            
+            return $this->features[$feature];
+        }
+        
+        return array();
+    }
+    
     
     /**
      * 
@@ -137,6 +222,24 @@ class TestOptions {
         
         return $absoluteTestTypeOptions;
     } 
+    
+    
+    public function getAbsoluteFeatureOptions($featureKey) {
+        $absoluteFeatureOptions = array();
+        $featureOptions = $this->getFeatureOptions($featureKey);
+        
+        foreach ($featureOptions as $optionKey => $optionValue) {
+            //var_dump($optionKey, $optionValue);
+            
+//            $key = ($useFullOptionKey) ? $optionKey : str_replace($testType.'-', '', $optionKey); 
+            $absoluteFeatureOptions[$optionKey] = $optionValue;
+        }
+        
+        return $absoluteFeatureOptions;        
+        
+//        var_dump($featureKey, $featureOptions);
+//        exit();
+    }
     
     
     /**
@@ -175,6 +278,21 @@ class TestOptions {
     }
     
     
+    public function getAbsoluteFeatures() {
+        $absoluteFeautures = array();
+        
+        foreach ($this->availableFeatures as $featureKey => $featureOptions) {            
+            if ($this->hasFeatureOptions($featureKey)) {
+                $absoluteFeautures[$featureKey] = 1;
+            } else {
+                $absoluteFeautures[$featureKey] = 0;
+            }
+        }
+        
+        return $absoluteFeautures;        
+    }
+    
+    
     /**
      * 
      * @return array
@@ -196,12 +314,28 @@ class TestOptions {
             }
         }
         
+        if ($this->hasFeatures()) {
+            if (!isset($optionsAsArray['feature-options'])) {
+                $optionsAsArray['feature-options'] = array();
+            }
+            
+            foreach ($this->getFeatures() as $featureKey) {
+                $optionsAsArray['feature-options'] = array_merge($optionsAsArray['feature-options'], $this->getAbsoluteFeatureOptions($featureKey));
+            }           
+        }
+        
         return $optionsAsArray;   
     }
     
     
     public function __toKeyArray() {
         $optionsAsArray = array();
+        
+        foreach ($this->features as $featureKey => $featureOptions) {
+            foreach ($featureOptions as $optionKey => $optionValue) {
+                $optionsAsArray[$optionKey] = $optionValue;
+            }
+        }
         
         foreach ($this->testTypes as $testTypeKey => $testType) {
             $optionsAsArray[$testTypeKey] = 1;
