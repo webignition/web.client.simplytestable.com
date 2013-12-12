@@ -315,12 +315,12 @@ class TestOptions {
         }
         
         if ($this->hasFeatures()) {
-            if (!isset($optionsAsArray['feature-options'])) {
-                $optionsAsArray['feature-options'] = array();
+            if (!isset($optionsAsArray['parameters'])) {
+                $optionsAsArray['parameters'] = array();
             }
             
             foreach ($this->getFeatures() as $featureKey) {
-                $optionsAsArray['feature-options'] = array_merge($optionsAsArray['feature-options'], $this->getAbsoluteFeatureOptions($featureKey));
+                $optionsAsArray['parameters'] = array_merge($optionsAsArray['parameters'], $this->getAbsoluteFeatureOptions($featureKey));
             }           
         }
         
