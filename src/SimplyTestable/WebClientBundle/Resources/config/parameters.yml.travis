@@ -118,7 +118,15 @@ parameters:
       errors: errors/
       html-validation: html-validation/
   test_options:
+    features:
+        http-authentication:
+          enabled: true
+          form_key: http-auth
+    ignore_on_error:
+        - http-auth-password
     names_and_default_values:
+        http-auth-username: ""
+        http-auth-password: ""
         html-validation: 1
         css-validation: 1
         css-validation-ignore-warnings: 1
