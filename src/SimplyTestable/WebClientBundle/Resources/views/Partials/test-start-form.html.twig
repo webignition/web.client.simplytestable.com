@@ -69,7 +69,7 @@
 {% include 'SimplyTestableWebClientBundle:Partials:/task-type-options/task-type-options.html.twig' %}         
     </div>
         
-{% if test_options['http-auth-username'] is defined %}              
+{% if test_options['http-authentication'] is defined %}              
     <div>       
         <p>
             <span class="authentication-selection">{% autoescape false %}{{ test_authentication_introduction }}{% endautoescape %}</span>

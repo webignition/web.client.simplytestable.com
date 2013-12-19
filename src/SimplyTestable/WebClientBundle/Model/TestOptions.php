@@ -332,6 +332,8 @@ class TestOptions {
         $optionsAsArray = array();
         
         foreach ($this->features as $featureKey => $featureOptions) {
+            $optionsAsArray[$featureKey] = 1;
+            
             foreach ($featureOptions as $optionKey => $optionValue) {
                 $optionsAsArray[$optionKey] = $optionValue;
             }

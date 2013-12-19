@@ -47,6 +47,18 @@
                 </div>                
         {% include 'SimplyTestableWebClientBundle:Partials:/task-type-options/task-type-options.html.twig' %} 
                 </div>
+                
+{% if test_options['http-authentication'] is defined %}              
+    <div>       
+        <p>
+            {% if test_options['http-auth-username'] is defined %}
+                This site or page does not require authentication.
+            {% else %}
+                This site or page requires authentication.
+            {% endif %}
+        </p>
+    </div>
+{% endif %}                
         </div>
             
         {% endif %}

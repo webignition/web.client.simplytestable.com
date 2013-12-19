@@ -77,7 +77,7 @@ class TestProgressController extends TestViewController
         }      
         
         $remoteTest = $this->getTestService()->getRemoteTestService()->get();        
-        
+
         if ($test->getState() == 'failed-no-sitemap' && is_null($remoteTest->getCrawl())) {
             return $this->forward('SimplyTestableWebClientBundle:Test:retest', array(
                 'website' => $website,
@@ -88,7 +88,7 @@ class TestProgressController extends TestViewController
         $taskTypes = $remoteTest->getTaskTypes();
         
         $this->getTestOptionsAdapter()->setRequestData($remoteTest->getOptions());
-        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();     
+        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();               
 
         $viewData = array(
             'website' => idn_to_utf8($website),
@@ -247,6 +247,10 @@ class TestProgressController extends TestViewController
             $this->testOptionsAdapter->setAvailableTaskTypes($this->getAvailableTaskTypes());
             $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
             $this->testOptionsAdapter->setInvertInvertableOptions(true);
+            
+            if (isset($testOptionsParameters['features'])) {
+                $this->testOptionsAdapter->setAvailableFeatures($testOptionsParameters['features']);
+            }            
         }
         
         return $this->testOptionsAdapter;
