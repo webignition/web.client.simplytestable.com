@@ -110,13 +110,13 @@ class AppController extends TestViewController
     }
     
     
-    private function getTestAuthenticationIntroduction(\SimplyTestable\WebClientBundle\Model\TestOptions $testOptions) {
+    private function getTestAuthenticationIntroduction(\SimplyTestable\WebClientBundle\Model\TestOptions $testOptions) {        
         if (!$testOptions->hasFeatureOptions('http-authentication')) {
             return 'This site or page does not require authentication.';
         }
         
         $httpAuthenticationOptions = $testOptions->getFeatureOptions('http-authentication');
-        return (isset($httpAuthenticationOptions['requires-authentication']) && $httpAuthenticationOptions['requires-authentication'])
+        return (isset($httpAuthenticationOptions['http-auth-username']) && $httpAuthenticationOptions['http-auth-username'] != '')
             ? 'This site or page requires authentication.'
             : 'This site or page does not require authentication.';
     }
