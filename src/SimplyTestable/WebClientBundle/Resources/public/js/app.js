@@ -1671,9 +1671,9 @@ application.root.testStartFormController = function () {
         return $('input.task-type', getTestOptions());
     };
     
-    var getAuthenticationCheckbox = function () {
-        return $('#authentication-options input[type=checkbox]');
-    };
+//    var getAuthenticationCheckbox = function () {
+//        return $('#authentication-options input[type=checkbox]');
+//    };
     
     var getTaskTypeCount = function () {
         var taskTypeCount = 0;
@@ -1723,13 +1723,17 @@ application.root.testStartFormController = function () {
         $('.task-type-selection', getIntro()).html(getTaskTypeSelectionString());
     };
     
-    var getAuthenticationSelectionString = function () {
-        if (getAuthenticationCheckbox().is(':checked')) {
+    var getAuthenticationSelectionString = function () {       
+        if (hasAuthenticationCredentials()) {
             return 'This site or page requires authentication.';
         } else {
             return 'This site or page does not require authentication.';
         }
     };
+    
+    // NEED TO SET UP PASSWORD-PROTECTED FULL SITE.
+    // NEED TO TEST TO SEE HOW TO HANDLE RETRIEVAL OF ROBOTS.TXT AND SITEMAP
+    
     
     var setAuthenticationContent = function () {
         $('.authentication-selection', getTestOptions()).html(getAuthenticationSelectionString());
@@ -1737,6 +1741,17 @@ application.root.testStartFormController = function () {
     
     var getAuthenticationCredentialInputs = function () {        
         return $('input.credential', $('#authentication-options '));
+    };
+    
+    var hasAuthenticationCredentials = function () {
+        var hasAuthenticationCredentials = false;
+        getAuthenticationCredentialInputs().each(function () {
+            if ($(this).val() !== '') {
+                hasAuthenticationCredentials = true;
+            }
+        });
+        
+        return hasAuthenticationCredentials;
     };
   
     this.initialise = function () {
@@ -1756,28 +1771,9 @@ application.root.testStartFormController = function () {
             });
         });
         
-        getAuthenticationCheckbox().each(function () {
-            $(this).change(function () {
-                setAuthenticationContent();
-            });
-        });
-        
         getAuthenticationCredentialInputs().each(function () {
             $(this).keyup(function () {
-                var hasNonBlankCredential = false;
-                getAuthenticationCredentialInputs().each(function () {
-                    if ($(this).val() !== '') {
-                        hasNonBlankCredential = true;
-                    }
-                });
-                
-                if (hasNonBlankCredential === true && !getAuthenticationCheckbox().is(':checked')) {
-                    getAuthenticationCheckbox().click();
-                }
-                
-                if (hasNonBlankCredential === false && getAuthenticationCheckbox().is(':checked')) {
-                    getAuthenticationCheckbox().click();
-                }
+                setAuthenticationContent();
             });
         });
     };

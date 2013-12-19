@@ -1467,9 +1467,9 @@ body.app-history-all .no-tests {
     padding:0;
 }
 
-#authentication-options .checkbox-lined {
+/*#authentication-options .checkbox-lined {
     margin-left: 20px;
-}
+}*/
 
 #authentication-options .checkbox-lined span {
     width: 70px;
