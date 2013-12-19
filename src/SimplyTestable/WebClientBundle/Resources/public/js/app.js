@@ -1691,8 +1691,6 @@ application.root.testStartFormController = function () {
         var taskTypeCount = getTaskTypeCount();
         var taskTypeIndex = 0;
         
-        console.log(taskTypeSelection);
-        
         for (var taskTypeName in taskTypeSelection) {
             if (taskTypeSelection.hasOwnProperty(taskTypeName)) {
                 taskTypeIndex = taskTypeIndex + 1;                
@@ -1756,7 +1754,7 @@ application.root.testStartFormController = function () {
         if (hasAuthenticationCredentials()) {
             getTaskTypeCheckboxes().each(function () {
                 var checkbox = $(this);
-                if (checkbox.is(':checked') && !isTaskTypeCompatibleWithHttpAuth(checkbox.attr('name'))) {
+                if (!isTaskTypeCompatibleWithHttpAuth(checkbox.attr('name'))) {
                     deactivateTaskType(checkbox.attr('name'));
                 }
             });

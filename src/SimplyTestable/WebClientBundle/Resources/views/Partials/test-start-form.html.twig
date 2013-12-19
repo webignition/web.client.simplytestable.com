@@ -28,14 +28,7 @@
             {% if 'js-static-analysis' in available_task_types|keys %}
         <div class="alert alert-error for:input-website">
             <button type="button" class="close" data-dismiss="alert">×</button>
-            <p><strong>Slow down!</strong></p>
-            <p>
-                You'll need to choose something to test. Tick 
-                {% for task_type in available_task_types %}
-                    <strong>{{ task_type }}</strong>{% if loop.revindex == 2 %} or {% else %}{% if loop.last == false %}, {% else %}{% endif %}{% endif %}                    
-                {% endfor %}
-                as required.
-            </p>            
+            <strong>Slow down!</strong> You'll need to choose something to test.           
         </div>             
             {% else %}
         <div class="alert alert-error for:input-website">
