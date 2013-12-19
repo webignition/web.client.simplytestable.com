@@ -1661,7 +1661,7 @@ application.root.testStartFormController = function () {
             var label = $('label', testOptionsSet).first();
             var checkbox = $('input[type=checkbox]', label);
             
-            taskTypeSelection[$('span.task-type-name', label).text()] = checkbox.is(':checked');
+            taskTypeSelection[$('span.task-type-name b', label).text()] = checkbox.is(':checked') && checkbox.attr('disabled') !== 'disabled';
         });
         
         return taskTypeSelection;        
@@ -1690,6 +1690,8 @@ application.root.testStartFormController = function () {
         var taskTypeSelection = getTaskTypeSelection();        
         var taskTypeCount = getTaskTypeCount();
         var taskTypeIndex = 0;
+        
+        console.log(taskTypeSelection);
         
         for (var taskTypeName in taskTypeSelection) {
             if (taskTypeSelection.hasOwnProperty(taskTypeName)) {
@@ -1755,10 +1757,19 @@ application.root.testStartFormController = function () {
             getTaskTypeCheckboxes().each(function () {
                 var checkbox = $(this);
                 if (checkbox.is(':checked') && !isTaskTypeCompatibleWithHttpAuth(checkbox.attr('name'))) {
-                    disableTaskType(checkbox.attr('name'));
+                    deactivateTaskType(checkbox.attr('name'));
                 }
             });
+        } else {
+            getTaskTypeCheckboxes().each(function () {
+                var checkbox = $(this);
+                if (checkbox.parent().is('.deactivated')) {
+                    reactivateTaskType(checkbox.attr('name'));
+                }
+            });            
         }
+        
+        setIntroContent();
     };
     
     var getTaskTypeCheckboxByKey = function (taskTypeKey) {
@@ -1773,15 +1784,36 @@ application.root.testStartFormController = function () {
         return checkbox;
     };
     
-    var disableTaskType = function (taskTypeKey) {
+    var deactivateTaskType = function (taskTypeKey) {
         var checkbox = getTaskTypeCheckboxByKey(taskTypeKey);
         if (checkbox === null) {
             return;
         }
+        
+        var testOptionSet = getTestOptionSetFromTaskTypeKey(taskTypeKey);
 
         checkbox.attr('disabled', 'disabled');        
-        checkbox.parent().addClass('disabled');
-        $('.test-options-advanced', getTestOptionSetFromTaskTypeKey(taskTypeKey)).slideUp();
+        checkbox.parent().addClass('deactivated');
+        
+        if ($('.deactivation-reason', testOptionSet).length === 0) {
+            $('.task-type-name', testOptionSet).append(' <span class="deactivation-reason">Not yet available when using HTTP authentication</span>');    
+        }        
+        
+        $('.test-options-advanced', testOptionSet).slideUp();
+    };    
+    
+    var reactivateTaskType = function (taskTypeKey) {
+        var checkbox = getTaskTypeCheckboxByKey(taskTypeKey);
+        if (checkbox === null) {
+            return;
+        }
+        
+        var testOptionSet = getTestOptionSetFromTaskTypeKey(taskTypeKey);
+
+        checkbox.removeAttr('disabled');        
+        checkbox.parent().removeClass('deactivated');
+        $('.deactivation-reason', testOptionSet).remove();
+        $('.test-options-advanced', getTestOptionSetFromTaskTypeKey(taskTypeKey)).slideDown();
     };
     
     var getTestOptionSetFromTaskTypeKey = function (taskTypeKey) {

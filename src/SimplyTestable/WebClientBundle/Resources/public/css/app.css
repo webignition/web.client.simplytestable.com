@@ -1149,8 +1149,17 @@ body.full-width {
     background-color: transparent;    
 }
 
-#test-options .test-options-set label.disabled {
+#test-options .test-options-set label b {
+    font-weight: normal;
+}
+
+#test-options .test-options-set label.disabled,
+#test-options .test-options-set label.deactivated {
     opacity: 0.4
+}
+
+#test-options .test-options-set label.deactivated .task-type-name b {
+    text-decoration:line-through;
 }
 
 .full-width-container .alert {

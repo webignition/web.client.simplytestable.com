@@ -1,6 +1,6 @@
 <div class="test-options-set task-type-option {% if (is_disabled) and (test_options['html-validation'] is not defined or test_options['html-validation'] == 0) %}test-options-set-disabled{% endif %}" id="html-validation-options">
     <label class="checkbox {% if (is_disabled) and (test_options['html-validation'] is not defined or test_options['html-validation'] == 0) %}disabled{% endif %}">
-        <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="html-validation" {% if (test_options['html-validation'] is defined and test_options['html-validation'] == 1) %} checked {% endif %} /> <span class="task-type-name">HTML validation</span>
+        <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="html-validation" {% if (test_options['html-validation'] is defined and test_options['html-validation'] == 1) %} checked {% endif %} /> <span class="task-type-name"><b>HTML validation</b></span>
         <span class="help-block">Examine whether the HTML markup for all your pages is valid</span>
     </label>                
 </div>
