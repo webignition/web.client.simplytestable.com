@@ -1671,10 +1671,6 @@ application.root.testStartFormController = function () {
         return $('input.task-type', getTestOptions());
     };
     
-//    var getAuthenticationCheckbox = function () {
-//        return $('#authentication-options input[type=checkbox]');
-//    };
-    
     var getTaskTypeCount = function () {
         var taskTypeCount = 0;
         var taskTypeSelection = getTaskTypeSelection();
@@ -1729,11 +1725,7 @@ application.root.testStartFormController = function () {
         } else {
             return 'This site or page does not require authentication.';
         }
-    };
-    
-    // NEED TO SET UP PASSWORD-PROTECTED FULL SITE.
-    // NEED TO TEST TO SEE HOW TO HANDLE RETRIEVAL OF ROBOTS.TXT AND SITEMAP
-    
+    };    
     
     var setAuthenticationContent = function () {
         $('.authentication-selection', getTestOptions()).html(getAuthenticationSelectionString());
@@ -1752,6 +1744,57 @@ application.root.testStartFormController = function () {
         });
         
         return hasAuthenticationCredentials;
+    };
+    
+    var isTaskTypeCompatibleWithHttpAuth = function (taskTypeKey) {
+        return ['html-validation'].indexOf(taskTypeKey) !== -1;        
+    };
+    
+    var updateTaskTypesByAuthenticationChoice = function () {
+        if (hasAuthenticationCredentials()) {
+            getTaskTypeCheckboxes().each(function () {
+                var checkbox = $(this);
+                if (checkbox.is(':checked') && !isTaskTypeCompatibleWithHttpAuth(checkbox.attr('name'))) {
+                    disableTaskType(checkbox.attr('name'));
+                }
+            });
+        }
+    };
+    
+    var getTaskTypeCheckboxByKey = function (taskTypeKey) {
+        var checkbox = null;
+        
+        getTaskTypeCheckboxes().each(function () {
+            if ($(this).attr('name') === taskTypeKey) {
+                checkbox = $(this);
+            }
+        });  
+        
+        return checkbox;
+    };
+    
+    var disableTaskType = function (taskTypeKey) {
+        var checkbox = getTaskTypeCheckboxByKey(taskTypeKey);
+        if (checkbox === null) {
+            return;
+        }
+
+        checkbox.attr('disabled', 'disabled');        
+        checkbox.parent().addClass('disabled');
+        $('.test-options-advanced', getTestOptionSetFromTaskTypeKey(taskTypeKey)).slideUp();
+    };
+    
+    var getTestOptionSetFromTaskTypeKey = function (taskTypeKey) {
+        var testOptionSet = null;
+        
+        $('.test-options-set', getTestOptions()).each(function () {
+            var currentTestOptionSet = $(this);
+            if ($('input[name='+taskTypeKey+']', currentTestOptionSet).length === 1) {
+                testOptionSet = currentTestOptionSet;
+            }
+        });
+        
+        return testOptionSet;
     };
   
     this.initialise = function () {
@@ -1774,6 +1817,7 @@ application.root.testStartFormController = function () {
         getAuthenticationCredentialInputs().each(function () {
             $(this).keyup(function () {
                 setAuthenticationContent();
+                updateTaskTypesByAuthenticationChoice();
             });
         });
     };
