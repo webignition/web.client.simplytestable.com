@@ -19,29 +19,21 @@ class HttpAuthenticationFeatureTest extends AbstractTestOptionsTest {
     public function testPasswordBlankByDefault() {
         $httpAuthenticationFeatureOptions = $this->getHttpAuthenticationFeatureOptions();
         $this->assertFalse(isset($httpAuthenticationFeatureOptions['password']));
-    }  
-    
-    public function testGetRequiresAuthenticationFromRequest() {
-        $this->getRequestData()->set('authentication', '1');
-        
-        $httpAuthenticationFeatureOptions = $this->getHttpAuthenticationFeatureOptions();        
-        $this->assertEquals(1, $httpAuthenticationFeatureOptions['authentication']);
-    }
-    
+    }    
     
     public function testGetUsernameFromRequest() {
-        $this->getRequestData()->set('authentication-username', 'foo');
+        $this->getRequestData()->set('http-auth-username', 'foo');
         
         $httpAuthenticationFeatureOptions = $this->getHttpAuthenticationFeatureOptions();                
-        $this->assertEquals('foo', $httpAuthenticationFeatureOptions['authentication-username']);
+        $this->assertEquals('foo', $httpAuthenticationFeatureOptions['http-auth-username']);
     }
     
     
     public function testGetPasswordFromRequest() {
-        $this->getRequestData()->set('authentication-password', 'bar');
+        $this->getRequestData()->set('http-auth-password', 'bar');
         
         $httpAuthenticationFeatureOptions = $this->getHttpAuthenticationFeatureOptions();        
-        $this->assertEquals('bar', $httpAuthenticationFeatureOptions['authentication-password']);
+        $this->assertEquals('bar', $httpAuthenticationFeatureOptions['http-auth-password']);
     }
     
     
