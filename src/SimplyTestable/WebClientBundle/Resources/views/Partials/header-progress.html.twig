@@ -51,10 +51,28 @@
 {% if test_options['http-authentication'] is defined %}              
     <div>       
         <p>
-            {{ test_authentication_introduction }}
+            <span class="authentication-selection">{% autoescape false %}{{ test_authentication_introduction }}{% endautoescape %}</span>
+            
+            {% if remote_test.hasParameter('http-auth-username') %}
+            <span class="expandable-control expandable-control-default-closed for-authentication-options-expandable">See authentication options</span>
+            {% endif %}
         </p>
-    </div>
-{% endif %}                
+    </div>         
+        
+    {% if remote_test.hasParameter('http-auth-username') %}
+    <div id="authentication-options-expandable">        
+        <h3>HTTP Authentication Details</h3>        
+        <div class="test-options-set" id="authentication-options">
+            <label class="checkbox-lined"><span>Username</span><input disabled name="http-auth-username" class="credential" type="text" value="{{ remote_test.parameter('http-auth-username') }}"></label>
+            <label class="checkbox-lined">
+                <span>Password</span>
+                <input disabled name="http-auth-password" class="credential" type="password"
+                       value="{% for i in 0..remote_test.parameter('http-auth-username')|length - 1 %}*{% endfor %}">
+            </label>
+        </div>        
+    </div> 
+    {% endif %}
+{% endif %}               
         </div>
             
         {% endif %}
