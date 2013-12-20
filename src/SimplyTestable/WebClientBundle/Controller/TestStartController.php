@@ -8,6 +8,10 @@ use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 
 class TestStartController extends TestController
 {  
+    const HTTP_AUTH_FEATURE_NAME = 'http-authentication';    
+    const HTTP_AUTH_FEATURE_USERNAME_KEY = 'http-auth-username';
+    const HTTP_AUTH_FEATURE_PASSWORD_KEY = 'http-auth-password';
+    
     private $taskTypesCompatibleWithHttpAuth = array(
         'HTML validation'
     );
@@ -37,13 +41,16 @@ class TestStartController extends TestController
         $this->getTestOptionsAdapter()->setRequestData($requestValues);
         $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
         
-        $httpAuthFeatureOptions = $testOptions->getFeatureOptions('http-authentication');
-        if ($httpAuthFeatureOptions['http-auth-username'] == '' && $httpAuthFeatureOptions['http-auth-password'] == '') {
-            $testOptions->removeFeatureOptions('http-authentication');
-            $httpAuthFeatureOptions = $testOptions->getFeatureOptions('http-authentication');
+        if ($testOptions->hasFeatureOptions(self::HTTP_AUTH_FEATURE_NAME)) {
+            $httpAuthFeatureOptions = $testOptions->getFeatureOptions(self::HTTP_AUTH_FEATURE_NAME);
+            
+            if ($httpAuthFeatureOptions[self::HTTP_AUTH_FEATURE_USERNAME_KEY] == '' && $httpAuthFeatureOptions[self::HTTP_AUTH_FEATURE_PASSWORD_KEY] == '') {
+                $testOptions->removeFeatureOptions(self::HTTP_AUTH_FEATURE_NAME);
+                $httpAuthFeatureOptions = $testOptions->getFeatureOptions(self::HTTP_AUTH_FEATURE_NAME);
+            }            
         }
         
-        if ($testOptions->hasFeatureOptions('http-authentication') && $httpAuthFeatureOptions['http-auth-username'] !== '') {
+        if ($testOptions->hasFeatureOptions(self::HTTP_AUTH_FEATURE_NAME) && $httpAuthFeatureOptions[self::HTTP_AUTH_FEATURE_USERNAME_KEY] !== '') {
             foreach ($testOptions->getTestTypes() as $testType) {
                 if (!in_array($testType, $this->taskTypesCompatibleWithHttpAuth)) {
                     $testOptions->removeTestType(strtolower(str_replace(' ', '-', $testType)));
