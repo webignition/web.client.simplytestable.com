@@ -64,6 +64,17 @@ class TestOptions {
     
     /**
      * 
+     * @param string $testTypeKey
+     */
+    public function removeTestType($testTypeKey) {
+        if (array_key_exists($testTypeKey, $this->testTypes)) {
+            unset($this->testTypes[$testTypeKey]);
+        }        
+    }
+    
+    
+    /**
+     * 
      * @param string $featureKey
      * @param array $featureOptions
      */
@@ -197,12 +208,19 @@ class TestOptions {
      * @param string $feature
      * @return array
      */
-    public function getFeatureOptions($feature) {
+    public function getFeatureOptions($feature) {        
         if ($this->hasFeatureOptions($feature)) {            
             return $this->features[$feature];
         }
         
         return array();
+    }
+    
+    
+    public function removeFeatureOptions($feature) {
+        if ($this->hasFeatureOptions($feature)) {            
+            unset($this->features[$feature]);
+        }
     }
     
     

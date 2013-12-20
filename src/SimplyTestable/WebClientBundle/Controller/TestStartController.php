@@ -8,6 +8,9 @@ use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 
 class TestStartController extends TestController
 {  
+    private $taskTypesCompatibleWithHttpAuth = array(
+        'HTML validation'
+    );
     
     /**
      *
@@ -32,7 +35,21 @@ class TestStartController extends TestController
         $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
         $this->getTestOptionsAdapter()->setRequestData($requestValues);
-        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();           
+        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
+        
+        $httpAuthFeatureOptions = $testOptions->getFeatureOptions('http-authentication');
+        if ($httpAuthFeatureOptions['http-auth-username'] == '' && $httpAuthFeatureOptions['http-auth-password'] == '') {
+            $testOptions->removeFeatureOptions('http-authentication');
+            $httpAuthFeatureOptions = $testOptions->getFeatureOptions('http-authentication');
+        }
+        
+        if ($testOptions->hasFeatureOptions('http-authentication') && $httpAuthFeatureOptions['http-auth-username'] !== '') {
+            foreach ($testOptions->getTestTypes() as $testType) {
+                if (!in_array($testType, $this->taskTypesCompatibleWithHttpAuth)) {
+                    $testOptions->removeTestType(strtolower(str_replace(' ', '-', $testType)));
+                }
+            }
+        }
 
         if (!$this->hasWebsite()) {            
             $this->get('session')->setFlash('test_start_error', 'website-blank');
