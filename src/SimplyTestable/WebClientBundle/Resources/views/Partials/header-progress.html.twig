@@ -51,11 +51,7 @@
 {% if test_options['http-authentication'] is defined %}              
     <div>       
         <p>
-            {% if test_options['http-auth-username'] is defined %}
-                This site or page does not require authentication.
-            {% else %}
-                This site or page requires authentication.
-            {% endif %}
+            {{ test_authentication_introduction }}
         </p>
     </div>
 {% endif %}                

@@ -125,6 +125,36 @@ class RemoteTest extends AbstractStandardObject {
     
     
     /**
+     * 
+     * @return \stdClass
+     */
+    public function getParameters() {
+        return ($this->hasProperty('parameters')) ? json_decode($this->getProperty('parameters')) : new \stdClass();
+    }
+    
+    
+    /**
+     * 
+     * @param string $key
+     * @return mixed
+     */
+    public function getParameter($key) {
+        $parameters = $this->getParameters();
+        return (isset($parameters->$key)) ? $parameters->$key : null;        
+    }
+    
+    
+    /**
+     * 
+     * @param string $key
+     * @return boolean
+     */
+    public function hasParameter($key) {
+        return !is_null($this->getParameter($key));
+    }
+    
+    
+    /**
      *
      * @return array 
      */

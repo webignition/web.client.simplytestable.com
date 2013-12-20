@@ -88,7 +88,7 @@ class TestProgressController extends TestViewController
         $taskTypes = $remoteTest->getTaskTypes();
         
         $this->getTestOptionsAdapter()->setRequestData($remoteTest->getOptions());
-        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();               
+        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
 
         $viewData = array(
             'website' => idn_to_utf8($website),
@@ -116,7 +116,8 @@ class TestProgressController extends TestViewController
                 'ignore-warnings' => 1,
                 'vendor-extensions' => 'warn',
                 'ignore-common-cdns' => 1                
-            ),            
+            ),
+            'test_authentication_introduction' => $this->getTestAuthenticationIntroduction($remoteTest)
         );  
         
         if ($this->isJsonResponseRequired()) {
@@ -127,6 +128,13 @@ class TestProgressController extends TestViewController
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
         return $this->sendResponse($viewData);
     }
+    
+    
+    private function getTestAuthenticationIntroduction(RemoteTest $remoteTest) {
+        return ($remoteTest->hasParameter('http-auth-username'))
+            ? 'This site or page requires authentication.'
+            : 'This site or page does not require authentication.';
+    }    
     
     /**
      * 
