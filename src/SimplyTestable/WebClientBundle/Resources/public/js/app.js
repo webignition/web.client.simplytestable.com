@@ -1750,7 +1750,7 @@ application.root.testStartFormController = function () {
         return ['html-validation'].indexOf(taskTypeKey) !== -1;        
     };
     
-    var updateTaskTypesByAuthenticationChoice = function () {
+    var updateTaskTypesByAuthenticationChoice = function () {        
         if (hasAuthenticationCredentials()) {
             getTaskTypeCheckboxes().each(function () {
                 var checkbox = $(this);

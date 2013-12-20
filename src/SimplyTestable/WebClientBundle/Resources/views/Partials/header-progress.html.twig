@@ -65,8 +65,7 @@
         <div class="test-options-set" id="authentication-options">
             <label class="checkbox-lined"><span>Username</span><input disabled name="http-auth-username" class="credential" type="text" value="{{ remote_test.parameter('http-auth-username') }}"></label>
             <label class="checkbox-lined">
-                <span>Password</span>
-                <input disabled name="http-auth-password" class="credential" type="password"
+                <span>Password</span><input disabled name="http-auth-password" class="credential" type="password"
                        value="{% for i in 0..remote_test.parameter('http-auth-username')|length - 1 %}*{% endfor %}">
             </label>
         </div>        

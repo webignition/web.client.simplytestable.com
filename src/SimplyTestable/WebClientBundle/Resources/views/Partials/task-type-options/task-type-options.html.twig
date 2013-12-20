@@ -9,7 +9,7 @@
 
 {% set is_disabled = app.request.get('_route') == 'app_progress' or ((is_owner is defined and is_owner == false) and (is_public_user_test is defined and is_public_user_test == false)) %}
 {% set is_enabled = (is_disabled == false) %}
-{% set has_http_auth = (test_options['http-auth-username'] is defined and test_options['http-auth-username'] != '') or (remote_test.hasParameter('http-auth-username') and remote_test.parameter('http-auth-username') != '') %}
+{% set has_http_auth = (test_options['http-auth-username'] is defined and test_options['http-auth-username'] != '') or (remote_test is defined and remote_test.hasParameter('http-auth-username') and remote_test.parameter('http-auth-username') != '') %}
 
 {% if 'html-validation' in available_task_types|keys %}
     {% include 'SimplyTestableWebClientBundle:Partials:/task-type-options/html-validation-options.html.twig' %} 
