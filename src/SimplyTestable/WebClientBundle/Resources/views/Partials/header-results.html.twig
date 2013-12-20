@@ -41,6 +41,25 @@
                 
         {% include 'SimplyTestableWebClientBundle:Partials:/task-type-options/task-type-options.html.twig' %} 
                 </div>
+                
+{% if test_options['http-authentication'] is defined %}              
+    <div>       
+        <p>
+            <span class="authentication-selection">{% autoescape false %}{{ test_authentication_introduction }}{% endautoescape %}</span>
+            <span class="expandable-control expandable-control-default-closed for-authentication-options-expandable">Set authentication options</span>
+        </p>
+    </div>         
+        
+    <div id="authentication-options-expandable">        
+        <h3>HTTP Authentication Details</h3>
+        <span class="help-block">For when your site or page uses either <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">basic</a> or <a href="http://en.wikipedia.org/wiki/Digest_access_authentication">digest</a> HTTP authentication. Commonly used for public staging sites.</span>            
+        <span class="help-block">Currently only compatible with HTML validation.</span>            
+        <div class="test-options-set" id="authentication-options">                
+            <label class="checkbox-lined"><span>Username</span><input name="http-auth-username" class="credential" type="text" placeholder="Enter required username" {% if remote_test.hasParameter('http-auth-username') and remote_test.parameter('http-auth-username') !='' %}value="{{ remote_test.parameter('http-auth-username') }}"{% endif %}></label>
+            <label class="checkbox-lined"><span>Password</span><input name="http-auth-password" class="credential" type="text" placeholder="Enter required password" {% if remote_test.hasParameter('http-auth-password') and remote_test.parameter('http-auth-password') !='' %}value="{{ remote_test.parameter('http-auth-password') }}"{% endif %}></label>
+        </div>        
+    </div>        
+{% endif %}                
         </div>            
     </form>
         

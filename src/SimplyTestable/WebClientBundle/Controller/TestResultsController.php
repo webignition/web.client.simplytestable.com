@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
+use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 
 class TestResultsController extends TestViewController
 {    
@@ -308,7 +309,8 @@ class TestResultsController extends TestViewController
                 'jslint-option-maxlen' => 256
             ),
             'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions),
-            'filtered_task_counts' => $this->getFilteredTaskCounts($test, $taskTypeFilter)
+            'filtered_task_counts' => $this->getFilteredTaskCounts($test, $taskTypeFilter),
+            'test_authentication_introduction' => $this->getTestAuthenticationIntroduction($remoteTest)
         );
                        
         //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTest->getTaskCount() : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));
@@ -337,6 +339,12 @@ class TestResultsController extends TestViewController
         ); 
     }
     
+    private function getTestAuthenticationIntroduction(RemoteTest $remoteTest) {        
+        return ($remoteTest->hasParameter('http-auth-username'))
+            ? 'This site or page requires authentication.'
+            : 'This site or page does not require authentication.';
+    }     
+    
     private function getTaskTypeLabel($taskTypeFilter) {
         if (is_null($taskTypeFilter)) {
             return 'All';
@@ -348,7 +356,7 @@ class TestResultsController extends TestViewController
     }
     
     private function getTestOptionsIntroduction(\SimplyTestable\WebClientBundle\Model\TestOptions $testOptions) {        
-        $testOptionsIntroduction = 'Tested ';
+        $testOptionsIntroduction = 'Testing ';
         
         $allAvailableTaskTypes = $this->container->getParameter('available_task_types');
         $availableTaskTypes = $this->getAvailableTaskTypes();        
@@ -493,6 +501,10 @@ class TestResultsController extends TestViewController
             $this->testOptionsAdapter->setAvailableTaskTypes($this->getAvailableTaskTypes());
             $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
             $this->testOptionsAdapter->setInvertInvertableOptions(true);
+            
+            if (isset($testOptionsParameters['features'])) {
+                $this->testOptionsAdapter->setAvailableFeatures($testOptionsParameters['features']);
+            }            
         }
         
         return $this->testOptionsAdapter;
