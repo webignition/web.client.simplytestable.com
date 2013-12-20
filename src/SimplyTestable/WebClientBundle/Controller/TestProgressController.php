@@ -131,10 +131,33 @@ class TestProgressController extends TestViewController
     
     
     private function getTestAuthenticationIntroduction(RemoteTest $remoteTest) {
+        $unselectedTaskTypes = $this->getUnselectedTaskTypes($remoteTest);
+        $unselectedTaskTypeString = '';
+        
+        $taskTypeIndex = 0;
+        
+        foreach ($unselectedTaskTypes as $unselectedTaskType) {
+            $unselectedTaskTypeString .= $unselectedTaskType;
+            
+            if ($taskTypeIndex == count($unselectedTaskTypes) - 2) {
+                $unselectedTaskTypeString .= ' and ';
+            } elseif ($taskTypeIndex < count($unselectedTaskTypes) - 2) {
+                $unselectedTaskTypeString .= ', ';
+            }
+            
+            $taskTypeIndex++;            
+        }
+        
         return ($remoteTest->hasParameter('http-auth-username'))
-            ? 'This site or page requires authentication.'
+            ? 'This site or page requires authentication. This has disabled ' . $unselectedTaskTypeString . ' testing.'
             : 'This site or page does not require authentication.';
-    }    
+    } 
+    
+    
+    private function getUnselectedTaskTypes(RemoteTest $remoteTest) {
+        return array_diff($this->getAvailableTaskTypes(), $remoteTest->getTaskTypes());     
+    }
+    
     
     /**
      * 
