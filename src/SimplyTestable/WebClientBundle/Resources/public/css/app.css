@@ -1024,6 +1024,8 @@ input.inline-short {
     color:#333;
     opacity:0.8;
     font-size:14px;
+    margin:0;
+    padding:0;
 }
     
 body.single-page-notification .primary-options {
