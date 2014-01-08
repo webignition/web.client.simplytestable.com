@@ -13,7 +13,8 @@ class TestStartController extends TestController
     const HTTP_AUTH_FEATURE_PASSWORD_KEY = 'http-auth-password';
     
     private $taskTypesCompatibleWithHttpAuth = array(
-        'HTML validation'
+        'HTML validation',
+        'CSS validation'
     );
     
     /**

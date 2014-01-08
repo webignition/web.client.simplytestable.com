@@ -1747,7 +1747,7 @@ application.root.testStartFormController = function () {
     };
     
     var isTaskTypeCompatibleWithHttpAuth = function (taskTypeKey) {
-        return ['html-validation'].indexOf(taskTypeKey) !== -1;        
+        return ['html-validation', 'css-validation'].indexOf(taskTypeKey) !== -1;        
     };
     
     var updateTaskTypesByAuthenticationChoice = function () {        
