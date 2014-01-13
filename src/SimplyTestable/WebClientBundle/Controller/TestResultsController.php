@@ -187,7 +187,7 @@ class TestResultsController extends TestViewController
     }    
     
     
-    public function indexAction($website, $test_id) {                
+    public function indexAction($website, $test_id) {
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }
@@ -200,7 +200,7 @@ class TestResultsController extends TestViewController
         
         $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
-        if ($testRetrievalOutcome->hasResponse()) {
+        if ($testRetrievalOutcome->hasResponse()) {            
             return $testRetrievalOutcome->getResponse();
         }
         
@@ -390,7 +390,7 @@ class TestResultsController extends TestViewController
     private function getTasksGroupedByUrl($tasks = array()) {
         $tasksGroupedByUrl = array();
         foreach ($tasks as $task) {
-            $url = idn_to_utf8($task->getUrl());
+            $url = rawurldecode(idn_to_utf8($task->getUrl()));
             
             /* @var $task Task */
             if (!isset($tasksGroupedByUrl[$url])) {

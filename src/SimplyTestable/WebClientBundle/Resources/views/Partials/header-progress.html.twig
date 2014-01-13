@@ -2,7 +2,7 @@
     <div id="input" class="leader">                  
         <h1 class="info">
             <label for="input-website">
-                <i id="completion-percent-state-icon" class="{{ state_icon }}"></i> Testing {{ website }}
+                <i id="completion-percent-state-icon" class="{{ state_icon }}"></i> Testing {{ test.formattedWebsite }}
                 {% if remote_test.state != 'new-queued' %}
                 <span id="test-id">(#{{ test.testId }})</span>           
                 {% endif %}

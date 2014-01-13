@@ -335,4 +335,13 @@ class Task {
     {
         return !is_null($this->getOutput());
     }
+    
+    
+    /**
+     * 
+     * @return string
+     */
+    public function getFormattedUrl() {
+        return rawurldecode($this->getUrl());
+    }       
 }

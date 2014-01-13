@@ -599,4 +599,13 @@ class Test {
         
         return $errorCount;
     }
+    
+    
+    /**
+     * 
+     * @return string
+     */
+    public function getFormattedWebsite() {
+        return rawurldecode($this->getWebsite());
+    }    
 }

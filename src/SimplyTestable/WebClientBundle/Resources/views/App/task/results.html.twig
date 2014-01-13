@@ -29,7 +29,7 @@
                         <i class="icon-bar-chart"></i>
                         {{ task.type }} results for 
                         <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}">
-                            {{ test.website }}
+                            {{ test.formattedWebsite }}
                             <span id="test-id">(#{{ test.testId }})</span>
                         </a>                            
                         task
@@ -37,7 +37,7 @@
                     </h1>
                         
                     <p>
-                        URL tested: <a href="{{ task.url }}">{{ task.url }}</a>
+                        URL tested: <a href="{{ task.url }}">{{ task.formattedUrl }}</a>
                     </p>
                     
                         
