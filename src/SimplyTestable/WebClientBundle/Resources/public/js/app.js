@@ -188,21 +188,7 @@ application.progress.testController = function() {
         $('#test-summary-task-count').text(latestTestData.remote_test.task_count);
     };
 
-    var displayAmmendment = function(messageContent) {        
-        console.log(messageContent);
-        
-/**
-<div class="full-width-container full-width-notification alert-ammendment">
-    <div class="container main">
-        <div class="row-fluid">
-            <div class="span12">
-{% include 'SimplyTestableWebClientBundle:Partials:test-url-limit-notification.html.twig' %}
-            </div>
-        </div>
-    </div>
-</div>
- */        
-        
+    var displayAmmendment = function(messageContent) {
         var ammendmentNotification = $('<div class="full-width-container full-width-notification alert-ammendment">').append(
             $('<div class="container main">').append(
                 $('<div class="row-fluid">').append(
