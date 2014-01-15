@@ -11,7 +11,7 @@ class CssValidationResultParser extends ResultParser {
     /**
      * @return Result
      */
-    protected function buildResult() {        
+    protected function buildResult() {                
         $result = new Result();        
         
         $rawOutputArray = json_decode($this->getOutput()->getContent());
@@ -68,6 +68,8 @@ class CssValidationResultParser extends ResultParser {
             'ref' => 'setRef'
         );
         
+        $rawMessageObject->message = $this->sanitizeMessage($rawMessageObject->message);
+        
         $message = new CssTextFileMessage();
         $message->setType($rawMessageObject->type);
         
@@ -77,6 +79,28 @@ class CssValidationResultParser extends ResultParser {
             }
         }
         
+        return $message;
+    }
+    
+    
+    /**
+     * 
+     * @param string $message
+     * @return string
+     */
+    private function sanitizeMessage($message) {
+        $message = $this->removeUnnecessaryPropertyReference($message);        
+        return $message;
+    }
+    
+    
+    /**
+     * 
+     * @param string $message
+     * @return string
+     */
+    private function removeUnnecessaryPropertyReference($message) {
+        $message = preg_replace('/\(null[^.]+\.html[^)]+\)/', '', $message);
         return $message;
     }
     
