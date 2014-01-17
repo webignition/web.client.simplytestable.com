@@ -188,6 +188,8 @@ class TaskController extends TestViewController
                 'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
                 'is_owner' => $isOwner,
                 'is_public_user_test' => $isPublicUserTest,
+                'formatted_url' => idn_to_utf8($this->getSchemelessUrl($task->getUrl())),
+                'formatted_website' => idn_to_utf8($this->getSchemelessUrl($test->getWebsite())),
         );
         
         if ($task->getType() == 'HTML validation') {

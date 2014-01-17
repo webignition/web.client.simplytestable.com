@@ -79,6 +79,27 @@ class TestViewController extends BaseViewController
      */
     protected function getTestService() {
         return $this->container->get('simplytestable.services.testservice');
-    }      
+    } 
+    
+    
+    /**
+     * 
+     * @param string $url
+     * @return string
+     */
+    protected function getSchemelessUrl($url) {       
+        $schemeMarkers = array(
+            'http://',
+            'https://'
+        );
+        
+        foreach ($schemeMarkers as $schemeMarker) {            
+            if (substr($schemeMarker, 0, strlen($schemeMarker)) == $schemeMarker) {                
+                return substr($url, strlen($schemeMarker));
+            }
+        }
+        
+        return $url;
+    }
     
 }

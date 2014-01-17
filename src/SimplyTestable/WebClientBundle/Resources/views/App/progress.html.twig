@@ -2,7 +2,7 @@
 
 {% block title %}
 {% if test is defined %}
-Testing {{website}} (#{{test.testId}}) - {{ parent() }}
+Testing {{formatted_website}} (#{{test.testId}}) - {{ parent() }}
 {% else %}
 Testing {{website}} - {{ parent() }}
 {% endif %}

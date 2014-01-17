@@ -278,6 +278,7 @@ class TestResultsController extends TestViewController
         
         $viewData = array(
             'website' => idn_to_utf8($website),
+            'formatted_website' => idn_to_utf8($this->getSchemelessUrl($website)),
             'this_url' => $this->getResultsUrl($website, $test_id),
             'test_input_action_url' => $this->generateUrl('test_start'),
             'test' => $test,
