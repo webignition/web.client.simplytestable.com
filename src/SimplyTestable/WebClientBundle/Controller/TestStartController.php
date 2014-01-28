@@ -14,7 +14,8 @@ class TestStartController extends TestController
     
     private $taskTypesCompatibleWithHttpAuth = array(
         'HTML validation',
-        'CSS validation'
+        'CSS validation',
+        'JS static analysis'
     );
     
     /**
