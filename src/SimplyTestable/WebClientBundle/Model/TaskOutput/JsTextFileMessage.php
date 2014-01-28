@@ -37,6 +37,15 @@ class JsTextFileMessage extends TextFileMessage {
     
     
     /**
+     * 
+     * @return boolean
+     */
+    public function isContentTypeException() {
+        return $this->getFragment() === 'InvalidContentTypeException';
+    }
+    
+    
+    /**
      *
      * @param int $columnNumber
      * @return \SimplyTestable\WebClientBundle\Model\TaskOutput\HtmlTextFileMessage

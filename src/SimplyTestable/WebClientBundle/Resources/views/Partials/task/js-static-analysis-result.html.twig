@@ -6,9 +6,11 @@
         </p>
     </div>
     <div class="content">
-        <span class="message">
+        <span class="message">            
             {% if error.fragment == 'webResourceException' %}
                 An error occurred trying to retrieve the content of this script URL.
+            {% elseif error.isContentTypeException == 'curlException' %}                 
+                Resource URL returned content identified as "{{ error.message }}", this is not a valid JavaScript content type.
             {% elseif error.fragment == 'curlException' %}  
                 {% if error.message == 6 %}
                 It appears that the domain name does not exist
