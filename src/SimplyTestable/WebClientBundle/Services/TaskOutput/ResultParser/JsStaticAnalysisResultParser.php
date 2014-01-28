@@ -172,10 +172,24 @@ class JsStaticAnalysisResultParser extends ResultParser {
         
         $message->setColumnNumber(0);
         $message->setLineNumber(0);
-        $message->setMessage($analysisOutput->errorReport->statusCode);
+        
+        $message->setMessage($this->getMessageFromErrorReport($analysisOutput->errorReport));
         $message->setFragment($analysisOutput->errorReport->reason);
         
         return $message;        
+    }
+    
+    
+    private function getMessageFromErrorReport(\stdClass $errorReport) {
+        if (isset($errorReport->statusCode)) {
+            return $errorReport->statusCode;
+        }
+        
+        if (isset($errorReport->contentType)) {
+            return $errorReport->contentType;
+        }
+        
+        throw new \RuntimeException('Unexpected failure condition');
     }
     
 }
