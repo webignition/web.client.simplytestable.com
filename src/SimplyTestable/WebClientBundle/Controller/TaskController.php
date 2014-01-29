@@ -381,13 +381,15 @@ class TaskController extends TestViewController
         $errorsGroupedByContext = array();
         $errors = $task->getOutput()->getResult()->getErrors();
         
-        foreach ($errors as $error) {
+        foreach ($errors as $error) {            
+            $context = rawurldecode($error->getContext());
+            
             /* @var $error \SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage */
-            if (!isset($errorsGroupedByContext[$error->getContext()])) {
-                $errorsGroupedByContext[$error->getContext()] = array();
+            if (!isset($errorsGroupedByContext[$context])) {
+                $errorsGroupedByContext[$context] = array();
             }
             
-            $errorsGroupedByContext[$error->getContext()][] = $error;
+            $errorsGroupedByContext[$context][] = $error;
         }
         
         return $errorsGroupedByContext;
