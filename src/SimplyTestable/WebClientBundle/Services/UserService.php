@@ -170,7 +170,7 @@ class UserService extends CoreApplicationService {
             $this->getUrl('user_reset_password', array('token' => $token)),
             null,
             array(
-                'password' => $password
+                'password' => rawurlencode($password)
             )
         );
         
@@ -225,8 +225,8 @@ class UserService extends CoreApplicationService {
                 $this->getUrl('user_create'),
                 null,
                 array(
-            'email' => $email,
-            'password' => $password,
+            'email' => rawurlencode($email),
+            'password' => rawurlencode($password),
             'plan' => $plan
         ));
         

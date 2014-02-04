@@ -24,7 +24,7 @@
         "webignition/simplytestable-base-migrations-bundle":"1.1",
         "webignition/resque-bundle":"*",
         "webignition/is-http-status-code":"0.2",
-        "guzzle/guzzle":"3.7.2",
+        "guzzle/guzzle":"3.8.0",
         "webignition/internet-media-type":">=0.1,<2.0",        
         "jasonlewis/expressive-date": "1.0.*",
         "webignition/html-validation-error-normaliser":"dev-master",

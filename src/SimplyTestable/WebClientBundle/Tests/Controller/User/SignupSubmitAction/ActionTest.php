@@ -16,7 +16,7 @@ class ActionTest extends BaseActionTest {
     
     protected function getActionName() {
         return 'signUpSubmitAction';
-    }    
+    }  
     
     public function testWithBlankEmail() {        
         $this->performActionTest(array(
@@ -152,6 +152,19 @@ class ActionTest extends BaseActionTest {
             )
         ));       
     }
+    
+    
+    public function testWithPasswordStartingWithAtCharacter() {
+        $this->performActionTest(array(
+            'statusCode' => 302,
+            'redirectPath' => '/signup/confirm/user@example.com/'
+        ), array(            
+            'postData' => array(
+                'email' => 'user@example.com',
+                'password' => '@password'
+            )
+        ));       
+    }    
     
 
 }

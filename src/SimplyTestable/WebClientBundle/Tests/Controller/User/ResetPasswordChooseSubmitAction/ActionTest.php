@@ -122,7 +122,17 @@ class ActionTest extends BaseActionTest {
         $this->assertEquals('/', $responseUrl->getPath());        
     }
 
+    public function testWithPasswordStartingWithAtCharacter() {
+        $response = $this->getUserController('resetPasswordChooseSubmitAction', array(
+            'email' => 'user@example.com',
+            'token' => 'valid-token',
+            'password' => '@non-blank-password'
+        ))->resetPasswordChooseSubmitAction();
+        $this->assertEquals(302, $response->getStatusCode()); 
 
+        $responseUrl = new \webignition\Url\Url($response->getTargetUrl());
+        $this->assertEquals('/', $responseUrl->getPath());        
+    }
 
 }
 
