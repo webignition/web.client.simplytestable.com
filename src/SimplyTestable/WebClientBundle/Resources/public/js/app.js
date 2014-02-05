@@ -332,16 +332,21 @@ application.progress.testController = function() {
     var refreshTestSummary = function() {
         var now = new Date();
 
-        var getProgressUrl = function() {
+        var getProgressUrl = function() {            
             return window.location.href + '?output=json&timestamp=' + now.getTime();
         };
 
         jQuery.ajax({
             dataType: 'json',
+            complete: function (request) {
+                if (request.getResponseHeader('content-type') && request.getResponseHeader('content-type').indexOf('application/json') === -1) {
+                    location.reload();
+                }
+            },
             error: function(request, textStatus, errorThrown) {        
             },
-            success: function(data, textStatus, request) {        
-                if (data.this_url !== window.location.href) {
+            success: function(data, textStatus, request) {                
+                if (data.this_url !== window.location.href) {                    
                     window.location.href = data.this_url;
                     return;
                 }

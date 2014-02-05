@@ -207,6 +207,7 @@ class TestService {
             return false;
         }
         
+        $this->getTest()->setWebsite(new NormalisedUrl($remoteTest->getWebsite()));
         $this->getTest()->setState($remoteTest->getState());
         $this->getTest()->setUrlCount($remoteTest->getUrlCount()); 
         

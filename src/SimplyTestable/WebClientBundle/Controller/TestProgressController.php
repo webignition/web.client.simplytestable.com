@@ -28,6 +28,8 @@ class TestProgressController extends TestViewController
     private $testStateLabelMap = array(
         'new' => 'New, waiting to start',
         'queued' => 'Queued, waiting for first test to begin',
+        'resolving' => 'Resolving website',
+        'resolved' => 'Resolving website',
         'preparing' => 'Finding URLs to test: looking for sitemap or news feed',
         'crawling' => 'Finding URLs to test',
         'failed-no-sitemap' => 'Finding URLs to test: preparing to crawl'
@@ -38,6 +40,8 @@ class TestProgressController extends TestViewController
         'queued' => 'icon-off',
         'queued-for-assignment' => 'icon-off',
         'preparing' => 'icon-search',
+        'resolving' => 'icon-search',
+        'resolved' => 'icon-search',
         'crawling' => 'icon-search',        
         'failed-no-sitemap' => 'icon-search',         
         'in-progress' => 'icon-play-circle'        
@@ -51,7 +55,7 @@ class TestProgressController extends TestViewController
         }
         
         $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
-        if ($testRetrievalOutcome->hasResponse()) {            
+        if ($testRetrievalOutcome->hasResponse()) {                        
             return $testRetrievalOutcome->getResponse();
         }
         
@@ -69,13 +73,13 @@ class TestProgressController extends TestViewController
             }
         }       
         
-        if ($test->getWebsite() != $website) {
+        if ($test->getWebsite() != $website) {            
             return $this->redirect($this->generateUrl('app_test_redirector', array(
                 'website' => $test->getWebsite(),
-                'test_id' => $test_id
+                'test_id' => $test_id                
             ), true));            
-        }      
-        
+        }
+            
         $remoteTest = $this->getTestService()->getRemoteTestService()->get();        
 
         if ($test->getState() == 'failed-no-sitemap' && is_null($remoteTest->getCrawl())) {
@@ -124,7 +128,7 @@ class TestProgressController extends TestViewController
         if ($this->isJsonResponseRequired()) {
             $viewData['estimated_seconds_remaining'] = $this->getEstimatedSecondsRemaining($remoteTest);
             $viewData['remote_test'] = $remoteTest->__toArray();
-        }
+        }        
         
         $this->setTemplate('SimplyTestableWebClientBundle:App:progress.html.twig');
         return $this->sendResponse($viewData);
@@ -197,11 +201,7 @@ class TestProgressController extends TestViewController
         return $this->getAvailableTaskTypeService()->get();        
     }    
     
-    private function getStateLabel(Test $test, RemoteTest $remoteTest) {        
-        if ($test->getState() == 'preparing') {
-            return $this->testStateLabelMap['queued'];
-        }
-        
+    private function getStateLabel(Test $test, RemoteTest $remoteTest) {               
         $label = (isset($this->testStateLabelMap[$test->getState()])) ? $this->testStateLabelMap[$test->getState()] : '';
         
         if ($test->getState() == 'in-progress') {
