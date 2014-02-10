@@ -154,7 +154,7 @@ class TestProgressController extends TestViewController
         }
         
         return ($remoteTest->hasParameter('http-auth-username'))
-            ? 'This site or page requires authentication. This has disabled ' . $unselectedTaskTypeString . ' testing.'
+            ? 'This site or page requires authentication.'
             : 'This site or page does not require authentication.';
     } 
     

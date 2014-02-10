@@ -1737,30 +1737,6 @@ application.root.testStartFormController = function () {
         return hasAuthenticationCredentials;
     };
     
-    var isTaskTypeCompatibleWithHttpAuth = function (taskTypeKey) {
-        return ['html-validation', 'css-validation', 'js-static-analysis'].indexOf(taskTypeKey) !== -1;        
-    };
-    
-    var updateTaskTypesByAuthenticationChoice = function () {        
-        if (hasAuthenticationCredentials()) {
-            getTaskTypeCheckboxes().each(function () {
-                var checkbox = $(this);
-                if (!isTaskTypeCompatibleWithHttpAuth(checkbox.attr('name'))) {
-                    deactivateTaskType(checkbox.attr('name'));
-                }
-            });
-        } else {
-            getTaskTypeCheckboxes().each(function () {
-                var checkbox = $(this);
-                if (checkbox.parent().is('.deactivated')) {
-                    reactivateTaskType(checkbox.attr('name'));
-                }
-            });            
-        }
-        
-        setIntroContent();
-    };
-    
     var getTaskTypeCheckboxByKey = function (taskTypeKey) {
         var checkbox = null;
         
@@ -1771,38 +1747,6 @@ application.root.testStartFormController = function () {
         });  
         
         return checkbox;
-    };
-    
-    var deactivateTaskType = function (taskTypeKey) {
-        var checkbox = getTaskTypeCheckboxByKey(taskTypeKey);
-        if (checkbox === null) {
-            return;
-        }
-        
-        var testOptionSet = getTestOptionSetFromTaskTypeKey(taskTypeKey);
-
-        checkbox.attr('disabled', 'disabled');        
-        checkbox.parent().addClass('deactivated');
-        
-        if ($('.deactivation-reason', testOptionSet).length === 0) {
-            $('.task-type-name', testOptionSet).append(' <span class="deactivation-reason">Not yet available when using HTTP authentication</span>');    
-        }        
-        
-        $('.test-options-advanced', testOptionSet).slideUp();
-    };    
-    
-    var reactivateTaskType = function (taskTypeKey) {
-        var checkbox = getTaskTypeCheckboxByKey(taskTypeKey);
-        if (checkbox === null) {
-            return;
-        }
-        
-        var testOptionSet = getTestOptionSetFromTaskTypeKey(taskTypeKey);
-
-        checkbox.removeAttr('disabled');        
-        checkbox.parent().removeClass('deactivated');
-        $('.deactivation-reason', testOptionSet).remove();
-        $('.test-options-advanced', getTestOptionSetFromTaskTypeKey(taskTypeKey)).slideDown();
     };
     
     var getTestOptionSetFromTaskTypeKey = function (taskTypeKey) {
@@ -1838,7 +1782,6 @@ application.root.testStartFormController = function () {
         getAuthenticationCredentialInputs().each(function () {
             $(this).keyup(function () {
                 setAuthenticationContent();
-                updateTaskTypesByAuthenticationChoice();
             });
         });
     };

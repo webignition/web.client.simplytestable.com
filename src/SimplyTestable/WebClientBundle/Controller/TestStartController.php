@@ -12,12 +12,6 @@ class TestStartController extends TestController
     const HTTP_AUTH_FEATURE_USERNAME_KEY = 'http-auth-username';
     const HTTP_AUTH_FEATURE_PASSWORD_KEY = 'http-auth-password';
     
-    private $taskTypesCompatibleWithHttpAuth = array(
-        'HTML validation',
-        'CSS validation',
-        'JS static analysis'
-    );
-    
     /**
      *
      * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
@@ -50,14 +44,6 @@ class TestStartController extends TestController
                 $testOptions->removeFeatureOptions(self::HTTP_AUTH_FEATURE_NAME);
                 $httpAuthFeatureOptions = $testOptions->getFeatureOptions(self::HTTP_AUTH_FEATURE_NAME);
             }            
-        }
-        
-        if ($testOptions->hasFeatureOptions(self::HTTP_AUTH_FEATURE_NAME) && $httpAuthFeatureOptions[self::HTTP_AUTH_FEATURE_USERNAME_KEY] !== '') {
-            foreach ($testOptions->getTestTypes() as $testType) {
-                if (!in_array($testType, $this->taskTypesCompatibleWithHttpAuth)) {
-                    $testOptions->removeTestType(strtolower(str_replace(' ', '-', $testType)));
-                }
-            }
         }
 
         if (!$this->hasWebsite()) {            
