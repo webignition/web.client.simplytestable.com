@@ -18,7 +18,11 @@
         {% endblock %}         
         
         {% block javascripts_app %}
-        <script type="text/javascript" src="/bundles/simplytestablewebclient/js/app.js"></script>
+        <!--<script type="text/javascript" src="/bundles/simplytestablewebclient/js/app.js"></script>-->
+        
+            {% javascripts '@SimplyTestableWebClientBundle/Resources/public/js/app.js' %}
+                <script type="text/javascript" src="{{ asset_url }}"></script>
+            {% endjavascripts %}        
         {% endblock %}           
         
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />

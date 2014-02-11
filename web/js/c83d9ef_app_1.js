@@ -1,0 +1,2512 @@
+var application = {};
+
+application.common = {};
+application.common.isLoggedIn = function () {
+    return $('.sign-out-form').prop('tagName') === 'FORM';
+};
+
+application.results = {};
+application.results.preparingController = function() {
+
+    var nextTaskIdCollection = [];
+
+    var getResultsUrl = function() {
+        return window.location.href.replace('/preparing/', '');
+    };
+
+    var getUnretrievedRemoteTaskIdsUrl = function() {
+        return window.location.href.replace('/results/preparing/', '/tasks/ids/unretrieved/100/');
+    };
+
+    var getTaskResultsRetrieveUrl = function() {
+        return window.location.href.replace('/preparing/', '/retrieve/');
+    };
+
+    var getRetrievalStatusUrl = function() {
+        return getTaskResultsRetrieveUrl() + 'status/';
+    };
+
+    var getRetrievalStatus = function() {
+        jQuery.ajax({
+            dataType: 'json',
+            error: function(request, textStatus, errorThrown) {
+            },
+            success: function(data, textStatus, request) {
+                $('#completion-percent-value').text(data['completion-percent']);
+                $('#remaining-tasks-to-retrieve-count').attr('class', data['remaining-tasks-to-retrieve-count']);
+
+                $('#completion-percent-bar').css({
+                    'width': data['completion-percent'] + '%'
+                });
+
+                $('#local-task-count').text(data['local-task-count']);
+                $('#remote-task-count').text(data['remote-task-count']);
+
+                initialise();
+            },
+            url: getRetrievalStatusUrl()
+        });
+    };
+
+    var retrieveNextRemoteTaskIdCollection = function() {
+        jQuery.ajax({
+            type: 'POST',
+            dataType: 'json',
+            error: function(request, textStatus, errorThrown) {
+            },
+            data: {
+                'remoteTaskIds': nextTaskIdCollection.join(',')
+            },
+            success: function(data, textStatus, request) {
+                getRetrievalStatus();
+            },
+            url: getTaskResultsRetrieveUrl()
+        });
+    };
+    var getNextRemoteTaskIdCollection = function() {
+//        getUnretrievedRemoteTaskIdsUrl();
+//        return;
+
+        jQuery.ajax({
+            dataType: 'json',
+            error: function(request, textStatus, errorThrown) {
+            },
+            success: function(data, textStatus, request) {
+                nextTaskIdCollection = data;
+                retrieveNextRemoteTaskIdCollection();
+            },
+            url: getUnretrievedRemoteTaskIdsUrl()
+        });
+    };
+
+
+    var getRemainingTasksToRetrieveCount = function() {
+        return parseInt($('#remaining-tasks-to-retrieve-count').attr('class'), 10);
+    };
+
+    var initialise = function() {
+        if (getRemainingTasksToRetrieveCount() === 0) {
+            window.location.href = getResultsUrl();
+        } else {
+            getNextRemoteTaskIdCollection();
+        }
+
+
+    };
+
+    this.initialise = initialise;
+};
+
+application.progress = {};
+
+application.progress.testController = function() {
+    var latestTestData = {};
+    var estimatedTimeRemainingHistory = [];
+    var estimatedTimeRemainingUpdateThreshold = 10;
+    var estimatedTimeRemainingIsFirstDisplay = true;
+
+    var setCompletionPercentValue = function() {
+        var completionPercentValue = $('#completion-percent-value');
+        
+        if (latestTestData.remote_test.state === 'failed-no-sitemap') {
+            if (!$('.progress').hasClass('progress-success')) {
+                $('.progress').addClass('progress-success');
+            }           
+        } else {
+            if ($('.progress').hasClass('progress-success')) {
+                $('.progress').removeClass('progress-success');
+                
+                if (latestTestData.is_owner) {
+                    $('#cancel-crawl-form').remove();
+                }                              
+            }
+        } 
+
+        if (completionPercentValue.text() !== latestTestData.remote_test.completion_percent) {            
+            completionPercentValue.text(latestTestData.remote_test.completion_percent);
+
+            if ($('html.csstransitions').length > 0) {
+                $('#completion-percent-bar').css({
+                    'width': latestTestData.remote_test.completion_percent + '%'
+                });
+            } else {
+                $('#completion-percent-bar').animate({
+                    'width': latestTestData.remote_test.completion_percent + '%'
+                });
+            }
+        }        
+        
+    };
+
+    var setCompletionPercentStateLabel = function() {
+        var completionPercentStateLabel = $('#completion-percent-state-label');
+        if (completionPercentStateLabel.text() !== latestTestData.state_label) {
+            completionPercentStateLabel.text(latestTestData.state_label);
+        }
+    };
+
+    var setCompletionPercentStateIcon = function() {
+        $('#completion-percent-state-icon').attr('class', '').addClass(latestTestData.state_icon);
+
+    };
+
+    var getTestQueueWidth = function(queueName) {
+        var minimumQueueWidth = 2;
+
+        if (latestTestData.remote_test.task_count_by_state[queueName] === 0) {
+            return minimumQueueWidth;
+        }
+
+        var queueWidth = (latestTestData.remote_test.task_count_by_state[queueName] / latestTestData.remote_test.task_count) * 100;
+
+        return (queueWidth < minimumQueueWidth) ? minimumQueueWidth : queueWidth;
+    };
+
+    var setTestQueues = function() {
+        var queues = ['queued', 'in_progress', 'completed', 'failed', 'skipped'];
+
+        for (var queueNameIndex = 0; queueNameIndex < queues.length; queueNameIndex++) {
+            var queueName = queues[queueNameIndex];
+
+            $('#test-summary .test-states .' + queueName).each(function() {
+                var queueDetail = $(this);
+                var bar = $('.bar .label', queueDetail)
+                bar.animate({
+                    'width': getTestQueueWidth(queueName) + '%'
+                });
+
+                bar.text(latestTestData.remote_test.task_count_by_state[queueName]);
+            });
+        }
+    };
+
+    var setUrlCount = function() {
+        $('#test-summary-url-count').text(latestTestData.remote_test.url_count);
+    };
+
+    var setTaskCount = function() {
+        $('#test-summary-task-count').text(latestTestData.remote_test.task_count);
+    };
+
+    var displayAmmendment = function(messageContent) {
+        var ammendmentNotification = $('<div class="full-width-container full-width-notification alert-ammendment">').append(
+            $('<div class="container main">').append(
+                $('<div class="row-fluid">').append(
+                    $('<div class="span12">').append(
+                        messageContent
+                    )
+                )
+            )
+        );
+            
+        var ammendmentNotificationClone = ammendmentNotification.clone(ammendmentNotification);
+        ammendmentNotificationClone.addClass('ammendment-clone');
+        ammendmentNotificationClone.css({
+            'display': 'none'
+        });            
+            
+        $('.progress-header').before(ammendmentNotificationClone);
+
+        ammendmentNotificationClone.slideDown(function() {
+            ammendmentNotificationClone.remove();
+
+            ammendmentNotification.css({
+                'opacity': 0
+
+            });
+
+            $('.progress-header').before(ammendmentNotification);
+
+            ammendmentNotification.animate({
+                'opacity': 1
+            });
+        });
+    };
+
+    var setAmmendments = function() {        
+        if ($('.alert-ammendment').length > 0) {
+            return;
+        }
+
+        if (latestTestData.remote_test.ammendments && latestTestData.remote_test.ammendments[0]) {
+            if (latestTestData.remote_test.ammendments[0].reason.indexOf('plan-url-limit-reached:') !== -1) {                
+                $.get(window.location.href.replace('progress', 'url-limit-notification'), function(data) {
+                    displayAmmendment(data);
+                });
+            }
+        }
+    };
+
+    var storeEstimatedTimeRemaining = function() {
+        if (latestTestData.estimated_seconds_remaining === -1) {
+            return;
+        }
+
+        estimatedTimeRemainingHistory.push(latestTestData.estimated_seconds_remaining);
+
+        if (estimatedTimeRemainingHistory.length >= estimatedTimeRemainingUpdateThreshold) {
+            setEstimatedTimeRemaining();
+            estimatedTimeRemainingHistory = [];
+        }
+    };
+
+    var setEstimatedTimeRemaining = function() {
+        if (estimatedTimeRemainingHistory.length === 1 && estimatedTimeRemainingHistory[0] < 1) {
+            return;
+        }
+
+        var timeRemainingString = ', about ' + formatEstimatedTimeRemaining(calculateEstimatedTimeRemaining()) + ' remaining';
+
+        if (estimatedTimeRemainingIsFirstDisplay === true) {
+            estimatedTimeRemainingIsFirstDisplay = false;
+            $('#completion-time-remaining').css({
+                'display': 'none'
+            }).text(timeRemainingString).fadeIn();
+
+        } else {
+            $('#completion-time-remaining').text(timeRemainingString);
+        }
+    };
+
+    var formatEstimatedTimeRemaining = function(durationInSeconds) {
+        var now = new Date().getTime();
+        var endTimestamp = now + (durationInSeconds * 1000);
+
+        return moment(endTimestamp).fromNow(true);
+    };
+
+    var calculateEstimatedTimeRemaining = function() {
+        var average = function(a) {
+            var r = {mean: 0, variance: 0, deviation: 0}, t = a.length;
+            for (var m, s = 0, l = t; l--; s += a[l])
+                ;
+            for (m = r.mean = s / t, l = t, s = 0; l--; s += Math.pow(a[l] - m, 2))
+                ;
+            return r.deviation = Math.sqrt(r.variance = s / t), r;
+        };
+
+        var getSubsetWithinStandardDeviation = function(averageData) {
+            var withinStdDev = averageData.deviation / (averageData.mean / 10);
+            var withinStd = function(mean, val, stdev) {
+                var low = mean - (stdev * averageData.deviation);
+                var hi = mean + (stdev * averageData.deviation);
+                return (val > low) && (val < hi);
+            };
+
+            var subset = [];
+
+            for (var index = 0; index < estimatedTimeRemainingHistory.length; index++) {
+                if (withinStd(averageData.mean, estimatedTimeRemainingHistory[index], withinStdDev)) {
+                    subset.push(estimatedTimeRemainingHistory[index]);
+                }
+            }
+
+            return subset;
+        };
+
+        var averageData = average(estimatedTimeRemainingHistory);
+        var subset = getSubsetWithinStandardDeviation(averageData);
+
+        var subsetAverageData = average(subset);
+
+        return subsetAverageData.mean;
+    };
+    
+    var setCancelCrawlButton = function () {
+        if (latestTestData.remote_test.crawl === undefined) {
+            return;
+        }        
+
+        if ($('#cancel-crawl-form').get(0) === undefined) {
+            var cancelCrawlForm = $('<form />')
+                    .attr('id', 'cancel-crawl-form')               
+                    .attr('method', 'post')
+                    .attr('action', $('#cancel-form').attr('action').replace('cancel', 'cancel-crawl'))
+                    .append('<button type="submit" class="btn btn-warning">Stop finding URLs, start testing</button>')
+                    .addClass('top-right-form');
+
+            $('#completion-percent').append(cancelCrawlForm);
+        }      
+    };
+
+    var refreshTestSummary = function() {
+        var now = new Date();
+
+        var getProgressUrl = function() {            
+            return window.location.href + '?output=json&timestamp=' + now.getTime();
+        };
+
+        jQuery.ajax({
+            dataType: 'json',
+            complete: function (request) {
+                if (request.getResponseHeader('content-type') && request.getResponseHeader('content-type').indexOf('application/json') === -1) {
+                    location.reload();
+                }
+            },
+            error: function(request, textStatus, errorThrown) {        
+            },
+            success: function(data, textStatus, request) {                
+                if (data.this_url !== window.location.href) {                    
+                    window.location.href = data.this_url;
+                    return;
+                }
+
+                latestTestData = data;
+                
+                if (latestTestData.remote_test.state === 'in-progress') {                    
+                    $('#test-summary-container').css({
+                        'display':'block'
+                    });                    
+                    
+                    $('#test-list').css({
+                        'display':'block'
+                    });                       
+                }
+
+                setCompletionPercentValue();
+                setCompletionPercentStateLabel();
+                setCompletionPercentStateIcon();
+                setTestQueues();
+                setUrlCount();
+                setTaskCount();
+                setAmmendments();
+                
+                if (latestTestData.remote_test.state !== 'failed-no-sitemap') {                    
+                    storeEstimatedTimeRemaining();
+                }
+                
+                if (latestTestData.remote_test.state === 'failed-no-sitemap' && latestTestData.is_owner === true) {
+                    setCancelCrawlButton();
+                }
+
+                window.setTimeout(function() {
+                    refreshTestSummary(10);
+                }, 3000);
+            },
+            url: getProgressUrl()
+        });
+    };
+
+    this.initialise = function() {        
+        refreshTestSummary();
+        
+        if (!$('#test-summary-container').hasClass('state-in-progress')) {
+            $('#test-summary-container').css({
+                'display':'none'
+            });            
+        }
+        
+        if (!$('#test-list').hasClass('state-in-progress')) {
+            $('#test-list').css({
+                'display':'none'
+            });            
+        }  
+        
+        if ($('#completion-percent').hasClass('state-crawling')) {
+            $('.progress').addClass('progress-success');        
+        }      
+    };
+};
+
+application.progress.taskController = function() {
+
+    var finishedStates = [
+        'completed',
+        'failed',
+        'failed-no-retry-available',
+        'failed-retry-available',
+        'failed-retry-limit-reached',
+        'skipped'
+    ];
+
+    var failedStates = [
+        'failed',
+        'failed-no-retry-available',
+        'failed-retry-available',
+        'failed-retry-limit-reached'
+    ];
+
+    var incompleteStates = [
+        'queued',
+        'queued-for-assignment',
+        'in-progress'
+    ];
+
+    var stateIconMap = {
+        'queued-for-assignment': 'icon-cog',
+        'queued': 'icon-cog',
+        'in-progress': 'icon-cogs',
+        'completed': 'icon-bar-chart',
+        'failed': 'icon-ban-circle',
+        'failed-http-retrieval-redirect-loop': 'icon-refresh',
+        'failed-no-retry-available': 'icon-ban-circle',
+        'failed-retry-available': 'icon-ban-circle',
+        'failed-retry-limit-reached': 'icon-ban-circle',
+        'skipped': 'icon-random'
+    };
+
+    var pageLength = 100;
+    var tabLimit = 9;
+
+    var taskIds = null;
+    var tasks = null;
+
+    var taskListContainer = null;
+    var tabList = null;
+
+    var taskOutputController = null;
+
+    var getUrlCount = function() {
+        return $('#test-summary-url-count').text();
+    };
+
+    var getTaskCount = function() {
+        return parseInt($('#test-summary-task-count').text(), 10);
+    };
+
+    var getTaskIdsUrl = function() {
+        return window.location.href.replace('/progress/', '/tasks/ids/');
+    };
+
+    var getTasksUrl = function() {
+        return window.location.href.replace('/progress/', '/tasks/');
+    };
+
+    var getTaskIds = function() {
+        if (taskIds === null) {
+            jQuery.ajax({
+                dataType: 'json',
+                error: function(request, textStatus, errorThrown) {
+                },
+                success: function(data, textStatus, request) {
+                    if (data.length > 0) {
+                        taskIds = data;
+                    }
+                },
+                url: getTaskIdsUrl()
+            });
+
+            return null;
+        }
+
+        return taskIds;
+    };
+
+    var isTaskIdValid = function(taskId) {
+        var taskIdsLength = getTaskIds().length;
+
+        for (var taskIdIndex = 0; taskIdIndex < taskIdsLength; taskIdIndex++) {
+            if (getTaskIds()[taskIdIndex] == taskId) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    var hasTaskForIds = function(taskIds) {
+        var taskIdsLength = taskIds.length;
+        var result = {};
+        var taskId;
+
+        for (var taskIdIndex = 0; taskIdIndex < taskIdsLength; taskIdIndex++) {
+            taskId = taskIds[taskIdIndex];
+
+            if (isTaskIdValid(taskId)) {
+                result[taskId] = (!(tasks === null || tasks[taskId] === undefined));
+            }
+        }
+
+        return result;
+    };
+
+    var isFinished = function(task) {
+        for (var stateIndex = 0; stateIndex < finishedStates.length; stateIndex++) {
+            if (task.state == finishedStates[stateIndex]) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    var getTasks = function(taskIds, callback) {
+        var hasTasks = hasTaskForIds(taskIds);
+        var tasksToRetrieve = [];
+        var taskId;
+        var taskUpdateCount = 0;
+        var taskUpdateLimit = 10;
+
+        for (taskId in hasTasks) {
+            if (hasTasks.hasOwnProperty(taskId)) {
+                if (hasTasks[taskId] === false) {
+                    tasksToRetrieve.push(taskId);
+                } else {
+                    if (!isFinished(tasks[taskId]) && taskUpdateCount <= taskUpdateLimit) {
+                        tasksToRetrieve.push(taskId);
+                        taskUpdateCount++;
+                    }
+                }
+            }
+        }
+
+        if (tasksToRetrieve.length) {
+            jQuery.ajax({
+                type: 'POST',
+                data: {
+                    'taskIds': tasksToRetrieve.join(',')
+                },
+                dataType: 'json',
+                error: function(request, textStatus, errorThrown) {
+                },
+                success: function(data, textStatus, request) {
+                    for (var taskId in data) {
+                        if (data.hasOwnProperty(taskId)) {
+                            if (tasks === null) {
+                                tasks = {};
+                            }
+
+                            tasks[taskId] = data[taskId];
+                        }
+                    }
+
+                    var returnTasks = {};
+                    for (var taskIdIndex = 0; taskIdIndex < taskIds.length; taskIdIndex++) {
+                        taskId = taskIds[taskIdIndex];
+                        returnTasks[taskId] = tasks[taskId];
+                    }
+
+                    callback(returnTasks);
+                },
+                url: getTasksUrl()
+            });
+        }
+    };
+
+    var getTaskListContainer = function() {
+        if (taskListContainer === null) {
+            taskListContainer = $('#task-list-container');
+        }
+
+        return taskListContainer;
+    };
+
+    var getTabCount = function() {
+        return Math.ceil(getTaskCount() / pageLength);
+    };
+
+    var getTabLabel = function(tabIndex) {
+        var start = (pageLength * tabIndex) + 1;
+        var end = start + pageLength - 1;
+
+        if (end > getTaskCount()) {
+            end = getTaskCount();
+        }
+
+        return start + ' &hellip; ' + end;
+    };
+
+    var getNextVisibleTabIndex = function(direction) {
+        var nextVisibleTabIndex = 0;
+
+        if (direction == 'right') {
+            $('.tab', tabList).each(function(index) {
+                if ($(this).hasClass('tab-visible')) {
+                    nextVisibleTabIndex = index + 1;
+                }
+            });
+        } else {
+            $($('.tab', tabList).get().reverse()).each(function(index) {
+                if ($(this).hasClass('tab-visible')) {
+                    nextVisibleTabIndex = index + 1;
+                }
+            });
+        }
+
+        return nextVisibleTabIndex;
+    };
+
+    var buildTabList = function() {
+        tabList = $('<ul id="tab-list" class="nav nav-tabs pull-left" />');
+        getTaskListContainer().append(tabList);
+
+        var tabCount = getTabCount();
+        for (var tabIndex = 0; tabIndex < tabCount; tabIndex++) {
+            (function(tabIndex) {
+                tabList.append($('<li class="tab"><a href="#pane' + tabIndex + '" data-toggle="tab">' + getTabLabel(tabIndex) + '</a></li>').click(function() {
+                    var parent = $('#pane' + tabIndex);
+                    var getTaskListCallback = function(taskList) {
+                        updateTaskList(taskList.list, taskList.tasks, function() {
+                            if (parent.is('.active')) {
+                                window.setTimeout(function() {
+                                    getTaskList(tabIndex * 100, parent, getTaskListCallback);
+                                }, 3000);
+                            }
+
+                            $('.spinner', parent).remove();
+                            parent.removeClass('pane-empty');
+                        });
+                    };
+
+                    getTaskList(tabIndex * 100, parent, getTaskListCallback);
+                }));
+            })(tabIndex);
+        }
+
+        if (tabCount > tabLimit) {
+            tabList.addClass('constrained');
+
+            $('.tab', tabList).each(function(index) {
+                if (index >= tabLimit) {
+                    $(this).addClass('tab-hidden');
+                } else {
+                    $(this).addClass('tab-visible');
+                }
+            });
+
+            tabList.before(
+                    $('<span class="tab-list-control tab-list-previous pull-left">&lsaquo;</span>').click(function() {
+                var nextVisibleTabIndex = getNextVisibleTabIndex('left');
+                if ((getTabCount() - nextVisibleTabIndex) < tabLimit) {
+                    nextVisibleTabIndex = getTabCount() - tabLimit;
+                }
+
+                $($('.tab', tabList).get().reverse()).each(function(index) {
+                    var tab = $(this);
+                    tab.removeClass('tab-visible').removeClass('tab-hidden');
+
+                    if (index >= nextVisibleTabIndex && index < nextVisibleTabIndex + tabLimit) {
+                        tab.addClass('tab-visible');
+                    } else {
+                        tab.addClass('tab-hidden');
+                    }
+
+                    if (index == nextVisibleTabIndex) {
+                        tab.click().addClass('active');
+                        $('#pane' + index).addClass('active');
+                    } else {
+                        tab.removeClass('active');
+                        $('#pane' + index).removeClass('active');
+                    }
+                });
+            })
+                    ).after(
+                    $('<span class="tab-list-control tab-list-previous pull-left">&rsaquo;</span>').click(function() {
+                var nextVisibleTabIndex = getNextVisibleTabIndex('right');
+                if ((getTabCount() - nextVisibleTabIndex) < tabLimit) {
+                    nextVisibleTabIndex = getTabCount() - tabLimit;
+                }
+
+                $('.tab', tabList).each(function(index) {
+                    var tab = $(this);
+
+                    tab.removeClass('tab-visible').removeClass('tab-hidden');
+
+                    if (index >= nextVisibleTabIndex && index < nextVisibleTabIndex + tabLimit) {
+                        tab.addClass('tab-visible');
+                    } else {
+                        tab.addClass('tab-hidden');
+                    }
+
+                    if (index == nextVisibleTabIndex) {
+                        tab.click().addClass('active');
+                        $('#pane' + index).addClass('active');
+                    } else {
+                        tab.removeClass('active');
+                        $('#pane' + index).removeClass('active');
+                    }
+                });
+            })
+                    );
+        }
+    };
+
+    var buildTabContent = function() {
+        var tabContent = $('<div class="tab-content" />');
+        getTaskListContainer().append(tabContent);
+
+        var tabCount = getTabCount();
+        for (var tabIndex = 0; tabIndex < tabCount; tabIndex++) {
+            (function(tabIndex) {
+                var pane = $('<div class="tab-pane pane-empty" id="pane' + tabIndex + '"><img class="spinner" src="/bundles/simplytestablewebclient/images/spinner.gif" /></div>');
+                if (tabIndex === 0) {
+                    pane.addClass('active');
+                }
+
+                tabContent.append(pane);
+            })(tabIndex);
+        }
+
+        tabContent.before('<div class="clearfix" style="width:100%;" />');
+    };
+
+    var getTabList = function() {
+        if (tabList === null) {
+            buildTabList();
+            buildTabContent();
+        }
+
+        return tabList;
+    };
+
+    var getTaskCollection = function(offset, callback) {
+        if (offset === undefined) {
+            offset = 0;
+        }
+
+        var taskIds = getTaskIds().slice(offset, offset + pageLength);
+        var tasks = getTasks(taskIds, function(tasks) {
+            callback(tasks);
+        });
+    };
+
+    var getTaskListIdentifier = function(tasks) {
+        var taskIds = [];
+        for (var taskId in tasks) {
+            if (tasks.hasOwnProperty(taskId)) {
+                taskIds.push(taskId);
+            }
+        }
+
+        return 'tasks-' + taskIds.join('-');
+    };
+
+    var getTaskList = function(offset, parent, callback) {
+        getTaskCollection(offset, function(tasks) {
+            var taskListIdentifier = getTaskListIdentifier(tasks);
+            if ($('.' + taskListIdentifier, parent).length === 0) {
+                parent.append('<ul class="tasks ' + taskListIdentifier + '" />');
+            }
+
+            callback({
+                'list': $('.' + taskListIdentifier, getTaskListContainer()),
+                'tasks': tasks
+            });
+        });
+    };
+
+    var setTaskListItemState = function(taskListItem, task) {
+        var stateIndex = 0;
+        for (stateIndex = 0; stateIndex < incompleteStates.length; stateIndex++) {
+            taskListItem.removeClass(incompleteStates[stateIndex]);
+        }
+
+        for (stateIndex = 0; stateIndex < finishedStates.length; stateIndex++) {
+            taskListItem.removeClass(finishedStates[stateIndex]);
+        }
+
+        taskListItem.addClass(task.state);
+    };
+
+    var isTaskListItemFailed = function(taskListItem) {
+        for (var stateIndex = 0; stateIndex < failedStates.length; stateIndex++) {
+            if (taskListItem.is('.' + failedStates[stateIndex])) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+
+    var isFailedDueToRedirectLoop = function(task) {
+        if (task.output == undefined) {
+            return false;
+        }
+
+        if (task.output.content == undefined) {
+            return false;
+        }
+
+        var outputParser = new taskOutputController.outputParser();
+        var outputResult = outputParser.getResults(task.output);
+
+        if (outputResult.hasErrors() === false) {
+            return false;
+        }
+
+        var errors = outputResult.getErrors();
+        for (var errorIndex = 0; errorIndex < errors.length; errorIndex++) {
+            if (errors[errorIndex].getClass() == 'http-retrieval-redirect-loop') {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+
+    var buildTaskSetListItem = function(taskSetListItem, tasks) {
+        if ($('.url', taskSetListItem).length === 0) {
+            taskSetListItem.append('<span class="url" />');
+        }
+
+        $('.url', taskSetListItem).html(punycode.toUnicode(decodeURIComponent((tasks[0]['url']+'').replace(/\+/g, '%20'))));
+
+        for (var taskIndex = 0; taskIndex < tasks.length; taskIndex++) {
+            updateTaskListItem(getTaskListItem(taskSetListItem, tasks[taskIndex]), tasks[taskIndex]);
+        }
+    };
+
+
+    var buildTaskListItem = function(taskListItem, task) {
+        if ((taskListItem.is('.completed') || isTaskListItemFailed(taskListItem)) && isFinished(task)) {
+            return;
+        }
+
+        taskListItem.html('');
+        setTaskListItemState(taskListItem, task);
+
+        var stateIconIndex = task.state;
+        if (isFailedDueToRedirectLoop(task)) {
+            stateIconIndex = 'failed-http-retrieval-redirect-loop';
+        }
+
+        taskListItem.append('<span class="meta"><span class="state"><i class="' + stateIconMap[stateIconIndex] + '"></i></span><span class="type">' + task.type + '</span></span>');//        
+
+        if (isFinished(task)) {
+            var outputParser = new taskOutputController.outputParser();
+            var outputResult = outputParser.getResults(task.output);
+
+            var outputIndicator;
+
+            if (task.state == 'skipped') {
+
+            } else {
+                if (outputResult.hasErrors() && outputResult.hasWarnings()) {
+                    outputIndicator = '<a href="' + (window.location.href.replace('/progress/', '/' + task.task_id + '/results/')) + '" class="output-indicator label label-important">' + outputResult.getErrorCount() + ' error' + (outputResult.getErrorCount() == 1 ? '' : 's') + ' and ' + outputResult.getWarningCount() + ' warning' + (outputResult.getWarningCount() == 1 ? '' : 's') + '<i class="icon-caret-right"></i></a>';
+                } else if (!outputResult.hasErrors() && outputResult.hasWarnings()) {
+                    outputIndicator = '<a href="' + (window.location.href.replace('/progress/', '/' + task.task_id + '/results/')) + '" class="output-indicator label label-info">' + outputResult.getWarningCount() + ' warning' + (outputResult.getWarningCount() == 1 ? '' : 's') + ' <i class="icon-caret-right"></i></a>';
+                } else if (outputResult.hasErrors() && !outputResult.hasWarnings()) {
+                    outputIndicator = '<a href="' + (window.location.href.replace('/progress/', '/' + task.task_id + '/results/')) + '" class="output-indicator label label-important">' + outputResult.getErrorCount() + ' error' + (outputResult.getErrorCount() == 1 ? '' : 's') + ' <i class="icon-caret-right"></i></a>';
+                } else {
+                    outputIndicator = '<span class="output-indicator"><i class="icon-ok"></i></span>';
+                }
+            }
+
+            $('.meta', taskListItem).append(outputIndicator);
+        }
+    };
+
+
+    var updateTaskSetListItem = function(taskSetListItem, tasks) {
+        buildTaskSetListItem(taskSetListItem, tasks);
+    };
+
+
+    var updateTaskListItem = function(taskListItem, task) {
+        buildTaskListItem(taskListItem, task);
+    };
+
+
+    var getTaskSetListItem = function(taskList, taskSet) {
+        var taskSetIdentifier = 'taskSet';
+        for (var taskSetIndex = 0; taskSetIndex < taskSet.length; taskSetIndex++) {
+            taskSetIdentifier += '-' + taskSet[taskSetIndex]['id'];
+        }
+
+        if ($('#' + taskSetIdentifier, taskList).length === 0) {
+            taskList.append('<li class="taskSet" id="' + taskSetIdentifier + '" />');
+        }
+
+        return $('#' + taskSetIdentifier, taskList);
+    };
+
+    var getTaskListItem = function(taskSetListItem, task) {
+        var taskIdentifier = 'task' + task.task_id;
+
+        if ($('#' + taskIdentifier, taskSetListItem).length === 0) {
+            taskSetListItem.append('<div class="task" id="' + taskIdentifier + '" />');
+        }
+
+        return $('#' + taskIdentifier, taskSetListItem);
+    };
+
+    var getTasksGroupedByUrl = function(tasks) {
+        var tasksGroupedByUrl = {};
+
+        for (var taskId in tasks) {
+            if (tasks.hasOwnProperty(taskId)) {
+                if (tasksGroupedByUrl[tasks[taskId]['url']] === undefined) {
+                    tasksGroupedByUrl[tasks[taskId]['url']] = [];
+                }
+
+                tasksGroupedByUrl[tasks[taskId]['url']].push(tasks[taskId]);
+            }
+        }
+
+        return tasksGroupedByUrl;
+    };
+
+    var updateTaskList = function(taskList, tasks, callback) {
+        var tasksGroupedByUrl = getTasksGroupedByUrl(tasks);
+
+        for (var url in tasksGroupedByUrl) {
+            updateTaskSetListItem(getTaskSetListItem(taskList, tasksGroupedByUrl[url]), tasksGroupedByUrl[url]);
+        }
+
+        callback();
+    };
+
+    var initialise = function() {
+        taskOutputController = new application.progress.taskOutputController();
+
+        if (getUrlCount() === 0 || getTaskCount() === 0 || getTaskIds() === null) {
+            window.setTimeout(function() {
+                initialise();
+            }, 1000);
+
+            return;
+        }
+
+        if (getTaskCount() <= pageLength) {
+            var parent = getTaskListContainer();
+            var getTaskListCallback = function(taskList) {
+                updateTaskList(taskList.list, taskList.tasks, function() {
+                    window.setTimeout(function() {
+                        getTaskList(0, parent, getTaskListCallback);
+                    }, 1000);
+                });
+            };
+
+            getTaskList(0, parent, getTaskListCallback);
+            return;
+        }
+
+        $('.tab', getTabList()).first().click().addClass('active');
+    };
+
+
+    this.initialise = initialise;
+};
+
+application.progress.taskOutputController = function() {
+
+    var outputMessage = {
+        'abstract': function() {
+            var type = '';
+            var message = '';
+            var errorClass = '';
+
+            var setClass = function(newClass) {
+                errorClass = newClass;
+            };
+
+            var getClass = function() {
+                return errorClass;
+            };
+
+            var setMessage = function(newMessage) {
+                message = newMessage;
+            };
+
+            var getMessage = function() {
+                return message;
+            };
+
+            var setType = function(newType) {
+                type = newType;
+            };
+
+            var getType = function() {
+                return type;
+            };
+
+            var isType = function(queriedType) {
+                return getType() == queriedType;
+            };
+
+            var toString = function() {
+                return getMessage();
+            };
+
+            this.toString = toString;
+
+            this.setClass = setClass;
+            this.getClass = getClass;
+            this.setType = setType;
+            this.getType = getType;
+            this.isType = isType;
+            this.setMessage = setMessage;
+            this.getMessage = getMessage;
+        },
+        'HTML validation': function() {
+            var lineNumber = 0;
+            var columnNumber = 0;
+
+            var setLineNumber = function(newLineNumber) {
+                lineNumber = newLineNumber;
+            };
+
+            var getLineNumber = function() {
+                return lineNumber;
+            };
+
+            var setColumnNumber = function(newColumnNumber) {
+                columnNumber = newColumnNumber;
+            };
+
+            var getColumnNumber = function() {
+                return columnNumber;
+            };
+
+            var toString = function() {
+                return this.getMessage() + ' at line ' + getLineNumber() + ', column ' + getColumnNumber();
+            };
+
+            this.setLineNumber = setLineNumber;
+            this.getLineNumber = getLineNumber;
+            this.setColumnNumber = setColumnNumber;
+            this.getColumnNumber = getColumnNumber;
+            this.toString = toString;
+        },
+        'CSS validation': function() {
+            var lineNumber = 0;
+            var context = '';
+            var ref = '';
+
+            var setLineNumber = function(newLineNumber) {
+                lineNumber = newLineNumber;
+            };
+
+            var getLineNumber = function() {
+                return lineNumber;
+            };
+
+            var setRef = function(newRef) {
+                ref = newRef;
+            };
+
+            var getRef = function() {
+                return ref;
+            };
+
+            var setContext = function(newContext) {
+                context = newContext;
+            };
+
+            var getContext = function() {
+                return context;
+            };
+
+            var toString = function() {
+                return 'Css validation error as a string';
+                //return this.getMessage() + ' at line ' + getLineNumber() + ', column ' + getColumnNumber();
+            }
+
+            this.setLineNumber = setLineNumber;
+            this.getLineNumber = getLineNumber;
+            this.setContext = setContext;
+            this.getContext = getContext;
+            this.setRef = setRef;
+            this.getRef = getRef;
+            this.toString = toString;
+        },
+        'JS static analysis': function() {
+            var lineNumber = 0;
+            var columnNumber = 0;
+            var context = '';
+            var fragment = '';
+
+            var setLineNumber = function(newLineNumber) {
+                lineNumber = newLineNumber;
+            };
+
+            var getLineNumber = function() {
+                return lineNumber;
+            };
+
+            var setColumnNumber = function(newColumnNumber) {
+                columnNumber = newColumnNumber;
+            };
+
+            var getColumnNumber = function() {
+                return columnNumber;
+            };
+
+            var setFragment = function(newFragment) {
+                fragment = newFragment;
+            };
+
+            var getFragment = function() {
+                return fragment;
+            };
+
+            var setContext = function(newContext) {
+                context = newContext;
+            };
+
+            var getContext = function() {
+                return context;
+            };
+
+            var toString = function() {
+                return 'JS static analysis error as a string';
+                //return this.getMessage() + ' at line ' + getLineNumber() + ', column ' + getColumnNumber();
+            }
+
+            this.setLineNumber = setLineNumber;
+            this.getLineNumber = getLineNumber;
+            this.setColumnNumber = setColumnNumber;
+            this.getColumnNumber = getColumnNumber;
+            this.setContext = setContext;
+            this.getContext = getContext;
+            this.setFragment = setFragment;
+            this.getFragment = getFragment;
+            this.toString = toString;
+        },
+        'Link integrity': function() {
+            var context;
+            var url;
+            
+            var setContext = function (newContext) {
+                context = newContext;
+            };
+            
+            var getContext = function () {
+                return context;
+            };
+            
+            var setUrl = function (newUrl) {
+                url = newUrl;
+            };
+            
+            var getUrl = function () {
+                return url;
+            };
+
+            var toString = function() {
+                return this.getMessage();
+            };
+
+            this.setContext = setContext;
+            this.getContext = getContext;
+            this.setUrl = setUrl;
+            this.getUrl = getUrl;
+            this.toString = toString;
+        },                
+    };
+
+    outputMessage['abstract'].prototype = new outputMessage['abstract'];
+    outputMessage['HTML validation'].prototype = new outputMessage['abstract'];
+    outputMessage['CSS validation'].prototype = new outputMessage['abstract'];
+    outputMessage['JS static analysis'].prototype = new outputMessage['abstract'];
+    outputMessage['Link integrity'].prototype = new outputMessage['abstract'];
+
+    var outputResult = function() {
+        var errorCount = 0;
+        var warningCount = 0;
+        var errors = [];
+        var warnings = [];
+
+        var getErrorCount = function() {
+            return errorCount;
+        };
+
+        var getWarningCount = function() {
+            return warningCount;
+        };
+
+        var setErrors = function(newErrors) {            
+            errors = newErrors;
+            errorCount = errors.length;
+        };
+
+        var getErrors = function() {
+            return errors;
+        };
+
+        var setWarnings = function(newWarnings) {
+            warnings = newWarnings;
+            warningCount = warnings.length;
+        }
+
+        var getWarnings = function() {
+            return warnings;
+        };
+
+        var hasErrors = function() {
+            return getErrorCount() > 0;
+        };
+
+        var hasWarnings = function() {
+            return getWarningCount() > 0;
+        };
+
+        var hasMessages = function() {
+            return hasErrors() || hasWarnings();
+        }
+
+        this.getErrorCount = getErrorCount;
+        this.setErrors = setErrors;
+        this.getErrors = getErrors;
+        this.hasErrors = hasErrors;
+        this.getWarningCount = getWarningCount;
+        this.setWarnings = setWarnings;
+        this.getWarnings = getWarnings;
+        this.hasWarnings = hasWarnings;
+        this.hasMessages = hasMessages;
+    };
+
+    var outputParser = function() {
+
+        var parsers = {
+            'HTML validation': function(taskOutput) {
+                var getMessages = function() {
+                    if (taskOutput.content == undefined) {
+                        return [];
+                    }
+
+                    if (taskOutput.content.messages == undefined) {
+                        return [];
+                    }
+
+                    return taskOutput.content.messages;
+                };
+
+                // line_number":65,"column_number":12,"message":"No p element in scope but a p end tag seen.","messageid":"html5","type":"error"                            
+                var messages = getMessages();
+                var messageCount = messages.length;
+                var errors;
+
+                var getErrors = function() {
+                    if (errors == undefined) {
+                        errors = [];
+
+                        for (var messageIndex = 0; messageIndex < messageCount; messageIndex++) {
+                            var message = messages[messageIndex];
+
+                            if (message.type == 'error') {
+                                var currentError = new outputMessage['HTML validation'];
+
+                                currentError.setMessage(message.message);
+                                currentError.setLineNumber(message.line_number);
+                                currentError.setColumnNumber(message.column_number);
+                                currentError.setClass(message['class']);
+
+                                currentError.setType('error');
+                                errors.push(currentError);
+                            }
+                        }
+                    }
+
+                    return errors;
+                };
+
+                var getWarnings = function() {
+                    return [];
+                };
+
+                this.getErrors = getErrors;
+                this.getWarnings = getWarnings;
+            },
+            'CSS validation': function(taskOutput) {
+                var getMessages = function() {
+                    if (taskOutput.content == undefined) {
+                        return [];
+                    }
+
+                    if (taskOutput.content.messages == undefined) {
+                        return [];
+                    }
+
+                    return taskOutput.content.messages;
+                };
+
+                var messages = getMessages();
+                var messageCount = messages.length;
+                var outputMessages = {};
+
+                var getOutputMessagesOfType = function(type) {
+                    if (outputMessages[type] == undefined) {
+                        outputMessages[type] = [];
+
+                        for (var messageIndex = 0; messageIndex < messageCount; messageIndex++) {
+                            var message = messages[messageIndex];
+
+                            if (message.type == type) {
+                                var currentOutputMessage = new outputMessage['CSS validation'];
+                                currentOutputMessage.setType(type);
+
+                                currentOutputMessage.setMessage(message.message);
+                                currentOutputMessage.setMessage(message.line_number);
+                                currentOutputMessage.setContext(message.context);
+                                currentOutputMessage.setRef(message.ref);
+
+                                outputMessages[type].push(currentOutputMessage);
+                            }
+                        }
+                    }
+
+
+
+                    return outputMessages[type];
+                };
+
+                var getErrors = function() {
+                    return getOutputMessagesOfType('error');
+                };
+
+                var getWarnings = function() {
+                    return getOutputMessagesOfType('warning');
+                };
+
+                this.getErrors = getErrors;
+                this.getWarnings = getWarnings;
+            },
+            'JS static analysis': function(taskOutput) {
+                var getMessages = function() {
+                    if (taskOutput.content == undefined) {
+                        return [];
+                    }
+
+                    if (taskOutput.content.messages == undefined) {
+                        return [];
+                    }
+
+                    return taskOutput.content.messages;
+                };
+
+                var messages = getMessages();
+                var messageCount = messages.length;
+                var errors;
+
+                var getErrors = function() {
+                    if (errors == undefined) {
+                        errors = [];
+
+                        for (var messageIndex = 0; messageIndex < messageCount; messageIndex++) {
+                            var message = messages[messageIndex];
+
+                            if (message.type == 'error') {
+                                if (message.message.indexOf('Too many errors. ') === -1 && message.message.indexOf('Stopping') === -1) {
+                                    var currentError = new outputMessage['JS static analysis'];
+                                    currentError.setType('error');
+
+                                    currentError.setMessage(message.message);
+                                    currentError.setLineNumber(message.line_number);
+                                    currentError.setColumnNumber(message.column_number);
+                                    currentError.setContext(message.context);
+                                    currentError.setFragment(message.fragment);
+
+                                    errors.push(currentError);                                    
+                                }
+                            }
+                        }
+                    }
+
+                    return errors;
+                };
+
+                var getWarnings = function() {
+                    return [];
+                };
+
+                this.getErrors = getErrors;
+                this.getWarnings = getWarnings;
+            },
+            'Link integrity': function(taskOutput) {
+                var getMessages = function() {
+                    if (taskOutput.content == undefined) {
+                        return [];
+                    }
+
+                    if (taskOutput.content.messages == undefined) {
+                        return [];
+                    }
+
+                    return taskOutput.content.messages;
+                };
+
+                var messages = getMessages();
+                var messageCount = messages.length;
+                var errors;
+
+                var getErrors = function() {                    
+                    if (errors == undefined) {
+                        errors = [];
+
+                        for (var messageIndex = 0; messageIndex < messageCount; messageIndex++) {
+                            var message = messages[messageIndex];
+
+                            if (message.type == 'error') {
+                                var currentError = new outputMessage['Link integrity'];
+                                
+                                currentError.setContext(message.context);
+                                currentError.setUrl(message.url);
+                                currentError.setClass(message['class']);
+                                currentError.setMessage(message.message);
+
+                                currentError.setType('error');
+                                errors.push(currentError);
+                            }
+                        }
+                    }
+
+                    return errors;
+                };
+
+                var getWarnings = function() {
+                    return [];
+                };
+
+                this.getErrors = getErrors;
+                this.getWarnings = getWarnings;
+            },                    
+        };
+
+        var getResults = function(taskOutput) {            
+            var results = new outputResult();
+            var parser = new parsers[taskOutput.type](taskOutput);
+
+            results.setErrors(parser.getErrors());
+            results.setWarnings(parser.getWarnings());
+
+            return results;
+        }
+
+        this.getResults = getResults;
+
+    };
+
+    this.outputParser = outputParser;
+};
+
+
+application.account = {};
+application.account.cardController = function() {
+    
+    var fieldNameMessageMap = {
+            'exp_year': 'Select your card expiry month and year',
+            'expt_month': 'Select your card expiry month and year'
+    };
+    
+    var errorCodeMessageMap = {
+        'invalid_expiry_month':'Your card\'s expiry date is in the past',
+        'invalid_expiry_year':'Your card\'s expiry date is in the past'
+    };
+    
+    var getMessage = function (fieldName, code, message) {
+        if (errorCodeMessageMap.hasOwnProperty(code)) {
+            return errorCodeMessageMap[code];
+        }
+        
+        if (fieldNameMessageMap.hasOwnProperty(fieldName)) {
+            return fieldNameMessageMap[fieldName];
+        }
+        
+        return message;
+    };
+    
+    var displayFieldError = function (fieldName, code, message) {        
+        var error = $('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">×</button><p>'+getMessage(fieldName, code, message)+'</p></div>');
+        var field = $('[data-stripe=' + fieldName + ']');
+        
+        if (field.attr('data-stripe') === undefined) {
+            return false;
+        }
+        
+        var fieldContainer = field.closest('.controls');
+        
+        var errorSpacer = error.clone();
+        errorSpacer.css({
+            'display': 'none',
+            'opacity': 0
+        });
+        
+        errorSpacer.hide();
+        
+        fieldContainer.prepend(errorSpacer);
+        errorSpacer.slideDown(function () {
+            errorSpacer.remove();            
+            error.css({
+                'opacity': 0
+            });            
+            fieldContainer.prepend(error);
+            error.animate({
+                'opacity': 1
+            });            
+        });
+        
+        return true;
+    };
+    
+    var validate = function () {
+        var requiredFieldNames = [
+            'name',
+            'address_line1',
+            'address_city',
+            'address_state',
+            'address_zip',
+            'number',
+            'exp_month',
+            'exp_year',
+            'cvc'
+        ];
+        
+        for (var requiredFieldIndex = 0; requiredFieldIndex < requiredFieldNames.length; requiredFieldIndex++) {            
+            var field = $('[data-stripe=' + requiredFieldNames[requiredFieldIndex] + ']');
+            var value = $.trim(field.val());
+            
+            if (value === '') {
+                return {
+                    'error' : {
+                        'param':requiredFieldNames[requiredFieldIndex],
+                        'message':'Hold on, you can\'t leave this empty'                        
+                    }
+                };
+            }            
+        }
+        
+        return {};
+    };
+
+    var initialise = function() {       
+        $('#payment-form').submit(function(event) {            
+            var form = $(this);            
+            form.find('button').prop('disabled', true);
+            $('.alert', form).remove();
+            
+            var validationResponse = validate();            
+            if (validationResponse.hasOwnProperty('error')) {
+                displayFieldError(validationResponse.error.param, null, validationResponse.error.message);
+                form.find('button').prop('disabled', false);
+                return false;
+            }                        
+
+            Stripe.createToken(form, function (status, response) {                
+                if (response.hasOwnProperty('error')) {
+                    displayError(response.error.param, response.error.code, response.error.message);
+                    form.find('button').prop('disabled', false);
+                    return false;
+                }
+                
+                jQuery.ajax({
+                    type:'POST',                    
+                    dataType: 'json',                    
+                    error: function(request, textStatus, errorThrown) {
+                    }, 
+                    success: function(data, textStatus, request) {
+                        if (data.hasOwnProperty('this_url')) {
+                            window.location = data.this_url;
+                            return false;
+                        }
+                        
+                        if (data.hasOwnProperty('user_account_card_exception_param') && data.user_account_card_exception_param !== '') {
+                            displayFieldError(
+                                data.user_account_card_exception_param,
+                                data.user_account_card_exception_code,
+                                data.user_account_card_exception_message
+                            );                            
+                        } else {
+                            displayFieldError(
+                                'number',
+                                data.user_account_card_exception_code,
+                                data.user_account_card_exception_message
+                            );                             
+                        }                        
+
+                        form.find('button').prop('disabled', false);
+                        return false;
+                    },                            
+                    url: window.location + response.id + '/associate/?output=json'
+                });
+            });
+
+            // Prevent the form from submitting with the default action
+            return false;
+        });
+    };
+
+    this.initialise = initialise;
+};
+
+application.root = {};
+application.root.testStartFormController = function () {
+    
+    var getForm = function () {
+        return $('#test-start-form');
+    };
+    
+    var getTextField = function () {
+        return $('input[name=website]', getForm());
+    };
+    
+    var getHeader = function () {
+        return $('h1', getForm());
+    };  
+    
+    var getFieldsContainer = function () {
+        return $('.fields', getForm());
+    };
+    
+    var getTestOptions = function () {
+        return $('#test-options');
+    };
+    
+    var getTaskTypeSelection = function () {
+        var taskTypeSelection = {};
+        
+        $('.task-type-option').each(function () {
+            var testOptionsSet = $(this);
+            var label = $('label', testOptionsSet).first();
+            var checkbox = $('input[type=checkbox]', label);
+            
+            taskTypeSelection[$('span.task-type-name b', label).text()] = checkbox.is(':checked') && checkbox.attr('disabled') !== 'disabled';
+        });
+        
+        return taskTypeSelection;        
+    };
+    
+    var getTaskTypeCheckboxes = function () {
+        return $('input.task-type', getTestOptions());
+    };
+    
+    var getTaskTypeCount = function () {
+        var taskTypeCount = 0;
+        var taskTypeSelection = getTaskTypeSelection();
+        
+        for (var taskTypeName in taskTypeSelection) {
+            if (taskTypeSelection.hasOwnProperty(taskTypeName)) {
+                taskTypeCount = taskTypeCount + 1;
+            }
+        }        
+        
+        return taskTypeCount;
+    };
+    
+    var getTaskTypeSelectionString = function () {
+        var taskTypeSelectionString = 'Testing ';
+        
+        var taskTypeSelection = getTaskTypeSelection();        
+        var taskTypeCount = getTaskTypeCount();
+        var taskTypeIndex = 0;
+        
+        for (var taskTypeName in taskTypeSelection) {
+            if (taskTypeSelection.hasOwnProperty(taskTypeName)) {
+                taskTypeIndex = taskTypeIndex + 1;                
+                
+                taskTypeSelectionString = taskTypeSelectionString + '<span class="' + (taskTypeSelection[taskTypeName] ? 'selected' : 'not-selected') + '">' + taskTypeName + '</span>';
+                
+                if (taskTypeIndex === taskTypeCount - 1) {
+                    taskTypeSelectionString = taskTypeSelectionString + ' and ';
+                } else {
+                    if (taskTypeIndex < taskTypeCount) {
+                        taskTypeSelectionString = taskTypeSelectionString + ', ';
+                    }                    
+                }                
+            }
+        }
+        
+        taskTypeSelectionString = taskTypeSelectionString + '.';        
+        return taskTypeSelectionString;
+    };
+    
+    var getIntro = function () {
+        return $('.intro', getForm());
+    };
+    
+    var setIntroContent = function () {
+        $('.task-type-selection', getIntro()).html(getTaskTypeSelectionString());
+    };
+    
+    var getAuthenticationSelectionString = function () {       
+        if (hasAuthenticationCredentials()) {
+            return 'This site or page requires authentication.';
+        } else {
+            return 'This site or page does not require authentication.';
+        }
+    };    
+    
+    var setAuthenticationContent = function () {
+        $('.authentication-selection', getTestOptions()).html(getAuthenticationSelectionString());
+    };
+    
+    var getAuthenticationCredentialInputs = function () {        
+        return $('input.credential', $('#authentication-options '));
+    };
+    
+    var hasAuthenticationCredentials = function () {
+        var hasAuthenticationCredentials = false;
+        getAuthenticationCredentialInputs().each(function () {
+            if ($(this).val() !== '') {
+                hasAuthenticationCredentials = true;
+            }
+        });
+        
+        return hasAuthenticationCredentials;
+    };
+    
+    var getTaskTypeCheckboxByKey = function (taskTypeKey) {
+        var checkbox = null;
+        
+        getTaskTypeCheckboxes().each(function () {
+            if ($(this).attr('name') === taskTypeKey) {
+                checkbox = $(this);
+            }
+        });  
+        
+        return checkbox;
+    };
+    
+    var getTestOptionSetFromTaskTypeKey = function (taskTypeKey) {
+        var testOptionSet = null;
+        
+        $('.test-options-set', getTestOptions()).each(function () {
+            var currentTestOptionSet = $(this);
+            if ($('input[name='+taskTypeKey+']', currentTestOptionSet).length === 1) {
+                testOptionSet = currentTestOptionSet;
+            }
+        });
+        
+        return testOptionSet;
+    };
+  
+    this.initialise = function () {
+        try {
+            if (Modernizr.input.placeholder) {
+                var headerIcon = $('i', getHeader()).clone();
+                getHeader().remove();
+                getFieldsContainer().prepend(headerIcon);            
+            }
+        } catch (ReferenceError) {
+        }
+        
+        getTaskTypeCheckboxes().each(function () {
+            var checkbox = $(this);
+            checkbox.change(function () {
+                setIntroContent();
+            });
+        });
+        
+        getAuthenticationCredentialInputs().each(function () {
+            $(this).keyup(function () {
+                setAuthenticationContent();
+            });
+        });
+    };
+};
+
+
+application.root.currentTestController = function () {
+    var getBaseUrl = function () {
+        return window.location.protocol + "//" + window.location.hostname + window.location.pathname;
+    };    
+    
+    var remoteTests = null;
+    var previousRemoteTests = null;
+    
+    var getContainer = function () {
+        return $('#current-tests-content');
+    };
+    
+    var getTests = function () {
+        return $('.site', getContainer());
+    };
+    
+    var hasCurrentTests = function () {
+        return getTests().length > 0;
+    };
+    
+    var getTest = function (id) {                
+        var test = $("[data-test-id='"+id+"']", getContainer());
+        return (test.is('.site')) ? test : null;
+    };
+    
+    var updateTest = function (testData) {        
+        if (!testIsInCurrentList(testData.id)) {
+            getCurrentTestContent(function (data) {
+                $(data).each(function () {
+                    var test = $(this);
+                    if (test.is('.site') && parseInt(test.attr('data-test-id'), 10) === parseInt(testData.id, 10)) {
+                        addNewTest(test);
+                    }                    
+                });
+            });
+        }        
+        
+        var test = getTest(testData.id);
+        if (test === null) {
+            return;
+        }
+        
+        var getQueuedCount = function () {
+            return getCountByState('queued') + getCountByState('queued-for-assignment');
+        };
+        
+        var getInProgressCount = function () {
+            return getCountByState('in-progress');
+        };        
+        
+        var getCountByState = function (state) {
+            for (var stateName in testData.task_count_by_state) {
+                if (testData.task_count_by_state.hasOwnProperty(stateName)) {
+                    if (stateName === state) {
+                        return testData.task_count_by_state[state];
+                    }
+                }
+            }
+            
+            return 0;
+        };
+        
+        var getFinishedCount = function () {
+            return Math.max(testData.task_count - getQueuedCount() - getInProgressCount(), 0);
+        };
+        
+        var getCompletionPercent = function () {
+            return testData.completion_percent + 0;
+        };
+        
+        var setStateIcon = function () {
+            var stateIcon = $('.state-icon', test);
+            var iconClasses = stateIcon.attr('class').split(' ');            
+            for (var iconIndex = 0; iconIndex < iconClasses.length; iconIndex++) {
+                if (/icon-/.test(iconClasses[iconIndex])) {
+                    stateIcon.removeClass(iconClasses[iconIndex]);
+                }
+            }
+            
+            stateIcon.addClass(testData.state_icon);
+        };
+        
+        var setBadgeState = function () {
+            var badge = $('.badge', test);
+            var badgeClasses = badge.attr('class').split(' ');            
+            for (var index = 0; index < badgeClasses.length; index++) {
+                if (/badge-/.test(badgeClasses[index])) {
+                    badge.removeClass(badgeClasses[index]);
+                }
+            }
+            
+            badge.addClass('badge-' + testData.state_label_class);
+        };
+        
+        var hasSwitchedToOrFromCrawling = function () {
+            if (testData.state === 'crawling' && test.attr('data-state') !== 'crawling') {
+                return true;
+            }
+            
+            if (testData.state !== 'crawling' && test.attr('data-state') === 'crawling') {
+                return true;
+            }
+            
+            return false;            
+        };
+        
+        if (hasSwitchedToOrFromCrawling()) {
+            getCurrentTestContent(function (data) {
+                var tests = $(data);                
+                tests.each(function () {
+                    var currentTest = $(this);
+                    
+                    if (currentTest.is('.site')) {
+                        if (testData.id === parseInt(currentTest.attr('data-test-id'), 10)) {
+                            switchTest(currentTest);
+                        }
+                    }
+                });
+            });
+            
+            return;
+        }
+        
+        if (testData.state === 'crawling') {
+            $('.processed-url-count', test).text(testData.crawl.processed_url_count);
+            $('.discovered-url-count', test).text(testData.crawl.discovered_url_count);
+            
+        } else {
+            $('.queued-count', test).text(getQueuedCount());
+            $('.in-progress-count', test).text(getInProgressCount());
+            $('.finished-count', test).text(getFinishedCount());
+            $('.task-count', test).text(testData.task_count);
+            $('.url-count', test).text(testData.url_count);
+
+            setStateIcon();
+            setBadgeState();            
+        }
+        
+        $('.bar', test).css({
+            'width':Math.ceil(testData.completion_percent) + '%'
+        });        
+    };
+    
+    var testIsInRemoteList = function (id) {
+        for (var testIndex = 0; testIndex < remoteTests.length; testIndex++) {            
+            if (remoteTests[testIndex].id === id) {                
+                return true;
+            }
+        }        
+
+        return false;
+    };    
+    
+    var testIsInCurrentList = function (id) {
+        id = parseInt(id, 10);
+        
+        var is = false;
+        
+        getTests().each(function () {            
+            if (parseInt($(this).attr('data-test-id'), 10) === id) {
+                is = true;
+            }
+        });
+        
+        return is;
+    };
+    
+    var removeCompletedTest = function (test) {        
+        updateTest({
+            'id':parseInt(test.attr('data-test-id'), 10),
+            'task_count_by_state': {
+                'queued':0,
+                'queued-for-assignment':0,
+                'in-progress':0
+            },
+            'completion_percent':100,
+            'task_count':$('.task-count', test).text(),
+            'state_icon':'icon-play-circle',
+            'state_label_class':'success'
+        });
+        
+        test.slideUp(function () {
+            test.remove();
+        });
+
+    };
+    
+    var addNewTest = function (test) {
+        var addCallback = function () {
+            test.hide();            
+            getContainer().prepend(test);
+            test.slideDown();            
+        };
+        
+        if ($('p.info', getContainer()).is('.info')) {        
+            $('p.info', getContainer()).slideUp(function () {
+                addCallback();
+            });            
+        } else {
+            addCallback();
+        }
+    };
+    
+    var switchTest = function (newTest) {
+        var currentTest = getTest(newTest.attr('data-test-id'));
+        
+        newTest.hide();
+        getContainer().prepend(newTest);
+        currentTest.slideUp(function () {
+            newTest.slideDown(function () {
+                currentTest.remove();
+            });
+        });
+    };
+    
+    var updateList = function () {
+        for (var testIndex = 0; testIndex < remoteTests.length; testIndex++) {
+            updateTest(remoteTests[testIndex]);
+        } 
+        
+        if (remoteTests.length === 0) {
+            getTests().each(function () {
+                var test = $(this);         
+                removeCompletedTest(test);
+            });            
+        }
+
+        getTests().each(function () {
+            var test = $(this);            
+            var testId = parseInt(test.attr('data-test-id'), 10);
+            
+            for (var testIndex = 0; testIndex < remoteTests.length; testIndex++) {
+                if (testIsInRemoteList(testId) === false) {                    
+                    removeCompletedTest(test);
+                }
+            }
+        });
+    };
+    
+    var hasCurrentTestBeenRemovedFromList = function () {
+        if (previousRemoteTests === null) {
+            return false;
+        }
+        
+        if (remoteTests.length === 0 && previousRemoteTests.length !== 0) {
+            return true;
+        }
+        
+        for (var previousIndex = 0; previousIndex < previousRemoteTests.length; previousIndex++) {
+            if (!testIsInRemoteList(previousRemoteTests[previousIndex].id)) {
+                return true;
+            }
+        }
+        
+        return false;
+    };
+    
+    var retrieve = function () {        
+        jQuery.ajax({
+            dataType: 'json',
+            error: function(request, textStatus, errorThrown) {        
+            },
+            success: function(data, textStatus, request) {                
+                previousRemoteTests = remoteTests;
+                remoteTests = data;
+                updateList();
+                
+                if (hasCurrentTestBeenRemovedFromList()) {
+                    jQuery.ajax({
+                        dataType: 'html',
+                        error: function(request, textStatus, errorThrown) {             
+                        },
+                        success: function(data, textStatus, request) {                    
+                            var finishedTestsUpdateController = new application.root.finishedTestsUpdateController();
+                            finishedTestsUpdateController.initialise($(data));                            
+                        },
+                        url: getBaseUrl() + 'finished-content/'
+                    });
+                }                
+                
+                window.setTimeout(function() {
+                    refresh();
+                }, 3000); 
+            },
+            url: getBaseUrl() + 'current/'
+        });        
+    };
+    
+    var getCurrentTestContent = function (callback) {                
+        jQuery.ajax({
+            dataType: 'html',
+            error: function(request, textStatus, errorThrown) {                    
+            },
+            success: function(data, textStatus, request) {
+                if (typeof callback === 'function') {
+                    callback(data);
+                }               
+            },
+            url: getBaseUrl() + 'current-content/'
+        });        
+    };
+    
+    var refresh = function () {
+        if (hasCurrentTests()) {
+            retrieve();
+        } else {
+            getCurrentTestContent(function (data) {
+                if ($($(data).get(0)).is('.site')) {                    
+                    $(data).each(function () {
+                        addNewTest($(this));
+                    });                    
+                } else {
+                    $('#current-tests-content').html(data);                                 
+                }
+                
+                window.setTimeout(function() {
+                    refresh();
+                }, 3000);                   
+            });
+        }
+    };
+    
+    this.initialise = function () {
+        window.setTimeout(function() {
+            refresh();
+        }, 3000);            
+    };
+};
+
+application.root.finishedTestsPreparingController = function () {
+    var getBaseUrl = function () {
+        return window.location.protocol + "//" + window.location.hostname + window.location.pathname;
+    };        
+    
+    var getContainer = function () {
+        return $('#finished-tests');
+    };
+    
+    var getTestsRequiringResults = function () {
+        return $('.requires-results', getContainer());
+    };
+    
+    var getSummary = function (localTaskCount, remoteTaskCount) {        
+        if (localTaskCount === undefined && remoteTaskCount === undefined) {
+            return 'Preparing summary &hellip;';
+        }
+        
+        return 'Preparing summary &hellip; retrieved <strong class="local-task-count">'+ localTaskCount +'</strong> results of <strong class="remote-task-count">'+ remoteTaskCount +'</strong>';
+    };
+    
+    var getUnretrievedRemoteTaskIdsUrl = function(test) {
+        return getBaseUrl() + $('.website', test).text() + '/' + test.attr('data-test-id') + '/tasks/ids/unretrieved/100/';
+    };
+
+    var getTaskResultsRetrieveUrl = function(test) {
+        return getBaseUrl() + $('.website', test).text() + '/' + test.attr('data-test-id') + '/results/retrieve/';
+    };  
+    
+    var displayTestSummary = function (test) {
+        var getTestSummaryUrl = function () {
+            return getBaseUrl() + $('.website', test).text() + '/' + test.attr('data-test-id') + '/finished-summary/';
+        };
+        
+        jQuery.ajax({
+            dataType: 'html',
+            error: function(request, textStatus, errorThrown) {                
+            },
+            success: function(data, textStatus, request) {
+                var newTest = $(data);
+                $('.summary-stats', newTest).hide();
+                newTest.addClass('replacing');
+                
+                $('.summary-stats', test).slideUp(function () {
+                    test.replaceWith(newTest);
+                    $('.summary-stats', newTest).slideDown();
+                    newTest.removeClass('replacing');
+                });
+            },
+            url: getTestSummaryUrl(test)
+        });        
+    };
+    
+    var retrieveNextRemoteTaskIdCollection = function(test, taskIds) {        
+        jQuery.ajax({
+            type: 'POST',
+            dataType: 'json',
+            error: function(request, textStatus, errorThrown) {                
+            },
+            data: {
+                'remoteTaskIds': taskIds.join(',')
+            },
+            success: function(data, textStatus, request) {
+                checkStatus(test, function (data) {
+                    $('.bar', test).css({
+                        'width':Math.ceil(data.completion_percent) + '%'
+                    });
+                    
+                    if (data.completion_percent === 100) {
+                        displayTestSummary(test);
+                    } else {
+                        $('.local-task-count', test).text(data.local_task_count);                        
+                        getNextRemoteTaskIdCollection(test);
+                    }
+                });
+            },
+            url: getTaskResultsRetrieveUrl(test)
+        });
+    };    
+    
+    var getNextRemoteTaskIdCollection = function(test) {
+        jQuery.ajax({
+            dataType: 'json',
+            error: function(request, textStatus, errorThrown) {
+            },
+            success: function(data, textStatus, request) {
+                retrieveNextRemoteTaskIdCollection(test, data);
+            },
+            url: getUnretrievedRemoteTaskIdsUrl(test)
+        });
+    };
+    
+    var checkStatus = function (test, callback) {
+        var getPreparingStatsUrl = function () {
+            return getBaseUrl() + $('.website', test).text() + '/' + test.attr('data-test-id') + '/results/preparing/stats/';
+        };        
+        
+        jQuery.ajax({
+            dataType: 'json',
+            error: function(request, textStatus, errorThrown) {                 
+            },
+            success: function(data, textStatus, request) {        
+                callback(data);
+            },
+            url: getPreparingStatsUrl()
+        });        
+    };
+    
+    var initialiseTest = function (test) {        
+        checkStatus(test, function (data) {
+            $('.summary-stats .summary', test).html(getSummary(data.local_task_count, data.remote_task_count));
+            getNextRemoteTaskIdCollection(test);            
+        });
+        
+       $('.summary-stats', test).html('<p class="summary">' + getSummary() + '</p><div class="progress progress-striped active"><div class="bar" style="width:0%;"></div></div>');
+        
+
+    };
+    
+    this.initialise = function () {                
+        getTestsRequiringResults().each(function () {            
+            initialiseTest($(this));
+        });
+    };
+};
+
+application.root.finishedTestsUpdateController = function () {
+    var getContainer = function () {
+        return $('#finished-tests-content');
+    };
+    
+    var getTests = function () {
+        return $('.site', getContainer());
+    };
+    
+    var testSetContainsId = function (tests, id) {
+        var contains = false;
+        
+        tests.each(function () {
+            var test = $(this);
+            if (test.is('.site')) {
+                var testId = test.attr('data-test-id');
+
+                if (testId === id) {
+                    contains = true;
+                }
+            }            
+        });
+        
+        return contains;
+    };
+    
+    var remove = function (test) {
+        test.slideUp(function () {
+            test.remove();
+        });
+    };
+    
+    var removePreviousTests = function (currentTests, newTests) {
+        currentTests.each(function () {
+            var test = $(this);
+            var testId = test.attr('data-test-id');
+            
+            if (!testSetContainsId(newTests, testId)) {
+                remove(test);
+            }
+        });
+    };
+    
+    var addNewTests = function (currentTests, newTests) {
+        newTests.each(function () {
+            var test = $(this);
+            
+            if (test.is('.site')) {
+                var testId = test.attr('data-test-id');            
+                if (!testSetContainsId(currentTests, testId)) {
+                    if ($('p.info', getContainer()).is('.info')) {
+                        $('p.info').remove();
+                    }
+                    
+                    test.hide();
+                    getContainer().prepend(test);
+                    test.slideDown(function () {
+                        finishedTestsPreparingController = new application.root.finishedTestsPreparingController();
+                        finishedTestsPreparingController.initialise();                        
+                    });
+                }
+            }
+        });
+    };
+    
+    this.initialise = function (newTests) {        
+        removePreviousTests(getTests(), newTests);      
+        addNewTests(getTests(), newTests);
+    };
+};
+
+application.pages = {
+    '/*': {
+        'initialise': function() {            
+            if ($('body.user-account-card').length > 0) {
+                accountCardController = new application.account.cardController();
+                accountCardController.initialise();
+            }
+
+            if ($('body.app-progress').length > 0 && $('body.app-queued').length === 0) {
+                testProgressController = new application.progress.testController();
+                testProgressController.initialise();
+
+                taskProgressController = new application.progress.taskController();
+                taskProgressController.initialise();
+            }
+
+            if ($('body.app-results-preparing').length > 0) {
+                resultsPreparingController = new application.results.preparingController();
+                resultsPreparingController.initialise();
+            }
+            
+            if ($('body.app').length > 0) {
+                testStartFormController = new application.root.testStartFormController();
+                testStartFormController.initialise();
+                
+                currentTestController = new application.root.currentTestController();
+                currentTestController.initialise();
+                
+                finishedTestsPreparingController = new application.root.finishedTestsPreparingController();
+                finishedTestsPreparingController.initialise();
+            }
+            
+            if ($('body.app-results').length > 0) {
+                testStartFormController = new application.root.testStartFormController();
+                testStartFormController.initialise();
+            }            
+            
+            if ($('body.app-history').length > 0 || $('body.app-history-all').length > 0) {                                
+                finishedTestsPreparingController = new application.root.finishedTestsPreparingController();
+                finishedTestsPreparingController.initialise();
+            }            
+
+            if ($('body.content').length > 0) {
+                getTwitters('footer-tweet', {
+                    id: 'simplytestable',
+                    count: 1,
+                    enableLinks: true,
+                    ignoreReplies: true,
+                    clearContents: true,
+                    template: '%text% <a class="time" href="http://twitter.com/%user_screen_name%/statuses/%id_str%/">%time%</a>',
+                    callback: function() {
+                        $('.tweet-container .tweet').html($('#footer-tweet').html()).animate({
+                            'opacity': 1
+                        });
+                    }
+                });
+            }
+            
+            $('.full-width-container .alert:last').css({
+                'margin-bottom':'20px'
+            });
+
+            $('.expandable-control').each(function() {
+                var getExpandableArea = function(expandableControlClass) {
+                    var classes = expandableControlClass.split(' ');
+                    for (var classIndex = 0; classIndex < classes.length; classIndex++) {
+                        if (classes[classIndex].match(/for\-.+/)) {
+                            var expandableAreaId = classes[classIndex].replace('for-', '');
+                            var expandableArea = $('#' + expandableAreaId);
+
+                            if (expandableArea.length === 1) {
+                                return expandableArea;
+                            }
+                        }
+                    }
+
+                    return false;
+                };
+
+                var expandableControl = $(this);
+                var expandableArea = getExpandableArea(expandableControl.attr('class'));
+
+                if (expandableArea === false) {
+                    return;
+                }
+
+                var defaultState = (expandableControl.is('.expandable-control-default-closed ')) ? 'closed' : 'open';
+                var controlLinkIconName = (defaultState == 'closed') ? 'icon-caret-down' : 'icon-caret-up';
+
+                var controlLink = $('<a href="#" class="expandable-control-action">' + expandableControl.html() + ' <i class="icon ' + controlLinkIconName + '"></i></a>');
+                expandableControl.replaceWith(controlLink);
+
+                if (defaultState == 'closed') {
+                    expandableArea.css({'display': 'none'});
+                    expandableArea.addClass('closed');
+                }
+
+                controlLink.click(function(event) {
+                    if (expandableArea.is('.closed')) {
+                        expandableArea.slideDown(function() {
+                            expandableArea.removeClass('closed').addClass('open');
+                            $('.icon-caret-down', controlLink).replaceWith('<i class="icon icon-caret-up" />');
+                        });
+                    } else {
+                        expandableArea.slideUp(function() {
+                            expandableArea.removeClass('open').addClass('closed');
+                            $('.icon-caret-up', controlLink).replaceWith('<i class="icon icon-caret-down" />');
+                        });
+                    }
+
+                    event.preventDefault();
+                });
+            });
+
+        }
+    },
+    '/': {
+        'initialise': function() {}
+    },
+};
+
+
+
+var applicationController = function() {
+    var getPagePath = function() {
+        var pagePath = window.location.pathname;
+        if (pagePath.substr(pagePath.length - 1, 1) == '/') {
+            pagePath = pagePath.substr(0, pagePath.length - 1);
+        }
+
+        return pagePath;
+    };
+
+    var getPagePathParts = function() {
+        return getPagePath().split('/');
+    };
+
+    var getPageInitialisationPaths = function() {
+        var pageInitialisationPaths = [];
+        var pagePathParts = getPagePathParts();
+
+        if (pagePathParts.length === 1) {
+            return [
+                '/',
+                '/*'
+            ];
+        }
+
+        var currentPath = '';
+        var isFirstPath = true;
+
+        while (pagePathParts.length > 0) {
+            currentPath = pagePathParts.join('/');
+            if (!isFirstPath) {
+                currentPath += '/*';
+            }
+
+            pageInitialisationPaths.push(currentPath);
+
+            pagePathParts = pagePathParts.slice(0, pagePathParts.length - 1);
+            isFirstPath = false;
+        }
+
+        return pageInitialisationPaths;
+    };
+
+    var getInitialisationMethods = function() {
+        var pageInitialisationPaths = getPageInitialisationPaths();
+        var initialisationMethods = [];
+
+        for (var initialisationPathIndex = 0; initialisationPathIndex < pageInitialisationPaths.length; initialisationPathIndex++) {
+            if (typeof application.pages[pageInitialisationPaths[initialisationPathIndex]] === 'object') {
+                if (typeof application.pages[pageInitialisationPaths[initialisationPathIndex]]['initialise'] === 'function') {
+                    initialisationMethods.push(application.pages[pageInitialisationPaths[initialisationPathIndex]]['initialise']);
+                }
+            }
+        }
+
+        return initialisationMethods;
+    };
+
+    var initialise = function() {
+        var initialisationMethods = getInitialisationMethods();
+        for (var initialisationMethodIndex = 0; initialisationMethodIndex < initialisationMethods.length; initialisationMethodIndex++) {
+            initialisationMethods[initialisationMethodIndex]();
+        }
+    };
+
+    this.initialise = initialise;
+};
+
+
+$(document).ready(function() {
+    var app = new applicationController();
+    app.initialise();
+});
