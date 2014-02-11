@@ -1,6 +1,6 @@
 <div class="test-options-set task-type-option {% if (is_disabled) and (test_options['js-static-analysis'] is not defined or test_options['js-static-analysis'] == 0) %}test-options-set-disabled{% endif %}" id="js-static-analysis-validation-options">
-    <label class="checkbox {% if (is_disabled) and (test_options['js-static-analysis'] is not defined or test_options['js-static-analysis'] == 0) %}disabled{% endif %} {% if has_http_auth %}deactivated{% endif %}">
-        <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="js-static-analysis" {% if (test_options['js-static-analysis'] is defined and test_options['js-static-analysis'] == 1) %} checked {% endif %} /> <span class="task-type-name"><b>JavaScript static analysis</b> {% if has_http_auth %}<span class="deactivation-reason">Not yet available when using HTTP authentication</span>{% endif %}</span>
+    <label class="checkbox {% if (is_disabled) and (test_options['js-static-analysis'] is not defined or test_options['js-static-analysis'] == 0) %}disabled{% endif %}">
+        <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="js-static-analysis" {% if (test_options['js-static-analysis'] is defined and test_options['js-static-analysis'] == 1) %} checked {% endif %} /> <span class="task-type-name"><b>JavaScript static analysis</b></span>
         <span class="help-block">Analyse the quality of your JavaScript with <a href="http://www.jslint.com/lint.html">JSLint</a></span>
     </label>
 

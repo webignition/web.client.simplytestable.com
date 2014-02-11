@@ -1,6 +1,6 @@
 <div class="test-options-set task-type-option {% if (is_disabled) and (test_options['link-integrity'] is not defined or test_options['link-integrity'] == 0) %}test-options-set-disabled{% endif %}" id="link-integrity-options">
-    <label class="checkbox {% if (is_disabled) and (test_options['link-integrity'] is not defined or test_options['link-integrity'] == 0) %}disabled{% endif %} {% if has_http_auth %}deactivated{% endif %}">
-        <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="link-integrity" {% if (test_options['link-integrity'] is defined and test_options['link-integrity'] == 1) %} checked {% endif %} /> <span class="task-type-name"><b>Link integrity</b> {% if has_http_auth %}<span class="deactivation-reason">Not yet available when using HTTP authentication</span>{% endif %}</span>
+    <label class="checkbox {% if (is_disabled) and (test_options['link-integrity'] is not defined or test_options['link-integrity'] == 0) %}disabled{% endif %}">
+        <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="link-integrity" {% if (test_options['link-integrity'] is defined and test_options['link-integrity'] == 1) %} checked {% endif %} /> <span class="task-type-name"><b>Link integrity</b></span>
         <span class="help-block">Check all links in a web page, report those that do not work</span>
     </label>                
 </div>
