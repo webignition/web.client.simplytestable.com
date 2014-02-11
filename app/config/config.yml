@@ -5,7 +5,6 @@ imports:
     - { resource: "@SimplyTestableWebClientBundle/Resources/config/services.yml" }
 
 framework:
-    templating: { engines: ['twig'], assets_version: v2, assets_version_format: version-%%2$s/%%1$s }
     #esi:             ~
     #translator:      { fallback: %locale% }
     secret:          %secret%
