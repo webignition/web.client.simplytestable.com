@@ -1,3 +1,11 @@
+/**
+ * errorpage.css
+ */
+
+body.error .stay-updated {
+    height: 120px;
+}
+
 body.error .inner .icon {
     color: #08C;
     width: auto;

@@ -1,4 +1,11 @@
 {% extends 'SimplyTestableWebClientBundle::content.html.twig' %}
 
+{% block stylesheets %}      
+{{ parent() }}
+{% stylesheets '@SimplyTestableWebClientBundle/Resources/assets/css/errorpage.css' filter='cssrewrite' %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+{% endstylesheets %}
+{% endblock %}
+
 {% block leader_strapline %}                                                                                     
 {% endblock %} 

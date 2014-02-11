@@ -21,3 +21,4 @@ parameters:
     mailchimp_announcements_list_id: 1224633c43
     mailchimp_updates_list_id: 311aedc7f4
     mailchimp_introduction_list_id: e1b78ec47a
+    assetic.asset_factory.class: SimplyTestable\WebClientBundle\Factory\AssetFactory
