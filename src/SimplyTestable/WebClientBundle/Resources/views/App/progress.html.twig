@@ -11,8 +11,8 @@ Testing {{website}} - {{ parent() }}
 {% block javascripts %}        
     {{ parent() }}
     {% javascripts
-        '@SimplyTestableWebClientBundle/Resources/public/js/punycode.min.js'
-        '@SimplyTestableWebClientBundle/Resources/public/js/moment.min.js'
+        '@SimplyTestableWebClientBundle/Resources/assets/js/punycode.min.js'
+        '@SimplyTestableWebClientBundle/Resources/assets/js/moment.min.js'
          %}
         <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}      

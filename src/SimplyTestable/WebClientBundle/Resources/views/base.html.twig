@@ -7,8 +7,13 @@
         {% block stylesheets %}
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap.no-icons.min.css" rel="stylesheet">          
         <link href="//netdna.bootstrapcdn.com/font-awesome/2.0/css/font-awesome.css" rel="stylesheet">        
-        <link rel="stylesheet" href="/bundles/simplytestablewebclient/css/app.css" />
-        <link rel="stylesheet" href="/bundles/simplytestablewebclient/css/main.css" />        
+        
+{% stylesheets
+    '@SimplyTestableWebClientBundle/Resources/assets/css/app.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/css/main.css'
+    filter='cssrewrite' %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+{% endstylesheets %}
         {% endblock %}
         
         {% block javascripts %}        
@@ -18,7 +23,7 @@
         {% endblock %}         
         
         {% block javascripts_app %}        
-            {% javascripts '@SimplyTestableWebClientBundle/Resources/public/js/app.js' %}
+            {% javascripts '@SimplyTestableWebClientBundle/Resources/assets/js/app.js' %}
                 <script type="text/javascript" src="{{ asset_url }}"></script>
             {% endjavascripts %}        
         {% endblock %}           
