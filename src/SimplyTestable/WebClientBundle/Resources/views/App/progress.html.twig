@@ -8,12 +8,14 @@ Testing {{website}} - {{ parent() }}
 {% endif %}
 {% endblock %}
 
-
-
-{% block javascripts %}
-{{ parent() }}
-<script type="text/javascript" src="/bundles/simplytestablewebclient/js/punycode.min.js"></script>
-<script type="text/javascript" src="/bundles/simplytestablewebclient/js/moment.min.js"></script>
+{% block javascripts %}        
+    {{ parent() }}
+    {% javascripts
+        '@SimplyTestableWebClientBundle/Resources/public/js/punycode.min.js'
+        '@SimplyTestableWebClientBundle/Resources/public/js/moment.min.js'
+         %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}      
 {% endblock %} 
 
 {% block body_class %}full-width {{ parent() }}{% endblock %}
