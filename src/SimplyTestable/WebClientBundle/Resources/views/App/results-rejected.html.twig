@@ -7,6 +7,8 @@
     {% else %}
         Free test limit reached
     {% endif %}
+{% elseif remote_test.rejection.reason|slice(0, 4) == 'curl' %}
+    Sorry, that can't be accessed at the moment
 {% else %}
     Oops, I can't do that
 {% endif %}
@@ -116,6 +118,47 @@
     <div class="cta">
         <a href="{{ path('app') }}" class="btn btn-primary btn-large"><i class="icon icon-caret-left"></i> Try testing a different site</a>
     </div>
+{% endif %}
+    
+{% if remote_test.rejection.constraint is null and remote_test.rejection.reason|slice(0, 4) == 'curl' %}
+    {% set curl_error_number = remote_test.rejection.reason|slice(5, 2) %}
+    
+    {% if curl_error_number == 7 %}
+        {% set intro = 'there doesn\'t appear to be a web server there to talk to' %} 
+    {% elseif curl_error_number == 28 %}  
+        {% set intro = 'the web server didn\'t respond within 10 seconds' %}
+        {% set advice %}  
+            <p class="intro">
+                The web server for the site being tested is probably having
+                some issues if it doesn't respond within 10 seconds.
+            </p>
+            <p class="intro">
+                We won't run a test if a web server is responding slowly
+                as doing so is likely to make matters worse.
+            </p>
+        {% endset %}             
+    {% elseif curl_error_number == 52 %}    
+        {% set intro = 'the web server returned no data whatsoever' %}                      
+    {% endif %}
+
+    <p class="intro">  
+        Were not able to talk to {{ test.formattedWebsite }} at the moment{% if intro is defined %}: {{ intro }}{% endif %}.
+    </p>
+    
+    {% if advice is defined %}{{ advice }}{% endif %}
+
+    <p class="intro">
+        Check that <a href="{{ test.website }}">{{ test.formattedWebsite }}</a> is working as expected in a browser.
+    </p>
+
+    <div class="cta">
+        <a href="{{ path('app') }}" class="btn btn-primary btn-large"><i class="icon icon-caret-left"></i> Try testing a different site</a>
+    </div>
+    
+    <p class="support-hint">
+        If you need to <a href="mailto:&#115;&#117;&#112;&#112;&#111;&#114;&#116;&#64;&#115;&#105;&#109;&#112;&#108;&#121;&#116;&#101;&#115;&#116;&#97;&#98;&#108;&#101;&#46;&#99;&#111;&#109;">contact us</a>
+        about this, tell us you encountered curl error {{ curl_error_number }}. We'll know what this means.
+    </p>
 {% endif %}
 
 {% endblock %}

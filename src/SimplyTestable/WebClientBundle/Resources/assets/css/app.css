@@ -1490,3 +1490,8 @@ body.app-history-all .no-tests {
     width: 70px;
     display:inline-block;
 }
+
+.support-hint {
+    margin-top: 20px;
+    opacity: 0.8;
+}
