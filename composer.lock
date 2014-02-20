@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "062ecd367c1e92cc3f3331e64cbd216b",
+    "hash": "4881247b1d0c90dfe183bf69d6d21f2a",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -757,6 +757,53 @@
                 "orm"
             ],
             "time": "2014-02-09 14:45:36"
+        },
+        {
+            "name": "egulias/email-validator",
+            "version": "1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/egulias/EmailValidator.git",
+                "reference": "f064a586114c9864da45508b1b09911643635e94"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/f064a586114c9864da45508b1b09911643635e94",
+                "reference": "f064a586114c9864da45508b1b09911643635e94",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/lexer": "~1.0",
+                "php": ">= 5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Egulias\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Eduardo Gulias Davis"
+                }
+            ],
+            "description": "A library for validating emails",
+            "homepage": "https://github.com/egulias/EmailValidator",
+            "keywords": [
+                "email",
+                "validation",
+                "validator"
+            ],
+            "time": "2014-01-12 23:12:24"
         },
         {
             "name": "etechnika/idna-convert",

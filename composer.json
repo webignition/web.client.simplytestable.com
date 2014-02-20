@@ -30,7 +30,8 @@
         "webignition/html-validation-error-normaliser":"dev-master",
         "webignition/html-validation-error-linkifier":"dev-master",
         "zfr/zfr-mailchimp":"1.1.0",
-        "mlpz/postmark-bundle": "*"
+        "mlpz/postmark-bundle": "*",
+        "egulias/email-validator":"1.1.1"
     },
     "repositories": [
         {
