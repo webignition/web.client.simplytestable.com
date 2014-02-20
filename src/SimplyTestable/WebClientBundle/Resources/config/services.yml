@@ -143,3 +143,6 @@ services:
     arguments: 
         allTaskTypes: "%available_task_types%"           
         earlyAccessUsers: "%early_access_users%"
+        
+  simplytestable.services.postmark.sender:
+    class:   SimplyTestable\WebClientBundle\Services\Postmark\Sender     
