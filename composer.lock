@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "fe3f7b04c05d34c911a2e731b371a95c",
+    "hash": "062ecd367c1e92cc3f3331e64cbd216b",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -2306,58 +2306,6 @@
                 "templating"
             ],
             "time": "2014-02-10 07:40:03"
-        },
-        {
-            "name": "uam/postmark-swiftmailer-bundle",
-            "version": "0.2.5",
-            "target-dir": "UAM/Bundle/PostmarkSwiftMailerBundle",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/opichon/UAMPostmarkSwiftMailerBundle.git",
-                "reference": "0ecea2701854de52fe41c0a202b8058e0a6f678c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/opichon/UAMPostmarkSwiftMailerBundle/zipball/0ecea2701854de52fe41c0a202b8058e0a6f678c",
-                "reference": "0ecea2701854de52fe41c0a202b8058e0a6f678c",
-                "shasum": ""
-            },
-            "require": {
-                "mlpz/postmark-bundle": "*",
-                "php": ">=5.3.3",
-                "symfony/framework-bundle": "~2.0"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.2.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "UAM\\Bundle\\PostmarkSwiftMailerBundle": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Olivier Pichon",
-                    "email": "op@united-asian.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Symfony bundle to provide a Postmark SwiftMailer service",
-            "homepage": "http://gitweb.united-asian.com",
-            "keywords": [
-                "bundle",
-                "postmarkapp",
-                "swiftmailer",
-                "symfony"
-            ],
-            "time": "2013-06-07 15:51:28"
         },
         {
             "name": "webignition/container-aware-migration",
