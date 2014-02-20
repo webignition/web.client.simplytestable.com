@@ -27,6 +27,22 @@
             
         </div>                
         {% endif %}
+
+        {% if token_resend_error == 'postmark-failure' %}
+        <div class="alert alert-info for:input-email">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p>
+                <strong>Sorry, that didn't work</strong>
+            </p>
+            <p>
+                We tried to re-send your sign up confirmation email to "{{ app.request.get('email') }}"
+                but it didn't work.
+            </p>
+            <p>
+                Could you try again?
+            </p>            
+        </div>                
+        {% endif %}
     {% endif %}
 
 <form class="form-horizontal" method="post" action="{{ path('sign_up_confirm_submit', { 'email': app.request.get('email')}) }}">

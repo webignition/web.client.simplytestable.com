@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 use SimplyTestable\WebClientBundle\Model\User;
 use Symfony\Component\HttpFoundation\Cookie;
+use Egulias\EmailValidator\EmailValidator;
 
 class UserController extends BaseViewController
 {     
@@ -315,11 +316,17 @@ class UserController extends BaseViewController
             return $this->redirect($this->generateUrl('reset_password', array('email' => $email), true));          
         }    
         
-        $token = $this->getUserService()->getConfirmationToken($email);        
-        $this->sendPasswordResetConfirmationToken($email, $token);               
-        
-        $this->get('session')->setFlash('user_reset_password_confirmation', 'token-sent');
-        return $this->redirect($this->generateUrl('reset_password', array('email' => $email), true));
+        $token = $this->getUserService()->getConfirmationToken($email);
+        try {
+            $this->sendPasswordResetConfirmationToken($email, $token);            
+            $this->get('session')->setFlash('user_reset_password_confirmation', 'token-sent');
+            return $this->redirect($this->generateUrl('reset_password', array('email' => $email), true));           
+        } catch (\SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception $postmarkResponseException) {
+            $this->get('session')->setFlash('user_reset_password_error', 'invalid-email');
+            return $this->redirect($this->generateUrl('reset_password', array(
+                'email' => $email
+            ), true));             
+        }
     }  
     
     
@@ -513,10 +520,18 @@ class UserController extends BaseViewController
         }
         
         $token = $this->getUserService()->getConfirmationToken($email);        
-        $this->sendConfirmationToken($email, $token);         
         
-        $this->get('session')->setFlash('user_create_confirmation', 'user-created');
-        return $this->redirect($this->generateUrl('sign_up_confirm', array('email' => $email), true));
+        try {
+            $this->sendConfirmationToken($email, $token);         
+            $this->get('session')->setFlash('user_create_confirmation', 'user-created');
+            return $this->redirect($this->generateUrl('sign_up_confirm', array('email' => $email), true));            
+        } catch (\SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception $postmarkResponseException) {
+            $this->get('session')->setFlash('user_create_error', 'invalid-email');
+            return $this->redirect($this->generateUrl('sign_up', array(
+                'email' => $email,
+                'plan' => $plan 
+            ), true));
+        }
     }
     
     
@@ -544,57 +559,77 @@ class UserController extends BaseViewController
         if ($this->getUserService()->exists($email) === false) {
             $this->get('session')->setFlash('token_resend_error', 'invalid-user');
             return $this->redirect($this->generateUrl('sign_up_confirm', array('email' => $email), true));          
-        }             
+        }
         
         $token = $this->getUserService()->getConfirmationToken($email);        
-        $this->sendConfirmationToken($email, $token);        
-        $this->get('session')->setFlash('token_resend_confirmation', 'sent');      
         
-        return new \Symfony\Component\HttpFoundation\RedirectResponse($this->generateUrl('sign_up_confirm', array(
-            'email' => $email
-        )));
+        try {
+            $this->sendConfirmationToken($email, $token);        
+            $this->get('session')->setFlash('token_resend_confirmation', 'sent');      
+
+            return new \Symfony\Component\HttpFoundation\RedirectResponse($this->generateUrl('sign_up_confirm', array(
+                'email' => $email
+            )));    
+        } catch (\SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception $postmarkResponseException) {
+            $this->get('session')->setFlash('token_resend_error', 'postmark-failure');
+            return $this->redirect($this->generateUrl('sign_up_confirm', array('email' => $email), true));  
+        }
     }
     
-    private function sendConfirmationToken($email, $token) {        
+    
+    /**
+     * 
+     * @param string $email
+     * @param  $token
+     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
+     */
+    private function sendConfirmationToken($email, $token) {                
         $userCreationConfirmationEmailSettings = $this->container->getParameter('user_creation_confirmation_email');        
 
         $confirmationUrl = $this->generateUrl('sign_up_confirm', array(
-                'email' => $email
-            ), true).'?token=' . $token;
+            'email' => $email
+        ), true).'?token=' . $token;       
         
-        $message = \Swift_Message::newInstance();
-        
+        /* @var $message \MZ\PostmarkBundle\Postmark\Message */
+        $message  = $this->get('postmark.message');
+        $message->addTo($email);
         $message->setSubject($userCreationConfirmationEmailSettings['subject']);
-        $message->setFrom($userCreationConfirmationEmailSettings['sender_email'], $userCreationConfirmationEmailSettings['sender_name']);
-        $message->setTo($email);
-        $message->setBody($this->renderView('SimplyTestableWebClientBundle:Email:user-creation-confirmation.txt.twig', array(
+        $message->setTextMessage($this->renderView('SimplyTestableWebClientBundle:Email:user-creation-confirmation.txt.twig', array(
             'confirmation_url' => $confirmationUrl,
             'confirmation_code' => $token
         )));
         
-        $this->get('mailer')->send($message);        
-    }    
+        $this->getPostmarkSenderService()->send($message); 
+    } 
     
     
-    private function sendPasswordResetConfirmationToken($email, $token) {
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Services\Postmark\Sender
+     */
+    private function getPostmarkSenderService() {
+        return $this->get('simplytestable.services.postmark.sender');
+    }
+    
+    
+    private function sendPasswordResetConfirmationToken($email, $token) {        
         $userPasswordResetEmailSettings = $this->container->getParameter('user_reset_password_email');        
 
         $confirmationUrl = $this->generateUrl('reset_password_choose', array(
-                'email' => $email,
-                'token' => $token
-            ), true);
+            'email' => $email,
+            'token' => $token
+        ), true);
         
-        $message = \Swift_Message::newInstance();
-        
+        /* @var $message \MZ\PostmarkBundle\Postmark\Message */
+        $message  = $this->get('postmark.message');
+        $message->addTo($email);
         $message->setSubject($userPasswordResetEmailSettings['subject']);
-        $message->setFrom($userPasswordResetEmailSettings['sender_email'], $userPasswordResetEmailSettings['sender_name']);
-        $message->setTo($email);
-        $message->setBody($this->renderView('SimplyTestableWebClientBundle:Email:reset-password-confirmation.txt.twig', array(
+        $message->setTextMessage($this->renderView('SimplyTestableWebClientBundle:Email:reset-password-confirmation.txt.twig', array(
             'confirmation_url' => $confirmationUrl,
             'email' => $email
         )));
         
-        $this->get('mailer')->send($message);        
+        $this->getPostmarkSenderService()->send($message);       
     }    
     
     
@@ -679,17 +714,8 @@ class UserController extends BaseViewController
      * @return boolean
      */
     private function isEmailValid($email) {        
-        if (strpos($email, '@') <= 0) {
-            return false;
-        }
-        
-        try {
-            $message = \Swift_Message::newInstance();
-            $message->setTo($email);            
-            return true;
-        } catch (\Exception $exception) {
-            return false;
-        }
+        $validator = new EmailValidator;
+        return $validator->isValid($email);
     }
     
     /**

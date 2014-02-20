@@ -117,20 +117,27 @@ class ExceptionController extends Controller
      * 
      * @param \Symfony\Component\HttpKernel\Exception\FlattenException $exception
      */
-    private function sendDeveloperEmail(FlattenException $exception) {        
-        $message = \Swift_Message::newInstance();
-        
+    private function sendDeveloperEmail(FlattenException $exception) {                
+        /* @var $message \MZ\PostmarkBundle\Postmark\Message */
+        $message  = $this->get('postmark.message');
+        $message->addTo('jon@simplytestable.com');
         $message->setSubject($this->getDeveloperEmailSubject($exception));
-        $message->setFrom('robot@simplytestable.com');
-        $message->setTo('jon@simplytestable.com');
-        $message->setBody($this->renderView('SimplyTestableWebClientBundle:Email:exception.txt.twig', array(
+        $message->setTextMessage($this->renderView('SimplyTestableWebClientBundle:Email:exception.txt.twig', array(
             'status_code' => $exception->getStatusCode(),
             'status_text' => '"status text"',
             'exception' => $exception
-        )));
+        )));        
         
-        $this->get('mailer')->send($message);        
+        $this->getPostmarkSenderService()->send($message);
     }
+    
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Services\Postmark\Sender
+     */
+    private function getPostmarkSenderService() {
+        return $this->get('simplytestable.services.postmark.sender');
+    }    
     
     
     /**

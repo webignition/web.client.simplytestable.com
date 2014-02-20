@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Cookie;
+use Egulias\EmailValidator\EmailValidator;
 
 class UserAccountDetailsController extends AbstractUserAccountController
 {   
@@ -29,8 +30,14 @@ class UserAccountDetailsController extends AbstractUserAccountController
                     $response = $this->getUserEmailChangeRequestService()->createEmailChangeRequest($this->getRequestEmailAddress());
                     
                     if ($response === true) {
-                        $this->sendEmailChangeConfirmationToken();  
-                        $this->get('session')->setFlash('user_account_details_update_notice', 'email-done');
+                        try {
+                            $this->sendEmailChangeConfirmationToken();
+                            $this->get('session')->setFlash('user_account_details_update_notice', 'email-done');
+                        } catch (\SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception $postmarkResponseExceptiion) {
+                            $this->getUserEmailChangeRequestService()->cancelEmailChangeRequest();
+                            $this->get('session')->setFlash('user_account_details_update_notice', 'invalid-email');
+                            $this->get('session')->setFlash('user_account_details_update_email', $this->getRequestEmailAddress());                            
+                        }                        
                     } else {
                         switch ($response) {
                             case 409:
@@ -226,6 +233,9 @@ class UserAccountDetailsController extends AbstractUserAccountController
         return $this->redirect($this->generateUrl('user_account_index', array(), true));
     }
     
+    /**
+     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
+     */
     private function sendEmailChangeConfirmationToken() {        
         $emailChangeRequest = $this->getUserEmailChangeRequestService()->getEmailChangeRequest($this->getUser()->getUsername());
         
@@ -233,20 +243,28 @@ class UserAccountDetailsController extends AbstractUserAccountController
 
         $confirmationUrl = $this->generateUrl('user_account_index', array(), true).'?token=' . $emailChangeRequest['token'];
         
-        $message = \Swift_Message::newInstance();
-        
+        /* @var $message \MZ\PostmarkBundle\Postmark\Message */
+        $message  = $this->get('postmark.message');
+        $message->addTo($emailChangeRequest['new_email']);
         $message->setSubject($userCreationConfirmationEmailSettings['subject']);
-        $message->setFrom($userCreationConfirmationEmailSettings['sender_email'], $userCreationConfirmationEmailSettings['sender_name']);
-        $message->setTo($emailChangeRequest['new_email']);
-        $message->setBody($this->renderView('SimplyTestableWebClientBundle:Email:user-email-change-request-confirmation.txt.twig', array(
+        $message->setTextMessage($this->renderView('SimplyTestableWebClientBundle:Email:user-email-change-request-confirmation.txt.twig', array(
             'current_email' => $this->getUser()->getUsername(),
             'new_email' => $emailChangeRequest['new_email'],
             'confirmation_url' => $confirmationUrl,
             'confirmation_code' => $emailChangeRequest['token']
         )));
         
-        $this->get('mailer')->send($message);        
+        $this->getPostmarkSenderService()->send($message);
     }      
+    
+    
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Services\Postmark\Sender
+     */
+    private function getPostmarkSenderService() {
+        return $this->get('simplytestable.services.postmark.sender');
+    }    
     
     
     /**
@@ -339,17 +357,8 @@ class UserAccountDetailsController extends AbstractUserAccountController
      * @return boolean
      */
     private function isEmailValid($email) {        
-        if (strpos($email, '@') <= 0) {
-            return false;
-        }
-        
-        try {
-            $message = \Swift_Message::newInstance();
-            $message->setTo($email);            
-            return true;
-        } catch (\Exception $exception) {
-            return false;
-        }
+        $validator = new EmailValidator;
+        return $validator->isValid($email);
     } 
     
     
