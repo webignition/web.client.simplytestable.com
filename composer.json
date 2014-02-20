@@ -29,7 +29,8 @@
         "jasonlewis/expressive-date": "1.0.*",
         "webignition/html-validation-error-normaliser":"dev-master",
         "webignition/html-validation-error-linkifier":"dev-master",
-        "zfr/zfr-mailchimp":"1.1.0"        
+        "zfr/zfr-mailchimp":"1.1.0",
+        "uam/postmark-swiftmailer-bundle": "0.2.5"
     },
     "repositories": [
         {
