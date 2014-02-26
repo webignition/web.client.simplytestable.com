@@ -183,12 +183,15 @@ class Listener
     }      
     
     
-    public function onCustomerSubscriptionUpdated(\SimplyTestable\WebClientBundle\Event\Stripe\Event $event) {      
-        var_dump(__FUNCTION__); 
+    public function onCustomerSubscriptionUpdated(\SimplyTestable\WebClientBundle\Event\Stripe\Event $event) {              
+        /**
+         * Now only occurs for trialing to active
+         * either 'all active now' or 'downgraded to free'
+         * No more active to canceled
+         * also plan change!
+         */
         
         $this->event = $event;
-        
-        
         
         if ($event->getData()->get('is_plan_change')) {
             $this->event->getData()->set('plan_change', 1);
@@ -213,8 +216,6 @@ class Listener
             return;            
         }
         
-        //exit();
-        
         if ($event->getData()->get('is_status_change')) {
             $transition = $event->getData()->get('previous_subscription_status') . '_to_' . $event->getData()->get('subscription_status');
             $this->event->getData()->set('transition', $transition);
@@ -234,12 +235,7 @@ class Listener
                 'transition',
                 'has_card'                
             )), $viewParameters));            
-            return;               
-            
-            // trialing to active no card: trial ended, downgraded to free
-            // trialing to active has card: trial ended, payment soon
-            // active to canceled: canceled
-
+            return;
         }
     }
         
