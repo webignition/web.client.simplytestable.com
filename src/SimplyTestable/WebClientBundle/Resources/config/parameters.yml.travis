@@ -79,7 +79,19 @@ parameters:
       stripe.customer.subscription.created:
         subject: "[Simply Testable] You've signed up to the {{plan_name}} plan"
       stripe.invoice.created:
-        subject: "[Simply Testable] Invoice created, payment details needed"
+        subject: "[Simply Testable] Invoice {{invoice_id}} created, payment details needed"
+      stripe.invoice.payment_succeeded:
+        subject: "[Simply Testable] Invoice {{invoice_id}} paid, thanks!"        
+      stripe.customer.subscription.trial_will_end:
+        subject: "[Simply Testable] Your {{plan_name}} account trial ends in 3 days{{payment_details_needed_suffix}}"
+      stripe.invoice.payment_failed:
+        subject: "[Simply Testable] Invoice {{invoice_id}} payment failed"  
+      stripe.customer.subscription.updated-plan_change=1:
+        subject: "[Simply Testable] You've changed to the {{new_plan}} plan"                
+      stripe.customer.subscription.updated-transition=trialing_to_active-has_card=0:
+        subject: "[Simply Testable] Premium trial has ended, you've been dropped down to our free plan"          
+      stripe.customer.subscription.updated-transition=trialing_to_active-has_card=1:
+        subject: "[Simply Testable] Premium trial has ended, payment for the next month will be taken soon" 
   css-validation-ignore-common-cdns:
    - ajax.aspnetcdn.com
    - ajax.googleapis.com

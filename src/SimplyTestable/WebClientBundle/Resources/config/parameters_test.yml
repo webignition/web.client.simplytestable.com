@@ -85,13 +85,11 @@ parameters:
       stripe.invoice.payment_failed:
         subject: "[Simply Testable] Invoice {{invoice_id}} payment failed"  
       stripe.customer.subscription.updated-plan_change=1:
-        subject: "[Simply Testable] You've changed to the {{new_plan}} plan"          
-      stripe.customer.subscription.updated-transition=active_to_canceled:
-        subject: "[Simply Testable] "         
+        subject: "[Simply Testable] You've changed to the {{new_plan}} plan"                
       stripe.customer.subscription.updated-transition=trialing_to_active-has_card=0:
         subject: "[Simply Testable] Premium trial has ended, you've been dropped down to our free plan"          
       stripe.customer.subscription.updated-transition=trialing_to_active-has_card=1:
-        subject: "[Simply Testable] "             
+        subject: "[Simply Testable] Premium trial has ended, payment for the next month will be taken soon"             
   css-validation-ignore-common-cdns:
    - ajax.aspnetcdn.com
    - ajax.googleapis.com
