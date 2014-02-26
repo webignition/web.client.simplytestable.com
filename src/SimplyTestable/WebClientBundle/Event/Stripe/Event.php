@@ -76,4 +76,13 @@ class Event extends BaseEvent {
         return $this->data->get(self::USER_KEY);
     }
     
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function hasUser() {
+        return !is_null($this->getUser());
+    }
+    
 }

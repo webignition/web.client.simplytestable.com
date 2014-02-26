@@ -17,7 +17,11 @@ class EventController extends BaseController {
     public function indexAction() {                
         if (!$this->getEvent()->hasAcceptableName()) {
             return new Response('', 400);
-        }    
+        }
+        
+        if (!$this->getEvent()->hasUser()) {
+            return new Response('', 400);
+        }
         
         $this->get('event_dispatcher')->dispatch(
                 'stripe.' . $this->getEvent()->getName(),

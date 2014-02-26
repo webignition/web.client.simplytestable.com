@@ -15,7 +15,8 @@ class ErrorCasesTest extends ActionTest {
             'statusCode' => 400
         ), array(
             'postData' => array(
-                'foo' => 'bar'
+                'foo' => 'bar',
+                'user' => 'user@example.com'
             )
         ));
     }    
@@ -25,8 +26,19 @@ class ErrorCasesTest extends ActionTest {
             'statusCode' => 400
         ), array(
             'postData' => array(
-                'event' => 'foo'
+                'event' => 'foo',
+                'user' => 'user@example.com'
             )
         ));
     }
+    
+    public function testMissingUserReturns400() {
+        $this->performActionTest(array(
+            'statusCode' => 400
+        ), array(
+            'postData' => array(
+                'event' => 'customer.subscription.created'
+            )
+        ));
+    }    
 }

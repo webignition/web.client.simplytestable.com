@@ -21,7 +21,7 @@ class OnInvoicePaymentFailedTest extends ListenerTest {
     }
 
     
-    public function testNotificationIsSentForSingleInvoiceItem() {        
+    public function testNotificationIsIssued() {        
         $this->callListener(array(
             'lines' => array(
                 array(
