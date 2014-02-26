@@ -296,7 +296,7 @@ class UserController extends BaseViewController
     }     
     
 
-    public function resetPasswordSubmitAction() {        
+    public function resetPasswordSubmitAction() {                
         $email = trim($this->get('request')->request->get('email'));        
 
         if ($email == '') {
@@ -583,53 +583,54 @@ class UserController extends BaseViewController
      * @param  $token
      * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
      */
-    private function sendConfirmationToken($email, $token) {                
-        $userCreationConfirmationEmailSettings = $this->container->getParameter('user_creation_confirmation_email');        
+    private function sendConfirmationToken($email, $token) {        
+        $sender = $this->getMailService()->getConfiguration()->getSender('default');
+        $messageProperties = $this->getMailService()->getConfiguration()->getMessageProperties('user_creation_confirmation');        
 
         $confirmationUrl = $this->generateUrl('sign_up_confirm', array(
             'email' => $email
         ), true).'?token=' . $token;       
         
-        /* @var $message \MZ\PostmarkBundle\Postmark\Message */
-        $message  = $this->get('postmark.message');
+        $message = $this->getMailService()->getNewMessage();
+        $message->setFrom($sender['email'], $sender['name']);
         $message->addTo($email);
-        $message->setSubject($userCreationConfirmationEmailSettings['subject']);
+        $message->setSubject($messageProperties['subject']);
         $message->setTextMessage($this->renderView('SimplyTestableWebClientBundle:Email:user-creation-confirmation.txt.twig', array(
             'confirmation_url' => $confirmationUrl,
             'confirmation_code' => $token
         )));
         
-        $this->getPostmarkSenderService()->send($message); 
+        $this->getMailService()->getSender()->send($message); 
     } 
-    
     
     /**
      * 
-     * @return \SimplyTestable\WebClientBundle\Services\Postmark\Sender
+     * @return \SimplyTestable\WebClientBundle\Services\Mail\Service
      */
-    private function getPostmarkSenderService() {
-        return $this->get('simplytestable.services.postmark.sender');
+    private function getMailService() {
+        return $this->get('simplytestable.services.mail.service');
     }
     
     
     private function sendPasswordResetConfirmationToken($email, $token) {        
-        $userPasswordResetEmailSettings = $this->container->getParameter('user_reset_password_email');        
-
+        $sender = $this->getMailService()->getConfiguration()->getSender('default');
+        $messageProperties = $this->getMailService()->getConfiguration()->getMessageProperties('user_reset_password');
+  
         $confirmationUrl = $this->generateUrl('reset_password_choose', array(
             'email' => $email,
             'token' => $token
         ), true);
         
-        /* @var $message \MZ\PostmarkBundle\Postmark\Message */
-        $message  = $this->get('postmark.message');
+        $message = $this->getMailService()->getNewMessage();
+        $message->setFrom($sender['email'], $sender['name']);
         $message->addTo($email);
-        $message->setSubject($userPasswordResetEmailSettings['subject']);
+        $message->setSubject($messageProperties['subject']);
         $message->setTextMessage($this->renderView('SimplyTestableWebClientBundle:Email:reset-password-confirmation.txt.twig', array(
             'confirmation_url' => $confirmationUrl,
             'email' => $email
         )));
         
-        $this->getPostmarkSenderService()->send($message);       
+        $this->getMailService()->getSender()->send($message);     
     }    
     
     

@@ -237,16 +237,17 @@ class UserAccountDetailsController extends AbstractUserAccountController
      * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
      */
     private function sendEmailChangeConfirmationToken() {        
-        $emailChangeRequest = $this->getUserEmailChangeRequestService()->getEmailChangeRequest($this->getUser()->getUsername());
+        $emailChangeRequest = $this->getUserEmailChangeRequestService()->getEmailChangeRequest($this->getUser()->getUsername());    
         
-        $userCreationConfirmationEmailSettings = $this->container->getParameter('user_email_change_request_confirmation_email');
+        $sender = $this->getMailService()->getConfiguration()->getSender('default');
+        $messageProperties = $this->getMailService()->getConfiguration()->getMessageProperties('user_email_change_request_confirmation');
 
         $confirmationUrl = $this->generateUrl('user_account_index', array(), true).'?token=' . $emailChangeRequest['token'];
         
-        /* @var $message \MZ\PostmarkBundle\Postmark\Message */
-        $message  = $this->get('postmark.message');
+        $message = $this->getMailService()->getNewMessage();
+        $message->setFrom($sender['email'], $sender['name']);
         $message->addTo($emailChangeRequest['new_email']);
-        $message->setSubject($userCreationConfirmationEmailSettings['subject']);
+        $message->setSubject($messageProperties['subject']);
         $message->setTextMessage($this->renderView('SimplyTestableWebClientBundle:Email:user-email-change-request-confirmation.txt.twig', array(
             'current_email' => $this->getUser()->getUsername(),
             'new_email' => $emailChangeRequest['new_email'],
@@ -254,16 +255,16 @@ class UserAccountDetailsController extends AbstractUserAccountController
             'confirmation_code' => $emailChangeRequest['token']
         )));
         
-        $this->getPostmarkSenderService()->send($message);
-    }      
+        $this->getMailService()->getSender()->send($message);
+    }    
     
     
     /**
      * 
-     * @return \SimplyTestable\WebClientBundle\Services\Postmark\Sender
+     * @return \SimplyTestable\WebClientBundle\Services\Mail\Service
      */
-    private function getPostmarkSenderService() {
-        return $this->get('simplytestable.services.postmark.sender');
+    private function getMailService() {
+        return $this->get('simplytestable.services.mail.service');
     }    
     
     
