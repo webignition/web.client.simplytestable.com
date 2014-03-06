@@ -273,7 +273,39 @@ class Listener
     }  
     
     
-    public function onCustomerSubscriptionDeleted(\SimplyTestable\WebClientBundle\Event\Stripe\Event $event) {                
+    public function onCustomerSubscriptionDeleted(\SimplyTestable\WebClientBundle\Event\Stripe\Event $event) {
+        $this->event = $event;
+        
+        $subjectKeyParameters = array(
+            'actioned_by'
+        );
+        
+        if ($event->getData()->get('actioned_by') == 'user') {
+            $subjectKeyParameters[] = 'during_trial';
+        }
+        
+        $subject = $this->getSubject(array(
+            'plan_name' => strtolower($event->getData()->get('plan_name'))
+        ), $subjectKeyParameters);        
+
+        $viewParameters = array(
+            'trial_days_remaining' => $event->getData()->get('trial_days_remaining'),     
+            'trial_days_remaining_pluralisation' => ($event->getData()->get('trial_days_remaining') == 1 ? '' : 's'),
+            'account_url' => $this->router->generate('user_account_index', array(), true),
+            'plan_name' => strtolower($event->getData()->get('plan_name'))
+        );             
+
+        
+        $viewPathParameters = array(
+            'actioned_by'
+        );
+        
+        if ($event->getData()->get('actioned_by') == 'user') {
+            $viewPathParameters[] = 'during_trial';
+        }        
+        
+        $this->issueNotification($subject, $this->templating->render($this->getViewPath($viewPathParameters), $viewParameters));            
+        return;          
     }     
     
     
