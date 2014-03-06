@@ -90,9 +90,9 @@ parameters:
         subject: "[Simply Testable] Premium trial has ended, you've been dropped down to our free plan"          
       stripe.customer.subscription.updated-transition=trialing_to_active-has_card=1:
         subject: "[Simply Testable] Premium trial has ended, payment for the next month will be taken soon"             
-      stripe.customer.subscription.deleted-actioned_by=user-during_trial=1:
+      stripe.customer.subscription.deleted-actioned_by=user-is_during_trial=1:
         subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled"                   
-      stripe.customer.subscription.deleted-actioned_by=user-during_trial=0:
+      stripe.customer.subscription.deleted-actioned_by=user-is_during_trial=0:
         subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled"                 
       stripe.customer.subscription.deleted-actioned_by=system:
         subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled, you've been dropped down to our free plan"

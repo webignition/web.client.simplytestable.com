@@ -26,7 +26,7 @@ class OnCustomerSubscriptionDeletedTest extends ListenerTest {
         $this->callListener(array(
             'plan_name' => 'Agency',
             'actioned_by' => 'user',
-            'during_trial' => 1,
+            'is_during_trial' => 1,
             'trial_days_remaining' => 1
         ));
         
@@ -39,7 +39,7 @@ class OnCustomerSubscriptionDeletedTest extends ListenerTest {
         $this->callListener(array(
             'plan_name' => 'Agency',
             'actioned_by' => 'user',
-            'during_trial' => 1,
+            'is_during_trial' => 1,
             'trial_days_remaining' => 20
         ));
         
@@ -53,7 +53,7 @@ class OnCustomerSubscriptionDeletedTest extends ListenerTest {
         $this->callListener(array(
             'plan_name' => 'Agency',
             'actioned_by' => 'user',
-            'during_trial' => 0
+            'is_during_trial' => 0
         ));
         
         $this->assertEquals(1, $this->getMailService()->getSender()->getHistory()->count());

@@ -281,7 +281,7 @@ class Listener
         );
         
         if ($event->getData()->get('actioned_by') == 'user') {
-            $subjectKeyParameters[] = 'during_trial';
+            $subjectKeyParameters[] = 'is_during_trial';
         }
         
         $subject = $this->getSubject(array(
@@ -301,7 +301,7 @@ class Listener
         );
         
         if ($event->getData()->get('actioned_by') == 'user') {
-            $viewPathParameters[] = 'during_trial';
+            $viewPathParameters[] = 'is_during_trial';
         }        
         
         $this->issueNotification($subject, $this->templating->render($this->getViewPath($viewPathParameters), $viewParameters));            
