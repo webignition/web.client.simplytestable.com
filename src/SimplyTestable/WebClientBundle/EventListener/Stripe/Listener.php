@@ -270,7 +270,12 @@ class Listener
         $this->issueNotification($this->getSubject(array(
             'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id'))
         )), $this->templating->render($this->getViewPath(), $viewParameters));
+    }  
+    
+    
+    public function onCustomerSubscriptionDeleted(\SimplyTestable\WebClientBundle\Event\Stripe\Event $event) {                
     }     
+    
     
     private function issueNotification($subject, $messageBody) {
         $sender = $this->mailService->getConfiguration()->getSender('notifications');        

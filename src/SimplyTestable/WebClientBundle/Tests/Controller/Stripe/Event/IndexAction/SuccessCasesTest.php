@@ -198,4 +198,46 @@ class SuccessCasesTest extends ActionTest {
                 )
         ));         
     }
+    
+    
+    public function testCustomerSubscriptionDeletedUserCancelledDuringTrialReturns200() {
+        $this->performActionTest(array(
+            'statusCode' => 200
+        ), array(
+            'postData' => array(
+                'user' => 'user@example.com',
+                'event' => 'customer.subscription.deleted',
+                'plan_name' => 'Agency',
+                'actioned_by' => 'user',
+                'is_during_trial' => 1
+            )
+        ));          
+    }
+    
+    public function testCustomerSubscriptionDeletedUserCancelledAfterTrialReturns200() {
+        $this->performActionTest(array(
+            'statusCode' => 200
+        ), array(
+            'postData' => array(
+                'user' => 'user@example.com',
+                'event' => 'customer.subscription.deleted',
+                'plan_name' => 'Agency',
+                'actioned_by' => 'user',
+                'is_during_trial' => 0
+            )
+        ));         
+    }
+    
+    public function testCustomerSubscriptionDeletedSystemCancelledFollowingPaymentFailureReturns200() {
+        $this->performActionTest(array(
+            'statusCode' => 200
+        ), array(
+            'postData' => array(
+                'user' => 'user@example.com',
+                'event' => 'customer.subscription.deleted',
+                'plan_name' => 'Agency',
+                'actioned_by' => 'system'
+            )
+        ));         
+    }    
 }

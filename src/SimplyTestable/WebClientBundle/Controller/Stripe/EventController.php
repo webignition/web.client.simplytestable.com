@@ -8,23 +8,25 @@ use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
 
 class EventController extends BaseController {    
     
+    const LISTENER_EVENT_PREFIX = 'stripe.';
+    
     /**
      *
      * @var StripeEvent
      */
     private $event = null;
     
-    public function indexAction() {                
-        if (!$this->getEvent()->hasAcceptableName()) {
-            return new Response('', 400);
-        }
-        
+    public function indexAction() {
         if (!$this->getEvent()->hasUser()) {
             return new Response('', 400);
+        }        
+        
+        if (!$this->dispatcherHasListenerForEvent()) {
+            return new Response('', 400);
         }
         
-        $this->get('event_dispatcher')->dispatch(
-                'stripe.' . $this->getEvent()->getName(),
+        $this->getDispatcher()->dispatch(
+                $this->getListenerEventName(),
                 $this->getEvent()
         );   
         
@@ -32,12 +34,43 @@ class EventController extends BaseController {
     }
     
     
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Event\Stripe\Event
+     */
     private function getEvent() {
         if (is_null($this->event)) {
             $this->event = new StripeEvent($this->get('request')->request);
         }
         
         return $this->event;
+    }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    private function dispatcherHasListenerForEvent() {
+        return count($this->getDispatcher()->getListeners($this->getListenerEventName())) > 0;      
+    }
+    
+    
+    /**
+     * 
+     * @return \Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher
+     */
+    private function getDispatcher() {
+        return $this->get('event_dispatcher');
+    }
+    
+    
+    /**
+     * 
+     * @return string
+     */
+    private function getListenerEventName() {
+        return self::LISTENER_EVENT_PREFIX . $this->getEvent()->getName();
     }
     
 }

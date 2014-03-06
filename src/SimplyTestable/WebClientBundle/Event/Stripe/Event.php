@@ -3,25 +3,11 @@
 namespace SimplyTestable\WebClientBundle\Event\Stripe;
 
 use Symfony\Component\EventDispatcher\Event as BaseEvent;
-use SimplyTestable\WebClientBundle\Exception\Stripe\Event\Exception as StripeEventException;
 
 class Event extends BaseEvent {
     
     const NAME_KEY = 'event';
-    const USER_KEY = 'user';
-    
-    /**
-     *
-     * @var string[]
-     */
-    private $acceptableNames = array(
-        'customer.subscription.created',
-        'customer.subscription.trial_will_end',
-        'customer.subscription.updated',
-        'invoice.created',
-        'invoice.payment_succeeded',
-        'invoice.payment_failed'
-    );    
+    const USER_KEY = 'user';  
     
     
     /**
@@ -56,15 +42,6 @@ class Event extends BaseEvent {
      */
     public function getName() {
         return $this->data->get(self::NAME_KEY);
-    }
-    
-    
-    /**
-     * 
-     * @return boolean
-     */
-    public function hasAcceptableName() {
-        return in_array($this->getName(), $this->acceptableNames);
     }
     
     
