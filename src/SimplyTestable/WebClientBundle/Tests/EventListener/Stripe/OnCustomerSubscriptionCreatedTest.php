@@ -48,14 +48,17 @@ class OnCustomerSubscriptionCreatedTest extends ListenerTest {
     }
    
     public function testStatusActive() {
+        $amountInPence = 900;
+        
         $this->callListener(array(
             'status' => 'active',
             'plan_name' => 'Basic',
-            'amount' => 900
+            'amount' => $amountInPence
         ));
         
         $this->assertEquals(1, $this->getMailService()->getSender()->getHistory()->count());
         $this->assertFalse($this->getMailService()->getSender()->getLastResponse()->isError());
-    }
+        $this->assertNotificationMessageContains(number_format($amountInPence / 100, 2));
+    }  
     
 }

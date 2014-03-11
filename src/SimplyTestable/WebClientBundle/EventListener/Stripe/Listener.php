@@ -227,7 +227,7 @@ class Listener
             
             $viewParameters = array(
                 'plan_name' => strtolower($event->getData()->get('plan_name')),
-                'plan_amount' => strtolower($event->getData()->get('plan_amount')),
+                'plan_amount' => $this->getFormattedAmount($event->getData()->get('plan_amount')),
                 'account_url' => $this->router->generate('user_account_index', array(), true)
             );
             

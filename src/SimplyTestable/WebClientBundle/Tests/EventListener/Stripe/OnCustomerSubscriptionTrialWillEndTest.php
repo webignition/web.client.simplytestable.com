@@ -22,27 +22,33 @@ class OnCustomerSubscriptionTrialWillEndTest extends ListenerTest {
     
     
     public function testHasCardTrue() {        
+        $amountInPence = 1900;
+        
         $this->callListener(array(
             'has_card' => 1,
             'trial_end' => 1395341131,
             'plan_name' => 'Agency',
-            'plan_amount' => 1900            
+            'plan_amount' => $amountInPence            
         ));
         
         $this->assertEquals(1, $this->getMailService()->getSender()->getHistory()->count());
         $this->assertFalse($this->getMailService()->getSender()->getLastResponse()->isError());        
+        $this->assertNotificationMessageContains(number_format($amountInPence / 100, 2));
     }
     
     public function testHasCardFalse() {        
+        $amountInPence = 1900;
+        
         $this->callListener(array(
             'has_card' => 0,
             'trial_end' => 1395341131,
             'plan_name' => 'Agency',
-            'plan_amount' => 1900
+            'plan_amount' => $amountInPence
         ));
         
         $this->assertEquals(1, $this->getMailService()->getSender()->getHistory()->count());
         $this->assertFalse($this->getMailService()->getSender()->getLastResponse()->isError());        
+        $this->assertNotificationMessageContains(number_format($amountInPence / 100, 2));
     }    
     
 }
