@@ -2,9 +2,11 @@
 namespace SimplyTestable\WebClientBundle\Services;
 
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
+use webignition\Model\Stripe\Customer as StripeCustomer;
 
 class UserService extends CoreApplicationService {
     
@@ -434,7 +436,7 @@ class UserService extends CoreApplicationService {
     /**
      * 
      * @param \SimplyTestable\WebClientBundle\Model\User $user
-     * @return \webignition\WebResource\JsonDocument\JsonDocument
+     * @return \stdClass
      * @throws \SimplyTestable\WebClientBundle\Services\CurlException
      */
     public function getSummary(User $user) {
@@ -447,7 +449,7 @@ class UserService extends CoreApplicationService {
         $this->addAuthorisationToRequest($request);
 
         try {
-            return $this->webResourceService->get($request);
+            return new UserSummary($this->webResourceService->get($request)->getContentObject());
         } catch (\Guzzle\Http\Exception\CurlException $curlException) {
             throw $curlException;
         }        

@@ -11,17 +11,7 @@ class UserAccountCardController extends AbstractUserAccountController {
             return $notLoggedInResponse;
         }
         
-        $userSummary = $this->getUserService()->getSummary($this->getUser())->getContentObject();
-        
-//        var_dump($userSummary->stripe_customer->active_card);
-//        exit();
-
-//        $plan = $this->getUserService()->getPlanSummary($this->getUser())->getContentObject();
-//        if ($plan->name == 'basic') {
-//            return $this->redirect($this->generateUrl('user_account_index', array(), true));
-//        }
-//        
-//        $card = $this->getUserService()->getCardSummary($this->getUser())->getContentObject();      
+        $userSummary = $this->getUserService()->getSummary($this->getUser());
 
         $currentYear = date('Y');
         

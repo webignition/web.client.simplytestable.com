@@ -4,7 +4,7 @@
     <button type="button" class="close" data-dismiss="alert">×</button>
     <p><strong>You're already there!</strong></p>
     <p>
-        You've already on the <strong>{{ user_summary.plan.accountplan.name }}</strong> plan.
+        You've already on the <strong>{{ user_summary.plan.name }}</strong> plan.
     </p>
 </div>                
         {% else %}
@@ -12,7 +12,7 @@
     <button type="button" class="close" data-dismiss="alert">×</button>
     <p><strong>All done!</strong></p>
     <p>
-        You've changed to the <strong>{{ user_summary.plan.accountplan.name }}</strong> plan.
+        You've changed to the <strong>{{ user_summary.plan.name }}</strong> plan.
     </p>
 </div>                
     {% endif %}
@@ -130,7 +130,7 @@
 
 <div class="plan-section">
     <p>
-        You are on the <strong>{{ user_summary.plan.accountplan.name }}</strong> plan{% if user_summary.plan.accountplan.name == 'basic' %}. This is <strong>free of charge</strong> and always will be.
+        You are on the <strong>{{ user_summary.plan.name }}</strong> plan{% if user_summary.plan.name == 'basic' %}. This is <strong>free of charge</strong> and always will be.
         {% else %}
         at <strong>&pound{{ user_summary.stripecustomer.subscription.plan.amount / 100 }} per {{ user_summary.stripecustomer.subscription.plan.interval }}</strong>.
         {% endif %}
@@ -158,14 +158,14 @@
             </tr>
             <tr>
                 <th>URLs per test job</th>
-                <td>{% if user_summary.planConstraints.urls_per_job is defined %}{{ user_summary.planConstraints.urls_per_job }}{% else %}Unlimited{% endif %}</td>
+                <td>{% if user_summary.plan_constraints.urls_per_job is defined %}{{ user_summary.plan_constraints.urls_per_job }}{% else %}Unlimited{% endif %}</td>
             </tr>
             <tr>
                 <th>Credits</th>
                 <td>
-                    {% if user_summary.planConstraints.credits is defined %}
-                        {{ user_summary.planConstraints.credits.used|number_format(0) }} of 
-                        {{ user_summary.planConstraints.credits.limit|number_format(0) }} used ({{ (user_summary.planConstraints.credits.used / user_summary.planConstraints.credits.limit) * 100 }}%)
+                    {% if user_summary.plan_constraints.credits is defined %}
+                        {{ user_summary.plan_constraints.credits.used|number_format(0) }} of 
+                        {{ user_summary.plan_constraints.credits.limit|number_format(0) }} used ({{ (user_summary.plan_constraints.credits.used / user_summary.plan_constraints.credits.limit) * 100 }}%)
                     {% else %}
                         Unlimited
                     {% endif %}                                
@@ -179,9 +179,9 @@
     <h3>Change plan</h3>
     
 
-            {% if user_summary.plan.accountplan.name == 'basic' %}
-                {% if user_summary.plan.startTrialPeriod > 0  %}
-    {% if user_summary.plan.startTrialPeriod == 365 %}
+            {% if user_summary.plan.name == 'basic' %}
+                {% if user_summary.user_plan.start_trial_period > 0  %}
+    {% if user_summary.user_plan.start_trial_period == 365 %}
         <div class="alert alert-success">
             <p><strong>Special offer!</strong></p>
             <p>
@@ -191,13 +191,13 @@
     {% endif %}
     
     <p>
-        Try any premium plan free for <strong>{{ user_summary.plan.startTrialPeriod }}</strong> day{% if user_summary.plan.startTrialPeriod != 1%}s{% endif %}.
+        Try any premium plan free for <strong>{{ user_summary.user_plan.start_trial_period }}</strong> day{% if user_summary.user_plan.start_trial_period != 1%}s{% endif %}.
     </p>                             
                 {% endif %}
             {% else %}
             {% endif %}
 
-            {% if user_summary.plan.accountplan.name !='basic' %}
+            {% if user_summary.plan.name !='basic' %}
                 {% if plan.summary is defined %}
                     {% set trial_days_remaining = plan.summary.trial_period_days - plan.summary.days_of_trial_period + 1 %}                               
                     {% if trial_days_remaining > 0 %}
@@ -211,11 +211,11 @@
     <form method="post" action="{{ path('user_account_plan_subscribe') }}">
         <div class="input-append">
             <select name="plan">
-                <option value="basic" {% if user_summary.plan.accountplan.name == 'basic' %}selected{% endif %}>Basic (&pound;0)</option>
-                <option value="personal" {% if user_summary.plan.accountplan.name == 'personal' %}selected{% endif %}>Personal (&pound;{{ plans.personal.price }})</option>
-                <option value="agency" {% if user_summary.plan.accountplan.name == 'agency' %}selected{% endif %}>Agency (&pound;{{ plans.agency.price }})</option>
-                <option value="business" {% if user_summary.plan.accountplan.name == 'business' %}selected{% endif %}>Business (&pound;{{ plans.business.price }})</option>
-                <option value="enterprise" {% if user_summary.plan.accountplan.name == 'enterprise' %}selected{% endif %}>Enterprise (&pound;{{ plans.enterprise.price }})</option>
+                <option value="basic" {% if user_summary.plan.name == 'basic' %}selected{% endif %}>Basic (&pound;0)</option>
+                <option value="personal" {% if user_summary.plan.name == 'personal' %}selected{% endif %}>Personal (&pound;{{ plans.personal.price }})</option>
+                <option value="agency" {% if user_summary.plan.name == 'agency' %}selected{% endif %}>Agency (&pound;{{ plans.agency.price }})</option>
+                <option value="business" {% if user_summary.plan.name == 'business' %}selected{% endif %}>Business (&pound;{{ plans.business.price }})</option>
+                <option value="enterprise" {% if user_summary.plan.name == 'enterprise' %}selected{% endif %}>Enterprise (&pound;{{ plans.enterprise.price }})</option>
             </select>  
             <button class="btn" type="submit">Subscribe</button>
         </div>

@@ -13,8 +13,9 @@ class UserAccountPlanController extends AbstractUserAccountController
         
         $redirectResponse = $this->redirect($this->generateUrl('user_account_index', array(), true));
         
-        $userSummary = $this->getUserService()->getSummary($this->getUser())->getContentObject();
-        if (isset($userSummary->user_plan) && $userSummary->user_plan->plan->name == $this->get('request')->request->get('plan')) {
+        $userSummary = $this->getUserService()->getSummary($this->getUser());
+        
+        if ($userSummary->hasPlan() && $userSummary->getPlan()->getAccountPlan()->getName() == $this->get('request')->request->get('plan')) {
             $this->get('logger')->err('UserAccountPlanController::subscribeAction::already on selected plan');
             $this->get('session')->setFlash('plan_subscribe_success', 'already-on-plan');
             return $redirectResponse;
@@ -22,9 +23,7 @@ class UserAccountPlanController extends AbstractUserAccountController
 
         try {
             $response = $this->getUserPlanSubscriptionService()->subscribe($this->getUser(), $this->get('request')->request->get('plan'));
-            $this->get('logger')->err('UserAccountPlanController::subscribeAction::subscribe method done');
-            
-            
+            $this->get('logger')->err('UserAccountPlanController::subscribeAction::subscribe method done');            
             
             if ($response === true) {
                 $this->get('logger')->err('UserAccountPlanController::subscribeAction::subscribe method return true');
@@ -42,6 +41,7 @@ class UserAccountPlanController extends AbstractUserAccountController
                 
         return $redirectResponse;
     }
+    
     
     /**
      * 

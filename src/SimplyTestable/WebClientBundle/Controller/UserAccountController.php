@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+
 use Symfony\Component\HttpFoundation\Response;
 
 class UserAccountController extends AbstractUserAccountController {
@@ -13,40 +14,25 @@ class UserAccountController extends AbstractUserAccountController {
             return $notLoggedInResponse;
         }
         
-        $userSummary = $this->getUserService()->getSummary($this->getUser())->getContentObject();
+        $userSummary = $this->getUserService()->getSummary($this->getUser());
         
-        if (isset($userSummary->stripe_customer) && isset($userSummary->stripe_customer->subscription)) {
-            $userSummary->stripe_customer->subscription->day_of_trial_period = $this->getDayOfTrialPeriod($userSummary);
-        } 
-        
-        if (isset($userSummary->stripe_customer->active_card)) {
-            $userSummary->stripe_customer->active_card->exp_month_name = $this->getMonthNameFromNumber($userSummary->stripe_customer->active_card->exp_month);
-            $cardCheckFailures = array();
-            
-            foreach ($userSummary->stripe_customer->active_card as $cardKey => $cardValue) {                
-                if ($this->isCardKeyCheckFailure($cardKey, $cardValue)) {
-                    $cardCheckFailures[] = $this->getCardFieldFromCheckKey($cardKey);
-                }
-            }
-            
-            if (count($cardCheckFailures)) {
-                $userSummary->stripe_customer->active_card->check_failures = $cardCheckFailures;
-            }
-        }
+//        var_dump($this->getUserStripeEvents($userSummary));
+//        exit();
         
         $viewData = array_merge(array(
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
             'user_summary' => $userSummary,
-            'plan_presentation_name' => $this->getPlanPresentationName($userSummary->user_plan->plan->name),
+            'plan_presentation_name' => $this->getPlanPresentationName($userSummary->getPlan()->getAccountPlan()->getName()),
             'is_logged_in' => true,
-            'stripe_event_data' => $this->getUserStripeEventData($userSummary),
+            'stripe_event_data' => $this->getUserStripeEvents($userSummary),
             'stripe' => $this->container->getParameter('stripe'),
             'this_url' => $this->generateUrl('user_account_index', array(), true),
             'premium_plan_launch_offer_end' => $this->container->getParameter('premium_plan_launch_offer_end'),
             'plans' => $this->container->getParameter('plans'),
             'mailchimp_updates_subscribed' => $this->getMailchimpService()->listContains('updates', $this->getUser()->getUsername()),
             'mailchimp_announcements_subscribed' => $this->getMailchimpService()->listContains('announcements', $this->getUser()->getUsername()),
+            'card_expiry_month' => $this->getCardExpiryMonth($userSummary)
         ), $this->getViewFlashValues(array(
             'user_account_details_update_notice',
             'user_account_details_update_email',
@@ -66,98 +52,95 @@ class UserAccountController extends AbstractUserAccountController {
         $this->setTemplate('SimplyTestableWebClientBundle:User/Account:index.html.twig');
         return $this->sendResponse($viewData);
     }
+
     
-    
-    /**
-     * 
-     * @param string $checkKey
-     * @return string
-     */
-    private function getCardFieldFromCheckKey($checkKey) {
-        if (!$this->isCardKeyCheckKey($checkKey)) {
-            return $checkKey;
-        }
-        
-        return substr($checkKey, 0, strlen($checkKey) - strlen(self::STRIPE_CARD_CHECK_KEY_POSTFIX));
-    }
-    
-    
-    /**
-     * 
-     * @param string $cardKey
-     * @param mixed $cardValue
-     * @return boolean
-     */
-    private function isCardKeyCheckFailure($cardKey, $cardValue) {        
-        return $this->isCardKeyCheckKey($cardKey) && $cardValue === 'fail';
-    }
-    
-    
-    /**
-     * 
-     * @param string $cardKey
-     * @return boolean
-     */
-    private function isCardKeyCheckKey($cardKey) {
-        return substr($cardKey, strlen($cardKey) - strlen(self::STRIPE_CARD_CHECK_KEY_POSTFIX)) == self::STRIPE_CARD_CHECK_KEY_POSTFIX;                
-    }
-    
-    private function getUserStripeEventData($userSummary) {
-        if (!isset($userSummary->stripe_customer)) {
+    private function getUserStripeEvents(\SimplyTestable\WebClientBundle\Model\User\Summary $userSummary) {
+        if (!$userSummary->hasStripeCustomer()) {
             return array();
         }
         
-        $stripeEventData = array();
+        if (!$userSummary->getStripeCustomer()->hasSubscription()) {
+            return array();
+        }
         
-        if (!isset($userSummary->stripe_customer->subscription)) {
+        $stripeEvents = array();
+        
+        //if (!$userSummary->getStripeCustomer()->hasSubscription()) {
             $eventKeys = array(
                 'invoice.updated',
                 'invoice.created'
             );
             
             foreach ($eventKeys as $eventKey) {
-                $eventData = $this->getUserStripeEventService()->getLatestData($this->getUser(), $eventKey);
-                if (!is_null($eventData) && !isset($stripeEventData['invoice'])) {
-                    $stripeEventData['invoice'] = $eventData;
+                $eventData = $this->getUserStripeEventService()->getLatest($this->getUser(), $eventKey);
+                if (!is_null($eventData) && !isset($stripeEvents['invoice'])) {
+                    $stripeEvents['invoice'] = $eventData->getDataObject()->getObject();
                 }
             }
             
-            return $stripeEventData;
+            //return $stripeEvents;
+        //}
+        
+//        if ($userSummary->getStripeCustomer()->getSubscription()->isTrialing() || $userSummary->getStripeCustomer()->getSubscription()->isActive()) {
+//            $stripeEvents['invoice'] = $this->getUserStripeEventService()->getLatest($this->getUser(), 'invoice.created');            
+//        }
+//        
+//        ini_set('xdebug.var_display_max_data', 5000);
+//        ini_set('xdebug.var_display_max_depth', 10);
+//        
+//        var_dump($stripeEvents);
+//        exit();
+//        
+//        
+//        switch ($userSummary->stripe_customer->subscription->status) {
+//            case 'trialing':
+//                $stripeEvents['invoice'] = $this->getUserStripeEventService()->getLatestData($this->getUser(), 'invoice.created');
+//                break;
+//            
+//            case 'active':
+//                $stripeEvents['invoice'] = $this->getUserStripeEventService()->getLatestData($this->getUser(), 'invoice.created');
+//                break;
+//            
+//            case 'past_due':
+//                $stripeEvents['invoice'] = $this->getUserStripeEventService()->getLatestData($this->getUser(), 'invoice.updated');
+//                $stripeEvents['charge.failed'] = $this->getUserStripeEventService()->getLatestData($this->getUser(), 'charge.failed');
+//                break;
+//            
+//            case 'cancelled':
+//                var_dump("sub cancelled, what do we do?");
+//                exit();                
+//                break;
+//        }
+//            
+//        if (isset($stripeEvents['invoice'])) {
+//            var_dump($stripeEvents['invoice']->getDataObject()->getObject()->getNextPaymentAttempt());
+//            exit();
+//            
+//            if (!is_null($stripeEvents['invoice']->next_payment_attempt)) {
+//                $nextPaymentDate = new \ExpressiveDate(date('c', $stripeEvents['invoice']->next_payment_attempt));
+//                $stripeEvents['invoice']->next_payment_attempt_relative = $nextPaymentDate->getRelativeDate();                
+//            }
+//        }
+        
+        return $stripeEvents;
+    }
+    
+    
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Model\User\Summary $userSummary
+     * @return string|null
+     */
+    private function getCardExpiryMonth(\SimplyTestable\WebClientBundle\Model\User\Summary $userSummary) {
+        if (!$userSummary->hasStripeCustomer()) {
+            return null;
         }
         
-        switch ($userSummary->stripe_customer->subscription->status) {
-            case 'trialing':
-                $stripeEventData['invoice'] = $this->getUserStripeEventService()->getLatestData($this->getUser(), 'invoice.created');
-                break;
-            
-            case 'active':
-                $stripeEventData['invoice'] = $this->getUserStripeEventService()->getLatestData($this->getUser(), 'invoice.created');
-                break;
-            
-            case 'past_due':
-                $stripeEventData['invoice'] = $this->getUserStripeEventService()->getLatestData($this->getUser(), 'invoice.updated');
-                $stripeEventData['charge.failed'] = $this->getUserStripeEventService()->getLatestData($this->getUser(), 'charge.failed');
-                break;
-            
-            case 'cancelled':
-                var_dump("sub cancelled, what do we do?");
-                exit();                
-                break;
-        }
-            
-        if (isset($stripeEventData['invoice'])) {
-            if (!is_null($stripeEventData['invoice']->next_payment_attempt)) {
-                $nextPaymentDate = new \ExpressiveDate(date('c', $stripeEventData['invoice']->next_payment_attempt));
-                $stripeEventData['invoice']->next_payment_attempt_relative = $nextPaymentDate->getRelativeDate();                
-            }
+        if (!$userSummary->getStripeCustomer()->hasActiveCard()) {
+            return null;
         }
         
-        //var_dump($stripeEventData['invoice']);
-        //var_dump($stripeEventData['invoice']->lines->data[0]);
-//        var_dump($stripeEventData['invoice']->lines->data[0]->period->end);
-        //exit();
-        
-        return $stripeEventData;
+        return $this->getMonthNameFromNumber($userSummary->getStripeCustomer()->getActiveCard()->getExpiryMonth());                
     }
     
 

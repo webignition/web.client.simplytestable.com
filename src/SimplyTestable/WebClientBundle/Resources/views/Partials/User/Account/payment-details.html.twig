@@ -1,15 +1,15 @@
-{% if user_summary.user_plan.plan.name == 'basic' and (user_summary.stripe_customer is not defined or user_summary.stripe_customer.subscription is not defined) %}
+{% if user_summary.plan.accountplan.name == 'basic' and (user_summary.hasStripeCustomer == false or user_summary.getStripeCustomer.hasSubscription == false) %}
 <p>
     You're on a <strong>free</strong> plan, no payment details needed.
 </p>
 {% else %}
-<!-- user_summary.stripe_customer.subscription.status -->
-    {% if user_summary.stripe_customer.active_card is defined %}
-        {% if user_summary.stripe_customer.active_card.check_failures is defined and user_summary.stripe_customer.active_card.check_failures|length > 0 %}
+    {% if user_summary.stripeCustomer.hasActiveCard %}
+        {% if user_summary.stripeCustomer.activeCard.hasCheckFailures %}
             {% include 'SimplyTestableWebClientBundle:Partials/User/Account:payment-summary-card-check-failures.html.twig' %}                         
         {% endif %}
-        {% include 'SimplyTestableWebClientBundle:Partials/User/Account:card-summary.html.twig' %}                         
+        {% include 'SimplyTestableWebClientBundle:Partials/User/Account:card-summary.html.twig' %} 
     {% else %}
         {% include 'SimplyTestableWebClientBundle:Partials/User/Account:no-card.html.twig' %} 
     {% endif %}
 {% endif %}
+
