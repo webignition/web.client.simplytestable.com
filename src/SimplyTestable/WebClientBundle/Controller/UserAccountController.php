@@ -16,9 +16,6 @@ class UserAccountController extends AbstractUserAccountController {
         
         $userSummary = $this->getUserService()->getSummary($this->getUser());
         
-//        var_dump($this->getUserStripeEvents($userSummary));
-//        exit();
-        
         $viewData = array_merge(array(
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),

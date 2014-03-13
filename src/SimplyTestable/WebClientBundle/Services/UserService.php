@@ -436,7 +436,7 @@ class UserService extends CoreApplicationService {
     /**
      * 
      * @param \SimplyTestable\WebClientBundle\Model\User $user
-     * @return \stdClass
+     * @return \SimplyTestable\WebClientBundle\Model\User\Summary
      * @throws \SimplyTestable\WebClientBundle\Services\CurlException
      */
     public function getSummary(User $user) {

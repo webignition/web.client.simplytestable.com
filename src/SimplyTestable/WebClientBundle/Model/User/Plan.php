@@ -28,4 +28,13 @@ class Plan extends Object {
     public function getAccountPlan() {
         return $this->getDataProperty('plan');
     }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function hasTrialPeriodAvailable() {
+        return $this->getStartTrialPeriod() > 0;
+    }
 }

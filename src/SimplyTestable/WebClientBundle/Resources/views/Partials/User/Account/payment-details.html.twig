@@ -1,4 +1,4 @@
-{% if user_summary.plan.accountplan.name == 'basic' and (user_summary.hasStripeCustomer == false or user_summary.getStripeCustomer.hasSubscription == false) %}
+{% if user_summary.plan.accountplan.name == 'basic' and user_summary.plan.hasTrialPeriodAvailable %}
 <p>
     You're on a <strong>free</strong> plan, no payment details needed.
 </p>
