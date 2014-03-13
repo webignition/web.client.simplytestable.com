@@ -4,13 +4,8 @@
     {% if stripe_event_data['invoice'].isPaid %}
     paid <i class="icon icon-ok"></i>
     {% else %}
-        {% if stripe_event_data['invoice'].closed == true %}
-            closed (from previous premium subscription)
-        {% else %}
-            unpaid
-        {% endif %}    
-    {% endif %}     
-
+    unpaid  
+    {% endif %}
 </p>
 
 <table class="table">
