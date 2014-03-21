@@ -153,6 +153,7 @@ parameters:
     names_and_default_values:
         http-auth-username: ""
         http-auth-password: ""   
+        cookies: [{name: "", value: "", secure: false, path: "/", domain: ""}]        
         html-validation: 1
         css-validation: 1
         css-validation-ignore-warnings: 1
