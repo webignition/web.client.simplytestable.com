@@ -89,10 +89,10 @@
 {% if test_options['cookies'] is defined %}        
         
     <div>       
-        <p>
-            Custom cookies: <span class="cookies-enabled">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span>
+        <p class="badge badge-info action-badge">
+            <span class="">Custom cookies: <span class="cookies-enabled">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span>
             <span class="modal-control for-cookies-options-modal">
-                <span class="cookies-change">{{ (test_cookies_enabled) ? 'Change' : 'Set' }}</span> <span class="modal-header-value">cookie options</span>
+                change
             </span>
         </p>
     </div>

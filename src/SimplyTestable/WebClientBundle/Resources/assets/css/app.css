@@ -1537,3 +1537,23 @@ body.app-history-all .no-tests {
 .modal-content {
     display:none;
 }
+
+.action-badge {
+    display:inline;
+    padding: 0;
+    padding: 3px 9px 3px;
+    font-weight: normal;
+}
+
+.action-badge a {
+    color:#fff;
+    /*text-decoration: underline;*/
+    padding-left:3px;
+    font-weight: bold;
+
+    border-left: 1px solid rgb(255, 255, 255);
+    border-left: 1px solid rgba(255, 255, 255, .8);
+    -webkit-background-clip: padding-box; /* for Safari */
+    background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */    
+}
+
