@@ -1845,12 +1845,17 @@ application.root.testStartFormController = function () {
                 
                 if (input.attr('name').indexOf('name') !== -1) {
                     input.attr('name', 'cookies['+currentCookieCount+'][name]');
-                }
-                
+                }                
                 
                 if (input.attr('name').indexOf('value') !== -1) {
                     input.attr('name', 'cookies['+currentCookieCount+'][value]');
-                }                
+                } 
+                
+                input.keydown(function (event) {                                            
+                    if (event.which === 13) {
+                        modal.modal('hide');
+                    }
+                });                
             });
             
             $('.remove', newRow).html('');
@@ -1867,7 +1872,7 @@ application.root.testStartFormController = function () {
             
             tableBody.append(newRow);
             
-            var lastRow = $('.test-cookies table tbody tr', modal).last();            
+            var lastRow = $('.test-cookies table tbody tr', modal).last();
             $($('input', lastRow).get(0)).focus();
 
             event.preventDefault();
@@ -2570,21 +2575,6 @@ application.pages = {
                             },
                             'authentication-options':{
                                 'show': function (event) {
-//                                    var modal = $(event.target);
-//                                    
-//                                    $('td.remove', modal).each(function() {
-//                                        $(this).html('');
-//                                        
-//                                        var trashIcon = $('<i class="icon icon-trash" title="Remove this cookie"></i>').click(function () {                                                
-//                                            testStartFormController.clearCookie($(this));
-//                                        }).hover(function () {
-//                                            $(this).css({
-//                                                'cursor':'pointer'
-//                                            });
-//                                        });
-//                                        
-//                                        $(this).append(trashIcon);
-//                                    });
                                 },
                                 'shown': function (event) {
                                     $('input', $(event.target)).first().focus();
@@ -2640,6 +2630,12 @@ application.pages = {
                     ).append(
                             '<div class="modal-footer"><button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Done</button></div>'                    
                     );
+            
+                    $('input[type=text],input[type=password]', modal).keyup(function (event) {                        
+                        if (event.which === 13) {
+                            modal.modal('hide');
+                        }
+                    });
             
                     setEventHandlers();
 
