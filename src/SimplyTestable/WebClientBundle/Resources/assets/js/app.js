@@ -1710,17 +1710,47 @@ application.root.testStartFormController = function () {
         $('.task-type-selection', getIntro()).html(getTaskTypeSelectionString());
     };
     
-    var getAuthenticationSelectionString = function () {       
+    var getAuthenticationEnabledString = function () {       
         if (hasAuthenticationCredentials()) {
-            return 'This site or page requires authentication.';
+            return 'enabled';
         } else {
-            return 'This site or page does not require authentication.';
+            return 'not enabled';
         }
     };    
     
+    var getAuthenticationChangeString = function () {       
+        if (hasAuthenticationCredentials()) {
+            return 'Change';
+        } else {
+            return 'Set';
+        }
+    }; 
+    
+    var getCustomCookiesEnabledString = function () {       
+        if (hasCustomCookieValues()) {
+            return 'enabled';
+        } else {
+            return 'not enabled';
+        }
+    };    
+    
+    var getCustomCookiesChangeString = function () {       
+        if (hasCustomCookieValues()) {
+            return 'Change';
+        } else {
+            return 'Set';
+        }
+    };     
+    
     var setAuthenticationContent = function () {
-        $('.authentication-selection', getTestOptions()).html(getAuthenticationSelectionString());
+        $('.authentication-enabled', getTestOptions()).html(getAuthenticationEnabledString());
+        $('.authentication-change', getTestOptions()).html(getAuthenticationChangeString());
     };
+    
+    var setCustomCookiesContent = function () {
+        $('.cookies-enabled', getTestOptions()).html(getCustomCookiesEnabledString());
+        $('.cookies-change', getTestOptions()).html(getCustomCookiesChangeString());
+    };    
     
     var getAuthenticationCredentialInputs = function () {        
         return $('input.credential', $('#authentication-options '));
@@ -1735,6 +1765,22 @@ application.root.testStartFormController = function () {
         });
         
         return hasAuthenticationCredentials;
+    };
+    
+    var getCustomCookieInputs = function () {
+        return $('.test-cookies input', getForm());
+    };
+    
+    var hasCustomCookieValues = function () {
+        var hasCustomCookieValues = false;
+        
+        getCustomCookieInputs().each(function () {
+            if ($(this).val() !== '') {
+                hasCustomCookieValues = true;
+            }            
+        });
+        
+        return hasCustomCookieValues;
     };
     
     var getTaskTypeCheckboxByKey = function (taskTypeKey) {
@@ -1784,6 +1830,44 @@ application.root.testStartFormController = function () {
                 setAuthenticationContent();
             });
         });
+        
+        getCustomCookieInputs().each(function () {            
+            $(this).keyup(function () {
+                setCustomCookiesContent();
+            });            
+        });
+        
+        $('.add-cookie', getForm()).click(function(event) {
+            var tableBody = $('.test-cookies table tbody', getForm());            
+            var cookieRows = $('tr', tableBody);            
+            var currentCookieCount = cookieRows.length;
+            var newRow = $(cookieRows.get(0)).clone();
+            $('input', newRow).each(function () {
+                var input = $(this);
+                
+                input.attr('value', '');
+                
+                if (input.attr('name').indexOf('name') !== -1) {
+                    input.attr('name', 'cookies['+currentCookieCount+'][name]');
+                }
+                
+                
+                if (input.attr('name').indexOf('value') !== -1) {
+                    input.attr('name', 'cookies['+currentCookieCount+'][value]');
+                }
+                
+                
+            });
+            
+            tableBody.append(newRow);
+            
+            var lastRow = $('.test-cookies table tbody tr', getForm()).last();            
+            $($('input', lastRow).get(0)).focus();
+
+            event.preventDefault();
+        });
+        
+        $('#input-website').focus();
     };
 };
 

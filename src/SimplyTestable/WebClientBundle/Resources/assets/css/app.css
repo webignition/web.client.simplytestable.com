@@ -1124,7 +1124,7 @@ body.app-results #test-start-form button span {
     font-size:12px;
 }
 
-body.app-results #test-start-form button {
+body.app-results #test-start-form #retest-button {
     position: absolute;
     right: 30px;
     top: 30px;
@@ -1482,10 +1482,6 @@ body.app-history-all .no-tests {
     padding:0;
 }
 
-/*#authentication-options .checkbox-lined {
-    margin-left: 20px;
-}*/
-
 #authentication-options .checkbox-lined span {
     width: 70px;
     display:inline-block;
@@ -1494,4 +1490,33 @@ body.app-history-all .no-tests {
 .support-hint {
     margin-top: 20px;
     opacity: 0.8;
+}
+
+#cookies-options-expandable .test-cookies {
+    padding-top:0;
+}
+
+
+.test-cookies table {
+    margin:0;
+}
+
+.test-cookies table th,
+.test-cookies table td {
+    border-top:none;
+    padding: 4px 8px;
+}
+
+.test-cookies table th:nth-of-type(1),
+.test-cookies table td:nth-of-type(1) {
+    padding-left:0;
+}
+
+.test-cookies table .name {
+    width:1%;
+}
+
+.test-cookies table .value {
+    width:40%;
+    text-align: left;
 }

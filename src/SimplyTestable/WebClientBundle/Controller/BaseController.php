@@ -79,8 +79,12 @@ abstract class BaseController extends Controller
     }
     
     
-    protected function getRequestValue($name, $default = null, $httpMethod = null) {        
-        $value = trim($this->get('request')->get($name));
+    protected function getRequestValue($name, $default = null, $httpMethod = null) {
+        $value = $this->get('request')->get($name);
+        if (is_string($value)) {
+            $value = trim($value);
+        }
+        
         if ($value != '') {
             return $value;
         }

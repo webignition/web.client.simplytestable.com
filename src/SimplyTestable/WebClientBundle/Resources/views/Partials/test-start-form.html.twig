@@ -67,26 +67,82 @@
     
     <div id="test-options-expandable">        
 {% include 'SimplyTestableWebClientBundle:Partials:/task-type-options/task-type-options.html.twig' %}         
-    </div>
-        
-{% if test_options['http-authentication'] is defined %}              
+    </div>        
+{% if test_options['http-authentication'] is defined %}            
     <div>       
         <p>
-            <span class="authentication-selection">{% autoescape false %}{{ test_authentication_introduction }}{% endautoescape %}</span>
-            <span class="expandable-control expandable-control-default-closed for-authentication-options-expandable">Set authentication options</span>
+            HTTP authentication <span class="authentication-enabled">{{ (test_authentication_enabled) ? 'enabled' : 'not enabled' }}</span>.
+            <span class="expandable-control expandable-control-default-closed for-authentication-options-expandable">
+                <span class="authentication-change">{{ (test_authentication_enabled) ? 'Change' : 'Set' }}</span> authentication options                
+            </span>
         </p>
     </div>         
         
     <div id="authentication-options-expandable">        
-        <h3>HTTP Authentication Details</h3>
         <span class="help-block">For when your site or page uses either <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">basic</a> or <a href="http://en.wikipedia.org/wiki/Digest_access_authentication">digest</a> HTTP authentication. Commonly used for public staging sites. Not safe for <a href="http://blog.simplytestable.com/html-validation-for-password-protected-sites/#security">sensitive information</a>.</span>          
         <div class="test-options-set" id="authentication-options">                
             <label class="checkbox-lined"><span>Username</span><input name="http-auth-username" class="credential" type="text" placeholder="Enter required username" {% if test_options['http-auth-username'] is defined and test_options['http-auth-username'] != '' %}value="{{ test_options['http-auth-username'] }}"{% endif %}></label>
             <label class="checkbox-lined"><span>Password</span><input name="http-auth-password" class="credential" type="password" placeholder="Enter required password"></label>
         </div>        
-    </div>        
-{% endif %}
+    </div>
+{% endif %}        
+{% if test_options['cookies'] is defined %}        
         
+    <div>       
+        <p>
+            Custom cookies: <span class="cookies-enabled">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span>
+            <span class="expandable-control expandable-control-default-closed for-cookies-options-expandable">
+                <span class="cookies-change">{{ (test_cookies_enabled) ? 'Change' : 'Set' }}</span> cookie options
+            </span>
+        </p>
+    </div>         
+        
+    <div id="cookies-options-expandable">        
+        <span class="help-block">For testing sites that use cookies for authentication or for user-specific content. Add any number of cookies.</span>           
+        
+        <div class="test-options-set test-cookies">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="name">Name</th>
+                        <th class="value">Value</th>
+                        <!--
+                        <th>Domain</th>
+                        <th>Path</th>
+                        <th>Secure only?</th>
+                        -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cookie in test_options['cookies'] %}
+                        <tr>
+                            <td class="name">
+                                <input name="cookies[{{loop.index0}}][name]"
+                                       type="text"
+                                       placeholder="Cookie name"
+                                       {% if cookie['name'] is not empty %}value="{{ cookie['name'] }}"{% endif %}>                                
+                            </td>
+                            <td class="value">
+                                <input name="cookies[{{loop.index0}}][value]"
+                                       type="text"
+                                       placeholder="Cookie value"
+                                       {% if cookie['value'] is not empty %}value="{{ cookie['value'] }}"{% endif %}>                                   
+                            </td>                            
+                            <!--
+                            <td>domain</td>
+                            <td>path</td>
+                            <td>secure</td>
+                            -->
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <button type="submit" class="btn btn-small add-cookie" name="add-cookie" value="1"><i class="icon icon-plus"></i> Add another cookie</button>
+        </div>
+    </div> 
+        
+{% endif %}        
         
 </div> 
             

@@ -122,7 +122,8 @@ class TestProgressController extends TestViewController
                 'vendor-extensions' => 'warn',
                 'ignore-common-cdns' => 1                
             ),
-            'test_authentication_introduction' => $this->getTestAuthenticationIntroduction($remoteTest)
+            'test_authentication_enabled' => $this->getTestAuthenticationIsEnabled($remoteTest),
+            'test_cookies_enabled' => $this->getTestCookiesIsEnabled($remoteTest)
         );  
         
         if ($this->isJsonResponseRequired()) {
@@ -135,32 +136,23 @@ class TestProgressController extends TestViewController
     }
     
     
-    private function getTestAuthenticationIntroduction(RemoteTest $remoteTest) {
-        $unselectedTaskTypes = $this->getUnselectedTaskTypes($remoteTest);
-        $unselectedTaskTypeString = '';
-        
-        $taskTypeIndex = 0;
-        
-        foreach ($unselectedTaskTypes as $unselectedTaskType) {
-            $unselectedTaskTypeString .= $unselectedTaskType;
-            
-            if ($taskTypeIndex == count($unselectedTaskTypes) - 2) {
-                $unselectedTaskTypeString .= ' and ';
-            } elseif ($taskTypeIndex < count($unselectedTaskTypes) - 2) {
-                $unselectedTaskTypeString .= ', ';
-            }
-            
-            $taskTypeIndex++;            
-        }
-        
-        return ($remoteTest->hasParameter('http-auth-username'))
-            ? 'This site or page requires authentication.'
-            : 'This site or page does not require authentication.';
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest $remoteTest
+     * @return boolean
+     */
+    private function getTestAuthenticationIsEnabled(RemoteTest $remoteTest) {        
+        return $remoteTest->hasParameter('http-auth-username');
     } 
     
     
-    private function getUnselectedTaskTypes(RemoteTest $remoteTest) {
-        return array_diff($this->getAvailableTaskTypes(), $remoteTest->getTaskTypes());     
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest $remoteTest
+     * @return boolean
+     */
+    private function getTestCookiesIsEnabled(RemoteTest $remoteTest) {        
+        return $remoteTest->hasParameter('cookies');
     }
     
     

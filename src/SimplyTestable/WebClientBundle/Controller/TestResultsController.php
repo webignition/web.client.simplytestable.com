@@ -311,7 +311,8 @@ class TestResultsController extends TestViewController
             ),
             'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions),
             'filtered_task_counts' => $this->getFilteredTaskCounts($test, $taskTypeFilter),
-            'test_authentication_introduction' => $this->getTestAuthenticationIntroduction($remoteTest)
+            'test_authentication_enabled' => $this->getTestAuthenticationIsEnabled($remoteTest),
+            'test_cookies_enabled' => $this->getTestCookiesIsEnabled($remoteTest)
         );
                        
         //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTest->getTaskCount() : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));
@@ -340,11 +341,25 @@ class TestResultsController extends TestViewController
         ); 
     }
     
-    private function getTestAuthenticationIntroduction(RemoteTest $remoteTest) {        
-        return ($remoteTest->hasParameter('http-auth-username'))
-            ? 'This site or page requires authentication.'
-            : 'This site or page does not require authentication.';
-    }     
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest $remoteTest
+     * @return boolean
+     */
+    private function getTestAuthenticationIsEnabled(RemoteTest $remoteTest) {        
+        return $remoteTest->hasParameter('http-auth-username');
+    } 
+    
+    
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest $remoteTest
+     * @return boolean
+     */
+    private function getTestCookiesIsEnabled(RemoteTest $remoteTest) {        
+        return $remoteTest->hasParameter('cookies');
+    }
+    
     
     private function getTaskTypeLabel($taskTypeFilter) {
         if (is_null($taskTypeFilter)) {

@@ -224,6 +224,11 @@ class TestOptions {
     }
     
     
+    public function setFeatureOptions($name, $options) {
+        $this->features[$name] = $options;
+    }
+    
+    
     /**
      * 
      * @param string $testType

@@ -34,8 +34,22 @@ class TestStartController extends TestController
     {        
         $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
+        if ($this->isAddCookieRequest()) {
+            $customCookies = $requestValues->get('cookies');            
+            $customCookies[] = array(
+                'name' => '{{cookie-name}}',
+                'value' => '{{cookie-value}}'
+            );
+            
+            $requestValues->set('cookies', $customCookies);
+        }        
+        
         $this->getTestOptionsAdapter()->setRequestData($requestValues);
         $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
+        
+        if ($this->isAddCookieRequest()) {
+            return $this->redirect($this->getStartRedirectUrl($testOptions));
+        }
         
         if ($testOptions->hasFeatureOptions(self::HTTP_AUTH_FEATURE_NAME)) {
             $httpAuthFeatureOptions = $testOptions->getFeatureOptions(self::HTTP_AUTH_FEATURE_NAME);
@@ -46,12 +60,12 @@ class TestStartController extends TestController
             }            
         }
 
-        if (!$this->hasWebsite()) {            
+        if (!$this->hasWebsite() && $this->isTestStartRequest()) {
             $this->get('session')->setFlash('test_start_error', 'website-blank');
             return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));
         }
         
-        if ($testOptions->hasTestTypes() === false) {
+        if ($testOptions->hasTestTypes() === false && $this->isTestStartRequest()) {
             $this->get('session')->setFlash('test_start_error', 'no-test-types-selected');
             return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));                
         }
@@ -75,6 +89,33 @@ class TestStartController extends TestController
             
             return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));
         }
+    }
+    
+    
+    private function getStartRedirectUrl(\SimplyTestable\WebClientBundle\Model\TestOptions $testOptions) {
+        $url = $this->generateUrl('app', $this->getRedirectValues($testOptions), true);
+        return str_replace(array(
+            urlencode('{{cookie-name}}'),
+            urlencode('{{cookie-value}}')
+        ), '', $url);
+    }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    private function isTestStartRequest() {
+        return !$this->isAddCookieRequest();
+    }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    private function isAddCookieRequest() {
+        return !is_null($this->getRequestValue('add-cookie'));
     }
     
     

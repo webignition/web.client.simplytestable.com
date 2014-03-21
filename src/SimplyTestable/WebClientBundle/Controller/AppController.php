@@ -80,7 +80,8 @@ class AppController extends TestViewController
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
             'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions),
-            'test_authentication_introduction' => $this->getTestAuthenticationIntroduction($testOptions)
+            'test_authentication_enabled' => $this->getTestAuthenticationIsEnabled($testOptions),
+            'test_cookies_enabled' => $this->getTestCookiesIsEnabled($testOptions)
         )), $cacheValidatorHeaders);        
     }
     
@@ -109,16 +110,29 @@ class AppController extends TestViewController
         return $testOptionsIntroduction;
     }
     
-    
-    private function getTestAuthenticationIntroduction(\SimplyTestable\WebClientBundle\Model\TestOptions $testOptions) {        
+    private function getTestAuthenticationIsEnabled(\SimplyTestable\WebClientBundle\Model\TestOptions $testOptions) {        
         if (!$testOptions->hasFeatureOptions('http-authentication')) {
-            return 'This site or page does not require authentication.';
+            return false;
         }
         
         $httpAuthenticationOptions = $testOptions->getFeatureOptions('http-authentication');
-        return (isset($httpAuthenticationOptions['http-auth-username']) && $httpAuthenticationOptions['http-auth-username'] != '')
-            ? 'This site or page requires authentication.'
-            : 'This site or page does not require authentication.';
+        return (isset($httpAuthenticationOptions['http-auth-username']) && $httpAuthenticationOptions['http-auth-username'] != '');
+    }    
+    
+    
+    private function getTestCookiesIsEnabled(\SimplyTestable\WebClientBundle\Model\TestOptions $testOptions) {        
+        if (!$testOptions->hasFeatureOptions('cookies')) {
+            return false;
+        }   
+        
+        $cookieOptions = $testOptions->getFeatureOptions('cookies');                
+        foreach ($cookieOptions['cookies'] as $cookie) {            
+            if (isset($cookie['name']) && $cookie['name'] != '') {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
 

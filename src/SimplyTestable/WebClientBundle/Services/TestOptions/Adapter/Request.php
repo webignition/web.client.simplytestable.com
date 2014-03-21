@@ -160,13 +160,13 @@ class Request {
         $features = $this->parseFeatures();
         foreach ($features as $featureKey => $featureOptions) {
             $this->testOptions->addFeatureOptions($featureKey, $this->parseFeatureOptions($this->getFormKeyFromFeatureKey($featureKey)));
-        }        
+        }  
         
         $testTypes = $this->parseTestTypes();
         
         foreach ($testTypes as $testTypeKey => $testTypeName) {
             $this->testOptions->addTestType($testTypeKey, $testTypeName);
-        }
+        }        
         
         foreach ($this->availableTaskTypes as $testTypeKey => $testTypeName) {            
             $this->testOptions->addTestTypeOptions($testTypeKey, $this->parseTestTypeOptions($testTypeKey));
@@ -256,7 +256,7 @@ class Request {
     }
     
     
-    private function parseFeatureOptions($featureFormKey) {
+    private function parseFeatureOptions($featureFormKey) {        
         $featureOptions = array();
        
         // only handles parsing out feature options when at least something (the parent key) is present in the request data
@@ -273,16 +273,8 @@ class Request {
                         break;
                     
                     case 'array':
-                        $rawValues = (is_string($value)) ? explode("\n", $value) : $value;
-                        $cleanedValues = array();
-                        foreach ($rawValues as $rawValue) {
-                            $rawValue = trim($rawValue);
-                            if ($rawValue != '') {
-                                $cleanedValues[] = $rawValue;
-                            }
-                        }
-                        
-                        $featureOptions[$key] = $cleanedValues;
+                        $rawValues = (is_string($value)) ? explode("\n", $value) : $value;                        
+                        $featureOptions[$key] = $this->cleanRawValues($rawValues);
                         break;
                         
                     default:
@@ -293,7 +285,25 @@ class Request {
         }
         
         return $featureOptions;
-    }    
+    }
+    
+    
+    private function cleanRawValues($rawValues) {
+        $cleanedValues = array();
+        
+        foreach ($rawValues as $key => $rawValue) {
+            if (is_string($rawValue)) {
+                $value = trim($rawValue);
+                $cleanedValues[$key] = ($value == '') ? null : $value;
+            } elseif (is_array($rawValue)) {
+                $cleanedValues[$key] = $this->cleanRawValues($rawValue);
+            } else {
+                $cleanedValues[$key] = $rawValue;
+            }
+        }
+        
+        return $cleanedValues;
+    }
     
     
     /**

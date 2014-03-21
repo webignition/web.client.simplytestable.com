@@ -51,17 +51,16 @@
 {% if test_options['http-authentication'] is defined %}              
     <div>       
         <p>
-            <span class="authentication-selection">{% autoescape false %}{{ test_authentication_introduction }}{% endautoescape %}</span>
+            HTTP authentication {{ (test_authentication_enabled) ? 'enabled' : 'not enabled' }}
             
             {% if remote_test.hasParameter('http-auth-username') %}
-            <span class="expandable-control expandable-control-default-closed for-authentication-options-expandable">See authentication options</span>
+            <span class="expandable-control expandable-control-default-closed for-authentication-options-expandable">View authentication options</span>
             {% endif %}
         </p>
     </div>         
         
     {% if remote_test.hasParameter('http-auth-username') %}
-    <div id="authentication-options-expandable">        
-        <h3>HTTP Authentication Details</h3>        
+    <div id="authentication-options-expandable">              
         <div class="test-options-set" id="authentication-options">
             <label class="checkbox-lined"><span>Username</span><input disabled name="http-auth-username" class="credential" type="text" value="{{ remote_test.parameter('http-auth-username') }}"></label>
             <label class="checkbox-lined">
@@ -71,7 +70,62 @@
         </div>        
     </div> 
     {% endif %}
-{% endif %}               
+{% endif %}
+                
+{% if test_options['cookies'] is defined %}        
+        
+    <div>       
+        <p>
+            Custom cookies: <span class="cookies-enabled">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span>
+            
+            {% if remote_test.hasParameter('cookies') %}
+            <span class="expandable-control expandable-control-default-closed for-cookies-options-expandable">
+                View cookie options
+            </span>            
+            {% endif %}
+        </p>
+    </div>  
+               
+    {% if remote_test.hasParameter('cookies') %}
+    <div id="cookies-options-expandable">                
+        <span class="help-block">For testing sites that use cookies for authentication or for user-specific content. Add any number of cookies.</span>
+        
+        <div class="test-options-set test-cookies">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="name">Name</th>
+                        <th class="value">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cookie in remote_test.getParameter('cookies') %}
+                        <tr>
+                            <td class="name">
+                                <input name="cookies[{{loop.index0}}][name]"
+                                       type="text"
+                                       placeholder="Cookie name"
+                                       value="{{ cookie.name }}"
+                                       disabled>                                
+                            </td>
+                            <td class="value">
+                                <input name="cookies[{{loop.index0}}][value]"
+                                       type="text"
+                                       placeholder="Cookie value"
+                                       value="{{ cookie.value }}"
+                                       disabled>                                   
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+        
+{% endif %}                
+                
+                
         </div>
             
         {% endif %}

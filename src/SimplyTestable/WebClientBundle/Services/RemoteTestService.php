@@ -44,7 +44,17 @@ class RemoteTestService extends CoreApplicationService {
     }
     
     
-    public function start($canonicalUrl, TestOptions $testOptions, $testType = 'full site') {                
+    public function start($canonicalUrl, TestOptions $testOptions, $testType = 'full site') {        
+        if ($this->hasCustomCookies($testOptions)) {
+            $this->setCustomCookieDomainAndPath(
+                $testOptions,
+                $this->getCookieDomain($canonicalUrl),
+                '/'
+            );            
+        }
+        
+
+
         $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_start', array(
             'canonical-url' => rawurlencode($canonicalUrl)
         )).'?'.http_build_query(array_merge(array(
@@ -60,7 +70,63 @@ class RemoteTestService extends CoreApplicationService {
         } catch (\Guzzle\Http\Exception\CurlException $curlException) {
             throw $curlException;
         }
-    }    
+    } 
+    
+    
+    /**
+     * 
+     * @param string $canonicalUrl
+     * @return string
+     */
+    private function getCookieDomain($canonicalUrl) {        
+        $pslManager = new \Pdp\PublicSuffixListManager();
+        $parser = new \Pdp\Parser($pslManager->getList());
+        return $parser->parseUrl($canonicalUrl)->host->registerableDomain;
+    }
+    
+    
+    private function setCustomCookieDomainAndPath(TestOptions $testOptions, $domain, $path) {                
+        $cookieOptions = $testOptions->getFeatureOptions('cookies');        
+        $cookies = $cookieOptions['cookies'];
+        
+        foreach ($cookies as $index => $cookie) {
+            if (!isset($cookie['path'])) {
+                $cookie['path'] = '/';
+            }
+            
+            if (!isset($cookie['domain'])) {
+                $cookie['domain'] = '.' . $domain;
+            }
+            
+            $cookies[$index] = $cookie;
+        }
+        
+        $cookieOptions['cookies'] = $cookies;        
+        $testOptions->setFeatureOptions('cookies', $cookieOptions);
+    }
+    
+    
+    /**
+     * 
+     * @param \SimplyTestable\WebClientBundle\Model\TestOptions $testOptions
+     * @return boolean
+     */
+    private function hasCustomCookies(TestOptions $testOptions) {
+        if (!$testOptions->hasFeatureOptions('cookies')) {
+            return;
+        }   
+        
+        $cookieOptions = $testOptions->getFeatureOptions('cookies');
+        $cookies = $cookieOptions['cookies'];
+        
+        foreach ($cookies as $cookie) {
+            if (isset($cookie['name']) && !is_null($cookie['name'])) {
+                return true;
+            }
+        }
+        
+        return false;       
+    }
     
     
     
