@@ -114,6 +114,18 @@ class ActionTest extends BaseActionTest {
             )
         ));
     }
+    
+    
+    public function testAddCookieRequestRedirectsToTestStartForm() {
+        $this->performActionTest(array(
+            'statusCode' => 302,
+            'redirectPath' => '/',
+        ), array(
+            'postData' => array(
+                'add-cookie' => '1'
+            )
+        ));        
+    }
 
 
 }
