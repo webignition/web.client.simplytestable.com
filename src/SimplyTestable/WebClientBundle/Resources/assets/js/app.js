@@ -1716,14 +1716,6 @@ application.root.testStartFormController = function () {
         } else {
             return 'not enabled';
         }
-    };    
-    
-    var getAuthenticationChangeString = function () {       
-        if (hasAuthenticationCredentials()) {
-            return 'Change';
-        } else {
-            return 'Set';
-        }
     }; 
     
     var getCustomCookiesEnabledString = function () {       
@@ -1732,28 +1724,18 @@ application.root.testStartFormController = function () {
         } else {
             return 'not enabled';
         }
-    };    
-    
-    var getCustomCookiesChangeString = function () {       
-        if (hasCustomCookieValues()) {
-            return 'Change';
-        } else {
-            return 'Set';
-        }
-    };     
+    };
     
     var setAuthenticationContent = function () {
         $('.authentication-enabled', getTestOptions()).html(getAuthenticationEnabledString());
-        $('.authentication-change', getTestOptions()).html(getAuthenticationChangeString());
     };
     
     var setCustomCookiesContent = function () {
         $('.cookies-enabled', getTestOptions()).html(getCustomCookiesEnabledString());
-        $('.cookies-change', getTestOptions()).html(getCustomCookiesChangeString());
     };    
     
     var getAuthenticationCredentialInputs = function () {        
-        return $('input.credential', $('#authentication-options '));
+        return $('#authentication-options-modal input');
     };
     
     var hasAuthenticationCredentials = function () {
@@ -1783,6 +1765,23 @@ application.root.testStartFormController = function () {
         return hasCustomCookieValues;
     };
     
+    this.setAuthenticationContent = function () {
+        setAuthenticationContent();
+    };
+    
+    this.setAuthenticationFieldInputs = function (modal) {
+        var hiddenInputs = $('<div class="hidden-inputs">');
+
+        $('input', modal).each(function () {
+            var input = $(this);                                        
+            var hiddenInput = $('<input type="hidden"/>').attr('name', input.attr('name')).attr('value', input.val());
+
+            hiddenInputs.append(hiddenInput);
+        });
+
+        $('#authentication-options-modal').html(hiddenInputs);
+    };     
+    
     this.setCookieFieldInputs = function (modal) {
         var hiddenInputs = $('<div class="hidden-inputs">');
 
@@ -1794,7 +1793,8 @@ application.root.testStartFormController = function () {
         });
 
         $('#cookies-options-modal').html(hiddenInputs);
-    };
+    };   
+    
     
     this.setCustomCookiesContent = function () {
         setCustomCookiesContent();
@@ -2567,6 +2567,32 @@ application.pages = {
                                     testStartFormController.setCookieFieldInputs($(event.target));
                                     testStartFormController.setCustomCookiesContent();
                                 }
+                            },
+                            'authentication-options':{
+                                'show': function (event) {
+//                                    var modal = $(event.target);
+//                                    
+//                                    $('td.remove', modal).each(function() {
+//                                        $(this).html('');
+//                                        
+//                                        var trashIcon = $('<i class="icon icon-trash" title="Remove this cookie"></i>').click(function () {                                                
+//                                            testStartFormController.clearCookie($(this));
+//                                        }).hover(function () {
+//                                            $(this).css({
+//                                                'cursor':'pointer'
+//                                            });
+//                                        });
+//                                        
+//                                        $(this).append(trashIcon);
+//                                    });
+                                },
+                                'shown': function (event) {
+                                    $('input', $(event.target)).first().focus();
+                                },
+                                'hide': function (event) {
+                                    testStartFormController.setAuthenticationFieldInputs($(event.target));
+                                    testStartFormController.setAuthenticationContent();
+                                }                                
                             }
                         };                        
                         

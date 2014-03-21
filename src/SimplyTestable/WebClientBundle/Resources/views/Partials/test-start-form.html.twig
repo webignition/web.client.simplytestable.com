@@ -72,6 +72,28 @@
     <div>       
         <p>
             HTTP authentication <span class="authentication-enabled">{{ (test_authentication_enabled) ? 'enabled' : 'not enabled' }}</span>.
+            <span class="modal-control for-authentication-options-modal">
+                change                
+            </span>
+        </p>
+    </div>         
+        
+    <div id="authentication-options-modal" class="modal-content modal-type-authentication-options">        
+        <div class="modal-header-content">
+            <h3>HTTP Authentication</h3>
+            <span class="help-block modal-transform modal-transform-p">For when your site or page uses either <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">basic</a> or <a href="http://en.wikipedia.org/wiki/Digest_access_authentication">digest</a> HTTP authentication. Commonly used for public staging sites. Not safe for <a href="http://blog.simplytestable.com/html-validation-for-password-protected-sites/#security">sensitive information</a>.</span>          
+        </div>
+        <div class="modal-body-content">            
+            <div class="test-options-set" id="authentication-options">                
+                <label class="checkbox-lined"><span>Username</span><input name="http-auth-username" class="credential" type="text" placeholder="Enter required username" {% if test_options['http-auth-username'] is defined and test_options['http-auth-username'] != '' %}value="{{ test_options['http-auth-username'] }}"{% endif %}></label>
+                <label class="checkbox-lined"><span>Password</span><input name="http-auth-password" class="credential" type="password" placeholder="Enter required password"></label>
+            </div>              
+        </div>
+    </div>    
+<!--    
+    <div>       
+        <p>
+            HTTP authentication <span class="authentication-enabled">{{ (test_authentication_enabled) ? 'enabled' : 'not enabled' }}</span>.
             <span class="expandable-control expandable-control-default-closed for-authentication-options-expandable">
                 <span class="authentication-change">{{ (test_authentication_enabled) ? 'Change' : 'Set' }}</span> authentication options                
             </span>
@@ -85,12 +107,13 @@
             <label class="checkbox-lined"><span>Password</span><input name="http-auth-password" class="credential" type="password" placeholder="Enter required password"></label>
         </div>        
     </div>
+-->
 {% endif %}        
 {% if test_options['cookies'] is defined %}        
         
     <div>       
         <p class="badge badge-info action-badge">
-            <span class="">Custom cookies: <span class="cookies-enabled">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span>
+            <span class="action-badge-label">Custom cookies: <span class="cookies-enabled">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span></span>
             <span class="modal-control for-cookies-options-modal">
                 change
             </span>
@@ -99,7 +122,7 @@
         
     <div id="cookies-options-modal" class="modal-content modal-type-cookie-options">
         <div class="modal-header-content">
-            <h3>Cookie options</h3>
+            <h3>Custom Cookies</h3>
             <span class="help-block modal-transform modal-transform-p">For testing sites that use cookies for authentication or for user-specific content. Add any number of cookies.</span>           
         </div>
         
