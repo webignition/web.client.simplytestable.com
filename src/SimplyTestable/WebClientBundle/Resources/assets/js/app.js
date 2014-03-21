@@ -1768,7 +1768,7 @@ application.root.testStartFormController = function () {
     };
     
     var getCustomCookieInputs = function () {
-        return $('.test-cookies input', getForm());
+        return $('#cookies-options-modal input');
     };
     
     var hasCustomCookieValues = function () {
@@ -1783,29 +1783,29 @@ application.root.testStartFormController = function () {
         return hasCustomCookieValues;
     };
     
-    var getTaskTypeCheckboxByKey = function (taskTypeKey) {
-        var checkbox = null;
-        
-        getTaskTypeCheckboxes().each(function () {
-            if ($(this).attr('name') === taskTypeKey) {
-                checkbox = $(this);
-            }
-        });  
-        
-        return checkbox;
+    this.setCookieFieldInputs = function (modal) {
+        var hiddenInputs = $('<div class="hidden-inputs">');
+
+        $('input', modal).each(function () {
+            var input = $(this);                                        
+            var hiddenInput = $('<input type="hidden"/>').attr('name', input.attr('name')).attr('value', input.val());
+
+            hiddenInputs.append(hiddenInput);
+        });
+
+        $('#cookies-options-modal').html(hiddenInputs);
     };
     
-    var getTestOptionSetFromTaskTypeKey = function (taskTypeKey) {
-        var testOptionSet = null;
-        
-        $('.test-options-set', getTestOptions()).each(function () {
-            var currentTestOptionSet = $(this);
-            if ($('input[name='+taskTypeKey+']', currentTestOptionSet).length === 1) {
-                testOptionSet = currentTestOptionSet;
-            }
-        });
-        
-        return testOptionSet;
+    this.setCustomCookiesContent = function () {
+        setCustomCookiesContent();
+    };
+    
+    this.clearCookie = function (trashIcon) {
+        if ($('.modal.in tbody tr').length === 1) {
+            $('input', trashIcon.closest('tr')).val('');
+        } else {
+            trashIcon.closest('tr').remove();
+        }
     };
   
     this.initialise = function () {
@@ -1831,14 +1831,10 @@ application.root.testStartFormController = function () {
             });
         });
         
-        getCustomCookieInputs().each(function () {            
-            $(this).keyup(function () {
-                setCustomCookiesContent();
-            });            
-        });
-        
-        $('.add-cookie', getForm()).click(function(event) {
-            var tableBody = $('.test-cookies table tbody', getForm());            
+        $('.add-cookie', getForm()).click(function(event) {            
+            var modal = $('.modal.in');
+            
+            var tableBody = $('.test-cookies table tbody', modal);            
             var cookieRows = $('tr', tableBody);            
             var currentCookieCount = cookieRows.length;
             var newRow = $(cookieRows.get(0)).clone();
@@ -1854,14 +1850,24 @@ application.root.testStartFormController = function () {
                 
                 if (input.attr('name').indexOf('value') !== -1) {
                     input.attr('name', 'cookies['+currentCookieCount+'][value]');
-                }
-                
-                
+                }                
             });
+            
+            $('.remove', newRow).html('');
+                                        
+            var trashIcon = $('<i class="icon icon-trash" title="Remove this cookie"></i>').click(function () {                                                
+                testStartFormController.clearCookie($(this));
+            }).hover(function () {
+                $(this).css({
+                    'cursor':'pointer'
+                });
+            });
+
+            $('.remove', newRow).append(trashIcon);            
             
             tableBody.append(newRow);
             
-            var lastRow = $('.test-cookies table tbody tr', getForm()).last();            
+            var lastRow = $('.test-cookies table tbody tr', modal).last();            
             $($('input', lastRow).get(0)).focus();
 
             event.preventDefault();
@@ -2400,7 +2406,16 @@ application.root.finishedTestsUpdateController = function () {
 
 application.pages = {
     '/*': {
-        'initialise': function() {            
+        'initialise': function() { 
+            $(document).keyup(function (event) {               
+                $('.modal.in').each(function () {
+                    if (event.which === 27) {
+                        $(this).modal('hide');
+                    }
+                });
+//                
+            });
+            
             if ($('body.user-account-card').length > 0) {
                 accountCardController = new application.account.cardController();
                 accountCardController.initialise();
@@ -2459,6 +2474,174 @@ application.pages = {
             $('.full-width-container .alert:last').css({
                 'margin-bottom':'20px'
             });
+            
+            $('.modal-control').each(function () {
+                var getModal = function (controlClass) {
+                    var modalContent;
+                    
+                    var classes = controlClass.split(' ');                    
+                    for (var classIndex = 0; classIndex < classes.length; classIndex++) {
+                        if (classes[classIndex].match(/for\-.+/)) {
+                            modalContent = $('#' + classes[classIndex].replace('for-', ''));
+
+                            if (modalContent.length === 0) {
+                                return false;
+                            }
+                        }
+                    }                    
+                    
+                    var applyTransforms = function (contentSection) {
+                        $('.modal-transform', contentSection).each(function () {
+                            var item = $(this);
+                            
+                            var getTransformTo = function () {
+                                var classes = item.attr('class').split(' ');                    
+                                for (var classIndex = 0; classIndex < classes.length; classIndex++) {
+                                    if (classes[classIndex].match(/modal-transform-./)) {
+                                        return classes[classIndex].replace('modal-transform-', '');
+                                    }
+                                }
+                                
+                                return false;
+                            };
+                            
+                            var transformTo = getTransformTo();
+                            if (transformTo === false) {
+                                return;
+                            }                            
+                     
+                            item.replaceWith($('<'+transformTo+'>').append(item.html()));
+                            
+                        });
+                    };
+                    
+                    var getModalHeader = function () {
+                        var header = $('.modal-header-content', modalContent).prepend('<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>');
+                        applyTransforms(header);                        
+                        return header;
+                    };
+                    
+                    var getModalBody = function() {
+                        var body = $('.modal-body-content', modalContent);                        
+                        return body;
+                    };
+                    
+                    var setEventHandlers = function () {
+                        var handlers = {
+                            'cookie-options': {
+                                'show': function (event) {
+                                    var modal = $(event.target);
+                                    
+                                    $('td.remove', modal).each(function() {
+                                        $(this).html('');
+                                        
+                                        var trashIcon = $('<i class="icon icon-trash" title="Remove this cookie"></i>').click(function () {                                                
+                                            testStartFormController.clearCookie($(this));
+                                        }).hover(function () {
+                                            $(this).css({
+                                                'cursor':'pointer'
+                                            });
+                                        });
+                                        
+                                        $(this).append(trashIcon);
+                                    });
+                                },
+                                'shown': function (event) {
+                                    var modal = $(event.target);
+                                    var lastUnfilledNameInput = false;
+                                    
+                                    $('.name input', modal).each(function () {
+                                        var input = $(this);
+                                        if (jQuery.trim(input.val()) !== '') {
+                                            lastUnfilledNameInput = input;
+                                        }
+                                    });
+                                    
+                                    if (lastUnfilledNameInput === false) {
+                                        lastUnfilledNameInput = $('.name input', modal).last();
+                                    }
+                                    
+                                    lastUnfilledNameInput.focus();
+                                },
+                                'hide': function (event) {
+                                    testStartFormController.setCookieFieldInputs($(event.target));
+                                    testStartFormController.setCustomCookiesContent();
+                                }
+                            }
+                        };                        
+                        
+                        var getModalType = function () {
+                            var classes = modalContent.attr('class').split(' ');                    
+                            for (var classIndex = 0; classIndex < classes.length; classIndex++) {
+                                if (classes[classIndex].match(/modal-type-./)) {
+                                    return classes[classIndex].replace('modal-type-', '');
+                                }
+                            }
+                            
+                            return false;
+                        };
+                        
+                        var hasModalType = function () {
+                            return getModalType() !== false;
+                        };
+                        
+                        var hasHandlers = function () {
+                            return handlers.hasOwnProperty(getModalType());
+                        };
+                        
+                        if (!hasModalType()) {
+                            return;
+                        }
+                        
+                        if (!hasHandlers()) {
+                            return;
+                        }
+                        
+                        var modalType = getModalType();
+                        
+                        for (var eventName in handlers[modalType]) {
+                            if (handlers[modalType].hasOwnProperty(eventName)) {                                
+                                modal.on(eventName, handlers[modalType][eventName]);
+                            }
+                        }
+                        
+                    };
+                    
+                    var modal = $('<div class="modal hide"/>').append(
+                            $('<div class="modal-header"/>').append(getModalHeader())
+                    ).append(
+                            $('<div class="modal-body"/>').append(getModalBody())              
+                    ).append(
+                            '<div class="modal-footer"><button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Done</button></div>'                    
+                    );
+            
+                    setEventHandlers();
+
+                    return modal;                                       
+                    
+                };
+                
+                var modalControl = $(this);
+                var modal = getModal(modalControl.attr('class'));
+                
+                if (modal === false) {
+                    return;
+                }
+                
+                var controlLink = $('<a href="#" class="expandable-control-action">' + modalControl.html() + ' <i class="icon icon-caret-right"></i></a>');
+                modalControl.replaceWith(controlLink);
+                
+                controlLink.click(function (event) {
+                    modal.modal({
+                        backdrop: true,
+                        keyboard: true                        
+                    });
+                    event.preventDefault();
+                });
+                
+                                
+            });
+            
 
             $('.expandable-control').each(function() {
                 var getExpandableArea = function(expandableControlClass) {

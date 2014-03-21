@@ -1513,10 +1513,27 @@ body.app-history-all .no-tests {
 }
 
 .test-cookies table .name {
-    width:1%;
+    width:30%;
 }
 
 .test-cookies table .value {
-    width:40%;
+    width:90%;
     text-align: left;
+}
+
+.test-cookies table .remove {
+    width:10%;
+}
+
+.test-cookies table .remove .icon {
+    position: absolute;
+    margin: 4px 0 0 4px;
+}
+
+.test-cookies table input {
+    width:100%;
+}
+
+.modal-content {
+    display:none;
 }

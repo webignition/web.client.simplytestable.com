@@ -91,26 +91,25 @@
     <div>       
         <p>
             Custom cookies: <span class="cookies-enabled">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span>
-            <span class="expandable-control expandable-control-default-closed for-cookies-options-expandable">
-                <span class="cookies-change">{{ (test_cookies_enabled) ? 'Change' : 'Set' }}</span> cookie options
+            <span class="modal-control for-cookies-options-modal">
+                <span class="cookies-change">{{ (test_cookies_enabled) ? 'Change' : 'Set' }}</span> <span class="modal-header-value">cookie options</span>
             </span>
         </p>
-    </div>         
+    </div>
         
-    <div id="cookies-options-expandable">        
-        <span class="help-block">For testing sites that use cookies for authentication or for user-specific content. Add any number of cookies.</span>           
+    <div id="cookies-options-modal" class="modal-content modal-type-cookie-options">
+        <div class="modal-header-content">
+            <h3>Cookie options</h3>
+            <span class="help-block modal-transform modal-transform-p">For testing sites that use cookies for authentication or for user-specific content. Add any number of cookies.</span>           
+        </div>
         
-        <div class="test-options-set test-cookies">
+        <div class="test-options-set test-cookies modal-body-content">            
             <table class="table">
                 <thead>
                     <tr>
                         <th class="name">Name</th>
                         <th class="value">Value</th>
-                        <!--
-                        <th>Domain</th>
-                        <th>Path</th>
-                        <th>Secure only?</th>
-                        -->
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -127,20 +126,17 @@
                                        type="text"
                                        placeholder="Cookie value"
                                        {% if cookie['value'] is not empty %}value="{{ cookie['value'] }}"{% endif %}>                                   
-                            </td>                            
-                            <!--
-                            <td>domain</td>
-                            <td>path</td>
-                            <td>secure</td>
-                            -->
+                            </td>
+                            <td class="remove">                                
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
             
             <button type="submit" class="btn btn-small add-cookie" name="add-cookie" value="1"><i class="icon icon-plus"></i> Add another cookie</button>
-        </div>
-    </div> 
+        </div>        
+    </div>
         
 {% endif %}        
         
