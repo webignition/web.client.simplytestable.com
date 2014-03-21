@@ -312,7 +312,8 @@ class TestResultsController extends TestViewController
             'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions),
             'filtered_task_counts' => $this->getFilteredTaskCounts($test, $taskTypeFilter),
             'test_authentication_enabled' => $this->getTestAuthenticationIsEnabled($remoteTest),
-            'test_cookies_enabled' => $this->getTestCookiesIsEnabled($remoteTest)
+            'test_cookies_enabled' => $this->getTestCookiesIsEnabled($remoteTest),
+            'test_cookies' => $this->getTestCookies($remoteTest)
         );
                        
         //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTest->getTaskCount() : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));
@@ -358,6 +359,20 @@ class TestResultsController extends TestViewController
      */
     private function getTestCookiesIsEnabled(RemoteTest $remoteTest) {        
         return $remoteTest->hasParameter('cookies');
+    }
+    
+    
+    private function getTestCookies(RemoteTest $remoteTest) {
+        if ($remoteTest->hasParameter('cookies')) {            
+            return $remoteTest->getParameter('cookies');
+        }
+        
+        return array(
+            array(
+                'name' => null,
+                'value' => null
+            )
+        );
     }
     
     

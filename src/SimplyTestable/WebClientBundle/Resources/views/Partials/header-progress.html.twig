@@ -49,80 +49,85 @@
                 </div>
                 
 {% if test_options['http-authentication'] is defined %}              
-    <div>       
-        <p>
-            HTTP authentication {{ (test_authentication_enabled) ? 'enabled' : 'not enabled' }}
-            
-            {% if remote_test.hasParameter('http-auth-username') %}
-            <span class="expandable-control expandable-control-default-closed for-authentication-options-expandable">View authentication options</span>
-            {% endif %}
-        </p>
-    </div>         
+    <span class="badge action-badge">
+        <i class="icon icon-lock"></i>
+        <span class="action-badge-label">HTTP authentication <span class="authentication-enabled">{{ (test_authentication_enabled) ? 'enabled' : 'not enabled' }}</span></span>
         
+        {% if remote_test.hasParameter('http-auth-username') %}
+        <span class="modal-control for-authentication-options-modal">
+            view                
+        </span>
+        {% endif %}
+    </span>        
+       
     {% if remote_test.hasParameter('http-auth-username') %}
-    <div id="authentication-options-expandable">              
-        <div class="test-options-set" id="authentication-options">
-            <label class="checkbox-lined"><span>Username</span><input disabled name="http-auth-username" class="credential" type="text" value="{{ remote_test.parameter('http-auth-username') }}"></label>
-            <label class="checkbox-lined">
-                <span>Password</span><input disabled name="http-auth-password" class="credential" type="password"
-                       value="{% for i in 0..remote_test.parameter('http-auth-username')|length - 1 %}*{% endfor %}">
-            </label>
-        </div>        
-    </div> 
+    <div id="authentication-options-modal" class="modal-content modal-type-authentication-options">        
+        <div class="modal-header-content">
+            <h3>HTTP Authentication</h3>
+            <span class="help-block modal-transform modal-transform-p">For when your site or page uses either <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">basic</a> or <a href="http://en.wikipedia.org/wiki/Digest_access_authentication">digest</a> HTTP authentication. Commonly used for public staging sites. Not safe for <a href="http://blog.simplytestable.com/html-validation-for-password-protected-sites/#security">sensitive information</a>.</span>          
+        </div>
+        <div class="modal-body-content">            
+            <div class="test-options-set" id="authentication-options">                
+                <label class="checkbox-lined"><span>Username</span><input disabled name="http-auth-username" class="credential" type="text" value="{{ remote_test.parameter('http-auth-username') }}"></label>
+                <label class="checkbox-lined"><span>Password</span><input disabled name="http-auth-password" class="credential" type="password" value="{% for i in 0..remote_test.parameter('http-auth-username')|length - 1 %}*{% endfor %}"></label>
+            </div>              
+        </div>
+    </div>    
     {% endif %}
 {% endif %}
                 
-{% if test_options['cookies'] is defined %}        
+{% if test_options['cookies'] is defined %}            
+    <span class="badge action-badge">
+        <i class="icon icon-adjust"></i>
+        <span class="action-badge-label">Custom cookies: <span class="cookies-enabled">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span></span>
         
-    <div>       
-        <p>
-            Custom cookies: <span class="cookies-enabled">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span>
-            
-            {% if remote_test.hasParameter('cookies') %}
-            <span class="expandable-control expandable-control-default-closed for-cookies-options-expandable">
-                View cookie options
-            </span>            
-            {% endif %}
-        </p>
-    </div>  
-               
+        {% if remote_test.hasParameter('cookies') %}
+        <span class="modal-control for-cookies-options-modal">
+            view
+        </span>            
+        {% endif %}
+    </span> 
+    
     {% if remote_test.hasParameter('cookies') %}
-    <div id="cookies-options-expandable">                
-        <span class="help-block">For testing sites that use cookies for authentication or for user-specific content. Add any number of cookies.</span>
+    <div id="cookies-options-modal" class="modal-content modal-type-cookie-options">
+        <div class="modal-header-content">
+            <h3>Custom Cookies</h3>
+            <span class="help-block modal-transform modal-transform-p">For testing sites that use cookies for authentication or for user-specific content. Add any number of cookies.</span>           
+        </div>
         
-        <div class="test-options-set test-cookies">
+        <div class="test-options-set test-cookies modal-body-content">            
             <table class="table">
                 <thead>
                     <tr>
                         <th class="name">Name</th>
                         <th class="value">Value</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for cookie in remote_test.getParameter('cookies') %}
-                        <tr>
-                            <td class="name">
-                                <input name="cookies[{{loop.index0}}][name]"
-                                       type="text"
-                                       placeholder="Cookie name"
-                                       value="{{ cookie.name }}"
-                                       disabled>                                
-                            </td>
-                            <td class="value">
-                                <input name="cookies[{{loop.index0}}][value]"
-                                       type="text"
-                                       placeholder="Cookie value"
-                                       value="{{ cookie.value }}"
-                                       disabled>                                   
-                            </td>
-                        </tr>
-                    {% endfor %}
+                {% for cookie in remote_test.getParameter('cookies') %}
+                    <tr>
+                        <td class="name">
+                            <input name="cookies[{{loop.index0}}][name]"
+                                   type="text"
+                                   placeholder="Cookie name"
+                                   value="{{ cookie.name }}"
+                                   disabled>                                
+                        </td>
+                        <td class="value">
+                            <input name="cookies[{{loop.index0}}][value]"
+                                   type="text"
+                                   placeholder="Cookie value"
+                                   value="{{ cookie.value }}"
+                                   disabled>                                   
+                        </td>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
-        </div>
+        </div>        
     </div>
-    {% endif %}
-        
+    {% endif %}      
 {% endif %}                
                 
                 

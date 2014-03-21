@@ -68,16 +68,14 @@
     <div id="test-options-expandable">        
 {% include 'SimplyTestableWebClientBundle:Partials:/task-type-options/task-type-options.html.twig' %}         
     </div>        
-{% if test_options['http-authentication'] is defined %}
-     
-        <span class="badge action-badge">
-            <i class="icon icon-lock"></i>
-            <span class="action-badge-label">HTTP authentication <span class="authentication-enabled">{{ (test_authentication_enabled) ? 'enabled' : 'not enabled' }}</span></span>
-            <span class="modal-control for-authentication-options-modal">
-                change                
-            </span>
+{% if test_options['http-authentication'] is defined %}     
+    <span class="badge action-badge">
+        <i class="icon icon-lock"></i>
+        <span class="action-badge-label">HTTP authentication <span class="authentication-enabled">{{ (test_authentication_enabled) ? 'enabled' : 'not enabled' }}</span></span>
+        <span class="modal-control for-authentication-options-modal">
+            change                
         </span>
-        
+    </span>        
         
     <div id="authentication-options-modal" class="modal-content modal-type-authentication-options">        
         <div class="modal-header-content">
@@ -93,16 +91,14 @@
     </div>    
 {% endif %}        
 {% if test_options['cookies'] is defined %}        
-        
-      
-        <span class="badge action-badge">
-            <i class="icon icon-adjust"></i>
-            <span class="action-badge-label">Custom cookies: <span class="cookies-enabled">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span></span>
-            <span class="modal-control for-cookies-options-modal">
-                change
-            </span>
+              
+    <span class="badge action-badge">
+        <i class="icon icon-adjust"></i>
+        <span class="action-badge-label">Custom cookies: <span class="cookies-enabled">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span></span>
+        <span class="modal-control for-cookies-options-modal">
+            change
         </span>
-
+    </span>
         
     <div id="cookies-options-modal" class="modal-content modal-type-cookie-options">
         <div class="modal-header-content">

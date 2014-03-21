@@ -2569,8 +2569,10 @@ application.pages = {
                                     lastUnfilledNameInput.focus();
                                 },
                                 'hide': function (event) {
-                                    testStartFormController.setCookieFieldInputs($(event.target));
-                                    testStartFormController.setCustomCookiesContent();
+                                    if ($('#test-start-form').length === 1) {
+                                        testStartFormController.setCookieFieldInputs($(event.target));
+                                        testStartFormController.setCustomCookiesContent();                                        
+                                    }
                                 }
                             },
                             'authentication-options':{
@@ -2580,8 +2582,10 @@ application.pages = {
                                     $('input', $(event.target)).first().focus();
                                 },
                                 'hide': function (event) {
-                                    testStartFormController.setAuthenticationFieldInputs($(event.target));
-                                    testStartFormController.setAuthenticationContent();
+                                    if ($('#test-start-form').length === 1) {
+                                        testStartFormController.setAuthenticationFieldInputs($(event.target));
+                                        testStartFormController.setAuthenticationContent();                                        
+                                    }
                                 }                                
                             }
                         };                        
