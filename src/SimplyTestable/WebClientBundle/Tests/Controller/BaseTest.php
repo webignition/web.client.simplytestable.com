@@ -5,11 +5,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Controller;
 use SimplyTestable\WebClientBundle\Tests\BaseSimplyTestableTestCase;
 
 abstract class BaseTest extends BaseSimplyTestableTestCase {
-    
-    public static function setUpBeforeClass() {
-        self::setupDatabaseIfNotExists();
-    }    
-    
+      
     public function setUp() {
         parent::setUp();
         $this->removeAllTests();

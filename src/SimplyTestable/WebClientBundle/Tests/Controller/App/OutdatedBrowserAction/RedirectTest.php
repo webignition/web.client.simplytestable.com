@@ -6,10 +6,6 @@ use SimplyTestable\WebClientBundle\Tests\BaseSimplyTestableTestCase;
 
 class RedirectTest extends BaseSimplyTestableTestCase {    
     
-    public static function setUpBeforeClass() {
-        self::setupDatabaseIfNotExists();
-    }  
-    
     public function setUp() {
         parent::setUp();       
         $this->container->enterScope('request');

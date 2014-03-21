@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Console\Tester\CommandTester;
 
 abstract class BaseTestCase extends WebTestCase {
     
@@ -38,56 +39,38 @@ abstract class BaseTestCase extends WebTestCase {
         $this->container = $this->client->getKernel()->getContainer();        
         $this->application = new Application(self::$kernel);
         $this->application->setAutoExit(false);
-    }
-    
-
-    protected function runConsole($command, Array $options = array()) {
-        $args = array(
-            'app/console',
-            $command,
-            '-e',
-            'test',
-            '-q',
-            '-n'
-        );        
         
-        foreach ($options as $key => $value) {
-            $args[] = $key;
-            
-            if (!is_null($value) && !is_bool($value)) {
-                $args[] = $value;
-            }
-        }
-
-
-        $input = new ArgvInput($args);                 
-        return $this->application->run($input);
+        foreach ($this->getCommands() as $command) {
+            $this->application->add($command);
+        }          
     }
     
-    protected static function setupDatabase() {
-        exec('php app/console doctrine:database:drop -e test --force && php app/console doctrine:database:create -e test && php app/console doctrine:migrations:migrate -e test --no-interaction');
+    
+    /**
+     * 
+     * @return \Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand[]
+     */
+    protected function getCommands() {
+        return array_merge(array(
+        ), $this->getAdditionalCommands());
     } 
     
-    protected static function setupDatabaseIfNotExists() {
-        if (self::areDatabaseMigrationsNeeded()) {
-            self::setupDatabase();
-        }
-    }
+    /**
+     * 
+     * @return \Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand[]
+     */    
+    protected function getAdditionalCommands() {
+        return array();
+    }       
     
-    private static function areDatabaseMigrationsNeeded() {
-        $migrationStatusOutputLines = array();
-        exec('php app/console doctrine:migrations:status', $migrationStatusOutputLines);
+    protected function executeCommand($name, $arguments = array()) {
+        $command = $this->application->find($name);
+        $commandTester = new CommandTester($command);        
         
-        foreach ($migrationStatusOutputLines as $migrationStatusOutputLine) {
-            if (substr_count($migrationStatusOutputLine, '>> New Migrations:')) {
-                if ((int)trim(str_replace('>> New Migrations:', '', $migrationStatusOutputLine)) > 0) {
-                    return true;
-                }
-            }
-        }
+        $arguments['command'] = $command->getName();
         
-        return false;      
-    }    
+        return $commandTester->execute($arguments);
+    }   
 
     /**
      * Builds a Controller object and the request to satisfy it. Attaches the request
