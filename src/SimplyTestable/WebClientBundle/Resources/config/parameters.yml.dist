@@ -147,6 +147,9 @@ parameters:
         http-authentication:
           enabled: true
           form_key: http-auth
+        cookies:
+          enabled: true
+          form_key: cookies
     ignore_on_error:
         - http-auth-password
     names_and_default_values:
