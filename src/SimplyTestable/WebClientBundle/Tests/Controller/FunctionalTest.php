@@ -92,6 +92,16 @@ abstract class FunctionalTest extends BaseTest {
         }
     }
     
+    
+    protected function assertTitleContainsText($crawler, $text) {
+        $titles = $crawler->filter('title');        
+        $this->assertEquals(1, $titles->count());
+        
+        foreach ($titles as $title) {
+            $this->assertDomNodeContainsNext($title, $text);
+        }          
+    }
+    
 }
 
 

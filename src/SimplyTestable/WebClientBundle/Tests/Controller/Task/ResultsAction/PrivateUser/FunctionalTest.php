@@ -29,6 +29,18 @@ class FunctionalTest extends BaseFunctionalTest {
         $this->privateUserNavbarSignOutFormUrlTest($this->getScopedCrawler());          
     }
     
+    public function testLongUrlIsPresentInPageTitle() {
+        $websiteUrl = 'http://example.com/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij';
+        
+        $crawler = $this->getCrawler($this->getCurrentRequestUrl(array(
+            'website' => $websiteUrl,
+            'test_id' => 1,
+            'task_id' => 1
+        )));
+        
+        $this->assertTitleContainsText($crawler, str_replace('http://', '', $websiteUrl));        
+    }
+    
     /**
      * 
      * @return \Symfony\Component\DomCrawler\Crawler
