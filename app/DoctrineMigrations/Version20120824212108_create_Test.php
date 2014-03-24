@@ -35,7 +35,7 @@ class Version20120824212108_create_Test extends BaseMigration
             "CREATE TABLE Test (
                 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 user VARCHAR(255) NOT NULL COLLATE NOCASE,
-                website VARCHAR(255) NOT NULL COLLATE NOCASE,
+                website LONGTEXT NOT NULL COLLATE NOCASE,
                 state VARCHAR(255) NOT NULL COLLATE NOCASE,
                 taskTypes LONGTEXT NOT NULL COLLATE NOCASE,
                 timePeriod_id INT DEFAULT NULL,

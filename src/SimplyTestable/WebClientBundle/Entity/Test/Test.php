@@ -62,7 +62,7 @@ class Test {
      *
      * @var NormalisedUrl 
      * 
-     * @ORM\Column(type="string", nullable=false)
+     * @ORM\Column(type="text", nullable=false)
      * @SerializerAnnotation\Expose
      */
     private $website;
