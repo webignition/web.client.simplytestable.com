@@ -74,7 +74,7 @@ class AppController extends TestViewController
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
             'current_tests' => $currentTests,            
             'test_list' => $finishedTests,
-            'website' => idn_to_utf8($this->getPersistentValue('website')),
+            'website' => \Etechnika\IdnaConvert\IdnaConvert::decodeString($this->getPersistentValue('website')),
             'available_task_types' => $this->getAvailableTaskTypes(),
             'test_options' => $testOptions->__toKeyArray(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),

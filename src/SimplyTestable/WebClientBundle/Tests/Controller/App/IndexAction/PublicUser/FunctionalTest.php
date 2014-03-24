@@ -34,16 +34,46 @@ class FunctionalTest extends BaseFunctionalTest {
         $fullWidthNotifications = $crawler->filter('.full-width-notification');
         
         $this->assertGreaterThan(0, $fullWidthNotifications->count());
-        
-        $hasFreeDemoNotification = false;
+
         foreach ($fullWidthNotifications as $fullWidthNotification) {
-            if (substr_count($this->domNodeToHtml($fullWidthNotification), 'limited free demo')) {
-                $hasFreeDemoNotification = true;
-            }
+            $this->assertDomNodeContainsNext($fullWidthNotification, 'limited free demo');
         }
+    }
+    
+    
+    public function testShortUrlWebsiteIsPresentInWebsiteInputField() {
+        $websiteUrl = 'http://example.com/';
         
-        $this->assertTrue($hasFreeDemoNotification);   
-    }       
+        /* @var $navbar \Symfony\Component\DomCrawler\Crawler */
+        $crawler = $this->getCrawler($this->getCurrentRequestUrl(array(
+            'website' => $websiteUrl
+        )));
+        
+        $websiteInputs = $crawler->filter('#input-website');
+        
+        $this->assertEquals(1, $websiteInputs->count());
+        
+        $inputValues = $websiteInputs->first()->extract('value');
+        
+        $this->assertEquals($websiteUrl, $inputValues[0]);      
+    }
+    
+    public function testLongUrlWebsiteIsPresentInWebsiteInputField() {
+        $websiteUrl = 'http://example.com/012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456';
+        
+        /* @var $navbar \Symfony\Component\DomCrawler\Crawler */
+        $crawler = $this->getCrawler($this->getCurrentRequestUrl(array(
+            'website' => $websiteUrl
+        )));
+        
+        $websiteInputs = $crawler->filter('#input-website');
+        
+        $this->assertEquals(1, $websiteInputs->count());
+        
+        $inputValues = $websiteInputs->first()->extract('value');
+        
+        $this->assertEquals($websiteUrl, $inputValues[0]);      
+    }    
 
 }
 

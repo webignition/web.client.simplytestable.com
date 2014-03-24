@@ -84,6 +84,14 @@ abstract class FunctionalTest extends BaseTest {
         return $node->ownerDocument->saveHTML($node);        
     }
     
+    protected function assertDomNodeContainsNext(\DOMNode $node, $text) {
+        $markup = $this->domNodeToHtml($node);
+        
+        if (substr_count($markup, $text) < 1) {
+            $this->fail('Markup "'.$markup.'" does not contain text "'.$text.'"');
+        }
+    }
+    
 }
 
 
