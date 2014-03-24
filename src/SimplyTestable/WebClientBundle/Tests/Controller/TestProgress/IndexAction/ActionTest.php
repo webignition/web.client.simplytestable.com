@@ -15,7 +15,7 @@ class ActionTest extends BaseActionTest {
         return 'indexAction';
     }
     
-    public function testWithAuthorisedUser() {
+    public function testWithAuthorisedUser() {        
         $this->performActionTest(array(
             'statusCode' => 200
         ), array(
@@ -138,5 +138,17 @@ class ActionTest extends BaseActionTest {
             $this->assertEquals(6, $curlException->getErrorNo());
             return;
         };
-    }  
+    }
+    
+    
+    public function testWebsiteUrlLongerThan255Characters() {
+        $this->performActionTest(array(
+            'statusCode' => 200
+        ), array(
+            'methodArguments' => array(
+                'http://example.com/012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456',
+                1                
+            )
+        ));        
+    }
 }

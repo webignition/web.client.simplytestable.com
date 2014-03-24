@@ -47,7 +47,7 @@ class TestProgressController extends TestViewController
         'in-progress' => 'icon-play-circle'        
     );
     
-    public function indexAction($website, $test_id) {                        
+    public function indexAction($website, $test_id) {
         $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
         if ($this->isUsingOldIE()) {
@@ -95,7 +95,7 @@ class TestProgressController extends TestViewController
         $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
 
         $viewData = array(
-            'website' => idn_to_utf8($website),
+            'website' => \Etechnika\IdnaConvert\IdnaConvert::decodeString($website),
             'formatted_website' => idn_to_utf8($this->getSchemelessUrl($website)),
             'this_url' => $this->getProgressUrl($website, $test_id),
             'test_input_action_url' => $this->generateUrl('test_cancel', array(

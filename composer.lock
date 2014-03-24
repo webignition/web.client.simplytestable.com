@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "f13b513cf718214fd66283bdf5356ed1",
+    "hash": "0af0b89bf62ffb27971fb89cfdd4b602",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -789,16 +789,16 @@
         },
         {
             "name": "etechnika/idna-convert",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/etechnika/idna-convert.git",
-                "reference": "1ed24693c9983a721862943fde37eb87c62d892b"
+                "reference": "85e488474269b19630ca4e711061e4aa61ac879a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/etechnika/idna-convert/zipball/1ed24693c9983a721862943fde37eb87c62d892b",
-                "reference": "1ed24693c9983a721862943fde37eb87c62d892b",
+                "url": "https://api.github.com/repos/etechnika/idna-convert/zipball/85e488474269b19630ca4e711061e4aa61ac879a",
+                "reference": "85e488474269b19630ca4e711061e4aa61ac879a",
                 "shasum": ""
             },
             "require": {
@@ -839,7 +839,7 @@
             "keywords": [
                 "lib"
             ],
-            "time": "2014-01-28 08:16:09"
+            "time": "2014-02-15 12:42:32"
         },
         {
             "name": "glit/resque",
