@@ -369,7 +369,7 @@ class AppController extends TestViewController
             'this_url' => $this->getPreparingResultsUrl($website, $test_id),
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'website' => idn_to_utf8($website),
+            'website' => \Etechnika\IdnaConvert\IdnaConvert::decodeString($website),
             'test' => $test,
             'completion_percent' => $completionPercent,
             'remaining_tasks_to_retrieve_count' => $remainingTasksToRetrieveCount,

@@ -29,6 +29,24 @@ class FunctionalTest extends BaseFunctionalTest {
         $this->privateUserNavbarSignOutFormUrlTest($this->getScopedCrawler());          
     }
     
+    public function testLongUrlWebsiteIsPresentIntroduction() {
+        $websiteUrl = 'http://example.com/012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456';
+        
+        /* @var $navbar \Symfony\Component\DomCrawler\Crawler */
+        $crawler = $this->getCrawler($this->getCurrentRequestUrl(array(
+            'website' => $websiteUrl,
+            'test_id' => 1            
+        )));
+        
+        $websiteContainers = $crawler->filter('#website');
+        
+        $this->assertEquals(1, $websiteContainers->count());
+        
+        foreach ($websiteContainers as $websiteContainer) {
+            $this->assertDomNodeContainsNext($websiteContainer, $websiteUrl);
+        } 
+    }
+    
     /**
      * 
      * @return \Symfony\Component\DomCrawler\Crawler
