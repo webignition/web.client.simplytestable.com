@@ -7,6 +7,10 @@ use SimplyTestable\WebClientBundle\Model\User;
 
 class FunctionalTest extends BaseFunctionalTest {    
     
+    const WEBSITE = 'http://example.com/012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456';
+    
+    private $crawler;
+    
     public function setUp() {
         parent::setUp();
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath($this->getName())));
@@ -29,33 +33,46 @@ class FunctionalTest extends BaseFunctionalTest {
         $this->privateUserNavbarSignOutFormUrlTest($this->getScopedCrawler());          
     }
     
-    public function testLongUrlWebsiteIsPresentIntroduction() {
-        $websiteUrl = 'http://example.com/012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456';
-        
-        /* @var $navbar \Symfony\Component\DomCrawler\Crawler */
-        $crawler = $this->getCrawler($this->getCurrentRequestUrl(array(
-            'website' => $websiteUrl,
-            'test_id' => 1            
-        )));
-        
-        $websiteContainers = $crawler->filter('#website');
-        
-        $this->assertEquals(1, $websiteContainers->count());
-        
-        foreach ($websiteContainers as $websiteContainer) {
-            $this->assertDomNodeContainsNext($websiteContainer, $websiteUrl);
-        } 
+    public function testLongUrlInPageTitleIsTruncated() {
+        $expectedTitleUrl = substr(str_replace('http://', '', self::WEBSITE), 0, 64) . '…';        
+        $this->assertTitleContainsText($this->getScopedCrawler(), $expectedTitleUrl);
     }
+    
+    public function testContentWebsiteIsPresent() {
+        $contentWebsites = $this->getScopedCrawler()->filter('#website');
+        $this->assertEquals(1, $contentWebsites->count());
+    }
+    
+    public function testContentWebsiteTitle() {
+        $contentWebsites = $this->getScopedCrawler()->filter('#website');
+        $titles = $contentWebsites->extract('title');
+        
+        $this->assertEquals(self::WEBSITE, $titles[0]);
+    }    
+    
+    public function testContentWebsiteContent() {
+        $contentWebsites = $this->getScopedCrawler()->filter('#website');
+        $expectedWebsiteContent = substr(self::WEBSITE, 0, 40) . '…'; 
+
+        foreach ($contentWebsites as $contentWebsite) {
+            $this->assertDomNodeContainsNext($contentWebsite, $expectedWebsiteContent);
+        }
+    }
+    
     
     /**
      * 
      * @return \Symfony\Component\DomCrawler\Crawler
      */
     private function getScopedCrawler() {
-        return $this->getCrawler($this->getCurrentRequestUrl(array(
-            'website' => 'http://example.com',
-            'test_id' => 1            
-        )));
+        if (is_null($this->crawler)) {
+            $this->crawler = $this->getCrawler($this->getCurrentRequestUrl(array(
+                'website' => self::WEBSITE,
+                'test_id' => 1            
+            )));
+        }
+        
+        return $this->crawler;
     }
 
 }
