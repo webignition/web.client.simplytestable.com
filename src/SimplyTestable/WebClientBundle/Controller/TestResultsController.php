@@ -146,30 +146,30 @@ class TestResultsController extends TestViewController
             return $response;
         }
         
-        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());        
-        $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
+        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());                
+        $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);               
         if ($testRetrievalOutcome->hasResponse()) {
             return $testRetrievalOutcome->getResponse();
         }
         
-        $test = $testRetrievalOutcome->getTest();
+        $test = $testRetrievalOutcome->getTest();    
         
         if ($test->getWebsite() != $website) {
             return $this->redirect($this->generateUrl('app_test_redirector', array(
                 'website' => $test->getWebsite(),
                 'test_id' => $test_id
             ), true));            
-        }       
+        }   
         
         if ($test->getState() !== 'rejected') {
             return $this->redirect($this->getProgressUrl($website, $test_id));
         }
         
-        $remoteTest = $this->getTestService()->getRemoteTestService()->get();        
-        $userSummary = $this->getUserService()->getSummary($this->getUser())->getContentObject();        
+        $remoteTest = $this->getTestService()->getRemoteTestService()->get();                
+        $userSummary = $this->getUserService()->getSummary($this->getUser());
         
         $viewData = array(
-            'website' => idn_to_utf8($website),
+            'website' => $this->getUrlViewValues($website),
             'test' => $test,
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),

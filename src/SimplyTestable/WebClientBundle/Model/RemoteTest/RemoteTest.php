@@ -92,6 +92,7 @@ class RemoteTest extends AbstractStandardObject {
      */
     public function getTaskTypes() {
         $taskTypes = array();
+        
         foreach ($this->getSource()->task_types as $taskTypeObject) {
             $taskTypes[] = $taskTypeObject->name;
         }        

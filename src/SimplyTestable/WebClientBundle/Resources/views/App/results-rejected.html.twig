@@ -55,9 +55,9 @@
         tests for free per month per website for those who don't have an account.
     </p>
 
-    <p class="intro">
+    <p class="intro" id="reason">
         There have already been <strong>{{ remote_test.rejection.constraint.limit }}</strong> free full-site tests
-        this month for <strong>{{ website }}</strong>.
+        this month for <strong id="website">{{ website.utf8.raw }}</strong>.
     </p>
 
     <p class="intro">
@@ -77,9 +77,9 @@
         tests for free per month per URL for those who don't have an account.
     </p>
 
-    <p class="intro">
+    <p class="intro" id="reason">
         There have already been <strong>{{ remote_test.rejection.constraint.limit }}</strong> free single-URL tests
-        this month for <strong>{{ website }}</strong>.
+        this month for <strong id="website" title="{{website.utf8.raw}}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-40.html.twig' with {'url': website} %}</strong>.
     </p>
 
     <p class="intro">
@@ -94,8 +94,8 @@
 {% endif %}
 
 {% if remote_test.rejection.constraint is null and remote_test.rejection.reason == 'unroutable' %}
-    <p class="intro">    
-    Sorry, I can't test <a href="{{ website }}">{{ website }}</a> because it can't be accessed over the Internet.
+    <p class="intro first">    
+        <span class="nowrap">Sorry, I can't test <a title="{{website.raw}}" href="{{ website.raw }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-40.html.twig' with {'url': website} %}</a></span> because it can't be accessed over the Internet.
     </p>
 
     <p class="intro">

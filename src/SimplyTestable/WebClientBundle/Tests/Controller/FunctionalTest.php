@@ -85,9 +85,17 @@ abstract class FunctionalTest extends BaseTest {
     }
     
     protected function assertDomNodeContainsNext(\DOMNode $node, $text) {
-        $markup = $this->domNodeToHtml($node);
+        $markup = $this->domNodeToHtml($node); 
+        $content = strip_tags($markup);
+        $content = preg_replace('/\s/', ' ', $content);
         
-        if (substr_count($markup, $text) < 1) {
+        while (substr_count($content, '  ')) {
+            $content = str_replace('  ', ' ', $content);
+        }
+        
+        $content = trim($content);
+
+        if (substr_count($content, $text) < 1) {
             $this->fail('Markup "'.$markup.'" does not contain text "'.$text.'"');
         }
     }

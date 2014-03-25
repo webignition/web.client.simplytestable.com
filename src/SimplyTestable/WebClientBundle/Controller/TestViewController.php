@@ -15,8 +15,8 @@ class TestViewController extends BaseViewController
      */
     protected function getTestRetrievalOutcome($website, $test_id) {        
         $outcome = new \SimplyTestable\WebClientBundle\Model\ControllerTestRetrievalOutcome();
-        
-        try {
+
+        try {            
             if (!$this->getTestService()->has($website, $test_id)) {
                 $outcome->setResponse( $this->redirect($this->generateUrl('app_test_redirector', array(
                     'website' => $website,
