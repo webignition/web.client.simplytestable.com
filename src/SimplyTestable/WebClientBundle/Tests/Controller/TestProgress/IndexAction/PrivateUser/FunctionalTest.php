@@ -6,6 +6,8 @@ use SimplyTestable\WebClientBundle\Tests\Controller\TestProgress\FunctionalTest 
 use SimplyTestable\WebClientBundle\Model\User;
 
 class FunctionalTest extends BaseFunctionalTest {    
+    
+    const WEBSITE = 'http://example.com/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij';
 
     public function setUp() {
         parent::setUp();
@@ -29,13 +31,17 @@ class FunctionalTest extends BaseFunctionalTest {
         $this->privateUserNavbarSignOutFormUrlTest($this->getScopedCrawler());          
     }
     
+    public function testLongUrlIsPresentInPageTitle() {        
+        $this->assertTitleContainsText($this->getScopedCrawler(), str_replace('http://', '', self::WEBSITE));        
+    }    
+    
     /**
      * 
      * @return \Symfony\Component\DomCrawler\Crawler
      */
     private function getScopedCrawler() {        
         return $this->getCrawler($this->getCurrentRequestUrl(array(
-            'website' => 'http://example.com/',
+            'website' => self::WEBSITE,
             'test_id' => 1
         )));        
     }

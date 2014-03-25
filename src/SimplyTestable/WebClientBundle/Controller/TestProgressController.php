@@ -96,7 +96,7 @@ class TestProgressController extends TestViewController
 
         $viewData = array(
             'website' => \Etechnika\IdnaConvert\IdnaConvert::decodeString($website),
-            'formatted_website' => idn_to_utf8($this->getSchemelessUrl($website)),
+            'formatted_website' => \Etechnika\IdnaConvert\IdnaConvert::decodeString($this->getSchemelessUrl($website)),
             'this_url' => $this->getProgressUrl($website, $test_id),
             'test_input_action_url' => $this->generateUrl('test_cancel', array(
                 'website' => $website,
