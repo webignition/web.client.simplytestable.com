@@ -7,7 +7,9 @@ use SimplyTestable\WebClientBundle\Model\User;
 
 class FunctionalTest extends BaseFunctionalTest {    
     
-    const WEBSITE = 'http://example.com/';
+    const WEBSITE = 'http://example.com/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij';
+    
+    private $crawler;    
     
     public function setUp() {
         parent::setUp();
@@ -31,35 +33,27 @@ class FunctionalTest extends BaseFunctionalTest {
         $this->privateUserNavbarSignOutFormUrlTest($this->getScopedCrawler());          
     }
     
-    public function testNonTruncatedShortUrlIsPresentInPageTitle() {
-        $expectedTitleUrl = str_replace('http://', '', self::WEBSITE);        
+    public function testPageTitleContainsTruncatedWebsiteUrl() {
+        $expectedTitleUrl = substr(str_replace('http://', '', self::WEBSITE), 0, 40);
         $this->assertTitleContainsText($this->getScopedCrawler(), $expectedTitleUrl);        
-    }    
-    
-    public function testTruncatedLongUrlIsPresentInPageTitle() {
-        $websiteUrl = 'http://example.com/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij';
-        $expectedTitleUrl = substr(str_replace('http://', '', $websiteUrl), 0, 64) . '…';
-        
-        $crawler = $this->getCrawler($this->getCurrentRequestUrl(array(
-            'website' => $websiteUrl,
-            'test_id' => 1,
-            'task_id' => 1
-        )));
-        
-        $this->assertTitleContainsText($crawler, $expectedTitleUrl);        
     }
+
     
     /**
      * 
      * @return \Symfony\Component\DomCrawler\Crawler
      */
     private function getScopedCrawler() {        
-        return $this->getCrawler($this->getCurrentRequestUrl(array(
-            'website' => self::WEBSITE,
-            'test_id' => 1,
-            'task_id' => 1
-        )));        
-    }
+        if (is_null($this->crawler)) {
+            $this->crawler = $this->getCrawler($this->getCurrentRequestUrl(array(
+                'website' => self::WEBSITE,
+                'test_id' => 1,
+                'task_id' => 1
+            )));  
+        }
+        
+        return $this->crawler;
+    }     
 
 }
 
