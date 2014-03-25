@@ -2,7 +2,7 @@
     <div class="leader">                  
         <h1 class="info">
             <label for="input-website">
-                <i class="icon-bar-chart"></i> Results for {{ test.formattedWebsite }}
+                <i class="icon-bar-chart"></i> Results for <span id="test-url" title="{{website.raw}}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-50.html.twig' with {'url': website} %}</span>
                 <span id="test-id">(#{{ test.testId }})</span>           
             </label>
         </h1>

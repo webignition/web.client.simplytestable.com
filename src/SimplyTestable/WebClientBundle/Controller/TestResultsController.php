@@ -277,8 +277,7 @@ class TestResultsController extends TestViewController
         $testOptions = $this->getTestOptionsAdapter()->getTestOptions();   
         
         $viewData = array(
-            'website' => idn_to_utf8($website),
-            'formatted_website' => idn_to_utf8($this->getSchemelessUrl($website)),
+            'website' => $this->getUrlViewValues($website),
             'this_url' => $this->getResultsUrl($website, $test_id),
             'test_input_action_url' => $this->generateUrl('test_start'),
             'test' => $test,
@@ -421,8 +420,11 @@ class TestResultsController extends TestViewController
     private function getTasksGroupedByUrl($tasks = array()) {
         $tasksGroupedByUrl = array();
         foreach ($tasks as $task) {
-            $url = rawurldecode(idn_to_utf8($task->getUrl()));
+            $url = new \webignition\NormalisedUrl\NormalisedUrl($task->getUrl());
+            $url->getConfiguration()->enableConvertIdnToUtf8();
             
+            $url = (string)$url;
+
             /* @var $task Task */
             if (!isset($tasksGroupedByUrl[$url])) {
                 $tasksGroupedByUrl[$url] = array();

@@ -18,42 +18,6 @@ abstract class ErrorCasesTest extends BaseFunctionalTest {
         $this->setUser(new User('user@example.com','password'));
     }
     
-//    abstract protected function getExpectedReasonParagraphText();
-//    
-//    public function testReasonParagraphPresent() {        
-//        $reasonParagraphs = $this->getScopedCrawler()->filter('#reason');        
-//        $this->assertEquals(1, $reasonParagraphs->count(), 'Reason paragraph not found');        
-//    }
-//    
-//    public function testReasonParagraphContent() {        
-//        $reasonParagraphs = $this->getScopedCrawler()->filter('#reason');        
-//        
-//        foreach ($reasonParagraphs as $reasonParagraph) {
-//            $this->assertDomNodeContainsNext($reasonParagraph, $this->getExpectedReasonParagraphText());
-//        }     
-//    }
-//    
-//    public function testReasonParagraphContainsLink() {
-//        $reasonParagraphLinks = $this->getScopedCrawler()->filter('#reason')->filter('a');
-//        
-//        $this->assertEquals(1, $reasonParagraphLinks->count());      
-//    }
-//    
-//    public function testReasonParagraphLinkHref() {
-//        $reasonParagraphLinks = $this->getScopedCrawler()->filter('#reason')->filter('a');   
-//        
-//        $firstReasonParagraphHrefs = $reasonParagraphLinks->first()->extract('href');
-//        $this->assertEquals(self::WEBSITE, $firstReasonParagraphHrefs[0]);       
-//    }    
-//    
-//    public function testReasonParagraphLinkContent() {
-//        $reasonParagraphLinks = $this->getScopedCrawler()->filter('#reason')->filter('a');
-//        
-//        foreach ($reasonParagraphLinks as $reasonParagraphLink) {
-//            $this->assertDomNodeContainsNext($reasonParagraphLink, 'http://example.com/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrs…');
-//        }          
-//    }
-    
     /**
      * 
      * @return \Symfony\Component\DomCrawler\Crawler

@@ -88,10 +88,12 @@ class TestViewController extends BaseViewController
         
         $utf8Raw = (string)$websiteUrl;
         $utf8Truncated_40 = $this->getTruncatedString($utf8Raw, 40);
+        $utf8Truncated_50 = $this->getTruncatedString($utf8Raw, 50);
         $utf8Truncated_64 = $this->getTruncatedString($utf8Raw, 64);
         
         $utf8Schemeless = $this->getSchemelessUrl($utf8Raw);
         $utf8SchemelessTruncated_40 = $this->getTruncatedString($utf8Schemeless, 40);
+        $utf8SchemelessTruncated_50 = $this->getTruncatedString($utf8Schemeless, 50);
         $utf8SchemelessTruncated_64 = $this->getTruncatedString($utf8Schemeless, 64);
        
         return array(
@@ -99,14 +101,17 @@ class TestViewController extends BaseViewController
             'utf8' => array(
                 'raw' => $utf8Raw,
                 'truncated_40' => $utf8Truncated_40,
+                'truncated_50' => $utf8Truncated_50,
                 'truncated_64' => $utf8Truncated_64,
                 'is_truncated_40' => ($utf8Raw != $utf8Truncated_40),
+                'is_truncated_50' => ($utf8Raw != $utf8Truncated_50),
                 'is_truncated_64' => ($utf8Raw != $utf8Truncated_64),
                 'schemeless' => array(
                     'raw' => $utf8Schemeless,
                     'truncated_40' => $utf8SchemelessTruncated_40,
                     'truncated_64' => $utf8SchemelessTruncated_64,
                     'is_truncated_40' => ($utf8Schemeless != $utf8SchemelessTruncated_40),
+                    'is_truncated_50' => ($utf8Schemeless != $utf8SchemelessTruncated_50),
                     'is_truncated_64' => ($utf8Schemeless != $utf8SchemelessTruncated_64)
                  )
             )

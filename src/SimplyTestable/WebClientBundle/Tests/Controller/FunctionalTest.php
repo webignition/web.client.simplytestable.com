@@ -40,7 +40,7 @@ abstract class FunctionalTest extends BaseTest {
         }
         
         $button = $this->getNavbar($crawler)->filter('a:contains("'.$this->getUser()->getUsername().'")');        
-        $this->assertEquals(1, $button->count());
+        $this->assertEquals(1, $button->count(), "Navbar does not contain account link");
     }    
     
     protected function privateUserNavbarAccountLinkUrlTest(\Symfony\Component\DomCrawler\Crawler $crawler) {        

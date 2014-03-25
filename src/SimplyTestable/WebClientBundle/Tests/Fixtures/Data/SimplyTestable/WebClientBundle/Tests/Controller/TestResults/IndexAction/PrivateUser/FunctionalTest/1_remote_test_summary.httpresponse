@@ -4,7 +4,7 @@ Content-Type: application/json
 {
    "id":1,
    "user":"user@example.com",
-   "website":"http:\/\/example.com\/",
+   "website":"http:\/\/example.com\/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz",
    "state":"completed",
    "time_period":{
       "start_date_time":"2013-09-23T13:09:44+0100"

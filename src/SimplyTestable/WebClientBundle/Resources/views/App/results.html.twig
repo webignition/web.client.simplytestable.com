@@ -1,6 +1,6 @@
 {% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
 
-{% block title %}Results {{formatted_website}} (#{{test.testId}}) - {{ parent() }}{% endblock %}
+{% block title %}Results for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
 {% block body_class %}full-width {{ parent() }}{% endblock %}
 
@@ -86,7 +86,7 @@
                     <ul class="tasks">                           
                             {% for url,taskSet in tasks %}
                             <li class="taskSet">
-                                <span class="url">{{ url }}</span>
+                                <span class="url">{{ url }}<span class="fade"></span></span>
                                     {% for task in taskSet %}
                                 <div class="task {{ task.state }}" id="task{{ task.id }}">
                                     <span class="meta">

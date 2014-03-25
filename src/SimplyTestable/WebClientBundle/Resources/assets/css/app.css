@@ -190,6 +190,7 @@ section h2 {
 #test-list #task-list-container .tasks {
     list-style:none;
     margin: 20px 0 0 0;
+    overflow:hidden;
 }
 
 #test-list #task-list-container .task {
@@ -344,6 +345,7 @@ body.app-results div.main h1 i {
 
 #test-list #task-list-container .taskSet {
     margin-bottom:10px;
+    position:relative;
 }
 
 #test-list #task-list-container li.task a.label i {
@@ -1127,7 +1129,7 @@ body.app-results #test-start-form button span {
 body.app-results #test-start-form #retest-button {
     position: absolute;
     right: 30px;
-    top: 30px;
+    top: 0;
 }
 
 .full-width-container {
@@ -1382,7 +1384,7 @@ body.app-results #lock-unlock {
     position:absolute;
     right:30px;
     width:156px;
-    top:100px;
+    top:70px;
 }
 
 #finished-tests .requires-results p {
@@ -1579,6 +1581,8 @@ body.app-task-results .intro p {
     position:relative;
 }
 
+
+body.app-results .tasks .url .fade,
 body.app-task-results .intro p .fade {
     position: absolute;
     right:0;
@@ -1586,4 +1590,5 @@ body.app-task-results .intro p .fade {
     height:20px;
     background: #eee;
     opacity:0.6;
+    top:0;
 }
