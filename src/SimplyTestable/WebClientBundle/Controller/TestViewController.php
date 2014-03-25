@@ -70,7 +70,45 @@ class TestViewController extends BaseViewController
         ), true)));
         
         return $outcome;
-    }    
+    } 
+    
+    
+    /**
+     * 
+     * @param string $website
+     * @return string[]
+     */
+    protected function getWebsiteViewValues($website = null) {        
+        if (is_null($website) || trim($website) === '') {
+            return array();
+        }
+        
+        $websiteUrl = new \webignition\NormalisedUrl\NormalisedUrl($website);
+        $websiteUrl->getConfiguration()->enableConvertIdnToUtf8();
+        
+       $utf8Schemeless = $this->getSchemelessUrl($websiteUrl);
+       $utf8SchemelessTruncated = $this->getTruncatedString($utf8Schemeless, 64);
+       
+       return array(
+           'raw' => $website,
+           'utf8' => array(
+               'raw' => (string)$websiteUrl,
+               'schemeless' => array(
+                   'raw' => $utf8Schemeless,
+                   'truncated' => $utf8SchemelessTruncated,
+                   'is_truncated' => ($utf8Schemeless != $utf8SchemelessTruncated)
+               )
+           )
+       );
+    }
+    
+    private function getTruncatedString($input, $maxLength = 128) {
+        if (mb_strlen($input) <= $maxLength) {
+            return $input;
+        }
+        
+        return mb_substr($input, 0, $maxLength);
+    }
     
     
     /**

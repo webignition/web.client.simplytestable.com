@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "0af0b89bf62ffb27971fb89cfdd4b602",
+    "hash": "620a9ffde2d0d56b52f95a555eb186be",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -434,17 +434,17 @@
         },
         {
             "name": "doctrine/doctrine-migrations-bundle",
-            "version": "1.0.0-BETA3",
+            "version": "1.0.0-BETA4",
             "target-dir": "Doctrine/Bundle/MigrationsBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineMigrationsBundle.git",
-                "reference": "b87093e2c798fd4388e8914440d8ed32c2025fbc"
+                "reference": "84085d3a5a804818251de20914fb5b983cdfa67b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineMigrationsBundle/zipball/b87093e2c798fd4388e8914440d8ed32c2025fbc",
-                "reference": "b87093e2c798fd4388e8914440d8ed32c2025fbc",
+                "url": "https://api.github.com/repos/doctrine/DoctrineMigrationsBundle/zipball/84085d3a5a804818251de20914fb5b983cdfa67b",
+                "reference": "84085d3a5a804818251de20914fb5b983cdfa67b",
                 "shasum": ""
             },
             "require": {
@@ -491,7 +491,7 @@
                 "migrations",
                 "schema"
             ],
-            "time": "2013-12-18 05:36:26"
+            "time": "2014-03-16 10:57:13"
         },
         {
             "name": "doctrine/inflector",
@@ -1646,16 +1646,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "1.7.0",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "6225b22de9dcf36546be3a0b2fa8e3d986153f57"
+                "reference": "392ef35fd470638e08d0160d6b1cbab63cb23174"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/6225b22de9dcf36546be3a0b2fa8e3d986153f57",
-                "reference": "6225b22de9dcf36546be3a0b2fa8e3d986153f57",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/392ef35fd470638e08d0160d6b1cbab63cb23174",
+                "reference": "392ef35fd470638e08d0160d6b1cbab63cb23174",
                 "shasum": ""
             },
             "require": {
@@ -1663,11 +1663,11 @@
                 "psr/log": "~1.0"
             },
             "require-dev": {
-                "aws/aws-sdk-php": "~2.4.8",
-                "doctrine/couchdb": "dev-master",
-                "mlehner/gelf-php": "1.0.*",
+                "aws/aws-sdk-php": "~2.4, >2.4.8",
+                "doctrine/couchdb": "~1.0@dev",
+                "graylog2/gelf-php": "~1.0",
                 "phpunit/phpunit": "~3.7.0",
-                "raven/raven": "0.5.*",
+                "raven/raven": "~0.5",
                 "ruflin/elastica": "0.90.*"
             },
             "suggest": {
@@ -1675,19 +1675,20 @@
                 "doctrine/couchdb": "Allow sending log messages to a CouchDB server",
                 "ext-amqp": "Allow sending log messages to an AMQP server (1.0+ required)",
                 "ext-mongo": "Allow sending log messages to a MongoDB server",
-                "mlehner/gelf-php": "Allow sending log messages to a GrayLog2 server",
+                "graylog2/gelf-php": "Allow sending log messages to a GrayLog2 server",
                 "raven/raven": "Allow sending log messages to a Sentry server",
+                "rollbar/rollbar": "Allow sending log messages to Rollbar",
                 "ruflin/elastica": "Allow sending log messages to an Elastic Search server"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.7.x-dev"
+                    "dev-master": "1.8.x-dev"
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "Monolog": "src/"
+                "psr-4": {
+                    "Monolog\\": "src/Monolog"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1709,57 +1710,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2013-11-14 19:48:31"
-        },
-        {
-            "name": "phpcollection/phpcollection",
-            "version": "0.3.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/schmittjoh/php-collection.git",
-                "reference": "dbec93115a5ff149b476ee2d4ede3880239a3d77"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/schmittjoh/php-collection/zipball/dbec93115a5ff149b476ee2d4ede3880239a3d77",
-                "reference": "dbec93115a5ff149b476ee2d4ede3880239a3d77",
-                "shasum": ""
-            },
-            "require": {
-                "phpoption/phpoption": "1.*"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.2-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "PhpCollection": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache2"
-            ],
-            "authors": [
-                {
-                    "name": "Johannes M. Schmitt",
-                    "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
-                    "role": "Developer of wrapped JMSSerializerBundle"
-                }
-            ],
-            "description": "General-Purpose Collection Library for PHP",
-            "keywords": [
-                "collection",
-                "list",
-                "map",
-                "sequence",
-                "set"
-            ],
-            "time": "2013-12-13 09:27:51"
+            "time": "2014-03-23 19:50:26"
         },
         {
             "name": "phpoption/phpoption",
@@ -2543,16 +2494,16 @@
         },
         {
             "name": "webignition/php-stripe-models",
-            "version": "0.1.10",
+            "version": "0.1.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/php-stripe-models.git",
-                "reference": "9140f94a7e3442cc727f46ec106e1174b2f73d1e"
+                "reference": "3608b877b6146b6f6f1c6cad93c3de99e5184b4b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/php-stripe-models/zipball/9140f94a7e3442cc727f46ec106e1174b2f73d1e",
-                "reference": "9140f94a7e3442cc727f46ec106e1174b2f73d1e",
+                "url": "https://api.github.com/repos/webignition/php-stripe-models/zipball/3608b877b6146b6f6f1c6cad93c3de99e5184b4b",
+                "reference": "3608b877b6146b6f6f1c6cad93c3de99e5184b4b",
                 "shasum": ""
             },
             "require": {
@@ -2586,7 +2537,7 @@
                 "model",
                 "stripe"
             ],
-            "time": "2014-03-11 16:46:10"
+            "time": "2014-03-12 20:41:09"
         },
         {
             "name": "webignition/quoted-string",
@@ -2771,16 +2722,16 @@
         },
         {
             "name": "webignition/url",
-            "version": "1.9.8",
+            "version": "1.9.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/url.git",
-                "reference": "ad988e7e5a4eed333b055bba0aac8409137c397c"
+                "reference": "7df6141958c65957d3c692791eb8e07ace0cf147"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/url/zipball/ad988e7e5a4eed333b055bba0aac8409137c397c",
-                "reference": "ad988e7e5a4eed333b055bba0aac8409137c397c",
+                "url": "https://api.github.com/repos/webignition/url/zipball/7df6141958c65957d3c692791eb8e07ace0cf147",
+                "reference": "7df6141958c65957d3c692791eb8e07ace0cf147",
                 "shasum": ""
             },
             "require": {
@@ -2809,7 +2760,7 @@
             "keywords": [
                 "url"
             ],
-            "time": "2014-01-13 18:09:20"
+            "time": "2014-03-25 09:43:12"
         },
         {
             "name": "webignition/web-json-model",

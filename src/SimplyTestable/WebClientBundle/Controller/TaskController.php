@@ -188,7 +188,7 @@ class TaskController extends TestViewController
                 'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
                 'is_owner' => $isOwner,
                 'is_public_user_test' => $isPublicUserTest,
-                'formatted_website' => \Etechnika\IdnaConvert\IdnaConvert::decodeString($this->getSchemelessUrl($test->getWebsite())),
+                'website' => $this->getWebsiteViewValues($test->getWebsite())
         );
         
         if ($task->getType() == 'HTML validation') {

@@ -1,6 +1,6 @@
 {% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
 
-{% block title %}Results {{formatted_website}} (Test#{{test.testId}} Task#{{task.taskId}}) - {{ parent() }}{% endblock %}
+{% block title %}Results {% if website.utf8.schemeless.is_truncated %}{{website.utf8.schemeless.truncated}}&hellip;{% else %}{{website.utf8.schemeless.raw}}{% endif %} (Test#{{test.testId}} Task#{{task.taskId}}) - {{ parent() }}{% endblock %}
 
 {% block body_class %}full-width {{ parent() }}{% endblock %}
 

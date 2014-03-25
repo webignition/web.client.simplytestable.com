@@ -1,13 +1,13 @@
 {% extends 'SimplyTestableWebClientBundle::App/single-page-dialog.html.twig' %}
 
-{% block title %}Preparing results for {{website}} (#{{test.testId}}) - {{ parent() }}{% endblock %}
+{% block title %}Preparing results for {{website.utf8_schemeless}} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
 {% block content %}
 
 <h1>Preparing results &hellip; <span id="completion-percent-value">{{ completion_percent }}</span>% done                                </h1>
 
 <p>
-    I'm gathering the results for test <strong><span id="website">{{website}}</span> (#<span id="testId">{{test.testId}}</span>)</strong>
+    I'm gathering the results for test <strong><span id="website">{{website.utf8}}</span> (#<span id="testId">{{test.testId}}</span>)</strong>
 </p>
 
 <p class="summary">

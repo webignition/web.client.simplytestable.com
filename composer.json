@@ -17,7 +17,7 @@
         "sensio/generator-bundle": "2.2.*",
         "jms/security-extra-bundle": "1.4.*",
         "jms/di-extra-bundle": "1.3.*",
-        "webignition/url":">=1.1,<2.0",
+        "webignition/url":">=1.9.10,<2.0",
         "webignition/web-json-model":">=0.1,<2.0",
         "jms/serializer-bundle": "0.9.0",
         "webignition/simplytestable-base-migrations-bundle":"~1.3",
@@ -33,8 +33,7 @@
         "egulias/email-validator":"1.1.1",
         "doctrine/collections":"*",
         "webignition/php-stripe-models":">=0.1.10,<1.0",
-        "jeremykendall/php-domain-parser": "1.2.1",
-        "etechnika/idna-convert": "1.0.*"
+        "jeremykendall/php-domain-parser": "1.2.1"        
     },
     "repositories": [
         {

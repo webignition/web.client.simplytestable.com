@@ -49,8 +49,8 @@
                    id="input-website"
                    type="text"
                    placeholder="Enter website URL to start new test &hellip;"
-                   {% if website is defined and website != '' %}
-                   value="{{ website }}"
+                   {% if website is defined and website is not empty %}
+                   value="{{ website.raw }}"
                    {% endif %}
                    >
             <button type="submit" class="btn btn-primary btn-large" name="full-single" value="full">Test full site</button>
