@@ -66,7 +66,7 @@ class TestResultsController extends TestViewController
     }
     
     
-    public function failedNoUrlsDetectedAction($website, $test_id) {
+    public function failedNoUrlsDetectedAction($website, $test_id) {        
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }
@@ -114,7 +114,7 @@ class TestResultsController extends TestViewController
         ));       
         
         $viewData = array(
-            'website' => idn_to_utf8($website),
+            'website' => $this->getUrlViewValues($website),
             'test' => $test,
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),

@@ -7,7 +7,9 @@ use SimplyTestable\WebClientBundle\Model\User;
 
 class FunctionalTest extends BaseFunctionalTest {    
     
-    const WEBSITE = 'http://example.com/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij';
+    const WEBSITE = 'http://example.com/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz';
+    
+    private $crawler;
 
     public function setUp() {
         parent::setUp();
@@ -29,10 +31,17 @@ class FunctionalTest extends BaseFunctionalTest {
     
     public function testNavbarSignoutFormUrl() {
         $this->privateUserNavbarSignOutFormUrlTest($this->getScopedCrawler());          
+    } 
+    
+    public function testLongUrlInPageTitleIsTruncated() {
+        $expectedTitleUrl = substr(str_replace('http://', '', self::WEBSITE), 0, 64) . '…';
+        
+        $this->assertTitleContainsText($this->getScopedCrawler(), $expectedTitleUrl);
     }
     
-    public function testLongUrlIsPresentInPageTitle() {        
-        $this->assertTitleContainsText($this->getScopedCrawler(), str_replace('http://', '', self::WEBSITE));        
+    public function testFullTestUrlIsPresentInHeadingTitle() {
+        $titles = $this->getScopedCrawler()->filter('#test-url')->extract('title');
+        $this->assertEquals(self::WEBSITE, $titles[0]);
     }    
     
     /**
@@ -40,11 +49,15 @@ class FunctionalTest extends BaseFunctionalTest {
      * @return \Symfony\Component\DomCrawler\Crawler
      */
     private function getScopedCrawler() {        
-        return $this->getCrawler($this->getCurrentRequestUrl(array(
-            'website' => self::WEBSITE,
-            'test_id' => 1
-        )));        
-    }
+        if (is_null($this->crawler)) {
+            $this->crawler = $this->getCrawler($this->getCurrentRequestUrl(array(
+                'website' => self::WEBSITE,
+                'test_id' => 1
+            )));  
+        }
+        
+        return $this->crawler;
+    }  
 
 }
 

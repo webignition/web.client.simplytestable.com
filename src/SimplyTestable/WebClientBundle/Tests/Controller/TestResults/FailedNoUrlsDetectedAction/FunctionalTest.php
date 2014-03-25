@@ -1,9 +1,8 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Controller\TestResults\IndexAction\PrivateUser;
+namespace SimplyTestable\WebClientBundle\Tests\Controller\TestResults\FailedNoUrlsDetectedAction;
 
 use SimplyTestable\WebClientBundle\Tests\Controller\TestResults\FunctionalTest as BaseFunctionalTest;
-use SimplyTestable\WebClientBundle\Model\User;
 
 class FunctionalTest extends BaseFunctionalTest {
     
@@ -14,42 +13,36 @@ class FunctionalTest extends BaseFunctionalTest {
     public function setUp() {
         parent::setUp();
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath($this->getName())));
-        $this->setUser(new User('user@example.com','password'));
     }
     
     protected function getRoute() {
-        return 'app_results';
+        return 'app_results_failed_no_urls_detected';
     }     
     
     protected function getActionName() {
-        return 'indexAction';
+        return 'failedNoUrlsDetectedAction';
     }    
     
-    public function testNavbarContainsAccountLink() {                
-        $this->privateUserNavbarContainsAccountLinkTest($this->getScopedCrawler());           
+    public function testNavbarContainsSignInButton() {        
+        $this->publicUserNavbarContainsSignInButtonTest($this->getScopedCrawler());          
     }
     
-    public function testNavbarAccountLinkUrl() {                
-        $this->privateUserNavbarAccountLinkUrlTest($this->getScopedCrawler());           
+    public function testNavbarSignInButtonUrl() {  
+        $this->publicUserNavbarSignInButtonUrlTest($this->getScopedCrawler());          
+    }      
+    
+    public function testNavbarContainsCreateAccountButton() { 
+        $this->publicUserNavbarContainsCreateAccountButtonTest($this->getScopedCrawler());          
     }
     
-    public function testNavbarContainsSignOutButton() {
-        $this->privateUserNavbarContainsSignOutButtonTest($this->getScopedCrawler());          
-    }
-    
-    public function testNavbarSignoutFormUrl() {
-        $this->privateUserNavbarSignOutFormUrlTest($this->getScopedCrawler());          
-    }
-    
+    public function testNavbarCreateAccountButtonUrl() {  
+        $this->publicUserNavbarCreateAccountButtonUrlTest($this->getScopedCrawler());          
+    }    
+
     public function testLongUrlInPageTitleIsTruncated() {
         $expectedTitleUrl = substr(str_replace('http://', '', self::WEBSITE), 0, 64) . '…';
         
         $this->assertTitleContainsText($this->getScopedCrawler(), $expectedTitleUrl);
-    }
-    
-    public function testFullTestUrlIsPresentInHeadingTitle() {
-        $titles = $this->getScopedCrawler()->filter('#test-url')->extract('title');
-        $this->assertEquals(self::WEBSITE, $titles[0]);
     }
     
     

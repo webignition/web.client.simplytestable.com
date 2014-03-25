@@ -2,16 +2,14 @@
     <div id="input" class="leader">                  
         <h1 class="info">
             <label for="input-website">
-                <i id="completion-percent-state-icon" class="{{ state_icon }}"></i> Testing {{ test.formattedWebsite }}
-                {% if remote_test.state != 'new-queued' %}
+                <i id="completion-percent-state-icon" class="{{ state_icon }}"></i> Testing <span id="test-url" title="{{website.raw}}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-50.html.twig' with {'url': website} %}</span>
                 <span id="test-id">(#{{ test.testId }})</span>           
-                {% endif %}
             </label>
         </h1>    
 
         {% if (is_public_user_test is not defined or (is_public_user_test is defined and is_public_user_test == true) or is_owner) %}
             
-        <form id="cancel-form" class="top-right-form" method="post" action="{{ path('test_cancel', {website: website, test_id: test.testId}) }}">
+        <form id="cancel-form" class="top-right-form" method="post" action="{{ path('test_cancel', {website: website.raw, test_id: test.testId}) }}">
             <button type="submit" class="btn btn-danger">Stop test</button>
         </form>
             

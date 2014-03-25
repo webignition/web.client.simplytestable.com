@@ -1094,7 +1094,7 @@ body.user-account-index .news-subscriptions label span {
 
 .top-right-form {
     position:absolute;
-    top:30px;
+    top:0;
     right:30px;      
 }
 
@@ -1581,7 +1581,12 @@ body.app-task-results .intro p {
     position:relative;
 }
 
+body.app-progress .tasks .url,
+body.app-results .tasks .url {
+    white-space: nowrap;
+}
 
+body.app-progress .tasks .url .fade,
 body.app-results .tasks .url .fade,
 body.app-task-results .intro p .fade {
     position: absolute;

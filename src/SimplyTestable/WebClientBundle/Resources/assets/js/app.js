@@ -838,7 +838,7 @@ application.progress.taskController = function() {
 
     var buildTaskSetListItem = function(taskSetListItem, tasks) {
         if ($('.url', taskSetListItem).length === 0) {
-            taskSetListItem.append('<span class="url" />');
+            taskSetListItem.append($('<span class="url" />'));
         }
 
         $('.url', taskSetListItem).html(punycode.toUnicode(decodeURIComponent((tasks[0]['url']+'').replace(/\+/g, '%20'))));
@@ -846,6 +846,8 @@ application.progress.taskController = function() {
         for (var taskIndex = 0; taskIndex < tasks.length; taskIndex++) {
             updateTaskListItem(getTaskListItem(taskSetListItem, tasks[taskIndex]), tasks[taskIndex]);
         }
+        
+        $('.url').prepend('<span class="fade" />');
     };
 
 

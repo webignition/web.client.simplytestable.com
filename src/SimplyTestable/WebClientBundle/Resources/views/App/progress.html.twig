@@ -1,6 +1,6 @@
 {% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
 
-{% block title %}Testing {% if website.utf8.schemeless.is_truncated %}{{website.utf8.schemeless.truncated}}&hellip;{% else %}{{website.utf8.schemeless.raw}}{% endif %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
+{% block title %}Testing {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
 {% block javascripts %}        
     {{ parent() }}
