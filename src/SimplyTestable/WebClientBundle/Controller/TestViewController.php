@@ -75,34 +75,45 @@ class TestViewController extends BaseViewController
     
     /**
      * 
-     * @param string $website
+     * @param string $url
      * @return string[]
      */
-    protected function getWebsiteViewValues($website = null) {        
-        if (is_null($website) || trim($website) === '') {
+    protected function getUrlViewValues($url = null) {        
+        if (is_null($url) || trim($url) === '') {
             return array();
         }
         
-        $websiteUrl = new \webignition\NormalisedUrl\NormalisedUrl($website);
+        $websiteUrl = new \webignition\NormalisedUrl\NormalisedUrl($url);
         $websiteUrl->getConfiguration()->enableConvertIdnToUtf8();
         
-       $utf8Schemeless = $this->getSchemelessUrl($websiteUrl);
-       $utf8SchemelessTruncated = $this->getTruncatedString($utf8Schemeless, 64);
+        $utf8Raw = (string)$websiteUrl;
+        $utf8Truncated_40 = $this->getTruncatedString($utf8Raw, 40);
+        $utf8Truncated_64 = $this->getTruncatedString($utf8Raw, 64);
+        
+        $utf8Schemeless = $this->getSchemelessUrl($utf8Raw);
+        $utf8SchemelessTruncated_40 = $this->getTruncatedString($utf8Schemeless, 40);
+        $utf8SchemelessTruncated_64 = $this->getTruncatedString($utf8Schemeless, 64);
        
-       return array(
-           'raw' => $website,
-           'utf8' => array(
-               'raw' => (string)$websiteUrl,
-               'schemeless' => array(
-                   'raw' => $utf8Schemeless,
-                   'truncated' => $utf8SchemelessTruncated,
-                   'is_truncated' => ($utf8Schemeless != $utf8SchemelessTruncated)
-               )
-           )
-       );
+        return array(
+            'raw' => $url,
+            'utf8' => array(
+                'raw' => $utf8Raw,
+                'truncated_40' => $utf8Truncated_40,
+                'truncated_64' => $utf8Truncated_64,
+                'is_truncated_40' => ($utf8Raw != $utf8Truncated_40),
+                'is_truncated_64' => ($utf8Raw != $utf8Truncated_64),
+                'schemeless' => array(
+                    'raw' => $utf8Schemeless,
+                    'truncated_40' => $utf8SchemelessTruncated_40,
+                    'truncated_64' => $utf8SchemelessTruncated_64,
+                    'is_truncated_40' => ($utf8Schemeless != $utf8SchemelessTruncated_40),
+                    'is_truncated_64' => ($utf8Schemeless != $utf8SchemelessTruncated_64)
+                 )
+            )
+        );
     }
     
-    private function getTruncatedString($input, $maxLength = 128) {
+    private function getTruncatedString($input, $maxLength = 64) {
         if (mb_strlen($input) <= $maxLength) {
             return $input;
         }

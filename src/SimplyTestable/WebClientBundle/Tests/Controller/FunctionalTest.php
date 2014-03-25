@@ -92,6 +92,14 @@ abstract class FunctionalTest extends BaseTest {
         }
     }
     
+    protected function assertDomNodeDoesNotContainNext(\DOMNode $node, $text) {
+        $markup = $this->domNodeToHtml($node);
+        
+        if (substr_count($markup, $text) > 0) {
+            $this->fail('Markup "'.$markup.'" does contain text "'.$text.'"');
+        }
+    }    
+    
     
     protected function assertTitleContainsText($crawler, $text) {
         $titles = $crawler->filter('title');        
@@ -99,6 +107,16 @@ abstract class FunctionalTest extends BaseTest {
         
         foreach ($titles as $title) {
             $this->assertDomNodeContainsNext($title, $text);
+        }          
+    }
+    
+    
+    protected function assertTitleDoesNotContainText($crawler, $text) {
+        $titles = $crawler->filter('title');        
+        $this->assertEquals(1, $titles->count());
+        
+        foreach ($titles as $title) {
+            $this->assertDomNodeDoesNotContainNext($title, $text);
         }          
     }
     

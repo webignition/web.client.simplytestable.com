@@ -140,7 +140,7 @@ class TaskController extends TestViewController
         return (count($taskIds) > 0) ? $taskIds : null;
     }    
   
-    public function resultsAction($website, $test_id, $task_id) {        
+    public function resultsAction($website, $test_id, $task_id) {
         $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
         if ($this->isUsingOldIE()) {
@@ -158,7 +158,7 @@ class TaskController extends TestViewController
         $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
         if ($response->isNotModified($this->getRequest())) {
             return $response;
-        }        
+        } 
         
         $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
         if ($testRetrievalOutcome->hasResponse()) {
@@ -169,7 +169,7 @@ class TaskController extends TestViewController
         $isOwner = $this->getTestService()->getRemoteTestService()->owns();
         $isPublicUserTest = $test->getUser() == $this->getUserService()->getPublicUser()->getUsername();
         
-        $task = $this->getTaskService()->get($test, $task_id);
+        $task = $this->getTaskService()->get($test, $task_id);  
         
         if (is_null($task)) {
             return $this->redirect($this->generateUrl('app_test_redirector', array(
@@ -178,17 +178,25 @@ class TaskController extends TestViewController
             )));            
         }
         
+        if ($task->getOutput()->getErrorCount() === 0 && $task->getOutput()->getWarningCount() === 0) {
+            return $this->redirect($this->generateUrl('app_test_redirector', array(
+                'website' => $website,
+                'test_id' => $test_id
+            )));               
+        }
+        
         $this->getCssValidationErrorsGroupedByRef($task);         
         
         $viewData = array(
-                'test' => $test,
-                'task' => $task,
-                'public_site' => $this->container->getParameter('public_site'),
-                'user' => $this->getUser(),
-                'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-                'is_owner' => $isOwner,
-                'is_public_user_test' => $isPublicUserTest,
-                'website' => $this->getWebsiteViewValues($test->getWebsite())
+            'test' => $test,
+            'task' => $task,
+            'public_site' => $this->container->getParameter('public_site'),
+            'user' => $this->getUser(),
+            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+            'is_owner' => $isOwner,
+            'is_public_user_test' => $isPublicUserTest,
+            'website_url' => $this->getUrlViewValues($test->getWebsite()),
+            'task_url' => $this->getUrlViewValues($task->getUrl()),
         );
         
         if ($task->getType() == 'HTML validation') {

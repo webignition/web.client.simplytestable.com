@@ -65,6 +65,20 @@ class ActionTest extends BaseActionTest {
             )
         ));
     }
+    
+    
+    public function testWithNoErrorsAndNoWarnings() {
+        $this->performActionTest(array(
+            'statusCode' => 302,
+            'redirectPath' => '/http://example.com//1/'
+        ), array(
+            'methodArguments' => array(
+                'http://example.com/',
+                1,
+                2
+            )
+        ));        
+    }
 
 }
 

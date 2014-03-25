@@ -11,7 +11,7 @@ class CssValidationResultParser extends ResultParser {
     /**
      * @return Result
      */
-    protected function buildResult() {                
+    protected function buildResult() {
         $result = new Result();        
         
         $rawOutputArray = json_decode($this->getOutput()->getContent());
@@ -31,7 +31,7 @@ class CssValidationResultParser extends ResultParser {
             }
             
             $result->addMessage($this->getMessageFromOutput($rawMessageObject));
-        }      
+        }        
         
         return $result;
     }
@@ -40,7 +40,7 @@ class CssValidationResultParser extends ResultParser {
         $message = new CssTextFileMessage();
         $message->setType('error');
         $message->setMessage($outputMessage->message);
-        $message->setClass($outputMessage->messageId);
+        $message->setClass($outputMessage->class);
 
         return $message;
     }    

@@ -1,12 +1,6 @@
 {% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
 
-{% block title %}
-{% if test is defined %}
-Testing {{formatted_website}} (#{{test.testId}}) - {{ parent() }}
-{% else %}
-Testing {{website}} - {{ parent() }}
-{% endif %}
-{% endblock %}
+{% block title %}Testing {% if website.utf8.schemeless.is_truncated %}{{website.utf8.schemeless.truncated}}&hellip;{% else %}{{website.utf8.schemeless.raw}}{% endif %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
 {% block javascripts %}        
     {{ parent() }}

@@ -1,10 +1,10 @@
 {% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
 
-{% block title %}Results {% if website.utf8.schemeless.is_truncated %}{{website.utf8.schemeless.truncated}}&hellip;{% else %}{{website.utf8.schemeless.raw}}{% endif %} (Test#{{test.testId}} Task#{{task.taskId}}) - {{ parent() }}{% endblock %}
+{% block title %}Results for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website_url} %} (Test#{{test.testId}} Task#{{task.taskId}}) - {{ parent() }}{% endblock %}
 
 {% block body_class %}full-width {{ parent() }}{% endblock %}
 
-{% block body %}
+{% block body %}    
 
         {% if is_owner == false and is_public_user_test == false %}
 <div class="full-width-container full-width-notification">
@@ -24,12 +24,12 @@
     <div class="container main">            
         <div class="row-fluid">
             <div class="span12">                
-                <section>
-                    <h1 class="info">
+                <section class="intro">
+                    <h1 class="info">                        
                         <i class="icon-bar-chart"></i>
                         {{ task.type }} results for 
                         <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}">
-                            {{ test.formattedWebsite }}
+                            {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-40.html.twig' with {'url': website_url} %}
                             <span id="test-id">(#{{ test.testId }})</span>
                         </a>                            
                         task
@@ -37,7 +37,7 @@
                     </h1>
                         
                     <p>
-                        URL tested: <a href="{{ task.url }}">{{ task.formattedUrl }}</a>
+                        URL tested: <a href="{{ task.url }}">{{ task.formattedUrl }}</a><span class="fade"></span>
                     </p>
                     
                         
@@ -84,27 +84,27 @@
                         {% set statusCode = task.output.result.firstError.class|replace({'http-retrieval-': ''}) %}
                         
                         {% if statusCode == '401' %}
-                        <p>
-                            The page at <a href="{{task.url}}">{{task.url}}</a> requires authorisation.
+                        <p id="reason">
+                            The page at <a href="{{task.url}}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> requires authorisation.
                         </p>
                         
                         <p>
                             We can't yet test pages that are not publicly available.
                         </p>   
                         {% elseif statusCode == '403' %}
-                        <p>
-                            Looks like we're not allowed to access <a href="{{task.url}}">{{task.url}}</a>.
+                        <p id="reason">
+                            Looks like we're not allowed to access <a href="{{task.url}}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a>.
                         </p>                         
                         {% elseif statusCode == '404' %}
-                        <p>
-                            We can't test <a href="{{task.url}}">{{task.url}}</a> because it doesn't exist.
+                        <p id="reason">
+                            We can't test <a href="{{task.url}}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> because it doesn't exist.
                         </p>
                         <p>
                             Is the URL right?
                         </p>
                         {% elseif statusCode == '405' %}
-                        <p>
-                            We tried to retrieve <a href="{{task.url}}">{{task.url}}</a> using
+                        <p id="reason">
+                            We tried to retrieve <a href="{{task.url}}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> using
                             a HTTP GET request.
                         </p>                         
                         <p>
@@ -115,12 +115,12 @@
                             If GET requests are wrong I don't want to be right.
                         </p>
                         {% elseif statusCode == '500' %}
-                        <p>
+                        <p id="reason">
                             The application serving this URL encountered
                             an internal error and failed to return an acceptable response.
                         </p>                       
                         {% else %}
-                        <p>
+                        <p id="reason">
                             That's a pretty uncommon HTTP response error there.
                         </p>                                
                         {% endif %}
@@ -129,8 +129,8 @@
                         
                     {% elseif task.output.result.isHttpRedirectLoopFailure %}                                               
                         <h2 class="info"><i class="icon-refresh"></i> Redirect loop detected!</h2>                        
-                        <p>
-                            <a href="{{ task.url }}">{{ task.url }}</a> redirects to another URL which ultimately
+                        <p id="reason">
+                            <a href="{{ task.url }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> redirects to another URL which ultimately
                             redirects back to itself. Indefinitely. Forever.
                         </p>                        
 
@@ -144,8 +144,8 @@
                     {% elseif task.output.result.isHttpRedirectLimitFailure %}
                         <h2 class="info"><i class="icon-refresh"></i> Redirect limit reached!</h2>
                         
-                        <p>
-                            <a href="{{ task.url }}">{{ task.url }}</a> redirects to another URL which
+                        <p id="reason">
+                            <a href="{{ task.url }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> redirects to another URL which
                             redirects to another URL which redirects to another URL &hellip; and so on.
                         </p>                        
 
@@ -159,8 +159,8 @@
                     {% elseif task.output.result.isCharacterEncodingFailure %}
                         <h2 class="info"><i class="icon-strikethrough"></i> Character encoding confusion!</h2>
                         
-                        <p>
-                            The character encoding used for the page at <a href="{{ task.url }}">{{ task.url }}</a>
+                        <p id="reason">
+                            The character encoding used for the page at <a href="{{ task.url }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a>
                             is not quite right.
                         </p>                  
                         
@@ -179,8 +179,8 @@
                     {% elseif task.output.result.isCurlTimeoutFailure %}
                         <h2 class="info"><i class="icon-time"></i> Timeout!</h2>
                         
-                        <p>
-                            We tried to retrieve the page at <a href="{{ task.url }}">{{ task.url }}</a>
+                        <p id="reason">
+                            We tried to retrieve the page at <a href="{{ task.url }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a>
                             to test it.
                         </p>                  
 
@@ -194,8 +194,8 @@
                     {% elseif task.output.result.isCurlDnsResolutionFailulre %}
                         <h2 class="info"><i class="icon-time"></i> Timeout!</h2>
                         
-                        <p>
-                            We tried to retrieve the page at <a href="{{ task.url }}">{{ task.url }}</a>
+                        <p id="reason">
+                            We tried to retrieve the page at <a href="{{ task.url }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a>
                             to test it.
                         </p>                  
 
@@ -205,8 +205,8 @@
                     {% elseif task.output.result.isCurlUrlFormatFailure %}
                         <h2 class="info"><i class="icon-exclamation-sign"></i> Bad URL!</h2>
                         
-                        <p>
-                            We tried to retrieve the page at <a href="{{ task.url }}">{{ task.url }}</a>
+                        <p id="reason">
+                            We tried to retrieve the page at <a href="{{ task.url }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a>
                             to test it.
                         </p>                  
 
@@ -216,9 +216,8 @@
                     {% elseif task.output.result.isHtmlInvalidDocumentTypeFailure %}
                         <h2 class="info"><i class="icon-exclamation-sign"></i> Invalid document type!</h2>
                         
-                        <p>
-                            The page at <a href="{{ task.url }}">{{ task.url }}</a> contains an invalid
-                            doctype declaration:
+                        <p id="reason">
+                            The page at <a href="{{ task.url }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> contains an invalid doctype declaration:
                         </p>
                         
                         <pre>{{ task.output.result.firstError.message }}</pre>
@@ -235,9 +234,8 @@
                     {% elseif task.output.result.isHtmlMissingDocumentTypeFailure %}
                         <h2 class="info"><i class="icon-exclamation-sign"></i> Missing document type!</h2>
                         
-                        <p>
-                            The page at <a href="{{ task.url }}">{{ task.url }}</a> does not have a
-                            document type.
+                        <p id="reason">
+                            The page at <a href="{{ task.url }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> does not have a document type.
                         </p>
                         
                         <p>
@@ -258,8 +256,8 @@
                     {% elseif task.output.result.isCssValidationSslExceptionError %}
                         <h2 class="info"><i class="icon-exclamation-sign"></i> SSL error!</h2>
                         
-                        <p>
-                            Sorry, the CSS validator was unable to establish a SSL connection when validating {{ task.url }}.
+                        <p id="reason">
+                            Sorry, the CSS validator was unable to establish a SSL connection when validating <a href="{{ task.url }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a>.
                         </p>
                         
                         <p>
@@ -274,10 +272,10 @@
                     {% elseif task.output.result.isCssValidationUnknownExceptionError %}
                         <h2 class="info"><i class="icon-exclamation-sign"></i> Unknown validator error!</h2>
                         
-                        <p>
-                            Sorry, the CSS validator went bang when validating {{ task.url }}.
+                        <p id="reason">
+                            Sorry, the CSS validator went bang when validating <a href="{{ task.url }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a>.
                         </p>
-                        
+
                         <p>
                             This most commonly happens if the URL to be validated redirects to another URL. We're
                             working to fix this.                            
@@ -285,8 +283,8 @@
                     {% elseif task.output.result.isMarkuplessTextHtmlFailure %}
                         <h2 class="info"><i class="icon-exclamation-sign"></i> No markup found!</h2>
                         
-                        <p>
-                            The page at <a href="{{ task.url }}">{{ task.url }}</a> is being served as HTML
+                        <p id="reason">
+                            The page at <a href="{{ task.url }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> is being served as HTML
                             but did not return any HTML.
                         </p>
                         

@@ -1569,3 +1569,21 @@ body.app-history-all .no-tests {
     color:#333;
 }
 
+body.app-task-results h1 {
+    white-space:nowrap;
+}
+
+body.app-task-results .intro p {
+    white-space: nowrap;
+    overflow:hidden;
+    position:relative;
+}
+
+body.app-task-results .intro p .fade {
+    position: absolute;
+    right:0;
+    width:12px;
+    height:20px;
+    background: #eee;
+    opacity:0.6;
+}

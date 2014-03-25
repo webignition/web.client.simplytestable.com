@@ -455,9 +455,9 @@ class TaskService extends CoreApplicationService {
      * @param Task $task 
      * @return Task
      */
-    public function setParsedOutput(Task $task) {         
+    public function setParsedOutput(Task $task) {                 
         if ($task->hasOutput()) {            
-            $parser = $this->taskOutputResultParserService->getParser($task->getOutput());            
+            $parser = $this->taskOutputResultParserService->getParser($task->getOutput());                        
             $parser->setOutput($task->getOutput());
 
             $task->getOutput()->setResult($parser->getResult());
