@@ -24,7 +24,7 @@ class TestHistoryController extends TestViewController
             return $this->redirect($this->generateUrl('app_history_all'));
         }
         
-        $testList = $this->getFinishedTests(10, ($page_number - 1) * 10);        
+        $testList = $this->getFinishedTests(10, ($page_number - 1) * 10, $this->get('request')->get('filter'));        
         if ($page_number > $testList->getPageCount() && $testList->getPageCount() > 0) {            
             return $this->redirect($this->generateUrl('app_history', array('page_number' => $testList->getPageCount())));            
         }
@@ -71,8 +71,8 @@ class TestHistoryController extends TestViewController
      * 
      * @return array
      */
-    private function getFinishedTests($limit, $offset) {                        
-        $testList = $this->getTestService()->getRemoteTestService()->getFinished($limit, $offset);
+    private function getFinishedTests($limit, $offset, $filter = null) {
+        $testList = $this->getTestService()->getRemoteTestService()->getFinished($limit, $offset, $filter);
         
         foreach ($testList->get() as $testObject) {
             /* @var $remoteTest RemoteTest */

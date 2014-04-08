@@ -332,24 +332,25 @@ class RemoteTestService extends CoreApplicationService {
      * 
      * @param int $limit
      * @param int $offset 
+     * @param string $filter
      * @return \SimplyTestable\WebClientBundle\Model\TestList
      */
-    public function getFinished($limit, $offset) {
+    public function getFinished($limit, $offset, $filter = null) {
         $requestUrl = $this->getUrl('tests_list', array(
             'limit' => $limit,
             'offset' => $offset
         ));
         
-        $queryParts = array(); 
-        $excludeStates = array('rejected');        
-
-        foreach ($excludeStates as $excludeState) {
-            $queryParts[] = 'exclude-states[]=' . $excludeState;
+        $query = array(
+            'exclude-states' => array('rejected'),
+            'exclude-current' => 1
+        );
+        
+        if (!is_null($filter)) {
+            $query['url-filter'] = $filter;
         }
         
-        $queryParts[] = 'exclude-current=1';
-        
-        $requestUrl .= '?' . implode('&', $queryParts);        
+        $requestUrl .= '?' . http_build_query($query);
         
         $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
         
