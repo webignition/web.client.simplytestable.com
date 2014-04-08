@@ -51,7 +51,8 @@ class TestHistoryController extends TestViewController
             'user' => $this->getUser(),
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),         
             'test_list' => $testList,
-            'pagination_page_numbers' => $testList->getPageNumbers()
+            'pagination_page_numbers' => $testList->getPageNumbers(),
+            'filter' => $this->get('request')->get('filter')
         )), $cacheValidatorHeaders);                
     }
     
