@@ -79,7 +79,7 @@ class RemoteTest extends AbstractStandardObject {
         }
         
         if (isset($remoteTimePeriod->end_date_time)) {
-            $timePeriod->setStartDateTime(new \DateTime($remoteTimePeriod->end_date_time));
+            $timePeriod->setEndDateTime(new \DateTime($remoteTimePeriod->end_date_time));
         } 
         
         return $timePeriod;

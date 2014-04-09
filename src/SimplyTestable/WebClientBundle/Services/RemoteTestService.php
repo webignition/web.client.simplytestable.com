@@ -377,6 +377,26 @@ class RemoteTestService extends CoreApplicationService {
     }
     
     
+    public function getFinishedCount($filter = null) {
+        $requestUrl = $this->getUrl('tests_list_count');
+        
+        $query = array(
+            'exclude-states' => array('rejected'),
+            'exclude-current' => 1
+        );
+        
+        if (!is_null($filter)) {
+            $query['url-filter'] = $filter;
+        }
+        
+        $requestUrl .= '?' . http_build_query($query);
+        
+        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
+        
+        return $this->getListCount($request);         
+    }
+    
+    
     /**
      * 
      * @return \SimplyTestable\WebClientBundle\Model\TestList
@@ -403,6 +423,27 @@ class RemoteTestService extends CoreApplicationService {
         
         return $list;          
     }  
+    
+    
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Model\TestList
+     */
+    private function getListCount(\Guzzle\Http\Message\Request $request) {        
+        $this->addAuthorisationToRequest($request);
+        
+        try {
+            /* @var $responseDocument \webignition\WebResource\JsonDocument\JsonDocument */
+            $responseDocument = $this->webResourceService->get($request);            
+            $count = json_decode($responseDocument->getContent());
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {            
+            return null;
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
+            return null;
+        }
+        
+        return $count;         
+    }      
     
     
     /**

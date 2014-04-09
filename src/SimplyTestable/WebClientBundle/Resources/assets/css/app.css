@@ -1623,3 +1623,13 @@ color:#333;
     font-weight: normal;
     color:#333;
 }
+
+body.app-results .history {
+    position:absolute;
+    right:30px;
+    top:80px;
+}
+
+body.app-results .history-with-owner {
+    top:160px;
+}

@@ -43,6 +43,7 @@ parameters:
       test_is_public: /job/{canonical-url}/{test_id}/is_public/
       test_retest: /job/{canonical-url}/{test_id}/re-test/      
       tests_list_websites: /jobs/list/websites/      
+      tests_list_count: /jobs/list/count/      
   public_site:
     urls:
       home: http://local.simplytestable.com/

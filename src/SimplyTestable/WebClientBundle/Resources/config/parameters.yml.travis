@@ -45,6 +45,7 @@ parameters:
       test_set_private: /job/{canonical-url}/{test_id}/set-private/
       test_retest: /job/{canonical-url}/{test_id}/re-test/
       tests_list_websites: /jobs/list/websites/
+      tests_list_count: /jobs/list/count/
   public_site:
     urls:
       home: http://travis.simplytestable.com/

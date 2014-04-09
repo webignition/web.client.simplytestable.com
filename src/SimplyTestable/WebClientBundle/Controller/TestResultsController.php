@@ -275,7 +275,7 @@ class TestResultsController extends TestViewController
         
         $this->getTestOptionsAdapter()->setRequestData($remoteTest->getOptions());
         $testOptions = $this->getTestOptionsAdapter()->getTestOptions();   
-        
+
         $viewData = array(
             'website' => $this->getUrlViewValues($website),
             'this_url' => $this->getResultsUrl($website, $test_id),
@@ -312,7 +312,8 @@ class TestResultsController extends TestViewController
             'filtered_task_counts' => $this->getFilteredTaskCounts($test, $taskTypeFilter),
             'test_authentication_enabled' => $this->getTestAuthenticationIsEnabled($remoteTest),
             'test_cookies_enabled' => $this->getTestCookiesIsEnabled($remoteTest),
-            'test_cookies' => $this->getTestCookies($remoteTest)
+            'test_cookies' => $this->getTestCookies($remoteTest),
+            'domain_test_count' => $this->getTestService()->getRemoteTestService()->getFinishedCount($test->getWebsite())
         );
                        
         //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTest->getTaskCount() : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));
