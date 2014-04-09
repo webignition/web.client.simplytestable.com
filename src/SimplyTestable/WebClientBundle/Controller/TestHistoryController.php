@@ -26,7 +26,15 @@ class TestHistoryController extends TestViewController
         
         $testList = $this->getFinishedTests(10, ($page_number - 1) * 10, $this->get('request')->get('filter'));        
         if ($page_number > $testList->getPageCount() && $testList->getPageCount() > 0) {            
-            return $this->redirect($this->generateUrl('app_history', array('page_number' => $testList->getPageCount())));            
+            $redirectParameters = array(
+                'page_number' => $testList->getPageCount(),                
+            );
+            
+            if (!is_null($this->get('request')->get('filter'))) {
+                $redirectParameters['filter'] = $this->get('request')->get('filter');
+            }
+            
+            return $this->redirect($this->generateUrl('app_history', $redirectParameters));            
         }
         
         $templateName = 'SimplyTestableWebClientBundle:TestHistory:index.html.twig';
