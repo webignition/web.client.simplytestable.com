@@ -1562,7 +1562,7 @@ body.app-history-all .no-tests {
 
 .action-badge a {
     color:#666;
-    padding-left:5px;    
+    padding-left:6px;    
     border-left:1px solid #eee;
 }
 
@@ -1600,4 +1600,26 @@ body.app-task-results .intro p .fade {
 
 .nowrap {
     white-space: nowrap;
+}
+
+.action-badge {
+/*    border: 1px solid transparent;*/
+}
+
+.action-badge-enabled {
+/*    border: 1px solid #f89406;*/
+}
+
+.action-badge-enabled .icon-primary {
+/*    color: #f89406;*/
+color:#333;
+}
+
+.action-badge-enabled a {
+/*    border-color: #f89406;*/
+}
+
+.action-badge-filter-options strong {
+    font-weight: normal;
+    color:#333;
 }

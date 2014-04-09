@@ -47,8 +47,8 @@
                 </div>
                 
 {% if test_options['http-authentication'] is defined %}              
-    <span class="badge action-badge">
-        <i class="icon icon-lock"></i>
+    <span class="badge action-badge action-badge-http-authentication {%if test_authentication_enabled%}action-badge-enabled{% endif %}">
+        <i class="icon icon-lock icon-primary"></i>
         <span class="action-badge-label">HTTP authentication <span class="authentication-enabled">{{ (test_authentication_enabled) ? 'enabled' : 'not enabled' }}</span></span>
         
         {% if remote_test.hasParameter('http-auth-username') %}
@@ -75,8 +75,8 @@
 {% endif %}
                 
 {% if test_options['cookies'] is defined %}            
-    <span class="badge action-badge">
-        <i class="icon icon-adjust"></i>
+    <span class="badge action-badge action-badge-cookies-options  {%if test_cookies_enabled%}action-badge-enabled{% endif %}">
+        <i class="icon icon-adjust icon-primary"></i>
         <span class="action-badge-label">Custom cookies: <span class="cookies-enabled">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span></span>
         
         {% if remote_test.hasParameter('cookies') %}

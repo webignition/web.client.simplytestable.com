@@ -43,8 +43,8 @@
                 </div>
                 
 {% if test_options['http-authentication'] is defined %}                            
-    <span class="badge action-badge">
-        <i class="icon icon-lock"></i>
+    <span class="badge action-badge action-badge-http-authentication {%if test_authentication_enabled%}action-badge-enabled{% endif %}">
+        <i class="icon icon-lock icon-primary"></i>
         <span class="action-badge-label">HTTP authentication <span class="authentication-enabled">{{ (test_authentication_enabled) ? 'enabled' : 'not enabled' }}</span></span>        
 
         <span class="modal-control for-authentication-options-modal">
@@ -63,13 +63,16 @@
             <label class="checkbox-lined"><span>Password</span><input name="http-auth-password" class="credential" type="text" placeholder="Enter required password" {% if remote_test.hasParameter('http-auth-password') and remote_test.parameter('http-auth-password') !='' %}value="{{ remote_test.parameter('http-auth-password') }}"{% endif %}></label>
             </div>              
         </div>
+        <div class="modal-footer-content">
+            <button id="clear-http-authentication-button" class="btn" data-dismiss="modal" aria-hidden="true">Clear</button>
+        </div>                  
     </div>
 {% endif %}
                 
                 
 {% if test_options['cookies'] is defined %}        
-    <span class="badge action-badge">
-        <i class="icon icon-adjust"></i>
+    <span class="badge action-badge action-badge-cookies-options {%if test_cookies_enabled%}action-badge-enabled{% endif %}">
+        <i class="icon icon-adjust icon-primary"></i>
         <span class="action-badge-label">Custom cookies: <span class="cookies-enabled">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span></span>        
 
         <span class="modal-control for-cookies-options-modal">

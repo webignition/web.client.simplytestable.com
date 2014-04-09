@@ -28,6 +28,9 @@
                 <h2>
                     {% include 'SimplyTestableWebClientBundle:Partials:TestHistory/header-content.html.twig' %}
                 </h2>
+                
+                {% include 'SimplyTestableWebClientBundle:Partials:TestHistory/url-filter.html.twig' %}
+                
                 {% if test_list.maxresults > 0 %}
                     {% if pagination_page_numbers|length > 0 %}
                     {% include 'SimplyTestableWebClientBundle:Partials:TestHistory/pagination-content.html.twig' %}

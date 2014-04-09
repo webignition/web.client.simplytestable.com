@@ -1771,6 +1771,14 @@ application.root.testStartFormController = function () {
         setAuthenticationContent();
     };
     
+    this.hasAuthenticationCredentials = function () {
+        return hasAuthenticationCredentials();
+    };
+    
+    this.hasCustomCookieValues = function () {
+        return hasCustomCookieValues();
+    };
+    
     this.setAuthenticationFieldInputs = function (modal) {
         var hiddenInputs = $('<div class="hidden-inputs">');
 
@@ -1824,12 +1832,6 @@ application.root.testStartFormController = function () {
             var checkbox = $(this);
             checkbox.change(function () {
                 setIntroContent();
-            });
-        });
-        
-        getAuthenticationCredentialInputs().each(function () {
-            $(this).keyup(function () {
-                setAuthenticationContent();
             });
         });
         
@@ -2533,8 +2535,82 @@ application.pages = {
                         return body;
                     };
                     
+                    var getModalFooter = function () {
+                        var defaultContent = '<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">' + getModalOptions()['action-label'] + '</button>';
+                        var footer = $('.modal-footer-content', modalContent);                        
+                        
+                        if (footer.length === 0) {
+                            return defaultContent;
+                        }
+                        
+                        var footerContent = footer.html() + defaultContent;
+                        
+                        footer.remove();
+                        
+                        return footerContent;
+                    };
+                    
                     var setEventHandlers = function () {
                         var handlers = {
+                            'filter-options': {
+                                'shown': function (event) {
+                                    var modal = $(event.target);
+                                    var input = $('#input-filter', modal);
+                                    var filter = jQuery.trim(input.val());
+                                    var clearButton = $('#clear-filter-button', modal);
+                                    
+                                    input.focus();
+                                    
+                                    clearButton.click(function () {
+                                        input.val('');
+                                    });
+                                    
+                                    if (filter === '') {
+                                        clearButton.attr('disabled', 'disabled');
+                                    } else {
+                                        clearButton.removeAttr('disabled');
+                                    }                                    
+                                    
+                                    input.keyup(function () {
+                                        var filter = jQuery.trim(input.val());
+                                        
+                                        if (filter === '') {
+                                            clearButton.attr('disabled', 'disabled');
+                                        } else {
+                                            clearButton.removeAttr('disabled');
+                                        }
+                                    });
+                                    
+//                                    input.typeahead({
+//                                        'source':['Aardvark', 'Chicken', 'Zebra']
+//                                    }); 
+//                                    
+//                                    $('.typeahead').css({
+//                                        'z-index':2000
+//                                    });
+                                },
+                                'hidden':function (event) {
+                                    var modal = $(event.target);
+                                    var input = $('#input-filter', modal);
+                                    var filter = jQuery.trim(input.val());
+                                    var search = (filter === '') ? '' : '?filter=' + filter;
+                                    var currentSearch = window.location.search;
+                                    
+                                    if (currentSearch === '' && filter === '') {
+                                        return;
+                                    }
+                                    
+                                    if (filter === '') {
+                                        $('.action-badge-filter-options').removeClass('action-badge-enabled');
+                                    } else {
+                                        $('.action-badge-filter-options').addClass('action-badge-enabled');
+                                    }
+                                    
+                                    if (search !== currentSearch) {
+                                        window.location.search = search;
+                                    } 
+                                }
+                            },
                             'cookie-options': {
                                 'show': function (event) {
                                     var modal = $(event.target);
@@ -2575,19 +2651,67 @@ application.pages = {
                                         testStartFormController.setCookieFieldInputs($(event.target));
                                         testStartFormController.setCustomCookiesContent();                                        
                                     }
+                                    
+                                    if (testStartFormController.hasCustomCookieValues()) {
+                                        $('.action-badge-cookies-options').addClass('action-badge-enabled');
+                                    } else {
+                                        $('.action-badge-cookies-options').removeClass('action-badge-enabled');
+                                    }                                      
                                 }
                             },
                             'authentication-options':{
                                 'show': function (event) {
                                 },
                                 'shown': function (event) {
-                                    $('input', $(event.target)).first().focus();
+                                    var modal = $(event.target);
+                                    var clearButton = $('#clear-http-authentication-button', modal);
+                                    var inputs = $('input', modal);
+                                    
+                                    var hasAuthenticationCredentials = function () {
+                                        var has = false;
+                                        
+                                        inputs.each(function () {
+                                            if (jQuery.trim($(this).val()) !== '') {
+                                                has = true;
+                                            }
+                                        });                
+                                        
+                                        return has;
+                                    };
+                                    
+                                    clearButton.click(function () {
+                                        inputs.val('');
+                                    });
+                                    
+                                    if (hasAuthenticationCredentials()) {
+                                        clearButton.removeAttr('disabled');                                        
+                                    } else {
+                                        clearButton.attr('disabled', 'disabled');
+                                    } 
+                                    
+                                    inputs.each(function () {
+                                        $(this).keyup(function () {
+                                            if (hasAuthenticationCredentials()) {
+                                                clearButton.removeAttr('disabled');                                            
+                                            } else {
+                                                clearButton.attr('disabled', 'disabled');
+                                            }                                            
+                                        });
+                                    });                                  
+                                    
+                                    inputs.first().focus();
                                 },
                                 'hide': function (event) {
                                     if ($('#test-start-form').length === 1) {
                                         testStartFormController.setAuthenticationFieldInputs($(event.target));
                                         testStartFormController.setAuthenticationContent();                                        
                                     }
+                                    
+                                    if (testStartFormController.hasAuthenticationCredentials()) {
+                                        $('.action-badge-http-authentication').addClass('action-badge-enabled');
+                                    } else {
+                                        $('.action-badge-http-authentication').removeClass('action-badge-enabled');
+                                    }                                    
                                 }                                
                             }
                         };                        
@@ -2629,12 +2753,36 @@ application.pages = {
                         
                     };
                     
+                    var getModalOptions = function () {
+                        var retrievedOptions = {
+                            'action-label':'Done'
+                        };
+                        
+                        var optionKeys = [
+                            'action-label'
+                        ];
+                        
+                        var options = $('.modal-options', modalContent);
+                        if (options.length !== 1) {
+                            return retrievedOptions;
+                        }
+                        
+                        for (var index = 0; index < optionKeys.length; index++) {
+                            var option = $('.' + optionKeys[index], options);
+                            if (option.length === 1) {
+                                retrievedOptions[optionKeys[index]] = option.text();
+                            }                            
+                        }
+                        
+                        return retrievedOptions;
+                    };
+                    
                     var modal = $('<div class="modal hide"/>').append(
                             $('<div class="modal-header"/>').append(getModalHeader())
                     ).append(
                             $('<div class="modal-body"/>').append(getModalBody())              
                     ).append(
-                            '<div class="modal-footer"><button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Done</button></div>'                    
+                            $('<div class="modal-footer" />').append(getModalFooter())
                     );
             
                     $('input[type=text],input[type=password]', modal).keyup(function (event) {                        
