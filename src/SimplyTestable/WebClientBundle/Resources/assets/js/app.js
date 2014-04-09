@@ -2590,9 +2590,85 @@ application.pages = {
 //                                    });
                                 },
                                 'hidden':function (event) {
+                                    var getFilter = function () {                                        
+                                        var filter = jQuery.trim(input.val());
+                                        
+                                        var getParsedUrl = function(href) {
+                                            var l = document.createElement("a");
+                                            l.href = href;
+                                            return l;
+                                        };                                        
+                                        
+                                        var normaliseFilter = function () {
+                                            var parseableFilter = filter;
+                                            
+                                            if (!hasSchemePrefix(parseableFilter)) {
+                                                parseableFilter = 'http://' + parseableFilter;
+                                            }                                            
+                                            
+                                            var normalisedFilter = filter;
+                                            var parsedUrl = getParsedUrl(parseableFilter);
+                                            
+                                            if (parsedUrl.pathname === '/' && filter.substr(filter.length - 1) !== '/' && parsedUrl.hostname.indexOf('.') !== -1 && filter.substr(filter.length - 1 ) !== '*') {
+                                                normalisedFilter = filter + '/';
+                                            }
+                                            
+                                            return normalisedFilter;
+                                        };
+                                        
+                                        var hasSchemePrefix = function (url) {
+                                            var schemePrefixes = ['https://', 'http://'];
+                                            var has = false;
+                                            
+                                            for (var index = 0; index < schemePrefixes.length; index++) {
+                                                if (url.substr(0, schemePrefixes[index].length) === schemePrefixes[index]) {
+                                                    has = true;
+                                                }
+                                            }
+                                            
+                                            return has;
+                                        };                                        
+                                        
+                                        var hasPathEnd = function () {                                           
+                                            var parseableFilter = filter;
+                                            
+                                            if (!hasSchemePrefix(parseableFilter)) {
+                                                parseableFilter = 'http://' + parseableFilter;
+                                            }
+                                            
+                                            var parsedUrl = getParsedUrl(parseableFilter);
+                                            
+                                            if (parsedUrl.pathname === '/' && parsedUrl.hostname.indexOf('.') !== -1) {
+                                                normalisedFilter = filter + '/';
+                                            }                                    
+                                            
+                                            if (parsedUrl.pathname.match(/[^\.]+\.[^\.]/)) {
+                                                return true;
+                                            }                                        
+                                            
+                                            return false;
+                                        };
+                                        
+                                        filter = normaliseFilter();
+                                        
+                                        if (!hasPathEnd() && filter.substr(filter.length - 1) !== '*') {
+                                            filter = filter + '*';
+                                        }
+                                        
+                                        if (!hasSchemePrefix(filter) && filter.substr(0, 1) !== '*') {
+                                            filter = '*' + filter;
+                                        }
+                                        
+                                        if (filter === '*') {
+                                            filter = '';
+                                        }
+                                        
+                                        return filter;
+                                    };
+                                    
                                     var modal = $(event.target);
                                     var input = $('#input-filter', modal);
-                                    var filter = jQuery.trim(input.val());
+                                    var filter = getFilter();
                                     var search = (filter === '') ? '' : '?filter=' + filter;
                                     var currentSearch = window.location.search;
                                     
@@ -2605,6 +2681,8 @@ application.pages = {
                                     } else {
                                         $('.action-badge-filter-options').addClass('action-badge-enabled');
                                     }
+                                    
+                                    input.val(filter);
                                     
                                     if (search !== currentSearch) {
                                         window.location.search = search;
