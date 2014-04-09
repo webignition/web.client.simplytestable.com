@@ -50,7 +50,7 @@ class TestHistoryController extends TestViewController
         $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
         if ($response->isNotModified($this->getRequest())) {
             return $response;
-        } 
+        }
         
         $cacheValidatorHeaders->setLastModifiedDate(new \DateTime());
         $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);;        
@@ -61,7 +61,8 @@ class TestHistoryController extends TestViewController
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),         
             'test_list' => $testList,
             'pagination_page_numbers' => $testList->getPageNumbers(),
-            'filter' => $this->get('request')->get('filter')
+            'filter' => $this->get('request')->get('filter'),
+            'websites_source' => $this->generateUrl('app_history_websites', array(), true)
         )), $cacheValidatorHeaders);                
     }
     

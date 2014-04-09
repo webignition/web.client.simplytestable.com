@@ -2581,7 +2581,7 @@ application.pages = {
                                         }
                                     });
                                     
-                                    $.get('/app_dev.php/history/websites/', function (data) {                                        
+                                    $.get(input.attr('data-source-url'), function (data) {                                        
                                         input.typeahead({
                                             'source':data
                                         });                                        
