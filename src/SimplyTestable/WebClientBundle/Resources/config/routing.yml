@@ -1,7 +1,3 @@
-core_application_proxy:
-  pattern: /core-application-proxy/
-  defaults: { _controller: SimplyTestableWebClientBundle:CoreApplicationProxy:index } 
-  
 stripe_event:
   pattern: /stripe/event/
   defaults: { _controller: SimplyTestableWebClientBundle:Stripe\Event:index, _format: json }  
