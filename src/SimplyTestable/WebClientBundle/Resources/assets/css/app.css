@@ -1116,20 +1116,21 @@ body.app-results div.top-right-form form {
     display:inline;
 }
 
-body.app-results #test-start-form button {
+body.app-results .significant-button {
     text-align: left;
 }
 
-body.app-results #test-start-form button span {
+body.app-results .significant-button span {
     display:block;
     opacity:0.7;
     font-size:12px;
 }
 
-body.app-results #test-start-form #retest-button {
+body.app-results .significant-button {
     position: absolute;
-    right: 30px;
+    right: 0;
     top: 0;
+    width:160px;
 }
 
 .full-width-container {
@@ -1380,11 +1381,11 @@ body.app-results h2 a {
     padding:0;
 }
 
-body.app-results #lock-unlock {
-    position:absolute;
-    right:30px;
+body.app-results #lock-unlock .significant-button {
+/*    position:absolute;*/
+/*    right:30px;
     width:156px;
-    top:70px;
+*/    top:70px;
 }
 
 #finished-tests .requires-results p {
@@ -1626,10 +1627,10 @@ color:#333;
 
 body.app-results .history {
     position:absolute;
-    right:30px;
-    top:80px;
+    right:0;
+    top:70px;
 }
 
 body.app-results .history-with-owner {
-    top:160px;
+    top:140px;
 }
