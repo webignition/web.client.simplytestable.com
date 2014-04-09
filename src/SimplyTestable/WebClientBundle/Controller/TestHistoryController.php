@@ -42,7 +42,8 @@ class TestHistoryController extends TestViewController
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
             'template_last_modified_date' => $this->getTemplateLastModifiedDate($templateName)->format('Y-m-d H:i:s'),
             'test_list_hash' => $testList->getHash(),
-            'test_list' => md5(json_encode($testList))
+            'test_list' => md5(json_encode($testList)),
+            'filter' => $this->get('request')->get('filter'),
         ));
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);        
