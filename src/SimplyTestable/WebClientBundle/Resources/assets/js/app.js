@@ -2581,13 +2581,15 @@ application.pages = {
                                         }
                                     });
                                     
-//                                    input.typeahead({
-//                                        'source':['Aardvark', 'Chicken', 'Zebra']
-//                                    }); 
-//                                    
-//                                    $('.typeahead').css({
-//                                        'z-index':2000
-//                                    });
+                                    $.get('/app_dev.php/history/websites/', function (data) {                                        
+                                        input.typeahead({
+                                            'source':data
+                                        });                                        
+                                        
+                                        $('.typeahead').css({
+                                            'z-index':2000
+                                        });                                        
+                                    });
                                 },
                                 'hidden':function (event) {
                                     var getFilter = function () {                                        
@@ -2609,8 +2611,12 @@ application.pages = {
                                             var normalisedFilter = filter;
                                             var parsedUrl = getParsedUrl(parseableFilter);
                                             
-                                            if (parsedUrl.pathname === '/' && filter.substr(filter.length - 1) !== '/' && parsedUrl.hostname.indexOf('.') !== -1 && filter.substr(filter.length - 1 ) !== '*') {
-                                                normalisedFilter = filter + '/';
+                                            if (parsedUrl.pathname === '/' && filter.substr(normalisedFilter.length - 1) !== '/' && parsedUrl.hostname.indexOf('.') !== -1 && filter.substr(normalisedFilter.length - 1 ) !== '*') {
+                                                normalisedFilter = normalisedFilter + '/';
+                                            }
+                                            
+                                            if (parsedUrl.hostname.indexOf('.') === -1 && normalisedFilter.substr(filter.length - 1) === '/') {
+                                                normalisedFilter = normalisedFilter.substr(0, normalisedFilter.length - 1);
                                             }
                                             
                                             return normalisedFilter;
@@ -2638,8 +2644,8 @@ application.pages = {
                                             
                                             var parsedUrl = getParsedUrl(parseableFilter);
                                             
-                                            if (parsedUrl.pathname === '/' && parsedUrl.hostname.indexOf('.') !== -1) {
-                                                normalisedFilter = filter + '/';
+                                            if (parsedUrl.pathname === '/' && filter.substr(filter.length - 1) === '/') {
+                                                return true;
                                             }                                    
                                             
                                             if (parsedUrl.pathname.match(/[^\.]+\.[^\.]/)) {

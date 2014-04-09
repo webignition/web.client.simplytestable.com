@@ -358,6 +358,25 @@ class RemoteTestService extends CoreApplicationService {
     } 
     
     
+    public function getFinishedWebsites() {
+        $requestUrl = $this->getUrl('tests_list_websites');
+        
+        $query = array(
+            'exclude-states' => array(
+                'cancelled',
+                'rejected'
+            ),
+            'exclude-current' => 1
+        );
+        
+        $requestUrl .= '?' . http_build_query($query);
+        
+        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
+        
+        return $this->getWebsitesList($request);          
+    }
+    
+    
     /**
      * 
      * @return \SimplyTestable\WebClientBundle\Model\TestList
@@ -380,6 +399,27 @@ class RemoteTestService extends CoreApplicationService {
             }
         } catch (\Guzzle\Http\Exception\CurlException $curlException) {            
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
+        }        
+        
+        return $list;          
+    }  
+    
+    
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Model\TestList
+     */
+    private function getWebsitesList(\Guzzle\Http\Message\Request $request) {        
+        $this->addAuthorisationToRequest($request);
+        
+        try {
+            /* @var $responseDocument \webignition\WebResource\JsonDocument\JsonDocument */
+            $responseDocument = $this->webResourceService->get($request);            
+            $list = json_decode($responseDocument->getContent());
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {            
+            return array();
+        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
+            return array();
         }        
         
         return $list;          

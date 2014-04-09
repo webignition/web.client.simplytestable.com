@@ -101,6 +101,12 @@ app_history_all:
 app_history:
     pattern:  /history/{page_number}/
     defaults: { _controller: SimplyTestableWebClientBundle:TestHistory:index }      
+    requirements:
+        page_number: "\d+"    
+    
+app_history_websites:
+    pattern:  /history/websites/
+    defaults: { _controller: SimplyTestableWebClientBundle:TestHistory:websites, _format: json }     
     
 app_test_finished_summary:
     pattern:  /{website}/{test_id}/finished-summary/

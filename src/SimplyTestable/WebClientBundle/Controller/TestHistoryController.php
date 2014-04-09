@@ -66,6 +66,14 @@ class TestHistoryController extends TestViewController
     }
     
     
+    public function websitesAction() {
+        $this->getUserService()->setUser($this->getUser());
+        
+        $list = ($this->isUserValid()) ? $this->getTestService()->getRemoteTestService()->getFinishedWebsites() : array();
+        return $this->getUncacheableResponse(new Response($this->getSerializer()->serialize($list, 'json')));     
+    }
+    
+    
     /**
      * 
      * @param mixed $pageNumber
@@ -107,7 +115,7 @@ class TestHistoryController extends TestViewController
         }
         
         return $testList;
-    }    
+    }
     
     
     /**
