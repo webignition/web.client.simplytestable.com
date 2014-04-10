@@ -1,5 +1,8 @@
 {% extends 'SimplyTestableWebClientBundle::App/base.html.twig' %}
 
+{% set is_finished = task.state in ['completed', 'failed',  'failed-retry-available', 'failed-no-retry-available', 'failed-retry-limit-reached'] %}
+{% set is_failed = task.state in ['failed',  'failed-retry-available', 'failed-no-retry-available', 'failed-retry-limit-reached'] %} 
+
 {% block title %}Results for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website_url} %} (Test#{{test.testId}} Task#{{task.taskId}}) - {{ parent() }}{% endblock %}
 
 {% block body_class %}full-width {{ parent() }}{% endblock %}
@@ -61,11 +64,12 @@
 </div>
 
 <div class="container">
+    
     <div id="main">
 {% block main %}
-        {% if (task.state == 'completed' or task.state == 'failed' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-limit-reached') and (task.output.hasErrors or task.output.hasWarnings) %}
+        {% if is_finished %}
         <div class="row-fluid">
-            {% if task.state == 'failed' or task.state == 'failed-no-retry-available' or task.state == 'failed-retry-limit-reached' %}
+            {% if is_failed %}
             <section>                
                 <div class="span12 notification" id="task-summary">                    
                     {% if task.output.result.isValidatorServerErrorFailure %}
@@ -212,7 +216,18 @@
 
                         <p>
                             There's something funny about that URL. It's not made right, it can't be used.
-                        </p>                                              
+                        </p>
+                    {% elseif task.output.result.isCurlSslFailure %}
+                        <h2 class="info"><i class="icon-exclamation-sign"></i> SSL Error!</h2>
+                        
+                        <p id="reason">
+                            We were unable to establish a secure connection to <a href="{{ task.url }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a>
+                            to test it.
+                        </p>                  
+
+                        <p>
+                            This can happen if the URL is using a self-signed, invalid or exired certificate.
+                        </p>                           
                     {% elseif task.output.result.isHtmlInvalidDocumentTypeFailure %}
                         <h2 class="info"><i class="icon-exclamation-sign"></i> Invalid document type!</h2>
                         

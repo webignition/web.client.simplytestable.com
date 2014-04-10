@@ -198,8 +198,18 @@ class Result {
      * @return boolean
      */
     public function isCurlUrlFormatFailure() {
-        return $this->isOfErrorClass('/http-retrieval-curl-code-3/');      
+        return $this->isOfErrorClass('/http-retrieval-curl-code-3$/');      
     }  
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function isCurlSslFailure() {        
+        return $this->isOfErrorClass('/http-retrieval-curl-code-35$/');      
+    }  
+        
     
     
     /**
@@ -277,7 +287,7 @@ class Result {
      * @return boolean
      */
     private function isOfErrorClass($errorClassPattern) {
-        foreach ($this->getErrors() as $error) {                        
+        foreach ($this->getErrors() as $error) {
             if (preg_match($errorClassPattern, $error->getClass()) > 0) {
                 return true;
             }
