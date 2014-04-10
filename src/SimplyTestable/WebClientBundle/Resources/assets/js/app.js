@@ -2602,20 +2602,20 @@ application.pages = {
                                         };                                        
                                         
                                         var normaliseFilter = function () {
-                                            var parseableFilter = filter;
+                                            var parseableFilter = filter;                                            
                                             
                                             if (!hasSchemePrefix(parseableFilter)) {
                                                 parseableFilter = 'http://' + parseableFilter;
                                             }                                            
                                             
-                                            var normalisedFilter = filter;
+                                            var normalisedFilter = filter;                                            
                                             var parsedUrl = getParsedUrl(parseableFilter);
                                             
-                                            if (parsedUrl.pathname === '/' && filter.substr(normalisedFilter.length - 1) !== '/' && parsedUrl.hostname.indexOf('.') !== -1 && filter.substr(normalisedFilter.length - 1 ) !== '*') {
+                                            if (parsedUrl.pathname === '/' && normalisedFilter.substr(normalisedFilter.length - 1) !== '/' && parsedUrl.hostname.indexOf('.') !== -1 && normalisedFilter.substr(normalisedFilter.length - 1 ) !== '*'  && normalisedFilter.substr(normalisedFilter.length - 1 ) !== '.') {
                                                 normalisedFilter = normalisedFilter + '/';
                                             }
                                             
-                                            if (parsedUrl.hostname.indexOf('.') === -1 && normalisedFilter.substr(filter.length - 1) === '/') {
+                                            if (parsedUrl.hostname.indexOf('.') === -1 && normalisedFilter.substr(normalisedFilter.length - 1) === '/') {
                                                 normalisedFilter = normalisedFilter.substr(0, normalisedFilter.length - 1);
                                             }
                                             
@@ -2646,7 +2646,7 @@ application.pages = {
                                             
                                             if (parsedUrl.pathname === '/' && filter.substr(filter.length - 1) === '/') {
                                                 return true;
-                                            }                                    
+                                            }
                                             
                                             if (parsedUrl.pathname.match(/[^\.]+\.[^\.]/)) {
                                                 return true;
