@@ -1634,3 +1634,11 @@ body.app-results .history {
 body.app-results .history-with-owner {
     top:140px;
 }
+
+body.app-history .typeahead {
+    max-width:528px;
+}
+
+body.app-history .typeahead li a {
+    overflow:hidden;
+}
