@@ -50,9 +50,9 @@
 {% endif %}
 
 {% if remote_test.rejection.constraint.name is defined and remote_test.rejection.constraint.name == 'full_site_jobs_per_site' %}
-    <p class="intro">    
+    <p class="intro" id="reason">    
         We allow <strong>{{ remote_test.rejection.constraint.limit }}</strong> full-site 
-        demo test{% if remote_test.rejection.constraint.limit > 1%}{% endif %} per site for those who don't have an account.
+        demo test{% if remote_test.rejection.constraint.limit > 1%}s{% endif %} per site for those who don't have an account.
     </p>
 
     <p class="intro">
@@ -89,9 +89,9 @@
 {% endif %}
 
 {% if remote_test.rejection.constraint.name is defined and remote_test.rejection.constraint.name == 'single_url_jobs_per_url' %}
-    <p class="intro">    
+    <p class="intro" id="reason">    
         We allow <strong>{{ remote_test.rejection.constraint.limit }}</strong> single-page 
-        demo test{% if remote_test.rejection.constraint.limit > 1%}{% endif %} per page for those who don't have an account.
+        demo test{% if remote_test.rejection.constraint.limit > 1%}s{% endif %} per page for those who don't have an account.
     </p>
     
     <p class="intro">
