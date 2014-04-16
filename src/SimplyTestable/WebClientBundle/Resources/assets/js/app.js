@@ -1623,6 +1623,33 @@ application.account.cardController = function() {
     this.initialise = initialise;
 };
 
+application.account.signupController = function () {
+    
+    var emailField = function () {
+        return $('#email');
+    };
+    
+    var passwordField = function () {
+        return $('#password');
+    };  
+    
+    var isEmailFieldEmpty = function () {
+        return jQuery.trim(emailField().val()) === '';
+    };
+    
+    var initialise = function () {
+        if (isEmailFieldEmpty()) {
+            emailField().focus();
+        }
+        
+        console.log("cp01");
+    };
+    
+    this.initialise = function () {
+        return initialise();
+    };
+};
+
 application.root = {};
 application.root.testStartFormController = function () {
     
@@ -2424,6 +2451,11 @@ application.pages = {
                 });
 //                
             });
+            
+            if ($('body.sign-up').length > 0) {
+                signupController = new application.account.signupController();
+                signupController.initialise();
+            }            
             
             if ($('body.user-account-card').length > 0) {
                 accountCardController = new application.account.cardController();
