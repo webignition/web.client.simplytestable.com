@@ -208,7 +208,7 @@ section h2 {
 }
 
 #test-list #task-list-container .task .meta .output-indicator {
-/*    margin-left:8px;*/
+    /*    margin-left:8px;*/
 }
 
 #test-list #task-list-container .tasks .queued i,
@@ -365,8 +365,8 @@ body.app-task-results .errors {
 body.app-task-results .errors li {
     list-style-type: none;
     margin-bottom:16px;
-/*    position:relative;*/
-/*    height: 40px;*/
+    /*    position:relative;*/
+    /*    height: 40px;*/
 }
 
 body.app-task-results .errors li pre {
@@ -642,7 +642,7 @@ div.input-secondary {
 #finished-tests .site .url {
     white-space: nowrap;
     display:inline-block;
-/*    margin-bottom: 20px;*/
+    /*    margin-bottom: 20px;*/
 }
 
 #finished-tests .site .url .btn-spacer {
@@ -729,24 +729,24 @@ body.app-results #no-errors #trophy .icon-ok {
     line-height: 240px;
     color: #51A351;
     margin-left:30px;
-/*    position:absolute;
-    left:100px;
-    top:100px;*/
-    
+    /*    position:absolute;
+        left:100px;
+        top:100px;*/
+
 }
 
 body.app-results #no-errors p {
-position: absolute;
-left: 260px;
-font-size: 66px;
-line-height: 76px;
-opacity: 0.8;
-top: 40px;    
+    position: absolute;
+    left: 260px;
+    font-size: 66px;
+    line-height: 76px;
+    opacity: 0.8;
+    top: 40px;    
 }
 
 #test-options .ignore-common-cdn-domains ul {
-margin: 0;
-padding: 0;    
+    margin: 0;
+    padding: 0;    
 }
 
 #test-options .ignore-common-cdn-domains ul li {
@@ -805,7 +805,7 @@ body.app-progress .test-options-advanced ul {
 }
 
 body.app-progress .test-options-advanced ul li {
-   margin-bottom: 4px;
+    margin-bottom: 4px;
 }
 
 body.app-results-preparing h1,
@@ -845,12 +845,12 @@ body.app-results-preparing #completion-percent {
     body.single-page-dialog div.main input {
         width:96%;
     }    
-    
+
     body.single-page-dialog #main .input-append input,
     body.single-page-dialog div.main .input-append input {
         width:76%;
     }
-    
+
     body.app-task-results .errors .meta {
         width:14%
     }
@@ -906,7 +906,7 @@ body.account .account-details label {
 }
 
 body.account .plan table {
-    
+
 }
 
 body.account .plan th {
@@ -1033,7 +1033,7 @@ input.inline-short {
     margin:0;
     padding:0;
 }
-    
+
 body.single-page-notification .primary-options {
     padding-bottom: 20px;
 }
@@ -1099,7 +1099,7 @@ body.user-account-index .news-subscriptions label span {
 }
 
 .stop-on-errors {
-    
+
 }
 
 .stop-on-errors label.checkbox {
@@ -1382,10 +1382,10 @@ body.app-results h2 a {
 }
 
 body.app-results #lock-unlock .significant-button {
-/*    position:absolute;*/
-/*    right:30px;
-    width:156px;
-*/    top:70px;
+    /*    position:absolute;*/
+    /*    right:30px;
+        width:156px;
+    */    top:70px;
 }
 
 #finished-tests .requires-results p {
@@ -1420,14 +1420,14 @@ body.app-history-all .progress {
 .full-width-notification {
     padding:20px 0 10px 0;
     margin:0;
-    
+
     background-color: #d9edf7;
     color: #3a87ad; 
-    
+
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
-    
+
     padding-left:60px;
-    
+
     border-bottom: 1px solid #bce8f1;
 }
 
@@ -1493,6 +1493,22 @@ body.app-history-all .no-tests {
 .support-hint {
     margin-top: 20px;
     opacity: 0.8;
+}
+
+body.single-page-dialog .additional {
+    border-top: 1px solid #ddd;
+    margin-top: 40px;
+    padding-top: 20px;  
+}
+
+body.single-page-dialog .additional ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+body.single-page-dialog .additional ul a:hover .icon {
+    text-decoration: none;
 }
 
 #cookies-options-expandable .test-cookies {
@@ -1604,20 +1620,20 @@ body.app-task-results .intro p .fade {
 }
 
 .action-badge {
-/*    border: 1px solid transparent;*/
+    /*    border: 1px solid transparent;*/
 }
 
 .action-badge-enabled {
-/*    border: 1px solid #f89406;*/
+    /*    border: 1px solid #f89406;*/
 }
 
 .action-badge-enabled .icon-primary {
-/*    color: #f89406;*/
-color:#333;
+    /*    color: #f89406;*/
+    color:#333;
 }
 
 .action-badge-enabled a {
-/*    border-color: #f89406;*/
+    /*    border-color: #f89406;*/
 }
 
 .action-badge-filter-options strong {

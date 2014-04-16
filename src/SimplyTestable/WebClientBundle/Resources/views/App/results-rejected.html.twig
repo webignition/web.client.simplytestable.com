@@ -5,7 +5,7 @@
     {% if is_logged_in %}
         Plan limit reached 
     {% else %}
-        Free test limit reached
+        Demo limit reached
     {% endif %}
 {% elseif remote_test.rejection.reason|slice(0, 4) == 'curl' %}
     Sorry, that can't be accessed at the moment
@@ -52,38 +52,52 @@
 {% if remote_test.rejection.constraint.name is defined and remote_test.rejection.constraint.name == 'full_site_jobs_per_site' %}
     <p class="intro">    
         We allow <strong>{{ remote_test.rejection.constraint.limit }}</strong> full-site 
-        tests for free per month per website for those who don't have an account.
-    </p>
-
-    <p class="intro" id="reason">
-        There have already been <strong>{{ remote_test.rejection.constraint.limit }}</strong> free full-site tests
-        this month for <strong id="website">{{ website.utf8.raw }}</strong>.
+        demo test{% if remote_test.rejection.constraint.limit > 1%}{% endif %} per site for those who don't have an account.
     </p>
 
     <p class="intro">
-        Create an account or sign in to run more full-site tests this site.
+        You've reached that limit for this page.
+
+        Create an account or sign in to run new tests.
     </p>
 
     <div class="cta">
         <a href="{{ path('sign_up') }}" class="btn btn-primary btn-large"><i class="icon icon-user"></i> Create account</a>
         or
         <a href="{{ path('sign_in') }}" class="btn">Sign in</a>
+    </div>
+        
+    <div class="additional">
+        <ul>
+            <li>
+                <p>                    
+                    <a href="{{ path('app_history_all', {'filter': remote_test.website}) }}">Past results for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-40.html.twig' with {'url': website} %}<i class="icon icon-caret-right"></i></a>
+                </p>
+            </li>
+            <li>
+                <p>
+                    <a href="{{ [public_site.urls.home, public_site.urls.demo_account_comparison]|join('') }}">Benefits of a free account <i class="icon icon-caret-right"></i></a>
+                </p>
+            </li>
+            <li>
+                <p>
+                    <a href="{{ [public_site.urls.home, public_site.urls.plans_and_pricing]|join('') }}">Premium plan options <i class="icon icon-caret-right"></i></a>
+                </p>
+            </li>            
+        </ul>
     </div>
 {% endif %}
 
 {% if remote_test.rejection.constraint.name is defined and remote_test.rejection.constraint.name == 'single_url_jobs_per_url' %}
     <p class="intro">    
-        We allow <strong>{{ remote_test.rejection.constraint.limit }}</strong> single-URL 
-        tests for free per month per URL for those who don't have an account.
+        We allow <strong>{{ remote_test.rejection.constraint.limit }}</strong> single-page 
+        demo test{% if remote_test.rejection.constraint.limit > 1%}{% endif %} per page for those who don't have an account.
     </p>
-
-    <p class="intro" id="reason">
-        There have already been <strong>{{ remote_test.rejection.constraint.limit }}</strong> free single-URL tests
-        this month for <strong id="website" title="{{website.utf8.raw}}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-40.html.twig' with {'url': website} %}</strong>.
-    </p>
-
+    
     <p class="intro">
-        Create an account or sign in to run more single-URL tests this site.
+        You've reached that limit for this page.
+
+        Create an account or sign in to run new tests.
     </p>
 
     <div class="cta">
@@ -91,6 +105,26 @@
         or
         <a href="{{ path('sign_in') }}" class="btn">Sign in</a>
     </div>
+        
+    <div class="additional">
+        <ul>
+            <li>
+                <p>                    
+                    <a href="{{ path('app_history_all', {'filter': remote_test.website}) }}">Past results for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-40.html.twig' with {'url': website} %}<i class="icon icon-caret-right"></i></a>
+                </p>
+            </li>
+            <li>
+                <p>
+                    <a href="{{ [public_site.urls.home, public_site.urls.demo_account_comparison]|join('') }}">Benefits of a free account <i class="icon icon-caret-right"></i></a>
+                </p>
+            </li>
+            <li>
+                <p>
+                    <a href="{{ [public_site.urls.home, public_site.urls.plans_and_pricing]|join('') }}">Premium plan options <i class="icon icon-caret-right"></i></a>
+                </p>
+            </li>            
+        </ul>
+    </div>        
 {% endif %}
 
 {% if remote_test.rejection.constraint is null and remote_test.rejection.reason == 'unroutable' %}
