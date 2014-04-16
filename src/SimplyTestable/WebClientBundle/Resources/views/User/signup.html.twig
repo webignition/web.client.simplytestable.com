@@ -16,7 +16,7 @@
 <form class="form-horizontal" method="post" action="{{ path('sign_up_submit') }}">            
         {% if user_create_error is defined and user_create_error != '' %}
             {% if user_create_error == 'blank-email' %}
-        <div class="alert alert-error for:input-email">
+        <div class="alert alert-error for:email" data-for="email">
             <button type="button" class="close" data-dismiss="alert">×</button>
             <strong>Slow down!</strong> You're going to have to enter in your email address to sign up.
         </div>                
@@ -30,14 +30,14 @@
             {% endif %}        
 
             {% if user_create_error == 'invalid-email' %}
-        <div class="alert alert-error for:input-email">
+        <div class="alert alert-error for:email" data-for="email">
             <button type="button" class="close" data-dismiss="alert">×</button>
             <strong>Hmmm.</strong> I'm not convinced that <strong>{{ email }}</strong> is a valid email address.
         </div>                
             {% endif %}                
 
             {% if user_create_error == 'create-failed' %}
-        <div class="alert alert-error for:input-email">
+        <div class="alert alert-error for:email" data-for="email">
             <button type="button" class="close" data-dismiss="alert">×</button>
             <strong>Something went wrong.</strong> I tried to sign up <strong>{{ email }}</strong> but it didn't
             work. I don't know why.
@@ -45,7 +45,7 @@
             {% endif %}                                                    
         
             {% if user_create_error == 'create-failed-read-only' %}
-        <div class="alert alert-error for:input-email">
+        <div class="alert alert-error for:email" data-for="email">
             <button type="button" class="close" data-dismiss="alert">×</button>
             <p><strong>Sorry, I can't do that right now</strong></p>
             <p>
@@ -61,7 +61,7 @@
 
         {% if user_create_confirmation is defined and user_create_confirmation != '' %}
             {% if user_create_confirmation == 'user-exists' %}
-        <div class="alert alert-success for:input-email">
+        <div class="alert alert-success for:email" data-for="email">
             <button type="button" class="close" data-dismiss="alert">×</button>
             <p><strong>Guess what?</strong> Looks like <strong>{{ email }}</strong>
                 already has an account.</p>

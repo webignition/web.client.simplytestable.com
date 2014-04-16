@@ -5,6 +5,22 @@ application.common.isLoggedIn = function () {
     return $('.sign-out-form').prop('tagName') === 'FORM';
 };
 
+application.common.form = {};
+application.common.form.field = {};
+
+application.common.form.field.select = function (field) {
+    var oldVal = field.val();
+    field.focus().val('').val(oldVal);    
+};
+
+application.common.form.field.isEmpty = function (field) {
+    return jQuery.trim(field.val()) === '';   
+};
+
+application.common.form.field.hasError = function (field) {
+    return $('[data-for=' + field.attr('id') + ']').length > 0;   
+};
+
 application.results = {};
 application.results.preparingController = function() {
 
@@ -1631,18 +1647,22 @@ application.account.signupController = function () {
     
     var passwordField = function () {
         return $('#password');
-    };  
+    };
     
-    var isEmailFieldEmpty = function () {
-        return jQuery.trim(emailField().val()) === '';
+    var setFocus = function () {
+        if (application.common.form.field.isEmpty(emailField()) || application.common.form.field.hasError(emailField())) {
+            application.common.form.field.select(emailField());
+            return;
+        }        
+        
+        if (application.common.form.field.isEmpty(passwordField()) || application.common.form.field.hasError(passwordField())) {
+            application.common.form.field.select(passwordField());
+            return;
+        }                
     };
     
     var initialise = function () {
-        if (isEmailFieldEmpty()) {
-            emailField().focus();
-        }
-        
-        console.log("cp01");
+        setFocus();
     };
     
     this.initialise = function () {
