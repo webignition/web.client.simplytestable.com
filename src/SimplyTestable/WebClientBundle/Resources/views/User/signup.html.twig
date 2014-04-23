@@ -87,7 +87,7 @@
                 <option value="personal" {% if plan == 'personal' %}selected{% endif %}>Personal (&pound;9 per month)</option>
                 <option value="agency" {% if plan == 'agency' %}selected{% endif %}>Agency (&pound;19 per month)</option>
                 <option value="business" {% if plan == 'business' %}selected{% endif %}>Business (&pound;59 per month)</option>              
-                <option value="enterprise" {% if plan == 'enterprise' %}selected{% endif %}>Enterprise (&pound;299 per month)</option>
+{#                <option value="enterprise" {% if plan == 'enterprise' %}selected{% endif %}>Enterprise (&pound;299 per month)</option>#}
             </select>
             <a href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">View plan and pricing details <i class="icon icon-caret-right"></i></a>    
         </div>        
