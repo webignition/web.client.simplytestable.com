@@ -91,7 +91,8 @@ class TestViewController extends BaseViewController
         $utf8Truncated_50 = $this->getTruncatedString($utf8Raw, 50);
         $utf8Truncated_64 = $this->getTruncatedString($utf8Raw, 64);
         
-        $utf8Schemeless = $this->getSchemelessUrl($utf8Raw);
+        $utf8Schemeless = $this->trimUrl($utf8Raw);
+        
         $utf8SchemelessTruncated_40 = $this->getTruncatedString($utf8Schemeless, 40);
         $utf8SchemelessTruncated_50 = $this->getTruncatedString($utf8Schemeless, 50);
         $utf8SchemelessTruncated_64 = $this->getTruncatedString($utf8Schemeless, 64);
@@ -116,6 +117,16 @@ class TestViewController extends BaseViewController
                  )
             )
         );
+    }
+    
+    private function trimUrl($url) {
+        $url = $this->getSchemelessUrl($url);
+        
+        if (substr($url, strlen($url) - 1) == '/') {
+            $url = substr($url, 0, strlen($url) - 1);
+        }
+        
+        return $url;
     }
     
     private function getTruncatedString($input, $maxLength = 64) {

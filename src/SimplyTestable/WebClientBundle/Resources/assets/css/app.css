@@ -1497,7 +1497,7 @@ body.app-history-all .no-tests {
 
 body.single-page-dialog .additional {
     border-top: 1px solid #ddd;
-    margin-top: 40px;
+    margin-top: 26px;
     padding-top: 20px;  
 }
 
@@ -1657,4 +1657,30 @@ body.app-history .typeahead {
 
 body.app-history .typeahead li a {
     overflow:hidden;
+}
+
+.cta .btn {
+    text-align: left;
+    position: relative;
+    padding-right: 24px;
+}
+
+.cta .btn span {
+    display:block;
+}
+
+.cta .btn .primary {
+    font-size: 16px;
+}
+
+.cta .btn .byline {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+.cta .btn .icon {
+    position: absolute;
+    font-size: 24px;
+    right:10px;
+    top: 14px;
 }

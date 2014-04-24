@@ -19,7 +19,7 @@ class SingleUrlJobsPerUrlTest extends FunctionalTest {
         $reasons = $this->getScopedCrawler()->filter('#reason');        
         
         foreach ($reasons as $reason) {            
-            $this->assertDomNodeContainsNext($reason, 'We allow 10 single-page demo tests per page for those who don\'t have an account.');
+            $this->assertDomNodeContainsNext($reason, 'reached the limit of free single-page');
         }
     }
 

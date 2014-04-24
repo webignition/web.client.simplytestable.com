@@ -19,7 +19,7 @@ class FullSiteJobsPerSiteTest extends FunctionalTest {
         $reasons = $this->getScopedCrawler()->filter('#reason');
         
         foreach ($reasons as $reason) {            
-            $this->assertDomNodeContainsNext($reason, 'We allow 10 full-site demo tests per site for those who don\'t have an account');
+            $this->assertDomNodeContainsNext($reason, 'reached the limit of free full-site');
         } 
     }
 

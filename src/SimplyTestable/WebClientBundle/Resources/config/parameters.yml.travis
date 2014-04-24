@@ -51,7 +51,8 @@ parameters:
       home: http://travis.simplytestable.com/
       plans_and_pricing: plans/
       features: features/
-      demo_account_comparison: plans/more/
+      account_benefits: account-benefits/
+      plans_demo: plans/demo/
   content_type_web_resource_map:
     default: webignition\WebResource\WebResource
     application/json: webignition\WebResource\JsonDocument\JsonDocument
