@@ -3,21 +3,16 @@ require 'fileutils'
 
 task :default do  
   puts 'Building ...'
+  fetch_dependencies
   get_composer 
   run_commands([
-    "git pull",
-    "export SYMFONY_ENV=prod && ./composer.phar install"
-  ])   
-  #fetch_dependencies
-  run_commands([
-    "rm -Rf app/cache/prod/*",    
-    "export SYMFONY_ENV=prod && php app/console cache:warmup"
+    "./composer.phar install"
   ])
 end
 
 task :rebuild do
-  #remove_dependencies
-  #fetch_dependencies
+  remove_dependencies
+  fetch_dependencies
 end
 
 def remove_dependencies  

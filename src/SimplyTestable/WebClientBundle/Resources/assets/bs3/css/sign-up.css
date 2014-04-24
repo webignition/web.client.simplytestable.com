@@ -1,0 +1,17 @@
+.terms-notice {
+    margin-top: 20px;
+}
+
+.plans-link {
+    padding-left: 0;
+}
+
+.plans-link a {
+    margin-top: 6px;
+    display: block;       
+}
+
+.alert {
+    margin-top: 20px;
+    margin-bottom: -20px;
+}

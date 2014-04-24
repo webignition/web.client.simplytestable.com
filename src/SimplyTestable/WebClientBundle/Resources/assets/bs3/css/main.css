@@ -1,0 +1,65 @@
+body {
+    margin-top: 80px;
+}
+
+.navbar-inverse .container .navbar-brand {
+    background: url('/bundles/simplytestablewebclient/images/st30.png') transparent no-repeat 0px 9px;
+    color: #08C;
+    padding-left: 40px;
+    margin-left: -30px;
+}
+
+.navbar .spacer {
+    width:0;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.navbar .user-actions .spacer {
+    border-left: 1px solid #999;
+}
+
+.not-logged-in .navbar .user-actions .highlighted-spacer {
+    display: none;
+}
+
+.logged-in .navbar .user-actions .highlighted-spacer {
+    margin-right: 10px;
+    margin-left: -2px;    
+}
+
+section {
+    background-color: #eee;
+    padding: 20px 30px;
+    margin-bottom: 30px;
+}
+
+label {
+    font-weight: normal;
+}
+
+.input-larger {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    height: auto;    
+}
+
+.form-group-collection {
+    margin: 40px 0;    
+}
+
+.navbar-nav>li>a.btn-bordered,
+.btn-bordered {
+    border: 2px solid #357ebd;
+    padding-top: 6px;
+    padding-bottom: 6px;    
+    margin-top: 8px;    
+    border-radius: 4px;    
+}
+
+.navbar-nav>li>a.btn-bordered:hover,
+.btn-bordered:hover {
+    /*border-color: #285e8e;*/
+    border-color: #458ecd;
+    background-color: rgba(69,142,205, 0.3);
+}

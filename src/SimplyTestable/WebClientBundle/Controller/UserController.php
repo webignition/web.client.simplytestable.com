@@ -413,7 +413,7 @@ class UserController extends BaseViewController
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }        
         
-        $templateName = 'SimplyTestableWebClientBundle:User:signup.html.twig';
+        $templateName = 'SimplyTestableWebClientBundle:bs3/User:signup.html.twig';
         $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);
         
         $userCreateErrors = $this->get('session')->getFlashBag()->get('user_create_error');        
