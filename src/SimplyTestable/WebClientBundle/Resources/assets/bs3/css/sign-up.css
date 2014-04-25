@@ -15,3 +15,37 @@
     margin-top: 20px;
     margin-bottom: -20px;
 }
+
+.account-benefits-link {
+    display:block;
+}
+
+@media (max-width: 768px) {
+
+    .plans-link {
+        padding-left: 15px;
+    }
+
+    #submit {
+        width: 100%;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        font-size: 18px;
+    }
+
+    .form-group-submit-collection {
+        margin-top: 40px;
+    }
+
+    .alert {
+        border-left: none;
+        border-right: none;
+        border-radius: 0;
+        margin: 15px -15px;
+    }
+
+    .account-benefits-link {
+        display:inline;
+    }    
+
+}

@@ -28,12 +28,18 @@
 {% block content %}
 
     <h1>Create your free account</h1>
+    
     <p>
-        Sign up free in seconds to keep track of the tests you've started, find past test
-        results, easily re-test when you make changes.
+        Private tests, additional types of test, your own test history.
+        <a class="account-benefits-link" href="{{ [public_site.urls.home,public_site.urls.account_benefits]|join('') }}">Account benefits <i class="fa fa-caret-right"></i></a>
     </p>
+{#    <p>
+        Keep track of the tests you've started, find past test
+        results, easily re-test when you make changes.
+    </p>#}
     <p>
-        Choose any premium plan free for the first 30 days.
+        30-day free trial on all premium plans.
+{#        Choose any premium plan free for the first 30 days.#}
     </p>
 
     <form role="form" method="post" action="{{ path('sign_up_submit') }}" novalidate>     
@@ -96,10 +102,10 @@
         </div>  
         <div class="form-group-collection">
             <div class="form-group">
-                <label for="password">Account plan</label>
+                <label for="password">Account plan</label> <a class="hidden-sm hidden-md hidden-lg" href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">Plans and pricing <i class="fa fa-caret-right"></i></a>
 
                 <div class="row match-height">
-                    <div class="col-md-6">
+                    <div class="col-sm-6 col-md-6">
                         <select class="form-control" name="plan" id="plan">
                             <option value="basic" {% if plan == 'basic' %}selected{% endif %}>Basic (free)</option>
                             <option value="personal" {% if plan == 'personal' %}selected{% endif %}>Personal (&pound;9 per month)</option>
@@ -107,15 +113,15 @@
                             <option value="business" {% if plan == 'business' %}selected{% endif %}>Business (&pound;59 per month)</option>
                         </select>                    
                     </div>
-                    <div class="col-md-6 plans-link">
-                        <a href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">View plan and pricing details <i class="fa fa-caret-right"></i></a>
+                    <div class="hidden-xs col-sm-6 col-md-6 plans-link">
+                        <a href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">Plans and pricing <i class="fa fa-caret-right"></i></a>
                     </div>    
                 </div>
             </div>
         </div>
 
-        <div class="form-group-collection">            
-            <button type="submit" class="btn btn btn-primary">Sign up!</button>
+        <div class="form-group-collection form-group-submit-collection">            
+            <button id="submit" type="submit" class="btn btn btn-primary">Sign up!</button>
 
             <p class="terms-notice">
                 By making use of this website you agree to the <a href="http://help.simplytestable.com/legal/terms-of-service/">terms of service</a>.
