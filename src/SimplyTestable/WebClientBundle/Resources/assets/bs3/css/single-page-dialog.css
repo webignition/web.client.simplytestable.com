@@ -41,15 +41,7 @@ h1 {
     margin-left:30px;
 }
 
-#footer .list-inline li:after {
-    color:#6d6d6d;
-    content: "\2022";
-    margin-left:13px;
-}
 
-#footer .list-inline li:last-child:after {
-    content: "";
-}
 
 #footer .list-inline li a {
     color:#6d6d6d;
@@ -63,6 +55,16 @@ h1 {
     .navbar-nav.navbar-right:last-child {
         margin-right: -30px;
     }
+
+    #footer .list-inline li:after {
+        color:#6d6d6d;
+        content: "\2022";
+        margin-left:13px;
+    }
+
+    #footer .list-inline li:last-child:after {
+        content: "";
+    }    
 }
 
 @media (max-width: 768px) {
@@ -115,6 +117,15 @@ h1 {
 
     .navbar-nav {
         padding-left:18px;
+    }
+
+    #footer {
+        border-top: 1px solid #ddd;
+        padding-top: 20px;
+    }
+
+    #footer .list-inline {
+        margin-left: 0;
     }
 
 }
