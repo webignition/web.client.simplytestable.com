@@ -38,17 +38,18 @@ label {
     font-weight: normal;
 }
 
-.input-larger {
-    padding-top: 12px;
-    padding-bottom: 12px;
-    height: auto;    
-}
-
+.input-larger,
 .input-group-larger .btn,
 .input-group-larger .form-control {
     padding-top: 12px;
     padding-bottom: 12px;
     height: auto;    
+}
+
+body.IE8 .input-group-larger .btn,
+body.IE9 .input-group-larger .btn {
+    padding-top: 10px;
+    padding-bottom: 10px;  
 }
 
 .form-group-collection {
