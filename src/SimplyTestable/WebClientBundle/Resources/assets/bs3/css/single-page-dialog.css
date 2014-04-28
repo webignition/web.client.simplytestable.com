@@ -15,6 +15,7 @@ body {
 .navbar .container {
     padding-left: 0;
     padding-right:0;
+    width: 100%;
 }
 
 .navbar-inverse .navbar-nav>.active>a,
@@ -52,7 +53,7 @@ h1 {
 }
 
 @media (min-width: 768px) {
-    .navbar-nav.navbar-right:last-child {
+    .nav.navbar-nav.navbar-right {
         margin-right: -30px;
     }
 
