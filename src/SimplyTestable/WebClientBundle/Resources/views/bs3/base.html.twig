@@ -59,7 +59,11 @@
 
             <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>    
 
-            {% javascripts '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/app.js' %}
+            {% javascripts
+                '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/app.js'
+                '@SimplyTestableWebClientBundle/Resources/assets/vendor/jquery-placeholder/jquery-placeholder-2.0.8/jquery.placeholder.js'
+                '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/placeholder-init.js'
+            %}
             <script type="text/javascript" src="{{ asset_url }}"></script>
             {% endjavascripts %}
             

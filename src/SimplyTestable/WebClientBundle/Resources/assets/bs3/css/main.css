@@ -71,6 +71,10 @@ body.IE9 .input-group-larger .btn {
     background-color: rgba(69,142,205, 0.3);
 }
 
+.placeholder {
+    color: #aaa;
+}
+
 @media (max-width: 768px) {    
     .navbar a.btn,
     .navbar-form {
