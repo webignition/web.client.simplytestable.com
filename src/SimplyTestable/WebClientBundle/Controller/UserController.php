@@ -217,7 +217,7 @@ class UserController extends BaseViewController
         $userResetPasswordError = $this->getFlash('user_reset_password_error');
         $userResetPasswordConfirmation = $this->getFlash('user_reset_password_confirmation');
         
-        $templateName = 'SimplyTestableWebClientBundle:User:reset-password.html.twig';
+        $templateName = 'SimplyTestableWebClientBundle:bs3/User:reset-password.html.twig';
         $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);        
         
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
@@ -244,7 +244,8 @@ class UserController extends BaseViewController
             'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
             'email' => $this->getPersistentValue('email'),
             'user_reset_password_error' => $userResetPasswordError,
-            'user_reset_password_confirmation' => $userResetPasswordConfirmation
+            'user_reset_password_confirmation' => $userResetPasswordConfirmation,
+            'external_links' => $this->container->getParameter('external_links')
 
         )), $cacheValidatorHeaders);        
     }  
@@ -254,21 +255,22 @@ class UserController extends BaseViewController
     {        
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        }        
+        }    
         
-        //$userResetPasswordError = $this->getFlash('user_reset_password_error');
-        //$userResetPasswordConfirmation = $this->getFlash('user_reset_password_confirmation');
+        $actualToken = $this->getUserService()->getConfirmationToken($email);
         
-        $templateName = 'SimplyTestableWebClientBundle:User:reset-password-choose.html.twig';
+        $templateName = 'SimplyTestableWebClientBundle:bs3/User:reset-password-choose.html.twig';
         $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);        
         
         $userResetPasswordError = $this->getFlash('user_reset_password_error');
+        if ($userResetPasswordError == '' && $token != $actualToken) {
+            $userResetPasswordError = 'invalid-token';
+        }
        
         
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
             'email' => $email,
             'user_password_reset_error' => $userResetPasswordError
-            //'user_reset_password_confirmation' => $userResetPasswordConfirmation
         ));      
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
@@ -290,8 +292,8 @@ class UserController extends BaseViewController
             'email' => $email,
             'token' => $token,
             'user_reset_password_error' => $userResetPasswordError,
-            'stay_signed_in' => $this->getPersistentValue('stay-signed-in')
-            //'user_reset_password_confirmation' => $userResetPasswordConfirmation
+            'stay_signed_in' => $this->getPersistentValue('stay-signed-in'),
+            'external_links' => $this->container->getParameter('external_links')
 
         )), $cacheValidatorHeaders);        
     }     

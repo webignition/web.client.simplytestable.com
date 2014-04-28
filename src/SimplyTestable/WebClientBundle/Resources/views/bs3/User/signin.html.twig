@@ -58,12 +58,10 @@
                 <p>
                     That's not the right password. Try again.
                 </p>
-                <form role="form" class="single-button-form" method="get" action="{{ path('reset_password') }}">
-                    <div> 
-                        <input type="hidden" name="email" value="{{ email }}" />
-                        <button class="btn btn-success" type="submit">Ok, maybe I need to reset my password <i class="fa fa-caret-right"></i></button>
-                    </div>      
-                </form>                
+
+                <div class="single-button-form" > 
+                    <a class="btn btn-success" href="{{ path('reset_password', {'email': email}) }}">Ok, maybe I need to reset my password <i class="fa fa-caret-right"></i></a>
+                </div>
             </div>                
         {% endif %}
 
@@ -184,13 +182,10 @@
                 <input type="checkbox" {% if stay_signed_in != "0" %}checked="checked"{% endif %} name="stay-signed-in" value="1"><span>Stay signed in</span>
             </label> 
         </div>                   
-    </form>   
+    </form> 
 
-    <form role="form" class="single-button-form" method="get" action="{{ path('reset_password') }}">
-        <div class="additional input-additional">                
-            <button class="btn" type="submit">I need to reset my password</button>
-            <input type="hidden" name="email" value="{{ email }}" />        
-        </div>      
-    </form>    
+    <div class="additional single-button-form" > 
+        <a class="btn btn-default" href="{{ path('reset_password', {'email': email}) }}">I need to reset my password <i class="fa fa-caret-right"></i></a>
+    </div>
 
 {% endblock %}

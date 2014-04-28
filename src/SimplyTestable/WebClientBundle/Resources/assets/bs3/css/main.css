@@ -44,6 +44,13 @@ label {
     height: auto;    
 }
 
+.input-group-larger .btn,
+.input-group-larger .form-control {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    height: auto;    
+}
+
 .form-group-collection {
     margin: 40px 0 20px 0;    
 }
