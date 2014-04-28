@@ -35,7 +35,7 @@ class UserController extends BaseViewController
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
         }        
         
-        $templateName = 'SimplyTestableWebClientBundle:User:signin.html.twig';
+        $templateName = 'SimplyTestableWebClientBundle:bs3/User:signin.html.twig';
         $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);        
         
         $userSignInError = $this->getFlash('user_signin_error');
@@ -47,7 +47,7 @@ class UserController extends BaseViewController
             'user_signin_error' => $userSignInError,
             'user_signin_confirmation' => $userSignInConfirmation,
             'redirect' => $redirect,
-            'stay_signed_in' => $this->getPersistentValue('stay-signed-in')                
+            'stay_signed_in' => $this->getPersistentValue('stay-signed-in')
         ));
         
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
@@ -70,7 +70,8 @@ class UserController extends BaseViewController
             'user_signin_error' => $userSignInError,
             'user_signin_confirmation' => $userSignInConfirmation,
             'redirect' => $redirect,
-            'stay_signed_in' => $this->getPersistentValue('stay-signed-in')
+            'stay_signed_in' => $this->getPersistentValue('stay-signed-in'),
+            'external_links' => $this->container->getParameter('external_links')
         )), $cacheValidatorHeaders);        
     }
     
@@ -132,7 +133,7 @@ class UserController extends BaseViewController
                     'redirect' => $redirect,
                     'stay-signed-in' => $staySignedIn
                 ), true));                 
-            }          
+            }           
 
             if ($this->getUserService()->isEnabled()) {
                 $this->getUserService()->clearUser();
@@ -150,7 +151,7 @@ class UserController extends BaseViewController
             $this->sendConfirmationToken($email, $token);                  
 
             $this->get('session')->setFlash('user_signin_error', 'user-not-enabled');          
-            
+
             return $this->redirect($this->generateUrl('sign_in', array(
                 'email' => $email,
                 'redirect' => $redirect,

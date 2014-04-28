@@ -1,0 +1,9 @@
+.form-group-submit-collection .btn {
+    vertical-align: middle;
+}
+
+.form-group-submit-collection label {
+    display:inline-block;
+    vertical-align: middle;
+    margin-left: 6px;
+}

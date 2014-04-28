@@ -53,7 +53,7 @@
                         </form>
                     </li>                               
                 {% else %}#}
-                    <li class="user-actions text">
+                    <li class="user-actions text {% if app.request.get('_route') == 'sign_in' %}active{% endif %}">
 {#                        <p class="navbar-text spacer highlighted-spacer hidden-xs">&nbsp;</p>#}
                         <a class="username" href="{{ path('sign_in') }}">
                             <i class="fa fa-sign-in"></i> Sign in
