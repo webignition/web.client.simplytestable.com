@@ -1,7 +1,7 @@
 {% set username_parts = user.username|split('@') %}    
 
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container">
+<div class="navbar navbar-inverse" role="navigation">
+    <div class="container col-xs-12">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="sr-only">Toggle navigation</span>
@@ -16,7 +16,7 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li class="text {% if app.request.get('_route') == 'app' %}active{% endif %}">
+                <li class="text hidden-lg hidden-md hidden-sm {% if app.request.get('_route') == 'app' %}active{% endif %}">
                     <a href="{{ path('app') }}">
                         <i class="fa fa-tachometer"></i>
                         {% if is_logged_in %}
@@ -26,18 +26,18 @@
                         {% endif %}                                
                     </a>
                 </li>
-                <li class="text">
+                <li class="text hidden-lg hidden-md hidden-sm">
                     <a href="{{ public_site['urls']['home'] }}{{ public_site['urls']['features'] }}">
                         <i class="fa fa-signal"></i> Features
                     </a>
                 </li>
-                <li class="text">
+                <li class="text hidden-lg hidden-md hidden-sm">
                     <a href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">
                         <i class="fa fa-calendar"></i> Pricing <span class="hidden-sm">and plans</span>
                     </a>
                 </li>
 
-                {% if is_logged_in %}
+{#                {% if is_logged_in %}
                     <li class="user-actions text">
                         <p class="navbar-text spacer highlighted-spacer hidden-xs">&nbsp;</p>
                         <a class="username" href="{{ path('user_account_index') }}">
@@ -52,20 +52,20 @@
                             </button>
                         </form>
                     </li>                               
-                {% else %}
+                {% else %}#}
                     <li class="user-actions text">
-                        <p class="navbar-text spacer highlighted-spacer hidden-xs">&nbsp;</p>
+{#                        <p class="navbar-text spacer highlighted-spacer hidden-xs">&nbsp;</p>#}
                         <a class="username" href="{{ path('sign_in') }}">
                             <i class="fa fa-sign-in"></i> Sign in
                         </a>
                     </li>                                        
-                    <li class="text">
-                        <p class="navbar-text spacer highlighted-spacer hidden-xs">&nbsp;</p>
-                        <a class="btn-bordered" href="{{ path('sign_up') }}">
+                    <li class="text {% if app.request.get('_route') == 'sign_up' %}active{% endif %}">
+{#                        <p class="navbar-text spacer highlighted-spacer hidden-xs">&nbsp;</p>#}
+                        <a class="" href="{{ path('sign_up') }}">
                             <i class="fa fa-user"></i> Create an account
                         </a>
-                    </li>
-                {% endif %}
+                    </li>                                               
+{#                {% endif %}#}
             </ul>            
         </div><!--/.navbar-collapse -->
     </div>

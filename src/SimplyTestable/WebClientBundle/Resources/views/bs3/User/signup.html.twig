@@ -15,15 +15,19 @@
 {% block javascripts %}
     {{ parent() }}
 
-    {% javascripts '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js' %}
+    {% javascripts
+        '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormErrorHelper.js'
+        '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
+        '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/sign-up.js'
+        '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/form-helper.js'
+    %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}    
-    
-    {% javascripts '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/sign-up.js' %}
-    <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}
-
+    {% endjavascripts %} 
 {% endblock %}
+
+{#{% block nav %}
+    {% include 'SimplyTestableWebClientBundle:bs3/Partials/UserDialog:navbar.html.twig' %}
+{% endblock %}    #}
 
 {% block content %}
 
@@ -123,8 +127,8 @@
         <div class="form-group-collection form-group-submit-collection">            
             <button id="submit" type="submit" class="btn btn btn-primary">Sign up!</button>
 
-            <p class="terms-notice">
-                By making use of this website you agree to the <a href="http://help.simplytestable.com/legal/terms-of-service/">terms of service</a>.
+            <p class="terms-notice additional">
+                By making use of this website you agree to the <a href="{{ external_links.terms }}">terms of service</a>.
             </p>  
         </div>
 

@@ -448,7 +448,8 @@ class UserController extends BaseViewController
             'user_create_error' => $userCreateError,
             'user_create_confirmation' => $userCreateConfirmation,
             'email' => $this->getPersistentValue('email'),
-            'plan' => $this->getPersistentValue('plan')                
+            'plan' => $this->getPersistentValue('plan'),
+            'external_links' => $this->container->getParameter('external_links')
         )), $cacheValidatorHeaders); 
         
         
@@ -539,19 +540,52 @@ class UserController extends BaseViewController
     {        
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        }       
+        }
         
-        $this->setTemplate('SimplyTestableWebClientBundle:User:signup-confirm.html.twig');
-        return $this->sendResponse(array(
-            'public_site' => $this->container->getParameter('public_site'),
-            'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+        
+        $email = trim($this->get('request')->get('email'));
+        $userError = ($this->getUserService()->exists($email)) ? '' : 'invalid-user';        
+
+        $tokenResendError = $this->getFlash('token_resend_error');
+        if ($tokenResendError == 'invalid-user') {
+            $tokenResendError = '';
+            $userError = 'invalid-user';
+        }        
+
+        $notifications = array(
             'token_resend_confirmation' => $this->getFlash('token_resend_confirmation'),
             'user_create_confirmation' => $this->getFlash('user_create_confirmation'),
             'user_token_error' => $this->getFlash('user_token_error'),
             'token_resend_error' => $this->getFlash('token_resend_error'),
-            'token' => $this->get('request')->query->get('token')
-        ));
+            'user_error' => $userError             
+        );       
+        
+        $this->setTemplate('SimplyTestableWebClientBundle:bs3/User:signup-confirm.html.twig');
+        
+        return $this->sendResponse(array_merge(array(
+            'public_site' => $this->container->getParameter('public_site'),
+            'external_links' => $this->container->getParameter('external_links'),
+            'user' => $this->getUser(),
+            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+            'token' => $this->get('request')->query->get('token'),            
+            'has_notification' => $this->hasNotification($notifications)
+        ), $notifications));
+    }
+    
+    
+    /**
+     * 
+     * @param array $notifications
+     * @return boolean
+     */
+    private function hasNotification($notifications) {
+        foreach ($notifications as $notification) {
+            if (!empty($notification)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     

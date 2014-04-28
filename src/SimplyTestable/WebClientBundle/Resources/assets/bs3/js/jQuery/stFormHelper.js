@@ -11,11 +11,6 @@
             return returnValue;
         },
         
-        hasError: function () {            
-            return $('[data-for=' + $(this).attr('id') + ']').length > 0;   
-       
-        },
-        
         select: function () {
             var field = $(this), oldVal = field.val();
             field.focus().val('').val(oldVal);                

@@ -1,45 +1,120 @@
-#logo {
-    position: absolute;
-    background: url('/bundles/simplytestablewebclient/images/logo100-bold-bordered.png') transparent no-repeat top left;
-    width: 100px;
-    height: 100px;
-    left: -35px;
-    top: 100px;
+body {
+    background-color: #4f4f4f;
+}
+
+.navbar {
+    margin-bottom: 0;    
+    background: none;
+    border: none;        
+}
+
+.navbar .navbar-header .navbar-brand {
+    margin-left: -42px;
+}
+
+.navbar .container {
+    padding-left: 0;
+    padding-right:0;
+}
+
+.navbar-inverse .navbar-nav>.active>a,
+.navbar-inverse .navbar-nav>.active>a:hover,
+.navbar-inverse .navbar-nav>.active>a:focus {
+    background-color: transparent;
 }
 
 section {
-    margin-top: 80px;
+    position: relative;
 }
 
-#content {
-    margin-left: 30px;
+h1 {
+    font-size: 30px;
+}
+
+.additional {
+    border-top: 1px solid #ddd;
+    margin-top: 20px;
+    padding-top: 20px;    
+}
+
+#footer {
+    margin-left:30px;
+}
+
+#footer .list-inline li:after {
+    color:#6d6d6d;
+    content: "\2022";
+    margin-left:13px;
+}
+
+#footer .list-inline li:last-child:after {
+    content: "";
+}
+
+#footer .list-inline li a {
+    color:#6d6d6d;
+}
+
+.single-button-form {
+    margin: 20px 0;
+}
+
+@media (min-width: 768px) {
+    .navbar-nav.navbar-right:last-child {
+        margin-right: -30px;
+    }
 }
 
 @media (max-width: 768px) {
-    body {
-        margin-top:30px;
-    }
-    
     h1 {
         font-size: 24px;
     }
-    
-    #content {
+
+    #content,
+    #footer {
         margin-left: auto;
     }
-    
+
+    #footer {
+        padding-left: 15px;
+    }
+
     section {
         margin-top: 0;
         padding-left: 15px;
         padding-right: 15px;
+        padding-top: 0;
     }
-    
+
+    body {
+        margin-top: 0;
+        background-color: #eee;
+    }
+
     .col-xs-12 {
         padding-left: 0;
         padding-right:0;
     }
-    
+
     .form-group-collection {
         margin: 0;    
     }
+
+    .navbar {
+        background-color: #222;
+    }
+
+    .navbar .navbar-header .navbar-brand {
+        margin-left: 15px;
+    }
+
+    .container>.navbar-header,
+    .container>.navbar-collapse{
+        margin:0;
+    }
+
+    .navbar-nav {
+        padding-left:18px;
+    }
+
 }

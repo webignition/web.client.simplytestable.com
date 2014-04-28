@@ -1,6 +1,6 @@
 $(document).ready(function() {
     var email = $('#email');
-    if (email.stFormHelper().isEmpty() || email.stFormHelper().hasError()) {
+    if (email.stFormHelper().isEmpty() || email.stFormErrorHelper().hasError()) {
         email.stFormHelper().select();
         return;
     }
