@@ -153,98 +153,7 @@ class UserController extends BaseViewController
 
         $parameters = isset($redirectValues['parameters']) ? $redirectValues['parameters'] : array();
         return $this->redirect($this->generateUrl($redirectValues['route'], $parameters, true));
-    } 
-    
-    
-    public function resetPasswordAction()
-    {        
-        if ($this->isUsingOldIE()) {
-            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        }
-        
-        $userResetPasswordError = $this->getFlash('user_reset_password_error');
-        $userResetPasswordConfirmation = $this->getFlash('user_reset_password_confirmation');
-        
-        $templateName = 'SimplyTestableWebClientBundle:bs3/User:reset-password.html.twig';
-        $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);        
-        
-        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
-            'email' => $this->getPersistentValue('email'),
-            'user_password_reset_error' => $userResetPasswordError,
-            'user_reset_password_confirmation' => $userResetPasswordConfirmation
-        ));      
-        
-        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
-        
-//        if ($this->isProduction() && $cacheValidatorHeaders->getLastModifiedDate() == $templateLastModifiedDate) {            
-//            $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
-//            if ($response->isNotModified($this->getRequest())) {
-//                return $response;
-//            }
-//        }
-        
-        $cacheValidatorHeaders->setLastModifiedDate($templateLastModifiedDate);
-        $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);
-
-        return $this->getCachableResponse($this->render($templateName, array(            
-            'public_site' => $this->container->getParameter('public_site'),
-            'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'email' => $this->getPersistentValue('email'),
-            'user_reset_password_error' => $userResetPasswordError,
-            'user_reset_password_confirmation' => $userResetPasswordConfirmation,
-            'external_links' => $this->container->getParameter('external_links')
-
-        )), $cacheValidatorHeaders);        
-    }  
-    
-    
-    public function resetPasswordChooseAction($email, $token)
-    {        
-        if ($this->isUsingOldIE()) {
-            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        }    
-        
-        $actualToken = $this->getUserService()->getConfirmationToken($email);
-        
-        $templateName = 'SimplyTestableWebClientBundle:bs3/User:reset-password-choose.html.twig';
-        $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);        
-        
-        $userResetPasswordError = $this->getFlash('user_reset_password_error');
-        if ($userResetPasswordError == '' && $token != $actualToken) {
-            $userResetPasswordError = 'invalid-token';
-        }
-       
-        
-        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
-            'email' => $email,
-            'user_password_reset_error' => $userResetPasswordError
-        ));      
-        
-        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
-        
-//        if ($this->isProduction() && $cacheValidatorHeaders->getLastModifiedDate() == $templateLastModifiedDate) {            
-//            $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
-//            if ($response->isNotModified($this->getRequest())) {
-//                return $response;
-//            }
-//        }
-        
-        $cacheValidatorHeaders->setLastModifiedDate($templateLastModifiedDate);
-        $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);
-
-        return $this->getCachableResponse($this->render($templateName, array(            
-            'public_site' => $this->container->getParameter('public_site'),
-            'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'email' => $email,
-            'token' => $token,
-            'user_reset_password_error' => $userResetPasswordError,
-            'stay_signed_in' => $this->getPersistentValue('stay-signed-in'),
-            'external_links' => $this->container->getParameter('external_links')
-
-        )), $cacheValidatorHeaders);        
-    }     
+    }   
     
 
     public function resetPasswordSubmitAction() {                
@@ -421,59 +330,6 @@ class UserController extends BaseViewController
     }
     
     
-    public function signUpConfirmAction()
-    {        
-        if ($this->isUsingOldIE()) {
-            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        }
-        
-        
-        $email = trim($this->get('request')->get('email'));
-        $userError = ($this->getUserService()->exists($email)) ? '' : 'invalid-user';        
-
-        $tokenResendError = $this->getFlash('token_resend_error');
-        if ($tokenResendError == 'invalid-user') {
-            $tokenResendError = '';
-            $userError = 'invalid-user';
-        }        
-
-        $notifications = array(
-            'token_resend_confirmation' => $this->getFlash('token_resend_confirmation'),
-            'user_create_confirmation' => $this->getFlash('user_create_confirmation'),
-            'user_token_error' => $this->getFlash('user_token_error'),
-            'token_resend_error' => $this->getFlash('token_resend_error'),
-            'user_error' => $userError             
-        );       
-        
-        $this->setTemplate('SimplyTestableWebClientBundle:bs3/User:signup-confirm.html.twig');
-        
-        return $this->sendResponse(array_merge(array(
-            'public_site' => $this->container->getParameter('public_site'),
-            'external_links' => $this->container->getParameter('external_links'),
-            'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'token' => $this->get('request')->query->get('token'),            
-            'has_notification' => $this->hasNotification($notifications)
-        ), $notifications));
-    }
-    
-    
-    /**
-     * 
-     * @param array $notifications
-     * @return boolean
-     */
-    private function hasNotification($notifications) {
-        foreach ($notifications as $notification) {
-            if (!empty($notification)) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    
     public function signupConfirmResendAction($email) {
         if ($this->getUserService()->exists($email) === false) {
             $this->get('session')->setFlash('token_resend_error', 'invalid-user');
@@ -600,7 +456,7 @@ class UserController extends BaseViewController
 
     /**
      * 
-     * @param mixed $createResponse
+     * @param mixed $responseCode
      * @return boolean
      */
     private function requestFailedDueToReadOnly($responseCode) {
