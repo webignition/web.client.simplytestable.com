@@ -50,8 +50,7 @@ class RequestListener
      * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
      * @return null
      */
-    public function onKernelRequest(GetResponseEvent $event)
-    { 
+    public function onKernelRequest(GetResponseEvent $event) {         
         $this->event = $event;      
         
         if (!$this->isApplicationController()) {
@@ -81,9 +80,10 @@ class RequestListener
     }
     
     
-    private function setRequestCacheValidatorHeaders() {        
+    private function setRequestCacheValidatorHeaders() { 
+        $this->getController()->setRequest($this->event->getRequest());        
         $cacheValidatorParameters = $this->getController()->getCacheValidatorParameters();
-
+        
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier($cacheValidatorParameters);
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
@@ -126,17 +126,6 @@ class RequestListener
     private function getControllerClassName() {
         $controllerActionParts = explode('::', $this->event->getRequest()->attributes->get('_controller'));        
         return $controllerActionParts[0];    
-    }
-    
-    
-    
-    /**
-     * 
-     * @return string
-     */    
-    private function getActionName() {
-        $controllerActionParts = explode('::', $this->event->getRequest()->attributes->get('_controller'));        
-        return $controllerActionParts[1];
     }
     
     
@@ -253,7 +242,7 @@ class RequestListener
         }
         
         $identifier = new CacheValidatorIdentifier();
-        $identifier->setParameter('route', $this->kernel->getContainer()->get('request')->get('_route'));
+        $identifier->setParameter('route', $this->event->getRequest()->get('_route'));
         $identifier->setParameter('user', $this->getUserService()->getUser()->getUsername());
         $identifier->setParameter('is_logged_in', $this->getUserService()->isLoggedIn());
         

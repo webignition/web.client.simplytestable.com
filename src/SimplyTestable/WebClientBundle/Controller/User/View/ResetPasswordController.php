@@ -2,11 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\User\View;
 
-use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\Cacheable;
-
-class ResetPasswordController extends BaseViewController implements IEFiltered, Cacheable {
+class ResetPasswordController extends ViewController {
     
     protected function modifyViewName($viewName) {
         return str_replace(':User', ':bs3/User', $viewName);
@@ -19,7 +15,7 @@ class ResetPasswordController extends BaseViewController implements IEFiltered, 
     
     private function getTransientViewData($flush = true) {        
         return array(
-            'email' => trim($this->get('request')->query->get('email')),
+            'email' => trim($this->getRequest()->query->get('email')),
             'user_reset_password_error' => $this->getFlash('user_reset_password_error', $flush),
             'user_reset_password_confirmation' => $this->getFlash('user_reset_password_confirmation', $flush)
         );

@@ -6,13 +6,13 @@ use SimplyTestable\WebClientBundle\Tests\BaseTestCase;
 
 abstract class ListenerTest extends BaseTestCase {
     
-    const REQUEST_CONTROLLER = 'SimplyTestable\WebClientBundle\Controller\User\ViewController::signupAction';
+    const REQUEST_CONTROLLER = 'SimplyTestable\WebClientBundle\Controller\User\View\SignUpController::indexAction';
     
     protected $event;
     
     public function setUp() {
         parent::setUp();
-        $this->callListener();
+        $this->callListener();        
     }
     
     protected function getListenerMethodName() {
@@ -53,6 +53,7 @@ abstract class ListenerTest extends BaseTestCase {
     protected function buildEvent() {
         $request = new \Symfony\Component\HttpFoundation\Request();
         $request->attributes->set('_controller', self::REQUEST_CONTROLLER);
+        $request->attributes->set('_route', 'user_view_signup_index');
         
         return new \Symfony\Component\HttpKernel\Event\GetResponseEvent(
             $this->container->get('kernel'),

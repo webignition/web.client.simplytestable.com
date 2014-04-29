@@ -2,14 +2,9 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\User\View;
 
-use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\Cacheable;
-use Symfony\Component\HttpFoundation\Cookie;
-
-class SignUpConfirmController extends BaseViewController implements IEFiltered, Cacheable {
+class SignUpConfirmController extends ViewController {
     
-    const ONE_YEAR_IN_SECONDS = 31536000;       
+    //const ONE_YEAR_IN_SECONDS = 31536000;       
     
     protected function modifyViewName($viewName) {
         return str_replace(':User', ':bs3/User', $viewName);
@@ -24,7 +19,7 @@ class SignUpConfirmController extends BaseViewController implements IEFiltered, 
             'user_error'            
         );
         
-        $email = trim($this->get('request')->get('email'));
+        $email = trim($this->getRequest()->query->get('email'));
         $userError = ($this->getUserService()->exists($email)) ? '' : 'invalid-user';
         
         $viewData = $this->getTransientViewData();
@@ -48,7 +43,7 @@ class SignUpConfirmController extends BaseViewController implements IEFiltered, 
             'user_create_confirmation' => $this->getFlash('user_create_confirmation', $flush),
             'user_token_error' => $this->getFlash('user_token_error', $flush),
             'token_resend_error' => $this->getFlash('token_resend_error', $flush),            
-            'token' => trim($this->get('request')->query->get('token')), 
+            'token' => trim($this->getRequest()->query->get('token')), 
         );
     }
 

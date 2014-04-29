@@ -2,14 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\User\View;
 
-use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\Cacheable;
 use Symfony\Component\HttpFoundation\Cookie;
 
-class SignUpController extends BaseViewController implements IEFiltered, Cacheable {
+class SignUpController extends ViewController {
     
-    const ONE_YEAR_IN_SECONDS = 31536000;       
+    const ONE_YEAR_IN_SECONDS = 31536000;
     
     protected function modifyViewName($viewName) {
         return str_replace(':User', ':bs3/User', $viewName);
@@ -41,11 +38,14 @@ class SignUpController extends BaseViewController implements IEFiltered, Cacheab
         return array(
             'user_create_error' => $this->getFlash('user_create_error', $flush),
             'user_create_confirmation' => $this->getFlash('user_create_confirmation', $flush),
-            'email' => $this->getPersistentValue('email'),
-            'plan' => $this->getPersistentValue('plan'),
-            'redirect' => trim($this->get('request')->query->get('redirect'))
+            'email' => trim($this->getRequest()->query->get('email')),
+            'plan' => trim($this->getRequest()->query->get('plan')),
+            'redirect' => trim($this->getRequest()->query->get('redirect'))
         );
     }
+    
+    
+
 
     
     public function getCacheValidatorParameters() {        

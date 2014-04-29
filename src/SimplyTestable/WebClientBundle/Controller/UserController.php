@@ -294,7 +294,7 @@ class UserController extends BaseViewController
         
         if ($token != $inputToken) {
             $this->get('session')->setFlash('user_reset_password_error', 'invalid-token');
-            return $this->redirect($this->generateUrl('user_view_resetpasswordchoose', array(
+            return $this->redirect($this->generateUrl('user_view_resetpasswordchoose_index', array(
                 'email' => $email,
                 'token' => $inputToken,
                 'stay-signed-in' => $staySignedIn
@@ -305,7 +305,7 @@ class UserController extends BaseViewController
         
         if ($password == '') {
             $this->get('session')->setFlash('user_reset_password_error', 'blank-password');
-            return $this->redirect($this->generateUrl('user_view_resetpasswordchoose', array(
+            return $this->redirect($this->generateUrl('user_view_resetpasswordchoose_index', array(
                 'email' => $email,
                 'token' => $inputToken,
                 'stay-signed-in' => $staySignedIn
@@ -316,7 +316,7 @@ class UserController extends BaseViewController
         
         if ($this->requestFailedDueToReadOnly($passwordResetResponse)) {
             $this->get('session')->setFlash('user_reset_password_error', 'failed-read-only');
-            return $this->redirect($this->generateUrl('user_view_resetpasswordchoose', array(
+            return $this->redirect($this->generateUrl('user_view_resetpasswordchoose_index', array(
                 'email' => $email,
                 'token' => $inputToken,
                 'stay-signed-in' => $staySignedIn
@@ -325,7 +325,7 @@ class UserController extends BaseViewController
         
         if ($passwordResetResponse === 404) {
             $this->get('session')->setFlash('user_reset_password_error', 'invalid-token');
-            return $this->redirect($this->generateUrl('user_view_resetpasswordchoose', array(
+            return $this->redirect($this->generateUrl('user_view_resetpasswordchoose_index', array(
                 'email' => $email,
                 'token' => $inputToken,
                 'stay-signed-in' => $staySignedIn
@@ -535,7 +535,7 @@ class UserController extends BaseViewController
         $sender = $this->getMailService()->getConfiguration()->getSender('default');
         $messageProperties = $this->getMailService()->getConfiguration()->getMessageProperties('user_reset_password');
   
-        $confirmationUrl = $this->generateUrl('user_view_resetpasswordchoose', array(
+        $confirmationUrl = $this->generateUrl('user_view_resetpasswordchoose_index', array(
             'email' => $email,
             'token' => $token
         ), true);
