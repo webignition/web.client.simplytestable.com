@@ -7,53 +7,7 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use Symfony\Component\HttpFoundation\Cookie;
 
 class ViewController extends BaseViewController implements IEFiltered {     
-    const ONE_YEAR_IN_SECONDS = 31536000;    
-    
-    public function signInAction() {       
-        if ($this->isLoggedIn()) {
-            return $this->redirect($this->generateUrl('app', array(), true));
-        }      
-        
-        $templateName = 'SimplyTestableWebClientBundle:bs3/User:signin.html.twig';
-        $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);        
-        
-        $userSignInError = $this->getFlash('user_signin_error');
-        $userSignInConfirmation = $this->getFlash('user_signin_confirmation');
-        $redirect = $this->getPersistentValue('redirect');
-        
-        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
-            'email' => $this->getPersistentValue('email'),
-            'user_signin_error' => $userSignInError,
-            'user_signin_confirmation' => $userSignInConfirmation,
-            'redirect' => $redirect,
-            'stay_signed_in' => $this->getPersistentValue('stay-signed-in')
-        ));
-        
-        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
-        
-//        if ($this->isProduction() && $cacheValidatorHeaders->getLastModifiedDate() == $templateLastModifiedDate) {            
-//            $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
-//            if ($response->isNotModified($this->getRequest())) {
-//                return $response;
-//            }
-//        }
-        
-        $cacheValidatorHeaders->setLastModifiedDate($templateLastModifiedDate);
-        $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);
-
-        return $this->getCachableResponse($this->render($templateName, array(            
-            'public_site' => $this->container->getParameter('public_site'),
-            'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'email' => $this->getPersistentValue('email'),
-            'user_signin_error' => $userSignInError,
-            'user_signin_confirmation' => $userSignInConfirmation,
-            'redirect' => $redirect,
-            'stay_signed_in' => $this->getPersistentValue('stay-signed-in'),
-            'external_links' => $this->container->getParameter('external_links')
-        )), $cacheValidatorHeaders);        
-    }
-    
+    const ONE_YEAR_IN_SECONDS = 31536000;       
     
     public function signUpAction()
     {        
