@@ -59,9 +59,9 @@
                             <i class="fa fa-sign-in"></i> Sign in
                         </a>
                     </li>                                        
-                    <li class="text {% if app.request.get('_route') == 'user_view_signup' %}active{% endif %}">
+                    <li class="text {% if app.request.get('_route') == 'user_view_signup_index' %}active{% endif %}">
 {#                        <p class="navbar-text spacer highlighted-spacer hidden-xs">&nbsp;</p>#}
-                        <a class="" href="{{ path('user_view_signup') }}">
+                        <a class="" href="{{ path('user_view_signup_index') }}">
                             <i class="fa fa-user"></i> Create an account
                         </a>
                     </li>                                               

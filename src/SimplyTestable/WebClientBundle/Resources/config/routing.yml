@@ -30,9 +30,9 @@ user_view_resetpasswordchoose:
     pattern:  /reset-password/{email}/{token}/
     defaults: { _controller: SimplyTestableWebClientBundle:User/View:resetPasswordChoose }           
     
-user_view_signup:
+user_view_signup_index:
     pattern:  /signup/
-    defaults: { _controller: SimplyTestableWebClientBundle:User/View:signUp }      
+    defaults: { _controller: SimplyTestableWebClientBundle:User/View/SignUp:index }      
     
 sign_up_submit:
     pattern:  /signup/submit/

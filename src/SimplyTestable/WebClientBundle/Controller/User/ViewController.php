@@ -7,70 +7,7 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use Symfony\Component\HttpFoundation\Cookie;
 
 class ViewController extends BaseViewController implements IEFiltered {     
-    const ONE_YEAR_IN_SECONDS = 31536000;       
-    
-    public function signUpAction()
-    {        
-        $templateName = 'SimplyTestableWebClientBundle:bs3/User:signup.html.twig';
-        $templateLastModifiedDate = $this->getTemplateLastModifiedDate($templateName);
-        
-        $userCreateErrors = $this->get('session')->getFlashBag()->get('user_create_error');        
-        $userCreateError = (count($userCreateErrors) == 0) ? '' : $userCreateErrors[0];
-        
-        $userCreateConfirmations = $this->get('session')->getFlashBag()->get('user_create_confirmation');        
-        $userCreateConfirmation = (count($userCreateConfirmations) == 0) ? '' : $userCreateConfirmations[0];        
-
-        
-        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
-            'user_create_error' => $userCreateError,
-            'user_create_confirmation' => $userCreateConfirmation,
-            'email' => $this->getPersistentValue('email')
-        ));
-        
-        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
-        
-//        if ($this->isProduction() && $cacheValidatorHeaders->getLastModifiedDate() == $templateLastModifiedDate) {            
-//            $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
-//            if ($response->isNotModified($this->getRequest())) {
-//                return $response;
-//            }
-//        }
-        
-        $cacheValidatorHeaders->setLastModifiedDate($templateLastModifiedDate);
-        $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);
-        
-        $response = $this->getCachableResponse($this->render($templateName, array(            
-            'public_site' => $this->container->getParameter('public_site'),
-            'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'user_create_error' => $userCreateError,
-            'user_create_confirmation' => $userCreateConfirmation,
-            'email' => $this->getPersistentValue('email'),
-            'plan' => $this->getPersistentValue('plan'),
-            'external_links' => $this->container->getParameter('external_links')
-        )), $cacheValidatorHeaders); 
-        
-        
-        
-        $redirect = trim($this->get('request')->query->get('redirect'));
-        
-        if ($redirect !== '') {
-            $cookie = new Cookie(
-                'simplytestable-redirect',
-                $redirect,
-                time() + self::ONE_YEAR_IN_SECONDS,
-                '/',
-                '.simplytestable.com',
-                false,
-                true
-            );
-            
-            $response->headers->setCookie($cookie);            
-        }       
-
-        return $response;   
-    }    
-    
+    const ONE_YEAR_IN_SECONDS = 31536000;
     
     public function resetPasswordAction() {   
         $userResetPasswordError = $this->getFlash('user_reset_password_error');
