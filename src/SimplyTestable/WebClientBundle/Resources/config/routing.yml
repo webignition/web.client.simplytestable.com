@@ -6,9 +6,9 @@ sign_out_submit:
     pattern:  /signout/
     defaults: { _controller: SimplyTestableWebClientBundle:User:signOutSubmit }   
 
-user_view_signin:
+user_view_signin_index:
     pattern:  /signin/
-    defaults: { _controller: SimplyTestableWebClientBundle:User/View:signIn }  
+    defaults: { _controller: SimplyTestableWebClientBundle:User/View/SignIn:index }  
     
 sign_in_submit:
     pattern:  /signin/submit/

@@ -28,6 +28,14 @@ class RequestListener
      */
     private $kernel;
     
+    
+    /**
+     *
+     * @var \Symfony\Bundle\FrameworkBundle\Controller\Controller 
+     */
+    private $controller;
+    
+    
     /**
      * 
      * @param \Symfony\Component\HttpKernel\Kernel $kernel
@@ -44,10 +52,7 @@ class RequestListener
      */
     public function onKernelRequest(GetResponseEvent $event)
     { 
-        $this->event = $event;
-        
-//        var_dump($this->isApplicationController(), $this->isIeFilteredController(), $this->isUsingOldIE());
-//        exit();        
+        $this->event = $event;      
         
         if (!$this->isApplicationController()) {
             return;
@@ -56,26 +61,29 @@ class RequestListener
         if ($this->isIeFilteredController() && $this->isUsingOldIE()) {
             $this->event->setResponse($this->getRedirectResponseToOutdatedBrowserPage());
         }
-//        
-//        $this->getUserService()->setUserFromRequest($this->event->getRequest());
-//        
-//        if (!$this->isCacheableController()) {
-//            return;
-//        }        
-//        
-//        $this->setRequestCacheValidatorHeaders();
-//        
-//        $response = $this->getCacheableResponseService()->getCachableResponse($this->event->getRequest());
-//        
-//        $this->fixRequestIfNoneMatchHeader();        
-//        if ($response->isNotModified($this->event->getRequest())) {
-//            $this->event->setResponse($response);
-//        } 
+        
+        $this->getUserService()->setUserFromRequest($this->event->getRequest());
+        
+        if (!$this->isCacheableController()) {
+            return;
+        }
+        
+        $this->setRequestCacheValidatorHeaders();
+      
+        $response = $this->getCacheableResponseService()->getCachableResponse($this->event->getRequest());
+        
+        $this->fixRequestIfNoneMatchHeader();        
+        
+        if ($response->isNotModified($this->event->getRequest())) {
+            $this->event->setResponse($response);
+        } 
     }
     
     
     private function setRequestCacheValidatorHeaders() {
-        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
+        $cacheValidatorParameters = $this->getController()->getCacheValidatorParameters();
+
+        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier($cacheValidatorParameters);
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
         
         $this->event->getRequest()->headers->set('x-cache-validator-etag', $cacheValidatorHeaders->getETag());
@@ -130,9 +138,18 @@ class RequestListener
     }
     
     
+    /**
+     * 
+     * @return \Symfony\Bundle\FrameworkBundle\Controller\Controller 
+     */
     private function getController() {
-        $className = $this->getControllerClassName();
-        return new $className;
+        if (is_null($this->controller)) {
+            $className = $this->getControllerClassName();
+            $this->controller = new $className;
+            $this->controller->setContainer($this->kernel->getContainer());
+        }
+        
+        return $this->controller;
     }
     
     
@@ -219,6 +236,10 @@ class RequestListener
      * @return \SimplyTestable\WebClientBundle\Model\CacheValidatorIdentifier 
      */
     private function getCacheValidatorIdentifier(array $parameters = array()) {        
+        if (!$this->isCacheableController()) {
+            return null;
+        }
+        
         $identifier = new CacheValidatorIdentifier();
         $identifier->setParameter('route', $this->kernel->getContainer()->get('request')->get('_route'));
         $identifier->setParameter('user', $this->getUserService()->getUser()->getUsername());

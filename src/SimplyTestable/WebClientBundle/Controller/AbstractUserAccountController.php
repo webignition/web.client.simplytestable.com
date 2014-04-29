@@ -15,7 +15,7 @@ abstract class AbstractUserAccountController extends BaseViewController
 
         $this->get('session')->setFlash('user_signin_error', 'account-not-logged-in');
 
-        return $this->redirect($this->generateUrl('user_view_signin', array(
+        return $this->redirect($this->generateUrl('user_view_signin_index', array(
             'redirect' => base64_encode($redirectParameters)
         ), true));           
     }

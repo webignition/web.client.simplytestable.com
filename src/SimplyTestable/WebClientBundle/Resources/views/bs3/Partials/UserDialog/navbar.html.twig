@@ -53,9 +53,9 @@
                         </form>
                     </li>                               
                 {% else %}#}
-                    <li class="user-actions text {% if app.request.get('_route') == 'user_view_signin' %}active{% endif %}">
+                    <li class="user-actions text {% if app.request.get('_route') == 'user_view_signin_index' %}active{% endif %}">
 {#                        <p class="navbar-text spacer highlighted-spacer hidden-xs">&nbsp;</p>#}
-                        <a class="username" href="{{ path('user_view_signin') }}">
+                        <a class="username" href="{{ path('user_view_signin_index') }}">
                             <i class="fa fa-sign-in"></i> Sign in
                         </a>
                     </li>                                        

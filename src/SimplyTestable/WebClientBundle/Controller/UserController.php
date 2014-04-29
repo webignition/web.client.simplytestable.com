@@ -31,7 +31,7 @@ class UserController extends BaseViewController
 
         if ($email == '') {
             $this->get('session')->setFlash('user_signin_error', 'blank-email');
-            return $this->redirect($this->generateUrl('user_view_signin', array(
+            return $this->redirect($this->generateUrl('user_view_signin_index', array(
                 'redirect' => $redirect,
                 'stay-signed-in' => $staySignedIn
             ), true));             
@@ -39,7 +39,7 @@ class UserController extends BaseViewController
         
         if (!$this->isEmailValid($email)) {
             $this->get('session')->setFlash('user_signin_error', 'invalid-email');
-            return $this->redirect($this->generateUrl('user_view_signin', array(
+            return $this->redirect($this->generateUrl('user_view_signin_index', array(
                 'email' => $email,
                 'redirect' => $redirect,
                 'stay-signed-in' => $staySignedIn
@@ -50,7 +50,7 @@ class UserController extends BaseViewController
 
         if ($password == '') {
             $this->get('session')->setFlash('user_signin_error', 'blank-password');
-            return $this->redirect($this->generateUrl('user_view_signin', array(
+            return $this->redirect($this->generateUrl('user_view_signin_index', array(
                 'email' => $email,
                 'redirect' => $redirect,
                 'stay-signed-in' => $staySignedIn
@@ -63,7 +63,7 @@ class UserController extends BaseViewController
         
         if ($this->getUserService()->isPublicUser($user)) {
             $this->get('session')->setFlash('user_signin_error', 'public-user');
-            return $this->redirect($this->generateUrl('user_view_signin', array(
+            return $this->redirect($this->generateUrl('user_view_signin_index', array(
                 'email' => $email,
                 'redirect' => $redirect,
                 'stay-signed-in' => $staySignedIn
@@ -76,7 +76,7 @@ class UserController extends BaseViewController
             if (!$this->getUserService()->exists()) {
                 $this->getUserService()->clearUser();
                 $this->get('session')->setFlash('user_signin_error', 'invalid-user');
-                return $this->redirect($this->generateUrl('user_view_signin', array(
+                return $this->redirect($this->generateUrl('user_view_signin_index', array(
                     'email' => $email,
                     'redirect' => $redirect,
                     'stay-signed-in' => $staySignedIn
@@ -86,7 +86,7 @@ class UserController extends BaseViewController
             if ($this->getUserService()->isEnabled()) {
                 $this->getUserService()->clearUser();
                 $this->get('session')->setFlash('user_signin_error', 'authentication-failure');
-                return $this->redirect($this->generateUrl('user_view_signin', array(
+                return $this->redirect($this->generateUrl('user_view_signin_index', array(
                     'email' => $email,
                     'redirect' => $redirect,
                     'stay-signed-in' => $staySignedIn
@@ -100,7 +100,7 @@ class UserController extends BaseViewController
 
             $this->get('session')->setFlash('user_signin_error', 'user-not-enabled');          
 
-            return $this->redirect($this->generateUrl('user_view_signin', array(
+            return $this->redirect($this->generateUrl('user_view_signin_index', array(
                 'email' => $email,
                 'redirect' => $redirect,
                 'stay-signed-in' => $staySignedIn
@@ -113,7 +113,7 @@ class UserController extends BaseViewController
             $this->sendConfirmationToken($email, $token);                  
 
             $this->get('session')->setFlash('user_signin_error', 'user-not-enabled');
-            return $this->redirect($this->generateUrl('user_view_signin', array(
+            return $this->redirect($this->generateUrl('user_view_signin_index', array(
                 'email' => $email,
                 'redirect' => $redirect,
                 'stay-signed-in' => $staySignedIn
@@ -595,7 +595,7 @@ class UserController extends BaseViewController
             $redirectParameters['redirect'] = $this->get('request')->cookies->get('simplytestable-redirect');
         }
         
-        return $this->redirect($this->generateUrl('user_view_signin', $redirectParameters, true));  
+        return $this->redirect($this->generateUrl('user_view_signin_index', $redirectParameters, true));  
     }    
 
     /**

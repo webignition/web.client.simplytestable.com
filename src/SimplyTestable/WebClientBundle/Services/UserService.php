@@ -10,6 +10,8 @@ use webignition\Model\Stripe\Customer as StripeCustomer;
 
 class UserService extends CoreApplicationService {
     
+    const USER_COOKIE_KEY = 'simplytestable-user';
+    
     const PUBLIC_USER_USERNAME = 'public';
     const PUBLIC_USER_PASSWORD = 'public';
     
@@ -405,6 +407,27 @@ class UserService extends CoreApplicationService {
         $this->session->set('user', $this->userSerializerService->serialize($user));
         parent::setUser($user);
     }
+    
+    
+    /**
+     * 
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return null
+     */
+    public function setUserFromRequest(\Symfony\Component\HttpFoundation\Request $request) {       
+        if (!$request->cookies->has(self::USER_COOKIE_KEY)) {
+            $this->setUser($this->getPublicUser());
+            return;
+        }
+        
+        $user = $this->userSerializerService->unserializedFromString($request->cookies->get(self::USER_COOKIE_KEY));
+        
+        if (is_null($user)) {
+            return;
+        }
+        
+        $this->setUser($user);    
+    }    
     
     
     /**

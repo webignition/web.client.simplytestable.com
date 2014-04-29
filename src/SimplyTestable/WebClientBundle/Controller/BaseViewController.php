@@ -108,6 +108,37 @@ abstract class BaseViewController extends BaseController
     
     
     /**
+     * 
+     * @param array $additionalParameters
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function renderResponse(array $additionalParameters = array()) {
+        return parent::render($this->getViewName(), array_merge($this->getDefaultViewParameters(), $additionalParameters));
+    }     
+    
+    
+    /**
+     * 
+     * @param array $additionalParameters
+     * @return \Symfony\Component\HttpFoundation\Response
+     */    
+    protected function renderCacheableResponse(array $additionalParameters = array()) {
+        return $this->getCacheableResponseService()->getCachableResponse(
+            $this->getRequest(), $this->renderResponse($additionalParameters)
+        );        
+    }
+    
+    
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Services\CacheableResponseService
+     */
+    protected function getCacheableResponseService() {
+        return $this->get('simplytestable.services.cacheableResponseService');
+    }     
+    
+    
+    /**
      *
      * @param string $templateName
      * @return \DateTime 
@@ -194,17 +225,21 @@ abstract class BaseViewController extends BaseController
     /**
      *
      * @param type $flashKey
-     * @param type $messageIndex
      * @return string|null 
      */
-    protected function getFlash($flashKey, $messageIndex = 0) {        
-        $flashMessages = $this->get('session')->getFlashBag()->get($flashKey);         
-        if (!isset($flashMessages[$messageIndex])) {
+    protected function getFlash($flashKey, $flush = true) {        
+        if ($flush) {
+            $flashMessages = $this->get('session')->getFlashBag()->get($flashKey);         
+        } else {
+            $flashMessages = $this->get('session')->getFlashBag()->peek($flashKey);         
+        }        
+        
+        if (!isset($flashMessages[0])) {
             return '';
         }
         
-        return $flashMessages[$messageIndex];
-    }
+        return $flashMessages[0];
+    }   
     
     
     protected function getPersistentValue($key, $default = null) {
@@ -239,6 +274,69 @@ abstract class BaseViewController extends BaseController
      */
     protected function getSerializer() {
         return $this->container->get('serializer');
-    }     
+    } 
+    
+    
+    
+    protected function getViewName() {
+        $classNamespaceParts = $this->getClassNamespaceParts();
+        $bundleNamespaceParts = array_slice($classNamespaceParts, 0, array_search('Controller', $classNamespaceParts));        
+        
+        return $this->modifyViewName(implode('', $bundleNamespaceParts) . ':' .  $this->getViewPath() . ':' . $this->getViewFilename());
+    }
+    
+    
+    /**
+     * 
+     * @return string
+     */
+    protected function getViewPath() {
+        $classNamespaceParts = $this->getClassNamespaceParts();
+        $controllerClassNameParts = array_slice($classNamespaceParts, array_search('Controller', $classNamespaceParts) + 1);
+
+        array_walk($controllerClassNameParts, function(&$part) {
+            $part = preg_replace('/Controller$/', '', $part);
+        });
+
+        return implode('/', $controllerClassNameParts);
+    }
+    
+    
+    /**
+     * 
+     * @return string
+     */
+    protected function getViewFilename() {
+        $routeParts = explode('_', $this->container->get('request')->get('_route'));                
+        return $routeParts[count($routeParts) - 1] . '.html.twig';
+    }
+
+    
+    /**
+     * 
+     * @return string[]
+     */
+    private function getClassNamespaceParts() {
+        return explode('\\', get_class($this));
+    }  
+    
+    
+    /**
+     * 
+     * @return array
+     */
+    protected function getDefaultViewParameters() {
+        return array(
+            'user' => $this->getUserService()->getUser(),
+            'is_logged_in' => $this->getUserService()->isLoggedIn(),
+            'public_site' => $this->container->getParameter('public_site'),
+            'external_links' => $this->container->getParameter('external_links')
+        );
+    } 
+    
+    
+    protected function modifyViewName($viewName) {
+        return $viewName;
+    }
     
 }
