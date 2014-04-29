@@ -60,64 +60,20 @@ class UserAccountController extends AbstractUserAccountController {
             return array();
         }
         
-        $stripeEvents = array();
-        
-        //if (!$userSummary->getStripeCustomer()->hasSubscription()) {
-            $eventKeys = array(
-                'invoice.updated',
-                'invoice.created'
-            );
-            
-            foreach ($eventKeys as $eventKey) {
-                $eventData = $this->getUserStripeEventService()->getLatest($this->getUser(), $eventKey);
-                if (!is_null($eventData) && !isset($stripeEvents['invoice'])) {
-                    $stripeEvents['invoice'] = $eventData->getDataObject()->getObject();
-                }
+        $stripeEvents = array();       
+
+        $eventKeys = array(
+            'invoice.updated',
+            'invoice.created'
+        );
+
+        foreach ($eventKeys as $eventKey) {
+            $eventData = $this->getUserStripeEventService()->getLatest($this->getUser(), $eventKey);
+            if (!is_null($eventData) && !isset($stripeEvents['invoice'])) {
+                $stripeEvents['invoice'] = $eventData->getDataObject()->getObject();
             }
-            
-            //return $stripeEvents;
-        //}
-        
-//        if ($userSummary->getStripeCustomer()->getSubscription()->isTrialing() || $userSummary->getStripeCustomer()->getSubscription()->isActive()) {
-//            $stripeEvents['invoice'] = $this->getUserStripeEventService()->getLatest($this->getUser(), 'invoice.created');            
-//        }
-//        
-//        ini_set('xdebug.var_display_max_data', 5000);
-//        ini_set('xdebug.var_display_max_depth', 10);
-//        
-//        var_dump($stripeEvents);
-//        exit();
-//        
-//        
-//        switch ($userSummary->stripe_customer->subscription->status) {
-//            case 'trialing':
-//                $stripeEvents['invoice'] = $this->getUserStripeEventService()->getLatestData($this->getUser(), 'invoice.created');
-//                break;
-//            
-//            case 'active':
-//                $stripeEvents['invoice'] = $this->getUserStripeEventService()->getLatestData($this->getUser(), 'invoice.created');
-//                break;
-//            
-//            case 'past_due':
-//                $stripeEvents['invoice'] = $this->getUserStripeEventService()->getLatestData($this->getUser(), 'invoice.updated');
-//                $stripeEvents['charge.failed'] = $this->getUserStripeEventService()->getLatestData($this->getUser(), 'charge.failed');
-//                break;
-//            
-//            case 'cancelled':
-//                var_dump("sub cancelled, what do we do?");
-//                exit();                
-//                break;
-//        }
-//            
-//        if (isset($stripeEvents['invoice'])) {
-//            var_dump($stripeEvents['invoice']->getDataObject()->getObject()->getNextPaymentAttempt());
-//            exit();
-//            
-//            if (!is_null($stripeEvents['invoice']->next_payment_attempt)) {
-//                $nextPaymentDate = new \ExpressiveDate(date('c', $stripeEvents['invoice']->next_payment_attempt));
-//                $stripeEvents['invoice']->next_payment_attempt_relative = $nextPaymentDate->getRelativeDate();                
-//            }
-//        }
+        }
+
         
         return $stripeEvents;
     }
