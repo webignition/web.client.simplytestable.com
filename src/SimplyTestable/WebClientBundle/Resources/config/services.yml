@@ -173,3 +173,10 @@ services:
       - { name: kernel.event_listener, event: stripe.customer.subscription.updated, method: onCustomerSubscriptionUpdated }           
       - { name: kernel.event_listener, event: stripe.invoice.payment_succeeded, method: onInvoicePaymentSucceeded }           
       - { name: kernel.event_listener, event: stripe.invoice.payment_failed, method: onInvoicePaymentFailed }     
+      
+  simplytestable.controller.action_listener:
+    class: SimplyTestable\WebClientBundle\EventListener\RequestListener
+    arguments:        
+        kernel: @kernel
+    tags:
+      - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }      

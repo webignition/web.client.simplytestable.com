@@ -109,6 +109,35 @@ abstract class BaseTestCase extends WebTestCase {
         return $controllerCallable[0];
     }
     
+    
+    protected function createRoutedController($controllerClass, $controllerMethod, $routeName, array $parameters = array(), array $query = array(), array $cookies = array()) {
+        $request = $this->createWebRequest();        
+        $request->attributes->set('_controller', $controllerClass.'::'.$controllerMethod);
+        $request->attributes->set('_route', $routeName);
+        $request->request->add($parameters);
+        $request->query->add($query);       
+
+        foreach ($cookies as $cookieName => $cookieValue) {
+            $request->cookies->add(array($cookieName => $cookieValue));
+        }       
+        
+        $this->container->set('request', $request);
+              
+        $controllerCallable = $this->getControllerCallable($request);        
+        $controllerCallable[0]->setContainer($this->container);
+        
+        $dispatcher = $this->container->get('event_dispatcher');
+        $dispatcher->dispatch('kernel.controller', new \Symfony\Component\HttpKernel\Event\FilterControllerEvent(
+                self::$kernel,
+                $controllerCallable,
+                $request,
+                HttpKernelInterface::MASTER_REQUEST
+        ));
+
+        return $controllerCallable[0];
+    }    
+    
+    
     private function getControllerCallable(Request $request) {
         $controllerResolver = new \Symfony\Component\HttpKernel\Controller\ControllerResolver();        
         return $controllerResolver->getController($request);                
@@ -198,8 +227,68 @@ abstract class BaseTestCase extends WebTestCase {
     }
     
     
+    /**
+     * 
+     * @param array $items Collection of http messages and/or curl exceptions
+     * @return array
+     */
+    protected function buildHttpFixtureSet($items) {
+        $fixtures = array();
+        
+        foreach ($items as $item) {
+            switch ($this->getHttpFixtureItemType($item)) {
+                case 'httpMessage':
+                    $fixtures[] = \Guzzle\Http\Message\Response::fromMessage($item);
+                    break;
+                
+                case 'curlException':
+                    $fixtures[] = $this->getCurlExceptionFromCurlMessage($item);                    
+                    break;
+                
+                default:
+                    throw new \LogicException();
+            }
+        }
+        
+        return $fixtures;
+    }    
+    
+    
+    /**
+     * 
+     * @param string $item
+     * @return string
+     */
+    private function getHttpFixtureItemType($item) {
+        if (substr($item, 0, strlen('HTTP')) == 'HTTP') {
+            return 'httpMessage';
+        }
+        
+        return 'curlException';
+    }  
+    
+    
+    /**
+     * 
+     * @param string $curlMessage
+     * @return \Guzzle\Http\Exception\CurlException
+     */
+    private function getCurlExceptionFromCurlMessage($curlMessage) {
+        $curlMessageParts = explode(' ', $curlMessage, 2);
+        
+        $curlException = new \Guzzle\Http\Exception\CurlException();
+        if (isset($curlMessageParts[1])) {
+            $curlException->setError($curlMessageParts[1], (int)str_replace('CURL/', '', $curlMessageParts[0]));
+        } else {
+            $curlException->setError('Default Curl Message', (int)str_replace('CURL/', '', $curlMessageParts[0]));
+        }
+        
+        return $curlException;
+    } 
+    
+    
     protected function getHttpFixtures($path) {                
-        $fixtures = array();        
+        $fixtureContents = array();        
         $fixturesDirectory = new \DirectoryIterator($path);
         
         $fixturePathnames = array();
@@ -213,22 +302,10 @@ abstract class BaseTestCase extends WebTestCase {
         sort($fixturePathnames);
         
         foreach ($fixturePathnames as $fixturePathname) {                        
-            $fixtureContent = trim(file_get_contents($fixturePathname));
-            
-            switch (substr($fixtureContent, 0, 4)) {
-                case 'CURL':
-                    $curlException = new \Guzzle\Http\Exception\CurlException();
-                    $curlException->setError('', (int)  str_replace('CURL/', '', $fixtureContent));
-                    $fixtures[] = $curlException;
-                    break;
-                
-                case 'HTTP':
-                    $fixtures[] = \Guzzle\Http\Message\Response::fromMessage($fixtureContent);            
-                    break;
-            }
+            $fixtureContents[] = trim(file_get_contents($fixturePathname));
         }
         
-        return $fixtures;
+        return $this->buildHttpFixtureSet($fixtureContents);
     }     
 
 }

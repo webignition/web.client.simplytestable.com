@@ -40,7 +40,7 @@
                     There's no account for <strong>{{ email }}</strong>.
                     Good news - we can do that for you if you like.
                 </p>
-                <form role="form" class="single-button-form" method="get" action="{{ path('sign_up') }}">
+                <form role="form" class="single-button-form" method="get" action="{{ path('user_view_signup') }}">
                     <div> 
                         <input type="hidden" name="email" value="{{ email }}" />
                         <button class="btn btn-success" type="submit">Yes, sign me up please!</button>
@@ -60,7 +60,7 @@
                 </p>
 
                 <div class="single-button-form" > 
-                    <a class="btn btn-success" href="{{ path('reset_password', {'email': email}) }}">Ok, maybe I need to reset my password <i class="fa fa-caret-right"></i></a>
+                    <a class="btn btn-success" href="{{ path('user_view_resetpassword', {'email': email}) }}">Ok, maybe I need to reset my password <i class="fa fa-caret-right"></i></a>
                 </div>
             </div>                
         {% endif %}
@@ -75,7 +75,7 @@
                     You need to verify your email address before you can sign in.
                 </p>            
 
-                <form role="form" class="single-button-form" method="get" action="{{ path('sign_up_confirm', {'email': email}) }}">
+                <form role="form" class="single-button-form" method="get" action="{{ path('user_view_signupconfirm', {'email': email}) }}">
                     <div> 
                         <button class="btn btn-success" type="submit">Go to account activation <i class="fa fa-caret-right"></i></button>
                     </div>      
@@ -185,7 +185,7 @@
     </form> 
 
     <div class="additional single-button-form" > 
-        <a class="btn btn-default" href="{{ path('reset_password', {'email': email}) }}">I need to reset my password <i class="fa fa-caret-right"></i></a>
+        <a class="btn btn-default" href="{{ path('user_view_resetpassword', {'email': email}) }}">I need to reset my password <i class="fa fa-caret-right"></i></a>
     </div>
 
 {% endblock %}

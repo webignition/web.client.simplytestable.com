@@ -48,7 +48,7 @@ parameters:
       tests_list_count: /jobs/list/count/
   public_site:
     urls:
-      home: http://simplytestable.com/
+      home: http://test.simplytestable.com/
       plans_and_pricing: plans/
       features: features/
       account_benefits: account-benefits/

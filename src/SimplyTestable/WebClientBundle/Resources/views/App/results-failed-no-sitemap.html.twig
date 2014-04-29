@@ -15,12 +15,12 @@
 
 <div class="primary-options">
     <div class="inline-forms">
-        <form action="{{ path('sign_in') }}" method="get">
+        <form action="{{ path('user_view_signin') }}" method="get">
             <button  type="submit" class="btn btn-primary btn-large">Sign in to crawl this site to find URLs</button>
             <input type="hidden" name="redirect" value="{{ redirect }}" />
         </form> 
         or 
-        <form action="{{ path('sign_up') }}" method="get">
+        <form action="{{ path('user_view_signup') }}" method="get">
             <button  type="submit" class="btn btn-large">Create an account</button>
             <input type="hidden" name="redirect" value="{{ redirect }}" />
         </form>          
