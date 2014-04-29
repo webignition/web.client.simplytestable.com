@@ -2,15 +2,13 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\User\View;
 
-class SignUpConfirmController extends ViewController {
-    
-    //const ONE_YEAR_IN_SECONDS = 31536000;       
+class SignUpConfirmController extends ViewController {    
     
     protected function modifyViewName($viewName) {
         return str_replace(':User', ':bs3/User', $viewName);
     }
     
-    public function indexAction() {
+    public function indexAction($email) {
         $notificationKeys = array(
             'token_resend_confirmation',
             'user_create_confirmation',
@@ -19,7 +17,6 @@ class SignUpConfirmController extends ViewController {
             'user_error'            
         );
         
-        $email = trim($this->getRequest()->query->get('email'));
         $userError = ($this->getUserService()->exists($email)) ? '' : 'invalid-user';
         
         $viewData = $this->getTransientViewData();
