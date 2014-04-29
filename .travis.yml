@@ -21,7 +21,7 @@ before_script:
   - mv app/config/parameters.yml.travis app/config/parameters.yml
   - mv --force app/config/config_travis.yml app/config/config_test.yml
   - cp src/SimplyTestable/WebClientBundle/Resources/config/parameters.yml.travis src/SimplyTestable/WebClientBundle/Resources/config/parameters.yml
-  - php composer.phar install
+  - rake
   - php app/console doctrine:database:create
   - php app/console doctrine:migrations:migrate --no-interaction
   
