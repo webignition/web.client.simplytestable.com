@@ -76,6 +76,7 @@ class RequestListener
         
         if ($response->isNotModified($this->event->getRequest())) {
             $this->event->setResponse($response);
+            $this->kernel->getContainer()->get('session')->getFlashBag()->clear();
         } 
     }
     
