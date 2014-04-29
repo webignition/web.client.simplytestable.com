@@ -48,7 +48,7 @@ class SignUpConfirmController extends BaseViewController implements IEFiltered, 
             'user_create_confirmation' => $this->getFlash('user_create_confirmation', $flush),
             'user_token_error' => $this->getFlash('user_token_error', $flush),
             'token_resend_error' => $this->getFlash('token_resend_error', $flush),            
-            'token' => $this->get('request')->query->get('token'), 
+            'token' => trim($this->get('request')->query->get('token')), 
         );
     }
 

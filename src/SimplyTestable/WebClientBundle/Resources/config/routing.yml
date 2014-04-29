@@ -14,9 +14,9 @@ sign_in_submit:
     pattern:  /signin/submit/
     defaults: { _controller: SimplyTestableWebClientBundle:User:signInSubmit }     
     
-user_view_resetpassword:
+user_view_resetpassword_index:
     pattern:  /reset-password/
-    defaults: { _controller: SimplyTestableWebClientBundle:User/View:resetPassword }       
+    defaults: { _controller: SimplyTestableWebClientBundle:User/View/ResetPassword:index }       
     
 reset_password_submit:
     pattern:  /reset-password/submit/

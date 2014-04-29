@@ -252,29 +252,29 @@ class UserController extends BaseViewController
 
         if ($email == '') {
             $this->get('session')->setFlash('user_reset_password_error', 'blank-email');
-            return $this->redirect($this->generateUrl('user_view_resetpassword', array(), true));             
+            return $this->redirect($this->generateUrl('user_view_resetpassword_index', array(), true));             
         }                
         
         if (!$this->isEmailValid($email)) {
             $this->get('session')->setFlash('user_reset_password_error', 'invalid-email');
-            return $this->redirect($this->generateUrl('user_view_resetpassword', array(
+            return $this->redirect($this->generateUrl('user_view_resetpassword_index', array(
                 'email' => $email
             ), true));              
         }
         
         if ($this->getUserService()->exists($email) === false) {
             $this->get('session')->setFlash('user_reset_password_error', 'invalid-user');
-            return $this->redirect($this->generateUrl('user_view_resetpassword', array('email' => $email), true));          
+            return $this->redirect($this->generateUrl('user_view_resetpassword_index', array('email' => $email), true));          
         }    
         
         $token = $this->getUserService()->getConfirmationToken($email);
         try {
             $this->sendPasswordResetConfirmationToken($email, $token);            
             $this->get('session')->setFlash('user_reset_password_confirmation', 'token-sent');
-            return $this->redirect($this->generateUrl('user_view_resetpassword', array('email' => $email), true));           
+            return $this->redirect($this->generateUrl('user_view_resetpassword_index', array('email' => $email), true));           
         } catch (\SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception $postmarkResponseException) {
             $this->get('session')->setFlash('user_reset_password_error', 'invalid-email');
-            return $this->redirect($this->generateUrl('user_view_resetpassword', array(
+            return $this->redirect($this->generateUrl('user_view_resetpassword_index', array(
                 'email' => $email
             ), true));             
         }
@@ -287,7 +287,7 @@ class UserController extends BaseViewController
         $staySignedIn = trim($this->get('request')->request->get('stay-signed-in')) == '' ? 0 : 1; 
 
         if (!$this->isEmailValid($email) || $inputToken == '' || $this->getUserService()->exists($email) === false) {
-            return $this->redirect($this->generateUrl('user_view_resetpassword', array(), true));             
+            return $this->redirect($this->generateUrl('user_view_resetpassword_index', array(), true));             
         }                
 
         $token = $this->getUserService()->getConfirmationToken($email);             
