@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "702937dfd103afaa722ab515fb52527e",
+    "hash": "403ad19f13ae5e4cf77f4674f225dbff",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -2966,7 +2966,7 @@
         "webignition/html-validation-error-linkifier": 20
     },
     "platform": {
-        "php": ">=5.3.3"
+        "php": ">=5.4.0"
     },
     "platform-dev": [
 
