@@ -38,9 +38,9 @@ sign_up_submit:
     pattern:  /signup/submit/
     defaults: { _controller: SimplyTestableWebClientBundle:User:signUpSubmit }   
     
-user_view_signupconfirm:
+user_view_signupconfirm_index:
     pattern:  /signup/confirm/{email}/
-    defaults: { _controller: SimplyTestableWebClientBundle:User/View:signUpConfirm }       
+    defaults: { _controller: SimplyTestableWebClientBundle:User/View/SignUpConfirm:index }       
     
 sign_up_confirm_submit:
     pattern:  /signup/confirm/{email}/submit/

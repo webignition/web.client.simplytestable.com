@@ -81,7 +81,7 @@ class RequestListener
     }
     
     
-    private function setRequestCacheValidatorHeaders() {
+    private function setRequestCacheValidatorHeaders() {        
         $cacheValidatorParameters = $this->getController()->getCacheValidatorParameters();
 
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier($cacheValidatorParameters);
@@ -126,6 +126,17 @@ class RequestListener
     private function getControllerClassName() {
         $controllerActionParts = explode('::', $this->event->getRequest()->attributes->get('_controller'));        
         return $controllerActionParts[0];    
+    }
+    
+    
+    
+    /**
+     * 
+     * @return string
+     */    
+    private function getActionName() {
+        $controllerActionParts = explode('::', $this->event->getRequest()->attributes->get('_controller'));        
+        return $controllerActionParts[1];
     }
     
     

@@ -75,7 +75,7 @@
                     You need to verify your email address before you can sign in.
                 </p>            
 
-                <form role="form" class="single-button-form" method="get" action="{{ path('user_view_signupconfirm', {'email': email}) }}">
+                <form role="form" class="single-button-form" method="get" action="{{ path('user_view_signupconfirm_index', {'email': email}) }}">
                     <div> 
                         <button class="btn btn-success" type="submit">Go to account activation <i class="fa fa-caret-right"></i></button>
                     </div>      
