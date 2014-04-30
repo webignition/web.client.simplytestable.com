@@ -183,3 +183,14 @@ services:
         kernel: @kernel
     tags:
       - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }      
+      
+  simplytestable.listener.mailchimpEvent:
+    class:   SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener
+    arguments:
+        logger: "@logger"
+    tags:
+      - { name: kernel.event_listener, event: mailchimp.subscribe, method: onSubscribe }
+      - { name: kernel.event_listener, event: mailchimp.unsubscribe, method: onUnsubscribe }
+      - { name: kernel.event_listener, event: mailchimp.upemail, method: onUpEmail }
+      - { name: kernel.event_listener, event: mailchimp.cleaned, method: onCleaned }
+     
