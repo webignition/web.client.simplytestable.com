@@ -1,0 +1,32 @@
+{% extends 'SimplyTestableWebClientBundle::bs3/base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    
+    {% stylesheets    
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/user-account-index.css'
+    filter='cssrewrite' %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block body%}    
+    {{ parent() }}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Your account</h1>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Account details</h2>
+                {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:account-details.html.twig' %}
+            </div>
+            <div class="col-md-6">
+                <h2>Plan: {{ plan_presentation_name }}</h2>
+            </div>
+        </div>
+    </div>
+{% endblock %}

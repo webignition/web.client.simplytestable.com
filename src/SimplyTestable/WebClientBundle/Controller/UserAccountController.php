@@ -46,7 +46,7 @@ class UserAccountController extends AbstractUserAccountController {
             $viewData['token'] = $this->get('request')->query->get('token');
         }
 
-        $this->setTemplate('SimplyTestableWebClientBundle:User/Account:index.html.twig');
+        $this->setTemplate('SimplyTestableWebClientBundle:bs3/User/Account:index.html.twig');
         return $this->sendResponse($viewData);
     }
 

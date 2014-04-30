@@ -1,5 +1,5 @@
 body {
-    margin-top: 40px;
+    margin-top: 80px;
 }
 
 .navbar-inverse .container .navbar-brand {
@@ -13,6 +13,12 @@ body {
     width:0;
     margin-left: 5px;
     margin-right: 5px;
+}
+
+.navbar-inverse .navbar-nav>.active>a,
+.navbar-inverse .navbar-nav>.active>a:hover,
+.navbar-inverse .navbar-nav>.active>a:focus {
+    background-color: transparent;
 }
 
 .navbar .user-actions .spacer {
@@ -89,5 +95,9 @@ body.IE9 .input-group-larger .btn {
 
     .navbar .text a i {
         margin-right: 6px;
-    }  
+    } 
+    
+    .logged-in .navbar-form {
+        margin-left: 18px;
+    }
 }

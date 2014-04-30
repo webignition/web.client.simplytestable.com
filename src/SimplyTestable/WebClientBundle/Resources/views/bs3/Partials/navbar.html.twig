@@ -1,6 +1,4 @@
-{% set username_parts = user.username|split('@') %}    
-
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">    
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -26,6 +24,9 @@
                         {% endif %}                                
                     </a>
                 </li>
+                
+                {% if is_logged_in == false %}
+                
                 <li class="text">
                     <a href="{{ public_site['urls']['home'] }}{{ public_site['urls']['features'] }}">
                         <i class="fa fa-signal"></i> Features
@@ -36,12 +37,14 @@
                         <i class="fa fa-calendar"></i> Pricing <span class="hidden-sm">and plans</span>
                     </a>
                 </li>
+                
+                {% endif %}
 
                 {% if is_logged_in %}
-                    <li class="user-actions text">
+                    <li class="user-actions text {% if app.request.get('_route') == 'user_account_index' %}active{% endif %}">
                         <p class="navbar-text spacer highlighted-spacer hidden-xs">&nbsp;</p>
                         <a class="username" href="{{ path('user_account_index') }}">
-                            <i class="fa fa-user"></i> {{ username_parts[0] }}<span class="hidden-sm">@{{username_parts[1]}}</span>
+                            <i class="fa fa-user"></i> {{ user.username }}
                         </a>
                     </li>                         
                     <li>                    
