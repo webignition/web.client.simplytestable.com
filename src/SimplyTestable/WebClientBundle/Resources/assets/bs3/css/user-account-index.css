@@ -12,3 +12,20 @@ h2 {
 .confirm-email-change form {
     margin-top: 20px;
 }
+
+.account-section {
+    margin-bottom: 40px;
+}
+
+.news-subscriptions .checkbox {
+    margin-bottom: 20px;
+}
+
+.news-subscriptions .checkbox strong {
+    display:block;
+    font-weight: normal;
+}
+
+.news-subscriptions .checkbox span {
+    opacity: 0.7;
+}

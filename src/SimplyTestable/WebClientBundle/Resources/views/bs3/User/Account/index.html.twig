@@ -2,7 +2,7 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    
+
     {% stylesheets    
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/user-account-index.css'
     filter='cssrewrite' %}
@@ -18,11 +18,21 @@
                 <h1>Your account</h1>
             </div>
         </div>
-        
+
         <div class="row">
-            <div class="col-md-6">
-                <h2>Account details</h2>
-                {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:account-details.html.twig' %}
+            <div class="col-md-6">                
+                <div class="account-section account-details">
+                    <h2>Account details</h2>
+                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:account-details.html.twig' %}                    
+                </div>
+                <div class="account-section payment-details">
+                    <h2>Payment details</h2>
+                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:payment-details.html.twig' %} 
+                </div>                
+                <div class="account-section news-subscriptions">
+                    <h2>News subscriptions</h2>
+                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:news-subscriptions.html.twig' %} 
+                </div>                 
             </div>
             <div class="col-md-6">
                 <h2>Plan: {{ plan_presentation_name }}</h2>
