@@ -24,6 +24,12 @@ class ActionTest extends BaseActionTest {
     }
     
 
+    protected function getActionMethodArguments() {
+        return array(
+            'email' => 'user@example.com'
+        );
+    }
+        
 }
 
 

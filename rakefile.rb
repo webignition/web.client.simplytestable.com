@@ -6,7 +6,8 @@ task :default do
   fetch_dependencies
   get_composer 
   run_commands([
-    "./composer.phar install"
+    "./composer.phar install",
+    "php app/console simplytestable:cachevalidator:clear"
   ])
 end
 
