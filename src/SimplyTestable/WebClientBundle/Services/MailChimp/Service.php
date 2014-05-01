@@ -99,7 +99,9 @@ class Service {
    
         $this->getClient()->unsubscribe(array(
             'id' => $this->listRecipientsService->getListId($listName),
-            'email' => $email,
+            'email' => array(
+                'email' => $email
+            ),
             'delete_member' => false
         ));
         
