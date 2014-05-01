@@ -137,6 +137,21 @@ class ListRecipientsService {
     }
     
     
+    /**
+     * 
+     * @param string $listId
+     * @return string
+     * @throws \DomainException
+     */
+    public function getListName($listId) {
+        if (!in_array($listId, $this->listNameToListIdMap)) {
+            throw new \DomainException('List id "' . $listId . '" is not known', 2);
+        }
+        
+        return array_search($listId, $this->listNameToListIdMap);
+    }
+    
+    
     public function get($name) {
         if (!$this->hasListIdentifier($name)) {
             throw new \DomainException('List "' . $name . '" is not known', 1);

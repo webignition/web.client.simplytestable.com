@@ -10,7 +10,7 @@ abstract class EventTest extends BaseTestCase {
     
     /**
      *
-     * @var \SimplyTestable\WebClientBundle\Model\MailChimp\Event
+     * @var \SimplyTestable\WebClientBundle\Event\MailChimp\Event
      */
     protected $event;
     
