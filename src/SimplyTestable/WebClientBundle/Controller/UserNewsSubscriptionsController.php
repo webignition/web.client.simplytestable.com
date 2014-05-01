@@ -59,7 +59,7 @@ class UserNewsSubscriptionsController extends AbstractUserAccountController
   
     /**
      * 
-     * @return \SimplyTestable\WebClientBundle\Services\MailchimpService
+     * @return \SimplyTestable\WebClientBundle\Services\MailChimp\Service
      */
     private function getMailchimpService() {
         return $this->container->get('simplytestable.services.mailchimpservice');

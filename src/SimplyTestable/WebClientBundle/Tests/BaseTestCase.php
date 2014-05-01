@@ -162,7 +162,7 @@ abstract class BaseTestCase extends WebTestCase {
      * @param string $testName
      * @return string
      */
-    protected function getFixturesDataPath($testName) {
+    protected function getFixturesDataPath($testName = null) {
         $fixturesPath = $this->getCustomFixturesDataPath($testName);        
         
         while (!$this->directoryContainsFiles($fixturesPath) && $fixturesPath != __DIR__ . '/Fixtures') {

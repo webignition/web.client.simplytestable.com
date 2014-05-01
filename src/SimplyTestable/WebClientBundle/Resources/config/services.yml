@@ -130,13 +130,14 @@ services:
         webResourceService: "@simplytestable.services.webresourceservice"          
 
   simplytestable.services.mailchimpservice:
-    class:   SimplyTestable\WebClientBundle\Services\MailchimpService
+    class:   SimplyTestable\WebClientBundle\Services\MailChimp\Service
     arguments: 
         apiKey: %mailchimp_api_key%
-        lists:
-            updates: %mailchimp_updates_list_id%
-            announcements: %mailchimp_announcements_list_id%
-            introduction: %mailchimp_introduction_list_id%   
+        listRecipientsService: "@simplytestable.services.mailchimp.listRecipients"
+#        lists:
+#            updates: %mailchimp_updates_list_id%
+#            announcements: %mailchimp_announcements_list_id%
+#            introduction: %mailchimp_introduction_list_id%   
             
   simplytestable.services.availabletasktypeservice:
     class:   SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
