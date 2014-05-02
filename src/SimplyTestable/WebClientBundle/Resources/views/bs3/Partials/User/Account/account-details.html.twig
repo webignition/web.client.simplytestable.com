@@ -1,7 +1,3 @@
-{% set label_col_class = 'col-lg-3 col-md-4 ' %}
-{% set field_col_class = 'col-lg-6 col-md-7' %}    
-{% set submit_col_class = 'col-lg-offset-3 col-lg-9 col-md-offset-4 col-md-7' %}        
-
 {% if email_change_request is defined %}        
     {% if user_account_details_update_email_confirm_notice is defined and user_account_details_update_email_confirm_notice != '' %}   
         {% if user_account_details_update_email_confirm_notice == 'invalid-token' %}
