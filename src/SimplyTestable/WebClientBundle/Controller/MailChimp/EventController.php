@@ -17,6 +17,10 @@ class EventController extends BaseController {
     private $event = null;
     
     public function indexAction() {
+        if ($this->get('request')->getMethod() == 'GET') {
+            return new Response('', 200);
+        }
+        
         if (!$this->get('request')->request->has('type')) {
             return new Response('', 400);
         }
