@@ -20,9 +20,8 @@ class SubscribeCommand extends EmailListCommand
     }
 
 
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {     
-        $this->perform('subscribe', $input->getArgument('listId'), $input->getArgument('email'));
+    protected function execute(InputInterface $input, OutputInterface $output) {     
+        $this->getMailchimpService()->subscribe($input->getArgument('listId'), $input->getArgument('email'));
     }
   
 }

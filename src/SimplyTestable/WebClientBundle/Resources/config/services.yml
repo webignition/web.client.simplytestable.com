@@ -130,13 +130,14 @@ services:
         webResourceService: "@simplytestable.services.webresourceservice"          
 
   simplytestable.services.mailchimpservice:
-    class:   SimplyTestable\WebClientBundle\Services\MailchimpService
+    class:   SimplyTestable\WebClientBundle\Services\MailChimp\Service
     arguments: 
         apiKey: %mailchimp_api_key%
-        lists:
-            updates: %mailchimp_updates_list_id%
-            announcements: %mailchimp_announcements_list_id%
-            introduction: %mailchimp_introduction_list_id%   
+        listRecipientsService: "@simplytestable.services.mailchimp.listRecipients"
+#        lists:
+#            updates: %mailchimp_updates_list_id%
+#            announcements: %mailchimp_announcements_list_id%
+#            introduction: %mailchimp_introduction_list_id%   
             
   simplytestable.services.availabletasktypeservice:
     class:   SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
@@ -183,3 +184,24 @@ services:
         kernel: @kernel
     tags:
       - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }      
+      
+  simplytestable.listener.mailchimpEvent:
+    class:   SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener
+    arguments:
+        logger: "@logger"
+        mailchimpListRecipientsService: "@simplytestable.services.mailchimp.listRecipients"
+    tags:
+      - { name: kernel.event_listener, event: mailchimp.subscribe, method: onSubscribe }
+      - { name: kernel.event_listener, event: mailchimp.unsubscribe, method: onUnsubscribe }
+      - { name: kernel.event_listener, event: mailchimp.upemail, method: onUpEmail }
+      - { name: kernel.event_listener, event: mailchimp.cleaned, method: onCleaned }
+
+  simplytestable.services.mailchimp.listRecipients:
+    class:   SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService
+    calls:
+      - [addListIdentifier, ['announcements', %mailchimp_announcements_list_id%]]    
+      - [addListIdentifier, ['updates', %mailchimp_updates_list_id%]]    
+      - [addListIdentifier, ['introduction', %mailchimp_introduction_list_id%]]    
+    arguments:
+        entityManager: "@doctrine.orm.entity_manager"
+        logger: "@logger"

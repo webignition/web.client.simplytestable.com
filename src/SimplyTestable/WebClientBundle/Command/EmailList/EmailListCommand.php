@@ -3,19 +3,22 @@ namespace SimplyTestable\WebClientBundle\Command\EmailList;
 
 use SimplyTestable\WebClientBundle\Command\BaseCommand;
 
-abstract class EmailListCommand extends BaseCommand
-{
-    
-    protected function perform($methodName, $listId, $email)
-    {             
-        $this->getMailchimpService()->$methodName($listId, $email);
-    }       
+abstract class EmailListCommand extends BaseCommand {    
     
     /**
      * 
-     * @return \SimplyTestable\WebClientBundle\Services\MailchimpService
+     * @return \SimplyTestable\WebClientBundle\Services\MailChimp\Service
      */
-    private function getMailchimpService() {
+    protected function getMailchimpService() {
         return $this->getContainer()->get('simplytestable.services.mailchimpservice');
     }
+    
+    
+    /**
+     * 
+     * @return \SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService
+     */
+    protected function getMailchimpListRecipientsService() {
+        return $this->getContainer()->get('simplytestable.services.mailchimp.listRecipients');
+    }    
 }

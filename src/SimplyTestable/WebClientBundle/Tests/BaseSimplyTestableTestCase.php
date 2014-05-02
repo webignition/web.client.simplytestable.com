@@ -17,6 +17,7 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     const USER_ACCOUNT_PLAN_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\UserAccountPlanController';
     const REDIRECT_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\RedirectController';
     const STRIPE_EVENT_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\Stripe\EventController';
+    const MAILCHIMP_EVENT_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\MailChimp\EventController';
     
     
     /**

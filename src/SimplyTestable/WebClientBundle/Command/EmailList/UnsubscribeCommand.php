@@ -20,9 +20,8 @@ class UnsubscribeCommand extends EmailListCommand
     }
  
 
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {     
-        $this->perform('unsubscribe', $input->getArgument('listId'), $input->getArgument('email'));
+    protected function execute(InputInterface $input, OutputInterface $output) {     
+        $this->getMailchimpService()->unsubscribe($input->getArgument('listId'), $input->getArgument('email'));
     }
  
 }

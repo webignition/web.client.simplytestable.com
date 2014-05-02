@@ -10,11 +10,19 @@ framework:
 
 web_profiler:
     toolbar: false
-    intercept_redirects: false
-
-doctrine:
-  dbal:
-    connections:
-      default:
-        driver: pdo_sqlite
-        path: /run/shm/web.client.simplytestable.com.db
+    intercept_redirects: false        
+        
+parameters:    
+    database_driver: pdo_mysql
+    database_host: localhost
+    database_port: null
+    database_name: test_web_client_simplytestable_com
+    database_user: root
+    database_password: root 
+    
+#doctrine:
+#  dbal:
+#    connections:
+#      default:
+#        driver: pdo_sqlite
+#        path: /run/shm/web.client.simplytestable.com.db    

@@ -162,7 +162,7 @@ abstract class BaseTestCase extends WebTestCase {
      * @param string $testName
      * @return string
      */
-    protected function getFixturesDataPath($testName) {
+    protected function getFixturesDataPath($testName = null) {
         $fixturesPath = $this->getCustomFixturesDataPath($testName);        
         
         while (!$this->directoryContainsFiles($fixturesPath) && $fixturesPath != __DIR__ . '/Fixtures') {
@@ -307,5 +307,22 @@ abstract class BaseTestCase extends WebTestCase {
         
         return $this->buildHttpFixtureSet($fixtureContents);
     }     
+    
+    
+    public function tearDown() {
+        parent::tearDown();
+        
+        if (!is_null($this->container)) {
+            $this->container->get('doctrine')->getConnection()->close();
+        }
+        
+        $refl = new \ReflectionObject($this);
+        foreach ($refl->getProperties() as $prop) {
+            if (!$prop->isStatic() && 0 !== strpos($prop->getDeclaringClass()->getName(), 'PHPUnit_')) {
+                $prop->setAccessible(true);
+                $prop->setValue($this, null);
+            }
+        }
+    }    
 
 }

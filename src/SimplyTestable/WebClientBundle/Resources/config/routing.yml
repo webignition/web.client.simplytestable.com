@@ -1,6 +1,10 @@
 stripe_event:
   pattern: /stripe/event/
   defaults: { _controller: SimplyTestableWebClientBundle:Stripe\Event:index, _format: json }  
+  
+mailchimp_event:
+  pattern: /mailchimp/event/
+  defaults: { _controller: SimplyTestableWebClientBundle:MailChimp\Event:index, _format: json }     
 
 sign_out_submit:
     pattern:  /signout/
