@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Controller\User\View\SignUp\IndexAction;
+namespace SimplyTestable\WebClientBundle\Tests\Controller\User\View\SignUp\Index\IndexAction;
 
 use SimplyTestable\WebClientBundle\Tests\Controller\Base\ActionTest as BaseActionTest;
 

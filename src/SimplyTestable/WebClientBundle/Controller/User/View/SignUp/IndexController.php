@@ -1,10 +1,12 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Controller\User\View;
+namespace SimplyTestable\WebClientBundle\Controller\User\View\SignUp;
+
+use SimplyTestable\WebClientBundle\Controller\User\View\ViewController;
 
 use Symfony\Component\HttpFoundation\Cookie;
 
-class SignUpController extends ViewController {
+class IndexController extends ViewController {
     
     const ONE_YEAR_IN_SECONDS = 31536000;
     

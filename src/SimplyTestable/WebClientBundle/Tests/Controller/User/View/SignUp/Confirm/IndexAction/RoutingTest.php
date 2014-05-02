@@ -1,13 +1,15 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Controller\User\View\SignUp\IndexAction;
+namespace SimplyTestable\WebClientBundle\Tests\Controller\User\View\SignUp\Confirm\IndexAction;
 
 use SimplyTestable\WebClientBundle\Tests\Controller\Base\RoutingTest as BaseRoutingTest;
 
 class RoutingTest extends BaseRoutingTest {
 
     protected function getRouteParameters() {
-        return array();
+        return array(
+            'email' => 'user@example.com'
+        );
     }
 
 }

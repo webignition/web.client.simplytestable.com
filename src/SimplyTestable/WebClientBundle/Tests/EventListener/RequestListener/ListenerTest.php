@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Tests\BaseTestCase;
 
 abstract class ListenerTest extends BaseTestCase {
     
-    const REQUEST_CONTROLLER = 'SimplyTestable\WebClientBundle\Controller\User\View\SignUpController::indexAction';
+    const REQUEST_CONTROLLER = 'SimplyTestable\WebClientBundle\Controller\User\View\SignUp\IndexController::indexAction';
     
     protected $event;
     

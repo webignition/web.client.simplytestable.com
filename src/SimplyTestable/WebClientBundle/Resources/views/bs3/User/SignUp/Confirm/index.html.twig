@@ -29,7 +29,7 @@
                 There's no account for <strong>{{ app.request.get('email') }}</strong>.
                 Good news - we can do that for you if you like.
             </p>
-            <form role="form" class="single-button-form" method="get" action="{{ path('user_view_signup_index') }}">
+            <form role="form" class="single-button-form" method="get" action="{{ path('user_view_signup_index_index') }}">
                 <div> 
                     <input type="hidden" name="email" value="{{ app.request.get('email') }}" />
                     <button class="btn btn-success" type="submit">Yes, sign me up please!</button>

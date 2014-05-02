@@ -273,14 +273,14 @@ class UserController extends BaseViewController
         $email = trim($this->get('request')->request->get('email'));        
         if ($email == '') {
             $this->get('session')->setFlash('user_create_error', 'blank-email');
-            return $this->redirect($this->generateUrl('user_view_signup_index', array(
+            return $this->redirect($this->generateUrl('user_view_signup_index_index', array(
                 'plan' => $plan 
             ), true));             
         }
         
         if (!$this->isEmailValid($email)) {
             $this->get('session')->setFlash('user_create_error', 'invalid-email');
-            return $this->redirect($this->generateUrl('user_view_signup_index', array(
+            return $this->redirect($this->generateUrl('user_view_signup_index_index', array(
                 'email' => $email,
                 'plan' => $plan 
             ), true));              
@@ -290,7 +290,7 @@ class UserController extends BaseViewController
         if ($password == '') {
             $this->get('session')->setFlash('user_create_prefil', $email);
             $this->get('session')->setFlash('user_create_error', 'blank-password');
-            return $this->redirect($this->generateUrl('user_view_signup_index', array(
+            return $this->redirect($this->generateUrl('user_view_signup_index_index', array(
                 'email' => $email,
                 'plan' => $plan 
             ), true));               
@@ -301,17 +301,17 @@ class UserController extends BaseViewController
         
         if ($this->userCreationUserAlreadyExists($createResponse)) {
             $this->get('session')->setFlash('user_create_confirmation', 'user-exists');
-            return $this->redirect($this->generateUrl('user_view_signup_index', array('email' => $email), true));             
+            return $this->redirect($this->generateUrl('user_view_signup_index_index', array('email' => $email), true));             
         }
         
         if ($this->requestFailedDueToReadOnly($createResponse)) {
             $this->get('session')->setFlash('user_create_error', 'create-failed-read-only');
-            return $this->redirect($this->generateUrl('user_view_signup_index', array('email' => $email), true));               
+            return $this->redirect($this->generateUrl('user_view_signup_index_index', array('email' => $email), true));               
         }        
                 
         if ($this->userCreationFailed($createResponse)) {
             $this->get('session')->setFlash('user_create_error', 'create-failed');
-            return $this->redirect($this->generateUrl('user_view_signup_index', array('email' => $email), true));               
+            return $this->redirect($this->generateUrl('user_view_signup_index_index', array('email' => $email), true));               
         }
         
         $token = $this->getUserService()->getConfirmationToken($email);        
@@ -319,10 +319,10 @@ class UserController extends BaseViewController
         try {
             $this->sendConfirmationToken($email, $token);         
             $this->get('session')->setFlash('user_create_confirmation', 'user-created');
-            return $this->redirect($this->generateUrl('user_view_signupconfirm_index', array('email' => $email), true));            
+            return $this->redirect($this->generateUrl('user_view_signup_confirm_index', array('email' => $email), true));            
         } catch (\SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception $postmarkResponseException) {
             $this->get('session')->setFlash('user_create_error', 'invalid-email');
-            return $this->redirect($this->generateUrl('user_view_signup_index', array(
+            return $this->redirect($this->generateUrl('user_view_signup_index_index', array(
                 'email' => $email,
                 'plan' => $plan 
             ), true));
@@ -333,7 +333,7 @@ class UserController extends BaseViewController
     public function signupConfirmResendAction($email) {
         if ($this->getUserService()->exists($email) === false) {
             $this->get('session')->setFlash('token_resend_error', 'invalid-user');
-            return $this->redirect($this->generateUrl('user_view_signupconfirm_index', array('email' => $email), true));          
+            return $this->redirect($this->generateUrl('user_view_signup_confirm_index', array('email' => $email), true));          
         }
         
         $token = $this->getUserService()->getConfirmationToken($email);        
@@ -342,12 +342,12 @@ class UserController extends BaseViewController
             $this->sendConfirmationToken($email, $token);        
             $this->get('session')->setFlash('token_resend_confirmation', 'sent');      
 
-            return new \Symfony\Component\HttpFoundation\RedirectResponse($this->generateUrl('user_view_signupconfirm_index', array(
+            return new \Symfony\Component\HttpFoundation\RedirectResponse($this->generateUrl('user_view_signup_confirm_index', array(
                 'email' => $email
             )));    
         } catch (\SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception $postmarkResponseException) {
             $this->get('session')->setFlash('token_resend_error', 'postmark-failure');
-            return $this->redirect($this->generateUrl('user_view_signupconfirm_index', array('email' => $email), true));  
+            return $this->redirect($this->generateUrl('user_view_signup_confirm_index', array('email' => $email), true));  
         }
     }
     
@@ -362,7 +362,7 @@ class UserController extends BaseViewController
         $sender = $this->getMailService()->getConfiguration()->getSender('default');
         $messageProperties = $this->getMailService()->getConfiguration()->getMessageProperties('user_creation_confirmation');        
 
-        $confirmationUrl = $this->generateUrl('user_view_signupconfirm_index', array(
+        $confirmationUrl = $this->generateUrl('user_view_signup_confirm_index', array(
             'email' => $email
         ), true).'?token=' . $token;       
         
@@ -412,24 +412,24 @@ class UserController extends BaseViewController
     public function signupConfirmSubmitAction($email) {       
         if ($this->getUserService()->exists($email) === false) {
             $this->get('session')->setFlash('token_resend_error', 'invalid-user');
-            return $this->redirect($this->generateUrl('user_view_signupconfirm_index', array('email' => $email), true));          
+            return $this->redirect($this->generateUrl('user_view_signup_confirm_index', array('email' => $email), true));          
         }
         
         $token = trim($this->get('request')->get('token'));
         if ($token == '') {
             $this->get('session')->setFlash('user_token_error', 'blank-token');
-            return $this->redirect($this->generateUrl('user_view_signupconfirm_index', array('email' => $email), true));            
+            return $this->redirect($this->generateUrl('user_view_signup_confirm_index', array('email' => $email), true));            
         }
         
         $activationResponse = $this->getUserService()->activate($token);        
         if ($this->requestFailedDueToReadOnly($activationResponse)) {
             $this->get('session')->setFlash('user_token_error', 'failed-read-only');
-            return $this->redirect($this->generateUrl('user_view_signupconfirm_index', array('email' => $email), true));                
+            return $this->redirect($this->generateUrl('user_view_signup_confirm_index', array('email' => $email), true));                
         }
         
         if ($activationResponse == false) {
             $this->get('session')->setFlash('user_token_error', 'invalid-token');
-            return $this->redirect($this->generateUrl('user_view_signupconfirm_index', array('email' => $email), true));            
+            return $this->redirect($this->generateUrl('user_view_signup_confirm_index', array('email' => $email), true));            
         }
         
         $this->getResqueQueueService()->add(
