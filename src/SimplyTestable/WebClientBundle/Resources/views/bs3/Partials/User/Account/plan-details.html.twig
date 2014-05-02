@@ -137,8 +137,8 @@
 
         {% if user_summary.stripecustomer.subscription.status is defined %}
             {% if user_summary.stripecustomer.subscription.status == 'trialing' %}
-        You are on day <strong>{{ user_summary.dayOfTrialPeriod }}</strong> of your <strong>{{ user_summary.plan.startTrialPeriod }}</strong> day trial
-        ending <strong>{{ user_summary.stripecustomer.subscription.trialperiod.end|date("d") }} {{ user_summary.stripecustomer.subscription.trialperiod.end|date("F") }} {{ user_summary.stripecustomer.subscription.trialperiod.end|date("Y") }}</strong>.
+                You are on day <strong>{{ user_summary.dayOfTrialPeriod }}</strong> of your <strong>{{ user_summary.plan.startTrialPeriod }}</strong> day trial
+                ending <strong>{{ user_summary.stripecustomer.subscription.trialperiod.end|date("d") }} {{ user_summary.stripecustomer.subscription.trialperiod.end|date("F") }} {{ user_summary.stripecustomer.subscription.trialperiod.end|date("Y") }}</strong>.
             {% endif %}                    
         {% endif %}
     </p>            
@@ -178,7 +178,6 @@
 <div class="plan-section plan-details-change-plan">
     <h3>Change plan</h3>
 
-
     {% if user_summary.plan.accountplan.name == 'basic' %}
         {% if user_summary.plan.startTrialPeriod > 0  %}
             {% if user_summary.plan.startTrialPeriod == 365 %}
@@ -200,33 +199,34 @@
     {% if user_summary.plan.accountplan.name !='basic' %}
         {% if plan.summary is defined %}
             {% set trial_days_remaining = plan.summary.trial_period_days - plan.summary.days_of_trial_period + 1 %}                               
-                {% if trial_days_remaining > 0 %}
-                    <p>
-                        Switch between premium plans free for up to <strong>{{ trial_days_remaining }}</strong> day{% if trial_days_remaining != 1%}s{% endif %}.
-                    </p>                                
-                {% endif %}                            
-                {% endif %}                                
-                    {% endif %}
+            {% if trial_days_remaining > 0 %}
+                <p>
+                    Switch between premium plans free for up to <strong>{{ trial_days_remaining }}</strong> day{% if trial_days_remaining != 1%}s{% endif %}.
+                </p>                                
+            {% endif %}                            
+        {% endif %}                                
+    {% endif %}
 
-                        <div class="row">
-                            <div class="col-md-8">
-                                <form role="form" method="post" action="{{ path('user_account_plan_subscribe') }}">
-                                    <div class="input-group">
-                                        <select name="plan" class="form-control">
-                                            <option value="basic" {% if user_summary.plan.accountplan.name == 'basic' %}selected{% endif %}>Basic (&pound;0)</option>
-                                            <option value="personal" {% if user_summary.plan.accountplan.name == 'personal' %}selected{% endif %}>Personal (&pound;{{ plans.personal.price }})</option>
-                                            <option value="agency" {% if user_summary.plan.accountplan.name == 'agency' %}selected{% endif %}>Agency (&pound;{{ plans.agency.price }})</option>
-                                            <option value="business" {% if user_summary.plan.accountplan.name == 'business' %}selected{% endif %}>Business (&pound;{{ plans.business.price }})</option>
-                                            <option value="enterprise" {% if user_summary.plan.accountplan.name == 'enterprise' %}selected{% endif %}>Enterprise (&pound;{{ plans.enterprise.price }})</option>
-                                        </select> 
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-default" type="submit">Subscribe</button>
-                                        </span>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+    <div class="row">
+        <div class="col-md-8 col-sm-6">
+            <form role="form" method="post" action="{{ path('user_account_plan_subscribe') }}">
+                <div class="input-group">
+                    <select name="plan" class="form-control">
+                        <option value="basic" {% if user_summary.plan.accountplan.name == 'basic' %}selected{% endif %}>Basic (&pound;0)</option>
+                        <option value="personal" {% if user_summary.plan.accountplan.name == 'personal' %}selected{% endif %}>Personal (&pound;{{ plans.personal.price }})</option>
+                        <option value="agency" {% if user_summary.plan.accountplan.name == 'agency' %}selected{% endif %}>Agency (&pound;{{ plans.agency.price }})</option>
+                        <option value="business" {% if user_summary.plan.accountplan.name == 'business' %}selected{% endif %}>Business (&pound;{{ plans.business.price }})</option>
+                        <option value="enterprise" {% if user_summary.plan.accountplan.name == 'enterprise' %}selected{% endif %}>Enterprise (&pound;{{ plans.enterprise.price }})</option>
+                    </select> 
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">Subscribe</button>
+                    </span>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-12 col-sm-6">
+            <a class="plans-link" href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">View plan and pricing details <i class="fa fa-caret-right"></i></a>    
+        </div>
+    </div>    
 
-                        <a href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">View plan and pricing details <i class="fa fa-caret-right"></i></a>    
-
-                    </div>
+</div>
