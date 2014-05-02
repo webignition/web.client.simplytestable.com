@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Controller\User\View\ResetPasswordChoose\IndexAction;
+namespace SimplyTestable\WebClientBundle\Tests\Controller\User\View\ResetPassword\Choose\IndexAction;
 
 use SimplyTestable\WebClientBundle\Tests\Controller\Base\ActionTest as BaseActionTest;
 

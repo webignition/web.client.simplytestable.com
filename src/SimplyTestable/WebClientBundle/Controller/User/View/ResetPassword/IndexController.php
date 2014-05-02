@@ -1,8 +1,10 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Controller\User\View;
+namespace SimplyTestable\WebClientBundle\Controller\User\View\ResetPassword;
 
-class ResetPasswordController extends ViewController {
+use SimplyTestable\WebClientBundle\Controller\User\View\ViewController;
+
+class IndexController extends ViewController {
     
     protected function modifyViewName($viewName) {
         return str_replace(':User', ':bs3/User', $viewName);
