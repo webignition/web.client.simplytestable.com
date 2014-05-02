@@ -1,8 +1,8 @@
 <div class="row">
-    <div class="{{ label_col_class }}">
+    <div class="{{ label_col_class }} col-xs-1">
         <span class="card-type card-type-{{ user_summary.stripeCustomer.activeCard.type|lower}}"></span>
     </div>
-    <div class="{{ field_col_class }} details">
+    <div class="{{ field_col_class }} col-xs-4 details">
         <div class="card-details">
             <p> 
                 &bull;
@@ -20,7 +20,9 @@
                 {{ user_summary.stripeCustomer.activeCard.last4 }}
                 <span class="exp_date">expiring {{ card_expiry_month }} {{ user_summary.stripeCustomer.activeCard.expiryYear }}</span>
             </p>
-        </div>                            
+        </div>
+    </div>
+    <div class="{{ submit_col_class }} col-xs-6">
         <a href="{{ path('user_account_card') }}">Change your card details <i class="fa fa-caret-right"></i></a>                            
     </div>
 </div>
