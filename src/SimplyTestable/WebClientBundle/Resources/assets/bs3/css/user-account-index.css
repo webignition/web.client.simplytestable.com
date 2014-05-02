@@ -102,9 +102,22 @@ h3 {
     }
 }
 
-@media (max-width: 768px) {
-    .payment-details .row {
-        margin-left: 0;
+@media (max-width: 768px) {    
+    body {
+        margin-top: 40px;
+        background-color: #eee;
+    }    
+    
+    .plan-details-monthly-allowances table tr th {
+        width:54%;
+    }    
+
+    .account-details button,
+    .news-subscriptions button {
+        width: 100%;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        font-size: 18px;        
     }
 }
 
