@@ -280,7 +280,7 @@ abstract class BaseViewController extends BaseController
     
     protected function getViewName() {
         $classNamespaceParts = $this->getClassNamespaceParts();
-        $bundleNamespaceParts = array_slice($classNamespaceParts, 0, array_search('Controller', $classNamespaceParts));        
+        $bundleNamespaceParts = array_slice($classNamespaceParts, 0, array_search('Controller', $classNamespaceParts));
         
         return $this->modifyViewName(implode('', $bundleNamespaceParts) . ':' .  $this->getViewPath() . ':' . $this->getViewFilename());
     }
@@ -294,9 +294,18 @@ abstract class BaseViewController extends BaseController
         $classNamespaceParts = $this->getClassNamespaceParts();
         $controllerClassNameParts = array_slice($classNamespaceParts, array_search('Controller', $classNamespaceParts) + 1);
 
-        array_walk($controllerClassNameParts, function(&$part) {
-            $part = preg_replace('/Controller$/', '', $part);
+        array_walk($controllerClassNameParts, function(&$part) {            
+            $part = preg_replace(array(
+                '/Controller$/',
+                '/^View$/',
+            ), '', $part);
         });
+        
+        foreach ($controllerClassNameParts as $index => $part) {
+            if ($part == '') {
+                unset($controllerClassNameParts[$index]);
+            }
+        }
 
         return implode('/', $controllerClassNameParts);
     }
