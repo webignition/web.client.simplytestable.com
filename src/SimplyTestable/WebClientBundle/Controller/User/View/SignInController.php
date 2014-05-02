@@ -2,7 +2,9 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\User\View;
 
-class SignInController extends ViewController {
+use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+
+class SignInController extends CacheableViewController implements IEFiltered {
     
     protected function modifyViewName($viewName) {
         return str_replace(':User', ':bs3/User', $viewName);

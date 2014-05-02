@@ -3,10 +3,9 @@
 namespace SimplyTestable\WebClientBundle\Controller\User\View;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Cacheable;
 
-abstract class ViewController extends BaseViewController implements IEFiltered, Cacheable {
+abstract class CacheableViewController extends BaseViewController implements Cacheable {
     
     /**
      *

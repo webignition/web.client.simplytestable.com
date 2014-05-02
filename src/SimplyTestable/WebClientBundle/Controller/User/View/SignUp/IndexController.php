@@ -2,11 +2,12 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\User\View\SignUp;
 
-use SimplyTestable\WebClientBundle\Controller\User\View\ViewController;
+use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+use SimplyTestable\WebClientBundle\Controller\User\View\CacheableViewController;
 
 use Symfony\Component\HttpFoundation\Cookie;
 
-class IndexController extends ViewController {
+class IndexController extends CacheableViewController implements IEFiltered {
     
     const ONE_YEAR_IN_SECONDS = 31536000;
     

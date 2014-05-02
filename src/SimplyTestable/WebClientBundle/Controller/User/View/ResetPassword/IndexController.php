@@ -2,9 +2,10 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\User\View\ResetPassword;
 
-use SimplyTestable\WebClientBundle\Controller\User\View\ViewController;
+use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+use SimplyTestable\WebClientBundle\Controller\User\View\CacheableViewController;
 
-class IndexController extends ViewController {
+class IndexController extends CacheableViewController implements IEFiltered {
     
     protected function modifyViewName($viewName) {
         return str_replace(':User', ':bs3/User', $viewName);

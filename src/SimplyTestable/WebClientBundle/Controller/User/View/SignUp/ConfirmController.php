@@ -2,9 +2,10 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\User\View\SignUp;
 
-use SimplyTestable\WebClientBundle\Controller\User\View\ViewController;
+use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+use SimplyTestable\WebClientBundle\Controller\User\View\CacheableViewController;
 
-class ConfirmController extends ViewController {    
+class ConfirmController extends CacheableViewController implements IEFiltered {    
     
     protected function modifyViewName($viewName) {
         return str_replace(':User', ':bs3/User', $viewName);
