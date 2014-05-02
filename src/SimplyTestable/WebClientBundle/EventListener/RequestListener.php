@@ -6,6 +6,7 @@ use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
+use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresUser as RequiresUserController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Cacheable as CacheableController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered as IEFilteredController;
 
@@ -51,17 +52,23 @@ class RequestListener
      * @return null
      */
     public function onKernelRequest(GetResponseEvent $event) {         
-        $this->event = $event;      
+        $this->event = $event;
         
         if (!$this->isApplicationController()) {
             return;
         }
         
+        $this->getUserService()->setUserFromRequest($this->event->getRequest());
+        
+        if ($this->isRequiresUserController() && !$this->getUserService()->isLoggedIn()) {            
+            $this->kernel->getContainer()->get('session')->setFlash('user_signin_error', 'account-not-logged-in');            
+            $this->event->setResponse($this->getUserSignInRedirectResponse());            
+            return;             
+        }          
+        
         if ($this->isIeFilteredController() && $this->isUsingOldIE()) {
             $this->event->setResponse($this->getRedirectResponseToOutdatedBrowserPage());
         }
-        
-        $this->getUserService()->setUserFromRequest($this->event->getRequest());
         
         if (!$this->isCacheableController()) {
             return;
@@ -77,6 +84,19 @@ class RequestListener
             $this->event->setResponse($response);
             $this->kernel->getContainer()->get('session')->getFlashBag()->clear();
         } 
+    }
+    
+    
+    /**
+     * 
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    private function getUserSignInRedirectResponse() {
+        return new RedirectResponse($this->getController()->generateUrl('user_view_signin_index', array(
+            'redirect' => base64_encode(json_encode(array(
+                'route' => 'user_account_index')
+            ))
+        ), true));
     }
     
     
@@ -160,6 +180,14 @@ class RequestListener
      */
     private function isCacheableController() {
         return $this->getController() instanceof CacheableController; 
+    }
+    
+    
+    /**
+     * @return boolean
+     */
+    private function isRequiresUserController() {
+        return $this->getController() instanceof RequiresUserController; 
     }
     
     

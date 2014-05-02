@@ -2,19 +2,14 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresUser;
 
-use Symfony\Component\HttpFoundation\Response;
-
-class UserAccountController extends AbstractUserAccountController {
+class UserAccountController extends AbstractUserAccountController implements RequiresUser {
     
     const STRIPE_CARD_CHECK_KEY_POSTFIX = '_check';
 
-    public function indexAction() {
-        if (($notLoggedInResponse = $this->getNotLoggedInResponse()) instanceof Response) {
-            return $notLoggedInResponse;
-        }
-        
-        $userSummary = $this->getUserService()->getSummary($this->getUser());
+    public function indexAction() {        
+        $userSummary = $this->getUserService()->getSummary();
         
         $viewData = array_merge(array(
             'public_site' => $this->container->getParameter('public_site'),

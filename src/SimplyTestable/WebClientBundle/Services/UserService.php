@@ -462,7 +462,11 @@ class UserService extends CoreApplicationService {
      * @return \SimplyTestable\WebClientBundle\Model\User\Summary
      * @throws \SimplyTestable\WebClientBundle\Services\CurlException
      */
-    public function getSummary(User $user) {
+    public function getSummary(User $user = null) {
+        if (is_null($user)) {
+            $user = $this->getUser();
+        }
+        
         $request = $this->webResourceService->getHttpClientService()->getRequest(
                 $this->getUrl('user', array(
                     'email' => $user->getUsername()
