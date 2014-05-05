@@ -65,10 +65,10 @@ user_subscription_choices_update:
 user_account_details_confirm_email_change:
     pattern:  /account/details/update/confirm-email-change/
     defaults: { _controller: SimplyTestableWebClientBundle:UserAccountDetails:confirmEmailChange }          
-        
-user_account_index:
+
+user_view_account_index_index:
     pattern:  /account/
-    defaults: { _controller: SimplyTestableWebClientBundle:User/View/Account/Index:index }    
+    defaults: { _controller: SimplyTestableWebClientBundle:User/View/Account/Index:index }          
     
 user_account_card:
     pattern:  /account/card/

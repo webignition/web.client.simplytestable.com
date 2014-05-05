@@ -42,7 +42,7 @@ class UserAccountCardController extends AbstractUserAccountController {
         
         try {
             $this->getUserAccountCardService()->associate($this->getUser(), $stripe_card_token);
-            return $this->redirect($this->generateUrl('user_account_index', array(), true));
+            return $this->redirect($this->generateUrl('user_view_account_index_index', array(), true));
         } catch (\SimplyTestable\WebClientBundle\Exception\UserAccountCardException $userAccountCardException) {
             if ($this->isJsonResponseRequired()) {
                 return $this->sendResponse(array(

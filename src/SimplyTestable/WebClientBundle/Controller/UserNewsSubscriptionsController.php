@@ -31,7 +31,7 @@ class UserNewsSubscriptionsController extends AbstractUserAccountController
             $this->getMailchimpListRecipientsService()->persistAndFlush($listRecipients);
         }               
         
-        return $this->redirect($this->generateUrl('user_account_index', array(), true));        
+        return $this->redirect($this->generateUrl('user_view_account_index_index', array(), true));        
     }
     
     

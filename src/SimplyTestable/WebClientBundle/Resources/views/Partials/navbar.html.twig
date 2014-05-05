@@ -11,7 +11,7 @@
                     <div class="pull-right">                        
                         <form class="form-inline sign-out-form" method="post" action="{{ path('sign_out_submit') }}">
                             <p class="navbar-text">                                
-                                <a href="{{ path('user_account_index') }}" class="navbar-link navbar-user-link {% if app.request.get('_route') == 'user_account_index' %}active{% endif %}">
+                                <a href="{{ path('user_view_account_index_index') }}" class="navbar-link navbar-user-link {% if app.request.get('_route') == 'user_view_account_index_index' %}active{% endif %}">
                                     <i class="icon icon-user"></i>
                                     {{ user.username }}
                                 </a>

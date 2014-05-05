@@ -74,8 +74,15 @@ class WebResourceService {
             return;
         }
         
+//        if (substr_count($request->getUrl(), 'email-change-request')) {
+//            echo $request->getUrl() . "\n";
+//            echo $response . "\n\n";
+//            exit();            
+//        }
+        
 //        echo $request->getUrl() . "\n";
-//        echo $response . "\n\n";
+//        //echo $response . "\n\n";
+//        //exit();
 
 
         

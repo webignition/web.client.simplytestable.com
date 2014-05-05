@@ -58,7 +58,7 @@ class RequestListener
             return;
         }
         
-        $this->getUserService()->setUserFromRequest($this->event->getRequest());
+        $this->getUserService()->setUserFromRequest($this->event->getRequest());       
         
         if ($this->isRequiresUserController() && !$this->getUserService()->isLoggedIn()) {            
             $this->kernel->getContainer()->get('session')->setFlash('user_signin_error', 'account-not-logged-in');            
@@ -94,7 +94,7 @@ class RequestListener
     private function getUserSignInRedirectResponse() {
         return new RedirectResponse($this->getController()->generateUrl('user_view_signin_index', array(
             'redirect' => base64_encode(json_encode(array(
-                'route' => 'user_account_index')
+                'route' => 'user_view_account_index_index')
             ))
         ), true));
     }

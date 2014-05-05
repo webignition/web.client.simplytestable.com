@@ -15,7 +15,7 @@ class UserAccountDetailsController extends AbstractUserAccountController
             return $notLoggedInResponse;
         }
         
-        $redirectResponse = $this->redirect($this->generateUrl('user_account_index', array(), true));
+        $redirectResponse = $this->redirect($this->generateUrl('user_view_account_index_index', array(), true));
         
         if (!$this->hasAnyRequestValues()) {
             $this->get('session')->setFlash('user_account_details_update_notice', 'show-help');
@@ -119,7 +119,7 @@ class UserAccountDetailsController extends AbstractUserAccountController
         foreach ($actionKeys as $actionKey) {
             if ($this->get('request')->request->has($actionKey)) {
                 if (!is_null($requestedAction)) {
-                    return $this->redirect($this->generateUrl('user_account_index', array(), true)); 
+                    return $this->redirect($this->generateUrl('user_view_account_index_index', array(), true)); 
                 }
                 
                 $requestedAction = $actionKey;
@@ -137,11 +137,11 @@ class UserAccountDetailsController extends AbstractUserAccountController
                 return $this->confirmEmailChangeCancelAction();                
         }
         
-        return $this->redirect($this->generateUrl('user_account_index', array(), true));
+        return $this->redirect($this->generateUrl('user_view_account_index_index', array(), true));
     }
     
     private function confirmEmailChangeConfirmAction($token) {                
-        $redirectResponse =  $this->redirect($this->generateUrl('user_account_index', array(), true)); 
+        $redirectResponse =  $this->redirect($this->generateUrl('user_view_account_index_index', array(), true)); 
         
         $token = trim($token);
         if ($token === '') {
@@ -224,13 +224,13 @@ class UserAccountDetailsController extends AbstractUserAccountController
     private function confirmEmailChangeResendAction() {
         $this->sendEmailChangeConfirmationToken();
         $this->get('session')->setFlash('user_account_details_confirm_email_change_notice', 're-sent');
-        return $this->redirect($this->generateUrl('user_account_index', array(), true));
+        return $this->redirect($this->generateUrl('user_view_account_index_index', array(), true));
     }
     
     private function confirmEmailChangeCancelAction() {
         $this->getUserEmailChangeRequestService()->cancelEmailChangeRequest();
         $this->get('session')->setFlash('user_account_details_confirm_email_change_notice', 'cancelled');
-        return $this->redirect($this->generateUrl('user_account_index', array(), true));
+        return $this->redirect($this->generateUrl('user_view_account_index_index', array(), true));
     }
     
     /**
@@ -242,7 +242,7 @@ class UserAccountDetailsController extends AbstractUserAccountController
         $sender = $this->getMailService()->getConfiguration()->getSender('default');
         $messageProperties = $this->getMailService()->getConfiguration()->getMessageProperties('user_email_change_request_confirmation');
 
-        $confirmationUrl = $this->generateUrl('user_account_index', array(), true).'?token=' . $emailChangeRequest['token'];
+        $confirmationUrl = $this->generateUrl('user_view_account_index_index', array(), true).'?token=' . $emailChangeRequest['token'];
         
         $message = $this->getMailService()->getNewMessage();
         $message->setFrom($sender['email'], $sender['name']);

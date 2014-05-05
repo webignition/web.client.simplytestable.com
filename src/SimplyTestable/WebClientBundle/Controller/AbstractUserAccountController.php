@@ -10,7 +10,7 @@ abstract class AbstractUserAccountController extends BaseViewController
         }
         
         $redirectParameters = json_encode(array(
-            'route' => 'user_account_index'
+            'route' => 'user_view_account_index_index'
         ));
 
         $this->get('session')->setFlash('user_signin_error', 'account-not-logged-in');
