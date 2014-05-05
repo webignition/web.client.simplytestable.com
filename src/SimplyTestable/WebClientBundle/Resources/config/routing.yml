@@ -68,7 +68,7 @@ user_account_details_confirm_email_change:
         
 user_account_index:
     pattern:  /account/
-    defaults: { _controller: SimplyTestableWebClientBundle:UserAccount:index }    
+    defaults: { _controller: SimplyTestableWebClientBundle:User/View/Account/Index:index }    
     
 user_account_card:
     pattern:  /account/card/
