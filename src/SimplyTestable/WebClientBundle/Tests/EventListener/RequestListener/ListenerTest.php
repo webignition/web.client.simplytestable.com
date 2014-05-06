@@ -2,11 +2,9 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\EventListener\RequestListener;
 
-use SimplyTestable\WebClientBundle\Tests\BaseTestCase;
+use SimplyTestable\WebClientBundle\Tests\BaseSimplyTestableTestCase;
 
-abstract class ListenerTest extends BaseTestCase {
-    
-    const REQUEST_CONTROLLER = 'SimplyTestable\WebClientBundle\Controller\User\View\SignUp\IndexController::indexAction';
+abstract class ListenerTest extends BaseSimplyTestableTestCase {
     
     protected $event;
     
@@ -14,6 +12,9 @@ abstract class ListenerTest extends BaseTestCase {
         parent::setUp();
         $this->callListener();        
     }
+    
+    abstract protected function getControllerActionString();
+    abstract protected function getControllerRouteString();
     
     protected function getListenerMethodName() {
         $classNameParts = explode('\\', get_class($this));
@@ -52,8 +53,8 @@ abstract class ListenerTest extends BaseTestCase {
      */    
     protected function buildEvent() {
         $request = new \Symfony\Component\HttpFoundation\Request();
-        $request->attributes->set('_controller', self::REQUEST_CONTROLLER);
-        $request->attributes->set('_route', 'user_view_signup_index');
+        $request->attributes->set('_controller', $this->getControllerActionString());
+        $request->attributes->set('_route', $this->getControllerRouteString());
         
         return new \Symfony\Component\HttpKernel\Event\GetResponseEvent(
             $this->container->get('kernel'),

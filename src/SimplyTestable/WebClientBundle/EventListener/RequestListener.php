@@ -51,7 +51,7 @@ class RequestListener
      * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
      * @return null
      */
-    public function onKernelRequest(GetResponseEvent $event) {         
+    public function onKernelRequest(GetResponseEvent $event) {                 
         $this->event = $event;
         
         if (!$this->isApplicationController()) {
@@ -60,11 +60,11 @@ class RequestListener
         
         $this->getUserService()->setUserFromRequest($this->event->getRequest());       
         
-        if ($this->isRequiresUserController() && !$this->getUserService()->isLoggedIn()) {            
+        if ($this->isRequiresUserController() && !$this->getUserService()->isLoggedIn()) {                        
             $this->kernel->getContainer()->get('session')->setFlash('user_signin_error', 'account-not-logged-in');            
             $this->event->setResponse($this->getUserSignInRedirectResponse());            
             return;             
-        }          
+        }     
         
         if ($this->isIeFilteredController() && $this->isUsingOldIE()) {
             $this->event->setResponse($this->getRedirectResponseToOutdatedBrowserPage());

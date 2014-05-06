@@ -15,5 +15,13 @@ abstract class IEFilteredTest extends OnKernelRequestTest {
     
     abstract protected function getHttpUserAgent();
     
+    protected function getControllerActionString() {
+        return 'SimplyTestable\WebClientBundle\Controller\User\View\SignUp\IndexController::indexAction';
+    }
+    
+    protected function getControllerRouteString() {
+        return 'user_view_signup_index';
+    }
+    
     
 }
