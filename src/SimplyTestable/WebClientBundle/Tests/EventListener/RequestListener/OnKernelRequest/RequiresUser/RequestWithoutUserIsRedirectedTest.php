@@ -21,7 +21,7 @@ class RequestWithoutUserIsRedirectedTest extends RequiresUserTest {
     }
     
     public function testRedirectIsForSignInPage() {        
-        $expectedRedirectUrl = $this->container->get('router')->generate('user_view_signin_index', array(
+        $expectedRedirectUrl = $this->container->get('router')->generate('view_user_signin_index', array(
             'redirect' => base64_encode(json_encode(array(
                 'route' => 'user_view_account_index_index')
             ))            

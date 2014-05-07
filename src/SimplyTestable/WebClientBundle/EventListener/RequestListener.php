@@ -92,7 +92,7 @@ class RequestListener
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     private function getUserSignInRedirectResponse() {
-        return new RedirectResponse($this->getController()->generateUrl('user_view_signin_index', array(
+        return new RedirectResponse($this->getController()->generateUrl('view_user_signin_index', array(
             'redirect' => base64_encode(json_encode(array(
                 'route' => 'user_view_account_index_index')
             ))
