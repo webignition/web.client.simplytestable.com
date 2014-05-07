@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Controller\User\View\ResetPassword;
+namespace SimplyTestable\WebClientBundle\Controller\View\User\ResetPassword;
 
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Controller\User\View\CacheableViewController;

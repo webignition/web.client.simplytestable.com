@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Controller\User\View\ResetPassword\Choose\IndexAction;
+namespace SimplyTestable\WebClientBundle\Tests\Controller\View\User\ResetPassword\Choose\IndexAction;
 
 use SimplyTestable\WebClientBundle\Tests\Controller\Base\RoutingTest as BaseRoutingTest;
 
