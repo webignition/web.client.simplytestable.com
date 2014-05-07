@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Controller\User\View\SignUp;
+namespace SimplyTestable\WebClientBundle\Controller\View\User\SignUp;
 
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Controller\User\View\CacheableViewController;

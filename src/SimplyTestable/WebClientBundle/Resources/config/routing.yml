@@ -34,17 +34,17 @@ user_view_resetpassword_choose_index:
     pattern:  /reset-password/{email}/{token}/
     defaults: { _controller: SimplyTestableWebClientBundle:User/View/ResetPassword/Choose:index }           
     
-user_view_signup_index_index:
+view_user_signup_index_index:
     pattern:  /signup/
-    defaults: { _controller: SimplyTestableWebClientBundle:User/View/SignUp/Index:index }      
+    defaults: { _controller: SimplyTestableWebClientBundle:View/User/SignUp/Index:index }
     
 sign_up_submit:
     pattern:  /signup/submit/
     defaults: { _controller: SimplyTestableWebClientBundle:User:signUpSubmit }   
     
-user_view_signup_confirm_index:
+view_user_signup_confirm_index:
     pattern:  /signup/confirm/{email}/
-    defaults: { _controller: SimplyTestableWebClientBundle:User/View/SignUp/Confirm:index }       
+    defaults: { _controller: SimplyTestableWebClientBundle:View/User/SignUp/Confirm:index }
     
 sign_up_confirm_submit:
     pattern:  /signup/confirm/{email}/submit/

@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Controller\User\View\SignUp\Confirm\IndexAction;
+namespace SimplyTestable\WebClientBundle\Tests\Controller\View\User\SignUp\Confirm\IndexAction;
 
 use SimplyTestable\WebClientBundle\Tests\Controller\Base\RoutingTest as BaseRoutingTest;
 
