@@ -7,6 +7,10 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 
 class CardController extends BaseViewController implements RequiresUser, IEFiltered {
+
+    protected function modifyViewName($viewName) {
+        return str_replace(':User', ':bs3/User', $viewName);
+    }
     
     public function indexAction() {        
         $userSummary = $this->getUserService()->getSummary($this->getUser());
@@ -28,9 +32,7 @@ class CardController extends BaseViewController implements RequiresUser, IEFilte
             'user_account_card_exception_code'
         )));
 
-        $this->setTemplate('SimplyTestableWebClientBundle:bs3/User/Account:card.html.twig');
-        //$this->setTemplate('SimplyTestableWebClientBundle:User/Account:card.html.twig');
-        return $this->sendResponse($viewData);
+        return $this->renderResponse($viewData);
     }
 
     private function getCountries() {
