@@ -1,10 +1,10 @@
 {% extends 'SimplyTestableWebClientBundle::bs3/base.html.twig' %}
 
-{% set label_width_class = 'col-lg-3' %}
-{% set full_field_width_class = 'col-lg-9' %}
-{% set full_field_width_offset = 'col-lg-offset-3' %}
-{% set field_width_class = 'col-lg-5' %}
-{% set intro_width_class = 'col-lg-offset-3' %}
+{% set label_width_class = 'col-lg-3 col-md-4 col-sm-3' %}
+{% set full_field_width_class = 'col-lg-9 col-md-8 col-sm-8' %}
+{% set full_field_width_offset = 'col-lg-offset-3 col-md-offset-4 col-sm-offset-4' %}
+{% set field_width_class = 'col-lg-5 col-md-5 col-sm-5' %}
+{% set intro_width_class = 'col-lg-offset-3 col-md-offset-4 col-sm-offset-3' %}
 
 {% block title %}Your card details ({{ user.username }}) - {{ parent() }}{% endblock %}
 
@@ -50,11 +50,11 @@
               id="payment-form"
               action={{ path('user_account_card_associate', {'stripe_card_token' : 'stripe_card_token'}) }} novalidate>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6 card-details-group">
                     {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Card:cardholder-details.html.twig' %}
 
-                    <div class="col-lg-offset-3 submit">
-                        <button type="submit" class="btn">
+                    <div class="{{ intro_width_class }} submit hidden-xs hidden-sm">
+                        <button type="submit" class="btn btn-default xs-full">
                             {% if user_summary.stripeCustomer.hasActiveCard %}
                                 Update
                             {% else %}
@@ -63,10 +63,21 @@
                             card
                         </button>
                     </div>
-
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6 card-details-group">
                     {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Card:card-details.html.twig' %}
+                </div>
+            </div>
+            <div class="row hidden-lg hidden-md">
+                <div class="col-sm-9 col-sm-offset-3 col-xs-12 submit">
+                    <button type="submit" class="btn btn-default xs-full">
+                        {% if user_summary.stripeCustomer.hasActiveCard %}
+                            Update
+                        {% else %}
+                            Add
+                        {% endif %}
+                        card
+                    </button>
                 </div>
             </div>
         </form>

@@ -27,7 +27,7 @@
 
     <div class="col-lg-9 field">
         <div class="row">
-            <div class="col-lg-4 select-col">
+            <div class="col-lg-4 col-md-3 col-sm-2 col-xs-6 select-col">
                 <select class="form-control" id="inputExpiryMonth" data-stripe="exp_month">
                     <option value="">Month</option>
                     <option value="01">January</option>
@@ -44,7 +44,7 @@
                     <option value="12">December</option>
                 </select>
             </div>
-            <div class="col-lg-3 select-col">
+            <div class="col-lg-3 col-md-3 col-sm-2 col-xs-4 select-col">
                 <select class="form-control" id="inputExpiryYear" data-stripe="exp_year">
                     <option value="">Year</option>
                     {% for year in expiry_year_start..expiry_year_end %}
@@ -57,12 +57,12 @@
 </div>
 
 
-<div class="form-group">
+<div class="form-group cvc-form-group">
     <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container"></div>
 
-    <label for="inputCVC" class="{{ label_width_class }} control-label">CVC</label>
+    <label for="inputCVC" class="{{ label_width_class }} control-label">CVC <span class="help-block hidden-sm hidden-md hidden-lg">usually 3 digits on the back</span></label>
 
-    <div class="col-lg-2 field">
+    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3 field">
         {% if (user_summary.stripeCustomer.hasActiveCard and user_summary.stripeCustomer.activeCard.isPassedCvcCheck == false) or (user_account_card_exception_param  is defined and user_account_card_exception_param  == 'cvc') %}
 
             <div class="alert alert-danger">
@@ -83,13 +83,13 @@
 
     </div>
 
-    <span class="help-block">Usually 3 digits on the back</span>
+    <span class="help-block hidden-xs">Usually 3 digits on the back</span>
 </div>
 
 <div class="{{ intro_width_class }} intro">
-    <a class="collapse-control" href="#" data-toggle="collapse" data-target="#cvc-info">
+    <span class="collapse-control link" href="#" data-toggle="collapse" data-target="#cvc-info">
         What is a CVC and where do I find it?
-    </a>
+    </span>
 
     <div id="cvc-info" class="collapse">
         <p>

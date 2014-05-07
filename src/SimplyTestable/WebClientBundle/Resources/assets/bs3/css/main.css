@@ -81,6 +81,16 @@ body.IE9 .input-group-larger .btn {
     color: #aaa;
 }
 
+span.link {
+    color:#428bca;
+}
+
+span.link:focus,
+span.link:hover {
+    text-decoration: underline;
+    color: 2a6496;
+}
+
 @media (max-width: 768px) {    
     .navbar a.btn,
     .navbar-form {

@@ -1,10 +1,18 @@
+body {
+    padding-bottom: 40px;
+}
+
+.card-details-group {
+    margin-bottom: 40px;
+}
+
 .submit,
 .intro {
     padding-left: 6px;
 }
 
 .submit {
-    margin-top: 40px;
+    /*margin-top: 40px;*/
 }
 
 .expiry-date .select-col {
@@ -22,4 +30,51 @@
 
 .submit button .fa-check {
     color: #468847;
+}
+
+@media (min-width: 1200px) {
+    .submit {
+        margin-top: 40px;
+    }
+
+    .card-details-group {
+        margin-bottom: 0;
+    }
+}
+
+@media (min-width: 992px) {
+    .submit {
+        margin-top: 40px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .submit,
+    .intro {
+        padding-left: 8px;
+    }
+}
+
+@media (max-width: 992px) {
+    .submit {
+        padding-left: 14px;
+    }
+}
+
+@media (max-width: 768px) {
+    .intro {
+        padding-left: 0px;
+    }
+
+    .submit {
+        padding-left: 15px;
+    }
+
+    .cvc-form-group label .help-block {
+        display:inline;
+    }
+
+    .cvc-form-group  label {
+        width:100%;
+    }
 }
