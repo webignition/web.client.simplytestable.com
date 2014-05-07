@@ -7,7 +7,10 @@ task :default do
   get_composer 
   run_commands([
     "./composer.phar install",
-    "php app/console simplytestable:cachevalidator:clear"
+    "php app/console simplytestable:cachevalidator:clear",
+    "php app/console simplytestable:emaillist:retrieve-recipients updates",
+    "php app/console simplytestable:emaillist:retrieve-recipients announcements",
+    "php app/console simplytestable:emaillist:retrieve-recipients introduction"
   ])
 end
 

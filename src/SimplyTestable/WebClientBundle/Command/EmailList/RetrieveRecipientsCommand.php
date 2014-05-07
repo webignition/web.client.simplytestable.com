@@ -22,11 +22,15 @@ class RetrieveRecipientsCommand extends EmailListCommand
         if (!($this->getMailchimpListRecipientsService()->hasListIdentifier($input->getArgument('listName')))) {
             return 0;
         }
+
+        $output->write('Getting recipients for "' . $input->getArgument('listName') . '" ... ');
         
         $listRecipients = $this->getMailchimpListRecipientsService()->get($input->getArgument('listName'));
         $listRecipients->setRecipients(array());
         
         $members = $this->getMailchimpService()->retrieveMembers($input->getArgument('listName'));
+
+        $output->writeln(count($members) . ' recipients retrieved');
         
         foreach ($members as $member) {            
             $listRecipients->addRecipient($member['email']);
