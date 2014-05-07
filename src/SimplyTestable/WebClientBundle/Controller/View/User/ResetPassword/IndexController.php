@@ -3,7 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\User\ResetPassword;
 
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
-use SimplyTestable\WebClientBundle\Controller\User\View\CacheableViewController;
+use SimplyTestable\WebClientBundle\Controller\View\CacheableViewController;
 
 class IndexController extends CacheableViewController implements IEFiltered {
     

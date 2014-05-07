@@ -3,7 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\User\SignUp;
 
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
-use SimplyTestable\WebClientBundle\Controller\User\View\CacheableViewController;
+use SimplyTestable\WebClientBundle\Controller\View\CacheableViewController;
 
 class ConfirmController extends CacheableViewController implements IEFiltered {    
     
