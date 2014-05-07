@@ -2,5 +2,5 @@
 
 namespace SimplyTestable\WebClientBundle\Interfaces\Controller;
 
-interface RequiresUser {    
+interface RequiresPrivateUser {
 }

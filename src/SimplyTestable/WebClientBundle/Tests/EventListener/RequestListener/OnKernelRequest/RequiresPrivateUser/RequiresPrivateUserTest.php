@@ -1,10 +1,10 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\EventListener\RequestListener\OnKernelRequest\RequiresUser;
+namespace SimplyTestable\WebClientBundle\Tests\EventListener\RequestListener\OnKernelRequest\RequiresPrivateUser;
 
 use SimplyTestable\WebClientBundle\Tests\EventListener\RequestListener\OnKernelRequest\OnKernelRequestTest;
 
-abstract class RequiresUserTest extends OnKernelRequestTest {
+abstract class RequiresPrivateUserTest extends OnKernelRequestTest {
     
     protected function buildEvent() {
         $event = parent::buildEvent();        

@@ -2,9 +2,9 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Controller\View\User\Account\Index\IndexAction;
 
-use SimplyTestable\WebClientBundle\Tests\Controller\Base\RequiresUserTest as BaseRequiresUserTest;
+use SimplyTestable\WebClientBundle\Tests\Controller\Base\RequiresPrivateUserTest as BaseRequiresPrivateUserTest;
 
-class RequiresUserTest extends BaseRequiresUserTest {
+class RequiresPrivateUserTest extends BaseRequiresPrivateUserTest {
     
     public function setUp() {
         parent::setUp();

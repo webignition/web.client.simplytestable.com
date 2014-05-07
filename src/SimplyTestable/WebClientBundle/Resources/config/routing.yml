@@ -100,11 +100,11 @@ app_finished_content:
     
 app_history_all:
     pattern:  /history/
-    defaults: { _controller: SimplyTestableWebClientBundle:TestHistory:index, page_number: 1 }        
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/History/Index:index, page_number: 1 }
     
 app_history:
     pattern:  /history/{page_number}/
-    defaults: { _controller: SimplyTestableWebClientBundle:TestHistory:index }      
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/History/Index:index }
     requirements:
         page_number: "\d+"    
     

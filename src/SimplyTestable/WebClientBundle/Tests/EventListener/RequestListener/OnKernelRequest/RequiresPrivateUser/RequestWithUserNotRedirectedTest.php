@@ -1,8 +1,8 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\EventListener\RequestListener\OnKernelRequest\RequiresUser;
+namespace SimplyTestable\WebClientBundle\Tests\EventListener\RequestListener\OnKernelRequest\RequiresPrivateUser;
 
-class RequestWithUserNotRedirectedTest extends RequiresUserTest {
+class RequestWithUserNotRedirectedTest extends RequiresPrivateUserTest {
     
     protected function buildEvent() {     
         $user = $this->makeUser();

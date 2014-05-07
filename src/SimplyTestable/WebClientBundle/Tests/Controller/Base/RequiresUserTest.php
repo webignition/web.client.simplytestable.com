@@ -1,15 +1,15 @@
 <?php
 
 namespace SimplyTestable\WebClientBundle\Tests\Controller\Base;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresUser as RequiresUserController;
+use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser as RequiresPrivateUserController;
 
-abstract class RequiresUserTest extends BaseTest {
+abstract class RequiresPrivateUserTest extends BaseTest {
     
     const ROUTER_MATCH_CONTROLLER_KEY = '_controller';
     
     
-    public function testActionControllerIsRequiresUser() {
-        $this->assertTrue($this->getCurrentController() instanceof RequiresUserController);
+    public function testActionControllerIsRequiresPrivateUser() {
+        $this->assertTrue($this->getCurrentController() instanceof RequiresPrivateUserController);
     }
     
 }

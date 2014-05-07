@@ -6,7 +6,7 @@ use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresUser as RequiresUserController;
+use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser as RequiresPrivateUserController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Cacheable as CacheableController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered as IEFilteredController;
 
@@ -60,7 +60,7 @@ class RequestListener
         
         $this->getUserService()->setUserFromRequest($this->event->getRequest());       
         
-        if ($this->isRequiresUserController() && !$this->getUserService()->isLoggedIn()) {                        
+        if ($this->isRequiresPrivateUserController() && !$this->getUserService()->isLoggedIn()) {
             $this->kernel->getContainer()->get('session')->setFlash('user_signin_error', 'account-not-logged-in');            
             $this->event->setResponse($this->getUserSignInRedirectResponse());            
             return;             
@@ -186,8 +186,8 @@ class RequestListener
     /**
      * @return boolean
      */
-    private function isRequiresUserController() {
-        return $this->getController() instanceof RequiresUserController; 
+    private function isRequiresPrivateUserController() {
+        return $this->getController() instanceof RequiresPrivateUserController;
     }
     
     

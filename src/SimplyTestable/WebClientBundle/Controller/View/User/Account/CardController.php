@@ -3,10 +3,10 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\User\Account;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresUser;
+use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 
-class CardController extends BaseViewController implements RequiresUser, IEFiltered {
+class CardController extends BaseViewController implements RequiresPrivateUser, IEFiltered {
 
     protected function modifyViewName($viewName) {
         return str_replace(':User', ':bs3/User', $viewName);

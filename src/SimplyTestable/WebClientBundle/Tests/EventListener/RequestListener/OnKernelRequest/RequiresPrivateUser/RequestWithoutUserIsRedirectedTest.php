@@ -1,8 +1,8 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\EventListener\RequestListener\OnKernelRequest\RequiresUser;
+namespace SimplyTestable\WebClientBundle\Tests\EventListener\RequestListener\OnKernelRequest\RequiresPrivateUser;
 
-class RequestWithoutUserIsRedirectedTest extends RequiresUserTest {
+class RequestWithoutUserIsRedirectedTest extends RequiresPrivateUserTest {
 
     protected function getControllerActionString() {
         return 'SimplyTestable\WebClientBundle\Controller\View\User\Account\IndexController::indexAction';

@@ -3,10 +3,10 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\User\Account;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresUser;
+use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 
-class IndexController extends BaseViewController implements RequiresUser, IEFiltered {
+class IndexController extends BaseViewController implements RequiresPrivateUser, IEFiltered {
     
     const STRIPE_CARD_CHECK_KEY_POSTFIX = '_check';
 
