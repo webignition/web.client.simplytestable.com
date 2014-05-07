@@ -89,6 +89,7 @@ span.link:focus,
 span.link:hover {
     text-decoration: underline;
     color: 2a6496;
+    cursor: pointer;
 }
 
 @media (max-width: 768px) {    
