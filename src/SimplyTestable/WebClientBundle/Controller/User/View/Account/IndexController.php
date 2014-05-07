@@ -10,15 +10,16 @@ class IndexController extends BaseViewController implements RequiresUser, IEFilt
     
     const STRIPE_CARD_CHECK_KEY_POSTFIX = '_check';
 
-    public function indexAction() {        
+    protected function modifyViewName($viewName) {
+        return str_replace(':User', ':bs3/User', $viewName);
+    }
+
+    public function indexAction() {
         $userSummary = $this->getUserService()->getSummary();
         
         $viewData = array_merge(array(
-            'public_site' => $this->container->getParameter('public_site'),
-            'user' => $this->getUser(),
             'user_summary' => $userSummary,
             'plan_presentation_name' => $this->getPlanPresentationName($userSummary->getPlan()->getAccountPlan()->getName()),
-            'is_logged_in' => true,
             'stripe_event_data' => $this->getUserStripeEvents($userSummary),
             'stripe' => $this->container->getParameter('stripe'),
             'this_url' => $this->generateUrl('user_view_account_index_index', array(), true),
@@ -43,8 +44,7 @@ class IndexController extends BaseViewController implements RequiresUser, IEFilt
             $viewData['token'] = $this->get('request')->query->get('token');
         }
 
-        $this->setTemplate('SimplyTestableWebClientBundle:bs3/User/Account:index.html.twig');
-        return $this->sendResponse($viewData);
+        return $this->renderResponse($viewData);
     }
 
     
@@ -93,24 +93,6 @@ class IndexController extends BaseViewController implements RequiresUser, IEFilt
         return \DateTime::createFromFormat('!m', $userSummary->getStripeCustomer()->getActiveCard()->getExpiryMonth())->format('F');               
     }
 
-
-    /**
-     * 
-     * @param \stdClass $userSummary
-     * @return int
-     */
-    private function getDayOfTrialPeriod($userSummary) {
-        if (!isset($userSummary->stripe_customer)) {
-            return 0;
-        }
-        
-        if (!isset($userSummary->stripe_customer->subscription)) {
-            return 0;
-        }
-        
-        $trialPeriodRemaining = $userSummary->stripe_customer->subscription->trial_end - time();
-        return (int)($userSummary->user_plan->start_trial_period - floor($trialPeriodRemaining / 86400));
-    }
 
     /**
      * 
