@@ -70,7 +70,7 @@ user_view_account_index_index:
     pattern:  /account/
     defaults: { _controller: SimplyTestableWebClientBundle:User/View/Account/Index:index }          
     
-user_account_card:
+user_view_account_card_index:
     pattern:  /account/card/
     defaults: { _controller: SimplyTestableWebClientBundle:User/View/Account/Card:index }        
     

@@ -25,7 +25,7 @@ class UserAccountCardController extends AbstractUserAccountController {
                 $this->get('session')->setFlash('user_account_card_exception_message', $userAccountCardException->getMessage());
                 $this->get('session')->setFlash('user_account_card_exception_param', $userAccountCardException->getParam());
                 $this->get('session')->setFlash('user_account_card_exception_code', $userAccountCardException->getCode());                
-                return $this->redirect($this->generateUrl('user_account_card', array(), true));
+                return $this->redirect($this->generateUrl('user_view_account_card_index', array(), true));
             }
         }
     }
