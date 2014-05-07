@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\User;
 
-use SimplyTestable\WebClientBundle\Controller\User\View\CacheableViewController;
+use SimplyTestable\WebClientBundle\Controller\View\CacheableViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 
 class SignInController extends CacheableViewController implements IEFiltered {
