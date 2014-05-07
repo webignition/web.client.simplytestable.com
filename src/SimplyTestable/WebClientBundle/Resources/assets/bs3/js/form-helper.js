@@ -1,3 +1,5 @@
 $(document).ready(function() {
-    $('.alert[data-for]').stFormErrorHelper().focusFieldOnClear();
+    $('body').on('click', '.alert[data-for] .close', function (event) {
+        $('#' + $(event.target).parent().attr('data-for')).stFormHelper().select();
+    });
 });

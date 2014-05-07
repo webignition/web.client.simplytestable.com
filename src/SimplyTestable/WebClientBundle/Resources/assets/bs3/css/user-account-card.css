@@ -1,0 +1,25 @@
+.submit,
+.intro {
+    padding-left: 6px;
+}
+
+.submit {
+    margin-top: 40px;
+}
+
+.expiry-date .select-col {
+    padding-right: 0;
+}
+
+#cvc-info a {
+    display:block;
+    margin-top: 10px;
+}
+
+.submit button .fa {
+    margin-left: 8px;
+}
+
+.submit button .fa-check {
+    color: #468847;
+}

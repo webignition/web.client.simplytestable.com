@@ -348,4 +348,20 @@ abstract class BaseViewController extends BaseController
         return $viewName;
     }
     
+    
+    /**
+     * 
+     * @param array $keys
+     * @return array
+     */
+    protected function getViewFlashValues($keys) {
+        $flashValues = array();
+        
+        foreach ($keys as $key) {
+            $flashValues[$key] = $this->getFlash($key);
+        }
+        
+        return $flashValues;
+    }    
+    
 }

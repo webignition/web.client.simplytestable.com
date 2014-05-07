@@ -1,5 +1,7 @@
 {% extends 'SimplyTestableWebClientBundle::bs3/base.html.twig' %}
 
+{% block title %}Your account ({{ user.username }}) - {{ parent() }}{% endblock %}
+
 {% set label_col_class = 'col-lg-3 col-md-4 col-sm-3' %}
 {% set field_col_class = 'col-lg-6 col-md-7 col-sm-9' %}    
 {% set submit_col_class = 'col-lg-offset-3 col-lg-9 col-md-offset-4 col-md-7 col-sm-offset-3 col-sm-9' %}  
@@ -8,6 +10,7 @@
     {{ parent() }}
 
     {% stylesheets    
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/user-account.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/user-account-index.css'
     filter='cssrewrite' %}
     <link rel="stylesheet" href="{{ asset_url }}" />

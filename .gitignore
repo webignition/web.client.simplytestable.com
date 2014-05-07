@@ -11,6 +11,7 @@ bin
 composer.phar
 phpcpd.phar
 /nbproject
+/.idea
 /src/SimplyTestable/WebClientBundle/Resources/public/vendor/
 /src/SimplyTestable/WebClientBundle/Resources/assets/vendor/
 src/SimplyTestable/WebClientBundle/Resources/config/parameters.yml

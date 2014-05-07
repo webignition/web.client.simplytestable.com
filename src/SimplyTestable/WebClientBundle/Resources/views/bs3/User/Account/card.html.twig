@@ -1,0 +1,74 @@
+{% extends 'SimplyTestableWebClientBundle::bs3/base.html.twig' %}
+
+{% set label_width_class = 'col-lg-3' %}
+{% set full_field_width_class = 'col-lg-9' %}
+{% set full_field_width_offset = 'col-lg-offset-3' %}
+{% set field_width_class = 'col-lg-5' %}
+{% set intro_width_class = 'col-lg-offset-3' %}
+
+{% block title %}Your card details ({{ user.username }}) - {{ parent() }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {% stylesheets
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/user-account.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/user-account-card.css'
+    filter='cssrewrite' %}
+    <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+    <script type="text/javascript">
+        Stripe.setPublishableKey('{{ stripe_publishable_key }}');
+    </script>
+    {{ parent() }}
+
+    {% javascripts
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormErrorHelper.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/form-helper.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/user-account-card.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Your card details</h1>
+            </div>
+        </div>
+
+        <form class="form-horizontal"
+              role="form"
+              id="payment-form"
+              action={{ path('user_account_card_associate', {'stripe_card_token' : 'stripe_card_token'}) }} novalidate>
+            <div class="row">
+                <div class="col-md-6">
+                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Card:cardholder-details.html.twig' %}
+
+                    <div class="col-lg-offset-3 submit">
+                        <button type="submit" class="btn">
+                            {% if user_summary.stripeCustomer.hasActiveCard %}
+                                Update
+                            {% else %}
+                                Add
+                            {% endif %}
+                            card
+                        </button>
+                    </div>
+
+                </div>
+                <div class="col-md-6">
+                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Card:card-details.html.twig' %}
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

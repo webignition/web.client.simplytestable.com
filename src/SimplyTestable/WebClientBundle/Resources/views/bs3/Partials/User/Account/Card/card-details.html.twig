@@ -1,0 +1,105 @@
+<div class="{{ intro_width_class }} intro">
+    <h2>Credit card</h2>
+
+    <p>
+        We accept Visa and Mastercard credit and debit cards.
+    </p>
+</div>
+
+<div class="form-group">
+    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container"></div>
+
+    <label for="inputNumber" class="{{ label_width_class }} control-label">Number</label>
+
+    <div class="{{ full_field_width_class }} field">
+        <input type="text"
+               class="form-control"
+               id="inputNumber"
+               placeholder="15 or 16 digits across the front"
+               data-stripe="number">
+    </div>
+</div>
+
+<div class="form-group expiry-date">
+    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container"></div>
+
+    <label for="inputExpiryMonth" class="{{ label_width_class }} control-label">Expiry date</label>
+
+    <div class="col-lg-9 field">
+        <div class="row">
+            <div class="col-lg-4 select-col">
+                <select class="form-control" id="inputExpiryMonth" data-stripe="exp_month">
+                    <option value="">Month</option>
+                    <option value="01">January</option>
+                    <option value="02">February</option>
+                    <option value="03">March</option>
+                    <option value="04">April</option>
+                    <option value="05">May</option>
+                    <option value="06">June</option>
+                    <option value="07">July</option>
+                    <option value="08">August</option>
+                    <option value="09">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+            </div>
+            <div class="col-lg-3 select-col">
+                <select class="form-control" id="inputExpiryYear" data-stripe="exp_year">
+                    <option value="">Year</option>
+                    {% for year in expiry_year_start..expiry_year_end %}
+                        <option>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="form-group">
+    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container"></div>
+
+    <label for="inputCVC" class="{{ label_width_class }} control-label">CVC</label>
+
+    <div class="col-lg-2 field">
+        {% if (user_summary.stripeCustomer.hasActiveCard and user_summary.stripeCustomer.activeCard.isPassedCvcCheck == false) or (user_account_card_exception_param  is defined and user_account_card_exception_param  == 'cvc') %}
+
+            <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <p>
+                    Your card issuer could not verify that the CVC
+                    you provided is correct.
+                </p>
+            </div>
+
+        {% endif %}
+
+        <input type="text"
+               class="form-control"
+               id="inputCVC"
+               data-stripe="cvc"
+               maxlength="3">
+
+    </div>
+
+    <span class="help-block">Usually 3 digits on the back</span>
+</div>
+
+<div class="{{ intro_width_class }} intro">
+    <a class="collapse-control" href="#" data-toggle="collapse" data-target="#cvc-info">
+        What is a CVC and where do I find it?
+    </a>
+
+    <div id="cvc-info" class="collapse">
+        <p>
+            This is the <b>c</b>ard <b>v</b>erification <b>c</b>ode (CVC), also know as
+            CVV or similar-looking abbreviations.
+        </p>
+        <p>
+            It's commonly a 3-digit code on the back of your card:
+        </p>
+        <img src="/bundles/simplytestablewebclient/images/CVC2SampleVisaNew.png">
+        <a href="http://en.wikipedia.org/wiki/File:CVC2SampleVisaNew.png">Image credit</a>
+    </div>
+</div>

@@ -1,0 +1,119 @@
+<div class="{{ intro_width_class }} intro">
+    <h2>Card holder</h2>
+</div>
+
+<div class="form-group">
+    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container"></div>
+
+    <label for="inputFirstName" class="{{ label_width_class }} control-label">Name</label>
+
+    <div class="{{ full_field_width_class }} field">
+        <input type="text"
+               class="form-control"
+               id="inputFirstName"
+               placeholder="Name"
+               data-stripe="name"
+               value="{% if user_summary.stripeCustomer.hasActiveCard %}{{ user_summary.stripeCustomer.activeCard.name }}{% endif %}">
+    </div>
+</div>
+<div class="form-group">
+    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container"></div>
+
+    <label for="inputStreetAddress" class="{{ label_width_class }} control-label">Street address</label>
+
+    <div class="{{ full_field_width_class }} field">
+        {% if user_summary.stripeCustomer.hasActiveCard and user_summary.stripeCustomer.activeCard.isPassedAddressLine1Check == false %}
+
+            <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <p>
+                    Your card issuer could not verify that this line of the
+                    address is correct.
+                </p>
+            </div>
+
+        {% endif %}
+
+        <input type="text"
+               class="form-control"
+               id="inputStreetAddress"
+               placeholder="Street address"
+               data-stripe="address_line1"
+               value="{% if user_summary.stripeCustomer.hasActiveCard %}{{ user_summary.stripeCustomer.activeCard.addressLine1 }}{% endif %}">
+    </div>
+</div>
+<div class="form-group">
+    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container"></div>
+
+    <label for="inputCity" class="{{ label_width_class }} control-label">City</label>
+
+    <div class="{{ field_width_class }} field">
+        <input type="text"
+               class="form-control"
+               id="inputCity"
+               placeholder="City"
+               data-stripe="address_city"
+               value="{% if user_summary.stripeCustomer.hasActiveCard %}{{ user_summary.stripeCustomer.activeCard.addressCity }}{% endif %}">
+    </div>
+</div>
+<div class="form-group">
+    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container"></div>
+
+    <label for="inputState" class="{{ label_width_class }} control-label">State or County</label>
+
+    <div class="{{ field_width_class }} field">
+        <input type="text"
+               class="form-control"
+               id="inputState"
+               placeholder="State or County"
+               data-stripe="address_state"
+               value="{% if user_summary.stripeCustomer.hasActiveCard %}{{ user_summary.stripeCustomer.activeCard.addressState }}{% endif %}">
+    </div>
+</div>
+<div class="form-group">
+    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container"></div>
+
+    <label for="inputZip" class="{{ label_width_class }} control-label">Zip or postal code</label>
+
+    <div class="{{ field_width_class }} field">
+        {% if (user_summary.stripeCustomer.hasActiveCard and user_summary.stripeCustomer.activeCard.isPassedAddressZipCheck == false) or (user_account_card_exception_param  is defined and user_account_card_exception_param  == 'address_zip') %}
+
+            <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <p>
+                    Your card issuer could not verify that the zip or postal
+                    code you provided is correct.
+                </p>
+            </div>
+
+        {% endif %}
+
+        <input type="text"
+               class="form-control"
+               id="inputZip"
+               placeholder="Zip or postal code"
+               data-stripe="address_zip"
+               value="{% if user_summary.stripeCustomer.hasActiveCard %}{{ user_summary.stripeCustomer.activeCard.addressZip }}{% endif %}">
+    </div>
+</div>
+<div class="form-group">
+    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container"></div>
+
+    <label for="inputCountry" class="{{ label_width_class }} control-label">Country</label>
+
+    <div class="{{ field_width_class }} field">
+        <select data-stripe="address_country"
+                id="inputCountry"
+                class="form-control">
+            {% for country_code, country_name in countries %}
+                {% if user_summary.stripeCustomer.hasActiveCard %}
+                    <option {% if user_summary.stripeCustomer.activeCard.addressCountry == country_code %}selected{% endif %}
+                            value="{{ country_code }}">{{ country_name }}</option>
+                {% else %}
+                    <option {% if country_code == 'GB' %}selected{% endif %}
+                            value="{{ country_code }}">{{ country_name }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+</div>

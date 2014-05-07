@@ -143,21 +143,6 @@ class IndexController extends BaseViewController implements RequiresUser, IEFilt
      */
     protected function getUserEmailChangeRequestService() {
         return $this->get('simplytestable.services.useremailchangerequestservice');
-    }  
-    
-    /**
-     * 
-     * @param array $keys
-     * @return array
-     */
-    protected function getViewFlashValues($keys) {
-        $flashValues = array();
-        
-        foreach ($keys as $key) {
-            $flashValues[$key] = $this->getFlash($key);
-        }
-        
-        return $flashValues;
-    }       
+    }
 
 }
