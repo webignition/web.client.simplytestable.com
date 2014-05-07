@@ -88,8 +88,6 @@ $(document).ready(function() {
             var field = $('[data-stripe=' + requiredFieldNames[requiredFieldIndex] + ']');
             var value = $.trim(field.val());
 
-            console.log(requiredFieldNames[requiredFieldIndex], value);
-
             if (value === '') {
                 return {
                     'error' : {
