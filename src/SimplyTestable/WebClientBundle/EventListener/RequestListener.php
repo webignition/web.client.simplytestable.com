@@ -7,6 +7,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser as RequiresPrivateUserController;
+use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser as RequiresValidUserController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Cacheable as CacheableController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered as IEFilteredController;
 
@@ -58,7 +59,12 @@ class RequestListener
             return;
         }
         
-        $this->getUserService()->setUserFromRequest($this->event->getRequest());       
+        $this->getUserService()->setUserFromRequest($this->event->getRequest());
+
+        if ($this->isRequiresValidUserController() && !$this->getUserService()->authenticate()) {
+            $this->event->setResponse(new RedirectResponse($this->getController()->generateUrl('sign_out_submit', array(), true)));
+            return;
+        }
         
         if ($this->isRequiresPrivateUserController() && !$this->getUserService()->isLoggedIn()) {
             $this->kernel->getContainer()->get('session')->setFlash('user_signin_error', 'account-not-logged-in');            
@@ -189,8 +195,15 @@ class RequestListener
     private function isRequiresPrivateUserController() {
         return $this->getController() instanceof RequiresPrivateUserController;
     }
-    
-    
+
+
+    /**
+     * @return boolean
+     */
+    private function isRequiresValidUserController() {
+        return $this->getController() instanceof RequiresValidUserController;
+    }
+
     
     /**
      * 

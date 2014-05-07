@@ -4,19 +4,16 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Test\History;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 
 use Symfony\Component\HttpFoundation\Response;
 
-class IndexController extends BaseViewController implements IEFiltered {
+class IndexController extends BaseViewController implements IEFiltered, RequiresValidUser {
     const RESULTS_PREPARATION_THRESHOLD = 10;
     const DEFAULT_PAGE_NUMBER = 1;
 
 
     public function indexAction($page_number) {
-        if (!$this->isUserValid()) {            
-            return $this->redirect($this->generateUrl('sign_out_submit', array(), true));
-        }
-        
         if ($this->isPageNumberBelowRange($page_number)) {
             return $this->redirect($this->generateUrl('app_history_all'));
         }
