@@ -30,6 +30,11 @@ body.IE8 h3 {
         background-color: #eee;
     }
 
+    body.IE8 h2,
+    body.IE8 h3 {
+        background-color: #eee;
+    }
+
     button.xs-full {
         width: 100%;
         padding-top: 12px;
