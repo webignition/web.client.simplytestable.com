@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Controller\User\View\Account;
+namespace SimplyTestable\WebClientBundle\Controller\View\User\Account;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresUser;

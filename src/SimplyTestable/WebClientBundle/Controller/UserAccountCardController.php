@@ -13,7 +13,7 @@ class UserAccountCardController extends AbstractUserAccountController {
         
         try {
             $this->getUserAccountCardService()->associate($this->getUser(), $stripe_card_token);
-            return $this->redirect($this->generateUrl('user_view_account_index_index', array(), true));
+            return $this->redirect($this->generateUrl('view_user_account_index_index', array(), true));
         } catch (\SimplyTestable\WebClientBundle\Exception\UserAccountCardException $userAccountCardException) {
             if ($this->isJsonResponseRequired()) {
                 return $this->sendResponse(array(
@@ -25,7 +25,7 @@ class UserAccountCardController extends AbstractUserAccountController {
                 $this->get('session')->setFlash('user_account_card_exception_message', $userAccountCardException->getMessage());
                 $this->get('session')->setFlash('user_account_card_exception_param', $userAccountCardException->getParam());
                 $this->get('session')->setFlash('user_account_card_exception_code', $userAccountCardException->getCode());                
-                return $this->redirect($this->generateUrl('user_view_account_card_index', array(), true));
+                return $this->redirect($this->generateUrl('view_user_account_card_index', array(), true));
             }
         }
     }

@@ -5,11 +5,11 @@ namespace SimplyTestable\WebClientBundle\Tests\EventListener\RequestListener\OnK
 class RequestWithoutUserIsRedirectedTest extends RequiresUserTest {
 
     protected function getControllerActionString() {
-        return 'SimplyTestable\WebClientBundle\Controller\User\View\Account\IndexController::indexAction';
+        return 'SimplyTestable\WebClientBundle\Controller\View\User\Account\IndexController::indexAction';
     }
     
     protected function getControllerRouteString() {
-        return 'user_view_account_index_index';
+        return 'view_user_account_index_index';
     }
     
     public function testEventHasResponse() {
@@ -23,7 +23,7 @@ class RequestWithoutUserIsRedirectedTest extends RequiresUserTest {
     public function testRedirectIsForSignInPage() {        
         $expectedRedirectUrl = $this->container->get('router')->generate('view_user_signin_index', array(
             'redirect' => base64_encode(json_encode(array(
-                'route' => 'user_view_account_index_index')
+                'route' => 'view_user_account_index_index')
             ))            
         ), true);
         

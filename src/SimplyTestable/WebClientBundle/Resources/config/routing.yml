@@ -66,13 +66,13 @@ user_account_details_confirm_email_change:
     pattern:  /account/details/update/confirm-email-change/
     defaults: { _controller: SimplyTestableWebClientBundle:UserAccountDetails:confirmEmailChange }          
 
-user_view_account_index_index:
+view_user_account_index_index:
     pattern:  /account/
-    defaults: { _controller: SimplyTestableWebClientBundle:User/View/Account/Index:index }          
+    defaults: { _controller: SimplyTestableWebClientBundle:View/User/Account/Index:index }
     
-user_view_account_card_index:
+view_user_account_card_index:
     pattern:  /account/card/
-    defaults: { _controller: SimplyTestableWebClientBundle:User/View/Account/Card:index }        
+    defaults: { _controller: SimplyTestableWebClientBundle:View/User/Account/Card:index }
     
 user_account_card_associate:
     pattern:  /account/card/{stripe_card_token}/associate/

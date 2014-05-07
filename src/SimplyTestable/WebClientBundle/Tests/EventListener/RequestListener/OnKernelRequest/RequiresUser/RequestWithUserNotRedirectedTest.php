@@ -19,11 +19,11 @@ class RequestWithUserNotRedirectedTest extends RequiresUserTest {
     }
 
     protected function getControllerActionString() {
-        return 'SimplyTestable\WebClientBundle\Controller\User\View\Account\IndexController::indexAction';
+        return 'SimplyTestable\WebClientBundle\Controller\View\User\Account\IndexController::indexAction';
     }
     
     protected function getControllerRouteString() {
-        return 'user_view_account_index_index';
+        return 'view_user_account_index_index';
     }
     
     public function testEventHasNoResponse() {

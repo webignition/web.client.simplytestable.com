@@ -148,7 +148,7 @@ class Listener
             'trial_period_days' => $event->getData()->get('trial_period_days'),
             'trial_end' => $this->getFormattedDateString($event->getData()->get('trial_end')),            
             'amount' => $this->getFormattedAmount($event->getData()->get('amount')),            
-            'account_url' => $this->router->generate('user_view_account_index_index', array(), true)
+            'account_url' => $this->router->generate('view_user_account_index_index', array(), true)
         );
         
         $viewPathParameters = array(
@@ -174,7 +174,7 @@ class Listener
         $viewParameters = array(
             'plan_name' => strtolower($event->getData()->get('plan_name')),           
             'plan_amount' => $this->getFormattedAmount($event->getData()->get('plan_amount')),            
-            'account_url' => $this->router->generate('user_view_account_index_index', array(), true)
+            'account_url' => $this->router->generate('view_user_account_index_index', array(), true)
         );        
         
         $this->issueNotification($subject, $this->templating->render($this->getViewPath(array(
@@ -228,7 +228,7 @@ class Listener
             $viewParameters = array(
                 'plan_name' => strtolower($event->getData()->get('plan_name')),
                 'plan_amount' => $this->getFormattedAmount($event->getData()->get('plan_amount')),
-                'account_url' => $this->router->generate('user_view_account_index_index', array(), true)
+                'account_url' => $this->router->generate('view_user_account_index_index', array(), true)
             );
             
             $this->issueNotification($subject, $this->templating->render($this->getViewPath(array(
@@ -249,7 +249,7 @@ class Listener
         
         $viewParameters = array(         
             'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id')),
-            'account_url' => $this->router->generate('user_view_account_index_index', array(), true),
+            'account_url' => $this->router->generate('view_user_account_index_index', array(), true),
             'invoice_lines' => $this->getInvoiceLinesContent($event->getData()->get('lines')),
         );
         
@@ -262,7 +262,7 @@ class Listener
         
         $viewParameters = array(
             'plan_name' => strtolower($event->getData()->get('plan_name')),
-            'account_url' => $this->router->generate('user_view_account_index_index', array(), true),
+            'account_url' => $this->router->generate('view_user_account_index_index', array(), true),
             'invoice_lines' => $this->getInvoiceLinesContent($event->getData()->get('lines')),
             'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id'))
         );
@@ -291,7 +291,7 @@ class Listener
         $viewParameters = array(
             'trial_days_remaining' => $event->getData()->get('trial_days_remaining'),     
             'trial_days_remaining_pluralisation' => ($event->getData()->get('trial_days_remaining') == 1 ? '' : 's'),
-            'account_url' => $this->router->generate('user_view_account_index_index', array(), true),
+            'account_url' => $this->router->generate('view_user_account_index_index', array(), true),
             'plan_name' => strtolower($event->getData()->get('plan_name'))
         );             
 

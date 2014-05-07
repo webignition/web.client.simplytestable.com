@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Controller\User\View\Account;
+namespace SimplyTestable\WebClientBundle\Controller\View\User\Account;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresUser;
@@ -22,7 +22,7 @@ class IndexController extends BaseViewController implements RequiresUser, IEFilt
             'plan_presentation_name' => $this->getPlanPresentationName($userSummary->getPlan()->getAccountPlan()->getName()),
             'stripe_event_data' => $this->getUserStripeEvents($userSummary),
             'stripe' => $this->container->getParameter('stripe'),
-            'this_url' => $this->generateUrl('user_view_account_index_index', array(), true),
+            'this_url' => $this->generateUrl('view_user_account_index_index', array(), true),
             'premium_plan_launch_offer_end' => $this->container->getParameter('premium_plan_launch_offer_end'),
             'plans' => $this->container->getParameter('plans'),
             'mailchimp_updates_subscribed' => $this->getMailchimpService()->listContains('updates', $this->getUser()->getUsername()),

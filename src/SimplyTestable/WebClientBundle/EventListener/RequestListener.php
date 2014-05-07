@@ -94,7 +94,7 @@ class RequestListener
     private function getUserSignInRedirectResponse() {
         return new RedirectResponse($this->getController()->generateUrl('view_user_signin_index', array(
             'redirect' => base64_encode(json_encode(array(
-                'route' => 'user_view_account_index_index')
+                'route' => 'view_user_account_index_index')
             ))
         ), true));
     }
