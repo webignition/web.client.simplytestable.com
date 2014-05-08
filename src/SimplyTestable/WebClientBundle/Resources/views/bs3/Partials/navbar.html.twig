@@ -56,18 +56,34 @@
                         </form>
                     </li>                               
                 {% else %}
-                    <li class="user-actions text">
-                        <p class="navbar-text spacer highlighted-spacer hidden-xs">&nbsp;</p>
-                        <a class="username" href="{{ path('view_user_signin_index') }}">
-                            <i class="fa fa-sign-in"></i> Sign in
-                        </a>
-                    </li>                                        
-                    <li class="text">
-                        <p class="navbar-text spacer highlighted-spacer hidden-xs">&nbsp;</p>
-                        <a class="btn-bordered" href="{{ path('view_user_signup_index_index') }}">
-                            <i class="fa fa-user"></i> Create an account
-                        </a>
+                    <li class="user-actions">
+                        <div>
+                            <p class="navbar-text spacer highlighted-spacer">&nbsp;</p>
+                            <a href="{{ path('view_user_signin_index') }}" class="btn btn-default btn-sm navbar-btn">
+                                <i class="fa fa-caret-right"></i> Sign in
+                            </a>
+                        </div>
                     </li>
+                    <li>
+                        <div>
+                            <p class="navbar-text spacer hidden-xs">&nbsp;</p>
+                            <a href="{{ path('view_user_signup_index_index') }}" class="btn btn-default btn-sm navbar-btn">
+                                <i class="fa fa-user"></i> Create an account
+                            </a>
+                        </div>
+                    </li>
+                    {#<li class="user-actions text">#}
+                        {#<p class="navbar-text spacer highlighted-spacer hidden-xs">&nbsp;</p>#}
+                        {#<a class="username" href="{{ path('view_user_signin_index') }}">#}
+                            {#<i class="fa fa-sign-in"></i> Sign in#}
+                        {#</a>#}
+                    {#</li>                                        #}
+                    {#<li class="text">#}
+                        {#<p class="navbar-text spacer highlighted-spacer hidden-xs">&nbsp;</p>#}
+                        {#<a class="btn-bordered" href="{{ path('view_user_signup_index_index') }}">#}
+                            {#<i class="fa fa-user"></i> Create an account#}
+                        {#</a>#}
+                    {#</li>#}
                 {% endif %}
             </ul>            
         </div><!--/.navbar-collapse -->
