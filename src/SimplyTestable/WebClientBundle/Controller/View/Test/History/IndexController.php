@@ -2,78 +2,116 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\History;
 
-use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Controller\View\CacheableViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 
-use Symfony\Component\HttpFoundation\Response;
+class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser {
 
-class IndexController extends BaseViewController implements IEFiltered, RequiresValidUser {
     const RESULTS_PREPARATION_THRESHOLD = 10;
     const DEFAULT_PAGE_NUMBER = 1;
+    const TEST_LIST_LIMIT = 10;
+
+    /**
+     * @var \SimplyTestable\WebClientBundle\Model\TestList
+     */
+    private $testList = null;
 
 
-    public function indexAction($page_number) {
-        if ($this->isPageNumberBelowRange($page_number)) {
+    protected function modifyViewName($viewName) {
+        return str_replace(array(
+            //':User',
+            'history.html',
+            'all.html'
+        ), array(
+            //':bs3/User',
+            'index.html',
+            'index.html'
+        ), $viewName);
+    }
+
+
+    public function indexAction() {
+        if ($this->isPageNumberBelowRange()) {
             return $this->redirect($this->generateUrl('app_history_all'));
         }
-        
-        $testList = $this->getFinishedTests(10, ($page_number - 1) * 10, $this->get('request')->get('filter'));        
-        if ($page_number > $testList->getPageCount() && $testList->getPageCount() > 0) {            
+
+        if ($this->isPageNumberAboveRange()) {
             $redirectParameters = array(
-                'page_number' => $testList->getPageCount(),                
+                'page_number' => $this->getTestList()->getPageCount(),
             );
-            
+
             if (!is_null($this->get('request')->get('filter'))) {
                 $redirectParameters['filter'] = $this->get('request')->get('filter');
             }
-            
-            return $this->redirect($this->generateUrl('app_history', $redirectParameters));            
+
+            return $this->redirect($this->generateUrl('app_history', $redirectParameters));
         }
-        
-        $templateName = 'SimplyTestableWebClientBundle:TestHistory:index.html.twig';
-        
-        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier(array(
-            'template_last_modified_date' => $this->getTemplateLastModifiedDate($templateName)->format('Y-m-d H:i:s'),
-            'test_list_hash' => $testList->getHash(),
-            'test_list' => md5(json_encode($testList)),
-            'filter' => $this->get('request')->get('filter'),
-        ));
-        
-        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);        
-        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);            
-        if ($response->isNotModified($this->getRequest())) {
-            return $response;
-        }
-        
-        $cacheValidatorHeaders->setLastModifiedDate(new \DateTime());
-        $this->getCacheValidatorHeadersService()->store($cacheValidatorHeaders);;        
-        
-        return $this->getCachableResponse($this->render($templateName, array(            
-            'public_site' => $this->container->getParameter('public_site'),
-            'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),         
-            'test_list' => $testList,
-            'pagination_page_numbers' => $testList->getPageNumbers(),
+
+        return $this->renderCacheableResponse($this->getViewData());
+    }
+
+    private function getViewData() {
+        return array(
+            'test_list' => $this->getTestList(),
+            'pagination_page_numbers' => $this->getTestList()->getPageNumbers(),
             'filter' => $this->get('request')->get('filter'),
             'websites_source' => $this->generateUrl('app_history_websites', array(), true)
-        )), $cacheValidatorHeaders);                
+        );
+    }
+
+
+    /**
+     * @return int
+     */
+    private function getRequestPageNumber() {
+        return (int)$this->getRequest()->attributes->get('page_number');
+    }
+
+
+    public function getCacheValidatorParameters() {
+        return array(
+            'test_list_hash' => $this->getTestList()->getHash(),
+            'filter' => $this->get('request')->get('filter'),
+            'page_number' => $this->getRequestPageNumber()
+        );
     }
     
     /**
-     * 
-     * @param mixed $pageNumber
+     *
+
      * @return boolean
      */
-    private function isPageNumberBelowRange($pageNumber) {
-        return (int)$pageNumber < self::DEFAULT_PAGE_NUMBER;
+    private function isPageNumberBelowRange() {
+        return $this->getRequestPageNumber() < self::DEFAULT_PAGE_NUMBER;
     }
-    
-    
-    
+
+
     /**
-     * 
-     * @return array
+     * @return bool
+     */
+    private function isPageNumberAboveRange() {
+        return $this->getRequestPageNumber() > $this->getTestList()->getPageCount() && $this->getTestList()->getPageCount() > 0;
+    }
+
+
+    /**
+     * @return \SimplyTestable\WebClientBundle\Model\TestList
+     */
+    private function getTestList() {
+        if (is_null($this->testList)) {
+            $this->testList = $this->getFinishedTests(self::TEST_LIST_LIMIT, ($this->getRequestPageNumber() - 1) * self::TEST_LIST_LIMIT, $this->get('request')->get('filter'));
+        }
+
+        return $this->testList;
+    }
+
+
+    /**
+     * @param $limit
+     * @param $offset
+     * @param null $filter
+     * @return \SimplyTestable\WebClientBundle\Model\TestList
      */
     private function getFinishedTests($limit, $offset, $filter = null) {
         $testList = $this->getTestService()->getRemoteTestService()->getFinished($limit, $offset, $filter);
@@ -87,16 +125,8 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
             
             $testList->addTest($test);
             
-            if ($testList->requiresResults($test)) {
-                if ($remoteTest->isSingleUrl()) {
-                    $this->getTaskService()->getCollection($test);
-                } else {
-                    
-//                    
-//                    if (($remoteTest->getTaskCount() - self::RESULTS_PREPARATION_THRESHOLD) - $test->getTaskCount()) {
-//                        $this->getTaskService()->getCollection($test);
-//                    }                   
-                }
+            if ($testList->requiresResults($test) && $remoteTest->isSingleUrl()) {
+                $this->getTaskService()->getCollection($test);
             }
         }
         
