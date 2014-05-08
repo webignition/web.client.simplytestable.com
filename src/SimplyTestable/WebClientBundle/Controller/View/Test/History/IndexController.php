@@ -41,8 +41,8 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
                 'page_number' => $this->getTestList()->getPageCount(),
             );
 
-            if (!is_null($this->get('request')->get('filter'))) {
-                $redirectParameters['filter'] = $this->get('request')->get('filter');
+            if (!is_null($this->getRequest()->get('filter'))) {
+                $redirectParameters['filter'] = $this->getRequest()->get('filter');
             }
 
             return $this->redirect($this->generateUrl('app_history', $redirectParameters));
@@ -55,7 +55,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         return array(
             'test_list' => $this->getTestList(),
             'pagination_page_numbers' => $this->getTestList()->getPageNumbers(),
-            'filter' => $this->get('request')->get('filter'),
+            'filter' => $this->getRequest()->get('filter'),
             'websites_source' => $this->generateUrl('app_history_websites', array(), true)
         );
     }
@@ -72,7 +72,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     public function getCacheValidatorParameters() {
         return array(
             'test_list_hash' => $this->getTestList()->getHash(),
-            'filter' => $this->get('request')->get('filter'),
+            'filter' => $this->getRequest()->get('filter'),
             'page_number' => $this->getRequestPageNumber()
         );
     }
@@ -100,7 +100,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
      */
     private function getTestList() {
         if (is_null($this->testList)) {
-            $this->testList = $this->getFinishedTests(self::TEST_LIST_LIMIT, ($this->getRequestPageNumber() - 1) * self::TEST_LIST_LIMIT, $this->get('request')->get('filter'));
+            $this->testList = $this->getFinishedTests(self::TEST_LIST_LIMIT, ($this->getRequestPageNumber() - 1) * self::TEST_LIST_LIMIT, $this->getRequest()->get('filter'));
         }
 
         return $this->testList;
