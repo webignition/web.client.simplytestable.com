@@ -21,7 +21,7 @@ class TestHistoryController extends TestViewController
         }
         
         if ($this->isPageNumberBelowRange($page_number)) {
-            return $this->redirect($this->generateUrl('app_history_all'));
+            return $this->redirect($this->generateUrl('view_test_history_index_index'));
         }
         
         $testList = $this->getFinishedTests(10, ($page_number - 1) * 10, $this->get('request')->get('filter'));        

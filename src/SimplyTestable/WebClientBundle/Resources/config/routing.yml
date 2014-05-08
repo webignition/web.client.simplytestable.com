@@ -97,8 +97,8 @@ app_current_content:
 app_finished_content:    
     pattern:  /finished-content/
     defaults: { _controller: SimplyTestableWebClientBundle:App:finishedContent }      
-    
-app_history_all:
+
+view_test_history_index_index:
     pattern:  /history/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/History/Index:index, page_number: 1 }
     

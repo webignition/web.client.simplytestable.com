@@ -33,7 +33,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
     public function indexAction() {
         if ($this->isPageNumberBelowRange()) {
-            return $this->redirect($this->generateUrl('app_history_all'));
+            return $this->redirect($this->generateUrl('view_test_history_index_index'));
         }
 
         if ($this->isPageNumberAboveRange()) {
