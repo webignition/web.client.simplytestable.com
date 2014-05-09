@@ -1,0 +1,112 @@
+{% set was_not_started = test.test.state == 'cancelled' and test.remote_test.taskcount == test.remote_test.taskcountbystate.cancelled %}
+{% set no_urls = test.test.state == 'failed-no-sitemap' and test.remote_test.crawl is null %}
+
+<div data-test-id="{{ test.test.testId }}"
+     class="row site state-{{ test.test.state }} {% if was_not_started %}not-started{% endif %} {% if test_list is defined and test_list.requiresresults(test.test) %}requires-results{% endif %}">
+
+    <div class="col-lg-12">
+        <div class="row">
+            <div class="col-lg-12">
+                <a class="url" href="{{ path('app_results', {'website': test.test.website, 'test_id':test.test.testId}) }}">
+                    <i class="fa fa-bar-chart-o"></i><span class="website">{{ test.test.formattedWebsite }}</span> (#{{ test.test.testId }})
+                    <span class="btn-wrapper">
+                        <span class="btn-spacer"></span>
+                        <span class="btn btn-default btn-sm">View full results <i class="fa fa-caret-right"></i></span>
+                    </span>
+                </a>
+            </div>
+        </div>
+        <div class="row summary-stats">
+            {% if test_list is defined and test_list.requiresresults(test.test) %}
+                {#<div class="col-lg-12 content">#}
+                {#</div>#}
+            {% else %}
+                {% if was_not_started %}
+                    <div class="col-lg-12 reason">
+                        <p>
+                            Stopped before any tests were run.
+                        </p>
+                    </div>
+                {% elseif no_urls %}
+                    <div class="col-lg-12 reason">
+                        <p>
+                            No pages discovered for this demo test. Sign in to enable page discovery via crawling.
+                        </p>
+                    </div>
+                {% else %}
+                    <div class="col-lg-2 stat">
+                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:url-count.html.twig' with {'test': test.test, 'remote_test':test.remote_test} %}
+                    </div>
+                    <div class="col-lg-2 stat">
+                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:task-count.html.twig' with {'test': test.test, 'remote_test':test.remote_test} %}
+                    </div>
+                    <div class="col-lg-2 stat">
+                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:error-count.html.twig' with {'test': test.test} %}
+                    </div>
+                    <div class="col-lg-2 stat">
+                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:warning-count.html.twig' with {'test': test.test} %}
+                    </div>
+                    <div class="col-lg-4">
+                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:errors-by-task-type.html.twig' with {'test': test.test, 'remote_test':test.remote_test, 'type':null, 'filter':null} %}
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+
+{#<div data-test-id="{{ test.test.testId }}"#}
+     {#class="site state-{{ test.test.state }} {% if was_not_started %}not-started{% endif %} {% if test_list is defined and test_list.requiresresults(test.test) %}requires-results{% endif %}">#}
+
+    {#<div class="wrapper">#}
+        {#<div>#}
+            {#<a class="url" href="{{ path('app_results', {'website': test.test.website, 'test_id':test.test.testId}) }}">#}
+                {#<i class="fa fa-bar-chart-o"></i><span class="website">{{ test.test.formattedWebsite }}</span>#}
+                {#(#{{ test.test.testId }})#}
+                {#<span class="btn-wrapper">#}
+                    {#<span class="btn-spacer"></span>#}
+                    {#<span class="btn btn-default btn-sm">View full results <i class="fa fa-caret-right"></i></span>#}
+                {#</span>#}
+            {#</a>#}
+
+            {#<div class="row summary-stats">#}
+                {#{% if test_list is defined and test_list.requiresresults(test.test) %}#}
+                {#{% else %}#}
+                    {#{% if was_not_started %}#}
+                {#<div class="col-lg-12">#}
+                        {#<p>#}
+                            {#Stopped before any tests were run.#}
+                        {#</p>#}
+                    {#</div>#}
+                    {#{% elseif no_urls %}#}
+                    {#<div class="col-lg-12">#}
+                        {#<p>#}
+                            {#No urls discovered.#}
+                        {#</p>#}
+                        {#</div>#}
+                    {#{% else %}#}
+                        {#<div class="col-lg-2">#}
+                            {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:url-count.html.twig' with {'test': test.test, 'remote_test':test.remote_test} %}#}
+                        {#</div>#}
+                        {#<div class="col-lg-2">#}
+                            {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:task-count.html.twig' with {'test': test.test, 'remote_test':test.remote_test} %}#}
+                        {#</div>#}
+                        {#<div class="col-lg-2">#}
+                            {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:error-count.html.twig' with {'test': test.test} %}#}
+                        {#</div>#}
+                        {#<div class="col-lg-2">#}
+                            {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:warning-count.html.twig' with {'test': test.test} %}#}
+                        {#</div>#}
+                        {#<div class="col-lg-2">#}
+                            {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:errors-by-task-type.html.twig' with {'test': test.test, 'remote_test':test.remote_test, 'type':null, 'filter':null} %}#}
+                        {#</div>#}
+
+                    {#{% endif %}#}
+                {#{% endif %}#}
+            {#</div>#}
+        {#</div>#}
+    {#</div>#}
+{#</div>#}
+

@@ -1,0 +1,57 @@
+.summary-stats .summary-figure {
+    text-align: center;
+    border-radius: 60px;
+    width: 120px;
+    height: 120px;
+    background-color: #ddd;
+    color: #fff;
+}
+
+.summary-stats .summary-figure a,
+.summary-stats .summary-figure .anchor {
+    color: #fff;
+    opacity: 0.8;
+    display: block;
+    padding-top: 24px;
+}
+
+.summary-stats .outline-container .anchor {
+    color: #222;
+}
+
+.summary-stats .count {
+    font-size: 40px;
+    line-height: 40px;
+    display: block;
+}
+
+.summary-stats .error-container {
+    background-color: #b94a48;
+}
+
+.summary-stats .summary-figure a:hover {
+    text-decoration: none;
+    opacity: 1;
+}
+
+.summary-stats .success-container {
+    background-color: #468847;
+}
+
+.summary-prose ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.summary-prose ul li {
+    margin: 2px 0;
+}
+
+.summary-prose ul li a {
+    padding: 2px 0;
+}
+
+.summary-prose ul li a .fa {
+    margin-left:6px;
+}

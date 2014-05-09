@@ -1,0 +1,69 @@
+#finished-tests .site {
+    padding-bottom: 40px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid #ddd;
+    margin-top: 40px;
+    overflow: hidden;
+}
+
+#finished-tests .fa-bar-chart-o {
+    color: #468847;
+    margin-right: 6px;
+}
+
+#finished-tests .url {
+    white-space: nowrap;
+    display: inline-block;
+}
+
+#finished-tests a.url .btn-wrapper {
+    position: absolute;
+    right: 0px;
+    background-color: rgba(255, 255, 255, 0.5);
+    padding-left: 14px;
+}
+
+#finished-tests a.url .btn-wrapper .btn-spacer {
+    border-left: 2px solid #fff;
+}
+
+#finished-tests .reason {
+    margin-bottom: -20px;
+    margin-top: 20px;
+}
+
+#finished-tests .summary-figure {
+    border-radius: 40px;
+    width: 80px;
+    height: 80px;
+    position: relative;
+}
+
+#finished-tests .summary-stats .summary-figure a,
+#finished-tests .summary-stats .summary-figure .anchor {
+    padding-top: 20px;
+}
+
+#finished-tests .summary-stats .count {
+    font-size: 20px;
+    line-height: 20px;
+}
+
+#finished-tests .summary-stats {
+    margin-top: 20px;
+}
+
+#finished-tests .stat {
+    width: 80px;
+    margin-right: 20px;
+}
+
+#finished-tests .requires-results .summary-stats {
+    visibility: hidden;
+}
+
+#finished-tests .requires-results .preparing {
+    position: absolute;
+    width: 100%;
+    top: 50px;
+}

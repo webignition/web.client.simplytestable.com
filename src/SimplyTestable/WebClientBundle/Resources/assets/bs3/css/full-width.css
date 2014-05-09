@@ -1,0 +1,25 @@
+body.full-width {
+    margin-top: 51px;
+}
+
+.full-width .alert-container .alert {
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    margin-bottom: 0;
+}
+
+.full-width .alert-container .container {
+    padding-left: 25px;
+}
+
+.header {
+    background-color: #eee;
+    padding: 40px 0;
+}
+
+@media (max-width: 768px) {
+    .full-width .alert-container .container {
+        padding-left: 0;
+    }
+}

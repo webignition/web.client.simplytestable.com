@@ -118,6 +118,17 @@ app_test_finished_summary:
     requirements:
         website: ".+"
         test_id: "\d+"
+
+view_test_results_partial_finishedsummary_index:
+    pattern:  /{website}/{test_id}/finished-summary-bs3/
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Partial/FinishedSummary/Index:index }
+    requirements:
+        website: ".+"
+        test_id: "\d+"
+
+view_test_results_partial_finishedsummary_dummy:
+    pattern:  /test/finished-summary-dummy/
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Partial/FinishedSummary/Dummy:index }
     
 app_task_results:
     pattern:  /{website}/{test_id}/{task_id}/results/

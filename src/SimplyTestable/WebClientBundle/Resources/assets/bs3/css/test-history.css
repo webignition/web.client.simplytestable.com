@@ -1,0 +1,47 @@
+h1 {
+    margin:0;
+    font-size: 30px;
+}
+
+.action-badge {
+    margin: 14px 0;
+}
+
+.header {
+    padding-bottom: 0;
+}
+
+.pagination {
+    margin-top: 8px;
+}
+
+.pagination li a:hover {
+    background-color: #08c;
+    color:#fff;
+}
+
+.pagination li a:hover span {
+    opacity: 0.9;
+}
+
+.pagination>.disabled>span,
+.pagination>.disabled>span:hover {
+    background-color: transparent;
+}
+
+.pagination>li>a, .pagination>li>span {
+    padding: 8px 14px;
+}
+
+.pagination .fa-caret-left {
+    padding-right: 10px;
+}
+
+.pagination .fa-caret-right {
+    padding-left: 10px;
+}
+
+.progress {
+    height:4px;
+    margin-bottom:0;
+}

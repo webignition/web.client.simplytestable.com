@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\History;
 
-use SimplyTestable\WebClientBundle\Controller\View\CacheableViewController;
+use SimplyTestable\WebClientBundle\Controller\View\Test\CacheableViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 
@@ -20,11 +20,11 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
     protected function modifyViewName($viewName) {
         return str_replace(array(
-            //':User',
+            ':Test',
             'history.html',
             'all.html'
         ), array(
-            //':bs3/User',
+            ':bs3/Test',
             'index.html',
             'index.html'
         ), $viewName);
@@ -71,6 +71,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
     public function getCacheValidatorParameters() {
         return array(
+            'rand' => rand(),
             'test_list_hash' => $this->getTestList()->getHash(),
             'filter' => $this->getRequest()->get('filter'),
             'page_number' => $this->getRequestPageNumber()
@@ -140,15 +141,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
      */
     private function getTaskService() {
         return $this->container->get('simplytestable.services.taskservice');
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TestService
-     */
-    private function getTestService() {
-        return $this->container->get('simplytestable.services.testservice');
     }
 
 }

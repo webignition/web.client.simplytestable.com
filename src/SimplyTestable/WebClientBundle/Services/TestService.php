@@ -103,9 +103,17 @@ class TestService {
     public function has($canonicalUrl, $testId) {        
         if ($this->hasEntity($testId)) {
             return true;
-        }       
+        }
+
+        try {
+            return $this->get($canonicalUrl, $testId) instanceof Test;
+        } catch (WebResourceException $webResourceException) {
+            if ($webResourceException->getCode() == 403) {
+                return false;
+            }
+        }
         
-        return $this->get($canonicalUrl, $testId) instanceof Test;
+
     }
     
     

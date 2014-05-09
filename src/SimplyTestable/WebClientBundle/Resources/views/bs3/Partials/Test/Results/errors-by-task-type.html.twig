@@ -1,0 +1,28 @@
+{% set span_width %}{% if app.request.attributes.get('_route') == 'app_results' %}6{% else %}4{% endif %}{% endset %}
+{% set is_dashboard = (app.request.attributes.get('_route') != 'app_results') %}
+
+<div class="summary-container summary-prose">
+    {% if test.errorCount > 0 %}
+        <ul>
+        {% for task_type in remote_test.tasktypes %}
+            {% set task_error_count = test.getErrorCountByTaskType(task_type | replace({'JavaScript static analysis': "JS static analysis"})) %}
+
+            {% if (task_type | lower == type) %}
+                <li>
+                    {{ task_error_count }} {{ task_type }} error{% if task_error_count != 1 %}s{% endif %}
+                    {% if (task_error_count == 0) %}
+                    <i class="fa fa-check"></i>
+                    {% endif %}
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter={{ filter }}&type={{ task_type | lower }}">
+                        {{ task_error_count }} {{ task_type }} error{% if task_error_count != 1 %}s{% endif %}{% if is_dashboard %}<i class="fa fa-caret-right"></i>{% else %}{% if (task_error_count == 0) %}<i class="fa fa-check"></i>{% endif %}{% endif %}
+                    </a>
+                </li>
+            {% endif %}                       
+
+        {% endfor %}                    
+        </ul>
+    {% endif %}
+</div> 

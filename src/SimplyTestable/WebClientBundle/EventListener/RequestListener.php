@@ -8,8 +8,11 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser as RequiresPrivateUserController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser as RequiresValidUserController;
+use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner as RequiresValidTestOwnerController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Cacheable as CacheableController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered as IEFilteredController;
+
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 
 use SimplyTestable\WebClientBundle\Model\CacheValidatorIdentifier;
 
@@ -65,6 +68,43 @@ class RequestListener
             $this->event->setResponse(new RedirectResponse($this->getController()->generateUrl('sign_out_submit', array(), true)));
             return;
         }
+
+        if ($this->isRequiresValidTestOwnerController()) {
+            $website = $this->event->getRequest()->attributes->get('website');
+            $test_id = $this->event->getRequest()->attributes->get('test_id');
+
+            if (!$this->getTestService()->has($website, $test_id)) {
+                if ($this->getUserService()->isLoggedIn()) {
+                    $this->event->setResponse($this->getController()->render(
+                        'SimplyTestableWebClientBundle:App:test-not-authorised.html.twig',
+                        array(
+                            'public_site' => $this->kernel->getContainer()->getParameter('public_site'),
+                            'is_logged_in' => false,
+                            'test_id' => $test_id,
+                            'website' => $website
+                        )
+                    ));
+
+                    return;
+                }
+
+                $redirectParameters = json_encode(array(
+                    'route' => 'app_progress',
+                    'parameters' => array(
+                        'website' => $website,
+                        'test_id' => $test_id
+                    )
+                ));
+
+                $this->kernel->getContainer()->get('session')->setFlash('user_signin_error', 'test-not-logged-in');
+
+                $this->event->setResponse($this->getController()->redirect($this->getController()->generateUrl('view_user_signin_index', array(
+                    'redirect' => base64_encode($redirectParameters)
+                ), true)));
+
+                return;
+            }
+        }
         
         if ($this->isRequiresPrivateUserController() && !$this->getUserService()->isLoggedIn()) {
             $this->kernel->getContainer()->get('session')->setFlash('user_signin_error', 'account-not-logged-in');            
@@ -79,7 +119,7 @@ class RequestListener
         if (!$this->isCacheableController()) {
             return;
         }
-        
+
         $this->setRequestCacheValidatorHeaders();
       
         $response = $this->getCacheableResponseService()->getCachableResponse($this->event->getRequest());
@@ -89,7 +129,7 @@ class RequestListener
         if ($response->isNotModified($this->event->getRequest())) {
             $this->event->setResponse($response);
             $this->kernel->getContainer()->get('session')->getFlashBag()->clear();
-        } 
+        }
     }
     
     
@@ -204,6 +244,14 @@ class RequestListener
         return $this->getController() instanceof RequiresValidUserController;
     }
 
+
+    /**
+     * @return boolean
+     */
+    private function isRequiresValidTestOwnerController() {
+        return $this->getController() instanceof RequiresValidTestOwnerController;
+    }
+
     
     /**
      * 
@@ -293,14 +341,23 @@ class RequestListener
         
         return $identifier;
     }
-    
+
 
     /**
-     * 
+     *
      * @return \SimplyTestable\WebClientBundle\Services\UserService
      */
     private function getUserService() {
         return $this->kernel->getContainer()->get('simplytestable.services.userservice');
+    }
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TestService
+     */
+    private function getTestService() {
+        return $this->kernel->getContainer()->get('simplytestable.services.testservice');
     }
     
     

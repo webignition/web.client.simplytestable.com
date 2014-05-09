@@ -1,0 +1,11 @@
+.modal {
+    top: 160px;
+}
+
+.modal-content {
+    display:none;
+}
+
+.modal-header h3 {
+   margin:0;
+}
