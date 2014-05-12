@@ -95,7 +95,7 @@ $(document).ready(function() {
 
             var parsedUrl = getParsedUrl(parseableFilter);
 
-            if (parsedUrl.pathname === SLASH) {
+            if (parsedUrl.pathname === SLASH || parsedUrl.pathname === '') {
                 return hasTrailingSlash();
             }
 
