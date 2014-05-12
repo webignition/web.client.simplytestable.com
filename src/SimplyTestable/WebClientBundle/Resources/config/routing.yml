@@ -182,10 +182,11 @@ app_test_retest:
     defaults: { _controller: SimplyTestableWebClientBundle:Test:retest }  
     requirements:
        website: ".+"        
-       
-app_results_failed_no_urls_detected:
+
+view_test_results_failednourlsdetected_index:
+#app_results_failed_no_urls_detected:
     pattern:  /{website}/{test_id}/results/failed/no-urls-detected/
-    defaults: { _controller: SimplyTestableWebClientBundle:TestResults:failedNoUrlsDetected }  
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/FailedNoUrlsDetected/Index:index }
     requirements:
        website: ".+"       
        

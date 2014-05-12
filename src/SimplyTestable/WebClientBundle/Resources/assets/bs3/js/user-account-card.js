@@ -14,7 +14,6 @@ $(document).ready(function() {
             $('.fa', control).remove();
             control.append('<i class="fa fa-caret-down"></i>');
         });
-
     });
 
     var fieldNameMessageMap = {
