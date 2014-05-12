@@ -16,60 +16,47 @@ class TestViewController extends BaseViewController
     protected function getTestRetrievalOutcome($website, $test_id) {        
         $outcome = new \SimplyTestable\WebClientBundle\Model\ControllerTestRetrievalOutcome();
 
-        try {            
-            if (!$this->getTestService()->has($website, $test_id)) {
-                $outcome->setResponse( $this->redirect($this->generateUrl('app_test_redirector', array(
+        if (!$this->getTestService()->has($website, $test_id)) {
+            if ($this->isLoggedIn()) {
+                $this->setTemplate('SimplyTestableWebClientBundle:App:test-not-authorised.html.twig');
+                $outcome->setResponse($this->sendResponse(array(
+                    'this_url' => $this->getProgressUrl($website, $test_id),
+                    'test_input_action_url' => $this->generateUrl('test_cancel', array(
+                            'website' => $website,
+                            'test_id' => $test_id
+                        )),
                     'website' => $website,
-                    'test_id' => $test_id
-                ), true)));
-                return $outcome;
-            }            
-            
-            $test = $this->getTestService()->get($website, $test_id);
-            if ($this->getTestService()->getRemoteTestService()->authenticate()) {           
-                $outcome->setTest($test);
-                return $outcome;
-            }             
-            
-        } catch (WebResourceException $webResourceException) {
-            if ($webResourceException->getCode() != 403) {
-                throw $webResourceException;
-            }
-        }
+                    'test_id' => $test_id,
+                    'public_site' => $this->container->getParameter('public_site'),
+                    'user' => $this->getUser(),
+                    'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+                )));
 
-        if ($this->isLoggedIn()) {
-            $this->setTemplate('SimplyTestableWebClientBundle:App:test-not-authorised.html.twig');
-            $outcome->setResponse($this->sendResponse(array(
-                'this_url' => $this->getProgressUrl($website, $test_id),
-                'test_input_action_url' => $this->generateUrl('test_cancel', array(
+                return $outcome;
+            }
+
+            $redirectParameters = json_encode(array(
+                'route' => 'app_progress',
+                'parameters' => array(
                     'website' => $website,
                     'test_id' => $test_id
-                )),
-                'website' => $website,
-                'test_id' => $test_id,
-                'public_site' => $this->container->getParameter('public_site'),
-                'user' => $this->getUser(),
-                'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),                
-            )));
-            
+                )
+            ));
+
+            $this->get('session')->setFlash('user_signin_error', 'test-not-logged-in');
+
+            $outcome->setResponse($this->redirect($this->generateUrl('view_user_signin_index', array(
+                'redirect' => base64_encode($redirectParameters)
+            ), true)));
+
             return $outcome;
         }
-        
-        $redirectParameters = json_encode(array(
-            'route' => 'app_progress',
-            'parameters' => array(
-            'website' => $website,
-            'test_id' => $test_id                        
-            )
-        ));
 
-        $this->get('session')->setFlash('user_signin_error', 'test-not-logged-in');
-
-        $outcome->setResponse($this->redirect($this->generateUrl('view_user_signin_index', array(
-            'redirect' => base64_encode($redirectParameters)
-        ), true)));
-        
-        return $outcome;
+        $test = $this->getTestService()->get($website, $test_id);
+        if ($this->getTestService()->getRemoteTestService()->authenticate()) {
+            $outcome->setTest($test);
+            return $outcome;
+        }
     } 
     
     

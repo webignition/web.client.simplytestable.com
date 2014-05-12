@@ -111,6 +111,8 @@ class TestService {
             if ($webResourceException->getCode() == 403) {
                 return false;
             }
+
+            throw $webResourceException;
         }
         
 
