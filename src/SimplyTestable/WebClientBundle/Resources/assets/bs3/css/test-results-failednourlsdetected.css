@@ -1,0 +1,17 @@
+.ctas span {
+    margin: 0 10px;
+}
+
+@media (max-width: 768px) {
+    .ctas {
+        margin: 20px 0;
+    }
+
+    .ctas .btn {
+        margin-bottom: 20px;
+    }
+
+    .ctas .btn:last-of-type {
+        margin-bottom: 0;
+    }
+}
