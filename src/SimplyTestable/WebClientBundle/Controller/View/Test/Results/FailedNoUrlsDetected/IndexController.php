@@ -2,13 +2,6 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results\FailedNoUrlsDetected;
 
-//use SimplyTestable\WebClientBundle\Entity\Test\Test;
-//use SimplyTestable\WebClientBundle\Entity\Task\Task;
-//use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-//use Symfony\Component\HttpFoundation\Response;
-//use SimplyTestable\WebClientBundle\Exception\UserServiceException;
-//use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
-
 use SimplyTestable\WebClientBundle\Controller\View\Test\CacheableViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
