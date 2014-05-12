@@ -226,7 +226,7 @@ class TestResultsController extends TestViewController
         }        
         
         if ($test->getState() == 'failed-no-sitemap') {            
-            return $this->redirect($this->generateUrl('app_results_failed_no_urls_detected', array(
+            return $this->redirect($this->generateUrl('view_test_results_failednourlsdetected_index_index', array(
                 'website' => $test->getWebsite(),
                 'test_id' => $test_id
             ), true));             
