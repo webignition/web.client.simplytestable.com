@@ -125,7 +125,7 @@ class TestService {
      * @param int $testId
      * @return Test
      */
-    public function get($canonicalUrl, $testId) {        
+    public function get($canonicalUrl, $testId) {
         if ($this->hasEntity($testId)) {                  
             /* @var $test Test */
             $this->test = $this->fetchEntity($testId);          

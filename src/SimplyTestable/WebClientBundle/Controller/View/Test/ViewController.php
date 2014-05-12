@@ -8,11 +8,22 @@ abstract class ViewController extends BaseViewController {
 
 
     /**
+     * @var \SimplyTestable\WebClientBundle\Services\TestService
+     */
+    private $testService;
+
+
+    /**
      *
      * @return \SimplyTestable\WebClientBundle\Services\TestService
      */
     protected function getTestService() {
-        return $this->container->get('simplytestable.services.testservice');
+        if (is_null($this->testService)) {
+            $this->testService = $this->container->get('simplytestable.services.testservice');
+            $this->testService->getRemoteTestService()->setUser($this->getUserService()->getUser());
+        }
+
+        return $this->testService;
     }
 
 

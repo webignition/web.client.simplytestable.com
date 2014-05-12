@@ -43,7 +43,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         }
 
         return $this->renderCacheableResponse(array(
-            'website' => $this->getUrlViewValues($this->getRequest()->attributes->get('website')),
+            'website' => $this->getUrlViewValues($website),
             'redirect' => base64_encode(json_encode($this->getRedirectParameters()))
         ));
     }

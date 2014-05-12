@@ -163,8 +163,7 @@ abstract class BaseTestCase extends WebTestCase {
      * @return string
      */
     protected function getFixturesDataPath($testName = null) {
-        $fixturesPath = $this->getCustomFixturesDataPath($testName);        
-        
+        $fixturesPath = $this->getCustomFixturesDataPath($testName);
         while (!$this->directoryContainsFiles($fixturesPath) && $fixturesPath != __DIR__ . '/Fixtures') {
             $pathParts = explode(DIRECTORY_SEPARATOR, $fixturesPath);
             array_pop($pathParts);
@@ -287,26 +286,48 @@ abstract class BaseTestCase extends WebTestCase {
     } 
     
     
-    protected function getHttpFixtures($path) {                
-        $fixtureContents = array();        
+    protected function getHttpFixtures($path) {
+//        $fixtureContents = array();
+//        $fixturesDirectory = new \DirectoryIterator($path);
+//
+//        $fixturePathnames = array();
+//
+//        foreach ($fixturesDirectory as $directoryItem) {
+//            if ($directoryItem->isFile()) {
+//                $fixturePathnames[] = $directoryItem->getPathname();
+//            }
+//        }
+//
+//        sort($fixturePathnames);
+//
+//        foreach ($fixturePathnames as $fixturePathname) {
+//            $fixtureContents[] = trim(file_get_contents($fixturePathname));
+//        }
+//
+        return $this->buildHttpFixtureSet($this->getHttpFixtureContents($path));
+    }
+
+
+    protected function getHttpFixtureContents($path) {
+        $fixtureContents = array();
         $fixturesDirectory = new \DirectoryIterator($path);
-        
+
         $fixturePathnames = array();
-        
-        foreach ($fixturesDirectory as $directoryItem) {            
-            if ($directoryItem->isFile()) {                
+
+        foreach ($fixturesDirectory as $directoryItem) {
+            if ($directoryItem->isFile()) {
                 $fixturePathnames[] = $directoryItem->getPathname();
             }
         }
-        
+
         sort($fixturePathnames);
-        
-        foreach ($fixturePathnames as $fixturePathname) {                        
+
+        foreach ($fixturePathnames as $fixturePathname) {
             $fixtureContents[] = trim(file_get_contents($fixturePathname));
         }
-        
-        return $this->buildHttpFixtureSet($fixtureContents);
-    }     
+
+        return $fixtureContents;
+    }
     
     
     public function tearDown() {
