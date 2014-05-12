@@ -1,4 +1,4 @@
 src/SimplyTestable/WebClientBundle/Resources/assets/vendor:
   supersleight: http://24ways.org/code/supersleight-transparent-png-in-ie6/supersleight.zip
   internet-explorer-opacity-polyfill: https://github.com/bladeSk/internet-explorer-opacity-polyfill.git
-  jquery-placeholder: https://github.com/mathiasbynens/jquery-placeholder/archive/v2.0.8.zip
+  jquery-placeholder: https://github.com/diy/jquery-placeholder.git
