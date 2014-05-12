@@ -16,11 +16,15 @@
             <li class="disabled"><span><i class="fa fa-caret-left"></i> Newer</span></li>
         {% endif %}
 
+        <li class="hidden-lg hidden-md hidden-sm disabled">
+            <span>Page <strong>{{ test_list.pagenumber }}</strong> of <strong>{{ test_list.pagecount|number_format }}</strong></span>
+        </li>
+
         {% for page_number in pagination_page_numbers %}
             {% if test_list.pagenumber == page_number %}
-            <li class="disabled"><span>{{ page_number }}</span></li>
+            <li class="disabled hidden-xs"><span>{{ page_number }}</span></li>
             {% else %}
-            <li>
+            <li class="hidden-xs">
                 <a href="{{ path('app_history', {'page_number': page_number, 'filter': filter}) }}">
                     <span>{{ page_number }}</span>
                 </a>

@@ -23,7 +23,7 @@
     padding-left: 14px;
 }
 
-#finished-tests a.url .btn-wrapper .btn-spacer {
+#finished-tests a.url .btn-wrapper .btn-spacer-left {
     border-left: 2px solid #fff;
 }
 
@@ -66,4 +66,16 @@
     position: absolute;
     width: 100%;
     top: 50px;
+}
+
+@media (max-width: 768px) {
+    #finished-tests .requires-results .preparing {
+        width: 95%;
+    }
+}
+
+@media (max-width: 400px) {
+    #finished-tests .stat {
+        margin-right: 10px;
+    }
 }
