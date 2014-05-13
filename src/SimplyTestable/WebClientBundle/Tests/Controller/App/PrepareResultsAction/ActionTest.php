@@ -25,7 +25,7 @@ class ActionTest extends BaseActionTest {
             )
         ));
     }
-    
+
     public function testWithUnauthorisedUser() {
         $this->performActionTest(array(
             'statusCode' => 302,
@@ -36,9 +36,9 @@ class ActionTest extends BaseActionTest {
                 1
             )
         ));
-    } 
-    
-    
+    }
+
+
     public function testWithPublicTestAccessedByNonOwner() {
         $this->performActionTest(array(
             'statusCode' => 200
@@ -48,9 +48,9 @@ class ActionTest extends BaseActionTest {
                 1
             )
         ));
-    } 
-        
-    
+    }
+
+
     public function testWithNonExistentTest() {
         $this->performActionTest(array(
             'statusCode' => 302,
@@ -61,9 +61,9 @@ class ActionTest extends BaseActionTest {
                 1
             )
         ));
-    }   
-    
-    
+    }
+
+
     public function testWithUnfinishedTest() {
         $this->performActionTest(array(
             'statusCode' => 302,
@@ -74,9 +74,9 @@ class ActionTest extends BaseActionTest {
                 1
             )
         ));
-    } 
-    
-    
+    }
+
+
     public function testWithAuthorisedUserAsJson() {
         $this->performActionTest(array(
             'statusCode' => 200
@@ -87,9 +87,9 @@ class ActionTest extends BaseActionTest {
             'methodArguments' => array(
                 'http://example.com/',
                 1
-            )            
+            )
         ));
-    }  
+    }
     
     public function testWithHttpClientErrorRetrievingRemoteSummary() {                
         try {
@@ -99,7 +99,7 @@ class ActionTest extends BaseActionTest {
                     1
                 )            
             )); 
-            $this->fail('WebResourceException 404 has not been raised.');
+            $this->fail('WebResourceException 400 has not been raised.');
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
             $this->assertEquals(400, $webResourceException->getResponse()->getStatusCode());
             return;

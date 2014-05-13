@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Controller;
 
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Model\ControllerTestRetrievalOutcome;
 
 class TestViewController extends BaseViewController
 {
@@ -11,45 +12,21 @@ class TestViewController extends BaseViewController
      * 
      * @param string $website
      * @param int $test_id
-     * @return \SimplyTestable\WebClientBundle\Model\ControllerTestRetrievalOutcome
+     * @return ControllerTestRetrievalOutcome
      */
     protected function getTestRetrievalOutcome($website, $test_id) {        
-        $outcome = new \SimplyTestable\WebClientBundle\Model\ControllerTestRetrievalOutcome();
+        $outcome = new ControllerTestRetrievalOutcome();
 
-        if (!$this->getTestService()->has($website, $test_id)) {
-            if ($this->isLoggedIn()) {
-                $this->setTemplate('SimplyTestableWebClientBundle:App:test-not-authorised.html.twig');
-                $outcome->setResponse($this->sendResponse(array(
-                    'this_url' => $this->getProgressUrl($website, $test_id),
-                    'test_input_action_url' => $this->generateUrl('test_cancel', array(
-                            'website' => $website,
-                            'test_id' => $test_id
-                        )),
-                    'website' => $website,
-                    'test_id' => $test_id,
-                    'public_site' => $this->container->getParameter('public_site'),
-                    'user' => $this->getUser(),
-                    'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-                )));
-
-                return $outcome;
+        try {
+            if (!$this->getTestService()->has($website, $test_id)) {
+                return $this->handleInvalidTestOwner($outcome, $website, $test_id);
+            }
+        } catch (WebResourceException $webResourceException) {
+            if ($webResourceException->getCode() === 403) {
+                return $this->handleInvalidTestOwner($outcome, $website, $test_id);
             }
 
-            $redirectParameters = json_encode(array(
-                'route' => 'app_progress',
-                'parameters' => array(
-                    'website' => $website,
-                    'test_id' => $test_id
-                )
-            ));
-
-            $this->get('session')->setFlash('user_signin_error', 'test-not-logged-in');
-
-            $outcome->setResponse($this->redirect($this->generateUrl('view_user_signin_index', array(
-                'redirect' => base64_encode($redirectParameters)
-            ), true)));
-
-            return $outcome;
+            throw $webResourceException;
         }
 
         $test = $this->getTestService()->get($website, $test_id);
@@ -57,8 +34,44 @@ class TestViewController extends BaseViewController
             $outcome->setTest($test);
             return $outcome;
         }
-    } 
-    
+    }
+
+    private function handleInvalidTestOwner(ControllerTestRetrievalOutcome $outcome, $website, $test_id) {
+        if ($this->isLoggedIn()) {
+            $this->setTemplate('SimplyTestableWebClientBundle:App:test-not-authorised.html.twig');
+            $outcome->setResponse($this->sendResponse(array(
+                'this_url' => $this->getProgressUrl($website, $test_id),
+                'test_input_action_url' => $this->generateUrl('test_cancel', array(
+                        'website' => $website,
+                        'test_id' => $test_id
+                    )),
+                'website' => $website,
+                'test_id' => $test_id,
+                'public_site' => $this->container->getParameter('public_site'),
+                'user' => $this->getUser(),
+                'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+            )));
+
+            return $outcome;
+        }
+
+        $redirectParameters = json_encode(array(
+            'route' => 'app_progress',
+            'parameters' => array(
+                'website' => $website,
+                'test_id' => $test_id
+            )
+        ));
+
+        $this->get('session')->setFlash('user_signin_error', 'test-not-logged-in');
+
+        $outcome->setResponse($this->redirect($this->generateUrl('view_user_signin_index', array(
+            'redirect' => base64_encode($redirectParameters)
+        ), true)));
+
+        return $outcome;
+    }
+
     
     /**
      * 
