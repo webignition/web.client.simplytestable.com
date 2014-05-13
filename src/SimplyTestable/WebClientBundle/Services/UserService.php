@@ -14,6 +14,12 @@ class UserService extends CoreApplicationService {
     
     const PUBLIC_USER_USERNAME = 'public';
     const PUBLIC_USER_PASSWORD = 'public';
+
+
+    /**
+     * @var \SimplyTestable\WebClientBundle\Model\User\Summary[]
+     */
+    private $summaries = array();
     
     /**
      *
@@ -457,29 +463,32 @@ class UserService extends CoreApplicationService {
     
     
     /**
-     * 
-     * @param \SimplyTestable\WebClientBundle\Model\User $user
-     * @return \SimplyTestable\WebClientBundle\Model\User\Summary
-     * @throws \SimplyTestable\WebClientBundle\Services\CurlException
+     * @param User $user
+     * @return UserSummary
+     * @throws \Guzzle\Http\Exception\CurlException
      */
     public function getSummary(User $user = null) {
         if (is_null($user)) {
             $user = $this->getUser();
         }
-        
-        $request = $this->webResourceService->getHttpClientService()->getRequest(
+
+        if (!isset($this->summaries[$user->getUsername()])) {
+            $request = $this->webResourceService->getHttpClientService()->getRequest(
                 $this->getUrl('user', array(
                     'email' => $user->getUsername()
                 ))
-        );
-        
-        $this->addAuthorisationToRequest($request);
+            );
 
-        try {
-            return new UserSummary($this->webResourceService->get($request)->getContentObject());
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-            throw $curlException;
-        }        
+            $this->addAuthorisationToRequest($request);
+
+            try {
+                $this->summaries[$user->getUsername()] = new UserSummary($this->webResourceService->get($request)->getContentObject());
+            } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+                throw $curlException;
+            }
+        }
+        
+        return $this->summaries[$user->getUsername()];
     } 
     
     

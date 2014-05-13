@@ -3,7 +3,7 @@ Content-Type: application/json
 
 {
    "id":1,
-   "user":"public",
+   "user":"user@example.com",
    "website":"http:\/\/example.com\/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz",
    "state":"rejected",
    "url_count":0,
@@ -23,6 +23,15 @@ Content-Type: application/json
    "task_types":[
       {
          "name":"HTML validation"
+      },
+      {
+         "name":"CSS validation"
+      },
+      {
+         "name":"JS static analysis"
+      },
+      {
+         "name":"Link integrity"
       }
    ],
    "errored_task_count":0,
@@ -58,16 +67,23 @@ Content-Type: application/json
          "jslint-option-vars":"1",
          "jslint-option-white":"1",
          "jslint-option-anon":"1"
+      },
+      "Link integrity":{
+         "excluded-domains":[
+            "instagram.com"
+         ]
       }
    },
-   "type":"Single URL",
-   "is_public":true,
+   "type":"Full site",
+   "is_public":false,
    "parameters":"",
+   "error_count":0,
+   "warning_count":0,
    "rejection":{
       "reason":"plan-constraint-limit-reached",
       "constraint":{
          "name":"single_url_jobs_per_url",
-         "limit":10,
+         "limit":1,
          "is_available":true
       }
    }

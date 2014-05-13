@@ -164,6 +164,7 @@ abstract class BaseTestCase extends WebTestCase {
      */
     protected function getFixturesDataPath($testName = null) {
         $fixturesPath = $this->getCustomFixturesDataPath($testName);
+
         while (!$this->directoryContainsFiles($fixturesPath) && $fixturesPath != __DIR__ . '/Fixtures') {
             $pathParts = explode(DIRECTORY_SEPARATOR, $fixturesPath);
             array_pop($pathParts);
@@ -203,7 +204,7 @@ abstract class BaseTestCase extends WebTestCase {
         return realpath($this->getCustomFixturesDataPath($testName)) !== false;
     } 
     
-    protected function setHttpFixtures($fixtures, $client = null) {        
+    protected function setHttpFixtures($fixtures, $client = null) {
         if (count($fixtures) === 0) {            
             $this->fail('HTTP fixtures path empty or incorrect ('.$this->getFixturesDataPath($this->getName()).')');
         }
@@ -221,7 +222,7 @@ abstract class BaseTestCase extends WebTestCase {
         if (is_null($client)) {
             $client =  $this->getHttpClientService()->get();
         }
-         
+
         $client->addSubscriber($plugin);              
     }
     

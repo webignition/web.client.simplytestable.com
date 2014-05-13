@@ -3,9 +3,9 @@ Content-Type: application/json
 
 {
    "id":1,
-   "user":"public",
+   "user":"user@example.com",
    "website":"http:\/\/example.com\/",
-   "state":"failed-no-sitemap",
+   "state":"rejected",
    "url_count":0,
    "task_count":0,
    "task_count_by_state":{
@@ -23,6 +23,9 @@ Content-Type: application/json
    "task_types":[
       {
          "name":"HTML validation"
+      },
+      {
+         "name":"CSS validation"
       }
    ],
    "errored_task_count":0,
@@ -58,9 +61,25 @@ Content-Type: application/json
          "jslint-option-vars":"1",
          "jslint-option-white":"1",
          "jslint-option-anon":"1"
+      },
+      "Link integrity":{
+         "excluded-domains":[
+            "instagram.com"
+         ]
       }
    },
    "type":"Full site",
-   "is_public":true,
-   "parameters":""
+   "is_public":false,
+   "parameters":"",
+   "error_count":0,
+   "warning_count":0,
+   "rejection":{
+      "reason":"plan-constraint-limit-reached",
+      "constraint":{
+         "name":"credits_per_month",
+         "limit":50,
+         "is_available":true
+      }
+   }
 }
+

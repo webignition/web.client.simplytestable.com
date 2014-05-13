@@ -32,15 +32,13 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             return $this->redirect($this->getProgressUrl($website, $test_id));
         }
 
-        $remoteTest = $this->getTestService()->getRemoteTestService()->get();
-
         $viewData = array(
             'website' => $this->getUrlViewValues($website),
-            'remote_test' => $remoteTest,
+            'remote_test' => $this->getTestService()->getRemoteTestService()->get(),
             'plans' => $this->container->getParameter('plans')
         );
 
-        if ($remoteTest->getRejection()->getConstraint()->name == 'credits_per_month') {
+        if ($this->isRejectedDueToCreditLimit()) {
             $viewData['userSummary'] = $this->getUserService()->getSummary();
         }
 
@@ -60,12 +58,32 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
         $remoteTest = $this->getTestService()->getRemoteTestService()->get();
 
-        if ($remoteTest->getRejection()->getConstraint()->name == 'credits_per_month') {
+        if ($this->isRejectedDueToCreditLimit()) {
             $userSummary = $this->getUserService()->getSummary();
             $cacheValidatorParameters['limits'] = $remoteTest->getRejection()->getConstraint()->limit . ':' . $userSummary->getPlanConstraints()->credits->limit;
             $cacheValidatorParameters['credits_remaining'] = $userSummary->getPlanConstraints()->credits->limit -$userSummary->getPlanConstraints()->credits->used;
         }
 
         return $cacheValidatorParameters;
+    }
+
+
+    /**
+     * @return bool
+     */
+    private function isRejectedDueToCreditLimit() {
+        if ($this->getRemoteTest()->getRejection()->getReason() != 'plan-constraint-limit-reached') {
+            return false;
+        }
+
+        return $this->getRemoteTest()->getRejection()->getConstraint()->name == 'credits_per_month';
+    }
+
+
+    /**
+     * @return bool|\SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest
+     */
+    private function getRemoteTest() {
+        return $this->getTestService()->getRemoteTestService()->get();
     }
 }
