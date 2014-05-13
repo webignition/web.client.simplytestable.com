@@ -66,63 +66,6 @@ class TestResultsController extends TestViewController
     }
 
     
-    public function rejectedAction($website, $test_id) {        
-        if ($this->isUsingOldIE()) {
-            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        }
-     
-        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
-        $cacheValidatorIdentifier->setParameter('website', $website);
-        $cacheValidatorIdentifier->setParameter('test_id', $test_id);
-        
-        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
-        
-        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
-        if ($response->isNotModified($this->getRequest())) {
-            return $response;
-        }
-        
-        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());                
-        $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);               
-        if ($testRetrievalOutcome->hasResponse()) {
-            return $testRetrievalOutcome->getResponse();
-        }
-        
-        $test = $testRetrievalOutcome->getTest();    
-        
-        if ($test->getWebsite() != $website) {
-            return $this->redirect($this->generateUrl('app_test_redirector', array(
-                'website' => $test->getWebsite(),
-                'test_id' => $test_id
-            ), true));            
-        }   
-        
-        if ($test->getState() !== 'rejected') {
-            return $this->redirect($this->getProgressUrl($website, $test_id));
-        }
-        
-        $remoteTest = $this->getTestService()->getRemoteTestService()->get();                
-        $userSummary = $this->getUserService()->getSummary($this->getUser());
-        
-        $viewData = array(
-            'website' => $this->getUrlViewValues($website),
-            'test' => $test,
-            'public_site' => $this->container->getParameter('public_site'),
-            'user' => $this->getUser(),
-            'userSummary' => $userSummary,
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'remote_test' => $remoteTest
-        );
-
-            
-        $this->setTemplate('SimplyTestableWebClientBundle:App:results-rejected.html.twig');
-        return $this->getCachableResponse(
-                $this->sendResponse($viewData),
-                $cacheValidatorHeaders
-        ); 
-    }    
-    
-    
     public function indexAction($website, $test_id) {
         if ($this->isUsingOldIE()) {
             return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
