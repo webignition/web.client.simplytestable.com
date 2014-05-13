@@ -64,71 +64,7 @@ class TestResultsController extends TestViewController
         
         return $this->getAvailableTaskTypeService()->get();    
     }
-    
-    
-    public function failedNoUrlsDetectedAction($website, $test_id) {        
-        if ($this->isUsingOldIE()) {
-            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        }
-     
-        $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier();
-        $cacheValidatorIdentifier->setParameter('website', $website);
-        $cacheValidatorIdentifier->setParameter('test_id', $test_id);
-        
-        $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);
-        
-        $response = $this->getCachableResponse(new Response(), $cacheValidatorHeaders);
-        if ($response->isNotModified($this->getRequest())) {
-            return $response;
-        }
-        
-        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());        
-        $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
-        if ($testRetrievalOutcome->hasResponse()) {
-            return $testRetrievalOutcome->getResponse();
-        }
-        
-        $test = $testRetrievalOutcome->getTest();
-        
-        if ($test->getWebsite() != $website) {
-            return $this->redirect($this->generateUrl('app_test_redirector', array(
-                'website' => $test->getWebsite(),
-                'test_id' => $test_id
-            ), true));            
-        }       
-        
-        if ($test->getState() !== 'failed-no-sitemap') {
-            return $this->redirect($this->getProgressUrl($website, $test_id));
-        }
-        
-        if (!$this->getUserService()->isPublicUser($this->getUser())) {            
-            return $this->redirect($this->getProgressUrl($website, $test_id));
-        }
-        
-        $redirectParameters = json_encode(array(
-            'route' => 'app_progress',
-            'parameters' => array(
-                'website' => $website,
-                'test_id' => $test_id                        
-            )
-        ));       
-        
-        $viewData = array(
-            'website' => $this->getUrlViewValues($website),
-            'test' => $test,
-            'public_site' => $this->container->getParameter('public_site'),
-            'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'redirect' => base64_encode($redirectParameters)
-        );
-            
-        $this->setTemplate('SimplyTestableWebClientBundle:App:results-failed-no-sitemap.html.twig');
-        return $this->getCachableResponse(
-                $this->sendResponse($viewData),
-                $cacheValidatorHeaders
-        ); 
-    }
-    
+
     
     public function rejectedAction($website, $test_id) {        
         if ($this->isUsingOldIE()) {
@@ -233,7 +169,7 @@ class TestResultsController extends TestViewController
         }
         
         if ($test->getState() == 'rejected') {            
-            return $this->redirect($this->generateUrl('app_results_rejected', array(
+            return $this->redirect($this->generateUrl('view_test_results_rejected_index_index', array(
                 'website' => $test->getWebsite(),
                 'test_id' => $test_id
             ), true));             

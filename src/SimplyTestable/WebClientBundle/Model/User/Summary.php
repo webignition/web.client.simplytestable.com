@@ -3,7 +3,7 @@ namespace SimplyTestable\WebClientBundle\Model\User;
 
 use SimplyTestable\WebClientBundle\Model\Object;
 
-class Summary extends Object {    
+class Summary extends Object {
     
     /**
      * 
@@ -75,8 +75,39 @@ class Summary extends Object {
             return null;
         }
         
-        $trialPeriodRemaining = $this->getStripeCustomer()->getSubscription()->getTrialPeriod()->getEnd() - time();
-        return (int)($this->getPlan()->getStartTrialPeriod() - floor($trialPeriodRemaining / 86400));
+        return (int)($this->getPlan()->getStartTrialPeriod() - floor($this->getTrialPeriodRemaining() / 86400));
+    }
+
+
+    /**
+     * @return bool
+     */
+    private function hasDayOfTrialPeriod() {
+        if (!$this->hasStripeCustomer()) {
+            return false;
+        }
+
+        if (!$this->getStripeCustomer()->hasSubscription()) {
+            return false;
+        }
+
+        if (!$this->getStripeCustomer()->getSubscription()->isTrialing()) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getTrialPeriodRemaining() {
+        if (!$this->hasDayOfTrialPeriod()) {
+            return $this->getPlan()->getStartTrialPeriod() * 86400;
+        }
+
+        return $this->getStripeCustomer()->getSubscription()->getTrialPeriod()->getEnd() - time();
     }
     
     

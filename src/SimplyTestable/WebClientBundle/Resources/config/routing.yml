@@ -188,10 +188,10 @@ view_test_results_failednourlsdetected_index_index:
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/FailedNoUrlsDetected/Index:index }
     requirements:
        website: ".+"       
-       
-app_results_rejected:
+
+view_test_results_rejected_index_index:
     pattern:  /{website}/{test_id}/results/rejected/
-    defaults: { _controller: SimplyTestableWebClientBundle:TestResults:rejected }  
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Rejected/Index:index }
     requirements:
        website: ".+"         
        

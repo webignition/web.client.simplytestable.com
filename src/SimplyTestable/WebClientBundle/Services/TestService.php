@@ -105,15 +105,15 @@ class TestService {
             return true;
         }
 
-        try {
+        //try {
             return $this->get($canonicalUrl, $testId) instanceof Test;
-        } catch (WebResourceException $webResourceException) {
-            if ($webResourceException->getCode() == 403) {
-                return false;
-            }
-
-            throw $webResourceException;
-        }
+        //} catch (WebResourceException $webResourceException) {
+//            if ($webResourceException->getCode() == 403) {
+//                return false;
+//            }
+//
+//            throw $webResourceException;
+        //}
         
 
     }

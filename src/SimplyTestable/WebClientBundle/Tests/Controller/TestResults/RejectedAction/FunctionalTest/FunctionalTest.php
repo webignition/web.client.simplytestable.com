@@ -16,7 +16,7 @@ abstract class FunctionalTest extends BaseFunctionalTest {
     abstract protected function getWebsite();
     
     protected function getRoute() {
-        return 'app_results_rejected';
+        return 'view_test_results_rejected_index_index';
     }     
     
     protected function getActionName() {

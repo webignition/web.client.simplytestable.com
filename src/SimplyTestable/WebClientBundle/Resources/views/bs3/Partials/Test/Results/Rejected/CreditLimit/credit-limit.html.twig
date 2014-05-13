@@ -1,0 +1,7 @@
+{% set is_credit_limit_reached = userSummary.planConstraints.credits.used >= userSummary.planConstraints.credits.limit %}
+
+{% if is_credit_limit_reached %}
+    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Rejected/CreditLimit:plan-limit-reached.html.twig' %}
+{% else %}
+    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Rejected/CreditLimit:plan-limit-not-reached.html.twig' %}
+{% endif %}

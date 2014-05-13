@@ -74,35 +74,17 @@ class RequestListener
             $test_id = $this->event->getRequest()->attributes->get('test_id');
 
             if (!$this->getTestService()->has($website, $test_id)) {
-                if ($this->getUserService()->isLoggedIn()) {
-                    $this->event->setResponse($this->getController()->render(
-                        'SimplyTestableWebClientBundle:App:test-not-authorised.html.twig',
-                        array(
-                            'public_site' => $this->kernel->getContainer()->getParameter('public_site'),
-                            'is_logged_in' => false,
-                            'test_id' => $test_id,
-                            'website' => $website
-                        )
-                    ));
+                return $this->handleInvalidTestOwner();
+            }
 
-                    return;
+            try {
+                $this->getTestService()->get($website, $test_id);
+            } catch (WebResourceException $webResourceException) {
+                if ($webResourceException->getCode() == 403) {
+                    return $this->handleInvalidTestOwner();
                 }
 
-                $redirectParameters = json_encode(array(
-                    'route' => 'app_progress',
-                    'parameters' => array(
-                        'website' => $website,
-                        'test_id' => $test_id
-                    )
-                ));
-
-                $this->kernel->getContainer()->get('session')->setFlash('user_signin_error', 'test-not-logged-in');
-
-                $this->event->setResponse($this->getController()->redirect($this->getController()->generateUrl('view_user_signin_index', array(
-                    'redirect' => base64_encode($redirectParameters)
-                ), true)));
-
-                return;
+                throw $webResourceException;
             }
         }
         
@@ -130,6 +112,42 @@ class RequestListener
             $this->event->setResponse($response);
             $this->kernel->getContainer()->get('session')->getFlashBag()->clear();
         }
+    }
+
+
+    private function handleInvalidTestOwner() {
+        $website = $this->event->getRequest()->attributes->get('website');
+        $test_id = $this->event->getRequest()->attributes->get('test_id');
+
+        if ($this->getUserService()->isLoggedIn()) {
+            $this->event->setResponse($this->getController()->render(
+                'SimplyTestableWebClientBundle:App:test-not-authorised.html.twig',
+                array(
+                    'public_site' => $this->kernel->getContainer()->getParameter('public_site'),
+                    'is_logged_in' => false,
+                    'test_id' => $test_id,
+                    'website' => $website
+                )
+            ));
+
+            return;
+        }
+
+        $redirectParameters = json_encode(array(
+            'route' => 'app_progress',
+            'parameters' => array(
+                'website' => $website,
+                'test_id' => $test_id
+            )
+        ));
+
+        $this->kernel->getContainer()->get('session')->setFlash('user_signin_error', 'test-not-logged-in');
+
+        $this->event->setResponse($this->getController()->redirect($this->getController()->generateUrl('view_user_signin_index', array(
+            'redirect' => base64_encode($redirectParameters)
+        ), true)));
+
+        return;
     }
     
     

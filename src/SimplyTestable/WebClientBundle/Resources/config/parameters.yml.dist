@@ -125,6 +125,12 @@ parameters:
      [1,1,1]
   premium_plan_launch_offer_end: 31 July 2013
   plans:
+    basic:
+      name: Basic
+      price: 0
+      description_brief: Free
+      urls_per_job: 10
+      credits_per_month: 500
     personal:
       price: 9
       description_brief: For small scale projects

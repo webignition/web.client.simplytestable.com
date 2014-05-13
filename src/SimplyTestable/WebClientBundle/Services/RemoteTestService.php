@@ -179,7 +179,7 @@ class RemoteTestService extends CoreApplicationService {
     
     /**
      *
-     * @return \stdClass|boolean 
+     * @return \SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest|boolean
      */
     public function get() {        
         if (is_null($this->remoteTest)) {            

@@ -385,7 +385,7 @@ class RemoteTest extends AbstractStandardObject {
     
     /**
      * 
-     * @return \stdClass
+     * @return \SimplyTestable\WebClientBundle\Model\RemoteTest\Rejection
      */
     public function getRejection() {
         if (!$this->hasProperty('rejection')) {

@@ -1,0 +1,11 @@
+{% set reason %}
+We've reached the limit of free single-page <a href="{{ [public_site.urls.home, public_site.urls.plans_demo]|join('') }}">demo tests</a> that can
+be run for <span class="website">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-40.html.twig' with {'url': website} %}</span>.
+{% endset %}
+
+{% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results/Rejected:jobs-per-month-constraint.html.twig'
+with {
+'reason': reason,
+'primary_byline': 'To run more tests for this page.'
+}
+%}
