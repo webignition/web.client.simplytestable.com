@@ -147,4 +147,12 @@ ul.lead:first-of-type {
         margin-left: 0;
     }
 
+    .single-page-dialog .cta .btn {
+        width:100%;
+        margin-bottom: 20px;
+    }
+
+    .single-page-dialog .cta .btn:last-of-type {
+        margin-bottom: 0;
+    }
 }
