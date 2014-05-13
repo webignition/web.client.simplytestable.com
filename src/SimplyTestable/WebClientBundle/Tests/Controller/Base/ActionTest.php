@@ -13,6 +13,7 @@ abstract class ActionTest extends BaseTest {
     
     public function setUp() {
         parent::setUp();
+        $this->removeAllTests();
         
         if (count($this->getHttpFixtureItems()) > 0) {
             $this->setHttpFixtures($this->buildHttpFixtureSet($this->getHttpFixtureItems()));
