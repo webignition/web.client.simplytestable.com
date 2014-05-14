@@ -55,7 +55,13 @@ abstract class ListenerTest extends BaseSimplyTestableTestCase {
         $request = new \Symfony\Component\HttpFoundation\Request();
         $request->attributes->set('_controller', $this->getControllerActionString());
         $request->attributes->set('_route', $this->getControllerRouteString());
-        
+
+        if ($this->hasUser()) {
+            $request->cookies->add(array(
+                'simplytestable-user' => $this->getUserSerializerService()->serializeToString($this->getUser())
+            ));
+        }
+
         return new \Symfony\Component\HttpKernel\Event\GetResponseEvent(
             $this->container->get('kernel'),
             $request,

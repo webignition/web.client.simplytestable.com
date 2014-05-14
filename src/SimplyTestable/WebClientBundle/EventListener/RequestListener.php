@@ -141,7 +141,7 @@ class RequestListener
 
         $this->kernel->getContainer()->get('session')->setFlash('user_signin_error', 'test-not-logged-in');
 
-        $this->event->setResponse($this->getController()->redirect($this->getController()->generateUrl('view_user_signin_index', array(
+        $this->event->setResponse(new RedirectResponse($this->getController()->generateUrl('view_user_signin_index', array(
             'redirect' => base64_encode($redirectParameters)
         ), true)));
 
