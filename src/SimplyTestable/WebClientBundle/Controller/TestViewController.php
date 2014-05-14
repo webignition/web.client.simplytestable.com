@@ -37,18 +37,19 @@ class TestViewController extends BaseViewController
 
     private function handleInvalidTestOwner(ControllerTestRetrievalOutcome $outcome, $website, $test_id) {
         if ($this->isLoggedIn()) {
-            $this->setTemplate('SimplyTestableWebClientBundle:App:test-not-authorised.html.twig');
+            $this->setTemplate('SimplyTestableWebClientBundle:bs3/Test/Results:not-authorised.html.twig');
             $outcome->setResponse($this->sendResponse(array(
                 'this_url' => $this->getProgressUrl($website, $test_id),
                 'test_input_action_url' => $this->generateUrl('test_cancel', array(
                         'website' => $website,
                         'test_id' => $test_id
                     )),
-                'website' => $website,
+                'website' => $this->getUrlViewValues($website),
                 'test_id' => $test_id,
                 'public_site' => $this->container->getParameter('public_site'),
                 'user' => $this->getUser(),
                 'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+                'external_links' => $this->container->getParameter('external_links'),
             )));
 
             return $outcome;

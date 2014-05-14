@@ -121,7 +121,7 @@ class RequestListener
 
         if ($this->getUserService()->isLoggedIn()) {
             $this->event->setResponse($this->getController()->render(
-                'SimplyTestableWebClientBundle:App:test-not-authorised.html.twig',
+                'SimplyTestableWebClientBundle:bs3/Test/Results:not-authorised.html.twig',
                 array(
                     'public_site' => $this->kernel->getContainer()->getParameter('public_site'),
                     'is_logged_in' => false,
