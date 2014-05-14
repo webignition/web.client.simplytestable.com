@@ -68,6 +68,29 @@ class RequestListener
         
         $this->getUserService()->setUserFromRequest($this->event->getRequest());
 
+        try {
+            if ($this->isCacheableController()) {
+                $this->setRequestCacheValidatorHeaders();
+
+                $response = $this->getCacheableResponseService()->getCachableResponse($this->event->getRequest());
+
+                $this->fixRequestIfNoneMatchHeader();
+
+                if ($response->isNotModified($this->event->getRequest())) {
+                    $this->event->setResponse($response);
+                    $this->kernel->getContainer()->get('session')->getFlashBag()->clear();
+                    return;
+                }
+            }
+        } catch (\Exception $e) {
+            // Exceptions may well be raised by a controller when getting cache validator parameters as the controller
+            // can assume user and test authentication has already been carried out prior to the request reaching the
+            // controller.
+            // It is safe to ignore such exceptions.
+            // It is much faster to try and return a 304 Not Modified response at this stage prior to any significant
+            // processing occurring.
+        }
+
         if ($this->isRequiresValidUserController() && !$this->getUserService()->authenticate()) {
             $this->event->setResponse(new RedirectResponse($this->getController()->generateUrl('sign_out_submit', array(), true)));
             return;
@@ -96,19 +119,6 @@ class RequestListener
             $this->kernel->getContainer()->get('session')->setFlash('user_signin_error', 'account-not-logged-in');            
             $this->event->setResponse($this->getUserSignInRedirectResponse());            
             return;             
-        }     
-
-        if ($this->isCacheableController()) {
-            $this->setRequestCacheValidatorHeaders();
-
-            $response = $this->getCacheableResponseService()->getCachableResponse($this->event->getRequest());
-
-            $this->fixRequestIfNoneMatchHeader();
-
-            if ($response->isNotModified($this->event->getRequest())) {
-                $this->event->setResponse($response);
-                $this->kernel->getContainer()->get('session')->getFlashBag()->clear();
-            }
         }
     }
 
