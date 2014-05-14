@@ -61,6 +61,10 @@ class RequestListener
         if (!$this->isApplicationController()) {
             return;
         }
+
+        if ($this->isIeFilteredController() && $this->isUsingOldIE()) {
+            $this->event->setResponse($this->getRedirectResponseToOutdatedBrowserPage());
+        }
         
         $this->getUserService()->setUserFromRequest($this->event->getRequest());
 
@@ -93,24 +97,18 @@ class RequestListener
             $this->event->setResponse($this->getUserSignInRedirectResponse());            
             return;             
         }     
-        
-        if ($this->isIeFilteredController() && $this->isUsingOldIE()) {
-            $this->event->setResponse($this->getRedirectResponseToOutdatedBrowserPage());
-        }
-        
-        if (!$this->isCacheableController()) {
-            return;
-        }
 
-        $this->setRequestCacheValidatorHeaders();
-      
-        $response = $this->getCacheableResponseService()->getCachableResponse($this->event->getRequest());
-        
-        $this->fixRequestIfNoneMatchHeader();        
-        
-        if ($response->isNotModified($this->event->getRequest())) {
-            $this->event->setResponse($response);
-            $this->kernel->getContainer()->get('session')->getFlashBag()->clear();
+        if ($this->isCacheableController()) {
+            $this->setRequestCacheValidatorHeaders();
+
+            $response = $this->getCacheableResponseService()->getCachableResponse($this->event->getRequest());
+
+            $this->fixRequestIfNoneMatchHeader();
+
+            if ($response->isNotModified($this->event->getRequest())) {
+                $this->event->setResponse($response);
+                $this->kernel->getContainer()->get('session')->getFlashBag()->clear();
+            }
         }
     }
 

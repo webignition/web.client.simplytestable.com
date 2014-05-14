@@ -29,6 +29,15 @@ abstract class ViewController extends BaseViewController {
 
     /**
      *
+     * @return \SimplyTestable\WebClientBundle\Services\TaskService
+     */
+    protected function getTaskService() {
+        return $this->container->get('simplytestable.services.taskservice');
+    }
+
+
+    /**
+     *
      * @param string $url
      * @return string[]
      */

@@ -49,6 +49,16 @@ class TestService {
      * @var \SimplyTestable\WebClientBundle\Services\RemoteTestService
      */
     private $remoteTestService;
+
+
+    /**
+     * @var string[]
+     */
+    private $finishedStates = array(
+        'cancelled',
+        'completed',
+        'failed-no-sitemap',
+    );
     
     
     /**
@@ -259,8 +269,16 @@ class TestService {
     public function isFailed(Test $test) {
         $failedStatePrefix = 'failed';        
         return substr($test->getState(), 0, strlen($failedStatePrefix)) === $failedStatePrefix;
-    }   
-    
+    }
+
+
+    /**
+     * @param Test $test
+     * @return bool
+     */
+    public function isFinished(Test $test) {
+        return in_array($test->getState(), $this->finishedStates);
+    }
    
     
 }

@@ -192,7 +192,7 @@ abstract class BaseController extends Controller
      */
     protected function getPreparingResultsUrl($website, $test_id) {
         return $this->generateUrl(
-            'app_results_preparing',
+            'view_test_results_preparing_index_index',
             array(
                 'website' => $website,
                 'test_id' => $test_id

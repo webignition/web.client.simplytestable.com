@@ -11,7 +11,7 @@ abstract class FunctionalTest extends ControllerFunctionalTest {
     }
 
     protected function getRoute() {
-        return 'app_results_preparing';
+        return 'view_test_results_preparing_index_index';
     }    
     
     protected function getControllerName() {

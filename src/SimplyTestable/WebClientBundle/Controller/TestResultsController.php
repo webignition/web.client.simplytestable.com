@@ -140,7 +140,7 @@ class TestResultsController extends TestViewController
                 $urlParameters['output'] = $this->get('request')->query->get('output');
             }
             
-            return $this->redirect($this->generateUrl('app_results_preparing', $urlParameters, true));
+            return $this->redirect($this->generateUrl('view_test_results_preparing_index_index', $urlParameters, true));
         } else {
             $this->getTaskService()->getCollection($test);
         }      

@@ -143,21 +143,7 @@ class AppController extends TestViewController
     private function defaultAndPersistentTestOptionsToParameterBag() {
         $testOptionsParameters = $this->container->getParameter('test_options');        
         return new \Symfony\Component\HttpFoundation\ParameterBag($this->getPersistentValues($testOptionsParameters['names_and_default_values']));
-    }    
-    
-    
-//    /**
-//     * 
-//     * @return array
-//     */
-//    private function getTestOptions() {
-//        $testOptionsParameters = $this->container->getParameter('test_options');
-//        $testOptions = $this->getPersistentValues($testOptionsParameters['names_and_default_values']);
-//        
-//        
-//        
-//        return $testOptions;
-//    }
+    }
     
     
     /**
@@ -331,51 +317,6 @@ class AppController extends TestViewController
             case 'cancelled':
                 return 'success';
         }        
-    }
-    
-    
-    public function prepareResultsAction($website, $test_id)
-    {              
-        if ($this->isUsingOldIE()) {
-            return $this->forward('SimplyTestableWebClientBundle:App:outdatedBrowser');
-        }        
-        
-        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
-        
-        $testRetrievalOutcome = $this->getTestRetrievalOutcome($website, $test_id);
-        if ($testRetrievalOutcome->hasResponse()) {
-            return $testRetrievalOutcome->getResponse();
-        }
-        
-        $test = $testRetrievalOutcome->getTest();
-
-        if (!in_array($test->getState(), $this->testFinishedStates)) {
-            return $this->redirect($this->getProgressUrl($website, $test_id));
-        }
-        
-        if (!$test->hasTaskIds()) {
-            $this->getTaskService()->getRemoteTaskIds($test);
-        }
-        
-        $remoteTest = $this->getTestService()->getRemoteTestService()->get();
-        
-        $localTaskCount = $test->getTaskCount();      
-        $completionPercent = round(($localTaskCount / $remoteTest->getTaskCount()) * 100);
-        $remainingTasksToRetrieveCount = $remoteTest->getTaskCount() - $localTaskCount;
-        
-        $this->setTemplate('SimplyTestableWebClientBundle:App:results-preparing.html.twig');        
-        return $this->sendResponse(array(            
-            'public_site' => $this->container->getParameter('public_site'),
-            'this_url' => $this->getPreparingResultsUrl($website, $test_id),
-            'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-            'website' => $this->getUrlViewValues($website),
-            'test' => $test,
-            'completion_percent' => $completionPercent,
-            'remaining_tasks_to_retrieve_count' => $remainingTasksToRetrieveCount,
-            'local_task_count' => $localTaskCount,
-            'remote_task_count' => $remoteTest->getTaskCount()
-        ));     
     }
     
     

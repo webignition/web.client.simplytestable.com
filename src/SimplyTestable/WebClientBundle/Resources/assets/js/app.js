@@ -21,98 +21,6 @@ application.common.form.field.hasError = function (field) {
     return $('[data-for=' + field.attr('id') + ']').length > 0;   
 };
 
-application.results = {};
-application.results.preparingController = function() {
-
-    var nextTaskIdCollection = [];
-
-    var getResultsUrl = function() {
-        return window.location.href.replace('/preparing/', '');
-    };
-
-    var getUnretrievedRemoteTaskIdsUrl = function() {
-        return window.location.href.replace('/results/preparing/', '/tasks/ids/unretrieved/100/');
-    };
-
-    var getTaskResultsRetrieveUrl = function() {
-        return window.location.href.replace('/preparing/', '/retrieve/');
-    };
-
-    var getRetrievalStatusUrl = function() {
-        return getTaskResultsRetrieveUrl() + 'status/';
-    };
-
-    var getRetrievalStatus = function() {
-        jQuery.ajax({
-            dataType: 'json',
-            error: function(request, textStatus, errorThrown) {
-            },
-            success: function(data, textStatus, request) {
-                $('#completion-percent-value').text(data['completion-percent']);
-                $('#remaining-tasks-to-retrieve-count').attr('class', data['remaining-tasks-to-retrieve-count']);
-
-                $('#completion-percent-bar').css({
-                    'width': data['completion-percent'] + '%'
-                });
-
-                $('#local-task-count').text(data['local-task-count']);
-                $('#remote-task-count').text(data['remote-task-count']);
-
-                initialise();
-            },
-            url: getRetrievalStatusUrl()
-        });
-    };
-
-    var retrieveNextRemoteTaskIdCollection = function() {
-        jQuery.ajax({
-            type: 'POST',
-            dataType: 'json',
-            error: function(request, textStatus, errorThrown) {
-            },
-            data: {
-                'remoteTaskIds': nextTaskIdCollection.join(',')
-            },
-            success: function(data, textStatus, request) {
-                getRetrievalStatus();
-            },
-            url: getTaskResultsRetrieveUrl()
-        });
-    };
-    var getNextRemoteTaskIdCollection = function() {
-//        getUnretrievedRemoteTaskIdsUrl();
-//        return;
-
-        jQuery.ajax({
-            dataType: 'json',
-            error: function(request, textStatus, errorThrown) {
-            },
-            success: function(data, textStatus, request) {
-                nextTaskIdCollection = data;
-                retrieveNextRemoteTaskIdCollection();
-            },
-            url: getUnretrievedRemoteTaskIdsUrl()
-        });
-    };
-
-
-    var getRemainingTasksToRetrieveCount = function() {
-        return parseInt($('#remaining-tasks-to-retrieve-count').attr('class'), 10);
-    };
-
-    var initialise = function() {
-        if (getRemainingTasksToRetrieveCount() === 0) {
-            window.location.href = getResultsUrl();
-        } else {
-            getNextRemoteTaskIdCollection();
-        }
-
-
-    };
-
-    this.initialise = initialise;
-};
-
 application.progress = {};
 
 application.progress.testController = function() {
@@ -2299,11 +2207,6 @@ application.pages = {
                 taskProgressController = new application.progress.taskController();
                 taskProgressController.initialise();
             }
-
-            if ($('body.app-results-preparing').length > 0) {
-                resultsPreparingController = new application.results.preparingController();
-                resultsPreparingController.initialise();
-            }
             
             if ($('body.app').length > 0) {
                 testStartFormController = new application.root.testStartFormController();
@@ -2315,7 +2218,7 @@ application.pages = {
                 finishedTestsPreparingController = new application.root.finishedTestsPreparingController();
                 finishedTestsPreparingController.initialise();
             }
-            
+
             if ($('body.app-results').length > 0) {
                 testStartFormController = new application.root.testStartFormController();
                 testStartFormController.initialise();

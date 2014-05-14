@@ -132,14 +132,5 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         
         return $testList;
     }
-    
-    
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TaskService 
-     */
-    private function getTaskService() {
-        return $this->container->get('simplytestable.services.taskservice');
-    }
 
 }

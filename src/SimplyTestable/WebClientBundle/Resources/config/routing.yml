@@ -194,10 +194,10 @@ view_test_results_rejected_index_index:
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Rejected/Index:index }
     requirements:
        website: ".+"         
-       
-app_results_preparing:
+
+view_test_results_preparing_index_index:
     pattern:  /{website}/{test_id}/results/preparing/
-    defaults: { _controller: SimplyTestableWebClientBundle:App:prepareResults }  
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Preparing/Index:index }
     requirements:
        website: ".+"       
        
