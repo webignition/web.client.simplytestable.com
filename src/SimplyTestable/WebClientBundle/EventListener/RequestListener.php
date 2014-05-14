@@ -77,11 +77,11 @@ class RequestListener
             $website = $this->event->getRequest()->attributes->get('website');
             $test_id = $this->event->getRequest()->attributes->get('test_id');
 
-            if (!$this->getTestService()->has($website, $test_id)) {
-                return $this->handleInvalidTestOwner();
-            }
-
             try {
+                if (!$this->getTestService()->has($website, $test_id)) {
+                    return $this->handleInvalidTestOwner();
+                }
+
                 $this->getTestService()->get($website, $test_id);
             } catch (WebResourceException $webResourceException) {
                 if ($webResourceException->getCode() == 403) {

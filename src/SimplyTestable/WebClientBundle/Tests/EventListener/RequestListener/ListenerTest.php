@@ -10,6 +10,7 @@ abstract class ListenerTest extends BaseSimplyTestableTestCase {
     
     public function setUp() {
         parent::setUp();
+        $this->removeAllTests();
         $this->callListener();        
     }
     
