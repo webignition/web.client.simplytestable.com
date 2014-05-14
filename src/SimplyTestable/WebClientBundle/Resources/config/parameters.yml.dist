@@ -132,21 +132,25 @@ parameters:
       urls_per_job: 10
       credits_per_month: 500
     personal:
+      name: Personal
       price: 9
       description_brief: For small scale projects
       urls_per_job: 50
       credits_per_month: 5000
     agency:
+      name: Agency
       price: 19
       description_brief: Great for small organisations
       urls_per_job: 250
       credits_per_month: 20000
     business:
+      name: Business
       price: 59
       description_brief: Best value for professionals
       urls_per_job: 2500
       credits_per_month: 100000
     enterprise:
+      name: Enterprise
       price: 299
       description_brief: Full corporate treatment
       urls_per_job: 10000
