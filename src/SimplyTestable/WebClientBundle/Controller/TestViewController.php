@@ -7,12 +7,11 @@ use SimplyTestable\WebClientBundle\Model\ControllerTestRetrievalOutcome;
 
 class TestViewController extends BaseViewController
 {
-
     /**
-     * 
-     * @param string $website
-     * @param int $test_id
+     * @param $website
+     * @param $test_id
      * @return ControllerTestRetrievalOutcome
+     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
      */
     protected function getTestRetrievalOutcome($website, $test_id) {        
         $outcome = new ControllerTestRetrievalOutcome();
@@ -21,18 +20,18 @@ class TestViewController extends BaseViewController
             if (!$this->getTestService()->has($website, $test_id)) {
                 return $this->handleInvalidTestOwner($outcome, $website, $test_id);
             }
+
+            $test = $this->getTestService()->get($website, $test_id);
+            if ($this->getTestService()->getRemoteTestService()->authenticate()) {
+                $outcome->setTest($test);
+                return $outcome;
+            }
         } catch (WebResourceException $webResourceException) {
             if ($webResourceException->getCode() === 403) {
                 return $this->handleInvalidTestOwner($outcome, $website, $test_id);
             }
 
             throw $webResourceException;
-        }
-
-        $test = $this->getTestService()->get($website, $test_id);
-        if ($this->getTestService()->getRemoteTestService()->authenticate()) {
-            $outcome->setTest($test);
-            return $outcome;
         }
     }
 
