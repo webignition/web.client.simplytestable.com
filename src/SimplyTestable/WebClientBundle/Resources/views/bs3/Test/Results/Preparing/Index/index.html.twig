@@ -2,8 +2,7 @@
 
 {% set dialog_width = 6 %}
 
-
-{% block title %}Foo - {{ parent() }} {% endblock %}
+{% block title %}Preparing results for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
