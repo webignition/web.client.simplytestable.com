@@ -129,10 +129,11 @@ view_test_results_partial_finishedsummary_index:
 view_test_results_partial_finishedsummary_dummy:
     pattern:  /test/finished-summary-dummy/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Partial/FinishedSummary/Dummy:index }
-    
-app_task_results:
+
+view_test_task_results_index_index:
     pattern:  /{website}/{test_id}/{task_id}/results/
-    defaults: { _controller: SimplyTestableWebClientBundle:Task:results }  
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Task/Results/Index:index }
+    #defaults: { _controller: SimplyTestableWebClientBundle:Task:results }
     requirements:
         website: ".+"
         test_id: "\d+"

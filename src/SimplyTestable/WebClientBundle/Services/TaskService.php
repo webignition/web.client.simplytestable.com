@@ -482,7 +482,7 @@ class TaskService extends CoreApplicationService {
      * @param Task $task
      * @return boolean
      */
-    private function isFinished(Task $task) {
+    public function isFinished(Task $task) {
         return in_array($task->getState(), $this->finishedStates);
     }
     
@@ -511,7 +511,7 @@ class TaskService extends CoreApplicationService {
      * @param Task $task
      * @return boolean
      */
-    private function isIncomplete(Task $task) {
+    public function isIncomplete(Task $task) {
         return in_array($task->getState(), $this->incompleteStates);
     }        
     

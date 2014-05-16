@@ -1,0 +1,9 @@
+<ul class="issues html-validation-issues">
+    {% for error in task.output.result.getErrors %}
+        <li>
+            {% include [
+            'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded/ErrorList/html-validation:error.html.twig'
+            ]|join('') %}
+        </li>
+    {% endfor %}
+</ul>

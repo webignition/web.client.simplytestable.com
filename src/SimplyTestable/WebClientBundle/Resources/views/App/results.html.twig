@@ -109,7 +109,7 @@
                                                     {% if task.state == 'skipped' or task.state == 'cancelled' %}                                        
                                                     {% else %}
                                                         {% if task.output.hasErrors and task.output.hasWarnings %}
-                                            <a href="{{ path('app_task_results', { 'website': test.website, 'test_id': test.testId, 'task_id':task.taskId }) }}" class="label label-important">
+                                            <a href="{{ path('view_test_task_results_index_index', { 'website': test.website, 'test_id': test.testId, 'task_id':task.taskId }) }}" class="label label-important">
                                                             {{ task.output.errorCount }}
                                                             {% if task.output.errorCount == 1 %}
                                                     error,
@@ -127,7 +127,7 @@
 
                                                         {% elseif not task.output.hasErrors and task.output.hasWarnings %}
                                                 <span class="label label-success"><i class="icon icon-ok"></i> No errors</span>
-                                                <a href="{{ path('app_task_results', { 'website': test.website, 'test_id': test.testId, 'task_id':task.taskId }) }}" class="label label-info">                                                            
+                                                <a href="{{ path('view_test_task_results_index_index', { 'website': test.website, 'test_id': test.testId, 'task_id':task.taskId }) }}" class="label label-info">
                                                             {{ task.output.warningCount }}
                                                             {% if task.output.warningCount == 1 %}
                                                         warning
@@ -137,7 +137,7 @@
                                                         <i class="icon-caret-right"></i>    
                                                     </a>                                                            
                                                         {% elseif task.output.hasErrors and not task.output.hasWarnings %}
-                                                    <a href="{{ path('app_task_results', { 'website': test.website, 'test_id': test.testId, 'task_id':task.taskId }) }}" class="label label-important">
+                                                    <a href="{{ path('view_test_task_results_index_index', { 'website': test.website, 'test_id': test.testId, 'task_id':task.taskId }) }}" class="label label-important">
                                                             {{ task.output.errorCount }}
                                                             {% if task.output.errorCount == 1 %}
                                                             error

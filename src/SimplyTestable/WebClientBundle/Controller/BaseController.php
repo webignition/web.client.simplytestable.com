@@ -231,7 +231,7 @@ abstract class BaseController extends Controller
      */    
     protected function getTaskResultsUrl($website, $test_id, $task_id) {
         return $this->generateUrl(
-            'app_task_results',
+            'view_test_task_results_index_index',
             array(
                 'website' => $website,
                 'test_id' => $test_id,

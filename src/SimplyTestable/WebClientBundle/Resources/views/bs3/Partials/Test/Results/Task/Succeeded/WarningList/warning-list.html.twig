@@ -1,0 +1,11 @@
+<div class="row issue-list  {{ [task_type_key, 'issue-list']|join('-') }} warning-list {{ [task_type_key, 'warning-list']|join('-') }}" id="warnings">
+    <div class="col-lg-12">
+        <h2>Warnings <span class="badge alert-info">{{ task.output.warningCount }}</span></h2>
+
+        {% include [
+        'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded/WarningList/',
+        task_type_key,
+        ':list.html.twig'
+        ]|join('') %}
+    </div>
+</div>

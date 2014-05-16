@@ -1,0 +1,17 @@
+<div class="row issue-list  {{ [task_type_key, 'issue-list']|join('-') }} fixes-list {{ [task_type_key, 'fixes-list']|join('-') }}" id="fixes">
+    <div class="col-lg-12">
+        <h2>Fixes <span class="badge alert-fixes">{{ distinct_fixes | length }}</span></h2>
+
+        <ul class="issues">
+            {% for fix in distinct_fixes %}
+                <li>
+                    {% include [
+                    'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded/FixesList:',
+                    task_type_key,
+                    '-fix.html.twig'
+                    ]|join('') %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>

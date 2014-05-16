@@ -1,0 +1,156 @@
+.header p {
+    margin-top: 10px;
+}
+
+.label-fix,
+.label-fixes,
+.alert-fixes {
+    background-color: #f8b426;
+}
+
+
+.label-fix[href]:hover,
+.label-fix[href]:focus,
+.label-fixes[href]:hover,
+.label-fixes[href]:focus,
+.issue-list li:hover .label-fix[href]
+{
+    background-color: #f89406;
+}
+
+.summary-stats {
+    margin-top: 30px;
+}
+
+.summary-stats .label {
+    font-size: 28px;
+    line-height: 28px;
+    font-weight: normal;
+    margin-right: 20px;
+}
+
+.summary-stats .label span {
+    opacity: 0.8;
+}
+
+.summary-stats .label .count {
+
+}
+
+.summary-stats .label .name {
+    font-size: 14px;
+}
+
+.summary-stats .label .icon {
+    font-size: 20px;
+    line-height: 20px;
+    vertical-align: text-bottom;
+}
+
+.summary-stats .label .icon .fa {
+    font-size: 20px;
+}
+
+.no-longer-available,
+.issue-list {
+    margin-top: 40px;
+}
+
+.error-list {
+    border-left: 3px solid #d9534f;
+}
+
+.fixes-list {
+    border-left: 3px solid #f89406;
+}
+
+.warning-list {
+    border-left: 3px solid #428bca;
+}
+
+.issue-list h2,
+.issue-list h2 .badge {
+    vertical-align:middle;
+}
+
+.issue-list ul,
+.issue-list li {
+    margin:0;
+    padding:0;
+}
+
+.issue-list li {
+    list-style: none;
+}
+
+.issue-list .issues li {
+    border-bottom: 1px solid #eee;
+    padding: 16px 0;
+}
+
+.issue-list .issues li:last-of-type {
+    border-bottom: none;
+}
+
+.issue-list .meta {
+    font-family: monospace;
+    opacity: 0.6;
+}
+
+.issue-list .meta .digit {
+    text-align: right;
+    padding: 0;
+}
+
+.issue-list .meta .text {
+    padding-right: 0;
+}
+
+.issue-list .content {
+    padding-left:0;
+}
+
+.issue-list .css-validation-issues .content {
+    padding-left: 15px;
+}
+
+.issue-list .css-validation-issues .content code {
+    white-space: normal;
+}
+
+.css-validation-issue-list h3 {
+    padding-left: 5px;
+    font-size: 20px;
+    line-height: 20px;
+    margin-top: 40px;
+}
+
+.css-validation-issue-list h3 a,
+.css-validation-issue-list h3 a:hover,
+.css-validation-issue-list h3 a:focus {
+    color:#333;
+    text-decoration: none;
+}
+
+.css-validation-issue-list h3 .fa {
+    margin-right:8px;
+    font-size: 18px;
+    opacity: 0.8;
+}
+
+.issue-list .issues li:hover {
+    background-color: #eee;
+}
+
+.issue-list .issues li:hover .meta {
+    opacity: 1;
+}
+
+.fixes-list a {
+    display:block;
+    padding: 16px 0;
+}
+
+.fixes-list .issues li {
+    padding:0;
+}
