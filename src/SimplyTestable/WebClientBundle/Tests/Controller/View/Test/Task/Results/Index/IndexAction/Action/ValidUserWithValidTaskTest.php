@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Tests\Controller\Base\ActionTest as BaseActio
 
 class ValidUserWithValidTaskTest extends BaseActionTest {
 
-    const WEBSITE = 'http://example.com/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz';
+    const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const TASK_ID = 1;
 

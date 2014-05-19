@@ -4,7 +4,7 @@ Content-Type: application/json
 {
    "id":1,
    "user":"user@example.com",
-   "website":"http:\/\/example.com\/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz",
+   "website":"http:\/\/example.com\/",
    "state":"completed",
    "url_count":0,
    "task_count":1,

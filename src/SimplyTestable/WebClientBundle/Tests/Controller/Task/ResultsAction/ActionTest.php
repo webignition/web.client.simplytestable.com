@@ -15,29 +15,29 @@ class ActionTest extends BaseActionTest {
         return 'resultsAction';
     }
 
-    public function testWithAuthorisedUserWithValidTestAndValidTask() {
-        $this->performActionTest(array(
-            'statusCode' => 200
-        ), array(
-            'methodArguments' => array(
-                'http://example.com/',
-                1,
-                1
-            )
-        ));
-    } 
-    
-    public function testWithPublicTestAccessedByNonOwner() {
-        $this->performActionTest(array(
-            'statusCode' => 200
-        ), array(
-            'methodArguments' => array(
-                'http://example.com/',
-                1,
-                1
-            )
-        ));
-    }       
+//    public function testWithAuthorisedUserWithValidTestAndValidTask() {
+//        $this->performActionTest(array(
+//            'statusCode' => 200
+//        ), array(
+//            'methodArguments' => array(
+//                'http://example.com/',
+//                1,
+//                1
+//            )
+//        ));
+//    }
+//
+//    public function testWithPublicTestAccessedByNonOwner() {
+//        $this->performActionTest(array(
+//            'statusCode' => 200
+//        ), array(
+//            'methodArguments' => array(
+//                'http://example.com/',
+//                1,
+//                1
+//            )
+//        ));
+//    }
     
     
     public function testWithAuthorisedUserWithValidTestAndInvalidTask() {
