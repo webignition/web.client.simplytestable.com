@@ -85,6 +85,16 @@ abstract class FunctionalTest extends BaseTest {
     }
 
 
+    protected function assertHeadingContains($text) {
+        $headings = $this->getScopedCrawler()->filter('h1');
+        $this->assertEquals(1, $headings->count());
+
+        foreach ($headings as $heading) {
+            $this->assertDomNodeContainsNext($heading, $text);
+        }
+    }
+
+
 
     /**
      * @return \Symfony\Component\DomCrawler\Crawler

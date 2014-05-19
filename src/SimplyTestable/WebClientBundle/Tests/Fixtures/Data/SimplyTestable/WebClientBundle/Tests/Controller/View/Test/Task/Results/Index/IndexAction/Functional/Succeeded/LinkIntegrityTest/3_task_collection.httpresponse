@@ -1,0 +1,22 @@
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+[
+   {
+      "id":1,
+      "url":"http:\/\/example.com\/",
+      "state":"completed",
+      "worker":"",
+      "type":"Link integrity",
+      "time_period":{
+         "start_date_time":"2014-03-24T18:24:44+0000",
+         "end_date_time":"2014-03-24T18:24:45+0000"
+      },
+      "output":{
+         "output":"[{\"context\":\"<a class=\\\"require\\\" href=\\\"require.php\\\" target=\\\"_blank\\\"><\/a>\",\"state\":404,\"type\":\"http\",\"url\":\"http:\/\/www.megaintel.com\/require.php\"}]",
+         "content_type":"application\/json",
+         "error_count":1,
+         "warning_count":0
+      }
+   }
+]

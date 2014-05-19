@@ -1,0 +1,22 @@
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+[
+   {
+      "id":1,
+      "url":"http:\/\/example.com\/",
+      "state":"completed",
+      "worker":"",
+      "type":"CSS validation",
+      "time_period":{
+         "start_date_time":"2014-03-24T18:24:44+0000",
+         "end_date_time":"2014-03-24T18:24:45+0000"
+      },
+      "output":{
+         "output":"[{\"message\":\"Parse Error\\n\\t\\topacity=20)\",\"context\":\"#overlay\",\"line_number\":103,\"type\":\"error\",\"ref\":\"http:\\\/\\\/www.kennzeichnungen.de\\\/css\\\/lightbox.css\"}]",
+         "content_type":"application\/json",
+         "error_count":1,
+         "warning_count":0
+      }
+   }
+]
