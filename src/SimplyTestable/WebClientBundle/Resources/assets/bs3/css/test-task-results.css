@@ -185,12 +185,12 @@
     margin-left: 10px;
 }
 
-.html-validation-issues .content-column {
+.html-validation-issues .content {
     position: relative;
     padding-right: 50px;
 }
 
-.html-validation-issues .content-column .fix {
+.html-validation-issues .content .fix {
     position: absolute;
     right:15px;
     top:0;
