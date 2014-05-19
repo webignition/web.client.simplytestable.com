@@ -189,3 +189,14 @@
 .issue-list .collapse-control {
     margin-left: 10px;
 }
+
+.html-validation-issues .content-column {
+    position: relative;
+    padding-right: 50px;
+}
+
+.html-validation-issues .content-column .fix {
+    position: absolute;
+    right:15px;
+    top:0;
+}
