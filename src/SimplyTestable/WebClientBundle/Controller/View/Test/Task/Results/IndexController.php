@@ -74,23 +74,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         if ($task->getType() == 'JS static analysis') {
             $viewData['errors_by_js_context'] = $this->getJsStaticAnalysisErrorsGroupedByContext($task);
         }
-//
-//        $viewData = array(
-//            'test' => $test,
-//            'task' => $task,
-//            'public_site' => $this->container->getParameter('public_site'),
-//            'user' => $this->getUser(),
-//            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
-//            'is_owner' => $isOwner,
-//            'is_public_user_test' => $isPublicUserTest,
-//            'website_url' => $this->getUrlViewValues($test->getWebsite()),
-//            'task_url' => $this->getUrlViewValues($task->getUrl()),
-//        );
-//
 
-//
-
-//
         if ($task->getType() == 'Link integrity') {
             $viewData['errors_by_link_state'] = $this->getLinkIntegrityErrorsGroupedByLinkState($task);
             $viewData['link_class_labels'] = array(
@@ -154,28 +138,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
                 )
             );
         }
-
-//
-//        if ($test->getWebsite() != $website) {
-//            return $this->redirect($this->generateUrl('app_test_redirector', array(
-//                'website' => $test->getWebsite(),
-//                'test_id' => $test_id
-//            ), true));
-//        }
-//
-//        if ($test->getState() !== 'rejected') {
-//            return $this->redirect($this->getProgressUrl($website, $test_id));
-//        }
-//
-//        $viewData = array(
-//            'website' => $this->getUrlViewValues($website),
-//            'remote_test' => $this->getTestService()->getRemoteTestService()->get(),
-//            'plans' => $this->container->getParameter('plans')
-//        );
-//
-//        if ($this->isRejectedDueToCreditLimit()) {
-//            $viewData['userSummary'] = $this->getUserService()->getSummary();
-//        }
 
         return $this->renderCacheableResponse($viewData);
     }
