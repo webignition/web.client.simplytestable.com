@@ -14,15 +14,22 @@ abstract class ActionTest extends BaseTest {
     public function setUp() {
         parent::setUp();
         $this->removeAllTests();
-        
+
         if (count($this->getHttpFixtureItems()) > 0) {
             $this->setHttpFixtures($this->buildHttpFixtureSet($this->getHttpFixtureItems()));
         }
-        
-        $controller = $this->getCurrentController($this->getRequestPostData(), $this->getRequestQueryData());               
+
+        $controller = $this->getCurrentController($this->getRequestPostData(), $this->getRequestQueryData());
 
         $this->container->enterScope('request');
+
+        $this->preCall();
+
         $this->response = call_user_func_array(array($controller, $this->getActionName()), $this->getActionMethodArguments());
+    }
+
+
+    protected function preCall() {
     }
     
     
