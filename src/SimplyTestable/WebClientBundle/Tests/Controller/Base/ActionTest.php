@@ -64,6 +64,18 @@ abstract class ActionTest extends BaseTest {
         $this->assertHasCookieNamed($name);
         $this->assertEquals($value, $this->getResponseCookieValue($name));
     }
+
+    protected function assertResponseLocationHeader($expectedLocation) {
+        $this->assertResponseHasLocationHeader();
+        $this->assertEquals($expectedLocation, $this->response->headers->get('location'), 'Resp');
+    }
+
+
+    protected function assertResponseHasLocationHeader() {
+        $this->assertTrue($this->response->headers->has('location'), 'Response has no "location" header');
+    }
+
+
     
     
     /**

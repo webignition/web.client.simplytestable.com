@@ -1,0 +1,22 @@
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+[
+  {
+    "id": 1,
+    "url": "http://example.com/",
+    "state": "in-progress",
+    "worker": "",
+    "type": "JS static analysis",
+    "time_period": {
+      "start_date_time": "2013-04-24T00:52:40+0100",
+      "end_date_time": "2013-04-24T00:52:48+0100"
+    },
+    "output": {
+      "output": "[]",
+      "content_type": "application/json",
+      "error_count": 0,
+      "warning_count": 0
+    }
+  }
+]
