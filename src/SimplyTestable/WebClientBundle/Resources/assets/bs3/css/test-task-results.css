@@ -112,24 +112,16 @@
     width: 100px;
 }
 
-.issue-list .meta .text {
-    padding-right: 0;
-    float:left;
-}
+/*.issue-list .meta .text {*/
+    /*padding-right: 0;*/
+    /*float:left;*/
+/*}*/
 
-.issue-list .meta .digit {
-    text-align: right;
-    padding: 0;
-    float:right;
-}
-
-.issue-list .css-validation-issues .content {
-    padding-left: 15px;
-}
-
-.issue-list .css-validation-issues .content code {
-    white-space: normal;
-}
+/*.issue-list .meta .digit {*/
+    /*text-align: right;*/
+    /*padding: 0;*/
+    /*float:right;*/
+/*}*/
 
 .grouped-issues h3 {
     padding-left: 5px;
@@ -223,6 +215,10 @@
     margin-left: 95px;
 }
 
+.css-validation-issues .content code {
+    white-space: normal;
+}
+
 .js-static-analysis-issues .meta {
     width: 200px;
 }
@@ -246,6 +242,21 @@
         display: block;
         margin-bottom: 10px;
         text-align: left;
+    }
+
+    .issue-list .meta {
+        position: static;
+    }
+
+    .issue-list .content {
+        margin-left: auto;
+    }
+
+    .issue-list .meta .line,
+    .issue-list .meta .column {
+        float:none;
+        display:inline-block;
+        width: auto;
     }
 }
 
