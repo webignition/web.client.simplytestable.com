@@ -97,7 +97,6 @@
 }
 
 .issue-list .meta {
-    font-family: Menlo, Monaco, Consolas, monospace;
     opacity: 0.6;
 }
 
@@ -108,10 +107,6 @@
 
 .issue-list .meta .text {
     padding-right: 0;
-}
-
-.issue-list .content {
-    padding-left:0;
 }
 
 .issue-list .css-validation-issues .content {
@@ -199,4 +194,14 @@
     position: absolute;
     right:15px;
     top:0;
+}
+
+@media (min-width: 1200px) {
+    .issue-list .meta {
+        font-family: Menlo, Monaco, Consolas, monospace;
+    }
+
+    .issue-list .content {
+        padding-left:0;
+    }
 }
