@@ -1,0 +1,18 @@
+{% set heading = 'Unknown validator error!' %}
+
+{% set content %}
+<p id="reason">
+    Sorry, the CSS validator went bang when validating <a href="{{ task.url }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a>.
+</p>
+
+<p>
+    Such issues should no longer occur for tests started after January 16 2014.
+</p>
+
+<p>
+    Please <a href="mailto:{{ external_links.contact_email }}">let us know</a> if this you encounter this message.
+</p>
+
+{% endset %}
+
+{% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results/Task/Failed:failure-message.html.twig' %}

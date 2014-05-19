@@ -52,6 +52,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'website_url' => $this->getUrlViewValues($test->getWebsite()),
             'test' => $test,
             'task' => $task,
+            'task_url' => $this->getUrlViewValues($task->getUrl()),
             'is_owner' => $isOwner,
             'is_public_user_test' => $test->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
         );

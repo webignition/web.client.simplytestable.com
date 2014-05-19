@@ -1,0 +1,18 @@
+{% set heading = 'Redirect loop detected!' %}
+
+{% set content %}
+<p id="reason">
+    <a href="{{ task.url }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> redirects to another URL which ultimately
+    redirects back to itself. Indefinitely. Forever.
+</p>
+
+<p>
+    It's impossible to retrieve the content for this URL.
+</p>
+
+<p>
+    We can't  run any tests for it. No-one can view the content at this URL.
+</p>
+{% endset %}
+
+{% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results/Task/Failed:failure-message.html.twig' %}

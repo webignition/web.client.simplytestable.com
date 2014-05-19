@@ -1,0 +1,52 @@
+{% set statusCode = task.output.result.firstError.class|replace({'http-retrieval-': ''}) %}
+
+{% set heading %}
+{{ statusCode }}
+{{ task.output.result.firstError }}
+{% endset %}
+
+{% set content %}
+    {% if statusCode == '401' %}
+        <p id="reason">
+            The page at <a href="{{task.url}}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> requires authorisation.
+        </p>
+
+        <p>
+            We can't yet test pages that are not publicly available.
+        </p>
+    {% elseif statusCode == '403' %}
+        <p id="reason">
+            Looks like we're not allowed to access <a href="{{task.url}}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a>.
+        </p>
+    {% elseif statusCode == '404' %}
+        <p id="reason">
+            We can't test <a href="{{task.url}}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> because it doesn't exist.
+        </p>
+        <p>
+            Is the URL right?
+        </p>
+    {% elseif statusCode == '405' %}
+        <p id="reason">
+            We tried to retrieve <a href="{{task.url}}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> using
+            a HTTP GET request.
+        </p>
+        <p>
+            The web server for the URL did not like that. It told us that 'GET'
+            is not the right type of HTTP request method for that URL.
+        </p>
+        <p>
+            If GET requests are wrong I don't want to be right.
+        </p>
+    {% elseif statusCode == '500' %}
+        <p id="reason">
+            The application serving this URL encountered
+            an internal error and failed to return an acceptable response.
+        </p>
+    {% else %}
+        <p id="reason">
+            That's a pretty uncommon HTTP response error there.
+        </p>
+    {% endif %}
+{% endset %}
+
+{% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results/Task/Failed:failure-message.html.twig' %}

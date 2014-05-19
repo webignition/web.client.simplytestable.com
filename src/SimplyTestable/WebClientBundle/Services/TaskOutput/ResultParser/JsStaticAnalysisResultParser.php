@@ -40,7 +40,7 @@ class JsStaticAnalysisResultParser extends ResultParser {
         return $result;        
     }
     
-    private function getMessageFromFailedOutput($outputMessage) {        
+    private function getMessageFromFailedOutput($outputMessage) {
         $message = new JsTextFileMessage();
         $message->setType('error');
         $message->setMessage($outputMessage->message);

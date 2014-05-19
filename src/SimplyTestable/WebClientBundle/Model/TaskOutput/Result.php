@@ -189,7 +189,7 @@ class Result {
      * 
      * @return boolean
      */
-    public function isCurlDnsResolutionFailulre() {
+    public function isCurlDnsResolutionFailure() {
         return $this->isOfErrorClass('/http-retrieval-curl-code-6/');      
     }
     

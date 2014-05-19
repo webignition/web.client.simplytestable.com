@@ -92,6 +92,10 @@ span.link:hover {
     cursor: pointer;
 }
 
+blockquote {
+    border-left-color: #ccc;
+}
+
 @media (max-width: 768px) {    
     .navbar a.btn,
     .navbar-form {

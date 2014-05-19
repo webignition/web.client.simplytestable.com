@@ -36,11 +36,11 @@ class CssValidationResultParser extends ResultParser {
         return $result;
     }
     
-    private function getMessageFromFailedOutput($outputMessage) {        
+    private function getMessageFromFailedOutput($outputMessage) {
         $message = new CssTextFileMessage();
         $message->setType('error');
         $message->setMessage($outputMessage->message);
-        $message->setClass($outputMessage->class);
+        $message->setClass($outputMessage->messageId);
 
         return $message;
     }    
