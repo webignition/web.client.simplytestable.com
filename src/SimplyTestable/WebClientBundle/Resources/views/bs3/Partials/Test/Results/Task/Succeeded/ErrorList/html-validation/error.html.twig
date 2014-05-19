@@ -21,7 +21,7 @@
                     {% if error.lineNumber > -1 %}
                         <div class="row">
                             <div class="col-xs-6 text">Line</div>
-                            <div class="col-xs-6 digit">{# error.lineNumber #}99999</div>
+                            <div class="col-xs-6 digit">{{ error.lineNumber }}</div>
                         </div>
                     {% endif %}
                 </div>
@@ -29,7 +29,7 @@
                     {% if error.columnNumber > -1 %}
                         <div class="row">
                             <div class="col-xs-6 text">Column</div>
-                            <div class="col-xs-6 digit">{# error.columnNumber #}99999</div>
+                            <div class="col-xs-6 digit">{{ error.columnNumber }}</div>
                         </div>
                     {% endif %}
                 </div>
