@@ -1,51 +1,25 @@
-<div class="row">
-    <div class="col-lg-3 col-md-4 col-sm-12 meta">
-        <div class="row">
-            <div class="hidden-lg hidden-md">
-                <div class="col-sm-12">
-                    {% if error.lineNumber > -1 and error.columnNumber <= -1 %}
-                    Line  {{ error.lineNumber }}
-                    {% endif %}
-
-                    {% if error.columnNumber > -1 and error.lineNumber <= -1 %}
-                        Column {{ error.columnNumber }}
-                    {% endif %}
-
-                    {% if error.lineNumber > -1 and error.columnNumber > -1 %}
-                        Line  {{ error.lineNumber }}, Column {{ error.columnNumber }}
-                    {% endif %}
-                </div>
-            </div>
-            <div class="hidden-sm hidden-xs">
-                <div class="col-lg-4 col-md-4">
-                    {% if error.lineNumber > -1 %}
-                        <div class="row">
-                            <div class="col-xs-6 text">Line</div>
-                            <div class="col-xs-6 digit">{{ error.lineNumber }}</div>
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="col-lg-5 col-md-5 col-xs-5 col-lg-offset-1 col-md-offset-1">
-                    {% if error.columnNumber > -1 %}
-                        <div class="row">
-                            <div class="col-xs-6 text">Column</div>
-                            <div class="col-xs-6 digit">{{ error.columnNumber }}</div>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+<div class="meta">
+    <div class="line">
+        {% if error.lineNumber > -1 %}
+            <span class="text">Line</span>
+            <span class="digit">{{ error.lineNumber }}</span>
+        {% endif %}
     </div>
-    <div class="col-lg-9 col-md-8 col-sm-12 content">
-
-                <p>
-                    {{ error }}
-                </p>
-                {% if (documentation_urls[ loop.index0 ].exists) %}
-                    <a class="fix label label-fix" href="{{documentation_urls[ loop.index0 ].url}}">
-                        Fix <i class="fa fa-caret-right"></i>
-                    </a>
-                {% endif %}
-
+    <div class="column">
+        {% if error.columnNumber > -1 %}
+            <span class="text">Column</span>
+            <span class="digit">{{ error.columnNumber }}</span>
+        {% endif %}
     </div>
+</div>
+<div class="content">
+
+    <p>
+        {{ error }}
+    </p>
+    {% if (documentation_urls[ loop.index0 ].exists) %}
+        <a class="fix label label-fix" href="{{documentation_urls[ loop.index0 ].url}}">
+            Fix <i class="fa fa-caret-right"></i>
+        </a>
+    {% endif %}
 </div>

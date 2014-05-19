@@ -1,19 +1,15 @@
-<div class="row">
-    <div class="col-lg-1 meta">
-        {% if message.lineNumber > -1 %}
-            <div class="row">
-                <div class="col-xs-6 text">Line</div>
-                <div class="col-xs-6 digit">{{ message.lineNumber }}</div>
-            </div>
-        {% endif %}
-    </div>
-    <div class="col-lg-11 content">
-        {% if not message.context == ''%}
-            <code>{{ message.context|raw }}</code><br>
-        {% endif %}
+<div class="meta">
+    {% if message.lineNumber > -1 %}
+        <span class="text">Line</span>
+        <span class="digit">{{ message.lineNumber }}</span>
+    {% endif %}
+</div>
+<div class="content">
+    {% if not message.context == ''%}
+        <code>{{ message.context|raw }}</code><br>
+    {% endif %}
 
-        {#{{ message|split("\n")|join("<br>")|replace({"\t": '<span class="tab"></span>'})|raw }}#}
+    {#{{ message|split("\n")|join("<br>")|replace({"\t": '<span class="tab"></span>'})|raw }}#}
 
-        {{ message|raw }}
-    </div>
+    {{ message|raw }}
 </div>

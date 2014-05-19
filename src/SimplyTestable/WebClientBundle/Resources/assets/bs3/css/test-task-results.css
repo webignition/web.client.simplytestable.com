@@ -98,15 +98,29 @@
 
 .issue-list .meta {
     opacity: 0.6;
+    position: absolute;
+    left: 15px;
+}
+
+.issue-list .meta .line {
+    float:left;
+    width: 80px;
+}
+
+.issue-list .meta .column {
+    float:right;
+    width: 100px;
+}
+
+.issue-list .meta .text {
+    padding-right: 0;
+    float:left;
 }
 
 .issue-list .meta .digit {
     text-align: right;
     padding: 0;
-}
-
-.issue-list .meta .text {
-    padding-right: 0;
+    float:right;
 }
 
 .issue-list .css-validation-issues .content {
@@ -185,7 +199,12 @@
     margin-left: 10px;
 }
 
+.html-validation-issues .meta {
+    width: 200px;
+}
+
 .html-validation-issues .content {
+    margin-left: 225px;
     position: relative;
     padding-right: 50px;
 }
@@ -194,6 +213,22 @@
     position: absolute;
     right:15px;
     top:0;
+}
+
+.css-validation-issues .meta {
+    width: 80px;
+}
+
+.css-validation-issues .content {
+    margin-left: 95px;
+}
+
+.js-static-analysis-issues .meta {
+    width: 200px;
+}
+
+.js-static-analysis-issues .content {
+    margin-left: 225px;
 }
 
 @media (min-width: 992px) {
