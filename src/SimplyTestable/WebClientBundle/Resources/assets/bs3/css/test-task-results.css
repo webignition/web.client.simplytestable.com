@@ -196,7 +196,7 @@
     top:0;
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 992px) {
     .issue-list .meta {
         font-family: Menlo, Monaco, Consolas, monospace;
     }
@@ -205,3 +205,12 @@
         padding-left:0;
     }
 }
+
+@media (max-width: 992px) {
+    .summary-stats .label {
+        display: block;
+        margin-bottom: 10px;
+        text-align: left;
+    }
+}
+
