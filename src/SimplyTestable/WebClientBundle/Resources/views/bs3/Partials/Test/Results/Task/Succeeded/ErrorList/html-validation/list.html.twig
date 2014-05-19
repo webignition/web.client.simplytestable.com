@@ -1,4 +1,4 @@
-<ul class="issues html-validation-issues">
+<ul class="issues html-validation-issues collapse in" id="error-list-content">
     {% for error in task.output.result.getErrors %}
         <li>
             {% include [

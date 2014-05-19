@@ -69,8 +69,10 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             $viewData['errors_by_ref'] = $this->getCssValidationIssuesGroupedByRef($task, $task->getOutput()->getResult()->getErrors());
             $viewData['warnings_by_ref'] = $this->getCssValidationIssuesGroupedByRef($task, $task->getOutput()->getResult()->getWarnings());
         }
-//
-//        $this->getCssValidationErrorsGroupedByRef($task);
+
+        if ($task->getType() == 'JS static analysis') {
+            $viewData['errors_by_js_context'] = $this->getJsStaticAnalysisErrorsGroupedByContext($task);
+        }
 //
 //        $viewData = array(
 //            'test' => $test,
@@ -86,36 +88,71 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 //
 
 //
-//        if ($task->getType() == 'JS static analysis') {
-//            $viewData['errors_by_js_context'] = $this->getJsStaticAnalysisErrorsGroupedByContext($task);
-//        }
+
 //
-//        if ($task->getType() == 'Link integrity') {
-//            $viewData['errors_by_link_state'] = $this->getLinkIntegrityErrorsGroupedByLinkState($task);
-//            $viewData['link_class_labels'] = array(
-//                'curl' => 'Network-Level (curl)',
-//                'http' => 'HTTP'
-//            );
-//            $viewData['link_state_descriptions'] = array(
-//                'curl' => array(
-//                    3 => 'The URL was not properly formatted.'."\n\n".'These URLs (or ones these redirect to) are not formed correctly.',
-//                    6 => 'Couldn\'t resolve host.'."\n\n".'Are the domain names in the given links still valid and working?',
-//                    7 => "Failed to connect() to host or proxy.\n\nThis could be temporary issue.",
-//                    35 => "A problem occurred somewhere in the SSL/TLS handshake.",
-//                    52 => "Nothing was returned from the server, and under the circumstances, getting nothing is considered an error.",
-//                    56 => 'Failure with receiving network data.'."\n\n".'Whatever lives at the given domains isn\'t talking back.',
-//                    60 => "Peer certificate cannot be authenticated with known CA certificates.\n\nThere is a problem with the SSL certificates these domains are using."
-//                ),
-//                'http' => array(
-//                    302 => "Too many redirects.",
-//                    403 => "Access denied.\n\nAre these a password-protected pages?",
-//                    404 => "Not found.\n\nThese resources appear to no longer exist at the given URLs.",
-//                    410 => "Gone.\n\nThese resources are no longer at the given URLs.",
-//                    500 => "Internal server error.\n\nThe application serving the given content failed.",
-//                    503 => "Service Unavailable.\n\nThe application serving the content is not available right now."
-//                )
-//            );
-//        }
+        if ($task->getType() == 'Link integrity') {
+            $viewData['errors_by_link_state'] = $this->getLinkIntegrityErrorsGroupedByLinkState($task);
+            $viewData['link_class_labels'] = array(
+                'curl' => 'Network-Level (curl)',
+                'http' => 'HTTP'
+            );
+            $viewData['link_state_descriptions'] = array(
+                'curl' => array(
+                    3 => array(
+                        'The URL was not properly formatted',
+                        'These URLs (or ones these redirect to) are not formed correctly.'
+                    ),
+                    6 => array(
+                        'Couldn\'t resolve host',
+                        'Are the domain names in the given links still valid and working?'
+                    ),
+                    7 => array(
+                        'Failed to connect() to host or proxy',
+                        'This could be temporary issue.'
+                    ),
+                    35 => array(
+                        'A problem occurred somewhere in the SSL/TLS handshake'
+                    ),
+                    52 => array(
+                        'Nothing was returned from the server',
+                        'Under the circumstances, getting nothing is considered an error.'
+                    ),
+                    56 => array(
+                        'Failure with receiving network data.',
+                        'Whatever lives at the given domains isn\'t talking back.'
+                    ),
+                    60 => array(
+                        'Peer certificate cannot be authenticated with known CA certificates',
+                        'There is a problem with the SSL certificates these domains are using.'
+                    )
+                ),
+                'http' => array(
+                    302 => array(
+                        'Too many redirects',
+                    ),
+                    403 => array(
+                        "Access denied",
+                        "Are these a password-protected pages?"
+                    ),
+                    404 => array(
+                        "Not found",
+                        "These resources appear to no longer exist at the given URLs."
+                    ),
+                    410 => array(
+                        "Gone",
+                        "These resources are no longer at the given URLs."
+                    ),
+                    500 => array(
+                        "Internal server error",
+                        "The application serving the given content failed."
+                    ),
+                    503 => array(
+                        "Service Unavailable",
+                        "The application serving the content is not available right now."
+                    )
+                )
+            );
+        }
 
 //
 //        if ($test->getWebsite() != $website) {
@@ -279,5 +316,52 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         }
 
         return $groupedByRef;
+    }
+
+
+    private function getJsStaticAnalysisErrorsGroupedByContext(Task $task) {
+        if ($task->getType() != 'JS static analysis') {
+            return array();
+        }
+
+        $errorsGroupedByContext = array();
+        $errors = $task->getOutput()->getResult()->getErrors();
+
+        foreach ($errors as $error) {
+            $context = rawurldecode($error->getContext());
+
+            /* @var $error \SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage */
+            if (!isset($errorsGroupedByContext[$context])) {
+                $errorsGroupedByContext[$context] = array();
+            }
+
+            $errorsGroupedByContext[$context][] = $error;
+        }
+
+        return $errorsGroupedByContext;
+    }
+
+    private function getLinkIntegrityErrorsGroupedByLinkState(Task $task) {
+        if ($task->getType() != 'Link integrity') {
+            return array();
+        }
+
+        $errorsGroupedByLinkState = array();
+        $errors = $task->getOutput()->getResult()->getErrors();
+
+        foreach ($errors as $error) {
+            /* @var $error \SimplyTestable\WebClientBundle\Model\TaskOutput\LinkIntegrityMessage */
+            if (!isset($errorsGroupedByLinkState[$error->getClass()])) {
+                $errorsGroupedByLinkState[$error->getClass()] = array();
+            }
+
+            if (!isset($errorsGroupedByLinkState[$error->getClass()][$error->getState()])) {
+                $errorsGroupedByLinkState[$error->getClass()][$error->getState()] = array();
+            }
+
+            $errorsGroupedByLinkState[$error->getClass()][$error->getState()][] = $error;
+        }
+
+        return $errorsGroupedByLinkState;
     }
 }

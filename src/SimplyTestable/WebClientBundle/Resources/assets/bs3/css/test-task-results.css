@@ -73,6 +73,10 @@
     vertical-align:middle;
 }
 
+.issue-list h3 .badge {
+    vertical-align: top;
+}
+
 .issue-list ul,
 .issue-list li {
     margin:0;
@@ -93,7 +97,7 @@
 }
 
 .issue-list .meta {
-    font-family: monospace;
+    font-family: Menlo, Monaco, Consolas, monospace;
     opacity: 0.6;
 }
 
@@ -118,24 +122,30 @@
     white-space: normal;
 }
 
-.css-validation-issue-list h3 {
+.grouped-issues h3 {
     padding-left: 5px;
     font-size: 20px;
     line-height: 20px;
-    margin-top: 40px;
+    margin-top: 0;
+    padding-top: 40px;
 }
 
-.css-validation-issue-list h3 a,
-.css-validation-issue-list h3 a:hover,
-.css-validation-issue-list h3 a:focus {
+.grouped-issues h3 a {
+
+}
+
+.grouped-issues h3 a,
+.grouped-issues h3 a:hover,
+.grouped-issues h3 a:focus {
     color:#333;
     text-decoration: none;
 }
 
-.css-validation-issue-list h3 .fa {
+.grouped-issues h3 .fa {
     margin-right:8px;
     font-size: 18px;
     opacity: 0.8;
+    margin-left: -5px;
 }
 
 .issue-list .issues li:hover {
@@ -153,4 +163,29 @@
 
 .fixes-list .issues li {
     padding:0;
+}
+
+.issue-list pre.prettyprint {
+    background-color: transparent;
+    margin: 10px 0 0 0;
+    padding: 10px 0 10px 10px;
+    border: none;
+    border-radius: 0;
+}
+
+.js-static-analysis-issue-list pre.prettyprint {
+    opacity: 0.8;
+    border-left: 3px solid #ccc;
+}
+
+.js-static-analysis-issue-list li:hover pre.prettyprint {
+    opacity: 1;
+}
+
+.link-integrity-issue-list pre.prettyprint {
+    padding-left:0;
+}
+
+.issue-list .collapse-control {
+    margin-left: 10px;
 }

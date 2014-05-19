@@ -23,49 +23,11 @@
                         <div class="span12">
                             <h2 class="info"><i class="icon-ban-circle"></i> Errors ({{ task.output.errorCount }}) </h2>
                             {% if task.type == 'CSS validation' %}
-                                {% if task.output.hasErrors and not task.output.result.hasErrors %}
-                                    <div class="span12 notification" id="task-summary">
-                                        <p>
-                                            Detailed results from this test are no longer available.
-                                        </p>
-                                    </div>
-                                {% endif %}
 
-                                {% for ref,errors in errors_by_ref %}
-                                    <div>
-                                        <h3><i class="icon icon-file"></i> {% if ref == '' %}Inline in your HTML{% else %}{{ ref }}{% endif %}:</h3>
-                                        <ul class="errors">
-                                            {% for message in errors %}
-                                                <li>
-                                                    {% include 'SimplyTestableWebClientBundle:Partials:task/css-validation-result.html.twig' %}
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                {% endfor %}
                             {% elseif task.type == 'JS static analysis' %}
-                                {% if task.output.hasErrors and not task.output.result.hasErrors %}
-                                    <div class="span12 notification" id="task-summary">
-                                        <p>
-                                            Detailed results from this test are no longer available.
-                                        </p>
-                                    </div>
-                                {% endif %}
 
-                                {% for context,errors in errors_by_js_context %}
-                                    <div>
-                                        <h3><i class="{% if errors[0].isException %}icon icon-ban-circle{% else %}icon icon-file{% endif %}"></i> {% if context == 'inline' %}Inline in your HTML{% else %}{{ context }}{% endif %}:</h3>
-                                        <ul class="errors">
-                                            {% for error in errors %}
-                                                {% if ((error.message | replace({'Stopping': ''})) == error.message and (error.message | replace({'Too many errors': ''})) == error.message) %}
-                                                    <li>
-                                                        {% include 'SimplyTestableWebClientBundle:Partials:task/js-static-analysis-result.html.twig' %}
-                                                    </li>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                {% endfor %}
+
+
                             {% elseif task.type == 'Link integrity' %}
                                 {% if task.output.hasErrors and not task.output.result.hasErrors %}
                                     <div class="span12 notification" id="task-summary">
@@ -87,97 +49,14 @@
                                 {% endfor %}
 
                             {% else %}
-                                {% if task.output.hasErrors and not task.output.result.hasErrors %}
-                                    <div class="span12 notification" id="task-summary">
-                                        <p>
-                                            Detailed results from this test are no longer available.
-                                        </p>
-                                    </div>
-                                {% endif %}
 
-                                <ul class="errors">
-                                    {% for error in task.output.result.getErrors %}
-                                        <li>
-                                            {% if task.type == 'HTML validation' %}
-                                                {% include 'SimplyTestableWebClientBundle:Partials:task/html-validation-result.html.twig' %}
-                                            {% endif %}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
                             {% endif %}
                         </div>
-                        <div class="clearfix"></div>
+
                     </section>
 
 
-                    {% if distinct_fixes is defined and distinct_fixes | length > 0 %}
-                        <span id="fix-list" class="section-marker"></span>
-                        <section class="issue-list">
-                            <div class="span12">
-                                <h2 class="info"><i class="icon-heart"></i> Fixes ({{ distinct_fixes | length }}) </h2>
-                                <ul class="errors fixes">
-                                    {% for fix in distinct_fixes %}
-                                        <li>
-                                            <a href="{{fix.documentation_url}}">{{fix.error}} <i class="icon icon-caret-right"></i></a>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            <div class="clearfix"></div>
-                        </section>
-                    {% endif %}
-
-
                 {% endif %}
-
-                {% if task.output.result.hasWarnings %}
-                    <span id="warning-list" class="section-marker"></span>
-                    <section class="issue-list">
-                        <div class="span12">
-                            <h2 class="info"><i class="icon-exclamation-sign"></i> Warnings ({{task.output.result.warningCount}}) </h2>
-                            {% if task.type == 'CSS validation' %}
-                                {% for ref,warnings in warnings_by_ref %}
-                                    <div>
-                                        <h3><i class="icon icon-file"></i> {% if ref == '' %}Inline in your HTML{% else %}{{ ref }}{% endif %}:</h3>
-                                        <ul class="errors">
-                                            {% for message in warnings %}
-                                                <li>
-                                                    {% include 'SimplyTestableWebClientBundle:Partials:task/css-validation-result.html.twig' %}
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                {% endfor %}
-                            {% elseif task.type == 'JS static analysis' %}
-                                {% for context,errors in errors_by_js_context %}
-                                    <div>
-                                        <h3><i class="icon icon-file"></i> {% if context == 'inline' %}Inline in your HTML{% else %}{{ context }}{% endif %}:</h3>
-                                        <ul class="errors">
-                                            {% for error in errors %}
-                                                <li>
-                                                    {% include 'SimplyTestableWebClientBundle:Partials:task/js-static-analysis-result.html.twig' %}
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                {% endfor %}
-                            {% else %}
-                                <ul class="errors">
-                                    {% for error in task.output.result.getErrors %}
-                                        <li>
-                                            {% if task.type == 'HTML validation' %}
-                                                {% include 'SimplyTestableWebClientBundle:Partials:task/html-validation-result.html.twig' %}
-                                            {% endif %}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            {% endif %}
-                        </div>
-                        <div class="clearfix"></div>
-                    </section>
-                {% endif %}
-
-
 
 
             {% endif %}

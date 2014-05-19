@@ -8,16 +8,12 @@
         {% endif %}
     </div>
     <div class="col-lg-11 content">
-        <div class="row">
-            <div class="col-lg-11">
-                {% if not message.context == ''%}
-                    <code>{{ message.context|raw }}</code><br>
-                {% endif %}
+        {% if not message.context == ''%}
+            <code>{{ message.context|raw }}</code><br>
+        {% endif %}
 
-                {#{{ message|split("\n")|join("<br>")|replace({"\t": '<span class="tab"></span>'})|raw }}#}
+        {#{{ message|split("\n")|join("<br>")|replace({"\t": '<span class="tab"></span>'})|raw }}#}
 
-                {{ message|raw }}
-            </div>
-        </div>
+        {{ message|raw }}
     </div>
 </div>
