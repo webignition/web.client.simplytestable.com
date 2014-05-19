@@ -73,6 +73,10 @@
     vertical-align:middle;
 }
 
+.issue-list h3 {
+    word-break: break-all;
+}
+
 .issue-list h3 .badge {
     vertical-align: top;
 }
@@ -238,6 +242,10 @@
 }
 
 @media (max-width: 992px) {
+    .header {
+        padding-bottom: 0;
+    }
+
     .summary-stats .label {
         display: block;
         margin-bottom: 10px;
@@ -257,6 +265,10 @@
         float:none;
         display:inline-block;
         width: auto;
+    }
+
+    .grouped-issues h3 .fa {
+        display: none;
     }
 }
 
