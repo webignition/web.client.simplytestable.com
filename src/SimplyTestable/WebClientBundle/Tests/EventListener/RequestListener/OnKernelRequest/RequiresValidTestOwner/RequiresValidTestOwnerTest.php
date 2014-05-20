@@ -15,9 +15,15 @@ abstract class RequiresValidTestOwnerTest extends OnKernelRequestTest {
         $event = parent::buildEvent();
 
         $this->setHttpFixtures($this->buildHttpFixtureSet(array(
+            $this->getRemoteTestSummaryHttpResponse(),
             $this->getPublicUserSummaryHttpResponse(),
             $this->getRemoteTestSummaryHttpResponse(),
         )));
+
+//        $this->setHttpFixtures($this->buildHttpFixtureSet(array(
+//            $this->getPublicUserSummaryHttpResponse(),
+//            $this->getRemoteTestSummaryHttpResponse(),
+//        )));
 
         $event->getRequest()->attributes->add(array(
             'website' => self::WEBSITE,
