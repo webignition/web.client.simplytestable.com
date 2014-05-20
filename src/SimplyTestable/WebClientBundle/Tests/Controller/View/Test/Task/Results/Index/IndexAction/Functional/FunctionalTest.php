@@ -15,11 +15,11 @@ abstract class FunctionalTest extends BaseFunctionalTest {
 
         $this->setHttpFixtures(array_merge(
             array(
+                \Guzzle\Http\Message\Response::fromMessage($this->getRemoteTestSummaryHttpResponse()),
                 \Guzzle\Http\Message\Response::fromMessage('HTTP/1.0 200'),
-                \Guzzle\Http\Message\Response::fromMessage($this->getRemoteTestSummaryHttpResponse())
             ),
-            $this->getHttpFixtures($this->getFixturesDataPath()))
-        );
+            $this->getHttpFixtures($this->getFixturesDataPath())
+        ));
         $this->setUser($this->makeUser());
     }
 
