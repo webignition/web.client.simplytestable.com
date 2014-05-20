@@ -1,8 +1,18 @@
 {% set statusCode = task.output.result.firstError.class|replace({'http-retrieval-': ''}) %}
+{% set headingErrorWords = task.output.result.firstError|split(' ') %}
+
+{% set errorWording %}
+    {% for word in headingErrorWords %}
+        {{ [word|lower|capitalize, ' ']|join('') }}
+    {% endfor %}
+{% endset %}
+
+{#{% set statusCode = '503' %}#}
+{#{% set errorWording = 'Service Unavailable' %}#}
 
 {% set heading %}
-{{ statusCode }}
-{{ task.output.result.firstError }}
+HTTP {{ statusCode }}
+{{ errorWording }}
 {% endset %}
 
 {% set content %}
@@ -41,6 +51,25 @@
         <p id="reason">
             The application serving this URL encountered
             an internal error and failed to return an acceptable response.
+        </p>
+        <p>
+            This relates to an issue with the application serving the page being tested.
+        </p>
+    {% elseif statusCode == '502' %}
+        <p id="reason">
+            The application serving this URL received an invalid response
+            from an upstream server.
+        </p>
+        <p>
+            This relates to an issue with the application serving the page being tested.
+        </p>
+    {% elseif statusCode == '503' %}
+        <p id="reason">
+            The application serving this URL is unavailable. This is commonly a temporary
+            state due to maintenance or due to being overloaded.
+        </p>
+        <p>
+            This relates to an issue with the application serving the page being tested.
         </p>
     {% else %}
         <p id="reason">

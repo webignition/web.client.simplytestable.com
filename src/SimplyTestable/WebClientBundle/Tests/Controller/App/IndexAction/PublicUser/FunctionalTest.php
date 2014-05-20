@@ -36,7 +36,7 @@ class FunctionalTest extends BaseFunctionalTest {
         $this->assertGreaterThan(0, $fullWidthNotifications->count());
 
         foreach ($fullWidthNotifications as $fullWidthNotification) {
-            $this->assertDomNodeContainsNext($fullWidthNotification, 'limited free demo');
+            $this->assertDomNodeContainsText($fullWidthNotification, 'limited free demo');
         }
     }
     

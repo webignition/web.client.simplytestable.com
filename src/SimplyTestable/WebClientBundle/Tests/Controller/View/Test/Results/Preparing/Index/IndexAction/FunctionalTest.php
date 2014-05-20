@@ -51,7 +51,7 @@ class FunctionalTest extends BaseFunctionalTest {
         $expectedWebsiteContent = substr(self::WEBSITE, 0, 40) . '…';
 
         foreach ($contentWebsites as $contentWebsite) {
-            $this->assertDomNodeContainsNext($contentWebsite, $expectedWebsiteContent);
+            $this->assertDomNodeContainsText($contentWebsite, $expectedWebsiteContent);
         }
     }
 

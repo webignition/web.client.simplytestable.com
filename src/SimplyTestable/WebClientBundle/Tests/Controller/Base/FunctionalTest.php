@@ -90,7 +90,17 @@ abstract class FunctionalTest extends BaseTest {
         $this->assertEquals(1, $headings->count());
 
         foreach ($headings as $heading) {
-            $this->assertDomNodeContainsNext($heading, $text);
+            $this->assertDomNodeContainsText($heading, $text);
+        }
+    }
+
+
+    protected function assertElementContains($tagName, $text) {
+        $elements = $this->getScopedCrawler()->filter($tagName);
+        $this->assertEquals(1, $elements->count());
+
+        foreach ($elements as $element) {
+            $this->assertDomNodeContainsText($element, $text);
         }
     }
 
@@ -187,7 +197,7 @@ abstract class FunctionalTest extends BaseTest {
         return $node->ownerDocument->saveHTML($node);
     }
 
-    protected function assertDomNodeContainsNext(\DOMNode $node, $text) {
+    protected function assertDomNodeContainsText(\DOMNode $node, $text) {
         $markup = $this->domNodeToHtml($node);
         $content = strip_tags($markup);
         $content = preg_replace('/\s/', ' ', $content);
@@ -217,7 +227,7 @@ abstract class FunctionalTest extends BaseTest {
         $this->assertEquals(1, $titles->count());
 
         foreach ($titles as $title) {
-            $this->assertDomNodeContainsNext($title, $text);
+            $this->assertDomNodeContainsText($title, $text);
         }
     }
 

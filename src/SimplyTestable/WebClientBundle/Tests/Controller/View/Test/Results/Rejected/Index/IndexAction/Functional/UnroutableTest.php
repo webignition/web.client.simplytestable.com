@@ -16,13 +16,13 @@ class UnroutableTest extends FunctionalTest {
         $expectedContent = substr(self::WEBSITE, 0, 40) . '…';
 
         foreach ($this->getFirstParagraphLink() as $link) {
-            $this->assertDomNodeContainsNext($link, $expectedContent);
+            $this->assertDomNodeContainsText($link, $expectedContent);
         }
     }
 
     public function testReasonContent() {
         foreach ($this->getFirstParagraph() as $paragraph) {
-            $this->assertDomNodeContainsNext($paragraph, 'can\'t be accessed over the Internet');
+            $this->assertDomNodeContainsText($paragraph, 'can\'t be accessed over the Internet');
         }
     }
 

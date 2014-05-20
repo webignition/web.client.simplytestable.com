@@ -40,7 +40,12 @@ class CssValidationResultParser extends ResultParser {
         $message = new CssTextFileMessage();
         $message->setType('error');
         $message->setMessage($outputMessage->message);
-        $message->setClass($outputMessage->messageId);
+
+        if (isset($outputMessage->class)) {
+            $message->setClass($outputMessage->class);
+        } elseif (isset($outputMessage->messageId)) {
+            $message->setClass($outputMessage->messageId);
+        }
 
         return $message;
     }    

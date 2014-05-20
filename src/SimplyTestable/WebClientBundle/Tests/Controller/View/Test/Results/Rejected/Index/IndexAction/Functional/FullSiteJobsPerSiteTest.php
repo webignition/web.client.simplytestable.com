@@ -29,7 +29,7 @@ class FullSiteJobsPerSiteTest extends FunctionalTest {
         $reasons = $this->getScopedCrawler()->filter('#reason');
 
         foreach ($reasons as $reason) {
-            $this->assertDomNodeContainsNext($reason, 'reached the limit of free full-site');
+            $this->assertDomNodeContainsText($reason, 'reached the limit of free full-site');
         }
     }
 
