@@ -33,7 +33,7 @@ class TestController extends BaseController
         }
         
         return $this->redirect($this->generateUrl(
-            'app_results',
+            'view_test_results_index_index',
             array(
                 'website' => $this->getWebsite(),
                 'test_id' => $this->getTestId()
@@ -67,7 +67,7 @@ class TestController extends BaseController
             
             $this->getTestService()->getRemoteTestService()->cancel();
             return $this->redirect($this->generateUrl(
-                'app_results',
+                'view_test_results_index_index',
                 array(
                     'website' => $test->getWebsite(),
                     'test_id' => $test->getTestId()

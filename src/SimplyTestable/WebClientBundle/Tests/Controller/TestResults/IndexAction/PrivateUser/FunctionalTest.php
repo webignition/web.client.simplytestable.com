@@ -5,7 +5,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Controller\TestResults\IndexActio
 use SimplyTestable\WebClientBundle\Tests\Controller\TestResults\FunctionalTest as BaseFunctionalTest;
 use SimplyTestable\WebClientBundle\Model\User;
 
-class FunctionalTest extends BaseFunctionalTest {
+abstract class FunctionalTest extends BaseFunctionalTest {
     
     const WEBSITE = 'http://example.com/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz';
     
@@ -18,7 +18,7 @@ class FunctionalTest extends BaseFunctionalTest {
     }
     
     protected function getRoute() {
-        return 'app_results';
+        return 'view_test_results_index_index';
     }     
     
     protected function getActionName() {

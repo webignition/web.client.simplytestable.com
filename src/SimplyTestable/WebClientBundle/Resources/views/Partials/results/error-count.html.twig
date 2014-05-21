@@ -1,11 +1,11 @@
 {% set action_icon %}
-    {% if app.request.attributes.get('_route') == 'app_results' %}icon icon-caret-down{% else %}{% endif %}
+    {% if app.request.attributes.get('_route') == 'view_test_results_index_index' %}icon icon-caret-down{% else %}{% endif %}
 {% endset %}
 
 <div class="span2">
     <div class="summary-container summary-figure {% if test.errorCount > 0 %}error-container{% else %}success-container{% endif %}">
     {% if test.errorCount > 0 %}
-        <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=with-errors#test-list"><span class="count">{{ test.errorCount }}</span> <span class="stat-label">error{% if test.errorCount != 1 %}s{% endif %}</span><i class="{{ action_icon }}"></i></a>
+        <a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId }) }}?filter=with-errors#test-list"><span class="count">{{ test.errorCount }}</span> <span class="stat-label">error{% if test.errorCount != 1 %}s{% endif %}</span><i class="{{ action_icon }}"></i></a>
     {% else %}
         <span class="anchor"><span class="count">{{ test.errorCount }}</span> <span class="stat-label">errors</span><i class="icon icon-ok"></i></span>
     {% endif %}            

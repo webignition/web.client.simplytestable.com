@@ -63,7 +63,7 @@
                         {% endif %}
                             
                     {% if (type is not null) %}
-                        <a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter={{ filter }}">show for all types of test</a>
+                        <a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId }) }}?filter={{ filter }}">show for all types of test</a>
                     {% endif %}                            
                     </h2>
                         
@@ -73,12 +73,12 @@
 
                         {% if tasks is defined %}
                     <ul class="nav nav-tabs">
-                        <li class="tasks-all {% if (filter == 'all') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=all&type={{ type }}#test-list">All ({{ filtered_task_counts.all }})</a></li>
-                        <li class="tasks-with-errors {% if (filter == 'with-errors') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=with-errors&type={{ type }}#test-list"><i class="icon icon-ban-circle"></i> With errors ({{ filtered_task_counts.with_errors }})</a></li>
-                        <li class="tasks-with-warnings {% if (filter == 'with-warnings') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=with-warnings&type={{ type }}#test-list"><i class="icon icon-text">!</i> With warnings ({{ filtered_task_counts.with_warnings }})</a></li>
-                        <li class="tasks-without-errors {% if (filter == 'without-errors') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=without-errors&type={{ type }}#test-list"><i class="icon icon-ok"></i> Without errors ({{ filtered_task_counts.without_errors }})</a></li>                            
-                        {% if filtered_task_counts.skipped > 0 %}<li class="tasks-skipped {% if (filter == 'skipped') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=skipped#test-list"><i class="icon icon-random"></i> Skipped ({{ filtered_task_counts.skipped }})</a></li>{% endif %}
-                        {% if filtered_task_counts.cancelled > 0 %}<li class="tasks-cancelled {% if (filter == 'cancelled') %} active {% endif %}"><a href="{{ path('app_results', { 'website': test.website, 'test_id': test.testId }) }}?filter=cancelled#test-list"><i class="icon icon-remove"></i> Cancelled ({{ filtered_task_counts.cancelled }})</a></li>{% endif %}
+                        <li class="tasks-all {% if (filter == 'all') %} active {% endif %}"><a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId }) }}?filter=all&type={{ type }}#test-list">All ({{ filtered_task_counts.all }})</a></li>
+                        <li class="tasks-with-errors {% if (filter == 'with-errors') %} active {% endif %}"><a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId }) }}?filter=with-errors&type={{ type }}#test-list"><i class="icon icon-ban-circle"></i> With errors ({{ filtered_task_counts.with_errors }})</a></li>
+                        <li class="tasks-with-warnings {% if (filter == 'with-warnings') %} active {% endif %}"><a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId }) }}?filter=with-warnings&type={{ type }}#test-list"><i class="icon icon-text">!</i> With warnings ({{ filtered_task_counts.with_warnings }})</a></li>
+                        <li class="tasks-without-errors {% if (filter == 'without-errors') %} active {% endif %}"><a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId }) }}?filter=without-errors&type={{ type }}#test-list"><i class="icon icon-ok"></i> Without errors ({{ filtered_task_counts.without_errors }})</a></li>
+                        {% if filtered_task_counts.skipped > 0 %}<li class="tasks-skipped {% if (filter == 'skipped') %} active {% endif %}"><a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId }) }}?filter=skipped#test-list"><i class="icon icon-random"></i> Skipped ({{ filtered_task_counts.skipped }})</a></li>{% endif %}
+                        {% if filtered_task_counts.cancelled > 0 %}<li class="tasks-cancelled {% if (filter == 'cancelled') %} active {% endif %}"><a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId }) }}?filter=cancelled#test-list"><i class="icon icon-remove"></i> Cancelled ({{ filtered_task_counts.cancelled }})</a></li>{% endif %}
                     </ul>
 
                         {% if tasks|length > 0 %}
