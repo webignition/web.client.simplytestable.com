@@ -159,10 +159,11 @@ app_progress:
     defaults: { _controller: SimplyTestableWebClientBundle:TestProgress:index }  
     requirements:
         website: ".+" 
-        
-app_results:
+
+view_test_results_index_index:
+#app_results:
     pattern:  /{website}/{test_id}/results/
-    defaults: { _controller: SimplyTestableWebClientBundle:TestResults:index }  
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Index:index }
     requirements:
        website: ".+"
        
