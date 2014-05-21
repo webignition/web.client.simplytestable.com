@@ -20,7 +20,12 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
 
     public function indexAction($website, $test_id) {
-        $viewData = array();
+        $test = $this->getTestService()->get($website, $test_id);
+
+        $viewData = array(
+            'website' => $this->getUrlViewValues($website),
+            'test' => $test,
+        );
 
         return $this->renderCacheableResponse($viewData);
     }
