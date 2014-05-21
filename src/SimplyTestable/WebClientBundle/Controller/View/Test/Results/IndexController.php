@@ -42,6 +42,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'task_types' => $this->container->getParameter('task_types'),
             'test_options' => $testOptions->__toKeyArray(),
             'available_task_types' => $this->getAvailableTaskTypes(),
+            'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
         );
 
         return $this->renderCacheableResponse($viewData);
@@ -120,6 +121,19 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
      */
     private function getAvailableTaskTypeService() {
         return $this->container->get('simplytestable.services.availabletasktypeservice');
+    }
+
+
+    /**
+     *
+     * @return array
+     */
+    private function getCssValidationCommonCdnsToIgnore() {
+        if (!$this->container->hasParameter('css-validation-ignore-common-cdns')) {
+            return array();
+        }
+
+        return $this->container->getParameter('css-validation-ignore-common-cdns');
     }
 
 }

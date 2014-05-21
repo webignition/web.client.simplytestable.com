@@ -1,3 +1,9 @@
+.summary-stats {
+    margin-top: 0;
+    padding-top: 15px;
+}
+
+
 .summary-prose-section {
     margin-top: 20px;
     padding-left: 15px;
@@ -46,50 +52,6 @@
     color: #333;
 }
 
-.task-type-summary .fa {
-    color: #888;
+#test-options {
+
 }
-
-.task-type-summary .unavailable .fa {
-    /*border: 1px solid #ccc;*/
-    color: #aaa;
-}
-
-/*.task-type-summary .selected {*/
-    /*border: 1px solid #428bca;*/
-/*}*/
-
-/*.task-types {*/
-    /*margin-top: 20px;*/
-/*}*/
-
-/*.task-type {*/
-    /*background-color: #ddd;*/
-    /*color: #333;*/
-    /*border-radius: 7px;*/
-    /*padding: .2em .6em .3em;*/
-    /*padding: 10px;*/
-    /*position: relative;*/
-    /*margin-bottom: 20px;*/
-/*}*/
-
-/*.task-type label {*/
-    /*margin-bottom: 0;*/
-    /*display: block;*/
-/*}*/
-
-/*.task-type input[type=checkbox] {*/
-    /*position: absolute;*/
-/*}*/
-
-/*.task-type span {*/
-    /*display: block;*/
-    /*margin-left:18px;*/
-/*}*/
-
-/*.task-type .description {*/
-    /*margin-top: 0;*/
-    /*margin-bottom: 0;*/
-    /*display: none;*/
-/*}*/
-

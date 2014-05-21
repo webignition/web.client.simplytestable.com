@@ -1,0 +1,10 @@
+{% set disable = is_disabled and (test_options['html-validation'] is not defined or not test_options['html-validation']) %}
+{% set checked = test_options['html-validation'] is defined and test_options['html-validation'] == 1 %}
+
+<div class="test-options-set task-type-option {% if disable %}test-options-set-disabled{% endif %}" id="html-validation-options">
+    <label class="checkbox {% if disable %}disabled{% endif %}">
+        <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="html-validation" {% if checked %} checked {% endif %} />
+        <span class="task-type-name">HTML validation</span>
+        <span class="help-block">Examine whether the HTML markup for all your pages is valid</span>
+    </label>
+</div>

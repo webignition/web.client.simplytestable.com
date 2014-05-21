@@ -1,0 +1,56 @@
+{% macro labelled_checkbox(label, name, test_options, hint, is_disabled) %}
+    {% set disable = (is_disabled) and (test_options[name] is not defined or not test_options[name]) %}
+    {% set check = test_options[name] is defined and test_options[name] %}
+
+    <label class="checkbox {% if disable %}disabled{% endif %}"
+           {% if hint %}title="{{ hint }}"{% endif %}>
+        <input type="checkbox"
+               name="{{ name }}"
+               value="1"
+                {% if check %} checked {% endif %}
+                {% if is_disabled %}disabled{% endif %}>
+        {{ label | raw }}
+    </label>
+{% endmacro %}
+
+{% macro labelled_radio(label, name, value, test_options, title, is_disabled) %}
+    {% set disable = (is_disabled) and test_options[name] != value %}
+    {% set check = test_options[name] is defined and test_options[name] == value %}
+
+    <label class="radio {% if disable %}disabled{% endif %}" {% if title is defined and not title == '' %}title="{{ title }}"{% endif %}>
+        <input {% if (is_disabled) %}disabled{% endif %} type="radio" name="{{ name }}" value="{{ value }}" {% if check %} checked {% endif %}>
+        {{ label }}
+    </label>
+{% endmacro %}
+
+{% macro labelled_radio_group(options, name, test_options, is_disabled) %}
+    {% import _self as form %}
+
+    {% for option in options %}
+        {{ form.labelled_radio(option.label, name, option.value, test_options, (option.title is defined) ? option.title : '', is_disabled) }}
+    {% endfor %}
+{% endmacro %}
+
+{% import _self as form %}
+
+{% set is_disabled = app.request.get('_route') == 'app_progress' or ((is_owner is defined and is_owner == false) and (is_public_user_test is defined and is_public_user_test == false)) %}
+{% set is_enabled = (is_disabled == false) %}
+{% set has_http_auth = (test_options['http-auth-username'] is defined and test_options['http-auth-username'] != '') or (remote_test is defined and remote_test.hasParameter('http-auth-username') and remote_test.parameter('http-auth-username') != '') %}
+
+{% block prefix %}{% endblock %}
+
+{% if 'html-validation' in available_task_types|keys %}
+    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/HtmlValidation:test-options.html.twig' %}
+{% endif %}
+
+{% if 'css-validation' in available_task_types|keys %}
+    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/CssValidation:test-options.html.twig' %}
+{% endif %}
+
+{#{% if 'js-static-analysis' in available_task_types|keys %}#}
+    {#{% include 'SimplyTestableWebClientBundle:Partials:/task-type-options/js-static-analysis-options.html.twig' %}#}
+{#{% endif %}#}
+
+{#{% if 'link-integrity' in available_task_types|keys %}#}
+    {#{% include 'SimplyTestableWebClientBundle:Partials:/task-type-options/link-integrity-options.html.twig' %}#}
+{#{% endif %}#}

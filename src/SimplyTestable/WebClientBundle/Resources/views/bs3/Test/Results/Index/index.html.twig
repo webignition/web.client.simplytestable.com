@@ -8,26 +8,28 @@
     {% stylesheets
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/full-width.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/summary-stats.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-options.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-results.css'
     filter='cssrewrite' %}
     <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
 {% endblock %}
 
-{#{% block javascripts %}#}
-    {#{{ parent() }}#}
+{#'@SimplyTestableWebClientBundle/Resources/assets/bs3/js/bootstrap3-typeahead.js'#}
+{#'@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stModal.js'#}
+{#'@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'#}
+{#'@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stTestResultPreparer.js'#}
+{#'@SimplyTestableWebClientBundle/Resources/assets/bs3/js/modal.js'#}
 
-    {#{% javascripts#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/js/bootstrap3-typeahead.js'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stModal.js'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stTestResultPreparer.js'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/js/modal.js'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/js/test-history.js'#}
-    {#%}#}
-    {#<script type="text/javascript" src="{{ asset_url }}"></script>#}
-    {#{% endjavascripts %}#}
-{#{% endblock %}#}
+{% block javascripts %}
+    {{ parent() }}
+
+    {% javascripts
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/test-results.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
 
 {% block body_class %} {{ parent() }} full-width {% endblock %}
 
@@ -66,9 +68,22 @@
                             </span>
 
                         {% endfor %}
+
+                        <span class="collapse-control collapsed link" data-toggle="collapse" data-target="#test-options">
+                            Change test options
+                            <i class="fa fa-caret-down"></i>
+                        </span>
                     </p>
 
                     <form role="form" method="post" action="{{ path('test_start') }}">
+                        <div id="test-options" class="collapse in">
+                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options:results-test-options.html.twig' %}
+                        </div>
+                    </form>
+
+
+
+
                         {#<div class="task-types row">#}
                             {#{% for task_type_key, task_type_properties in task_types %}#}
                                 {#{% set is_available = test_options[task_type_key] is defined %}#}
@@ -88,7 +103,7 @@
                             {#{% endfor %}#}
                         {#</div>#}
 
-                    </form>
+
 
 
 
