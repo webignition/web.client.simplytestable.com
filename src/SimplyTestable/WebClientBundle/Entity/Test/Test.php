@@ -585,19 +585,32 @@ class Test {
         
         return $warningCount;
     }
-    
-    
+
     public function getErrorCountByTaskType($type = '') {
-        $errorCount = 0;
+        $count = 0;
+
+        foreach ($this->getTasks() as $task) {
+            /* @var $task \SimplyTestable\WebClientBundle\Entity\Task\Task */
+            if ($task->hasOutput() && $task->getType() == $type) {
+                $count += $task->getOutput()->getErrorCount();
+            }
+        }
+
+        return $count;
+    }
+    
+    
+    public function getWarningCountByTaskType($type = '') {
+        $count = 0;
         
         foreach ($this->getTasks() as $task) {
             /* @var $task \SimplyTestable\WebClientBundle\Entity\Task\Task */
-            if ($task->hasOutput() && $task->getType() == $type) {                
-                $errorCount += $task->getOutput()->getErrorCount();
+            if ($task->hasOutput() && $task->getType() == $type) {
+                $count += $task->getOutput()->getWarningCount();
             }            
         }
         
-        return $errorCount;
+        return $count;
     }
     
     

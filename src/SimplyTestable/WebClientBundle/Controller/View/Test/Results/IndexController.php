@@ -28,7 +28,9 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'test' => $test,
             'is_public_user_test' => $test->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
             'remote_test' => $this->getRemoteTest(),
-            'is_owner' => $isOwner
+            'is_owner' => $isOwner,
+            'type' => $this->getRequestType(),
+            'filter' => $this->getRequestFilter(),
         );
 
         return $this->renderCacheableResponse($viewData);
@@ -46,6 +48,22 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
      */
     private function getRemoteTest() {
         return $this->getTestService()->getRemoteTestService()->get();
+    }
+
+
+    /**
+     * @return string|null
+     */
+    private function getRequestType() {
+        return $this->getRequest()->query->has('type') ? $this->getRequest()->query->get('type') : null;
+    }
+
+
+    /**
+     * @return string
+     */
+    private function getRequestFilter() {
+        return $this->getRequest()->query->has('filter') ? $this->getRequest()->query->get('filter') : 'with-errors';
     }
 
 }

@@ -10,10 +10,18 @@
     {% set negative = 'danger' %}
 {% endif %}
 
+{% if name_suffix is not defined %}
+    {% set name_suffix = '' %}
+{% endif %}
+
+{% if anchor is not defined %}
+    {%  set anchor = '#' %}
+{% endif %}
+
 {% if count == 0 %}
 <span class="label label-{{ count == 0 ? positive : negative }}">
     <span class="count">{{ count|number_format }}</span>
-    <span class="name">{{ name }}{% if count != 1 %}{{ plural_suffix }}{% endif %}</span>
+    <span class="name">{{ name }}{% if count != 1 %}{{ plural_suffix }}{% endif %} {{ name_suffix }}</span>
     <span class="icon">
         {% if count == 0 %}
             <i class="fa fa-check"></i>
@@ -23,15 +31,11 @@
     </span>
 </span>
 {% else %}
-    <a href="#{{ name }}{% if count != 1 %}{{ plural_suffix }}{% endif %}" class="label label-{{ count == 0 ? positive : negative }}">
+    <a href="{{ anchor }}" class="label label-{{ count == 0 ? positive : negative }}">
         <span class="count">{{ count|number_format }}</span>
-        <span class="name">{{ name }}{% if count != 1 %}{{ plural_suffix }}{% endif %}</span>
+        <span class="name">{{ name }}{% if count != 1 %}{{ plural_suffix }}{% endif %} {{ name_suffix }}</span>
     <span class="icon">
-        {% if count == 0 %}
-            <i class="fa fa-check"></i>
-        {% else %}
-            <i class="fa fa-caret-down"></i>
-        {% endif %}
+        <i class="fa fa-caret-down"></i>
     </span>
     </a>
 {% endif %}

@@ -18,39 +18,6 @@
     background-color: #f89406;
 }
 
-.summary-stats {
-    margin-top: 30px;
-}
-
-.summary-stats .label {
-    font-size: 28px;
-    line-height: 28px;
-    font-weight: normal;
-    margin-right: 20px;
-}
-
-.summary-stats .label span {
-    opacity: 0.8;
-}
-
-.summary-stats .label .count {
-
-}
-
-.summary-stats .label .name {
-    font-size: 14px;
-}
-
-.summary-stats .label .icon {
-    font-size: 20px;
-    line-height: 20px;
-    vertical-align: text-bottom;
-}
-
-.summary-stats .label .icon .fa {
-    font-size: 20px;
-}
-
 .failed,
 .no-longer-available,
 .issue-list {
@@ -243,12 +210,6 @@ pre.prettyprint {
 @media (max-width: 992px) {
     .header {
         padding-bottom: 0;
-    }
-
-    .summary-stats .label {
-        display: block;
-        margin-bottom: 10px;
-        text-align: left;
     }
 
     .issue-list .meta {

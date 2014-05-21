@@ -10,6 +10,7 @@
     {% stylesheets
     '@SimplyTestableWebClientBundle/Resources/assets/vendor/color-themes-for-google-code-prettify/color-themes-for-google-code-prettify-1.0/build/assets/css/themes/github.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/full-width.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/summary-stats.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-task-results.css'
     filter='cssrewrite' %}
     <link rel="stylesheet" href="{{ asset_url }}"/>
@@ -57,17 +58,17 @@
 
                     {% if task.state == 'completed' %}
                         <div class="summary-stats">
-                            {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results/Task:issue-count.html.twig'
-                            with { 'count': task.output.errorCount, 'name':'error' }
+                            {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+                            with { 'count': task.output.errorCount, 'name':'error', 'anchor': '#errors' }
                             %}
 
-                            {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results/Task:issue-count.html.twig'
-                            with { 'count': task.output.warningCount, 'negative':'primary', 'name':'warning' }
+                            {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+                            with { 'count': task.output.warningCount, 'negative':'primary', 'name':'warning', 'anchor': '#warnings' }
                             %}
 
                             {% if distinct_fixes is defined and distinct_fixes | length > 0 %}
-                                {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results/Task:issue-count.html.twig'
-                                with { 'count': distinct_fixes | length, 'negative':'fixes', 'name':'fix', 'plural_suffix':'es' }
+                                {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+                                with { 'count': distinct_fixes | length, 'negative':'fixes', 'name':'fix', 'plural_suffix':'es', 'anchor':'#fixes' }
                                 %}
                             {%  endif %}
                         </div>
