@@ -14,13 +14,8 @@ body.full-width {
     border-bottom-width: 1px;
 }
 
-.full-width .alert-container .container {
-    padding-left: 25px;
-}
-
 .full-width .alert-container .alert .fa {
     width: 15px;
-    margin-left: -26px;
 }
 
 .header {

@@ -34,16 +34,7 @@
     {{ parent() }}
 
     <div class="alert-container">
-        {% if is_owner == false and is_public_user_test == false %}
-            <div class="alert alert-info">
-                <div class="container">
-                    <i class="fa fa-flag"></i>
-                    You're viewing a <strong>read-only version</strong> of this test.
-                    <a href="{{ path('view_user_signin_index') }}">Sign in</a> if you're the test owner to
-                    modify options and re-test.
-                </div>
-            </div>
-        {% endif %}
+        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic/Notification/Conditional:read-only-test.html.twig' %}
     </div>
 
     <div class="header">
