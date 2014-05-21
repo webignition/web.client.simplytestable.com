@@ -48,8 +48,59 @@
                         <span id="test-id">(#{{ test.testId }})</span>
                     </h1>
 
+                    <p class="task-type-summary">
+                        {% for task_type_key, task_type_name in available_task_types %}
+
+                            {% set is_available = test_options[task_type_key] is defined %}
+                            {% set is_selected = is_available and test_options[task_type_key] %}
+
+                            <span class="label {% if is_available %}available{% else %}unavailable{% endif %} {% if is_selected %}selected{% endif %}">
+                                {#{% if is_selected %}#}
+                                    {#<i class="fa fa-check"></i>#}
+                                {#{% endif %}#}
+
+                                {#{% if is_available == false %}#}
+                                    {#<i class="fa fa-ban"></i>#}
+                                {#{% endif %}#}
+                                {{ task_type_name }}
+                            </span>
+
+                        {% endfor %}
+                    </p>
+
+                    <form role="form" method="post" action="{{ path('test_start') }}">
+                        {#<div class="task-types row">#}
+                            {#{% for task_type_key, task_type_properties in task_types %}#}
+                                {#{% set is_available = test_options[task_type_key] is defined %}#}
+                                {#{% set is_selected = is_available and test_options[task_type_key] %}#}
+
+                                {#<div class="col-lg-3">#}
+                                    {#<div class="task-type">#}
+                                        {#<label>#}
+                                            {#<input type="checkbox" name="{{ task_type_key }}" value="1" {% if is_selected %}checked{% endif %}>#}
+                                            {#<span class="name">{{ task_type_properties.name }}</span>#}
+                                            {#<span class="help-block description">{{ task_type_properties.description|raw }}</span>#}
+                                        {#</label>#}
+
+                                    {#</div>#}
+                                {#</div>#}
+
+                            {#{% endfor %}#}
+                        {#</div>#}
+
+                    </form>
+
+
+
+                    {#{{ dump(available_task_types) }}#}
+                    {#{{ dump(task_types) }}#}
+
+
                     {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index:summary-stats.html.twig' %}
                     {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index:summary-prose.html.twig' %}
+
+
+
                 </div>
             </div>
         </div>

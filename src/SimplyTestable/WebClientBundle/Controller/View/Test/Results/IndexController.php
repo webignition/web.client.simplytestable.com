@@ -9,6 +9,11 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner
 
 class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner {
 
+    /**
+     *
+     * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     */
+    private $testOptionsAdapter = null;
 
     protected function modifyViewName($viewName) {
         return str_replace(array(
@@ -23,6 +28,9 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         $test = $this->getTestService()->get($website, $test_id);
         $isOwner = $this->getTestService()->getRemoteTestService()->owns($test);
 
+        $this->getTestOptionsAdapter()->setRequestData($this->getRemoteTest()->getOptions());
+        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
+
         $viewData = array(
             'website' => $this->getUrlViewValues($website),
             'test' => $test,
@@ -31,6 +39,9 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'is_owner' => $isOwner,
             'type' => $this->getRequestType(),
             'filter' => $this->getRequestFilter(),
+            'task_types' => $this->container->getParameter('task_types'),
+            'test_options' => $testOptions->__toKeyArray(),
+            'available_task_types' => $this->getAvailableTaskTypes(),
         );
 
         return $this->renderCacheableResponse($viewData);
@@ -64,6 +75,51 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
      */
     private function getRequestFilter() {
         return $this->getRequest()->query->has('filter') ? $this->getRequest()->query->get('filter') : 'with-errors';
+    }
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     */
+    private function getTestOptionsAdapter() {
+        if (is_null($this->testOptionsAdapter)) {
+            $testOptionsParameters = $this->container->getParameter('test_options');
+
+            $this->testOptionsAdapter = $this->container->get('simplytestable.services.testoptions.adapter.request');
+
+            $this->testOptionsAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
+            $this->testOptionsAdapter->setAvailableTaskTypes($this->getAvailableTaskTypes());
+            $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
+            $this->testOptionsAdapter->setInvertInvertableOptions(true);
+
+            if (isset($testOptionsParameters['features'])) {
+                $this->testOptionsAdapter->setAvailableFeatures($testOptionsParameters['features']);
+            }
+        }
+
+        return $this->testOptionsAdapter;
+    }
+
+
+    /**
+     *
+     * @return array
+     */
+    private function getAvailableTaskTypes() {
+        $this->getAvailableTaskTypeService()->setUser($this->getUser());
+        $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
+
+        return $this->getAvailableTaskTypeService()->get();
+    }
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
+     */
+    private function getAvailableTaskTypeService() {
+        return $this->container->get('simplytestable.services.availabletasktypeservice');
     }
 
 }
