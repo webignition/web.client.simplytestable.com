@@ -2,20 +2,15 @@
 
 {% block title %}Results for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
-{#{% block stylesheets %}#}
-    {#{{ parent() }}#}
+{% block stylesheets %}
+    {{ parent() }}
 
-    {#{% stylesheets#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/css/modal.css'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/css/full-width.css'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/css/action-badge.css'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-summary-stats.css'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/css/finished-test-summary.css'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-history.css'#}
-    {#filter='cssrewrite' %}#}
-    {#<link rel="stylesheet" href="{{ asset_url }}"/>#}
-    {#{% endstylesheets %}#}
-{#{% endblock %}#}
+    {% stylesheets
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/full-width.css'
+    filter='cssrewrite' %}
+    <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}
 
 {#{% block javascripts %}#}
     {#{{ parent() }}#}
@@ -36,6 +31,16 @@
 
 {% block body %}
     {{ parent() }}
+
+    <div class="alert-container">
+        {% if remote_test.ammendments is defined and remote_test.ammendments[0].constraint is defined %}
+            <div class="alert alert-info">
+                <div class="container">
+                    {% include 'SimplyTestableWebClientBundle:Partials:test-url-limit-notification.html.twig' %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
 
     {#<div class="alert-container">#}
         {#{% if is_logged_in == false %}#}
