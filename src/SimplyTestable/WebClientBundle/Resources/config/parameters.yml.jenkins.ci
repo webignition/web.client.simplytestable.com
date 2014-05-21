@@ -5,6 +5,11 @@ parameters:
   resque_pid: "simplytestable_webclientbundle" 
   early_access_users:
     - "jon@webignition.net"
+  task_types:
+      html-validation: "HTML validation"
+      css-validation: "CSS validation"
+      js-static-analysis: "JS static analysis"
+      link-integrity: "Link integrity checks"
   available_task_types:
     default:
       html-validation: "HTML validation"
