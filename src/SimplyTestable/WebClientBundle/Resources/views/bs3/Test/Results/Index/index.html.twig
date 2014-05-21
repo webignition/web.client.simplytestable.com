@@ -33,14 +33,7 @@
     {{ parent() }}
 
     <div class="alert-container">
-        {% if remote_test.ammendments is defined and remote_test.ammendments[0].constraint is defined %}
-            <div class="alert alert-info">
-                <div class="container">
-                    {% include 'SimplyTestableWebClientBundle:Partials:test-url-limit-notification.html.twig' %}
-                </div>
-            </div>
-        {% endif %}
-
+        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic/Notification/Conditional:url-limit.html.twig' %}
         {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic/Notification/Conditional:read-only-test.html.twig' %}
     </div>
 
