@@ -7,7 +7,7 @@
 
                     {% if task_issue_count > 0 %}
                         <li>
-                            {% if (task_type | lower != type) %}<a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId }) }}?filter={{ filter }}&type={{ task_type | lower }}">{% endif %}
+                            {% if (task_type | lower != type) %}<a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': filter, 'type': task_type|lower }) }}">{% endif %}
 
                                 <span class="badge alert-danger">{{ task_issue_count|number_format }}</span>
 
@@ -21,6 +21,7 @@
             </ul>
         </div>
     {% endif %}
+
     {% if test.warningCount %}
         <div class="summary-prose-section warnings">
             <ul>
@@ -29,7 +30,7 @@
 
                     {% if task_issue_count > 0 %}
                         <li>
-                            {% if (task_type | lower != type) %}<a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId }) }}?filter={{ filter }}&type={{ task_type | lower }}">{% endif %}
+                            {% if (task_type | lower != type) %}<a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': filter, 'type': task_type|lower }) }}">{% endif %}
 
                                 <span class="badge alert-info">{{ task_issue_count|number_format }}</span>
 

@@ -181,7 +181,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             return 'All';
         }
 
-        $taskTypeLabel = str_replace(array('Css', 'Html'), array('CSS', 'HTML'), ucwords($taskTypeFilter));
+        $taskTypeLabel = str_replace(array('css', 'html'), array('CSS', 'HTML'), $taskTypeFilter);
 
         return $taskTypeLabel;
     }
@@ -235,9 +235,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
 
     private function getFilteredTaskCounts(Test $test, $taskTypeFilter) {
-//        var_dump($taskTypeFilter);
-
-
         if ($taskTypeFilter == 'javascript static analysis') {
             $taskTypeFilter = 'js static analysis';
         }
@@ -247,25 +244,24 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
         $filteredTaskCounts = array();
 
+        $this->getTaskCollectionFilterService()->setOutcomeFilter(null);
         $filteredTaskCounts['all'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
 
-//        $this->getTaskCollectionFilterService()->setOutcomeFilter('with-errors');
-//        $filteredTaskCounts['with_errors'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
-//
-//        $this->getTaskCollectionFilterService()->setOutcomeFilter('with-warnings');
-//        $filteredTaskCounts['with_warnings'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
-//
-//        $this->getTaskCollectionFilterService()->setOutcomeFilter('without-errors');
-//        $filteredTaskCounts['without_errors'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
-//
-//        $this->getTaskCollectionFilterService()->setOutcomeFilter('skipped');
-//        $filteredTaskCounts['skipped'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
-//
-//        $this->getTaskCollectionFilterService()->setOutcomeFilter('cancelled');
-//        $filteredTaskCounts['cancelled'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+        $this->getTaskCollectionFilterService()->setOutcomeFilter('with-errors');
+        $filteredTaskCounts['with_errors'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
 
-//        var_dump($filteredTaskCounts);
-//        exit();
+        $this->getTaskCollectionFilterService()->setOutcomeFilter('with-warnings');
+        $filteredTaskCounts['with_warnings'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+
+        $this->getTaskCollectionFilterService()->setOutcomeFilter('without-errors');
+        $filteredTaskCounts['without_errors'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+
+        $this->getTaskCollectionFilterService()->setOutcomeFilter('skipped');
+        $filteredTaskCounts['skipped'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+
+        $this->getTaskCollectionFilterService()->setOutcomeFilter('cancelled');
+        $filteredTaskCounts['cancelled'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+
         return $filteredTaskCounts;
     }
 
