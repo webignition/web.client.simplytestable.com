@@ -63,13 +63,6 @@ input.inline-short {
     width: 80%;
 }
 
-/*.radio.inline, .checkbox.inline {*/
-    /*display: inline-block;*/
-    /*padding-top: 5px;*/
-    /*margin-bottom: 0;*/
-    /*vertical-align: middle;*/
-/*}*/
-
 @media (min-width: 1200px) {
     .css-validator-option-set.css-common-cdn-domains {
         margin-left: -6%;

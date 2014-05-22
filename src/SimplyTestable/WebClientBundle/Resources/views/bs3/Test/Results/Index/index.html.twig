@@ -69,20 +69,19 @@
                     </p>
 
                     <form role="form" method="post" action="{{ path('test_start') }}">
+                        <input type="hidden" name="website" value="{{ test.website }}" />
+                        <button type="submit" class="btn btn-primary btn-significant">
+                            Re-test
+                            <span>Using selected settings</span>
+                        </button>
+
                         <div id="test-options" class="collapse">
                             {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options:results-test-options.html.twig' %}
                         </div>
                     </form>
 
-                    {#{{ dump(available_task_types) }}#}
-                    {#{{ dump(task_types) }}#}
-
-
                     {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index:summary-stats.html.twig' %}
                     {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index:summary-prose.html.twig' %}
-
-
-
                 </div>
             </div>
         </div>
@@ -91,9 +90,7 @@
     {#<div class="container">#}
         {#<div class="row">#}
             {#<div class="col-lg-8 col-md-10 col-sm-12" id="finished-tests">#}
-                {#{% for test in test_list.get %}#}
-                    {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Summary:finished.html.twig' %}#}
-                {#{% endfor %}#}
+                {#p#}
             {#</div>#}
         {#</div>#}
     {#</div>#}
