@@ -23,4 +23,43 @@ $(document).ready(function() {
             event.preventDefault();
         });
     });
+
+    var maximumProseHeight = 0;
+
+    $('.summary-prose-section').each(function () {
+        var maximumBadgeWidth = 0;
+        var section = $(this);
+
+        if (section.height() > maximumProseHeight) {
+            maximumProseHeight = section.height();
+        }
+
+        $('.badge', section).each(function () {
+            var badge = $(this);
+            if (badge.width() > maximumBadgeWidth) {
+                maximumBadgeWidth = badge.width();
+            }
+        });
+
+        $('.badge', section).each(function () {
+            $(this).width(maximumBadgeWidth);
+        });
+
+    });
+
+    $('.summary-prose-section').each(function () {
+        $(this).height(maximumProseHeight);
+    });
+
+
+//
+//    $('.summary-prose .badge').each(function () {
+//        if ($(this).width() > widestBadge) {
+//            widestBadge = $(this).width();
+//        }
+//    });
+//
+//    $('.summary-prose .badge').each(function () {
+//        $(this).width(widestBadge);
+//    });
 });

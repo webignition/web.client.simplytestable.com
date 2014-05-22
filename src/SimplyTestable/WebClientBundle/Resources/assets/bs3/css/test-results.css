@@ -24,12 +24,8 @@ h1 {
     padding: 0;
 }
 
-.summary-prose-section .badge-wrapper {
-
-}
-
 .summary-prose-section .badge {
-
+    text-align: right;
 }
 
 .summary-prose .errors {
