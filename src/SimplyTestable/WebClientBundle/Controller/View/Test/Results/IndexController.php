@@ -182,7 +182,11 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             return 'All';
         }
 
-        $taskTypeLabel = str_replace(array('css', 'html'), array('CSS', 'HTML'), $taskTypeFilter);
+        $taskTypeLabel = str_replace(
+            array('css', 'html', 'js', 'link'),
+            array('CSS', 'HTML', 'JS', 'Link'),
+            $taskTypeFilter
+        );
 
         return $taskTypeLabel;
     }

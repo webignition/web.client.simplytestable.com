@@ -118,7 +118,10 @@
                     </h2>
 
                     {% if (type is not null) %}
-                        <a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': filter }) }}">show for all types of test</a>
+                        <a class="clear-type badge" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': filter }) }}">
+                            clear &ldquo;{{ type|replace({'html': 'HTML', 'css': 'CSS', 'js': 'JS'}) }}&rdquo; filter
+                            <i class="fa fa-times"></i>
+                        </a>
                     {% endif %}
 
                     {% if tasks is defined %}

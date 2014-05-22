@@ -6,6 +6,7 @@ h1 {
 h2 {
     margin:20px 0;
     font-size: 28px;
+    display: inline-block;
 }
 
 .header {
@@ -115,6 +116,7 @@ ul.nav-tabs.without-errors li a:hover {
 .nav-tabs>li>a:focus {
     background-color: #ddd;
     border: 1px solid #ddd;
+    color: #333;
 }
 
 .nav-tabs>li.active>a:hover,
@@ -160,4 +162,19 @@ ul.nav-tabs.without-errors li a:hover {
     color: #fff;
     background-color: #5cb85c;
     border: 1px solid #5cb85c;
+}
+
+a.clear-type,
+a.clear-type:hover,
+a.clear-type:focus {
+    display: inline-block;
+    background-color: #ddd;
+    font-weight: normal;
+    color: #333;
+    margin-left: 10px;
+    margin-bottom: 2px;
+}
+
+a.clear-type .fa {
+    opacity: 0.6;
 }
