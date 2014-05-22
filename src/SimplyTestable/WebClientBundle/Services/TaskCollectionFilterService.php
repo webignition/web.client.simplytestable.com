@@ -79,7 +79,10 @@ class TaskCollectionFilterService extends TaskService {
      * 
      * @return array
      */
-    public function getRemoteIdCount() {        
+    public function getRemoteIdCount() {
+        var_dump($this->getOutcomeFilter());
+        exit();
+
         if ($this->getOutcomeFilter() == self::OUTCOME_FILTER_SKIPPED || $this->getOutcomeFilter() == self::OUTCOME_FILTER_CANCELLED) {
             return $this->getEntityRepository()->getRemoteIdCountByTestAndTaskTypeIncludingStates(
                     $this->test,

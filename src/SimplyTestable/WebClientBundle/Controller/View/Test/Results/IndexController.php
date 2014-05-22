@@ -249,20 +249,20 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
         $filteredTaskCounts['all'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
 
-        $this->getTaskCollectionFilterService()->setOutcomeFilter('with-errors');
-        $filteredTaskCounts['with_errors'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
-
-        $this->getTaskCollectionFilterService()->setOutcomeFilter('with-warnings');
-        $filteredTaskCounts['with_warnings'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
-
-        $this->getTaskCollectionFilterService()->setOutcomeFilter('without-errors');
-        $filteredTaskCounts['without_errors'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
-
-        $this->getTaskCollectionFilterService()->setOutcomeFilter('skipped');
-        $filteredTaskCounts['skipped'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
-
-        $this->getTaskCollectionFilterService()->setOutcomeFilter('cancelled');
-        $filteredTaskCounts['cancelled'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+//        $this->getTaskCollectionFilterService()->setOutcomeFilter('with-errors');
+//        $filteredTaskCounts['with_errors'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+//
+//        $this->getTaskCollectionFilterService()->setOutcomeFilter('with-warnings');
+//        $filteredTaskCounts['with_warnings'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+//
+//        $this->getTaskCollectionFilterService()->setOutcomeFilter('without-errors');
+//        $filteredTaskCounts['without_errors'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+//
+//        $this->getTaskCollectionFilterService()->setOutcomeFilter('skipped');
+//        $filteredTaskCounts['skipped'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+//
+//        $this->getTaskCollectionFilterService()->setOutcomeFilter('cancelled');
+//        $filteredTaskCounts['cancelled'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
 
 //        var_dump($filteredTaskCounts);
 //        exit();
