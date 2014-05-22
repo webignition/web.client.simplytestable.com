@@ -76,6 +76,10 @@ h2 {
     font-size: 12px;
 }
 
+#lock-unlock .btn-significant {
+    top: 70px;
+}
+
 ul.nav-tabs.with-errors {
     border-bottom: 1px solid #d9534f;
 }
