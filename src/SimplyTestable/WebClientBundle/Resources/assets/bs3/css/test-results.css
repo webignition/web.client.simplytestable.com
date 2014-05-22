@@ -3,6 +3,10 @@ h1 {
     overflow: hidden;
 }
 
+.header {
+    margin-bottom: 40px;
+}
+
 .summary-stats {
     margin-top: 0;
     padding-top: 15px;

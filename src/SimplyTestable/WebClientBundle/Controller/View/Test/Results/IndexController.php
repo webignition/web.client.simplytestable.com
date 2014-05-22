@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Controller\View\Test\CacheableViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
+use SimplyTestable\WebClientBundle\Entity\Test\Test;
 
 class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner {
 
@@ -31,6 +32,16 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         $this->getTestOptionsAdapter()->setRequestData($this->getRemoteTest()->getOptions());
         $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
 
+        $remoteTaskIds = ($this->getRequestFilter() == 'all' && is_null($this->getRequestType()))
+            ? null
+            : $this->getFilteredTaskCollectionRemoteIds(
+                $test,
+                $this->getRequestFilter(),
+                $this->getRequestType()
+            );
+
+        $tasks = $this->getTaskService()->getCollection($test, $remoteTaskIds);
+
         $viewData = array(
             'website' => $this->getUrlViewValues($website),
             'test' => $test,
@@ -38,12 +49,16 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'remote_test' => $this->getRemoteTest(),
             'is_owner' => $isOwner,
             'type' => $this->getRequestType(),
+            'type_label' => $this->getTaskTypeLabel($this->getRequestType()),
             'filter' => $this->getRequestFilter(),
+            'filter_label' => ucwords(str_replace('-', ' ', $this->getRequestFilter())),
             'task_types' => $this->container->getParameter('task_types'),
             'test_options' => $testOptions->__toKeyArray(),
             'available_task_types' => $this->getAvailableTaskTypes(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
+            'tasks' => $this->getTasksGroupedByUrl($tasks),
+            'filtered_task_counts' => $this->getFilteredTaskCounts($test, $this->getRequestType()),
         );
 
         return $this->renderCacheableResponse($viewData);
@@ -68,7 +83,12 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
      * @return string|null
      */
     private function getRequestType() {
-        return $this->getRequest()->query->has('type') ? $this->getRequest()->query->get('type') : null;
+        if (!$this->getRequest()->query->has('type')) {
+            return null;
+        }
+
+        $type = trim($this->getRequest()->query->get('type'));
+        return ($type == '') ? null : $type;
     }
 
 
@@ -76,7 +96,12 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
      * @return string
      */
     private function getRequestFilter() {
-        return $this->getRequest()->query->has('filter') ? $this->getRequest()->query->get('filter') : 'with-errors';
+        if (!$this->getRequest()->query->has('filter')) {
+            return 'with-errors';
+        }
+
+        $filter = trim($this->getRequest()->query->get('filter'));
+        return ($filter == '') ? 'with-errors' : $filter;
     }
 
 
@@ -148,6 +173,100 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         }
 
         return $this->container->getParameter('js-static-analysis-ignore-common-cdns');
+    }
+
+
+    private function getTaskTypeLabel($taskTypeFilter) {
+        if (is_null($taskTypeFilter)) {
+            return 'All';
+        }
+
+        $taskTypeLabel = str_replace(array('Css', 'Html'), array('CSS', 'HTML'), ucwords($taskTypeFilter));
+
+        return $taskTypeLabel;
+    }
+
+
+    private function getFilteredTaskCollectionRemoteIds(Test $test, $taskOutcomeFilter, $taskTypeFilter) {
+        if ($taskTypeFilter == 'javascript static analysis') {
+            $taskTypeFilter = 'js static analysis';
+        }
+
+        $this->getTaskCollectionFilterService()->setTest($test);
+        $this->getTaskCollectionFilterService()->setOutcomeFilter($taskOutcomeFilter);
+        $this->getTaskCollectionFilterService()->setTypeFilter($taskTypeFilter);
+
+        return $this->getTaskCollectionFilterService()->getRemoteIds();
+    }
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService
+     */
+    private function getTaskCollectionFilterService() {
+        return $this->container->get('simplytestable.services.taskcollectionfilterservice');
+    }
+
+
+    /**
+     *
+     * @param array $tasks
+     * @return array
+     */
+    private function getTasksGroupedByUrl($tasks = array()) {
+        $tasksGroupedByUrl = array();
+        foreach ($tasks as $task) {
+            $url = new \webignition\NormalisedUrl\NormalisedUrl($task->getUrl());
+            $url->getConfiguration()->enableConvertIdnToUtf8();
+
+            $url = (string)$url;
+
+            /* @var $task Task */
+            if (!isset($tasksGroupedByUrl[$url])) {
+                $tasksGroupedByUrl[$url] = array();
+            }
+
+            $tasksGroupedByUrl[$url][] = $task;
+        }
+
+        return $tasksGroupedByUrl;
+    }
+
+
+    private function getFilteredTaskCounts(Test $test, $taskTypeFilter) {
+//        var_dump($taskTypeFilter);
+
+
+        if ($taskTypeFilter == 'javascript static analysis') {
+            $taskTypeFilter = 'js static analysis';
+        }
+
+        $this->getTaskCollectionFilterService()->setTest($test);
+        $this->getTaskCollectionFilterService()->setTypeFilter($taskTypeFilter);
+
+        $filteredTaskCounts = array();
+
+        $filteredTaskCounts['all'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+
+        $this->getTaskCollectionFilterService()->setOutcomeFilter('with-errors');
+        $filteredTaskCounts['with_errors'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+
+        $this->getTaskCollectionFilterService()->setOutcomeFilter('with-warnings');
+        $filteredTaskCounts['with_warnings'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+
+        $this->getTaskCollectionFilterService()->setOutcomeFilter('without-errors');
+        $filteredTaskCounts['without_errors'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+
+        $this->getTaskCollectionFilterService()->setOutcomeFilter('skipped');
+        $filteredTaskCounts['skipped'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+
+        $this->getTaskCollectionFilterService()->setOutcomeFilter('cancelled');
+        $filteredTaskCounts['cancelled'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
+
+//        var_dump($filteredTaskCounts);
+//        exit();
+        return $filteredTaskCounts;
     }
 
 }
