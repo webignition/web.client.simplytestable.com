@@ -9,7 +9,7 @@
                value="1"
                 {% if check %} checked {% endif %}
                 {% if is_disabled %}disabled{% endif %}>
-        {{ label | raw }}
+        <span class="text">{{ label | raw }}</span>
     </label>
 {% endmacro %}
 
@@ -47,10 +47,10 @@
     {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/CssValidation:test-options.html.twig' %}
 {% endif %}
 
-{#{% if 'js-static-analysis' in available_task_types|keys %}#}
-    {#{% include 'SimplyTestableWebClientBundle:Partials:/task-type-options/js-static-analysis-options.html.twig' %}#}
-{#{% endif %}#}
+{% if 'js-static-analysis' in available_task_types|keys %}
+    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/JsStaticAnalysis:test-options.html.twig' %}
+{% endif %}
 
-{#{% if 'link-integrity' in available_task_types|keys %}#}
-    {#{% include 'SimplyTestableWebClientBundle:Partials:/task-type-options/link-integrity-options.html.twig' %}#}
-{#{% endif %}#}
+{% if 'link-integrity' in available_task_types|keys %}
+    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/LinkIntegrity:test-options.html.twig' %}
+{% endif %}

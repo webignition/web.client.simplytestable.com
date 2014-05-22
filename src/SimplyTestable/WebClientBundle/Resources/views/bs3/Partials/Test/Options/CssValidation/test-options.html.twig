@@ -15,7 +15,7 @@
                 Advanced CSS validation options
                 <i class="fa fa-caret-down"></i>
             </span>
-            <div id="css-validation-options-advanced" class="collapse in">
+            <div id="css-validation-options-advanced" class="collapse">
                 <div class="row">
                     <div class="col-lg-2 css-validator-option-set validator-option-set css-general">
                         <h3>Handling warnings:</h3>
@@ -65,12 +65,12 @@
                         </label>
                     </div>
                     <div class="col-lg-4 css-validator-option-set validator-option-set css-domains-to-ignore">
-                        <p>Linked CSS domains to ignore:</p>
+                        <h3>Linked CSS domains to ignore:</h3>
 
                         <span class="help-block">
                             Ignore third-party CSS resources by domain.
                         </span>
-                        <textarea {% if (is_disabled) %}disabled{% endif %} name="css-validation-domains-to-ignore" rows="3" {% if (is_enabled) %} placeholder="example.mycdn.com                                                     one-per-line.example.com"{% endif %}>{% if test_options['css-validation-domains-to-ignore'] is defined and test_options['css-validation-domains-to-ignore'] != '' %}{{test_options['css-validation-domains-to-ignore']|join('\n')}}{% endif %}</textarea>
+                        <textarea class="form-control" {% if (is_disabled) %}disabled{% endif %} name="css-validation-domains-to-ignore" rows="3" {% if (is_enabled) %} placeholder="example.mycdn.com                                                     one-per-line.example.com"{% endif %}>{% if test_options['css-validation-domains-to-ignore'] is defined and test_options['css-validation-domains-to-ignore'] != '' %}{{test_options['css-validation-domains-to-ignore']|join('\n')}}{% endif %}</textarea>
                     </div>
                 </div>
             </div>

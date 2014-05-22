@@ -1,5 +1,18 @@
 {% extends 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Options:test-options.html.twig' %}
 
 {% block prefix %}
-    full/single choices here
+    <div class="row test-options-set">
+        <div class="col-lg-4">
+            <label class="radio">
+                <input type="radio" name="full-single" value="full" {% if remote_test.type == 'Full site' %}checked{% endif %}> Full site test
+                <span class="help-block">Test your entire site by finding URLs in your sitemap and by crawling your site</span>
+            </label>
+        </div>
+        <div class="col-lg-4">
+            <label class="radio">
+                <input type="radio" name="full-single" value="single" {% if remote_test.type != 'Full site' %}checked{% endif %}> Single URL test
+                <span class="help-block">Test just the above URL only</span>
+            </label>
+        </div>
+    </div>
 {% endblock %}

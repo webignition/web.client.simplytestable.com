@@ -24,13 +24,51 @@
     opacity: 0.8;
 }
 
-.ignore-common-cdn-domains li {
+.ignore-common-cdn-domains li,
+.js-static-analysis-ignore-common-cdns li {
     opacity: 0.8;
 }
 
 .css-domains-to-ignore textarea {
     width: 100%;
 }
+
+#js-static-analysis-validation-options h3 span {
+    font-weight: normal;
+}
+
+.test-options-set .snug-heading {
+    margin-bottom: -2px;
+}
+
+.js-static-analysis-jslint-options {
+    margin-top: 20px;
+}
+
+.jslint-option-set-group {
+    margin-top: 20px;
+}
+
+input.inline-short {
+    display:inline;
+    width:50px;
+}
+
+.jslint-limits .stop-when-reaching input[type=radio] {
+    margin-top: 10px;
+}
+
+.jslint-predef {
+    margin-top: 10px;
+    width: 80%;
+}
+
+/*.radio.inline, .checkbox.inline {*/
+    /*display: inline-block;*/
+    /*padding-top: 5px;*/
+    /*margin-bottom: 0;*/
+    /*vertical-align: middle;*/
+/*}*/
 
 @media (min-width: 1200px) {
     .css-validator-option-set.css-common-cdn-domains {

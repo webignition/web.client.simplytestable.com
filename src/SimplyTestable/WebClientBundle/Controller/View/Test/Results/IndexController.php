@@ -43,6 +43,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'test_options' => $testOptions->__toKeyArray(),
             'available_task_types' => $this->getAvailableTaskTypes(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
+            'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
         );
 
         return $this->renderCacheableResponse($viewData);
@@ -134,6 +135,19 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         }
 
         return $this->container->getParameter('css-validation-ignore-common-cdns');
+    }
+
+
+    /**
+     *
+     * @return array
+     */
+    private function getJsStaticAnalysisCommonCdnsToIgnore() {
+        if (!$this->container->hasParameter('js-static-analysis-ignore-common-cdns')) {
+            return array();
+        }
+
+        return $this->container->getParameter('js-static-analysis-ignore-common-cdns');
     }
 
 }
