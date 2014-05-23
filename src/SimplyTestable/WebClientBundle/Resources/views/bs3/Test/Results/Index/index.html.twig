@@ -153,7 +153,13 @@
                                     </a>
                                 </li>
                             {% endif %}
-                            {% if filtered_task_counts.cancelled > 0 %}<li class="tasks-cancelled {% if (filter == 'cancelled') %} active {% endif %}"><a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId }) }}?filter=cancelled#test-list"><i class="icon icon-remove"></i> Cancelled ({{ filtered_task_counts.cancelled }})</a></li>{% endif %}
+                            {% if filtered_task_counts.cancelled > 0 %}
+                                <li class="tasks-cancelled {% if (filter == 'cancelled') %} active {% endif %}">
+                                    <a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId }) }}?filter=cancelled#test-list">
+                                        Cancelled <span class="badge">{{ filtered_task_counts.cancelled }}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
                         </ul>
                     {% endif %}
 

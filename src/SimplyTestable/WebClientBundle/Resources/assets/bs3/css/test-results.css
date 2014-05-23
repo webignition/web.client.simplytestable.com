@@ -249,3 +249,7 @@ a.clear-type .fa {
 .skipped .meta .state .fa {
     color: #bbb;
 }
+
+.cancelled .meta .state .fa {
+    color: #bbb;
+}

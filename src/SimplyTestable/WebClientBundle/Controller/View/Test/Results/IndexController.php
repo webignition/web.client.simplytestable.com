@@ -267,6 +267,9 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         $this->getTaskCollectionFilterService()->setOutcomeFilter('cancelled');
         $filteredTaskCounts['cancelled'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
 
+//        var_dump($filteredTaskCounts);
+//        exit();
+
         return $filteredTaskCounts;
     }
 

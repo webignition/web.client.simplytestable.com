@@ -90,9 +90,13 @@ class TaskCollectionFilterService extends TaskService {
         
         $issueCount = null;
         $issueType = null;
+
+        $excludeStates = array('');
         
         switch ($this->getOutcomeFilter()) {
             case 'without-errors':
+                $excludeStates = array('skipped', 'cancelled', 'in-progress', 'awaiting-cancellation');
+
                 $issueCount = '= 0';
                 $issueType = 'error';
                 break;
@@ -113,7 +117,7 @@ class TaskCollectionFilterService extends TaskService {
                 $issueCount,
                 $issueType,
                 $this->getTypeFilter(),
-                array('skipped', 'cancelled', 'in-progress', 'awaiting-cancellation')
+                $excludeStates
         );      
     }    
     

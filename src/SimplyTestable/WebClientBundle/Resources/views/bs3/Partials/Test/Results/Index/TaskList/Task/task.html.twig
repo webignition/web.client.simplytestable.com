@@ -4,14 +4,18 @@
     'queued-for-assignment':'cog',
     'in-progress':'cogs',
     'skipped':'random',
-    'cancelled':'circle-dot-o',
-    'failed':'ban',
-    'failed-no-retry-availabl':'remove-circle',
-    'failed-retry-available':'remove-circle',
-    'failed-retry-limit-reached':'remove-circle',
+    'cancelled':'ban',
+    'failed':'exclamation-triangle',
+    'failed-no-retry-availabl':'exclamation-triangle',
+    'failed-retry-available':'exclamation-triangle',
+    'failed-retry-limit-reached':'exclamation-triangle',
 } %}
 
-{% set use_link = task.hasOutput and task.state not in ignore_results_states and task.output.hasErrors or task.output.hasWarnings %}
+{% set use_link = false %}
+
+{% if task.hasOutput %}
+    {% set use_link = task.state not in ignore_results_states and task.output.hasErrors or task.output.hasWarnings%}
+{% endif %}
 
 {% if use_link %}
     <a class="meta"  href="{{ path('view_test_task_results_index_index', { 'website': test.website, 'test_id': test.testId, 'task_id':task.taskId }) }}">
@@ -22,9 +26,9 @@
 <span class="state"><i class="fa fa-fw fa-{{ state_to_icon_map[task.state] }}"></i></span>
 <span class="type">{{ task.type }}</span>
 
-{% if task.hasOutput %}
+
     {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index/TaskList/Task/SummaryLabels:summary-labels.html.twig' %}
-{% endif %}
+
 
 {% if not use_link %}
     </span>

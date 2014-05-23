@@ -284,29 +284,29 @@ class TaskRepository extends EntityRepository
     
     public function getRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStates(Test $test, $issueCount = null, $issueType = null, $taskType, $excludeStates = array()) {
         $queryBuilder = $this->createQueryBuilder('Task');
-        $queryBuilder->join('Task.output', 'TaskOutput');
         $queryBuilder->select('COUNT(Task.taskId)');
         
         $where = 'Task.test = :Test ';
         $queryBuilder->setParameter('Test', $test);  
         
         if (!is_null($issueCount)) {
+            $queryBuilder->join('Task.output', 'TaskOutput');
             $issueComparatorAndCount = explode(' ', $issueCount);
-            $where .= ' AND TaskOutput.'.$issueType.'Count '.$issueComparatorAndCount[0].' :IssueCount';   
+            $where .= ' AND TaskOutput.'.$issueType.'Count '.$issueComparatorAndCount[0].' :IssueCount';
             $queryBuilder->setParameter('IssueCount', $issueComparatorAndCount[1]);
-        }        
-        
+        }
+
         if (is_array(($excludeStates))) {
             $stateConditions = array();
 
             foreach ($excludeStates as $stateIndex => $state) {
                 $stateConditions[] = '(Task.state != :State'.$stateIndex.') ';
                 $queryBuilder->setParameter('State'.$stateIndex, $state);
-            } 
-            
+            }
+
             $where .= ' AND ('.implode('AND', $stateConditions).')';
         }
-        
+
         if (!is_null($taskType)) {
             $where .= ' AND Task.type = :TaskType';
             $queryBuilder->setParameter('TaskType', $taskType);
