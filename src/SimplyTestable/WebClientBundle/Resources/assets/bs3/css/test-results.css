@@ -241,3 +241,7 @@ a.clear-type .fa {
 .completed .meta .fa-check {
     color: #5cb85c;
 }
+
+.failed .meta .state .fa {
+    color: #c9302c;
+}

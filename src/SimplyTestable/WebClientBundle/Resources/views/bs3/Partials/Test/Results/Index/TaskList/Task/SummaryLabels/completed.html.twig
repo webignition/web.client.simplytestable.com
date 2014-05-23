@@ -1,0 +1,19 @@
+{% if task.output.hasIssues %}
+    {% if task.output.hasErrors %}
+        <span class="label label-danger">
+            {{ task.output.errorCount }}
+            error{% if task.output.errorCount != 1 %}s{% endif %}
+            <i class="fa fa-caret-right"></i>
+        </span>
+    {% endif %}
+
+    {% if task.output.hasWarnings %}
+        <span class="label label-primary">
+            {{ task.output.warningCount }}
+            warning{% if task.output.warningCount != 1 %}s{% endif %}
+            <i class="fa fa-caret-right"></i>
+        </span>
+    {% endif %}
+{% else %}
+    <i class="fa fa-check"></i>
+{% endif %}
