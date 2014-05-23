@@ -245,3 +245,7 @@ a.clear-type .fa {
 .failed .meta .state .fa {
     color: #c9302c;
 }
+
+.skipped .meta .state .fa {
+    color: #bbb;
+}

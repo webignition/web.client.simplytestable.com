@@ -9,6 +9,10 @@
     {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index/TaskList/Task/SummaryLabels:completed.html.twig' %}
 {% endif %}
 
+{% if task.state == 'skipped' %}
+    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index/TaskList/Task/SummaryLabels:skipped.html.twig' %}
+{% endif %}
+
 {% if is_failed %}
     {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index/TaskList/Task/SummaryLabels:failed.html.twig' %}
 {% endif %}
