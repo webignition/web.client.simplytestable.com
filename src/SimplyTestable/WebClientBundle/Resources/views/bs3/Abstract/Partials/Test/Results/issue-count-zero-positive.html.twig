@@ -31,7 +31,7 @@
     </span>
 </span>
 {% else %}
-    <a href="{{ anchor }}" class="label label-{{ count == 0 ? positive : negative }}">
+    <a data-target="#test-list" data-target="#test-list" href="{{ anchor }}" class="label label-{{ count == 0 ? positive : negative }}">
         <span class="count">{{ count|number_format }}</span>
         <span class="name">{{ name }}{% if count != 1 %}{{ plural_suffix }}{% endif %} {{ name_suffix }}</span>
     <span class="icon">

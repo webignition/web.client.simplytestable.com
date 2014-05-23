@@ -52,14 +52,23 @@ $(document).ready(function() {
     });
 
 
+//    $('a[data-target=#test-list]').click(function () {
+//        var target = $('#test-list');
 //
-//    $('.summary-prose .badge').each(function () {
-//        if ($(this).width() > widestBadge) {
-//            widestBadge = $(this).width();
-//        }
-//    });
+//        $.scrollTo(target, {
+//            'offset':-50
+//        });
 //
-//    $('.summary-prose .badge').each(function () {
-//        $(this).width(widestBadge);
+//        window.location.hash = target.attr('id');
+//
+//        return false;
 //    });
+
+    if ($(window.location.hash).length) {
+        var target = $(window.location.hash);
+
+        $.scrollTo(target, {
+            'offset':-100
+        });
+    }
 });
