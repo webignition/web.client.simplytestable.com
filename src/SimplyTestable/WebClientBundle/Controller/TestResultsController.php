@@ -156,43 +156,43 @@ class TestResultsController extends TestViewController
         $testOptions = $this->getTestOptionsAdapter()->getTestOptions();   
 
         $viewData = array(
-            'website' => $this->getUrlViewValues($website),
-            'this_url' => $this->getResultsUrl($website, $test_id),
-            'test_input_action_url' => $this->generateUrl('test_start'),
-            'test' => $test,
-            'remote_test' => $remoteTest,
-            'public_site' => $this->container->getParameter('public_site'),
-            'filter' => $taskOutcomeFilter,
-            'filter_label' => ucwords(str_replace('-', ' ', $taskOutcomeFilter)),
-            'type' => $taskTypeFilter,
-            'type_label' => $this->getTaskTypeLabel($taskTypeFilter),
-            'user' => $this->getUser(),
-            'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),    
-            'is_owner' => $isOwner,
-            'is_public' => $isPublic,
-            'is_public_user_test' => $isPublicUserTest,
-            'task_types' => $taskTypes,
-            'available_task_types' => $this->getAvailableTaskTypes(),
-            'test_options' => $testOptions->__toKeyArray(),
-            'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
-            'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
-            'default_css_validation_options' => array(
-                'ignore-warnings' => 1,
-                'vendor-extensions' => 'warn',
-                'ignore-common-cdns' => 1                
-            ),
-            'default_js_static_analysis_options' => array(
-                'ignore-common-cdns' => 1,
-                'jslint-option-maxerr' => 50,
-                'jslint-option-indent' => 4,
-                'jslint-option-maxlen' => 256
-            ),
-            'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions),
-            'filtered_task_counts' => $this->getFilteredTaskCounts($test, $taskTypeFilter),
+            //'website' => $this->getUrlViewValues($website),
+            //'this_url' => $this->getResultsUrl($website, $test_id),
+            //'test_input_action_url' => $this->generateUrl('test_start'),
+            //'test' => $test,
+            //'remote_test' => $remoteTest,
+            //'public_site' => $this->container->getParameter('public_site'),
+            //'filter' => $taskOutcomeFilter,
+            //'filter_label' => ucwords(str_replace('-', ' ', $taskOutcomeFilter)),
+            //'type' => $taskTypeFilter,
+            //'type_label' => $this->getTaskTypeLabel($taskTypeFilter),
+            //'user' => $this->getUser(),
+            //'is_logged_in' => !$this->getUserService()->isPublicUser($this->getUser()),
+            //'is_owner' => $isOwner,
+            //'is_public' => $isPublic,
+            //'is_public_user_test' => $isPublicUserTest,
+            //'task_types' => $taskTypes,
+            //'available_task_types' => $this->getAvailableTaskTypes(),
+            //'test_options' => $testOptions->__toKeyArray(),
+            //'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
+            //'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
+//            'default_css_validation_options' => array(
+//                'ignore-warnings' => 1,
+//                'vendor-extensions' => 'warn',
+//                'ignore-common-cdns' => 1
+//            ),
+//            'default_js_static_analysis_options' => array(
+//                'ignore-common-cdns' => 1,
+//                'jslint-option-maxerr' => 50,
+//                'jslint-option-indent' => 4,
+//                'jslint-option-maxlen' => 256
+//            ),
+            //'test_options_introduction' => $this->getTestOptionsIntroduction($testOptions),
+            //'filtered_task_counts' => $this->getFilteredTaskCounts($test, $taskTypeFilter),
             'test_authentication_enabled' => $this->getTestAuthenticationIsEnabled($remoteTest),
             'test_cookies_enabled' => $this->getTestCookiesIsEnabled($remoteTest),
             'test_cookies' => $this->getTestCookies($remoteTest),
-            'domain_test_count' => $this->getTestService()->getRemoteTestService()->getFinishedCount($test->getWebsite())
+            //'domain_test_count' => $this->getTestService()->getRemoteTestService()->getFinishedCount($test->getWebsite())
         );
                        
         //$taskCollectionLength = ($taskListFilter == 'all') ? $remoteTest->getTaskCount() : $this->getFilteredTaskCollectionLength($test, $this->getRequestValue('filter', 'all'));

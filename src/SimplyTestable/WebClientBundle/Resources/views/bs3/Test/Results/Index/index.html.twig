@@ -6,9 +6,11 @@
     {{ parent() }}
 
     {% stylesheets
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/modal.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/full-width.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/summary-stats.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-options.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/action-badge.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-results.css'
     filter='cssrewrite' %}
     <link rel="stylesheet" href="{{ asset_url }}"/>
@@ -20,6 +22,10 @@
 
     {% javascripts
     '@SimplyTestableWebClientBundle/Resources/assets/vendor/jquery-scrollto/jquery.scrollTo-1.4.12/jquery.scrollTo.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stModal.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/modal.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/http-authentication-options-modal.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/test-results.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
@@ -74,6 +80,10 @@
                         <div id="test-options" class="collapse">
                             {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options:results-test-options.html.twig' %}
                         </div>
+
+                        {% if test_options['http-authentication'] is defined %}
+                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/HttpAuthentication:http-authentication.html.twig' %}
+                        {% endif %}
                     </form>
 
                     {% if is_owner and is_public_user_test == false %}

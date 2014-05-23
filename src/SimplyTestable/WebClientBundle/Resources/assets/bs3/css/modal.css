@@ -1,13 +1,9 @@
-.modal {
-    top: 160px;
-}
-
 .modal-content {
     display:none;
 }
 
 .modal-header h3 {
-   margin:0;
+   margin:0 0 10px 0;
 }
 
 @media (max-width: 768px) {

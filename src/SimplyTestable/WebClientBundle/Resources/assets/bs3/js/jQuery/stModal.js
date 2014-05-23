@@ -8,7 +8,7 @@
             $('.modal-content', modal).css({
                 'display':'block'
             });
-            var controlLink = $('<a href="#" class="expandable-control-action">' + modalControl.html() + ' <i class="fa fa-caret-right"></i></a>');
+            var controlLink = $('<a href="#" data-for="' + modalControl.attr('data-for') + '">' + modalControl.html() + ' <i class="fa fa-caret-right"></i></a>');
             modalControl.replaceWith(controlLink);
 
             controlLink.click(function (event) {

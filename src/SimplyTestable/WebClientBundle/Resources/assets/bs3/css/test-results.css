@@ -263,3 +263,7 @@ div.history {
 div.history-with-owner {
     top: 140px;
 }
+
+.action-badge {
+    margin-bottom: 20px;
+}

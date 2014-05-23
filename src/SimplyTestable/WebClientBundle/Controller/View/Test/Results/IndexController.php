@@ -60,7 +60,21 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
             'tasks' => $this->getTasksGroupedByUrl($tasks),
             'filtered_task_counts' => $this->getFilteredTaskCounts($test, $this->getRequestType()),
-            'domain_test_count' => $this->getTestService()->getRemoteTestService()->getFinishedCount($test->getWebsite())
+            'domain_test_count' => $this->getTestService()->getRemoteTestService()->getFinishedCount($test->getWebsite()),
+            'test_authentication_enabled' => $this->getRemoteTest()->hasParameter('http-auth-username'),
+            'test_cookies_enabled' => $this->getRemoteTest()->hasParameter('cookies'),
+            'test_cookies' => $this->getTestCookies(),
+            'default_css_validation_options' => array(
+                'ignore-warnings' => 1,
+                'vendor-extensions' => 'warn',
+                'ignore-common-cdns' => 1
+            ),
+            'default_js_static_analysis_options' => array(
+                'ignore-common-cdns' => 1,
+                'jslint-option-maxerr' => 50,
+                'jslint-option-indent' => 4,
+                'jslint-option-maxlen' => 256
+            ),
         );
 
         return $this->renderCacheableResponse($viewData);
@@ -268,10 +282,21 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         $this->getTaskCollectionFilterService()->setOutcomeFilter('cancelled');
         $filteredTaskCounts['cancelled'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
 
-//        var_dump($filteredTaskCounts);
-//        exit();
-
         return $filteredTaskCounts;
+    }
+
+
+    private function getTestCookies() {
+        if ($this->getRemoteTest()->hasParameter('cookies')) {
+            return $this->getRemoteTest()->getParameter('cookies');
+        }
+
+        return array(
+            array(
+                'name' => null,
+                'value' => null
+            )
+        );
     }
 
 }

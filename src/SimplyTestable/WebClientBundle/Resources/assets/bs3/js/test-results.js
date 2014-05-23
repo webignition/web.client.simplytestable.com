@@ -51,19 +51,6 @@ $(document).ready(function() {
         $(this).height(maximumProseHeight);
     });
 
-
-//    $('a[data-target=#test-list]').click(function () {
-//        var target = $('#test-list');
-//
-//        $.scrollTo(target, {
-//            'offset':-50
-//        });
-//
-//        window.location.hash = target.attr('id');
-//
-//        return false;
-//    });
-
     if ($(window.location.hash).length) {
         var target = $(window.location.hash);
 
@@ -71,4 +58,5 @@ $(document).ready(function() {
             'offset':-100
         });
     }
+
 });
