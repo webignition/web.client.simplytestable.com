@@ -60,6 +60,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
             'tasks' => $this->getTasksGroupedByUrl($tasks),
             'filtered_task_counts' => $this->getFilteredTaskCounts($test, $this->getRequestType()),
+            'domain_test_count' => $this->getTestService()->getRemoteTestService()->getFinishedCount($test->getWebsite())
         );
 
         return $this->renderCacheableResponse($viewData);

@@ -91,6 +91,13 @@
                         </form>
                     {% endif %}
 
+                    <div class="history {% if is_owner and is_public_user_test == false %}history-with-owner{% endif %}">
+                        <a href="{{ path('view_test_history_index_index', {'filter': test.website}) }}">
+                            {{ domain_test_count }} test{% if domain_test_count != 1%}s{% endif %} for this URL
+                            <i class="fa fa-caret-right"></i>
+                        </a>
+                    </div>
+
                     {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index:summary-stats.html.twig' %}
                     {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index:summary-prose.html.twig' %}
                 </div>

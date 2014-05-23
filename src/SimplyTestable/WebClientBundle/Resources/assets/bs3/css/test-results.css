@@ -253,3 +253,13 @@ a.clear-type .fa {
 .cancelled .meta .state .fa {
     color: #bbb;
 }
+
+div.history {
+    position: absolute;
+    right: 15px;
+    top: 70px;
+}
+
+div.history-with-owner {
+    top: 140px;
+}
