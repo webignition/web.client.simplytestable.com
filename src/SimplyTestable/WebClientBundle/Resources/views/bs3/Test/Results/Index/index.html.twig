@@ -113,7 +113,13 @@
                         {% elseif (filter == 'all') %}
                             <span>{{ type_label }}</span> results
                         {% else %}
-                            <span>{{ type_label }}</span> results {{ filter_label|lower }}
+                            <span>{{ type_label }}</span>
+                            {% if filter == 'skipped' or filter == 'cancelled' %}
+                                tests that were
+                            {% else %}
+                                results
+                            {% endif %}
+                            {{ filter_label|lower }}
                         {% endif %}
                     </h2>
 
@@ -148,14 +154,14 @@
                             </li>
                             {% if filtered_task_counts.skipped > 0 %}
                                 <li class="tasks-skipped {% if (filter == 'skipped') %} active {% endif %}">
-                                    <a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId }) }}?filter=skipped#test-list">
+                                    <a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'skipped', 'type': type }) }}#test-list">
                                         Skipped <span class="badge">{{ filtered_task_counts.skipped }}</span>
                                     </a>
                                 </li>
                             {% endif %}
                             {% if filtered_task_counts.cancelled > 0 %}
                                 <li class="tasks-cancelled {% if (filter == 'cancelled') %} active {% endif %}">
-                                    <a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId }) }}?filter=cancelled#test-list">
+                                    <a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'cancelled', 'type': type }) }}#test-list">
                                         Cancelled <span class="badge">{{ filtered_task_counts.cancelled }}</span>
                                     </a>
                                 </li>
