@@ -200,6 +200,14 @@ class Output {
     public function hasErrors() {
         return $this->getErrorCount() > 0;
     }
+
+
+    /**
+     * @return bool
+     */
+    public function hasIssues() {
+        return $this->hasErrors() || $this->hasWarnings();
+    }
     
     
     /**

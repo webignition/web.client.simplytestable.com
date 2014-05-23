@@ -7,6 +7,11 @@
     border-bottom-right-radius: 7px;
 }
 
+.test-options-set:hover {
+    border-left: 3px solid #ccc;
+    background-color: #e2e2e2;
+}
+
 .test-options-set .collapse-control {
     display:inline-block;
     margin: 0 0 6px 0;

@@ -4,7 +4,7 @@ h1 {
 }
 
 h2 {
-    margin:20px 0;
+    margin:20px 0 60px 0;
     font-size: 28px;
     display: inline-block;
 }
@@ -81,6 +81,10 @@ h2 {
     top: 70px;
 }
 
+ul.nav-tabs {
+    border-bottom: 1px solid #999;
+}
+
 ul.nav-tabs.with-errors {
     border-bottom: 1px solid #d9534f;
 }
@@ -107,61 +111,69 @@ ul.nav-tabs.without-errors li a:hover {
 
 .nav-tabs>li.active>a {
     color: #333;
-    background-color: #ddd;
-    border: 1px solid #ddd;
+    background-color: #fff;
+    border: 1px solid #999;
     border-bottom-color: transparent;
 }
 
 .nav-tabs>li>a:hover,
 .nav-tabs>li>a:focus {
-    background-color: #ddd;
-    border: 1px solid #ddd;
+    /*background-color: #ddd;*/
+    border: 1px solid #999;
     color: #333;
 }
 
 .nav-tabs>li.active>a:hover,
 .nav-tabs>li.active>a:focus {
-    background-color: #ddd;
-    border: 1px solid #ddd;
+    border: 1px solid #999;
 }
 
 .nav-tabs>li.tasks-with-errors>a:hover,
 .nav-tabs>li.tasks-with-errors>a:focus {
     color: #d9534f;
+    border-top-color: #d9534f;
+    border-left-color: #d9534f;
+    border-right-color: #d9534f;
 }
 
 .nav-tabs>li.active.tasks-with-errors>a,
 .nav-tabs>li.active.tasks-with-errors>a:hover,
 .nav-tabs>li.active.tasks-with-errors>a:focus {
-    color: #fff;
-    background-color: #d9534f;
+    color: #d9534f;
     border: 1px solid #d9534f;
+    border-bottom-color: #fff;
 }
 
 .nav-tabs>li.tasks-with-warnings>a:hover,
 .nav-tabs>li.tasks-with-warnings>a:focus {
     color: #428bca;
+    border-top-color: #428bca;
+    border-left-color: #428bca;
+    border-right-color: #428bca;
 }
 
 .nav-tabs>li.active.tasks-with-warnings>a,
 .nav-tabs>li.active.tasks-with-warnings>a:hover,
 .nav-tabs>li.active.tasks-with-warnings>a:focus {
-    color: #fff;
-    background-color: #428bca;
+    color: #428bca;
     border: 1px solid #428bca;
+    border-bottom-color: #fff;
 }
 
 .nav-tabs>li.tasks-without-errors>a:hover,
 .nav-tabs>li.tasks-without-errors>a:focus {
     color: #5cb85c;
+    border-top-color: #5cb85c;
+    border-left-color: #5cb85c;
+    border-right-color: #5cb85c;
 }
 
 .nav-tabs>li.active.tasks-without-errors>a,
 .nav-tabs>li.active.tasks-without-errors>a:hover,
 .nav-tabs>li.active.tasks-without-errors>a:focus {
-    color: #fff;
-    background-color: #5cb85c;
+    color: #5cb85c;
     border: 1px solid #5cb85c;
+    border-bottom-color: #fff;
 }
 
 a.clear-type,
@@ -177,4 +189,55 @@ a.clear-type:focus {
 
 a.clear-type .fa {
     opacity: 0.6;
+}
+
+.tasks {
+    margin-top: 20px;
+}
+
+.task-set {
+    margin-bottom: 20px;
+}
+
+.task-set .url {
+    whitespace: nowrap;
+}
+
+.task {
+    margin: 10px 0 10px 15px;
+}
+
+.task .meta .type {
+    width: 110px;
+    display: inline-block;
+    opacity: 0.6;
+    color: #333;
+}
+
+.task .meta .label {
+    font-weight: normal;
+    font-size: 12px;
+    margin-right: 8px;
+    padding: 3px 6px;
+}
+
+.task .meta:hover {
+    text-decoration: none;
+}
+
+.task a.meta:hover .type {
+    opacity: 1;
+}
+
+.task .meta:hover .label-danger {
+    background-color: #c9302c;
+}
+
+.task .meta:hover .label-primary {
+    background-color: #3071a9;
+}
+
+.completed .meta .fa-bar-chart-o,
+.completed .meta .fa-check {
+    color: #5cb85c;
 }

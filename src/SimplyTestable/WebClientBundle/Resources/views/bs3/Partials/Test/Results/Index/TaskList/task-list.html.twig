@@ -1,0 +1,68 @@
+{% set state_to_icon_map = {
+    'completed':'bar-chart-o',
+    'queued':'cog',
+    'queued-for-assignment':'cog',
+    'in-progress':'cogs',
+    'skipped':'random',
+    'cancelled':'circle-dot-o',
+    'failed':'ban',
+    'failed-no-retry-availabl':'remove-circle',
+    'failed-retry-available':'remove-circle',
+    'failed-retry-limit-reached':'remove-circle',
+} %}
+
+{% set ignore_results_states = ['skipped', 'cancelled'] %}
+
+<ul class="tasks list-unstyled">
+    {% for url,taskSet in tasks %}
+        <li class="task-set">
+            <span class="url">{{ url }}<span class="fade"></span></span>
+            {% for task in taskSet %}
+                <div class="task {{ task.state }}" id="task{{ task.id }}">
+                    {% set use_link = task.hasOutput and task.state not in ignore_results_states and task.output.hasErrors or task.output.hasWarnings %}
+
+                    {% if use_link %}
+                        <a class="meta" href="{{ path('view_test_task_results_index_index', { 'website': test.website, 'test_id': test.testId, 'task_id':task.taskId }) }}">
+                    {% else %}
+                        <span class="meta">
+                    {% endif %}
+
+                    <span class="state">
+                        <i class="fa fa-fw fa-{{ state_to_icon_map[task.state] }}"></i>
+                    </span>
+
+                    <span class="type">{{ task.type }}</span>
+
+                    {% if task.hasOutput %}
+
+                        {% if task.output.hasIssues %}
+                            {% if task.output.hasErrors %}
+                                <span class="label label-danger">
+                                    {{ task.output.errorCount }}
+                                    error{% if task.output.errorCount != 1 %}s{% endif %}
+                                    <i class="fa fa-caret-right"></i>
+                                </span>
+                            {% endif %}
+
+                            {% if task.output.hasWarnings %}
+                                <span class="label label-primary">
+                                    {{ task.output.warningCount }}
+                                    warning{% if task.output.warningCount != 1 %}s{% endif %}
+                                    <i class="fa fa-caret-right"></i>
+                                </span>
+                            {% endif %}
+                        {% else %}
+                            <i class="fa fa-check"></i>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if not use_link %}
+                        </span>
+                    {% else %}
+                        </a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </li>
+    {% endfor %}
+</ul>
