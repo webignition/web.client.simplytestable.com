@@ -73,3 +73,9 @@ input.inline-short {
         margin-left: -6%;
     }
 }
+
+@media (min-width: 768px) {
+    .jslint-predef {
+        width: 100%;
+    }
+}
