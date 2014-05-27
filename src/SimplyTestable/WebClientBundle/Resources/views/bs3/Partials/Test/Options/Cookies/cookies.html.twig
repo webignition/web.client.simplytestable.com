@@ -43,7 +43,7 @@
                                        class="form-control"
                                        type="text"
                                        placeholder="Cookie value"
-                                       value="{{ cookie.value }}">
+                                       value="{{ cookie.value is defined ? cookie.value : '' }}">
                             </td>
                             <td class="remove">
                             </td>
