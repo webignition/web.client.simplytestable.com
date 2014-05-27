@@ -104,9 +104,6 @@ $(document).ready(function() {
 
             $('.fa', control).remove();
             control.append(' <i class="fa fa-caret-up"></i>');
-
-            event.preventDefault();
-            event.stopPropagation();
         });
 
         detail.on('hidden.bs.collapse', function (event) {
@@ -115,9 +112,6 @@ $(document).ready(function() {
 
             $('.fa', control).remove();
             control.append(' <i class="fa fa-caret-down"></i>');
-
-            event.preventDefault();
-            event.stopPropagation();
         });
     });
 
@@ -157,62 +151,27 @@ $(document).ready(function() {
     }
 
     $('#test-options').on('show.bs.collapse', function (event) {
-        if ($(event.target).attr('id') !== 'test-options') {
-            return;
+        if (getDeviceSize() === 'sm') {
+            $('.side-action').hide();
         }
-
-        if (getDeviceSize() !== 'sm') {
-            return;
-        }
-
-        $('.side-action').hide();
     });
 
     $('#test-options').on('shown.bs.collapse', function (event) {
-        if ($(event.target).attr('id') !== 'test-options') {
-            return;
+        if (getDeviceSize() === 'sm') {
+            setSideActionElementsAtSameOffsetAsTestSummary();
         }
-
-        if (getDeviceSize() !== 'sm') {
-            return;
-        }
-
-        setSideActionElementsAtSameOffsetAsTestSummary();
     });
 
     $('#test-options').on('hide.bs.collapse', function (event) {
-        if ($(event.target).attr('id') !== 'test-options') {
-            return;
+        if (getDeviceSize() === 'sm') {
+            $('.side-action').hide();
         }
-
-        if (getDeviceSize() !== 'sm') {
-            return;
-        }
-
-        $('.side-action').hide();
     });
 
     $('#test-options').on('hidden.bs.collapse', function (event) {
-        if ($(event.target).attr('id') !== 'test-options') {
-            return;
+        if (getDeviceSize() === 'sm') {
+            setSideActionElementsAtSameOffsetAsTestSummary();
         }
-
-        if (getDeviceSize() !== 'sm') {
-            return;
-        }
-
-        $('.side-action').each(function () {
-            var item = $(this);
-
-            item.show().css({
-                'visibility':'hidden'
-            })
-
-            item.css({
-                'top': sideActionTopDefaults[item.attr('id')],
-                'visibility':'visible'
-            });
-        });
     });
 
 });
