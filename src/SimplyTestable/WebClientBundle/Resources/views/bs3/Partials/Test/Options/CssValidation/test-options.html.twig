@@ -17,7 +17,7 @@
             </span>
             <div id="css-validation-options-advanced" class="collapse">
                 <div class="row">
-                    <div class="col-lg-2 col-md-2 css-validator-option-set validator-option-set css-general">
+                    <div class="col-lg-2 col-md-2 col-sm-6 css-validator-option-set validator-option-set css-general">
                         <h3>Handling warnings:</h3>
 
                         {{ form.labelled_checkbox(
@@ -28,7 +28,7 @@
                             is_disabled)
                         }}
                     </div>
-                    <div class="col-lg-3 col-md-3 css-validator-option-set validator-option-set css-vendor-extensions">
+                    <div class="col-lg-3 col-md-3 col-sm-6 css-validator-option-set validator-option-set css-vendor-extensions">
                         <h3>Vendor extension issues:</h3>
 
                         {{ form.labelled_radio_group(
@@ -49,7 +49,7 @@
                             is_disabled
                         ) }}
                     </div>
-                    <div class="col-lg-3 col-md-3 css-validator-option-set validator-option-set css-common-cdn-domains">
+                    <div class="col-lg-3 col-md-3 col-sm-6 css-validator-option-set validator-option-set css-common-cdn-domains">
                         <h3>Common <a href="http://en.wikipedia.org/wiki/Content_delivery_network">CDN</a> domains:</h3>
 
                         <label class="checkbox ignore-common-cdn-domains {% if (is_disabled) and (test_options['css-validation-ignore-common-cdns'] is not defined or test_options['css-validation-ignore-common-cdns'] == 0) %}disabled{% endif %}">
@@ -64,7 +64,7 @@
                             {% endif %}
                         </label>
                     </div>
-                    <div class="col-lg-4 col-md-4 css-validator-option-set validator-option-set css-domains-to-ignore">
+                    <div class="col-lg-4 col-md-4 col-sm-6 css-validator-option-set validator-option-set css-domains-to-ignore">
                         <h3>Linked CSS domains to ignore:</h3>
 
                         <span class="help-block">
