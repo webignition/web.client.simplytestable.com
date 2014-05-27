@@ -188,7 +188,7 @@
                     {% endif %}
 
                     {% if tasks is empty %}
-                        none
+                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index/TaskList:none.html.twig' %}
                     {% else %}
                         {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index/TaskList:task-list.html.twig' %}
                     {% endif %}
