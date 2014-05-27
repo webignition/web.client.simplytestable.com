@@ -48,6 +48,11 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
+                    <span id="device-size-lg"></span>
+                    <span id="device-size-md"></span>
+                    <span id="device-size-sm"></span>
+                    <span id="device-size-xs"></span>
+
                     <h1>
                         Results for <span id="test-url" title="{{website.raw}}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-50.html.twig' with {'url': website} %}</span>
                         <span id="test-id">(#{{ test.testId }})</span>
@@ -73,7 +78,7 @@
 
                     <form id="retest-form" role="form" method="post" action="{{ path('test_start') }}">
                         <input type="hidden" name="website" value="{{ test.website }}" />
-                        <button type="submit" class="btn btn-default btn-significant">
+                        <button id="retest-button" type="submit" class="btn btn-default btn-significant side-action" data-offset="0">
                             <i class="fa fa-refresh"></i>
                             Re-test
                             <span>Using selected settings</span>
@@ -99,7 +104,7 @@
                         {% set description = (is_public) ? 'Make this test private' : 'Make this test public' %}
 
                         <form id="lock-unlock" action="{{ path(route, { 'website': test.website, 'test_id': test.testId }) }}">
-                            <button type="submit" class="btn btn-default btn-significant">
+                            <button id="lock-unlock-button" type="submit" class="btn btn-default btn-significant side-action" data-offset="70">
                                 <i class="fa fa-{{ icon }}"></i>
                                 {{ label }}
                                 <span>{{ description }}</span>
@@ -107,7 +112,7 @@
                         </form>
                     {% endif %}
 
-                    <div class="history {% if is_owner and is_public_user_test == false %}history-with-owner{% endif %}">
+                    <div id="history-link-container" class="history {% if is_owner and is_public_user_test == false %}history-with-owner{% endif %} side-action" data-offset="{{ is_owner and is_public_user_test == false ? '140' : '70' }}">
                         <a href="{{ path('view_test_history_index_index', {'filter': test.website}) }}">
                             {{ domain_test_count }} test{% if domain_test_count != 1%}s{% endif %} for this URL
                             <i class="fa fa-caret-right"></i>

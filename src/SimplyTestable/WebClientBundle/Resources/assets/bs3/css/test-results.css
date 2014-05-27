@@ -269,6 +269,11 @@ div.history-with-owner {
 }
 
 @media (max-width: 992px) {
+    /*h1 {*/
+    /*white-space: normal;*/
+    /*word-wrap: break-word;*/
+    /*}*/
+
     .btn-significant {
         top: 145px;
     }
@@ -285,4 +290,77 @@ div.history-with-owner {
         top: 285px;
     }
 
+}
+
+@media (max-width: 1200px) {
+    #device-size-lg {
+        visibility: hidden;
+    }
+
+    #device-size-md {
+        visibility: visible;
+    }
+
+    #device-size-sm {
+        visibility: hidden;
+    }
+
+    #device-size-xs {
+        visibility: hidden;
+    }
+}
+
+
+@media (max-width: 992px) {
+    #device-size-lg {
+        visibility: hidden;
+    }
+
+    #device-size-md {
+        visibility: hidden;
+    }
+
+    #device-size-sm {
+        visibility: visible;
+    }
+
+    #device-size-xs {
+        visibility: hidden;
+    }
+}
+
+@media (max-width: 768px) {
+    #device-size-lg {
+        visibility: hidden;
+    }
+
+    #device-size-md {
+        visibility: hidden;
+    }
+
+    #device-size-sm {
+        visibility: hidden;
+    }
+
+    #device-size-xs {
+        visibility: visible;
+    }
+}
+
+@media (min-width: 1200px) {
+    #device-size-lg {
+        visibility: visible;
+    }
+
+    #device-size-md {
+        visibility: hidden;
+    }
+
+    #device-size-sm {
+        visibility: hidden;
+    }
+
+    #device-size-xs {
+        visibility: hidden;
+    }
 }
