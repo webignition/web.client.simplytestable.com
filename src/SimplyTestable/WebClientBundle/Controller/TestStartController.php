@@ -11,6 +11,8 @@ class TestStartController extends TestController
     const HTTP_AUTH_FEATURE_NAME = 'http-authentication';    
     const HTTP_AUTH_FEATURE_USERNAME_KEY = 'http-auth-username';
     const HTTP_AUTH_FEATURE_PASSWORD_KEY = 'http-auth-password';
+    const COOKIES_FEATURE_NAME = 'cookies';
+
     
     /**
      *
@@ -58,6 +60,25 @@ class TestStartController extends TestController
                 $testOptions->removeFeatureOptions(self::HTTP_AUTH_FEATURE_NAME);
                 $httpAuthFeatureOptions = $testOptions->getFeatureOptions(self::HTTP_AUTH_FEATURE_NAME);
             }            
+        }
+
+        if ($testOptions->hasFeatureOptions(self::COOKIES_FEATURE_NAME)) {
+            $cookieFeatureOptions = $testOptions->getFeatureOptions(self::COOKIES_FEATURE_NAME);
+            $cookies = $cookieFeatureOptions['cookies'];
+
+            foreach ($cookies as $index => $cookie) {
+                foreach ($cookie as $key => $value) {
+                    if (is_null($value)) {
+                        $cookie[$key] = '';
+                    }
+                }
+
+                $cookies[$index] = $cookie;
+            }
+
+            $cookieFeatureOptions['cookies'] = $cookies;
+
+            $testOptions->setFeatureOptions(self::COOKIES_FEATURE_NAME, $cookieFeatureOptions);
         }
 
         if (!$this->hasWebsite() && $this->isTestStartRequest()) {
