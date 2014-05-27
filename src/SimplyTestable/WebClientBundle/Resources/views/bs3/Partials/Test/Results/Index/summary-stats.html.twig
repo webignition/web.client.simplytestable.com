@@ -1,13 +1,17 @@
 <div class="summary-stats">
-    {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-    with { 'count': test.errorCount, 'name':'error', 'anchor': '?filter=with-errors#test-list' }
-    %}
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-8">
+            {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+            with { 'count': test.errorCount, 'name':'error', 'anchor': '?filter=with-errors#test-list' }
+            %}
 
-    {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-    with { 'count': test.warningCount, 'negative':'primary', 'name':'warning', 'anchor': '?filter=with-warnings#test-list' }
-    %}
+            {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+            with { 'count': test.warningCount, 'negative':'primary', 'name':'warning', 'anchor': '?filter=with-warnings#test-list' }
+            %}
 
-    {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-negative.html.twig'
-    with { 'count': remote_test.errorfreetaskcount, 'name':'test', 'name_suffix':' without errors', 'positive': 'danger', 'negative': 'success', 'anchor': '?filter=without-errors#test-list' }
-    %}
+            {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-negative.html.twig'
+            with { 'count': remote_test.errorfreetaskcount, 'name':'test', 'name_suffix':' without errors', 'positive': 'danger', 'negative': 'success', 'anchor': '?filter=without-errors#test-list' }
+            %}
+        </div>
+    </div>
 </div>
