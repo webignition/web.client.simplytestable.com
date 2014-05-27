@@ -17,18 +17,12 @@ $(document).ready(function() {
         }
     }
 
-    var sideActionTopDefaults = {};
+    var setSideActionElementsAtSameOffsetAsTestSummary = function (additionalOffset) {
+        if (additionalOffset === undefined) {
+            additionalOffset = 15;
+        }
 
-    var storeSideActionTopDefaults = function () {
-        $('.side-action').each(function () {
-            var item = $(this);
-
-            sideActionTopDefaults[item.attr('id')] = item.css('top');
-        });
-    };
-
-    var setSideActionElementsAtSameOffsetAsTestSummary = function () {
-        var summaryStatsOffset = $('.summary-stats').offset().top;
+        var summaryStatsTop = $('.summary-stats').position().top
 
         $('.side-action').each(function () {
             var item = $(this);
@@ -36,57 +30,30 @@ $(document).ready(function() {
                 'visibility':'hidden'
             });
 
-            var offset = item.offset();
-            var diff = summaryStatsOffset + parseInt(item.attr('data-offset'), 10) - 147;
+            var newOffset = summaryStatsTop + parseInt(item.attr('data-offset'), 10) + additionalOffset;
 
             item.css({
-                'top':diff + 'px',
+                'top':newOffset + 'px',
                 'visibility':'visible'
             });
         });
     };
 
-    storeSideActionTopDefaults();
+    if (['lg', 'md'].indexOf(getDeviceSize()) !== -1) {
+        setSideActionElementsAtSameOffsetAsTestSummary(-90);
+    }
+
+    if (getDeviceSize() === 'sm') {
+        setSideActionElementsAtSameOffsetAsTestSummary();
+    }
 
     $( window ).resize(function() {
-        if (getDeviceSize() === 'lg' || getDeviceSize() === 'md') {
-            $($('.side-action').get(0)).css({
-                'top':'0px'
-            });
-
-            $($('.side-action').get(1)).css({
-                'top':'70px'
-            });
-
-            if ($('.side-action').length === 3) {
-                $($('.side-action').get(2)).css({
-                    'top':'140px'
-                });
-            }
+        if (['lg', 'md'].indexOf(getDeviceSize()) !== -1) {
+            setSideActionElementsAtSameOffsetAsTestSummary(-90);
         }
 
         if (getDeviceSize() === 'sm') {
-            $($('.side-action').get(0)).css({
-                'top':'145px'
-            });
-
-            $($('.side-action').get(1)).css({
-                'top':'215px'
-            });
-
-            if ($('.side-action').length === 3) {
-                $($('.side-action').get(2)).css({
-                    'top':'285px'
-                });
-            }
-        }
-
-        storeSideActionTopDefaults();
-
-        if (getDeviceSize() === 'sm') {
-            if ($('#test-options.collapse.in').length) {
-                setSideActionElementsAtSameOffsetAsTestSummary();
-            }
+            setSideActionElementsAtSameOffsetAsTestSummary();
         }
     });
 
@@ -166,6 +133,34 @@ $(document).ready(function() {
     });
 
     $('#test-options').on('hidden.bs.collapse', function (event) {
+        if (getDeviceSize() === 'sm') {
+            setSideActionElementsAtSameOffsetAsTestSummary();
+        }
+    });
+
+    if ($('#test-url').text().indexOf('…') !== -1) {
+        $('h1').addClass('abridged').addClass('is-out');
+    }
+
+    $('h1').click(function () {
+        var url = $('#test-url');
+        var heading = $('h1');
+
+        if (heading.is('.abridged')) {
+            if (heading.is('.is-out')) {
+                heading.attr('data-abridged', url.text());
+                url.text(url.attr('title'));
+                heading.removeClass('is-out').addClass('is-in');
+            } else {
+                url.text(heading.attr('data-abridged'));
+                heading.removeClass('is-in').addClass('is-out');
+            }
+        }
+
+        if (['lg', 'md'].indexOf(getDeviceSize()) !== -1) {
+            setSideActionElementsAtSameOffsetAsTestSummary(-90);
+        }
+
         if (getDeviceSize() === 'sm') {
             setSideActionElementsAtSameOffsetAsTestSummary();
         }

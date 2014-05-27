@@ -73,6 +73,7 @@ abstract class ViewController extends BaseViewController {
                 'schemeless' => array(
                     'raw' => $utf8Schemeless,
                     'truncated_40' => $utf8SchemelessTruncated_40,
+                    'truncated_50' => $utf8SchemelessTruncated_50,
                     'truncated_64' => $utf8SchemelessTruncated_64,
                     'is_truncated_40' => ($utf8Schemeless != $utf8SchemelessTruncated_40),
                     'is_truncated_50' => ($utf8Schemeless != $utf8SchemelessTruncated_50),
