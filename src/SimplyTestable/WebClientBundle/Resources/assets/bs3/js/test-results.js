@@ -49,9 +49,6 @@ $(document).ready(function() {
     storeSideActionTopDefaults();
 
     $( window ).resize(function() {
-
-        console.log(getDeviceSize());
-
         if (getDeviceSize() === 'lg' || getDeviceSize() === 'md') {
             $($('.side-action').get(0)).css({
                 'top':'0px'
