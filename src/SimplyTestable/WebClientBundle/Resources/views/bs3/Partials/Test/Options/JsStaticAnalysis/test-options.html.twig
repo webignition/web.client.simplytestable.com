@@ -18,7 +18,7 @@
             <div id="js-static-analysis-options-advanced" class="collapse">
 
                 <div class="row">
-                    <div class="col-lg-3 validator-option-set js-static-analysis-common-cdn-domains">
+                    <div class="col-lg-3 col-md-4 validator-option-set js-static-analysis-common-cdn-domains">
                         <h3>Common <a href="http://en.wikipedia.org/wiki/Content_delivery_network">CDN</a> domains:</h3>
 
                         <label class="checkbox ignore-common-cdn-domains {% if (is_disabled) and test_options['js-static-analysis-ignore-common-cdns'] is not defined or (test_options['js-static-analysis-ignore-common-cdns'] is defined and test_options['js-static-analysis-ignore-common-cdns'] == 0) %}disabled{% endif %}">
@@ -33,7 +33,7 @@
                             {% endif %}
                         </label>
                     </div>
-                    <div class="col-lg-4 css-validator-option-set validator-option-set css-domains-to-ignore">
+                    <div class="col-lg-4 col-md-5 css-validator-option-set validator-option-set css-domains-to-ignore">
                         <h3>Linked JavaScript domains to ignore:</h3>
 
                     <span class="help-block">
@@ -58,7 +58,7 @@
                                 <div class="col-lg-12 jslint-option-set-group">
                                     <h3 class="snug-heading">Warn:</h3>
                                     <div class="row">
-                                        <div class="col-lg-3 jslint-option-set">
+                                        <div class="col-lg-3 col-md-3 jslint-option-set">
                                             {{ form.labelled_checkbox('About unused parameters', 'js-static-analysis-jslint-option-unparam', test_options, 'unparam', is_disabled) }}
                                             {{ form.labelled_checkbox('When <code>continue</code> is used', 'js-static-analysis-jslint-option-continue', test_options, 'continue', is_disabled) }}
                                             {{ form.labelled_checkbox('About <code>debugger</code> operations', 'js-static-analysis-jslint-option-debug', test_options, 'debug', is_disabled) }}
@@ -66,14 +66,14 @@
                                             {{ form.labelled_checkbox('About unfiltered <code>for &hellip; in</code>', 'js-static-analysis-jslint-option-forin', test_options, 'forin', is_disabled) }}
 
                                         </div>
-                                        <div class="col-lg-4 jslint-option-set">
+                                        <div class="col-lg-4 col-md-4 jslint-option-set">
                                             {{ form.labelled_checkbox('When not using dot notation to access properties', 'js-static-analysis-jslint-option-sub', test_options, 'sub', is_disabled) }}
                                             {{ form.labelled_checkbox('When bitwise operators are used', 'js-static-analysis-jslint-option-bitwise', test_options, 'bitwise', is_disabled) }}
                                             {{ form.labelled_checkbox('About dangling <code>_</code> in identifiers', 'js-static-analysis-jslint-option-nomen', test_options, 'nomen', is_disabled) }}
                                             {{ form.labelled_checkbox('About <code>++</code> and <code>--</code> operations', 'js-static-analysis-jslint-option-plusplus', test_options, 'plusplus', is_disabled) }}
                                             {{ form.labelled_checkbox('When uncapitalised constructors are used', 'js-static-analysis-jslint-option-newcap', test_options, 'newcap', is_disabled) }}
                                         </div>
-                                        <div class="col-lg-5 jslint-option-set">
+                                        <div class="col-lg-5 col-md-5 jslint-option-set">
                                             {{ form.labelled_checkbox('When code is not in strict mode (<code>\'use strict\';</code>)', 'js-static-analysis-jslint-option-sloppy', test_options, 'sloppy', is_disabled) }}
                                             {{ form.labelled_checkbox('About blocking <code>&hellip;Sync</code> methods', 'js-static-analysis-jslint-option-stupid', test_options, 'stupid', is_disabled) }}
                                             {{ form.labelled_checkbox('About multiple var statements per function', 'js-static-analysis-jslint-option-vars', test_options, 'vars', is_disabled) }}
@@ -85,7 +85,7 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-lg-3 jslint-option-set-group">
+                                <div class="col-lg-3 col-md-3 jslint-option-set-group">
                                     <h3 class="snug-heading">Assume:</h3>
                                     <div class="row">
                                         <div class="col-lg-12 jslint-option-set">
@@ -96,7 +96,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-4 jslint-option-set-group jslint-limits">
+                                <div class="col-lg-4 col-md-4 jslint-option-set-group jslint-limits">
                                     <h3 class="snug-heading">Limits:</h3>
                                     <div class="row">
                                         <div class="col-lg-12 inline-short stop-on-errors">
@@ -143,7 +143,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-5 jslint-option-set-group">
+                                <div class="col-lg-5 col-md-5 jslint-option-set-group">
                                     <h3 class="snug-heading">Predefined variable names:</h3>
                                     <textarea class="form-control jslint-predef" {% if (is_disabled) %}disabled{% endif %} name="js-static-analysis-jslint-option-predef" rows="5" {% if (is_enabled) %}placeholder="NamesOfVariables                                            AssumedToBePredefined                                OnePerLine"{% endif %}>{% if test_options['js-static-analysis-jslint-option-predef'] is defined and test_options['js-static-analysis-jslint-option-predef'] != '' %}{{test_options['js-static-analysis-jslint-option-predef']|join('\n')}}{% endif %}</textarea>
                                 </div>
