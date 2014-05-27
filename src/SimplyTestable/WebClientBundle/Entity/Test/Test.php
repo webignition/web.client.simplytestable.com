@@ -566,7 +566,23 @@ class Test {
         }
         
         return $errorCount;
-    }    
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function hasErrors() {
+        return $this->getErrorCount() > 0;
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function hasWarnings() {
+        return $this->getWarningCount() > 0;
+    }
     
     
     /**

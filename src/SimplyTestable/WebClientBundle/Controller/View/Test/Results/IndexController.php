@@ -11,6 +11,11 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner {
 
     /**
+     * @var Test
+     */
+    private $test;
+
+    /**
      *
      * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
      */
@@ -25,9 +30,23 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     }
 
 
+    /**
+     * @return Test
+     */
+    private function getTest() {
+        if (is_null($this->test)) {
+            $this->test = $this->getTestService()->get(
+                $this->getRequest()->attributes->get('website'),
+                $this->getRequest()->attributes->get('test_id')
+            );
+        }
+
+        return $this->test;
+    }
+
+
     public function indexAction($website, $test_id) {
-        $test = $this->getTestService()->get($website, $test_id);
-        $isOwner = $this->getTestService()->getRemoteTestService()->owns($test);
+        $isOwner = $this->getTestService()->getRemoteTestService()->owns($this->getTest());
 
         $this->getTestOptionsAdapter()->setRequestData($this->getRemoteTest()->getOptions());
         $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
@@ -35,18 +54,18 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         $remoteTaskIds = ($this->getRequestFilter() == 'all' && is_null($this->getRequestType()))
             ? null
             : $this->getFilteredTaskCollectionRemoteIds(
-                $test,
+                $this->getTest(),
                 $this->getRequestFilter(),
                 $this->getRequestType()
             );
 
-        $tasks = $this->getTaskService()->getCollection($test, $remoteTaskIds);
+        $tasks = $this->getTaskService()->getCollection($this->getTest(), $remoteTaskIds);
 
         $viewData = array(
             'website' => $this->getUrlViewValues($website),
-            'test' => $test,
+            'test' => $this->getTest(),
             'is_public' => $this->getTestService()->getRemoteTestService()->isPublic(),
-            'is_public_user_test' => $test->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
+            'is_public_user_test' => $this->getTest()->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
             'remote_test' => $this->getRemoteTest(),
             'is_owner' => $isOwner,
             'type' => $this->getRequestType(),
@@ -59,8 +78,8 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
             'tasks' => $this->getTasksGroupedByUrl($tasks),
-            'filtered_task_counts' => $this->getFilteredTaskCounts($test, $this->getRequestType()),
-            'domain_test_count' => $this->getTestService()->getRemoteTestService()->getFinishedCount($test->getWebsite()),
+            'filtered_task_counts' => $this->getFilteredTaskCounts($this->getTest(), $this->getRequestType()),
+            'domain_test_count' => $this->getTestService()->getRemoteTestService()->getFinishedCount($this->getTest()->getWebsite()),
             'test_authentication_enabled' => $this->getRemoteTest()->hasParameter('http-auth-username'),
             'test_cookies_enabled' => $this->getRemoteTest()->hasParameter('cookies'),
             'test_cookies' => $this->getTestCookies(),
@@ -113,13 +132,28 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
      */
     private function getRequestFilter() {
         if (!$this->getRequest()->query->has('filter')) {
-            return 'with-errors';
+            return $this->getDefaultRequestFilter();
         }
 
         $filter = trim($this->getRequest()->query->get('filter'));
-        return ($filter == '') ? 'with-errors' : $filter;
+        return ($filter == '') ? $this->getDefaultRequestFilter() : $filter;
     }
 
+
+    /**
+     * @return string
+     */
+    private function getDefaultRequestFilter() {
+        if ($this->getTest()->hasErrors()) {
+            return 'with-errors';
+        }
+
+        if ($this->getTest()->hasWarnings()) {
+            return 'with-warnings';
+        }
+
+        return 'without-errors';
+    }
 
     /**
      *
