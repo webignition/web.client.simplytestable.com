@@ -11,6 +11,7 @@
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/summary-stats.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-options.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/action-badge.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/cookies-options-modal.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-results.css'
     filter='cssrewrite' %}
     <link rel="stylesheet" href="{{ asset_url }}"/>
@@ -26,6 +27,7 @@
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/modal.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/http-authentication-options-modal.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/cookie-options-modal.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/test-results.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
@@ -69,7 +71,7 @@
                         </span>
                     </p>
 
-                    <form role="form" method="post" action="{{ path('test_start') }}">
+                    <form id="retest-form" role="form" method="post" action="{{ path('test_start') }}">
                         <input type="hidden" name="website" value="{{ test.website }}" />
                         <button type="submit" class="btn btn-default btn-significant">
                             <i class="fa fa-refresh"></i>
@@ -83,6 +85,10 @@
 
                         {% if test_options['http-authentication'] is defined %}
                             {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/HttpAuthentication:http-authentication.html.twig' %}
+                        {% endif %}
+
+                        {% if test_options['cookies'] is defined %}
+                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/Cookies:cookies.html.twig' %}
                         {% endif %}
                     </form>
 

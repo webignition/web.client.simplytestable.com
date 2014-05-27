@@ -10,9 +10,11 @@ $(document).ready(function() {
 
     var closedBy = $('input[name=closed-by]', modal);
 
-    $('input[type=text], input[type=password]', modal).keyup(function (event) {
+    $('input[type=text], input[type=password]', modal).keydown(function (event) {
         if (event.which === 13) {
             $('[data-name=apply]', modal).click();
+            event.preventDefault();
+            event.stopPropagation();
         }
     });
 
