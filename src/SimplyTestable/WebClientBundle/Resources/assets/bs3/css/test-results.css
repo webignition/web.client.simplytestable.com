@@ -360,6 +360,11 @@ div.history-with-owner {
     .side-actions .test-options {
         margin-top: 0;
     }
+
+    .tabs .btn {
+        margin-right: 15px;
+        margin-bottom: 10px;
+    }
 }
 
 @media (max-width: 768px) {

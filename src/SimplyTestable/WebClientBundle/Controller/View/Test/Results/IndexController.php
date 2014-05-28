@@ -46,6 +46,28 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
 
     public function indexAction($website, $test_id) {
+        if ($this->getTest()->getState() == 'failed-no-sitemap') {
+            return $this->redirect($this->generateUrl('view_test_results_failednourlsdetected_index_index', array(
+                'website' => $website,
+                'test_id' => $test_id
+            ), true));
+        }
+
+        if ($this->getTest()->getState() == 'rejected') {
+            return $this->redirect($this->generateUrl('view_test_results_rejected_index_index', array(
+                'website' => $website,
+                'test_id' => $test_id
+            ), true));
+        }
+
+        if ($this->getTest()->getWebsite() != $website) {
+            return $this->redirect($this->generateUrl('app_test_redirector', array(
+                'website' => $this->getTest()->getWebsite(),
+                'test_id' => $test_id
+            ), true));
+        }
+
+
         $isOwner = $this->getTestService()->getRemoteTestService()->owns($this->getTest());
 
         $this->getTestOptionsAdapter()->setRequestData($this->getRemoteTest()->getOptions());

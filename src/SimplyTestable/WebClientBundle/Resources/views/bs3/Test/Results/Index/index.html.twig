@@ -161,7 +161,7 @@
                     {% endif %}
 
                     {% if tasks is defined %}
-                        <ul class="nav nav-tabs {{ filter }} hidden-xs">
+                        <ul class="nav nav-tabs {{ filter }} hidden-xs hidden-sm    ">
                             <li class="tasks-all {% if (filter == 'all') %} active {% endif %}">
                                 <a data-target="#test-list" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'all', 'type': type }) }}#test-list">
                                     All <span class="badge">{{ filtered_task_counts.all }}</span>
@@ -202,7 +202,7 @@
                             {% endif %}
                         </ul>
 
-                        <div class="hidden-lg hidden-md hidden-sm">
+                        <div class="hidden-lg hidden-md tabs">
                             <a class="btn btn-default" data-target="#test-list" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'all', 'type': type }) }}#test-list">
                                 All <span class="badge">{{ filtered_task_counts.all }}</span>
                             </a>
