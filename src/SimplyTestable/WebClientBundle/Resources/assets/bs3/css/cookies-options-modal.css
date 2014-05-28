@@ -5,3 +5,7 @@
 #cookies-options-modal .remove .fa {
     cursor: pointer;
 }
+
+#cookies-options-modal th {
+    border-bottom: none;
+}

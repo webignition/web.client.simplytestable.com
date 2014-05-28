@@ -14,7 +14,7 @@
 }
 
 .summary-stats .label .count {
-
+    vertical-align: middle;
 }
 
 .summary-stats .label .name {
@@ -25,6 +25,7 @@
     font-size: 20px;
     line-height: 20px;
     vertical-align: text-bottom;
+    margin-left: 4px;
 }
 
 .summary-stats .label .icon .fa {

@@ -37,44 +37,30 @@ h2 {
 
 .summary-stats {
     margin-top: 0;
-    /*padding-top: 15px;*/
 }
 
 .summary-stats .label {
     display: block;
-    text-align: left;
-    margin-bottom: 10px;
-}
-
-.summary-prose-section {
-    margin-top: 20px;
-    padding-left: 15px;
-    display: inline-block;
-    margin-right: 20px;
-    vertical-align: top;
-}
-
-.summary-prose-section ul,
-.summary-prose-section li {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.summary-prose-section .badge {
     text-align: right;
+    margin-bottom: 10px;
+    width: 100%;
+    padding-right: 40px;
+    position: relative;
 }
 
-.summary-prose .errors {
-    border-left: 3px solid #d9534f;
+.summary-stats .count {
+    display: block;
+    margin-bottom: -10px;
 }
 
-.summary-prose .warnings {
-    border-left: 3px solid #428bca;
+.summary-stats .label .icon {
+    position: absolute;
+    right: 15px;
+    top: 20px;
 }
 
-.task-type-summary {
-    /*padding-top: 15px;*/
+.task-type-summary .item {
+
 }
 
 .task-type-summary .task-type-name {
@@ -82,7 +68,7 @@ h2 {
 }
 
 .task-type-summary .row {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .task-type-summary .badge {
@@ -127,17 +113,16 @@ h2 {
     margin: 10px 0;
 }
 
-.details .collapse-control {
-    display: inline-block;
-    margin-top: 20px;
-}
-
 .side-actions .test-option .icon-primary {
     opacity: 0.6;
 }
 
 .side-actions .test-option .enabled .icon-primary {
     opacity: 1;
+}
+
+.side-actions .test-options {
+    margin-top: 20px;
 }
 
 #test-options {
