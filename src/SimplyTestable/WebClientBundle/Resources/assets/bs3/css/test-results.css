@@ -259,7 +259,7 @@ a.clear-type .fa {
 }
 
 .task-set .url {
-    whitespace: nowrap;
+    white-space: nowrap;
 }
 
 .task {
@@ -325,6 +325,13 @@ div.history-with-owner {
 
 .action-badge {
     margin-bottom: 20px;
+}
+
+@media (max-width: 1200px) {
+    .task-type-summary .multiple  .item {
+        display: block;
+        margin-bottom: 4px;
+    }
 }
 
 @media (max-width: 992px) {
