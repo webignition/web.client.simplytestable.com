@@ -175,25 +175,27 @@
                                     All <span class="badge">{{ filtered_task_counts.all }}</span>
                                 </a>
                             </li>
-                            {% if test.hasErrors %}
+                            {% if filtered_task_counts.with_errors > 0 %}
                             <li class="tasks-with-errors {% if (filter == 'with-errors') %} active {% endif %}">
                                 <a data-target="#test-list" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-errors', 'type': type }) }}#test-list">
                                     With errors <span class="badge alert-danger">{{ filtered_task_counts.with_errors }}</span>
                                 </a>
                             </li>
                             {% endif %}
-                            {% if test.hasWarnings %}
+                            {% if filtered_task_counts.with_warnings > 0 %}
                             <li class="tasks-with-warnings {% if (filter == 'with-warnings') %} active {% endif %}">
                                 <a data-target="#test-list" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-warnings', 'type': type }) }}#test-list">
                                     With warnings <span class="badge alert-info">{{ filtered_task_counts.with_warnings }}</span>
                                 </a>
                             </li>
                             {% endif %}
+                            {% if filtered_task_counts.without_errors > 0 %}
                             <li class="tasks-without-errors {% if (filter == 'without-errors') %} active {% endif %}">
                                 <a data-target="#test-list" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'without-errors', 'type': type }) }}#test-list">
                                     Without errors <span class="badge alert-success">{{ filtered_task_counts.without_errors }}</span>
                                 </a>
                             </li>
+                            {% endif %}
                             {% if filtered_task_counts.skipped > 0 %}
                                 <li class="tasks-skipped {% if (filter == 'skipped') %} active {% endif %}">
                                     <a data-target="#test-list" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'skipped', 'type': type }) }}#test-list">
