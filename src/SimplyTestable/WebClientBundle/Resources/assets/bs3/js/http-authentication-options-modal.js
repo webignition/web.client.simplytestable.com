@@ -56,10 +56,10 @@ $(document).ready(function() {
     modal.on('hidden.bs.modal', function () {
         if (usernameInput.stFormHelper().isEmpty() && passwordInput.stFormHelper().isEmpty()) {
             $('.status', actionBadge).text('not enabled');
-            actionBadge.removeClass('action-badge-enabled');
+            actionBadge.removeClass('enabled');
         } else {
             $('.status', actionBadge).text('enabled');
-            actionBadge.addClass('action-badge-enabled');
+            actionBadge.addClass('enabled');
         }
     });
 

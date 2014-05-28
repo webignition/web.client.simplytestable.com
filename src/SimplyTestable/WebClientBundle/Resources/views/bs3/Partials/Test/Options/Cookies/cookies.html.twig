@@ -1,13 +1,22 @@
-<span id="cookies-action-badge" class="badge action-badge {% if test_cookies_enabled %}action-badge-enabled{% endif %}">
+{#<span id="cookies-action-badge" class="badge action-badge {% if test_cookies_enabled %}action-badge-enabled{% endif %}">#}
+    {#<i class="fa fa-adjust icon-primary"></i>#}
+    {#<span class="action-badge-label">#}
+        {#Custom cookies#}
+        {#<span class="status">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span>#}
+    {#</span>#}
+    {#<span class="modal-control" data-for="cookies-options-modal">#}
+        {#change#}
+    {#</span>#}
+{#</span>#}
+
+<div id="cookies-action-badge">
     <i class="fa fa-adjust icon-primary"></i>
-    <span class="action-badge-label">
-        Custom cookies
-        <span class="status">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span>
-    </span>
-    <span class="modal-control" data-for="cookies-options-modal">
+    Custom cookies
+    <span class="status">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span>
+            <span class="modal-control" data-for="cookies-options-modal">
         change
     </span>
-</span>
+</div>
 
 <div class="modal" id="cookies-options-modal">
     <div class="modal-dialog">

@@ -31,11 +31,20 @@ h2 {
     margin-bottom: 40px;
 }
 
-.summary-stats {
-    margin-top: 0;
-    padding-top: 15px;
+.header .details {
+    margin-top: 30px;
 }
 
+.summary-stats {
+    margin-top: 0;
+    /*padding-top: 15px;*/
+}
+
+.summary-stats .label {
+    display: block;
+    text-align: left;
+    margin-bottom: 10px;
+}
 
 .summary-prose-section {
     margin-top: 20px;
@@ -65,38 +74,85 @@ h2 {
 }
 
 .task-type-summary {
-    margin: 20px 0;
+    /*padding-top: 15px;*/
 }
 
-.task-type-summary .label {
-    color: #888;
-    background-color: #ddd;
-    font-weight: normal;
-    font-size: inherit;
-    margin-right: 10px;
-
+.task-type-summary .task-type-name {
+    text-align: right;
 }
 
-.task-type-summary .available {
-    color: #333;
+.task-type-summary .row {
+    margin-bottom: 10px;
 }
 
-.btn-significant {
-    position: absolute;
-    top: 0;
-    right:15px;
-    width: 160px;
+.task-type-summary .badge {
+    text-align: right;
+}
+
+.task-type-summary .fa-check {
+    color: #5cb85c;
+}
+
+.task-type-summary .badge-errors {
+    color: #fff;
+    background-color: #d9534f;
+}
+
+.task-type-summary a:hover .badge-errors {
+    background-color: #c9302c;
+}
+
+.task-type-summary .badge-success {
+    color: #fff;
+    background-color: #5cb85c;
+}
+
+.task-type-summary .badge-warnings {
+    background-color: #428bca;
+}
+
+.task-type-summary a:hover .badge-warnings {
+    background-color: #3071a9;
+}
+
+.side-actions {
+    text-align: right;
+}
+
+.side-actions .modal {
     text-align: left;
 }
 
-.btn-significant span {
-    display: block;
-    opacity: 0.7;
-    font-size: 12px;
+.side-actions .test-option {
+    margin: 10px 0;
 }
 
-#lock-unlock .btn-significant {
-    top: 70px;
+.details .collapse-control {
+    display: inline-block;
+    margin-top: 20px;
+}
+
+.side-actions .test-option .icon-primary {
+    opacity: 0.6;
+}
+
+.side-actions .test-option .enabled .icon-primary {
+    opacity: 1;
+}
+
+#test-options {
+    margin-top: 30px;
+}
+
+.btn-significant {
+    width: 220px;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.btn-significant span {
+    opacity: 0.7;
+    font-size: 12px;
 }
 
 ul.nav-tabs {
@@ -302,7 +358,26 @@ div.history-with-owner {
     div.history-with-owner {
         top: 285px;
     }
+}
 
+@media (max-width: 768px) {
+    .task-type-summary .label {
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+
+    .task-type-summary .collapse-control {
+        display: block;
+    }
+
+    .header {
+        margin-bottom: 0;
+    }
+
+    a.btn {
+        display: inline-block;
+        margin-bottom: 10px;
+    }
 }
 
 @media (max-width: 1200px) {

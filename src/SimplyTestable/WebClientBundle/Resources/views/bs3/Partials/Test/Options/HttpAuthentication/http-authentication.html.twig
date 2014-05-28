@@ -1,16 +1,14 @@
 {% set has_http_auth_username = remote_test.hasParameter('http-auth-username') and remote_test.parameter('http-auth-username') !='' %}
 {% set has_http_auth_password = remote_test.hasParameter('http-auth-password') and remote_test.parameter('http-auth-password') !='' %}
 
-<span id="http-authentication-action-badge" class="badge action-badge {% if test_authentication_enabled %}action-badge-enabled{% endif %}">
-    <i class="fa fa-lock icon-primary"></i>
-    <span class="action-badge-label">
+<div id="http-authentication-action-badge">
+        <i class="fa fa-lock icon-primary"></i>
         HTTP authentication
         <span class="status">{{ (test_authentication_enabled) ? 'enabled' : 'not enabled' }}</span>
-    </span>
-    <span class="modal-control" data-for="http-authentication-options-modal">
+            <span class="modal-control" data-for="http-authentication-options-modal">
         change
     </span>
-</span>
+</div>
 
 <div class="modal" id="http-authentication-options-modal">
     <div class="modal-dialog">
