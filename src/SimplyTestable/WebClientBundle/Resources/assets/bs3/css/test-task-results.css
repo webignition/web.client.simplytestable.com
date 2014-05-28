@@ -197,6 +197,18 @@ pre.prettyprint {
     margin-top: 40px;
 }
 
+/*.summary-stats .row {*/
+    /*padding-left: 0;*/
+    /*padding-right: 0;*/
+/*}*/
+
+/*.summary-stats .count,*/
+/*.summary-stats .name {*/
+    /*width: auto;*/
+    /*display: inline;*/
+    /*float:none;*/
+/*}*/
+
 @media (min-width: 992px) {
     .issue-list .meta {
         font-family: Menlo, Monaco, Consolas, monospace;

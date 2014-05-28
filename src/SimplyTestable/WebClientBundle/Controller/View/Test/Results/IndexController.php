@@ -67,6 +67,13 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             ), true));
         }
 
+        if (!$this->hasRequestFilter()) {
+            return $this->redirect($this->generateUrl('view_test_results_index_index', array(
+                'website' => $website,
+                'test_id' => $test_id,
+                'filter' => $this->getDefaultRequestFilter()
+            ), true));
+        }
 
         $isOwner = $this->getTestService()->getRemoteTestService()->owns($this->getTest());
 
@@ -159,6 +166,14 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
         $filter = trim($this->getRequest()->query->get('filter'));
         return ($filter == '') ? $this->getDefaultRequestFilter() : $filter;
+    }
+
+
+    /**
+     * @return bool
+     */
+    private function hasRequestFilter() {
+        return $this->getRequest()->query->has('filter');
     }
 
 

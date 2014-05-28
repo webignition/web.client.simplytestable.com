@@ -1,21 +1,21 @@
 $(document).ready(function() {
-    var getDeviceSize = function () {
-        if ($('#device-size-lg').css('visibility') === 'visible') {
-            return 'lg';
-        }
-
-        if ($('#device-size-md').css('visibility') === 'visible') {
-            return 'md';
-        }
-
-        if ($('#device-size-sm').css('visibility') === 'visible') {
-            return 'sm';
-        }
-
-        if ($('#device-size-xs').css('visibility') === 'visible') {
-            return 'xs';
-        }
-    }
+//    var getDeviceSize = function () {
+//        if ($('#device-size-lg').css('visibility') === 'visible') {
+//            return 'lg';
+//        }
+//
+//        if ($('#device-size-md').css('visibility') === 'visible') {
+//            return 'md';
+//        }
+//
+//        if ($('#device-size-sm').css('visibility') === 'visible') {
+//            return 'sm';
+//        }
+//
+//        if ($('#device-size-xs').css('visibility') === 'visible') {
+//            return 'xs';
+//        }
+//    }
 
     $('.collapse-control').each(function () {
         var control = $(this);
@@ -81,6 +81,18 @@ $(document).ready(function() {
 //    $('.summary-prose-section').each(function () {
 //        $(this).height(maximumProseHeight);
 //    });
+
+    $('.summary-stats a').click(function () {
+        var target = $($(this).attr('data-target'));
+
+        $.scrollTo(target, {
+            'offset':-100
+        });
+
+        window.location.hash = target.attr('id');
+
+        return false;
+    });
 
     if ($(window.location.hash).length) {
         var target = $(window.location.hash);
