@@ -57,7 +57,7 @@
                     </p>
 
                     {% if task.state == 'completed' %}
-                        <div class="summary-stats">
+                        <div class="summary-stats hidden-xs hidden-sm">
                             {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
                             with { 'count': task.output.errorCount, 'name':'error', 'anchor': '#errors' }
                             %}
@@ -69,6 +69,22 @@
                             {% if distinct_fixes is defined and distinct_fixes | length > 0 %}
                                 {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
                                 with { 'count': distinct_fixes | length, 'negative':'fixes', 'name':'fix', 'plural_suffix':'es', 'anchor':'#fixes' }
+                                %}
+                            {%  endif %}
+                        </div>
+
+                        <div class="summary-stats hidden-lg hidden-md">
+                            {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+                            with { 'count': task.output.errorCount, 'name':'error', 'anchor': '#errors', 'stacked': true }
+                            %}
+
+                            {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+                            with { 'count': task.output.warningCount, 'negative':'primary', 'name':'warning', 'anchor': '#warnings', 'stacked': true }
+                            %}
+
+                            {% if distinct_fixes is defined and distinct_fixes | length > 0 %}
+                                {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+                                with { 'count': distinct_fixes | length, 'negative':'fixes', 'name':'fix', 'plural_suffix':'es', 'anchor':'#fixes', 'stacked': true }
                                 %}
                             {%  endif %}
                         </div>
