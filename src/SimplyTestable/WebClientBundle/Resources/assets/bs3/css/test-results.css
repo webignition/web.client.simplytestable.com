@@ -42,15 +42,15 @@ h2 {
 .summary-stats .label {
     display: block;
     text-align: right;
-    margin-bottom: 10px;
     width: 100%;
     padding-right: 40px;
     position: relative;
+    margin: 0 0 10px 0;
 }
 
 .summary-stats .count {
     display: block;
-    margin-bottom: -10px;
+    margin-bottom: -6px;
 }
 
 .summary-stats .label .icon {
@@ -110,7 +110,7 @@ h2 {
 }
 
 .side-actions .test-option {
-    margin: 10px 0;
+    margin: 0 0 10px 0;
 }
 
 .side-actions .test-option .icon-primary {
@@ -122,7 +122,7 @@ h2 {
 }
 
 .side-actions .test-options {
-    margin-top: 20px;
+    margin-top: 40px;
 }
 
 #test-options {
@@ -327,7 +327,7 @@ div.history-with-owner {
     margin-bottom: 20px;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1200px) and (min-width: 992px) {
     .task-type-summary .multiple  .item {
         display: block;
         margin-bottom: 4px;
@@ -335,20 +335,30 @@ div.history-with-owner {
 }
 
 @media (max-width: 992px) {
-    .btn-significant {
-        top: 145px;
+    .task-type-summary .multiple  .item {
+        display: block;
+        margin-bottom: 4px;
     }
 
-    #lock-unlock .btn-significant {
-        top: 215px;
+    .summary-stats .count {
+        display: inline;
+        padding-right: 0;
     }
 
-    div.history {
-        top: 215px;
+    .summary-stats .label .name {
+        text-align: left;
     }
 
-    div.history-with-owner {
-        top: 285px;
+    .summary-stats .label .icon {
+        top: 10px;
+    }
+
+    .side-actions {
+        margin-top: 40px;
+    }
+
+    .side-actions .test-options {
+        margin-top: 0;
     }
 }
 
@@ -372,75 +382,75 @@ div.history-with-owner {
     }
 }
 
-@media (max-width: 1200px) {
-    #device-size-lg {
-        visibility: hidden;
-    }
+/*@media (max-width: 1200px) {*/
+    /*#device-size-lg {*/
+        /*visibility: hidden;*/
+    /*}*/
 
-    #device-size-md {
-        visibility: visible;
-    }
+    /*#device-size-md {*/
+        /*visibility: visible;*/
+    /*}*/
 
-    #device-size-sm {
-        visibility: hidden;
-    }
+    /*#device-size-sm {*/
+        /*visibility: hidden;*/
+    /*}*/
 
-    #device-size-xs {
-        visibility: hidden;
-    }
-}
+    /*#device-size-xs {*/
+        /*visibility: hidden;*/
+    /*}*/
+/*}*/
 
 
-@media (max-width: 992px) {
-    #device-size-lg {
-        visibility: hidden;
-    }
+/*@media (max-width: 992px) {*/
+    /*#device-size-lg {*/
+        /*visibility: hidden;*/
+    /*}*/
 
-    #device-size-md {
-        visibility: hidden;
-    }
+    /*#device-size-md {*/
+        /*visibility: hidden;*/
+    /*}*/
 
-    #device-size-sm {
-        visibility: visible;
-    }
+    /*#device-size-sm {*/
+        /*visibility: visible;*/
+    /*}*/
 
-    #device-size-xs {
-        visibility: hidden;
-    }
-}
+    /*#device-size-xs {*/
+        /*visibility: hidden;*/
+    /*}*/
+/*}*/
 
-@media (max-width: 768px) {
-    #device-size-lg {
-        visibility: hidden;
-    }
+/*@media (max-width: 768px) {*/
+    /*#device-size-lg {*/
+        /*visibility: hidden;*/
+    /*}*/
 
-    #device-size-md {
-        visibility: hidden;
-    }
+    /*#device-size-md {*/
+        /*visibility: hidden;*/
+    /*}*/
 
-    #device-size-sm {
-        visibility: hidden;
-    }
+    /*#device-size-sm {*/
+        /*visibility: hidden;*/
+    /*}*/
 
-    #device-size-xs {
-        visibility: visible;
-    }
-}
+    /*#device-size-xs {*/
+        /*visibility: visible;*/
+    /*}*/
+/*}*/
 
-@media (min-width: 1200px) {
-    #device-size-lg {
-        visibility: visible;
-    }
+/*@media (min-width: 1200px) {*/
+    /*#device-size-lg {*/
+        /*visibility: visible;*/
+    /*}*/
 
-    #device-size-md {
-        visibility: hidden;
-    }
+    /*#device-size-md {*/
+        /*visibility: hidden;*/
+    /*}*/
 
-    #device-size-sm {
-        visibility: hidden;
-    }
+    /*#device-size-sm {*/
+        /*visibility: hidden;*/
+    /*}*/
 
-    #device-size-xs {
-        visibility: hidden;
-    }
-}
+    /*#device-size-xs {*/
+        /*visibility: hidden;*/
+    /*}*/
+/*}*/
