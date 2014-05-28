@@ -114,6 +114,11 @@ abstract class BaseTestCase extends WebTestCase {
         $request = $this->createWebRequest();        
         $request->attributes->set('_controller', $controllerClass.'::'.$controllerMethod);
         $request->attributes->set('_route', $routeName);
+
+        foreach ($this->getRequestAttributes() as $key => $value) {
+            $request->attributes->set($key, $value);
+        }
+
         $request->request->add($parameters);
         $request->query->add($query);       
 
@@ -345,6 +350,11 @@ abstract class BaseTestCase extends WebTestCase {
                 $prop->setValue($this, null);
             }
         }
-    }    
+    }
+
+
+    protected function getRequestAttributes() {
+        return array();
+    }
 
 }
