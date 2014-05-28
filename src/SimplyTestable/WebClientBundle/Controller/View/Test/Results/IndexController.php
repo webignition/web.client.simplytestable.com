@@ -129,8 +129,15 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     }
 
     public function getCacheValidatorParameters() {
+        $test = $this->getTest();
+
         return array(
-            'rand' => rand()
+            'website' => $this->getRequest()->attributes->get('website'),
+            'test_id' => $this->getRequest()->attributes->get('test_id'),
+            'is_public' => $this->getTestService()->getRemoteTestService()->isPublic(),
+            'is_public_user_test' => $test->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
+            'type' => $this->getRequestType(),
+            'filter' => $this->getRequestFilter(),
         );
     }
 
