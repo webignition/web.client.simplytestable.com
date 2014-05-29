@@ -219,7 +219,7 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
             $this->client->getCookieJar()->set($cookie);
         }
         
-        $crawler = $this->client->request($method, $url);        
+        $crawler = $this->client->request($method, $url);
         return $crawler;
     }    
     

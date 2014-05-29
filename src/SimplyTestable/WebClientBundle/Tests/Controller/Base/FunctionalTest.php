@@ -15,6 +15,16 @@ abstract class FunctionalTest extends BaseTest {
     private $crawler;
 
 
+    public function testResponseStatusCodeIs200() {
+        $this->getScopedCrawler();
+        $this->assertEquals(
+            200,
+            $this->client->getResponse()->getStatusCode(),
+            'Response is not 200' . "\n" . $this->client->getResponse()
+        );
+    }
+
+
     /**
      *
      * @return \Symfony\Component\DomCrawler\Crawler
