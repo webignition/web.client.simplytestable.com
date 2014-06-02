@@ -2219,11 +2219,6 @@ application.pages = {
                 finishedTestsPreparingController.initialise();
             }
 
-            if ($('body.app-results').length > 0) {
-                testStartFormController = new application.root.testStartFormController();
-                testStartFormController.initialise();
-            }
-
             if ($('body.content').length > 0) {
                 getTwitters('footer-tweet', {
                     id: 'simplytestable',
