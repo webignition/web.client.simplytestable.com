@@ -78,6 +78,13 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             ), true));
         }
 
+        if (!$this->getTestService()->isFinished($this->getTest())) {
+            return $this->redirect($this->generateUrl('app_progress', array(
+                'website' => $this->getTest()->getWebsite(),
+                'test_id' => $test_id
+            ), true));
+        }
+
         if (($this->getRemoteTest()->getTaskCount() - self::RESULTS_PREPARATION_THRESHOLD) > $this->getTest()->getTaskCount()) {
             $urlParameters = array(
                 'website' => $this->getTest()->getWebsite(),
