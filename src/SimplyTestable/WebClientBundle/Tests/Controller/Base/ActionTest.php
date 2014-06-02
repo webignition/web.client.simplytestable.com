@@ -3,13 +3,22 @@
 namespace SimplyTestable\WebClientBundle\Tests\Controller\Base;
 
 abstract class ActionTest extends BaseTest {
-    
+
+    private $expectedControllerExceptionClass = null;
+    private $expectedControllerExceptionCode = null;
+    private $expectedControllerExceptionMessage = null;
     
     /**
      *
      * @var \Symfony\Component\HttpFoundation\Response
      */
     protected $response;
+
+
+    /**
+     * @var \Exception
+     */
+    protected $controllerException;
     
     public function setUp() {
         parent::setUp();
@@ -25,7 +34,50 @@ abstract class ActionTest extends BaseTest {
 
         $this->preCall();
 
-        $this->response = call_user_func_array(array($controller, $this->getActionName()), $this->getActionMethodArguments());
+        try {
+            $this->response = call_user_func_array(array($controller, $this->getActionName()), $this->getActionMethodArguments());
+        } catch (\Exception $e) {
+            if ($this->hasExpectedException()) {
+                $this->controllerException = $e;
+
+                $this->assertInstanceOf($this->expectedControllerExceptionClass, $e);
+
+                if (!is_null($this->expectedControllerExceptionCode)) {
+                    $this->assertEquals($this->expectedControllerExceptionCode, $e->getCode());
+                }
+
+
+                if (!is_null($this->expectedControllerExceptionMessage)) {
+                    $this->assertEquals($this->expectedControllerExceptionMessage, $e->getMessage());
+                }
+
+            } else {
+                throw $e;
+            }
+        }
+    }
+
+
+    /**
+     * @return bool
+     */
+    private function hasExpectedException() {
+        return !is_null($this->expectedControllerExceptionClass);
+    }
+
+
+    protected function setExpectedControllerExceptionClass($class) {
+        $this->expectedControllerExceptionClass = $class;
+    }
+
+
+    protected function setExpectedControllerExceptionCode($code) {
+        $this->expectedControllerExceptionCode = $code;
+    }
+
+
+    protected function setExpectedControllerExceptionMessage($message) {
+        $this->expectedControllerExceptionMessage = $message;
     }
 
 
@@ -52,8 +104,10 @@ abstract class ActionTest extends BaseTest {
         return array();
     }
     
-    public function testResponseStatusCode() {        
-        $this->assertEquals($this->getExpectedResponseStatusCode(), $this->response->getStatusCode());
+    public function testResponseStatusCode() {
+        if ($this->response) {
+            $this->assertEquals($this->getExpectedResponseStatusCode(), $this->response->getStatusCode());
+        }
     }
     
     protected function assertHasCookieNamed($name) {

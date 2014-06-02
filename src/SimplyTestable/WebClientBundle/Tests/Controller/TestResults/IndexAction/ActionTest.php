@@ -16,77 +16,77 @@ abstract class ActionTest extends BaseActionTest {
     }
     
     
-    public function testWithAuthorisedUser() {
-        $this->performActionTest(array(
-            'statusCode' => 200
-        ), array(
-            'methodArguments' => array(
-                'http://example.com/',
-                1                
-            )
-        ));
-    }
-    
-    public function testWithAuthorisedUserWhereTasksNeedToBeRetrieved() {
-        $this->performActionTest(array(
-            'statusCode' => 302,
-            'redirectPath' => '/http://example.com//1/results/preparing/'
-        ), array(
-            'methodArguments' => array(
-                'http://example.com/',
-                1                
-            )
-        ));
-    }    
-    
-    public function testWithUnauthorisedUser() {
-        $this->performActionTest(array(
-            'statusCode' => 302,
-            'redirectPath' => '/signin/'
-        ), array(
-            'methodArguments' => array(
-                'http://example.com/',
-                1                
-            )
-        ));
-    } 
-    
-    public function testWithPublicTestAccessedByNonOwner() {
-        $this->performActionTest(array(
-            'statusCode' => 200
-        ), array(
-            'methodArguments' => array(
-                'http://example.com/',
-                1                
-            )
-        ));
-    }    
-    
-    
-    public function testWithNonExistentTest() {
-        $this->performActionTest(array(
-            'statusCode' => 302,
-            'redirectPath' => '/signin/'
-        ), array(
-            'methodArguments' => array(
-                'http://example.com/',
-                1                
-            )
-        ));
-    }   
-    
-    
-    public function testWithUnfinishedTest() {
-        $this->performActionTest(array(
-            'statusCode' => 302,
-            'redirectPath' => '/http://example.com//1/progress/'
-        ), array(
-            'methodArguments' => array(
-                'http://example.com/',
-                1                
-            )
-        ));
-    } 
+//    public function testWithAuthorisedUser() {
+//        $this->performActionTest(array(
+//            'statusCode' => 200
+//        ), array(
+//            'methodArguments' => array(
+//                'http://example.com/',
+//                1
+//            )
+//        ));
+//    }
+//
+//    public function testWithAuthorisedUserWhereTasksNeedToBeRetrieved() {
+//        $this->performActionTest(array(
+//            'statusCode' => 302,
+//            'redirectPath' => '/http://example.com//1/results/preparing/'
+//        ), array(
+//            'methodArguments' => array(
+//                'http://example.com/',
+//                1
+//            )
+//        ));
+//    }
+//
+//    public function testWithUnauthorisedUser() {
+//        $this->performActionTest(array(
+//            'statusCode' => 302,
+//            'redirectPath' => '/signin/'
+//        ), array(
+//            'methodArguments' => array(
+//                'http://example.com/',
+//                1
+//            )
+//        ));
+//    }
+//
+//    public function testWithPublicTestAccessedByNonOwner() {
+//        $this->performActionTest(array(
+//            'statusCode' => 200
+//        ), array(
+//            'methodArguments' => array(
+//                'http://example.com/',
+//                1
+//            )
+//        ));
+//    }
+//
+//
+//    public function testWithNonExistentTest() {
+//        $this->performActionTest(array(
+//            'statusCode' => 302,
+//            'redirectPath' => '/signin/'
+//        ), array(
+//            'methodArguments' => array(
+//                'http://example.com/',
+//                1
+//            )
+//        ));
+//    }
+//
+//
+//    public function testWithUnfinishedTest() {
+//        $this->performActionTest(array(
+//            'statusCode' => 302,
+//            'redirectPath' => '/http://example.com//1/progress/'
+//        ), array(
+//            'methodArguments' => array(
+//                'http://example.com/',
+//                1
+//            )
+//        ));
+//    }
 
     
     
