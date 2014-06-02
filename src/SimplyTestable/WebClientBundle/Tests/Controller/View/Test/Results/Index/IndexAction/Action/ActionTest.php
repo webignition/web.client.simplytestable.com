@@ -9,12 +9,6 @@ abstract class ActionTest extends BaseActionTest {
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
 
-    /**
-     *
-     * remote test summary
-     */
-
-
     protected function getHttpFixtureItems() {
         return $this->getHttpFixtureContents($this->getFixturesDataPath());
     }
