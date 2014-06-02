@@ -29,8 +29,8 @@ abstract class FunctionalTest extends BaseFunctionalTest {
      *   - is marked as enabled when set on test: done
      *   - is not marked as enabled when not set on test: done
      * custom cookies feature:
-     *   - is marked as enabled when set on test
-     *   - is not marked as enabled when not set on test
+     *   - is marked as enabled when set on test: done
+     *   - is not marked as enabled when not set on test: done
      * summary stats
      */
 
