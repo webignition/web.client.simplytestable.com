@@ -88,19 +88,26 @@
 
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6 col-lg-pull-0 col-md-pull-0 col-sm-pull-0 col-xs-pull-6">
                                             {% if is_owner and is_public_user_test == false %}
-                                            {% set route = (is_public) ? 'app_test_lock' : 'app_test_unlock' %}
-                                            {% set icon = (is_public) ? 'lock' : 'unlock' %}
-                                            {% set label = (is_public) ? 'Lock' : 'Unlock' %}
-                                            {% set description = (is_public) ? 'Make this test private' : 'Make this test public' %}
+                                                {% set route = (is_public) ? 'app_test_lock' : 'app_test_unlock' %}
+                                                {% set icon = (is_public) ? 'lock' : 'unlock' %}
+                                                {% set label = (is_public) ? 'Lock' : 'Unlock' %}
+                                                {% set description = (is_public) ? 'Make this test private' : 'Make this test public' %}
 
-                                            <form id="lock-unlock" action="{{ path(route, { 'website': test.website, 'test_id': test.testId }) }}">
-                                            <button id="lock-unlock-button" type="submit" class="btn btn-default btn-significant side-action" data-offset="70">
-                                            <i class="fa fa-{{ icon }}"></i>
-                                            {{ label }}
-                                            <span>{{ description }}</span>
-                                            </button>
-                                            </form>
+                                                <form id="lock-unlock" action="{{ path(route, { 'website': test.website, 'test_id': test.testId }) }}">
+                                                    <button id="lock-unlock-button" type="submit" class="btn btn-default btn-significant side-action" data-offset="70">
+                                                        <i class="fa fa-{{ icon }}"></i>
+                                                        {{ label }}
+                                                        <span>{{ description }}</span>
+                                                    </button>
+                                                </form>
                                             {% endif %}
+
+                                            <div class="history {% if is_owner and is_public_user_test == false %}history-with-owner{% endif %}">
+                                                <a href="{{ path('view_test_history_index_index', {'filter': test.website}) }}">
+                                                    {{ domain_test_count }} test{% if domain_test_count != 1%}s{% endif %} for this URL
+                                                    <i class="fa fa-caret-right"></i>
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -119,9 +126,9 @@
                                     {% endif %}
 
                                     <span class="collapse-control collapsed link" data-toggle="collapse" data-target="#test-options">
-                                    Choose what to test (and tweak advanced options)
-                                    <i class="fa fa-caret-down"></i>
-                                </span>
+                                        Choose what to test (and tweak advanced options)
+                                        <i class="fa fa-caret-down"></i>
+                                    </span>
                                 </div>
                             </div>
 
