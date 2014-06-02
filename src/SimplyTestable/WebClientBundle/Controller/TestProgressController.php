@@ -233,12 +233,12 @@ class TestProgressController extends TestViewController
         }
         
         $tasksPerMinute = $this->getCoreApplicationStatusService()->getTaskThroughputPerMinute();
-        if ($tasksPerMinute === 0) {
+        if (!$tasksPerMinute) {
             return -1;
         }
         
         $inProgressJobCount = $this->getCoreApplicationStatusService()->getInProgressJobCount();
-        if ($inProgressJobCount === 0) {
+        if (!$inProgressJobCount) {
             return -1;
         }
 
