@@ -66,7 +66,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 //        }
 //
 //        if (!$this->getTestService()->isFinished($this->getTest())) {
-//            return $this->redirect($this->generateUrl('app_progress', array(
+//            return $this->redirect($this->generateUrl('view_test_results_index_index', array(
 //                'website' => $this->getTest()->getWebsite(),
 //                'test_id' => $test_id
 //            ), true));

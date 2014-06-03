@@ -87,7 +87,7 @@ class TestController extends BaseController
             $this->getLogger()->err('TestController::cancelAction:webResourceException ['.$webResourceException->getResponse()->getStatusCode().']');            
             
             return $this->redirect($this->generateUrl(
-                'app_progress',
+                'view_test_progress_index_index',
                 array(
                     'website' => $this->getWebsite(),
                     'test_id' => $this->getTestId()
@@ -98,7 +98,7 @@ class TestController extends BaseController
             $this->getLogger()->err('TestController::cancelAction:curlException ['.$curlException->getErrorNo().']');
             
             return $this->redirect($this->generateUrl(
-                'app_progress',
+                'view_test_progress_index_index',
                 array(
                     'website' => $this->getWebsite(),
                     'test_id' => $this->getTestId()
@@ -118,7 +118,7 @@ class TestController extends BaseController
            
             $this->getTestService()->getRemoteTestService()->cancelByTestProperties($remoteTest->getCrawl()->id, $test->getWebsite());
             return $this->redirect($this->generateUrl(
-                'app_progress',
+                'view_test_progress_index_index',
                 array(
                     'website' => $test->getWebsite(),
                     'test_id' => $test->getTestId()
@@ -135,7 +135,7 @@ class TestController extends BaseController
             $this->getLogger()->err('TestController::cancelAction:webResourceException ['.$webResourceException->getResponse()->getStatusCode().']');            
             
             return $this->redirect($this->generateUrl(
-                'app_progress',
+                'view_test_progress_index_index',
                 array(
                     'website' => $this->getWebsite(),
                     'test_id' => $this->getTestId()
@@ -147,7 +147,7 @@ class TestController extends BaseController
             $this->getLogger()->err('TestController::cancelAction:curlException ['.$curlException->getErrorNo().']');
             
             return $this->redirect($this->generateUrl(
-                'app_progress',
+                'view_test_progress_index_index',
                 array(
                     'website' => $this->getWebsite(),
                     'test_id' => $this->getTestId()
@@ -203,7 +203,7 @@ class TestController extends BaseController
         $response = $this->getTestService()->getRemoteTestService()->retest($test_id, $website);
 
         return $this->redirect($this->generateUrl(
-            'app_progress',
+            'view_test_progress_index_index',
             array(
                 'website' => $response->getContentObject()->website,
                 'test_id' => $response->getContentObject()->id

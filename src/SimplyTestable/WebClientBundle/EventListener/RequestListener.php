@@ -142,7 +142,7 @@ class RequestListener
         }
 
         $redirectParameters = json_encode(array(
-            'route' => 'app_progress',
+            'route' => 'view_test_progress_index_index',
             'parameters' => array(
                 'website' => $website,
                 'test_id' => $test_id

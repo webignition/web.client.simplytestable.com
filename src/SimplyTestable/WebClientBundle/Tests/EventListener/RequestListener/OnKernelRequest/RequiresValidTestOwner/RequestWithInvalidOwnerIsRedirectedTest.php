@@ -19,7 +19,7 @@ class RequestWithInvalidOwnerIsRedirectedTest extends RequiresValidTestOwnerTest
     public function testRedirectIsForSignInPage() {
         $expectedRedirectUrl = $this->container->get('router')->generate('view_user_signin_index', array(
             'redirect' => base64_encode(json_encode(array(
-                'route' => 'app_progress',
+                'route' => 'view_test_progress_index_index',
                 'parameters' => array(
                     'website' => self::WEBSITE,
                     'test_id' => self::TEST_ID

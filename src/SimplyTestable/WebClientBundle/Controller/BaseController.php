@@ -173,7 +173,7 @@ abstract class BaseController extends Controller
      */
     protected function getProgressUrl($website, $test_id) {
         return $this->generateUrl(
-            'app_progress',
+            'view_test_progress_index_index',
             array(
                 'website' => $website,
                 'test_id' => $test_id

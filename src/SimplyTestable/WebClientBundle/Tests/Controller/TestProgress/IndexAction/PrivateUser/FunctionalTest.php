@@ -5,7 +5,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Controller\TestProgress\IndexActi
 use SimplyTestable\WebClientBundle\Tests\Controller\TestProgress\FunctionalTest as BaseFunctionalTest;
 use SimplyTestable\WebClientBundle\Model\User;
 
-class FunctionalTest extends BaseFunctionalTest {    
+abstract class FunctionalTest extends BaseFunctionalTest {
     
     const WEBSITE = 'http://example.com/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz';
     

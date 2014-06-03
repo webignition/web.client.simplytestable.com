@@ -12,7 +12,7 @@ abstract class FunctionalTest extends ControllerFunctionalTest {
     }
 
     protected function getRoute() {
-        return 'app_progress';
+        return 'view_test_progress_index_index';
     }    
     
     protected function getControllerName() {

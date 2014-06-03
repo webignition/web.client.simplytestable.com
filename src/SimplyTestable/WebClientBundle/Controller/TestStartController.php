@@ -94,7 +94,7 @@ class TestStartController extends TestController
         try {
             $jsonResponseObject = $this->getTestService()->getRemoteTestService()->start($this->getTestUrl(), $testOptions, ($this->isFullTest() ? 'full site' : 'single url'))->getContentObject();            
             return $this->redirect($this->generateUrl(
-                'app_progress',
+                'view_test_progress_index_index',
                 array(
                     'website' => $jsonResponseObject->website,
                     'test_id' => $jsonResponseObject->id

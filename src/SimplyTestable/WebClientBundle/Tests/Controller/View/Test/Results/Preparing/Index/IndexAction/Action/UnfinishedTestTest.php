@@ -10,7 +10,7 @@ class UnfinishedTestTest extends ActionTest {
 
     public function testRedirectLocationIsProgressUrl() {
         $this->assertEquals(
-            $this->getCurrentController()->generateUrl('app_progress', $this->getActionMethodArguments(), true),
+            $this->getCurrentController()->generateUrl('view_test_progress_index_index', $this->getActionMethodArguments(), true),
             $this->response->headers->get('location')
         );
     }

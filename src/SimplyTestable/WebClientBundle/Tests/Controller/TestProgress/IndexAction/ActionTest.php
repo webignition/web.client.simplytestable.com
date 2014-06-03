@@ -4,7 +4,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Controller\TestProgress\IndexActi
 
 use SimplyTestable\WebClientBundle\Tests\Controller\TestProgress\ActionTest as BaseActionTest;
 
-class ActionTest extends BaseActionTest {    
+abstract class ActionTest extends BaseActionTest {
     
     public function setUp() {
         parent::setUp();

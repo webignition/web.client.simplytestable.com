@@ -43,7 +43,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
     private function getRedirectParameters() {
         return array(
-            'route' => 'app_progress',
+            'route' => 'view_test_progress_index_index',
             'parameters' => array(
                 'website' => $this->getRequest()->attributes->get('website'),
                 'test_id' => $this->getRequest()->attributes->get('test_id')
