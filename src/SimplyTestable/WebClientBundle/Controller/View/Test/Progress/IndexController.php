@@ -42,8 +42,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
 
     public function indexAction($website, $test_id) {
-        $viewData = array();
-
 //        if ($this->getTest()->getState() == 'failed-no-sitemap') {
 //            return $this->redirect($this->generateUrl('view_test_results_failednourlsdetected_index_index', array(
 //                'website' => $website,
@@ -110,9 +108,9 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 //            ), true));
 //        }
 //
-//        $viewData = array(
-//            'website' => $this->getUrlViewValues($website),
-//            'test' => $this->getTest(),
+        $viewData = array(
+            'website' => $this->getUrlViewValues($website),
+            'test' => $this->getTest(),
 //            'is_public' => $this->getTestService()->getRemoteTestService()->isPublic(),
 //            'is_public_user_test' => $this->getTest()->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
 //            'remote_test' => $this->getRemoteTest(),
@@ -143,7 +141,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 //                'jslint-option-indent' => 4,
 //                'jslint-option-maxlen' => 256
 //            ),
-//        );
+        );
 
         return $this->renderCacheableResponse($viewData);
     }

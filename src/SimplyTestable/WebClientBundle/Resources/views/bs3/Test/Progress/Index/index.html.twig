@@ -1,38 +1,34 @@
 {% extends 'SimplyTestableWebClientBundle::bs3/base.html.twig' %}
 
-{#{% block title %}Results for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}#}
+{% block title %}Testing {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
-{#{% block stylesheets %}#}
-    {#{{ parent() }}#}
+{% block stylesheets %}
+    {{ parent() }}
 
-    {#{% stylesheets#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/css/modal.css'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/css/full-width.css'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/css/summary-stats.css'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-options.css'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/css/action-badge.css'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/css/cookies-options-modal.css'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-results.css'#}
-    {#filter='cssrewrite' %}#}
-    {#<link rel="stylesheet" href="{{ asset_url }}"/>#}
-    {#{% endstylesheets %}#}
-{#{% endblock %}#}
+    {% stylesheets
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/modal.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/full-width.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-options.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/cookies-options-modal.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-progress.css'
+    filter='cssrewrite' %}
+    <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}
 
-{#{% block javascripts %}#}
-    {#{{ parent() }}#}
+{% block javascripts %}
+    {{ parent() }}
 
-    {#{% javascripts#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/vendor/jquery-scrollto/jquery.scrollTo-1.4.12/jquery.scrollTo.js'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stModal.js'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/js/modal.js'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/js/http-authentication-options-modal.js'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/js/cookie-options-modal.js'#}
-    {#'@SimplyTestableWebClientBundle/Resources/assets/bs3/js/test-results.js'#}
-    {#%}#}
-    {#<script type="text/javascript" src="{{ asset_url }}"></script>#}
-    {#{% endjavascripts %}#}
-{#{% endblock %}#}
+    {% javascripts
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stModal.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/modal.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/http-authentication-options-modal.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/cookie-options-modal.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/test-progress.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
 
 {% block body_class %} {{ parent() }} full-width {% endblock %}
 
