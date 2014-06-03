@@ -14,7 +14,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
     private $testStateLabelMap = array(
         'new' => 'New, waiting to start',
-        'queued' => 'Queued, waiting for first test to begin',
+        'queued' => 'waiting for first test to begin',
         'resolving' => 'Resolving website',
         'resolved' => 'Resolving website',
         'preparing' => 'Finding URLs to test: looking for sitemap or news feed',
@@ -206,6 +206,10 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
         if ($this->getTest()->getState() == 'in-progress') {
             $label = $this->getRemoteTest()->getCompletionPercent().'% done';
+        }
+
+        if (in_array($this->getTest()->getState(), ['queued', 'in-progress'])) {
+            $label = $this->getRemoteTest()->getUrlCount() . ' urls, ' . $this->getRemoteTest()->getTaskCount() . ' tests; ' . $label;
         }
 
         if ($this->getTest()->getState() == 'crawling') {
