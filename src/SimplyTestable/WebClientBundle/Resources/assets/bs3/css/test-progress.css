@@ -6,3 +6,22 @@
 .side-actions {
     text-align: right;
 }
+
+.task-queues .queue .name {
+    text-align: right;
+}
+
+.task-queues .progress {
+    margin-bottom: 0;
+    height: 10px;
+}
+
+.task-queues .queue .bar {
+    padding-left: 0;
+}
+
+.task-queues .queue .bar .label {
+    min-width: 40px;
+    display: inline-block;
+    text-align: left;
+}

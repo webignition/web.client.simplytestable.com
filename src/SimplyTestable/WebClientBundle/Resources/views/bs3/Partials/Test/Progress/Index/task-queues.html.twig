@@ -1,0 +1,52 @@
+<div class="row queue">
+    <div class="col-lg-3 name">
+        <span class="label label-warning">Queued</span>
+    </div>
+    <div class="col-lg-9 bar">
+        <span class="label label-warning">
+            <span class="value">
+                {{ remote_test.taskcountbystate.queued|number_format }}
+            </span>
+        </span>
+    </div>
+</div>
+<div class="row queue">
+    <div class="col-lg-3 name">
+        <span class="label label-primary">In progress</span>
+    </div>
+    <div class="col-lg-9 bar">
+        <span class="label label-primary">
+            <span class="value">10</span>
+        </span>
+    </div>
+</div>
+<div class="row queue">
+    <div class="col-lg-3 name">
+        <span class="label label-success">Completed</span>
+    </div>
+    <div class="col-lg-9 bar">
+        <span class="label label-success">
+            <span class="value">100</span>
+        </span>
+    </div>
+</div>
+<div class="row queue">
+    <div class="col-lg-3 name">
+        <span class="label label-default">Skipped</span>
+    </div>
+    <div class="col-lg-9 bar">
+        <span class="label label-default">
+            <span class="value">1</span>
+        </span>
+    </div>
+</div>
+<div class="row queue">
+    <div class="col-lg-3 name">
+        <span class="label label-danger">Failed</span>
+    </div>
+    <div class="col-lg-9 bar">
+        <span class="label label-danger">
+            <span class="value">0</span>
+        </span>
+    </div>
+</div>

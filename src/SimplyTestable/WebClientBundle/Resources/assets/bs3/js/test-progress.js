@@ -38,6 +38,25 @@ $(document).ready(function() {
         }
     };
 
+//    var setQueueNameMinimumWidths = function () {
+//        var maximumWidth = 0;
+//
+//        $('.task-queues .bar .label').each(function () {
+//            var label = $(this);
+//            console.log(label.width());
+//            if (label.width() > maximumWidth) {
+//                maximumWidth = label.width();
+//            }
+//        });
+//
+//        console.log("!", maximumWidth);
+//
+////        $('.task-queues .bar .label').each(function () {
+////            $(this).css({
+////                'min-width':maximumWidth
+////            })
+////        });
+//    };
 
     var refreshTestSummary = function() {
         var now = new Date();
@@ -82,6 +101,8 @@ $(document).ready(function() {
 
                 latestTestData = data;
 
+                console.log(data);
+
 //                if (latestTestData.remote_test.state === 'in-progress') {
 //                    $('#test-summary-container').css({
 //                        'display':'block'
@@ -92,8 +113,12 @@ $(document).ready(function() {
 //                    });
 //                }
 //
-                setCompletionPercentValue();
-                setCompletionPercentStateLabel();
+
+
+//                setCompletionPercentValue();
+//                setCompletionPercentStateLabel();
+
+
 //                setCompletionPercentStateIcon();
 //                setTestQueues();
 //                setUrlCount();
@@ -108,14 +133,15 @@ $(document).ready(function() {
 //                    setCancelCrawlButton();
 //                }
 //
-                window.setTimeout(function() {
-                    refreshTestSummary(10);
-                }, 3000);
+//                window.setTimeout(function() {
+//                    refreshTestSummary(10);
+//                }, 3000);
             },
             url: getProgressUpdateUrl()
         });
     };
 
     refreshTestSummary();
+    //setQueueNameMinimumWidths();
 
 });

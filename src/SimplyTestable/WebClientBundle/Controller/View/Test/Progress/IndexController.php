@@ -122,7 +122,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'this_url' => $this->getProgressUrl($website, $test_id),
 //            'is_public' => $this->getTestService()->getRemoteTestService()->isPublic(),
 //            'is_public_user_test' => $this->getTest()->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
-            'remote_test' => $this->getRemoteTest()->__toArray(),
+            'remote_test' => $this->getRemoteTest(),
             'state_label' => $this->getStateLabel(),
 //            'is_owner' => $isOwner,
 //            'type' => $this->getRequestType(),
