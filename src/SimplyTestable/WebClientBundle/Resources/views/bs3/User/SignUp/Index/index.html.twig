@@ -46,7 +46,20 @@
 {#        Choose any premium plan free for the first 30 days.#}
     </p>
 
-    <form role="form" method="post" action="{{ path('sign_up_submit') }}" novalidate>     
+    <form role="form" method="post" action="{{ path('sign_up_submit') }}" novalidate>
+
+        {% if user_create_confirmation is defined and user_create_confirmation == 'user-exists' %}
+
+            <div class="alert alert-success" data-for="email">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <p>
+                    Looks like <strong>{{ email }}</strong> already has an account.</p>
+                <p>
+                    Do you need to <a href="{{ path('view_user_resetpassword_index_index', {'email': email}) }}">reset your password</a>?
+                </p>
+            </div>
+
+        {% endif %}
 
         {% if user_create_error is defined and user_create_error != '' %}
             {% if user_create_error == 'blank-email' %}
