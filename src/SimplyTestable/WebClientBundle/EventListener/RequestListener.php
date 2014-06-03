@@ -175,6 +175,10 @@ class RequestListener
     private function setRequestCacheValidatorHeaders() { 
         $this->getController()->setRequest($this->event->getRequest());        
         $cacheValidatorParameters = $this->getController()->getCacheValidatorParameters();
+
+        if ($this->event->getRequest()->headers->has('accept')) {
+            $cacheValidatorHeaders['http-header-accept'] = $this->event->getRequest()->headers->get('accept');
+        }
         
         $cacheValidatorIdentifier = $this->getCacheValidatorIdentifier($cacheValidatorParameters);
         $cacheValidatorHeaders = $this->getCacheValidatorHeadersService()->get($cacheValidatorIdentifier);

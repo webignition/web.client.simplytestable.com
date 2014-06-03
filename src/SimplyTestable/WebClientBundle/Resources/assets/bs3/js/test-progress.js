@@ -1,4 +1,43 @@
 $(document).ready(function() {
+    var latestTestData = {};
+
+    var setCompletionPercentValue = function () {
+//        if (latestTestData.remote_test.state === 'failed-no-sitemap') {
+//            if (!$('.progress').hasClass('progress-success')) {
+//                $('.progress').addClass('progress-success');
+//            }
+//        } else {
+//            if ($('.progress').hasClass('progress-success')) {
+//                $('.progress').removeClass('progress-success');
+//
+//                if (latestTestData.is_owner) {
+//                    $('#cancel-crawl-form').remove();
+//                }
+//            }
+//        }
+
+        var completionPercentBar = $('#completion-percent-bar');
+        completionPercentBar.attr('aria-valuenow', latestTestData.remote_test.completion_percent );
+
+        if ($('html.csstransitions').length > 0) {
+            completionPercentBar.css({
+                'width': latestTestData.remote_test.completion_percent + '%'
+            });
+        } else {
+            completionPercentBar.animate({
+                'width': latestTestData.remote_test.completion_percent + '%'
+            });
+        }
+
+    };
+
+    var setCompletionPercentStateLabel = function() {
+        var completionPercentStateLabel = $('#completion-percent-state-label');
+        if (completionPercentStateLabel.text() !== latestTestData.state_label) {
+            completionPercentStateLabel.text(latestTestData.state_label);
+        }
+    };
+
 
     var refreshTestSummary = function() {
         var now = new Date();
@@ -8,13 +47,19 @@ $(document).ready(function() {
                 window.location.protocol,
                 '//',
                 window.location.host,
-                window.location.pathname,
+                window.location.pathname
+            ].join('');
+
+            return url;
+        };
+
+        var getProgressUpdateUrl = function() {
+            var url = [
+                getProgressUrl(),
                 '?output=json&timestamp=' + now.getTime()
             ].join('');
 
             return url;
-
-            //return window.location.href + '?output=json&timestamp=' + now.getTime();
         };
 
         jQuery.ajax({
@@ -22,7 +67,7 @@ $(document).ready(function() {
                 Accept : "application/json"
             },
             complete: function (request) {
-                console.log('complete');
+//                console.log('complete');
 //                if (request.getResponseHeader('content-type') && request.getResponseHeader('content-type').indexOf('application/json') === -1) {
 //                    location.reload();
 //                }
@@ -30,14 +75,13 @@ $(document).ready(function() {
             error: function(request, textStatus, errorThrown) {
             },
             success: function(data, textStatus, request) {
-                console.log('success', data);
-//                if (data.this_url !== window.location.href) {
-//                    window.location.href = data.this_url;
-//                    return;
-//                }
-//
-//                latestTestData = data;
-//
+                if (data.this_url !== getProgressUrl()) {
+                    window.location.href = data.this_url;
+                    return;
+                }
+
+                latestTestData = data;
+
 //                if (latestTestData.remote_test.state === 'in-progress') {
 //                    $('#test-summary-container').css({
 //                        'display':'block'
@@ -48,8 +92,8 @@ $(document).ready(function() {
 //                    });
 //                }
 //
-//                setCompletionPercentValue();
-//                setCompletionPercentStateLabel();
+                setCompletionPercentValue();
+                setCompletionPercentStateLabel();
 //                setCompletionPercentStateIcon();
 //                setTestQueues();
 //                setUrlCount();
@@ -64,11 +108,11 @@ $(document).ready(function() {
 //                    setCancelCrawlButton();
 //                }
 //
-//                window.setTimeout(function() {
-//                    refreshTestSummary(10);
-//                }, 3000);
+                window.setTimeout(function() {
+                    refreshTestSummary(10);
+                }, 3000);
             },
-            url: getProgressUrl()
+            url: getProgressUpdateUrl()
         });
     };
 

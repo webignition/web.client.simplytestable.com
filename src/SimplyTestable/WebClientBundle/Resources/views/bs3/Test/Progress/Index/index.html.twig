@@ -57,12 +57,13 @@
                     <div class="row details">
                         <div class="col-lg-12">
                             <div class="progress">
-                                <div class="progress-bar"
+                                <div id="completion-percent-bar"
+                                     class="progress-bar"
                                      role="progressbar"
-                                     aria-valuenow="{{ remote_test.completionpercent }}"
+                                     aria-valuenow="{{ remote_test.completion_percent }}"
                                      aria-valuemin="0"
                                      aria-valuemax="100"
-                                     style="width: {{ remote_test.completionpercent }}%;"></div>
+                                     style="width: {{ remote_test.completion_percent }}%;"></div>
                             </div>
                         </div>
 
@@ -71,7 +72,7 @@
                                 <div class="col-lg-8 col-md-7 col-sm-6 col-xs-12">
                                     <div class="row">
                                         <div class="col-lg-12">
-                                            [state]
+                                            <span id="completion-percent-state-label">{{ state_label }}</span><span id="completion-time-remaining">&nbsp;</span>
                                         </div>
                                         <div class="col-lg-12">
                                             [X] urls, [Y] tests

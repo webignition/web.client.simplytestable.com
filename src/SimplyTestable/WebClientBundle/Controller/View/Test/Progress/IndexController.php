@@ -12,13 +12,14 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
     const RESULTS_PREPARATION_THRESHOLD = 100;
 
-    private $filters = array(
-        'with-errors',
-        'with-warnings',
-        'without-errors',
-        'all',
-        'skipped',
-        'cancelled',
+    private $testStateLabelMap = array(
+        'new' => 'New, waiting to start',
+        'queued' => 'Queued, waiting for first test to begin',
+        'resolving' => 'Resolving website',
+        'resolved' => 'Resolving website',
+        'preparing' => 'Finding URLs to test: looking for sitemap or news feed',
+        'crawling' => 'Finding URLs to test',
+        'failed-no-sitemap' => 'Finding URLs to test: preparing to crawl'
     );
 
     /**
@@ -38,6 +39,11 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         ), array(
             ':bs3/Test',
         ), $viewName);
+    }
+
+
+    protected function getAllowedContentTypes() {
+        return array_merge(['application/json'], parent::getAllowedContentTypes());
     }
 
 
@@ -113,9 +119,11 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         $viewData = array(
             'website' => $this->getUrlViewValues($website),
             'test' => $this->getTest(),
+            'this_url' => $this->getProgressUrl($website, $test_id),
 //            'is_public' => $this->getTestService()->getRemoteTestService()->isPublic(),
 //            'is_public_user_test' => $this->getTest()->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
-            'remote_test' => $this->getRemoteTest(),
+            'remote_test' => $this->getRemoteTest()->__toArray(),
+            'state_label' => $this->getStateLabel(),
 //            'is_owner' => $isOwner,
 //            'type' => $this->getRequestType(),
 //            'type_label' => $this->getTaskTypeLabel($this->getRequestType()),
@@ -164,6 +172,10 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     }
 
     public function getCacheValidatorParameters() {
+        /**
+         * timestamp for json response
+         */
+
         return array(
             'rand' => rand()
         );
@@ -189,78 +201,19 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     }
 
 
-    /**
-     * @return string|null
-     */
-    private function getRequestType() {
-        if (!$this->getRequest()->query->has('type')) {
-            return null;
+    private function getStateLabel() {
+        $label = (isset($this->testStateLabelMap[$this->getTest()->getState()])) ? $this->testStateLabelMap[$this->getTest()->getState()] : '';
+
+        if ($this->getTest()->getState() == 'in-progress') {
+            $label = $this->getRemoteTest()->getCompletionPercent().'% done';
         }
 
-        $type = trim($this->getRequest()->query->get('type'));
-        return ($type == '') ? null : $type;
+        if ($this->getTest()->getState() == 'crawling') {
+            $label .= ': '. $this->getRemoteTest()->getCrawl()->processed_url_count .' checked, ' . $this->getRemoteTest()->getCrawl()->discovered_url_count.' of '. $this->getRemoteTest()->getCrawl()->limit .' found';        }
+
+        return $label;
     }
 
-
-    /**
-     * @return string
-     */
-    private function getRequestFilter() {
-        if (!$this->getRequest()->query->has('filter')) {
-            return $this->getDefaultRequestFilter();
-        }
-
-        $filter = trim($this->getRequest()->query->get('filter'));
-
-        if (!$this->isRelevantRequestFilter($filter)) {
-            return $this->getDefaultRequestFilter();
-        }
-
-        return $filter;
-    }
-
-
-    /**
-     * @return string|null
-     */
-    private function getRawRequestFilter() {
-        return $this->getRequest()->query->get('filter');
-    }
-
-
-    /**
-     * @param $filter
-     * @return bool
-     */
-    private function isRelevantRequestFilter($filter) {
-        if (!in_array($filter, $this->filters)) {
-            return false;
-        }
-
-        $modifiedFilter = str_replace('-', '_', $filter);
-
-        if (!array_key_exists($modifiedFilter, $this->getFilteredTaskCounts())) {
-            return false;
-        }
-
-        return $this->getFilteredTaskCounts()[$modifiedFilter] > 0;
-    }
-
-
-    /**
-     * @return string
-     */
-    private function getDefaultRequestFilter() {
-        if ($this->getTest()->hasErrors()) {
-            return 'with-errors';
-        }
-
-        if ($this->getTest()->hasWarnings()) {
-            return 'with-warnings';
-        }
-
-        return 'without-errors';
-    }
 
     /**
      *

@@ -14,6 +14,14 @@ use webignition\NormalisedUrl\NormalisedUrl;
 abstract class BaseViewController extends BaseController
 {    
     private $template;
+
+
+    protected function getAllowedContentTypes() {
+        return array(
+            'text/html'
+        );
+    }
+
     
     protected function setTemplate($template)
     {
@@ -120,7 +128,7 @@ abstract class BaseViewController extends BaseController
             $priorities   = array('text/html', 'application/json', '*/*');
             $format = $negotiator->getBest($request->headers->get('accept'), $priorities);
 
-            if ($format->getValue() == 'application/json') {
+            if ($format->getValue() == 'application/json' && in_array($format->getValue(), $this->getAllowedContentTypes())) {
                 $response = new Response($this->getSerializer()->serialize($additionalParameters, 'json'));
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
@@ -137,16 +145,6 @@ abstract class BaseViewController extends BaseController
      * @return \Symfony\Component\HttpFoundation\Response
      */    
     protected function renderCacheableResponse(array $additionalParameters = array()) {
-/*
-        if ($this->isJsonResponseRequired()) {
-            $response = new Response($this->getSerializer()->serialize($viewData, 'json'));
-            $response->headers->set('Content-Type', 'application/json');
-            return $response;
-        }
- */
-
-
-
         return $this->getCacheableResponseService()->getCachableResponse(
             $this->getRequest(), $this->renderResponse(
                 $this->getRequest(),
