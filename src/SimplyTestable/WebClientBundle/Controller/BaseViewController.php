@@ -2,7 +2,9 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+use Negotiation\FormatNegotiator;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Model\CacheValidatorIdentifier;
 use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
@@ -105,14 +107,26 @@ abstract class BaseViewController extends BaseController
         
         return $response;
     }
-    
-    
+
+
     /**
-     * 
+     * @param Request $request
      * @param array $additionalParameters
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
-    protected function renderResponse(array $additionalParameters = array()) {
+    protected function renderResponse(Request $request, array $additionalParameters = array()) {
+        if ($request->headers->has('accept')) {
+            $negotiator   = new FormatNegotiator();
+            $priorities   = array('text/html', 'application/json', '*/*');
+            $format = $negotiator->getBest($request->headers->get('accept'), $priorities);
+
+            if ($format->getValue() == 'application/json') {
+                $response = new Response($this->getSerializer()->serialize($additionalParameters, 'json'));
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;
+            }
+        }
+
         return parent::render($this->getViewName(), array_merge($this->getDefaultViewParameters(), $additionalParameters));
     }     
     
@@ -123,8 +137,21 @@ abstract class BaseViewController extends BaseController
      * @return \Symfony\Component\HttpFoundation\Response
      */    
     protected function renderCacheableResponse(array $additionalParameters = array()) {
+/*
+        if ($this->isJsonResponseRequired()) {
+            $response = new Response($this->getSerializer()->serialize($viewData, 'json'));
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
+ */
+
+
+
         return $this->getCacheableResponseService()->getCachableResponse(
-            $this->getRequest(), $this->renderResponse($additionalParameters)
+            $this->getRequest(), $this->renderResponse(
+                $this->getRequest(),
+                $additionalParameters
+            )
         );        
     }
     

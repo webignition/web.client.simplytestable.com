@@ -42,6 +42,8 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
 
     public function indexAction($website, $test_id) {
+
+
 //        if ($this->getTest()->getState() == 'failed-no-sitemap') {
 //            return $this->redirect($this->generateUrl('view_test_results_failednourlsdetected_index_index', array(
 //                'website' => $website,
@@ -56,19 +58,19 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 //            ), true));
 //        }
 //
-//        if ($this->getTest()->getWebsite() != $website) {
-//            return $this->redirect($this->generateUrl('app_test_redirector', array(
-//                'website' => $this->getTest()->getWebsite(),
-//                'test_id' => $test_id
-//            ), true));
-//        }
-//
-//        if (!$this->getTestService()->isFinished($this->getTest())) {
-//            return $this->redirect($this->generateUrl('view_test_results_index_index', array(
-//                'website' => $this->getTest()->getWebsite(),
-//                'test_id' => $test_id
-//            ), true));
-//        }
+        if ($this->getTest()->getWebsite() != $website) {
+            return $this->redirect($this->generateUrl('app_test_redirector', array(
+                'website' => $this->getTest()->getWebsite(),
+                'test_id' => $test_id
+            ), true));
+        }
+
+        if ($this->getTestService()->isFinished($this->getTest())) {
+            return $this->redirect($this->generateUrl('view_test_results_index_index', array(
+                'website' => $this->getTest()->getWebsite(),
+                'test_id' => $test_id
+            ), true));
+        }
 //
 //        if (($this->getRemoteTest()->getTaskCount() - self::RESULTS_PREPARATION_THRESHOLD) > $this->getTest()->getTaskCount()) {
 //            $urlParameters = array(
@@ -113,7 +115,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'test' => $this->getTest(),
 //            'is_public' => $this->getTestService()->getRemoteTestService()->isPublic(),
 //            'is_public_user_test' => $this->getTest()->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
-//            'remote_test' => $this->getRemoteTest(),
+            'remote_test' => $this->getRemoteTest(),
 //            'is_owner' => $isOwner,
 //            'type' => $this->getRequestType(),
 //            'type_label' => $this->getTaskTypeLabel($this->getRequestType()),

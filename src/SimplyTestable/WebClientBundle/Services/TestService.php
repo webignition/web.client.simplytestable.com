@@ -55,6 +55,7 @@ class TestService {
      * @var string[]
      */
     private $finishedStates = array(
+        'rejected',
         'cancelled',
         'completed',
         'failed-no-sitemap',
