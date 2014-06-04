@@ -124,13 +124,13 @@
                                 <div class="col-lg-12 col-md-12 col-sm-8 col-xs-12 col-md-pull-0 col-sm-pull-4 col-xs-pull-0 test-options">
                                     {% if test_options['http-authentication'] is defined %}
                                         <div class="test-option">
-                                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/HttpAuthentication:http-authentication.html.twig' %}
+                                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/HttpAuthentication:http-authentication.html.twig' with {'read_only': true} %}
                                         </div>
                                     {% endif %}
 
                                     {% if test_options['cookies'] is defined %}
                                         <div class="test-option">
-                                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/Cookies:cookies.html.twig' %}
+                                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/Cookies:cookies.html.twig' with {'read_only': true} %}
                                         </div>
                                     {% endif %}
 

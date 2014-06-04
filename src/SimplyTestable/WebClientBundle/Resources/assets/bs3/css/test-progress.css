@@ -20,6 +20,14 @@ h1 {
     text-align: left;
 }
 
+.side-actions .test-option .icon-primary {
+    opacity: 0.6;
+}
+
+.side-actions .test-option {
+    margin: 0 0 10px 0;
+}
+
 .task-queues .queue  {
     margin: 0 0 5px 0;
 }

@@ -1,21 +1,25 @@
-{#<span id="cookies-action-badge" class="badge action-badge {% if test_cookies_enabled %}action-badge-enabled{% endif %}">#}
-    {#<i class="fa fa-adjust icon-primary"></i>#}
-    {#<span class="action-badge-label">#}
-        {#Custom cookies#}
-        {#<span class="status">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span>#}
-    {#</span>#}
-    {#<span class="modal-control" data-for="cookies-options-modal">#}
-        {#change#}
-    {#</span>#}
-{#</span>#}
+{% if read_only is not defined %}
+    {% set read_only = false %}
+{% endif %}
 
 <div id="cookies-action-badge">
     <i class="fa fa-adjust icon-primary"></i>
     Custom cookies
-    <span class="status">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span>
-            <span class="modal-control" data-for="cookies-options-modal">
-        change
-    </span>
+
+    {% if read_only %}
+        {% if test_cookies_enabled %}
+            <span class="status modal-control" data-for="cookies-options-modal">
+                enabled
+            </span>
+        {% else %}
+            not enabled
+        {% endif %}
+    {% else %}
+        <span class="status">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span>
+        <span class="modal-control" data-for="cookies-options-modal">
+            change
+        </span>
+    {% endif %}
 </div>
 
 <div class="modal" id="cookies-options-modal">
