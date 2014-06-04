@@ -186,4 +186,12 @@ $(document).ready(function() {
     refreshTestSummary();
     setQueueNameMinimumWidths();
 
+    $('#cancel-button').click(function () {
+        var button = $(this);
+        $('.fa', button).removeClass('fa-power-off').addClass('fa-spinner fa-spin');
+        button.animate({
+            'opacity':0.6
+        });
+    });
+
 });
