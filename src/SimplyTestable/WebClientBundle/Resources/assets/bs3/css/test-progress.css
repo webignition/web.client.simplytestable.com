@@ -21,7 +21,6 @@
 }
 
 .task-queues .queue .bar .label {
-    min-width: 40px;
     display: inline-block;
     text-align: left;
 }

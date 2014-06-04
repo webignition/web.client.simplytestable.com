@@ -288,7 +288,7 @@ class RemoteTest extends AbstractStandardObject {
         }
         
         return $remoteTestArray;
-    } 
+    }
     
     
     /**

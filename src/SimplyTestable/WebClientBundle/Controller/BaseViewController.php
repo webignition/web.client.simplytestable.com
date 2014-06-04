@@ -128,15 +128,28 @@ abstract class BaseViewController extends BaseController
             $priorities   = array('text/html', 'application/json', '*/*');
             $format = $negotiator->getBest($request->headers->get('accept'), $priorities);
 
-            if ($format->getValue() == 'application/json' && in_array($format->getValue(), $this->getAllowedContentTypes())) {
+            if ($format->getValue() != 'text/html' && in_array($format->getValue(), $this->getAllowedContentTypes())) {
                 $response = new Response($this->getSerializer()->serialize($additionalParameters, 'json'));
-                $response->headers->set('Content-Type', 'application/json');
+                $response->headers->set('Content-Type', $format->getValue());
                 return $response;
             }
         }
 
         return parent::render($this->getViewName(), array_merge($this->getDefaultViewParameters(), $additionalParameters));
-    }     
+    }
+
+
+    protected function requestIsForApplicationJson(Request $request) {
+        if (!$request->headers->has('accept')) {
+            return false;
+        }
+
+        $negotiator = new FormatNegotiator();
+        $priorities = array('*/*');
+        $format = $negotiator->getBest($request->headers->get('accept'), $priorities);
+
+        return $format->getValue() == 'application/json';
+    }
     
     
     /**

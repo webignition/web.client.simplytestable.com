@@ -269,7 +269,9 @@ application.progress.testController = function() {
             },
             error: function(request, textStatus, errorThrown) {        
             },
-            success: function(data, textStatus, request) {                
+            success: function(data, textStatus, request) {
+                console.log(data);
+
                 if (data.this_url !== window.location.href) {                    
                     window.location.href = data.this_url;
                     return;
@@ -303,9 +305,9 @@ application.progress.testController = function() {
                     setCancelCrawlButton();
                 }
 
-                window.setTimeout(function() {
-                    refreshTestSummary(10);
-                }, 3000);
+//                window.setTimeout(function() {
+//                    refreshTestSummary(10);
+//                }, 3000);
             },
             url: getProgressUrl()
         });

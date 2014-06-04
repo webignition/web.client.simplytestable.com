@@ -1,0 +1,36 @@
+{% if name is not defined %}
+    {% set name = 'Name' %}
+{% endif %}
+
+{% if value is not defined %}
+    {% set value = 0 %}
+{% endif %}
+
+{% if label_type is not defined %}
+    {% set label_type = 'default' %}
+{% endif %}
+
+{% set id = name|lower|replace({' ': '_'}) %}
+
+{% if not remote_test.taskcount %}
+    {% set width = 0 %}
+{% else %}
+    {% set width = (value / remote_test.taskcount * 100)|round(0, 'ceil') %}
+{% endif %}
+
+
+{#{% set width = (value / remote_test.taskcount * 100)|round(0, 'ceil') %}#}
+
+<div class="row queue" id="task-queue-{{ id }}">
+    <div class="col-lg-3 name">
+        <span class="label label-{{ label_type }}">{{ name }}</span>
+    </div>
+    <div class="col-lg-9 bar">
+    <span class="label label-{{ label_type }}"
+          data-width="{{ width }}">
+        <span class="value">
+            {{ value|number_format }}
+        </span>
+    </span>
+    </div>
+</div>

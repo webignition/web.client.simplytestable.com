@@ -116,13 +116,14 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 //            ), true));
 //        }
 //
+
         $viewData = array(
             'website' => $this->getUrlViewValues($website),
             'test' => $this->getTest(),
             'this_url' => $this->getProgressUrl($website, $test_id),
 //            'is_public' => $this->getTestService()->getRemoteTestService()->isPublic(),
 //            'is_public_user_test' => $this->getTest()->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
-            'remote_test' => $this->getRemoteTest(),
+            'remote_test' => $this->requestIsForApplicationJson($this->getRequest()) ? $this->getRemoteTest()->__toArray() : $this->getRemoteTest(),
             'state_label' => $this->getStateLabel(),
 //            'is_owner' => $isOwner,
 //            'type' => $this->getRequestType(),

@@ -38,25 +38,50 @@ $(document).ready(function() {
         }
     };
 
-//    var setQueueNameMinimumWidths = function () {
-//        var maximumWidth = 0;
-//
-//        $('.task-queues .bar .label').each(function () {
-//            var label = $(this);
-//            console.log(label.width());
-//            if (label.width() > maximumWidth) {
-//                maximumWidth = label.width();
-//            }
-//        });
-//
-//        console.log("!", maximumWidth);
-//
-////        $('.task-queues .bar .label').each(function () {
-////            $(this).css({
-////                'min-width':maximumWidth
-////            })
-////        });
-//    };
+    var setTaskQueues = function () {
+        for (state in latestTestData.remote_test.task_count_by_state) {
+            if (latestTestData.remote_test.task_count_by_state.hasOwnProperty(state)) {
+                var label = $('#task-queue-' + state + ' .bar .label');
+                if (label.length) {
+                    var width = Math.ceil(latestTestData.remote_test.task_count_by_state[state] / latestTestData.remote_test.task_count * 100);
+
+                    if (width > label.attr('data-width')) {
+                        label.attr('data-width', width);
+                        queue.animate({
+                            'width':queue.attr('data-width') + '%'
+                        });
+                    }
+                }
+            }
+        }
+    };
+
+    var setQueueNameMinimumWidths = function () {
+        var maximumWidth = 0;
+
+        $('.task-queues .bar .label').each(function () {
+            var label = $(this);
+            if (label.width() > maximumWidth) {
+                maximumWidth = label.outerWidth();
+            }
+        });
+
+        $('.task-queues .bar .label').each(function () {
+            var label = $(this);
+            var width = maximumWidth + 'px';
+
+            if (label.attr('data-width')) {
+                width = label.attr('data-width') + '%';
+            }
+
+            $(this).css({
+                'min-width':maximumWidth + 'px',
+                'width':width,
+                'display':'block',
+                'margin-top':'3px'
+            })
+        });
+    };
 
     var refreshTestSummary = function() {
         var now = new Date();
@@ -94,14 +119,14 @@ $(document).ready(function() {
             error: function(request, textStatus, errorThrown) {
             },
             success: function(data, textStatus, request) {
-                if (data.this_url !== getProgressUrl()) {
-                    window.location.href = data.this_url;
-                    return;
-                }
+//                if (data.this_url !== getProgressUrl()) {
+//                    window.location.href = data.this_url;
+//                    return;
+//                }
 
                 latestTestData = data;
 
-                console.log(data);
+                //console.log(data);
 
 //                if (latestTestData.remote_test.state === 'in-progress') {
 //                    $('#test-summary-container').css({
@@ -115,12 +140,12 @@ $(document).ready(function() {
 //
 
 
-//                setCompletionPercentValue();
-//                setCompletionPercentStateLabel();
+                setCompletionPercentValue();
+                setCompletionPercentStateLabel();
 
 
 //                setCompletionPercentStateIcon();
-//                setTestQueues();
+                setTaskQueues();
 //                setUrlCount();
 //                setTaskCount();
 //                setAmmendments();
@@ -133,15 +158,15 @@ $(document).ready(function() {
 //                    setCancelCrawlButton();
 //                }
 //
-//                window.setTimeout(function() {
-//                    refreshTestSummary(10);
-//                }, 3000);
+                window.setTimeout(function() {
+                    refreshTestSummary(10);
+                }, 3000);
             },
             url: getProgressUpdateUrl()
         });
     };
 
     refreshTestSummary();
-    //setQueueNameMinimumWidths();
+    setQueueNameMinimumWidths();
 
 });
