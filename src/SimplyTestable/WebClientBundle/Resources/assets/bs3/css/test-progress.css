@@ -61,6 +61,13 @@ h1 {
     padding-top: 3px;
 }
 
+.ammendment-clone,
+.ammendment-clone a {
+    background-color: #eee;
+    color: transparent;
+    border-color: transparent;
+}
+
 @media (min-width: 1200px) {
     .side-actions {
         position: static;

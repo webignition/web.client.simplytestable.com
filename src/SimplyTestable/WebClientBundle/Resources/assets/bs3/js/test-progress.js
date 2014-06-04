@@ -1,6 +1,48 @@
 $(document).ready(function() {
     var latestTestData = {};
 
+    var displayAmmendment = function(messageContent) {
+        var ammendmentNotification = $('<div class="alert alert-info alert-ammendment">').append(
+            $('<div class="container">').append(messageContent)
+        );
+
+        var ammendmentNotificationClone = ammendmentNotification.clone(ammendmentNotification);
+        ammendmentNotificationClone.addClass('ammendment-clone').css({
+            'display': 'none'
+        });
+
+        $('.alert-container').append(ammendmentNotificationClone);
+
+        ammendmentNotificationClone.slideDown(function() {
+            ammendmentNotificationClone.remove();
+
+            ammendmentNotification.css({
+                'opacity': 0
+
+            });
+
+            $('.alert-container').append(ammendmentNotification);
+
+            ammendmentNotification.animate({
+                'opacity': 1
+            });
+        });
+    };
+
+    var setAmmendments = function() {
+        if ($('.alert-ammendment').length > 0) {
+            return;
+        }
+
+        if (latestTestData.remote_test.ammendments && latestTestData.remote_test.ammendments[0]) {
+            if (latestTestData.remote_test.ammendments[0].reason.indexOf('plan-url-limit-reached:') !== -1) {
+                $.get(window.location.href.replace('progress', 'url-limit-notification'), function(data) {
+                    displayAmmendment(data);
+                });
+            }
+        }
+    };
+
     var setCompletionPercentValue = function () {
 //        if (latestTestData.remote_test.state === 'failed-no-sitemap') {
 //            if (!$('.progress').hasClass('progress-success')) {
@@ -159,13 +201,8 @@ $(document).ready(function() {
 
                 setCompletionPercentValue();
                 setCompletionPercentStateLabel();
-
-
-//                setCompletionPercentStateIcon();
                 setTaskQueues();
-//                setUrlCount();
-//                setTaskCount();
-//                setAmmendments();
+                setAmmendments();
 //
 //                if (latestTestData.remote_test.state !== 'failed-no-sitemap') {
 //                    storeEstimatedTimeRemaining();
