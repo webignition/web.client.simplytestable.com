@@ -44,7 +44,7 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
             $viewData['token'] = $this->get('request')->query->get('token');
         }
 
-        return $this->renderResponse($viewData);
+        return $this->renderResponse($this->getRequest(), $viewData);
     }
 
     

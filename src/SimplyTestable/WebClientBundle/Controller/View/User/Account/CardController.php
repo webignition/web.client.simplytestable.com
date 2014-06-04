@@ -32,7 +32,7 @@ class CardController extends BaseViewController implements RequiresPrivateUser, 
             'user_account_card_exception_code'
         )));
 
-        return $this->renderResponse($viewData);
+        return $this->renderResponse($this->getRequest(), $viewData);
     }
 
     private function getCountries() {
