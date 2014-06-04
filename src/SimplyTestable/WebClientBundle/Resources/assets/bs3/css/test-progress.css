@@ -16,6 +16,10 @@ h1 {
     text-align: right;
 }
 
+.side-actions .modal {
+    text-align: left;
+}
+
 .task-queues .queue  {
     margin: 0 0 5px 0;
 }
@@ -49,6 +53,13 @@ h1 {
     padding-top: 3px;
 }
 
-#cancel-button {
+@media (min-width: 1200px) {
+    .side-actions {
+        position: static;
+    }
 
+    .side-actions .test-options {
+        position: absolute;
+        bottom: 10px;
+    }
 }
