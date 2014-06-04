@@ -95,8 +95,8 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 //
 //        $isOwner = $this->getTestService()->getRemoteTestService()->owns($this->getTest());
 //
-//        $this->getTestOptionsAdapter()->setRequestData($this->getRemoteTest()->getOptions());
-//        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
+        $this->getTestOptionsAdapter()->setRequestData($this->getRemoteTest()->getOptions());
+        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
 //
 //        $remoteTaskIds = ($this->getRequestFilter() == 'all' && is_null($this->getRequestType()))
 //            ? null
@@ -131,16 +131,16 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 //            'filter' => $this->getRequestFilter(),
 //            'filter_label' => ucwords(str_replace('-', ' ', $this->getRequestFilter())),
 //            'task_types' => $this->container->getParameter('task_types'),
-//            'test_options' => $testOptions->__toKeyArray(),
-//            'available_task_types' => $this->getAvailableTaskTypes(),
+            'test_options' => $testOptions->__toKeyArray(),
+            'available_task_types' => $this->getAvailableTaskTypes(),
 //            'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
 //            'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
 //            'tasks' => $this->getTasksGroupedByUrl($tasks),
 //            'filtered_task_counts' => $this->getFilteredTaskCounts(),
 //            'domain_test_count' => $this->getTestService()->getRemoteTestService()->getFinishedCount($this->getTest()->getWebsite()),
-//            'test_authentication_enabled' => $this->getRemoteTest()->hasParameter('http-auth-username'),
-//            'test_cookies_enabled' => $this->getRemoteTest()->hasParameter('cookies'),
-//            'test_cookies' => $this->getTestCookies(),
+            'test_authentication_enabled' => $this->getRemoteTest()->hasParameter('http-auth-username'),
+            'test_cookies_enabled' => $this->getRemoteTest()->hasParameter('cookies'),
+            'test_cookies' => $this->getTestCookies(),
 //            'default_css_validation_options' => array(
 //                'ignore-warnings' => 1,
 //                'vendor-extensions' => 'warn',

@@ -8,7 +8,7 @@ h1 {
     height: 4px;
 }
 
-#completion-percent-state-label {
+.subtle {
     opacity: 0.6;
 }
 
