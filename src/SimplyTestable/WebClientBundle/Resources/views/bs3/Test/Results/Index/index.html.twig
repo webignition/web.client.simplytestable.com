@@ -55,10 +55,7 @@
 
                     <h1>
                         Report for
-                        <span id="test-url" title="{{website.raw}}">
-                            {{ website.utf8.schemeless.raw }}
-                            {#{% include 'SimplyTestableWebClientBundle:Partials/url:utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %}#}
-                        </span>
+                        <span id="test-url" title="{{website.raw}}">{{ website.utf8.schemeless.raw }}</span>
                         <span id="test-id">(#{{ test.testId }})</span>
                     </h1>
 
@@ -80,7 +77,7 @@
                                     <div class="row">
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6 col-lg-push-0 col-md-push-0 col-sm-push-0 col-xs-push-6 retest-col">
                                             <button id="retest-button" type="submit" class="btn btn-default btn-significant side-action" data-offset="0">
-                                                <i class="fa fa-refresh"></i>
+                                                <i class="fa fa-fw fa-refresh"></i>
                                                 Re-test
                                                 <span>Using selected settings</span>
                                             </button>
@@ -95,7 +92,7 @@
 
                                                 <form id="lock-unlock" action="{{ path(route, { 'website': test.website, 'test_id': test.testId }) }}">
                                                     <button id="lock-unlock-button" type="submit" class="btn btn-default btn-significant side-action" data-offset="70">
-                                                        <i class="fa fa-{{ icon }}"></i>
+                                                        <i class="fa fa-fw fa-{{ icon }}"></i>
                                                         {{ label }}
                                                         <span>{{ description }}</span>
                                                     </button>
