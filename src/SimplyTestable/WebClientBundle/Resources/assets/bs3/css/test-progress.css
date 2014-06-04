@@ -3,6 +3,10 @@ h1 {
     word-wrap: break-word;
 }
 
+.header {
+    margin-bottom: 40px;
+}
+
 .header .progress {
     margin: 8px 0 4px 0;
     height: 4px;
@@ -78,6 +82,14 @@ h1 {
 
 #test-options {
     margin-top: 30px;
+}
+
+#tasks {
+    display:none;
+}
+
+#tasks h2 .fa {
+    margin-left: 15px;
 }
 
 @media (min-width: 1200px) {

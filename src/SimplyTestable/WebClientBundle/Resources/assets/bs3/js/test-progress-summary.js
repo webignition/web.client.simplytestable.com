@@ -1,5 +1,7 @@
+var latestTestData = {};
+
 $(document).ready(function() {
-    var latestTestData = {};
+    var liveResultsController = new testProgressTasksController();
 
     var displayAmmendment = function(messageContent) {
         var ammendmentNotification = $('<div class="alert alert-info alert-ammendment">').append(
@@ -142,6 +144,12 @@ $(document).ready(function() {
         });
     };
 
+    var initialiseLiveResults = function () {
+        if (['queued', 'in-progress'].indexOf(latestTestData.test.state) !== -1) {
+            liveResultsController.initialise();
+        }
+    };
+
     var refreshTestSummary = function() {
         var now = new Date();
 
@@ -185,8 +193,6 @@ $(document).ready(function() {
 
                 latestTestData = data;
 
-                //console.log(data);
-
 //                if (latestTestData.remote_test.state === 'in-progress') {
 //                    $('#test-summary-container').css({
 //                        'display':'block'
@@ -203,6 +209,7 @@ $(document).ready(function() {
                 setCompletionPercentStateLabel();
                 setTaskQueues();
                 setAmmendments();
+                initialiseLiveResults();
 //
 //                if (latestTestData.remote_test.state !== 'failed-no-sitemap') {
 //                    storeEstimatedTimeRemaining();
