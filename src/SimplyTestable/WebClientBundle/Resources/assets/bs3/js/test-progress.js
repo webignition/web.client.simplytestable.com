@@ -39,18 +39,36 @@ $(document).ready(function() {
     };
 
     var setTaskQueues = function () {
+        var getWidthForState = function (state) {
+            if (latestTestData.remote_test.task_count === 0) {
+                return 0;
+            }
+
+            if (!latestTestData.remote_test.task_count_by_state.hasOwnProperty(state)) {
+                return 0;
+            }
+
+            if (latestTestData.remote_test.task_count_by_state[state] === 0) {
+                return 0;
+            }
+
+            return Math.ceil(latestTestData.remote_test.task_count_by_state[state] / latestTestData.remote_test.task_count * 100);
+        };
+
         for (state in latestTestData.remote_test.task_count_by_state) {
             if (latestTestData.remote_test.task_count_by_state.hasOwnProperty(state)) {
                 var label = $('#task-queue-' + state + ' .bar .label');
                 if (label.length) {
-                    var width = Math.ceil(latestTestData.remote_test.task_count_by_state[state] / latestTestData.remote_test.task_count * 100);
+                    var width = getWidthForState(state);
 
-                    if (width > label.attr('data-width')) {
+                    if (width !== label.attr('data-width')) {
                         label.attr('data-width', width);
-                        queue.animate({
-                            'width':queue.attr('data-width') + '%'
+                        label.animate({
+                            'width':label.attr('data-width') + '%'
                         });
                     }
+
+                    $('.value', label).text(latestTestData.remote_test.task_count_by_state[state]);
                 }
             }
         }
@@ -77,8 +95,7 @@ $(document).ready(function() {
             $(this).css({
                 'min-width':maximumWidth + 'px',
                 'width':width,
-                'display':'block',
-                'margin-top':'3px'
+                'display':'block'
             })
         });
     };
@@ -119,10 +136,10 @@ $(document).ready(function() {
             error: function(request, textStatus, errorThrown) {
             },
             success: function(data, textStatus, request) {
-//                if (data.this_url !== getProgressUrl()) {
-//                    window.location.href = data.this_url;
-//                    return;
-//                }
+                if (data.this_url !== getProgressUrl()) {
+                    window.location.href = data.this_url;
+                    return;
+                }
 
                 latestTestData = data;
 

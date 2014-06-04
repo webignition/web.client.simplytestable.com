@@ -1,19 +1,33 @@
+h1 {
+    white-space: normal;
+    word-wrap: break-word;
+}
+
 .header .progress {
-    margin-top: 8px;
+    margin: 8px 0 4px 0;
     height: 4px;
+}
+
+#completion-percent-state-label {
+    opacity: 0.6;
 }
 
 .side-actions {
     text-align: right;
 }
 
-.task-queues .queue .name {
-    text-align: right;
+.task-queues .queue  {
+    margin: 0 0 5px 0;
 }
 
-.task-queues .progress {
-    margin-bottom: 0;
-    height: 10px;
+.task-queues .queue .name {
+    padding-right: 5px;
+    padding-left: 0;
+}
+
+.task-queues .queue .name .label {
+    display:block;
+    text-align: right;
 }
 
 .task-queues .queue .bar {
@@ -23,4 +37,18 @@
 .task-queues .queue .bar .label {
     display: inline-block;
     text-align: left;
+}
+
+.task-queues .queue .bar .wrapper {
+    display: block;
+    background-color: #e6e6e6;
+    border-radius: .25em;
+}
+
+.task-queues .label {
+    padding-top: 3px;
+}
+
+#cancel-button {
+
 }

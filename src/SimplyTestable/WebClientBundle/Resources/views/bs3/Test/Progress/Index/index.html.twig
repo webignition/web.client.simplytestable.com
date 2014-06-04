@@ -65,15 +65,17 @@
                                      aria-valuemax="100"
                                      style="width: {{ remote_test.completionpercent }}%;"></div>
                             </div>
+
+                            <p id="completion-percent-state-label">{{ state_label }}</span><span id="completion-time-remaining">&nbsp;</p>
                         </div>
 
                         <div class="col-lg-8 col-md-7 col-sm-12 col-xs-12">
                             <div class="row">
                                 <div class="col-lg-8 col-md-7 col-sm-6 col-xs-12">
                                     <div class="row">
-                                        <div class="col-lg-12">
-                                            <span id="completion-percent-state-label">{{ state_label }}</span><span id="completion-time-remaining">&nbsp;</span>
-                                        </div>
+                                        {#<div class="col-lg-12">#}
+                                            {##}
+                                        {#</div>#}
                                         <div class="col-lg-12 task-queues">
                                             {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Progress/Index:task-queues.html.twig' %}
                                         </div>
@@ -103,11 +105,6 @@
                                                     <span>and go to the results</span>
                                                 </button>
                                             </form>
-                                            {#<button id="retest-button" type="submit" class="btn btn-default btn-significant side-action" data-offset="0">#}
-                                                {#<i class="fa fa-refresh"></i>#}
-                                                {#Re-test#}
-                                                {#<span>Using selected settings</span>#}
-                                            {#</button>#}
                                         </div>
 
                                         {#<div class="col-lg-12 col-md-12 col-sm-12 col-xs-6 col-lg-pull-0 col-md-pull-0 col-sm-pull-0 col-xs-pull-6">#}

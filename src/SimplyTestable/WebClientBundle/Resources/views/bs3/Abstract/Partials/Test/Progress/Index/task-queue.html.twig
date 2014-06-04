@@ -22,15 +22,17 @@
 {#{% set width = (value / remote_test.taskcount * 100)|round(0, 'ceil') %}#}
 
 <div class="row queue" id="task-queue-{{ id }}">
-    <div class="col-lg-3 name">
+    <div class="col-lg-2 name">
         <span class="label label-{{ label_type }}">{{ name }}</span>
     </div>
-    <div class="col-lg-9 bar">
-    <span class="label label-{{ label_type }}"
-          data-width="{{ width }}">
-        <span class="value">
-            {{ value|number_format }}
+    <div class="col-lg-10 bar">
+        <span class="wrapper">
+            <span class="label label-{{ label_type }}"
+                  data-width="{{ width }}">
+                <span class="value">
+                    {{ value|number_format }}
+                </span>
+            </span>
         </span>
-    </span>
     </div>
 </div>
