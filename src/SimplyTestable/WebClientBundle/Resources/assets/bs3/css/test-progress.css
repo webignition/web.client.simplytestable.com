@@ -8,6 +8,14 @@ h1 {
     height: 4px;
 }
 
+.header .progress-summary {
+    margin-bottom: 10px;
+}
+
+.header .details {
+    position: relative;
+}
+
 .subtle {
     opacity: 0.6;
 }
@@ -66,6 +74,10 @@ h1 {
     background-color: #eee;
     color: transparent;
     border-color: transparent;
+}
+
+#test-options {
+    margin-top: 30px;
 }
 
 @media (min-width: 1200px) {
