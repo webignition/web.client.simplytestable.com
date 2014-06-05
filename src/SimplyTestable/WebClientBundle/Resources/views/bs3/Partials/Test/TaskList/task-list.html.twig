@@ -1,3 +1,15 @@
+{% set tasks_by_url = {} %}
+
+{% for task in tasks %}
+    {% if tasks_by_url[task.url] is not defined %}
+        {% set tasks_by_url = tasks_by_url|merge({(task.url): []}) %}
+    {% endif %}
+
+    {% set current_url_set = tasks_by_url[task.url]|merge([task]) %}
+    {% set tasks_by_url = tasks_by_url|merge({(task.url): current_url_set}) %}
+
+{% endfor %}
+
 {% set state_to_icon_map = {
     'completed':'bar-chart-o',
     'queued':'cog',
@@ -12,7 +24,7 @@
 } %}
 
 <ul class="tasks list-unstyled">
-    {% for url,taskSet in tasks %}
+    {% for url, tasks in tasks_by_url %}
         <li class="task-set">
             <span class="url">{{ url }}<span class="fade"></span></span>
             {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/TaskList/Task:collection.html.twig' %}

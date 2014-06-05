@@ -1,4 +1,4 @@
-{% for task in taskSet %}
+{% for task in tasks %}
     <div class="task {{ task.state }}" id="task{{ task.taskId }}">
         {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/TaskList/Task:task.html.twig' %}
     </div>

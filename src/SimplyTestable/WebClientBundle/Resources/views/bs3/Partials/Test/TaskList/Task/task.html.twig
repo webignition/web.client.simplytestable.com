@@ -27,12 +27,9 @@
     <span class="meta">
 {% endif %}
 
-<span class="state"><i class="fa fa-fw fa-{{ state_to_icon_map[task.state] }}"></i></span>
-<span class="type">{{ task.type }}</span>
-
-
-    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/TaskList/Task/SummaryLabels:summary-labels.html.twig' %}
-
+        <span class="state"><i class="fa fa-fw fa-{{ state_to_icon_map[task.state] }}"></i></span>
+        <span class="type">{{ task.type }}</span>
+        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/TaskList/Task/SummaryLabels:summary-labels.html.twig' %}
 
 {% if not use_link %}
     </span>
