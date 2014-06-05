@@ -246,6 +246,7 @@ a.clear-type .fa {
     .side-actions .test-options {
         position: absolute;
         bottom: 10px;
+        width: auto;
     }
 }
 
