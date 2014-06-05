@@ -4,6 +4,18 @@ var testProgressTasksController = function () {
     var pageLength = 100;
     var currentPage = 1;
 
+    var busyIndicatorController = function () {
+
+        this.show = function () {
+            $('h2', tasks).append('<i class="fa fa-spinner fa-spin"></i>');
+        };
+
+        this.hide = function () {
+            $('h2 .fa-spinner', tasks).remove();
+        };
+
+    };
+
     var taskIdListController = function () {
         var taskIds = null;
         var isReady = false;
@@ -37,12 +49,14 @@ var testProgressTasksController = function () {
             }
         };
 
-        var getList = function () {
+        var getCurrentPageList = function () {
+            var currentPageIndex = currentPage - 1;
 
+            return taskIds.slice(currentPageIndex * pageLength, currentPage * pageLength);
         };
 
         this.initialise = initialise;
-        this.getList = getList;
+        this.getCurrentPageList = getCurrentPageList;
 
         this.isReady = function () {
             return isReady;
@@ -51,18 +65,76 @@ var testProgressTasksController = function () {
 
     var taskListController = function () {
         var taskIdList = new taskIdListController();
+        var taskList = null;
+        var isReady = false;
+
+        var getTasksUrl = function() {
+            var url = [
+                window.location.protocol,
+                '//',
+                window.location.host,
+                window.location.pathname.replace('/progress/', '/tasklist/')
+            ].join('');
+
+            return url;
+        };
 
         var initialise = function () {
             taskIdList.initialise();
+
+            var taskIdListReadinessCheck = function (callback) {
+                if (taskIdList.isReady()) {
+                    callback();
+                } else {
+                    window.setTimeout(function () {
+                        taskIdListReadinessCheck(callback);
+                    }, 300);
+                }
+            };
+
+            taskIdListReadinessCheck(function () {
+                jQuery.ajax({
+                    type: 'POST',
+                    data:{
+                        'taskIds':taskIdList.getCurrentPageList()
+                    },
+                    error: function(request, textStatus, errorThrown) {
+                        console.log('error');
+                    },
+                    success: function(data, textStatus, request) {
+                        taskList = data;
+                        isReady = true;
+                        console.log("isReady");
+                    },
+                    url: getTasksUrl()
+                });
+            });
+
             console.log('task list controller init');
         };
 
+        var draw = function () {
+            $('#tasks').append(taskList);
+        };
+
+        var update = function () {
+
+        };
+
         var render = function () {
-            console.log('task list render');
+            if (!isReady) {
+                return;
+            }
+
+            if ($('.tasks').length) {
+                update();
+            } else {
+                draw();
+            }
         };
 
         this.isReady = function () {
-            return taskIdList.isReady();
+            return isReady;
         };
 
         this.initialise = initialise;
@@ -132,6 +204,7 @@ var testProgressTasksController = function () {
 
     var paginator = new paginationController();
     var taskList = new taskListController();
+    var busyIndicator = new busyIndicatorController();
 
     var initialise = function () {
         if (isInitialised) {
@@ -141,7 +214,7 @@ var testProgressTasksController = function () {
         isInitialised = true;
 
         tasks.css('display', 'block');
-        $('h2', tasks).append('<i class="fa fa-spinner fa-spin"></i>');
+        busyIndicator.show();
 
         if (paginator.isRequired()) {
             paginator.initialise();
@@ -162,6 +235,7 @@ var testProgressTasksController = function () {
 
         taskListReadinessCheck(function () {
             taskList.render();
+            busyIndicator.hide();
         });
     };
 

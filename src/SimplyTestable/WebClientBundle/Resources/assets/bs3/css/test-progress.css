@@ -92,6 +92,11 @@ h1 {
     margin-left: 15px;
 }
 
+.tasks {
+    margin-top: 0;
+}
+
+
 @media (min-width: 1200px) {
     .side-actions {
         position: static;
