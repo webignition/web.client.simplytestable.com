@@ -102,7 +102,7 @@ h2 {
 }
 
 
-@media (min-width: 1200px) {
+@media (min-width: 992px) {
     .side-actions {
         position: static;
     }
