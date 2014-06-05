@@ -10,19 +10,6 @@
 
 {% endfor %}
 
-{% set state_to_icon_map = {
-    'completed':'bar-chart-o',
-    'queued':'cog',
-    'queued-for-assignment':'cog',
-    'in-progress':'cogs',
-    'skipped':'random',
-    'cancelled':'circle-dot-o',
-    'failed':'ban',
-    'failed-no-retry-availabl':'remove-circle',
-    'failed-retry-available':'remove-circle',
-    'failed-retry-limit-reached':'remove-circle',
-} %}
-
 <ul class="tasks list-unstyled">
     {% for url, tasks in tasks_by_url %}
         <li class="task-set">

@@ -60,3 +60,12 @@
 .cancelled .meta .state .fa {
     color: #bbb;
 }
+
+.in-progress .meta .state .fa {
+    color: #428bca;
+}
+
+.queued .meta .state .fa,
+.queued-for-assignment .meta .state .fa {
+    color: #f0ad4e;
+}

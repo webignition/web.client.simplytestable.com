@@ -1,14 +1,14 @@
 {% set state_to_icon_map = {
-    'completed':'bar-chart-o',
-    'queued':'cog',
-    'queued-for-assignment':'cog',
-    'in-progress':'cogs',
-    'skipped':'random',
-    'cancelled':'ban',
-    'failed':'exclamation-triangle',
-    'failed-no-retry-availabl':'exclamation-triangle',
-    'failed-retry-available':'exclamation-triangle',
-    'failed-retry-limit-reached':'exclamation-triangle',
+    'completed':'fa-bar-chart-o',
+    'queued':'fa-circle-o',
+    'queued-for-assignment':'fa-circle-o',
+    'in-progress':'fa-spin fa-cog',
+    'skipped':'fa-random',
+    'cancelled':'fa-ban',
+    'failed':'fa-exclamation-triangle',
+    'failed-no-retry-availabl':'fa-exclamation-triangle',
+    'failed-retry-available':'fa-exclamation-triangle',
+    'failed-retry-limit-reached':'fa-exclamation-triangle',
 } %}
 
 {% set use_link = false %}
@@ -27,7 +27,7 @@
     <span class="meta">
 {% endif %}
 
-        <span class="state"><i class="fa fa-fw fa-{{ state_to_icon_map[task.state] }}"></i></span>
+        <span class="state"><i class="fa fa-fw {{ state_to_icon_map[task.state] }}"></i></span>
         <span class="type">{{ task.type }}</span>
         {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/TaskList/Task/SummaryLabels:summary-labels.html.twig' %}
 
