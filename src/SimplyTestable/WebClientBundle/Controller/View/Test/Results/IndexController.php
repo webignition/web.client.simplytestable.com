@@ -21,10 +21,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         'cancelled',
     );
 
-    /**
-     * @var Test
-     */
-    private $test;
 
     /**
      *
@@ -38,21 +34,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         ), array(
             ':bs3/Test',
         ), $viewName);
-    }
-
-
-    /**
-     * @return Test
-     */
-    private function getTest() {
-        if (is_null($this->test)) {
-            $this->test = $this->getTestService()->get(
-                $this->getRequest()->attributes->get('website'),
-                $this->getRequest()->attributes->get('test_id')
-            );
-        }
-
-        return $this->test;
     }
 
 
@@ -172,14 +153,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'type' => $this->getRequestType(),
             'filter' => $this->getRequestFilter(),
         );
-    }
-
-
-    /**
-     * @return bool|\SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest
-     */
-    private function getRemoteTest() {
-        return $this->getTestService()->getRemoteTestService()->get();
     }
 
 

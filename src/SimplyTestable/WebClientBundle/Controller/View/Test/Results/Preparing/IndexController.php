@@ -20,38 +20,33 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     
     
     public function indexAction($website, $test_id) {
-        $test = $this->getTestService()->get($website, $test_id);
-
-        if (!$this->getTestService()->isFinished($test)) {
+        if (!$this->getTestService()->isFinished($this->getTest())) {
             return $this->redirect($this->getProgressUrl($website, $test_id));
         }
 
-        if ($test->getWebsite() != $website) {
+        if ($this->getTest()->getWebsite() != $website) {
             return $this->redirect($this->generateUrl('app_test_redirector', array(
-                'website' => $test->getWebsite(),
+                'website' => $this->getTest()->getWebsite(),
                 'test_id' => $test_id
             ), true));
         }
 
-        if (!$test->hasTaskIds()) {
-            $this->getTaskService()->getRemoteTaskIds($test);
+        if (!$this->getTest()->hasTaskIds()) {
+            $this->getTaskService()->getRemoteTaskIds($this->getTest());
         }
 
         return $this->renderCacheableResponse(array(
-            'completion_percent' => $this->getCompletionPercent($test->getTaskCount()),
+            'completion_percent' => $this->getCompletionPercent($this->getTest()->getTaskCount()),
             'website' => $this->getUrlViewValues($website),
-            'test' => $test,
-            'local_task_count' => $test->getTaskCount(),
+            'test' => $this->getTest(),
+            'local_task_count' => $this->getTest()->getTaskCount(),
             'remote_task_count' => $this->getRemoteTest()->getTaskCount(),
-            'remaining_tasks_to_retrieve_count' => $this->getRemainingTasksToRetrieveCount($test->getTaskCount())
+            'remaining_tasks_to_retrieve_count' => $this->getRemainingTasksToRetrieveCount($this->getTest()->getTaskCount())
         ));
     }
 
     public function getCacheValidatorParameters() {
-        $test = $this->getTestService()->get(
-            $this->getRequest()->attributes->get('website'),
-            $this->getRequest()->attributes->get('test_id')
-        );
+        $test = $this->getTest();
 
         return array(
             'website' => $this->getRequest()->attributes->get('website'),
@@ -78,10 +73,4 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         return $this->getRemoteTest()->getTaskCount() - $localTaskCount;
     }
 
-    /**
-     * @return bool|RemoteTest
-     */
-    private function getRemoteTest() {
-        return $this->getTestService()->getRemoteTestService()->get();
-    }
 }

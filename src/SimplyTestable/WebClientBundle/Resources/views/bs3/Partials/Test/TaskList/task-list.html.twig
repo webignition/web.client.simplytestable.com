@@ -11,17 +11,11 @@
     'failed-retry-limit-reached':'remove-circle',
 } %}
 
-{% set ignore_results_states = ['skipped', 'cancelled'] %}
-
 <ul class="tasks list-unstyled">
     {% for url,taskSet in tasks %}
         <li class="task-set">
             <span class="url">{{ url }}<span class="fade"></span></span>
-            {% for task in taskSet %}
-                <div class="task {{ task.state }}" id="task{{ task.id }}">
-                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index/TaskList/Task:task.html.twig' %}
-                </div>
-            {% endfor %}
+            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/TaskList/Task:collection.html.twig' %}
         </li>
     {% endfor %}
 </ul>

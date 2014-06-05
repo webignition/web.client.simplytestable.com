@@ -13,6 +13,10 @@
 
 {% set use_link = false %}
 
+{% if ignore_results_states is not defined %}
+    {% set ignore_results_states = ['skipped', 'cancelled'] %}
+{% endif %}
+
 {% if task.hasOutput %}
     {% set use_link = task.state not in ignore_results_states and task.output.hasErrors or task.output.hasWarnings%}
 {% endif %}
@@ -27,7 +31,7 @@
 <span class="type">{{ task.type }}</span>
 
 
-    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index/TaskList/Task/SummaryLabels:summary-labels.html.twig' %}
+    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/TaskList/Task/SummaryLabels:summary-labels.html.twig' %}
 
 
 {% if not use_link %}

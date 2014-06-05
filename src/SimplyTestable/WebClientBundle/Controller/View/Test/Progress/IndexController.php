@@ -23,11 +23,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     );
 
     /**
-     * @var Test
-     */
-    private $test;
-
-    /**
      *
      * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
      */
@@ -158,20 +153,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     }
 
 
-    /**
-     * @return Test
-     */
-    private function getTest() {
-        if (is_null($this->test)) {
-            $this->test = $this->getTestService()->get(
-                $this->getRequest()->attributes->get('website'),
-                $this->getRequest()->attributes->get('test_id')
-            );
-        }
-
-        return $this->test;
-    }
-
     public function getCacheValidatorParameters() {
         /**
          * timestamp for json response
@@ -191,14 +172,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 //            'type' => $this->getRequestType(),
 //            'filter' => $this->getRequestFilter(),
 //        );
-    }
-
-
-    /**
-     * @return bool|\SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest
-     */
-    private function getRemoteTest() {
-        return $this->getTestService()->getRemoteTestService()->get();
     }
 
 

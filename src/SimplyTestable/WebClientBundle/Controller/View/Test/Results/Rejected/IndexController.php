@@ -19,16 +19,14 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     
     
     public function indexAction($website, $test_id) {
-        $test = $this->getTestService()->get($website, $test_id);
-
-        if ($test->getWebsite() != $website) {
+        if ($this->getTest()->getWebsite() != $website) {
             return $this->redirect($this->generateUrl('app_test_redirector', array(
-                'website' => $test->getWebsite(),
+                'website' => $this->getTest()->getWebsite(),
                 'test_id' => $test_id
             ), true));
         }
 
-        if ($test->getState() !== 'rejected') {
+        if ($this->getTest()->getState() !== 'rejected') {
             return $this->redirect($this->getProgressUrl($website, $test_id));
         }
 
@@ -77,13 +75,5 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         }
 
         return $this->getRemoteTest()->getRejection()->getConstraint()->name == 'credits_per_month';
-    }
-
-
-    /**
-     * @return bool|\SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest
-     */
-    private function getRemoteTest() {
-        return $this->getTestService()->getRemoteTestService()->get();
     }
 }

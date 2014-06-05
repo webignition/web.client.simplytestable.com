@@ -133,7 +133,6 @@ view_test_results_partial_finishedsummary_dummy:
 view_test_task_results_index_index:
     pattern:  /{website}/{test_id}/{task_id}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Task/Results/Index:index }
-    #defaults: { _controller: SimplyTestableWebClientBundle:Task:results }
     requirements:
         website: ".+"
         test_id: "\d+"
@@ -218,7 +217,14 @@ task_results_retrieve_status:
     pattern:  /{website}/{test_id}/results/retrieve/status/
     defaults: { _controller: SimplyTestableWebClientBundle:TaskResults:status }  
     requirements:
-       website: ".+"         
+       website: ".+"
+
+view_test_task_tasklist_index_index:
+    pattern:  /{website}/{test_id}/tasklist/
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Task/TaskList/Index:index }
+    requirements:
+        website: ".+"
+        test_id: "\d+"
         
 app_tasks:
     pattern:  /{website}/{test_id}/tasks/

@@ -102,13 +102,15 @@ class RequestListener
 
             try {
                 if (!$this->getTestService()->has($website, $test_id)) {
-                    return $this->handleInvalidTestOwner();
+                    $this->event->setResponse($this->getController()->getInvalidOwnerResponse());
+                    return;
                 }
 
                 $this->getTestService()->get($website, $test_id);
             } catch (WebResourceException $webResourceException) {
                 if ($webResourceException->getCode() == 403) {
-                    return $this->handleInvalidTestOwner();
+                    $this->event->setResponse($this->getController()->getInvalidOwnerResponse());
+                    return;
                 }
 
                 throw $webResourceException;
@@ -122,43 +124,6 @@ class RequestListener
         }
     }
 
-
-    private function handleInvalidTestOwner() {
-        $website = $this->event->getRequest()->attributes->get('website');
-        $test_id = $this->event->getRequest()->attributes->get('test_id');
-
-        if ($this->getUserService()->isLoggedIn()) {
-            $this->event->setResponse($this->getController()->render(
-                'SimplyTestableWebClientBundle:bs3/Test/Results:not-authorised.html.twig',
-                array(
-                    'public_site' => $this->kernel->getContainer()->getParameter('public_site'),
-                    'is_logged_in' => false,
-                    'test_id' => $test_id,
-                    'website' => $website
-                )
-            ));
-
-            return;
-        }
-
-        $redirectParameters = json_encode(array(
-            'route' => 'view_test_progress_index_index',
-            'parameters' => array(
-                'website' => $website,
-                'test_id' => $test_id
-            )
-        ));
-
-        $this->kernel->getContainer()->get('session')->setFlash('user_signin_error', 'test-not-logged-in');
-
-        $this->event->setResponse(new RedirectResponse($this->getController()->generateUrl('view_user_signin_index', array(
-            'redirect' => base64_encode($redirectParameters)
-        ), true)));
-
-        return;
-    }
-    
-    
     /**
      * 
      * @return \Symfony\Component\HttpFoundation\RedirectResponse

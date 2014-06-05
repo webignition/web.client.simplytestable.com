@@ -3,8 +3,16 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Test;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 abstract class ViewController extends BaseViewController {
+
+    /**
+     * @var Test
+     */
+    private $test;
 
 
     /**
@@ -122,5 +130,64 @@ abstract class ViewController extends BaseViewController {
 
         return $url;
     }
+
+
+    public function getInvalidOwnerResponse() {
+        foreach (['website', 'test_id'] as $requiredRequestAttribute) {
+            if (!$this->getRequest()->attributes->has($requiredRequestAttribute)) {
+                return new Response('', 400);
+            }
+        }
+
+        if ($this->getUserService()->isLoggedIn()) {
+            return $this->render(
+                'SimplyTestableWebClientBundle:bs3/Test/Results:not-authorised.html.twig',
+                array(
+                    'public_site' => $this->container->getParameter('public_site'),
+                    'is_logged_in' => false,
+                    'test_id' => $this->getRequest()->attributes->get('test_id'),
+                    'website' => $this->getRequest()->attributes->get('website')
+                )
+            );
+        }
+
+        $redirectParameters = json_encode(array(
+            'route' => 'view_test_progress_index_index',
+            'parameters' => array(
+                'website' => $this->getRequest()->attributes->get('website'),
+                'test_id' => $this->getRequest()->attributes->get('test_id')
+            )
+        ));
+
+        $this->container->get('session')->setFlash('user_signin_error', 'test-not-logged-in');
+
+        return new RedirectResponse($this->generateUrl('view_user_signin_index', array(
+            'redirect' => base64_encode($redirectParameters)
+        ), true));
+    }
+
+
+    /**
+     * @return Test
+     */
+    protected function getTest() {
+        if (is_null($this->test)) {
+            $this->test = $this->getTestService()->get(
+                $this->getRequest()->attributes->get('website'),
+                $this->getRequest()->attributes->get('test_id')
+            );
+        }
+
+        return $this->test;
+    }
+
+
+    /**
+     * @return bool|\SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest
+     */
+    protected function getRemoteTest() {
+        return $this->getTestService()->getRemoteTestService()->get();
+    }
+
 
 }
