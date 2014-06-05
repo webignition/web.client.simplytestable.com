@@ -72,7 +72,7 @@ var testProgressTasksController = function () {
     var paginationController = function () {
         var isXs = function () {
             var firstItem = $(getItems().first());
-            return firstItem.is('.is-xs') && firstItem.css('display') === 'none';
+            return firstItem.is('.is-xs') && firstItem.css('display') !== 'none';
         };
 
         var getItems = function () {
@@ -92,7 +92,7 @@ var testProgressTasksController = function () {
                 var startIndex = (pageIndex * pageLength) + 1;
                 var endIndex = startIndex + pageLength - 1;
 
-                pagination.append('<li class="is-not-xs hidden-xs"><a href="#"><span>' + startIndex + ' … ' + endIndex + '</span></a></li>');
+                pagination.append('<li class="is-not-xs hidden-xs" id="page-' + (pageIndex + 1) + '"><a href="#"><span>' + startIndex + ' … ' + endIndex + '</span></a></li>');
             }
 
             pagination.append('<li class="hidden-lg hidden-md hidden-sm"><span>Next <i class="fa fa-caret-right"></i></span></li>');
@@ -108,12 +108,25 @@ var testProgressTasksController = function () {
             return latestTestData.remote_test.task_count > pageLength;
         };
 
+        var selectCurrentPage = function () {
+            if (isXs()) {
+                return;
+            }
+
+            getItems().each(function () {
+                $(this).removeClass('active');
+            });
+
+            $('#page-' + currentPage).addClass('active');
+        };
+
         var initialise = function () {
             render();
         };
 
         this.initialise = initialise;
         this.isRequired = isRequired;
+        this.selectCurrentPage = selectCurrentPage;
         this.isXs = isXs;
     };
 
@@ -132,6 +145,7 @@ var testProgressTasksController = function () {
 
         if (paginator.isRequired()) {
             paginator.initialise();
+            paginator.selectCurrentPage();
         }
 
         taskList.initialise();
