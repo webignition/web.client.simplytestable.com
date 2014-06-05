@@ -3,6 +3,11 @@ h1 {
     word-wrap: break-word;
 }
 
+h2 {
+    margin:20px 0 20px 0;
+    font-size: 28px;
+ }
+
 .header {
     margin-bottom: 40px;
 }

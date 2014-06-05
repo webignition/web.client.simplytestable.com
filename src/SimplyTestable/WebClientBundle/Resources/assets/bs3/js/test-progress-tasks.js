@@ -18,7 +18,6 @@ var testProgressTasksController = function () {
 
     var taskIdListController = function () {
         var taskIds = null;
-        var isReady = false;
 
         var getTaskIdsUrl = function() {
             var url = [
@@ -31,8 +30,8 @@ var testProgressTasksController = function () {
             return url;
         };
 
-        var initialise = function () {
-            if (taskIds === null) {
+        var initialise = function (callback) {
+            if (!isInitialised()) {
                 jQuery.ajax({
                     dataType: 'json',
                     error: function(request, textStatus, errorThrown) {
@@ -41,32 +40,47 @@ var testProgressTasksController = function () {
                         if (data.length > 0) {
                             taskIds = data;
                         }
-
-                        isReady = true;
                     },
                     url: getTaskIdsUrl()
                 });
+
+                window.setTimeout(function () {
+                    initialise(callback);
+                }, 300);
+
+                return;
+            }
+
+            if (typeof callback === 'function') {
+                callback();
             }
         };
 
+
         var getCurrentPageList = function () {
             var currentPageIndex = currentPage - 1;
-
             return taskIds.slice(currentPageIndex * pageLength, currentPage * pageLength);
         };
 
+        /**
+         *
+         * @returns {boolean}
+         */
+        var isInitialised = function () {
+            return taskIds !== null;
+        };
+
+
         this.initialise = initialise;
         this.getCurrentPageList = getCurrentPageList;
-
-        this.isReady = function () {
-            return isReady;
-        };
+        //this.isInitialised = isInitialised;
     };
 
     var taskListController = function () {
         var taskIdList = new taskIdListController();
-        var taskList = null;
-        var isReady = false;
+        var taskLists = [];
+        var isLoadingTaskList = false;
+        var hasBeforeEventFired = false;
 
         var getTasksUrl = function() {
             var url = [
@@ -79,65 +93,78 @@ var testProgressTasksController = function () {
             return url;
         };
 
-        var initialise = function () {
-            taskIdList.initialise();
+        /**
+         *
+         * @returns {boolean}
+         */
+        var hasCurrentPage = function () {
+            return typeof taskLists[currentPage] !== 'undefined';
+        };
 
-            var taskIdListReadinessCheck = function (callback) {
-                if (taskIdList.isReady()) {
-                    callback();
-                } else {
-                    window.setTimeout(function () {
-                        taskIdListReadinessCheck(callback);
-                    }, 300);
-                }
-            };
-
-            taskIdListReadinessCheck(function () {
-                jQuery.ajax({
-                    type: 'POST',
-                    data:{
-                        'taskIds':taskIdList.getCurrentPageList()
-                    },
-                    error: function(request, textStatus, errorThrown) {
-                        console.log('error');
-                    },
-                    success: function(data, textStatus, request) {
-                        taskList = data;
-                        isReady = true;
-                        console.log("isReady");
-                    },
-                    url: getTasksUrl()
-                });
-            });
-
-            console.log('task list controller init');
+        var isCurrentPageDisplayed = function () {
+            return parseInt($('.tasks').attr('data-page'), 10) === currentPage;
         };
 
         var draw = function () {
-            $('#tasks').append(taskList);
+            var currentTaskList = $('.tasks');
+            if (currentTaskList.length) {
+                currentTaskList.remove();
+            }
+
+            var taskListToRender = $(taskLists[currentPage]).attr('data-page', currentPage);
+
+            $('#tasks').append(taskListToRender);
         };
 
         var update = function () {
-
+            console.log('update');
         };
 
         var render = function () {
-            if (!isReady) {
+            if (!hasBeforeEventFired) {
+                $('body').trigger('tasklist.render.before');
+                hasBeforeEventFired = true;
+            }
+
+            if (!hasCurrentPage()) {
+                if (!isLoadingTaskList) {
+                    isLoadingTaskList = true;
+
+                    taskIdList.initialise(function () {
+                        jQuery.ajax({
+                            type: 'POST',
+                            data:{
+                                'taskIds':taskIdList.getCurrentPageList()
+                            },
+                            error: function(request, textStatus, errorThrown) {
+                                console.log('error');
+                            },
+                            success: function(data, textStatus, request) {
+                                isLoadingTaskList = false;
+                                taskLists[currentPage] = data;
+                            },
+                            url: getTasksUrl()
+                        });
+                    });
+                }
+
+                window.setTimeout(function () {
+                    render();
+                }, 300);
+
                 return;
             }
 
-            if ($('.tasks').length) {
+            if (isCurrentPageDisplayed()) {
                 update();
             } else {
                 draw();
             }
+
+            $('body').trigger('tasklist.render.after');
+            hasBeforeEventFired = false;
         };
 
-        this.isReady = function () {
-            return isReady;
-        };
-
-        this.initialise = initialise;
         this.render = render;
     };
 
@@ -170,7 +197,12 @@ var testProgressTasksController = function () {
             pagination.append('<li class="hidden-lg hidden-md hidden-sm"><span>Next <i class="fa fa-caret-right"></i></span></li>');
 
             pagination.click(function (event) {
-                console.log(event.target);
+                var item = $(event.target).closest('li');
+                var selectedPageNumber = parseInt(item.attr('id').replace('page-', ''), 10);
+
+                $(event.target).trigger('page.click', [selectedPageNumber]);
+
+                event.preventDefault();
             });
 
             tasks.append(pagination);
@@ -178,6 +210,10 @@ var testProgressTasksController = function () {
 
         var isRequired = function () {
             return latestTestData.remote_test.task_count > pageLength;
+        };
+
+        var getPagination = function () {
+            return $('.pagination');
         };
 
         var selectCurrentPage = function () {
@@ -199,6 +235,7 @@ var testProgressTasksController = function () {
         this.initialise = initialise;
         this.isRequired = isRequired;
         this.selectCurrentPage = selectCurrentPage;
+        this.getPagination = getPagination;
         this.isXs = isXs;
     };
 
@@ -214,30 +251,34 @@ var testProgressTasksController = function () {
         isInitialised = true;
 
         tasks.css('display', 'block');
-        busyIndicator.show();
 
         if (paginator.isRequired()) {
             paginator.initialise();
             paginator.selectCurrentPage();
+
+            paginator.getPagination().on('page.click', function (event, selectedPageNumber) {
+                currentPage = selectedPageNumber;
+                paginator.selectCurrentPage();
+                taskList.render();
+            });
         }
 
-        taskList.initialise();
-
-        var taskListReadinessCheck = function (callback) {
-            if (taskList.isReady()) {
-                callback();
-            } else {
-                window.setTimeout(function () {
-                    taskListReadinessCheck(callback);
-                }, 300);
-            }
-        };
-
-        taskListReadinessCheck(function () {
-            taskList.render();
-            busyIndicator.hide();
-        });
+        taskList.render();
     };
+
+    $('body').on('tasklist.render.before', function () {
+        busyIndicator.show();
+        $('.tasks').animate({
+            'opacity':0.6
+        });
+    });
+
+    $('body').on('tasklist.render.after', function () {
+        busyIndicator.hide();
+        $('.tasks').animate({
+            'opacity':1
+        });
+    });
 
     this.initialise = function () {
         initialise();

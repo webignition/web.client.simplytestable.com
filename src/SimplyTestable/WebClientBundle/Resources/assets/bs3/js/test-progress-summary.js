@@ -219,9 +219,9 @@ $(document).ready(function() {
 //                    setCancelCrawlButton();
 //                }
 //
-                window.setTimeout(function() {
-                    refreshTestSummary(10);
-                }, 3000);
+//                window.setTimeout(function() {
+//                    refreshTestSummary(10);
+//                }, 3000);
             },
             url: getProgressUpdateUrl()
         });
