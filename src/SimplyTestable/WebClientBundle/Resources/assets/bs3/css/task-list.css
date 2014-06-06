@@ -6,10 +6,6 @@
     margin-bottom: 20px;
 }
 
-.task-set .url {
-    white-space: nowrap;
-}
-
 .task {
     margin: 10px 0 10px 15px;
 }
@@ -68,10 +64,4 @@
 .queued .meta .state .fa,
 .queued-for-assignment .meta .state .fa {
     color: #f0ad4e;
-}
-
-@media (max-width: 768px) {
-    .task-set .url {
-        white-space: normal;
-    }
 }
