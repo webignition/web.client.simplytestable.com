@@ -218,9 +218,9 @@ var testProgressTasksController = function () {
             var pageCount = Math.ceil(latestTestData.remote_test.task_count / pageLength);
 
             var pagination = $('<ul class="pagination">').append(
-                    '<li class="is-xs disabled hidden-lg hidden-md hidden-sm"><span><i class="fa fa-caret-left"></i> Previous</span></li>'
+                    '<li class="is-xs previous-next previous disabled hidden-lg hidden-md hidden-sm"><span><i class="fa fa-caret-left"></i> Previous</span></li>'
                 ).append(
-                    '<li class="hidden-lg hidden-md hidden-sm disabled"><span>Page <strong id="page-index">1</strong> of <strong>' + pageCount + '</strong></span></li>'
+                    '<li class="hidden-lg hidden-md hidden-sm disabled"><span>Page <strong id="page-index">1</strong> of <strong id="page-count">' + pageCount + '</strong></span></li>'
                 );
 
             for (var pageIndex = 0; pageIndex < pageCount; pageIndex++) {
@@ -230,13 +230,23 @@ var testProgressTasksController = function () {
                 pagination.append('<li class="is-not-xs hidden-xs" id="page-' + (pageIndex + 1) + '"><a href="#"><span>' + startIndex + ' … ' + endIndex + '</span></a></li>');
             }
 
-            pagination.append('<li class="hidden-lg hidden-md hidden-sm"><span>Next <i class="fa fa-caret-right"></i></span></li>');
+            pagination.append('<li class="next previous-next hidden-lg hidden-md hidden-sm"><span>Next <i class="fa fa-caret-right"></i></span></li>');
 
             pagination.click(function (event) {
                 var item = $(event.target).closest('li');
-                var selectedPageNumber = parseInt(item.attr('id').replace('page-', ''), 10);
 
-                $(event.target).trigger('page.click', [selectedPageNumber]);
+                if (item.is('.previous_next')) {
+                    var selectedPageNumber = parseInt(item.attr('id').replace('page-', ''), 10);
+                    $(event.target).trigger('page.click', [selectedPageNumber]);
+                } else {
+                    var pageIndex = parseInt($('#page-index').text(), 10);
+                    var pageCount = parseInt($('#page-count').text(), 10);
+
+                    var selectedPageNumber = pageIndex + 1;
+                    if (selectedPageNumber <= pageCount) {
+                        $(event.target).trigger('page.click', [selectedPageNumber]);
+                    }
+                }
 
                 event.preventDefault();
             });
@@ -254,6 +264,19 @@ var testProgressTasksController = function () {
 
         var selectCurrentPage = function () {
             if (isXs()) {
+                $('#page-index').text(currentPage);
+
+                if (currentPage === 1) {
+                    $('.previous-next.previous').addClass('disabled');
+                    $('.previous-next.next').removeClass('disabled');
+                } else if (currentPage === parseInt($('#page-count').text(), 10)) {
+                    $('.previous-next.previous').removeClass('disabled');
+                    $('.previous-next.next').addClass('disabled');
+                } else {
+                    $('.previous-next.previous').removeClass('disabled');
+                    $('.previous-next.next').removeClass('disabled');
+                }
+
                 return;
             }
 
@@ -353,7 +376,6 @@ var testProgressTasksController = function () {
         }
 
         window.setTimeout(function () {
-            console.log('calling update');
             taskUpdater.update();
         }, 3000);
     });
