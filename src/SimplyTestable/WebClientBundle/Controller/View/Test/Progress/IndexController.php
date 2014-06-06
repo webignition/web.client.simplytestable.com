@@ -65,62 +65,20 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         }
 
         $this->getTestOptionsAdapter()->setRequestData($this->getRemoteTest()->getOptions());
-        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
-//
-//        $remoteTaskIds = ($this->getRequestFilter() == 'all' && is_null($this->getRequestType()))
-//            ? null
-//            : $this->getFilteredTaskCollectionRemoteIds(
-//                $this->getTest(),
-//                $this->getRequestFilter(),
-//                $this->getRequestType()
-//            );
-//
-//        $tasks = $this->getTaskService()->getCollection($this->getTest(), $remoteTaskIds);
-//
-//        if ($this->getRawRequestFilter() != $this->getRequestFilter()) {
-//            return $this->redirect($this->generateUrl('view_test_results_index_index', array(
-//                'website' => $website,
-//                'test_id' => $test_id,
-//                'filter' => $this->getDefaultRequestFilter()
-//            ), true));
-//        }
-//
 
         $viewData = array(
             'website' => $this->getUrlViewValues($website),
             'test' => $this->getTest(),
             'this_url' => $this->getProgressUrl($website, $test_id),
-//            'is_public' => $this->getTestService()->getRemoteTestService()->isPublic(),
-            'is_public_user_test' => $this->getTest()->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
             'remote_test' => $this->requestIsForApplicationJson($this->getRequest()) ? $this->getRemoteTest()->__toArray() : $this->getRemoteTest(),
             'state_label' => $this->getStateLabel(),
-//            'is_owner' => $isOwner,
-//            'type' => $this->getRequestType(),
-//            'type_label' => $this->getTaskTypeLabel($this->getRequestType()),
-//            'filter' => $this->getRequestFilter(),
-//            'filter_label' => ucwords(str_replace('-', ' ', $this->getRequestFilter())),
-//            'task_types' => $this->container->getParameter('task_types'),
-            'test_options' => $testOptions->__toKeyArray(),
             'available_task_types' => $this->getAvailableTaskTypes(),
-            'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
-            'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
-//            'tasks' => $this->getTasksGroupedByUrl($tasks),
-//            'filtered_task_counts' => $this->getFilteredTaskCounts(),
-//            'domain_test_count' => $this->getTestService()->getRemoteTestService()->getFinishedCount($this->getTest()->getWebsite()),
+            'test_options' => $this->getTestOptionsAdapter()->getTestOptions()->__toKeyArray(),
             'test_authentication_enabled' => $this->getRemoteTest()->hasParameter('http-auth-username'),
             'test_cookies_enabled' => $this->getRemoteTest()->hasParameter('cookies'),
             'test_cookies' => $this->getTestCookies(),
-//            'default_css_validation_options' => array(
-//                'ignore-warnings' => 1,
-//                'vendor-extensions' => 'warn',
-//                'ignore-common-cdns' => 1
-//            ),
-//            'default_js_static_analysis_options' => array(
-//                'ignore-common-cdns' => 1,
-//                'jslint-option-maxerr' => 50,
-//                'jslint-option-indent' => 4,
-//                'jslint-option-maxlen' => 256
-//            ),
+            'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
+            'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
         );
 
         return $this->renderCacheableResponse($viewData);
