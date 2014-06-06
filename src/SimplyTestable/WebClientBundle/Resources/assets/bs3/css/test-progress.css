@@ -122,15 +122,15 @@ h2 {
 }
 
 .job-crawling #cancel-button {
-    visibility: hidden;
+    display:none;
 }
 
 #cancel-crawl-button {
-    visibility: hidden;
+    display:none;
 }
 
 .job-crawling #cancel-crawl-button {
-    visibility: visible;
+    display: inherit;
     position: absolute;
     top: 0;
     right: 15px;
@@ -162,6 +162,7 @@ h2 {
 
     .btn-significant {
         margin-top: 20px;
+        width: 100%;
     }
 
     .task-types p {
@@ -183,5 +184,17 @@ h2 {
     .header {
         margin-bottom: 0;
         padding-top: 15px;
+    }
+
+    .test-summary,
+    .side-actions .test-options {
+        display:none;
+    }
+
+    .job-queued .test-summary,
+    .job-in-progress .test-summary,
+    .job-queued .side-actions .test-options,
+    .job-in-progress .side-actions .test-options {
+        display: inherit;
     }
 }
