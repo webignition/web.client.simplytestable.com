@@ -224,7 +224,7 @@
                                 All <span class="badge">{{ filtered_task_counts.all }}</span>
                             </a>
 
-                            {% if test.hasErrors %}
+                            {% if filtered_task_counts.with_errors > 0 %}
                             <a class="btn btn-default alert-danger {{ filter == 'with-errors' ? 'selected' : '' }}"
                                data-target="#test-list"
                                href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-errors', 'type': type }) }}#test-list">
@@ -232,7 +232,7 @@
                             </a>
                             {% endif %}
 
-                            {% if test.hasWarnings %}
+                            {% if filtered_task_counts.with_warnings > 0 %}
                             <a class="btn btn-default alert-info {{ filter == 'with-warnings' ? 'selected' : '' }}"
                                data-target="#test-list"
                                href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-warnings', 'type': type }) }}#test-list">
@@ -240,11 +240,13 @@
                             </a>
                             {% endif %}
 
+                            {% if filtered_task_counts.without_errors > 0 %}
                             <a class="btn btn-default alert-success {{ filter == 'without-errors' ? 'selected' : '' }}"
                                data-target="#test-list"
                                href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'without-errors', 'type': type }) }}#test-list">
                                 Without errors <span class="badge alert-success">{{ filtered_task_counts.without_errors }}</span>
                             </a>
+                            {% endif %}
 
                             {% if filtered_task_counts.skipped > 0 %}
                             <a class="btn btn-default {{ filter == 'skipped' ? 'selected' : '' }}"
