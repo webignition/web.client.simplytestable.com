@@ -286,6 +286,10 @@ a.clear-type .fa {
     .task-type-summary .task-type-count {
         padding-left: 0;
     }
+
+    .summary-stats .label .icon {
+        top: 12px;
+    }
 }
 
 @media (max-width: 768px) {
