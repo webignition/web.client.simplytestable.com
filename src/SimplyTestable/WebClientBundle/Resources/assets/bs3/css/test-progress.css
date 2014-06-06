@@ -139,4 +139,8 @@ h2 {
     .test-options {
         margin-top: 20px;
     }
+
+    .side-actions {
+        text-align: left;
+    }
 }

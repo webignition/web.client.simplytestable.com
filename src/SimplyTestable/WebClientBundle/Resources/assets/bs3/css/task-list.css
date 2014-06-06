@@ -65,3 +65,9 @@
 .queued-for-assignment .meta .state .fa {
     color: #f0ad4e;
 }
+
+@media (max-width: 768px) {
+    .task {
+        margin-left: 0;
+    }
+}
