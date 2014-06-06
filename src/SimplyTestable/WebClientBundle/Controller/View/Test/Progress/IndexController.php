@@ -43,22 +43,13 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
 
     public function indexAction($website, $test_id) {
+        if ($this->getTestService()->isFinished($this->getTest())) {
+            return $this->redirect($this->generateUrl('view_test_results_index_index', array(
+                'website' => $website,
+                'test_id' => $test_id
+            ), true));
+        }
 
-
-//        if ($this->getTest()->getState() == 'failed-no-sitemap') {
-//            return $this->redirect($this->generateUrl('view_test_results_failednourlsdetected_index_index', array(
-//                'website' => $website,
-//                'test_id' => $test_id
-//            ), true));
-//        }
-//
-//        if ($this->getTest()->getState() == 'rejected') {
-//            return $this->redirect($this->generateUrl('view_test_results_rejected_index_index', array(
-//                'website' => $website,
-//                'test_id' => $test_id
-//            ), true));
-//        }
-//
         if ($this->getTest()->getWebsite() != $website) {
             return $this->redirect($this->generateUrl('app_test_redirector', array(
                 'website' => $this->getTest()->getWebsite(),
@@ -72,24 +63,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
                 'test_id' => $test_id
             ), true));
         }
-//
-//        if (($this->getRemoteTest()->getTaskCount() - self::RESULTS_PREPARATION_THRESHOLD) > $this->getTest()->getTaskCount()) {
-//            $urlParameters = array(
-//                'website' => $this->getTest()->getWebsite(),
-//                'test_id' => $test_id
-//            );
-//
-//            if ($this->get('request')->query->has('output')) {
-//                $urlParameters['output'] = $this->get('request')->query->get('output');
-//            }
-//
-//            return $this->redirect($this->generateUrl('view_test_results_preparing_index_index', $urlParameters, true));
-//        } else {
-//            $this->getTaskService()->getCollection($this->getTest());
-//        }
-//
-//        $isOwner = $this->getTestService()->getRemoteTestService()->owns($this->getTest());
-//
+
         $this->getTestOptionsAdapter()->setRequestData($this->getRemoteTest()->getOptions());
         $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
 //
@@ -264,110 +238,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     }
 
 
-    private function getTaskTypeLabel($taskTypeFilter) {
-        if (is_null($taskTypeFilter)) {
-            return 'All';
-        }
-
-        $taskTypeLabel = str_replace(
-            array('css', 'html', 'js', 'link'),
-            array('CSS', 'HTML', 'JS', 'Link'),
-            $taskTypeFilter
-        );
-
-        return $taskTypeLabel;
-    }
-
-
-    private function getFilteredTaskCollectionRemoteIds(Test $test, $taskOutcomeFilter, $taskTypeFilter) {
-        if ($taskTypeFilter == 'javascript static analysis') {
-            $taskTypeFilter = 'js static analysis';
-        }
-
-        $this->getTaskCollectionFilterService()->setOutcomeFilter($taskOutcomeFilter);
-        $this->getTaskCollectionFilterService()->setTypeFilter($taskTypeFilter);
-
-        return $this->getTaskCollectionFilterService()->getRemoteIds();
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService
-     */
-    private function getTaskCollectionFilterService() {
-        $service = $this->container->get('simplytestable.services.taskcollectionfilterservice');
-        $service->setTest($this->getTest());
-
-        return $service;
-    }
-
-
-    /**
-     *
-     * @param array $tasks
-     * @return array
-     */
-    private function getTasksGroupedByUrl($tasks = array()) {
-        $tasksGroupedByUrl = array();
-        foreach ($tasks as $task) {
-            $url = new \webignition\NormalisedUrl\NormalisedUrl($task->getUrl());
-            $url->getConfiguration()->enableConvertIdnToUtf8();
-
-            $url = (string)$url;
-
-            /* @var $task Task */
-            if (!isset($tasksGroupedByUrl[$url])) {
-                $tasksGroupedByUrl[$url] = array();
-            }
-
-            $tasksGroupedByUrl[$url][] = $task;
-        }
-
-        return $tasksGroupedByUrl;
-    }
-
-
-    /**
-     * @return string
-     */
-    private function getNormalisedRequestType() {
-        $type = $this->getRequestType();
-
-        if ($type == 'javascript static analysis') {
-            $type = 'js static analysis';
-        }
-
-        return $type;
-    }
-
-
-    private function getFilteredTaskCounts() {
-        $this->getTaskCollectionFilterService()->setTypeFilter($this->getNormalisedRequestType());
-
-        $filteredTaskCounts = array();
-
-        $this->getTaskCollectionFilterService()->setOutcomeFilter(null);
-        $filteredTaskCounts['all'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
-
-        $filteredTaskCounts['with_errors'] = $this->getFilteredTaskCount('with-errors');
-        $filteredTaskCounts['with_warnings'] = $this->getFilteredTaskCount('with-warnings');
-        $filteredTaskCounts['without_errors'] = $this->getFilteredTaskCount('without-errors');
-        $filteredTaskCounts['skipped'] = $this->getFilteredTaskCount('skipped');
-        $filteredTaskCounts['cancelled'] = $this->getFilteredTaskCount('cancelled');
-
-        return $filteredTaskCounts;
-    }
-
-
-    private function getFilteredTaskCount($outcomeFilter) {
-        $this->getTaskCollectionFilterService()->setTypeFilter($this->getNormalisedRequestType());
-        $this->getTaskCollectionFilterService()->setOutcomeFilter($outcomeFilter);
-
-        return $this->getTaskCollectionFilterService()->getRemoteIdCount();
-    }
-
-
     private function getTestCookies() {
         if ($this->getRemoteTest()->hasParameter('cookies')) {
             return $this->getRemoteTest()->getParameter('cookies');
@@ -380,5 +250,4 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             )
         );
     }
-
 }
