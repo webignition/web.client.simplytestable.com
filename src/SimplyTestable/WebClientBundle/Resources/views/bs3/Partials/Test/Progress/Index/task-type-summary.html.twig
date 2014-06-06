@@ -1,32 +1,75 @@
+{% set selected_task_types = [] %}
+
+{% for task_type_key, task_type_name in available_task_types %}
+
+    {% set is_available = test_options[task_type_key] is defined %}
+    {% set is_selected = is_available and test_options[task_type_key] %}
+
+    {% set task_type_error_count = 0 %}
+
+    {% for task_type in remote_test.tasktypes %}
+        {% if task_type_name == task_type %}
+            {% set task_type_error_count = test.getErrorCountByTaskType(task_type | replace({'JavaScript static analysis': "JS static analysis"})) %}
+        {% endif %}
+    {% endfor %}
+
+    {% set task_type_warning_count = 0 %}
+
+    {% for task_type in remote_test.tasktypes %}
+        {% if task_type_name == task_type %}
+            {% set task_type_warning_count = test.getWarningCountByTaskType(task_type | replace({'JavaScript static analysis': "JS static analysis"})) %}
+        {% endif %}
+    {% endfor %}
+
+    {% if is_selected %}
+        {% set selected_task_types = selected_task_types|merge([task_type_name]) %}
+    {% endif %}
+
+{% endfor %}
+
 <div class="task-type-summary">
 
-    {% for task_type_key, task_type_name in available_task_types %}
-
-        {% set is_available = test_options[task_type_key] is defined %}
-        {% set is_selected = is_available and test_options[task_type_key] %}
-
-        {% set task_type_error_count = 0 %}
-
-        {% for task_type in remote_test.tasktypes %}
-            {% if task_type_name == task_type %}
-                {% set task_type_error_count = test.getErrorCountByTaskType(task_type | replace({'JavaScript static analysis': "JS static analysis"})) %}
-            {% endif %}
-        {% endfor %}
-
-        {% set task_type_warning_count = 0 %}
-
-        {% for task_type in remote_test.tasktypes %}
-            {% if task_type_name == task_type %}
-                {% set task_type_warning_count = test.getWarningCountByTaskType(task_type | replace({'JavaScript static analysis': "JS static analysis"})) %}
-            {% endif %}
-        {% endfor %}
-
-        {% if is_selected %}
-            <div class="row">
-                <span class="col-lg-12 task-type-name">{{ task_type_name }}</span>
-            </div>
-        {% endif %}
-
+    {% for task_type_name in selected_task_types %}
+        <div class="row hidden-xs">
+            <span class="col-lg-12 task-type-name">{{ task_type_name }}</span>
+        </div>
     {% endfor %}
+
+    <span class="hidden-lg hidden-md hidden-sm task-type-names">
+        {{ selected_task_types|slice(0, selected_task_types|length - 1)|join(', ') }}
+        and
+        {{ selected_task_types|slice(selected_task_types|length - 1)|join('') }}
+    </span>
+
+    {#{% for task_type_key, task_type_name in available_task_types %}#}
+
+        {#{% set is_available = test_options[task_type_key] is defined %}#}
+        {#{% set is_selected = is_available and test_options[task_type_key] %}#}
+
+        {#{% set task_type_error_count = 0 %}#}
+
+        {#{% for task_type in remote_test.tasktypes %}#}
+            {#{% if task_type_name == task_type %}#}
+                {#{% set task_type_error_count = test.getErrorCountByTaskType(task_type | replace({'JavaScript static analysis': "JS static analysis"})) %}#}
+            {#{% endif %}#}
+        {#{% endfor %}#}
+
+        {#{% set task_type_warning_count = 0 %}#}
+
+        {#{% for task_type in remote_test.tasktypes %}#}
+            {#{% if task_type_name == task_type %}#}
+                {#{% set task_type_warning_count = test.getWarningCountByTaskType(task_type | replace({'JavaScript static analysis': "JS static analysis"})) %}#}
+            {#{% endif %}#}
+        {#{% endfor %}#}
+
+        {#{% if is_selected %}#}
+            {#<div class="row hidden-xs">#}
+                {#<span class="col-lg-12 task-type-name">{{ task_type_name }}</span>#}
+            {#</div>#}
+
+            {#<span class="hidden-lg hidden-md hidden-sm">{{ task_type_name }}</span>#}
+        {#{% endif %}#}
+
+    {#{% endfor %}#}
 
 </div>

@@ -113,3 +113,29 @@ h2 {
         width: auto;
     }
 }
+
+@media (max-width: 768px) {
+    .header .task-types {
+        margin-top: 15px;
+    }
+
+    .btn-significant span {
+        display: inline;
+    }
+
+    .btn-significant {
+        margin-top: 20px;
+    }
+
+    .task-types p {
+        display: inline;
+    }
+
+    .task-type-summary {
+        display: inline;
+    }
+
+    .test-options {
+        margin-top: 20px;
+    }
+}
