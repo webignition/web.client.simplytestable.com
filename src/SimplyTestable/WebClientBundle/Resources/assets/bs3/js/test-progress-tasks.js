@@ -225,7 +225,7 @@ var testProgressTasksController = function () {
 
             for (var pageIndex = 0; pageIndex < pageCount; pageIndex++) {
                 var startIndex = (pageIndex * pageLength) + 1;
-                var endIndex = startIndex + pageLength - 1;
+                var endIndex = Math.min(startIndex + pageLength - 1, latestTestData.remote_test.task_count);
 
                 pagination.append('<li class="is-not-xs hidden-xs" id="page-' + (pageIndex + 1) + '"><a href="#"><span>' + startIndex + ' … ' + endIndex + '</span></a></li>');
             }
