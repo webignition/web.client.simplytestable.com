@@ -9,8 +9,7 @@ h2 {
  }
 
 .header {
-    margin-bottom: 0;
-    padding-top: 15px;
+    margin-bottom: 40px;
 }
 
 .header .progress {
@@ -142,5 +141,10 @@ h2 {
 
     .side-actions {
         text-align: left;
+    }
+
+    .header {
+        margin-bottom: 0;
+        padding-top: 15px;
     }
 }
