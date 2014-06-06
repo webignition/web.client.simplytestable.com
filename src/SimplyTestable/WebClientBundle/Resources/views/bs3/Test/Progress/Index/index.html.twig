@@ -35,7 +35,7 @@
     {% endjavascripts %}
 {% endblock %}
 
-{% block body_class %} {{ parent() }} full-width {% endblock %}
+{% block body_class %} {{ parent() }} full-width job-{{ remote_test.state }} {% endblock %}
 
 {% block body %}
     {{ parent() }}
@@ -61,7 +61,7 @@
                         <div class="col-lg-12 progress-summary">
                             <div class="progress">
                                 <div id="completion-percent-bar"
-                                     class="progress-bar"
+                                     class="progress-bar {% if remote_test.state == 'crawling' %}progress-bar-warning{% endif %}"
                                      role="progressbar"
                                      aria-valuenow="{{ remote_test.completionpercent }}"
                                      aria-valuemin="0"
@@ -71,7 +71,7 @@
                             <p class="subtle" id="completion-percent-state-label">{{ state_label }}</span><span id="completion-time-remaining">&nbsp;</p>
                         </div>
 
-                        <div class="col-lg-9 col-md-9 col-sm-7 col-xs-12">
+                        <div class="col-lg-9 col-md-9 col-sm-7 col-xs-12 test-summary">
                             <div class="row">
                                 <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 task-queues">
                                     <p>Test Summary:</p>
@@ -87,17 +87,20 @@
                         <div class="col-lg-3 col-md-3 col-sm-5 side-actions">
                             <div class="row">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 buttons">
-                                    <div class="row">
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 retest-col">
-                                            <form id="cancel-form" role="form" method="post" action="{{ path('test_cancel', {website: website.raw, test_id: test.testId}) }}">
-                                                <button id="cancel-button" type="submit" class="btn btn-danger btn-significant side-action">
-                                                    <i class="fa fa-fw fa-power-off"></i>
-                                                    Stop test
-                                                    <span>and go to the results</span>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
+                                    <form id="cancel-form" role="form" method="post" action="{{ path('test_cancel', {website: website.raw, test_id: test.testId}) }}">
+                                        <button id="cancel-button" type="submit" class="btn btn-danger btn-significant side-action">
+                                            <i class="fa fa-fw fa-power-off"></i>
+                                            Stop test
+                                            <span>and go to the results</span>
+                                        </button>
+                                    </form>
+
+                                    <form id="cancel-crawl-form" role="form" method="post" action="{{ path('test_cancel_crawl', {'test_id':test.testId, 'website':test.website}) }}">
+                                        <button id="cancel-crawl-button" type="submit" class="btn btn-warning btn-significant side-action">
+                                            <i class="fa fa-fw fa-power-off"></i>
+                                            Stop finding pages, start testing
+                                        </button>
+                                    </form>
                                 </div>
 
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 test-options">

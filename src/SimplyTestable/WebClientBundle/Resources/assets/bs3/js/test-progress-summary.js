@@ -144,9 +144,25 @@ $(document).ready(function() {
         });
     };
 
+    var initialiseTestSummary = function () {
+        if (['queued', 'in-progress'].indexOf(latestTestData.test.state) !== -1) {
+            //console.log("cp01");
+
+            $('.test-summary', '.test-options').css('visibility', 'visible');
+        }
+    };
+
     var initialiseLiveResults = function () {
         if (['queued', 'in-progress'].indexOf(latestTestData.test.state) !== -1) {
             liveResultsController.initialise();
+        }
+    };
+
+    var setProgressBarStyle = function () {
+        if (latestTestData.test.state === 'crawling') {
+            $('.progress-bar').addClass('progress-bar-warning');
+        } else {
+            $('.progress-bar').removeClass('progress-bar-warning');
         }
     };
 
@@ -193,23 +209,24 @@ $(document).ready(function() {
 
                 latestTestData = data;
 
-//                if (latestTestData.remote_test.state === 'in-progress') {
-//                    $('#test-summary-container').css({
-//                        'display':'block'
-//                    });
-//
-//                    $('#test-list').css({
-//                        'display':'block'
-//                    });
-//                }
-//
+                var body = $('body')
+                var bodyClasses = body.attr('class').split(' ');
 
+                for (var classIndex = 0; classIndex < bodyClasses.length; classIndex++) {
+                    if (bodyClasses[classIndex].match(/^job-/)) {
+                        body.removeClass(bodyClasses[classIndex]);
+                    }
+                }
+
+                body.addClass('job-' + latestTestData.test.state);
 
                 setCompletionPercentValue();
                 setCompletionPercentStateLabel();
                 setTaskQueues();
                 setAmmendments();
+                initialiseTestSummary();
                 initialiseLiveResults();
+                setProgressBarStyle();
 //
 //                if (latestTestData.remote_test.state !== 'failed-no-sitemap') {
 //                    storeEstimatedTimeRemaining();
@@ -231,6 +248,14 @@ $(document).ready(function() {
     setQueueNameMinimumWidths();
 
     $('#cancel-button').click(function () {
+        var button = $(this);
+        $('.fa', button).removeClass('fa-power-off').addClass('fa-spinner fa-spin');
+        button.animate({
+            'opacity':0.6
+        });
+    });
+
+    $('#cancel-crawl-button').click(function () {
         var button = $(this);
         $('.fa', button).removeClass('fa-power-off').addClass('fa-spinner fa-spin');
         button.animate({

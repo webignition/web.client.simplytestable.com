@@ -101,6 +101,42 @@ h2 {
     margin-top: 0;
 }
 
+/*#cancel-button,*/
+/*#cancel-crawl-button {*/
+    /*width: auto;*/
+    /*position: absolute;*/
+    /*right: 15px;*/
+    /*top: 0;*/
+/*}*/
+
+.test-summary,
+.side-actions .test-options {
+    visibility: hidden;
+}
+
+.job-queued .test-summary,
+.job-in-progress .test-summary,
+.job-queued .side-actions .test-options,
+.job-in-progress .side-actions .test-options {
+    visibility: visible;
+}
+
+.job-crawling #cancel-button {
+    visibility: hidden;
+}
+
+#cancel-crawl-button {
+    visibility: hidden;
+}
+
+.job-crawling #cancel-crawl-button {
+    visibility: visible;
+    position: absolute;
+    top: 0;
+    right: 15px;
+    width: auto;
+}
+
 
 @media (min-width: 992px) {
     .side-actions {

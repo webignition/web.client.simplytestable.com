@@ -27,7 +27,7 @@ h2 {
 
 .header {
     margin-bottom: 40px;
-    padding-top: 15px;
+    padding-top: 40px;
 }
 
 .header .details {
@@ -295,5 +295,9 @@ a.clear-type .fa {
 
     .retest-col {
         padding-left: 0;
+    }
+
+    .header {
+        padding-top: 15px;
     }
 }

@@ -79,6 +79,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'test_cookies' => $this->getTestCookies(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
+            'is_public_user_test' => $this->getTest()->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
         );
 
         return $this->renderCacheableResponse($viewData);
