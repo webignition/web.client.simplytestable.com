@@ -289,6 +289,10 @@ a.clear-type .fa {
 }
 
 @media (max-width: 768px) {
+    .side-actions {
+        margin-top: 0;
+    }
+
     .side-actions .buttons {
         margin: 20px 0;
     }
