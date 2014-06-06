@@ -248,6 +248,7 @@ a.clear-type .fa {
         position: absolute;
         bottom: 10px;
         width: auto;
+        right: 0;
     }
 }
 
