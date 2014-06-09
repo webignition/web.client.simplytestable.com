@@ -17,6 +17,15 @@ class ActionTest extends BaseActionTest {
         );
     }
 
+
+    protected function getRequestAttributes() {
+        return array(
+            'website' => 'http://example.com/',
+            'test_id' => 1
+        );
+    }
+
+
     protected function getExpectedResponseStatusCode() {
         return 200;
     }
