@@ -7,7 +7,10 @@ var testProgressTasksController = function () {
     var busyIndicatorController = function () {
 
         this.show = function () {
-            $('h2', tasks).append('<i class="fa fa-spinner fa-spin"></i>');
+            var heading = $('h2', tasks);
+
+            $('.fa', heading).remove();
+            heading.append('<i class="fa fa-spinner fa-spin"></i>');
         };
 
         this.hide = function () {
@@ -88,15 +91,18 @@ var testProgressTasksController = function () {
         };
 
         var retrieve = function (taskIds, callback) {
+            $('body').trigger('tasklist.retrieve.before');
+
             jQuery.ajax({
                 type: 'POST',
                 data:{
                     'taskIds':taskIds
                 },
                 error: function(request, textStatus, errorThrown) {
-//                    console.log('error');
                 },
                 success: function(data, textStatus, request) {
+                    $('body').trigger('tasklist.retrieve.after');
+
                     if (typeof callback === 'function') {
                         callback(data);
                     }
@@ -111,31 +117,34 @@ var testProgressTasksController = function () {
     var taskListController = function () {
         var taskIdList = new taskIdListController();
         var taskLists = [];
-        var isLoadingTaskList = false;
         var hasBeforeEventFired = false;
 
         /**
          *
          * @returns {boolean}
          */
-        var hasCurrentPage = function () {
-            return typeof taskLists[currentPage] !== 'undefined';
+        var hasPage = function (pageNumber) {
+            return typeof taskLists[pageNumber] !== 'undefined';
         };
 
         var isCurrentPageDisplayed = function () {
             return parseInt($('.tasks').attr('data-page'), 10) === currentPage;
         };
 
-        var draw = function () {
+        var isAnyPageDisplayed = function () {
+            return $('.tasks').length > 0;
+        };
+
+        var draw = function (pageNumber) {
             var currentTaskList = $('.tasks');
             if (currentTaskList.length) {
                 currentTaskList.remove();
             }
 
-            $('#tasks').append(taskLists[currentPage]);
+            $('#tasks').append(taskLists[pageNumber]);
         };
 
-        var update = function () {
+        var update = function (pageNumber) {
             $('.task', taskLists[currentPage]).each(function () {
                 var updatedTask = $(this);
                 var inPageTask = $('#' + updatedTask.attr('id'));
@@ -146,62 +155,63 @@ var testProgressTasksController = function () {
             });
         };
 
-        var render = function () {
-            if (!hasBeforeEventFired) {
-                $('body').trigger('tasklist.render.before');
-                hasBeforeEventFired = true;
-            }
+        var render = function (pageNumber) {
+            $('body').trigger('tasklist.render.before', pageNumber);
 
-            if (!hasCurrentPage()) {
-                if (!isLoadingTaskList) {
-                    isLoadingTaskList = true;
+            if (!hasPage(pageNumber)) {
+                taskIdList.initialise(function () {
+                    var retriever = new taskListRetrieveController();
+                    retriever.retrieve(taskIdList.getCurrentPageList(), function (data) {
+                        var taskList = $('<div>').append(data);
+                        $('.tasks', taskList).attr('data-page', pageNumber);
 
-                    taskIdList.initialise(function () {
-                        var retriever = new taskListRetrieveController();
-                        retriever.retrieve(taskIdList.getCurrentPageList(), function (data) {
-                            isLoadingTaskList = false;
-
-                            var taskList = $('<div>').append(data);
-                            $('.tasks', taskList).attr('data-page', currentPage);
-
-                            taskLists[currentPage] = taskList.html();
-                        });
+                        taskLists[pageNumber] = taskList.html();
+                        render(pageNumber);
                     });
-                }
-
-                window.setTimeout(function () {
-                    render();
-                }, 300);
+                });
 
                 return;
             }
 
-
-
-            if (isCurrentPageDisplayed()) {
-                update();
-            } else {
-                draw();
+            if (pageNumber === currentPage) {
+                if (isCurrentPageDisplayed()) {
+                    update(pageNumber);
+                } else {
+                    draw(pageNumber);
+                }
             }
 
-            $('body').trigger('tasklist.render.after');
+            $('body').trigger('tasklist.render.after', [pageNumber]);
             hasBeforeEventFired = false;
         };
 
         var store = function (tasks) {
-            var taskList = $('<div>').append(taskLists[currentPage]);
+            for (var taskListIndex = 1; taskListIndex < taskLists.length; taskListIndex++) {
+                var taskList = $('<div>').append(taskLists[taskListIndex]);
+                var taskListUpdated = false;
 
-            tasks.each(function () {
-                var updatedTask = $(this);
-                $('#' + updatedTask.attr('id'), taskList).replaceWith(updatedTask);
-            });
+                tasks.each(function () {
+                    var updatedTask = $(this);
+                    var currentTask = $('#' + updatedTask.attr('id'), taskList);
 
-            taskLists[currentPage] = taskList.html();
+                    if (currentTask.length) {
+                        currentTask.replaceWith(updatedTask);
+                        taskListUpdated = true;
+                    }
+
+                    //$('#' + updatedTask.attr('id'), taskList).replaceWith(updatedTask);
+                });
+
+                if (taskListUpdated) {
+                    taskLists[taskListIndex] = taskList.html();
+                }
+            }
         };
 
         this.render = render;
         this.store = store;
         this.isCurrentPageDisplayed = isCurrentPageDisplayed;
+        this.isAnyPageDisplayed = isAnyPageDisplayed;
     };
 
     var paginationController = function () {
@@ -218,7 +228,7 @@ var testProgressTasksController = function () {
             var pageCount = Math.ceil(latestTestData.remote_test.task_count / pageLength);
 
             var pagination = $('<ul class="pagination">').append(
-                    '<li class="is-xs previous-next previous disabled hidden-lg hidden-md hidden-sm"><span><i class="fa fa-caret-left"></i> Previous</span></li>'
+                    '<li class="is-xs previous-next previous disabled hidden-lg hidden-md hidden-sm"><a href="#"><span><i class="fa fa-caret-left"></i> Previous</span></a></li>'
                 ).append(
                     '<li class="hidden-lg hidden-md hidden-sm disabled"><span>Page <strong id="page-index">1</strong> of <strong id="page-count">' + pageCount + '</strong></span></li>'
                 );
@@ -230,22 +240,24 @@ var testProgressTasksController = function () {
                 pagination.append('<li class="is-not-xs hidden-xs" id="page-' + (pageIndex + 1) + '"><a href="#"><span>' + startIndex + ' … ' + endIndex + '</span></a></li>');
             }
 
-            pagination.append('<li class="next previous-next hidden-lg hidden-md hidden-sm"><span>Next <i class="fa fa-caret-right"></i></span></li>');
+            pagination.append('<li class="next previous-next hidden-lg hidden-md hidden-sm"><a href="#"><span>Next <i class="fa fa-caret-right"></i></span></a></li>');
 
             pagination.click(function (event) {
                 var item = $(event.target).closest('li');
 
-                if (item.is('.previous_next')) {
-                    var selectedPageNumber = parseInt(item.attr('id').replace('page-', ''), 10);
-                    $(event.target).trigger('page.click', [selectedPageNumber]);
-                } else {
+                if (item.is('.previous-next')) {
                     var pageIndex = parseInt($('#page-index').text(), 10);
                     var pageCount = parseInt($('#page-count').text(), 10);
 
-                    var selectedPageNumber = pageIndex + 1;
+                    var pageNumberChange = (item.is('.next')) ? +1 : -1;
+
+                    var selectedPageNumber = pageIndex + pageNumberChange;
                     if (selectedPageNumber <= pageCount) {
                         $(event.target).trigger('page.click', [selectedPageNumber]);
                     }
+                } else {
+                    var selectedPageNumber = parseInt(item.attr('id').replace('page-', ''), 10);
+                    $(event.target).trigger('page.click', [selectedPageNumber]);
                 }
 
                 event.preventDefault();
@@ -263,21 +275,17 @@ var testProgressTasksController = function () {
         };
 
         var selectCurrentPage = function () {
-            if (isXs()) {
-                $('#page-index').text(currentPage);
+            $('#page-index').text(currentPage);
 
-                if (currentPage === 1) {
-                    $('.previous-next.previous').addClass('disabled');
-                    $('.previous-next.next').removeClass('disabled');
-                } else if (currentPage === parseInt($('#page-count').text(), 10)) {
-                    $('.previous-next.previous').removeClass('disabled');
-                    $('.previous-next.next').addClass('disabled');
-                } else {
-                    $('.previous-next.previous').removeClass('disabled');
-                    $('.previous-next.next').removeClass('disabled');
-                }
-
-                return;
+            if (currentPage === 1) {
+                $('.previous-next.previous').addClass('disabled');
+                $('.previous-next.next').removeClass('disabled');
+            } else if (currentPage === parseInt($('#page-count').text(), 10)) {
+                $('.previous-next.previous').removeClass('disabled');
+                $('.previous-next.next').addClass('disabled');
+            } else {
+                $('.previous-next.previous').removeClass('disabled');
+                $('.previous-next.next').removeClass('disabled');
             }
 
             getItems().each(function () {
@@ -315,6 +323,14 @@ var testProgressTasksController = function () {
             return taskIds;
         };
 
+        var isRetrieving = function () {
+            if (retrieveRequest === null) {
+                return false;
+            }
+
+            return retrieveRequest.readyState !== 4;
+        };
+
         var update = function () {
             var incompleteTaskIds = getTaskIdCollection();
             if (incompleteTaskIds.length) {
@@ -349,27 +365,26 @@ var testProgressTasksController = function () {
             paginator.getPagination().on('page.click', function (event, selectedPageNumber) {
                 currentPage = selectedPageNumber;
                 paginator.selectCurrentPage();
-                taskList.render();
+                taskList.render(currentPage);
             });
         }
 
-        taskList.render();
+        taskList.render(currentPage);
     };
 
-    $('body').on('tasklist.render.before', function () {
-        busyIndicator.show();
-
+    $('body').on('tasklist.render.before', function (event, pageNumber) {
         if (!taskList.isCurrentPageDisplayed()) {
+            busyIndicator.show();
             $('.tasks').animate({
                 'opacity':0.6
             });
         }
     });
 
-    $('body').on('tasklist.render.after', function () {
-        busyIndicator.hide();
+    $('body').on('tasklist.render.after', function (event, pageNumber) {
+        if (taskList.isCurrentPageDisplayed()) {
+            busyIndicator.hide();
 
-        if (!taskList.isCurrentPageDisplayed()) {
             $('.tasks').animate({
                 'opacity':1
             });
@@ -382,7 +397,13 @@ var testProgressTasksController = function () {
 
     $('body').on('tasklist.update.retrieve', function (event, data) {
         taskList.store($('.task', data));
-        taskList.render();
+        taskList.render(currentPage);
+    });
+
+    $('body').on('tasklist.retrieve.before', function () {
+    });
+
+    $('body').on('tasklist.retrieve.after', function () {
     });
 
     this.initialise = function () {
