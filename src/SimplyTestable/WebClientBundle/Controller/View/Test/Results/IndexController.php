@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use Symfony\Component\HttpFoundation\Response;
 
 class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner {
 
@@ -120,7 +121,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'available_task_types' => $this->getAvailableTaskTypes(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
-            //'tasks' => $this->getTasksGroupedByUrl($tasks),
             'tasks' => $tasks,
             'filtered_task_counts' => $this->getFilteredTaskCounts(),
             'domain_test_count' => $this->getTestService()->getRemoteTestService()->getFinishedCount($this->getTest()->getWebsite()),
