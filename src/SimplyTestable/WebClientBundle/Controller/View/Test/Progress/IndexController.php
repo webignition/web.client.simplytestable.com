@@ -43,13 +43,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
 
     public function indexAction($website, $test_id) {
-        if ($this->getTestService()->isFinished($this->getTest())) {
-            return $this->redirect($this->generateUrl('view_test_results_index_index', array(
-                'website' => $website,
-                'test_id' => $test_id
-            ), true));
-        }
-
         if ($this->getTest()->getWebsite() != $website) {
             return $this->redirect($this->generateUrl('app_test_redirector', array(
                 'website' => $this->getTest()->getWebsite(),
@@ -58,10 +51,24 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         }
 
         if ($this->getTestService()->isFinished($this->getTest())) {
-            return $this->redirect($this->generateUrl('view_test_results_index_index', array(
-                'website' => $this->getTest()->getWebsite(),
+            if ($this->getTest()->getState() !== 'failed-no-sitemap') {
+                return $this->redirect($this->generateUrl('view_test_results_index_index', array(
+                    'website' => $this->getTest()->getWebsite(),
+                    'test_id' => $test_id
+                ), true));
+            }
+
+            if ($this->getUserService()->isPublicUser($this->getUser())) {
+                return $this->redirect($this->generateUrl('view_test_results_index_index', array(
+                    'website' => $this->getTest()->getWebsite(),
+                    'test_id' => $test_id
+                ), true));
+            }
+
+            return $this->forward('SimplyTestableWebClientBundle:Test:retest', array(
+                'website' => $website,
                 'test_id' => $test_id
-            ), true));
+            ));
         }
 
         $this->getTestOptionsAdapter()->setRequestData($this->getRemoteTest()->getOptions());
