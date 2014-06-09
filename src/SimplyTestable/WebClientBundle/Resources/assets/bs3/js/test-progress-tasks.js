@@ -319,14 +319,6 @@ var testProgressTasksController = function () {
             return taskIds;
         };
 
-        var isRetrieving = function () {
-            if (retrieveRequest === null) {
-                return false;
-            }
-
-            return retrieveRequest.readyState !== 4;
-        };
-
         var update = function () {
             var incompleteTaskIds = getTaskIdCollection();
             if (incompleteTaskIds.length) {
