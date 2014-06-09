@@ -259,7 +259,7 @@ var testProgressTasksController = function () {
                 event.preventDefault();
             });
 
-            tasks.append(pagination);
+            $('h2', tasks).after(pagination);
         };
 
         var isRequired = function () {
@@ -268,6 +268,10 @@ var testProgressTasksController = function () {
 
         var getPagination = function () {
             return $('.pagination');
+        };
+
+        var isRendered = function () {
+            return $('.pagination').length > 0;
         };
 
         var selectCurrentPage = function () {
@@ -300,6 +304,7 @@ var testProgressTasksController = function () {
         this.selectCurrentPage = selectCurrentPage;
         this.getPagination = getPagination;
         this.isXs = isXs;
+        this.isRendered = isRendered;
     };
 
     var taskUpdateController = function () {
@@ -346,17 +351,6 @@ var testProgressTasksController = function () {
 
         tasks.css('display', 'block');
 
-        if (paginator.isRequired()) {
-            paginator.initialise();
-            paginator.selectCurrentPage();
-
-            paginator.getPagination().on('page.click', function (event, selectedPageNumber) {
-                currentPage = selectedPageNumber;
-                paginator.selectCurrentPage();
-                taskList.render(currentPage);
-            });
-        }
-
         taskList.render(currentPage);
     };
 
@@ -375,6 +369,17 @@ var testProgressTasksController = function () {
 
             $('.tasks').animate({
                 'opacity':1
+            });
+        }
+
+        if (paginator.isRequired() && !paginator.isRendered()) {
+            paginator.initialise();
+            paginator.selectCurrentPage();
+
+            paginator.getPagination().on('page.click', function (event, selectedPageNumber) {
+                currentPage = selectedPageNumber;
+                paginator.selectCurrentPage();
+                taskList.render(currentPage);
             });
         }
 
