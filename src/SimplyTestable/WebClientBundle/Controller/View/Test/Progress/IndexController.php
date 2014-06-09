@@ -119,7 +119,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         }
 
         if ($this->getTest()->getState() == 'crawling') {
-            $label .= ': '. $this->getRemoteTest()->getCrawl()->processed_url_count .' checked, ' . $this->getRemoteTest()->getCrawl()->discovered_url_count.' of '. $this->getRemoteTest()->getCrawl()->limit .' found';        }
+            $label .= ': '. $this->getRemoteTest()->getCrawl()->processed_url_count .' pages examined, ' . $this->getRemoteTest()->getCrawl()->discovered_url_count.' of '. $this->getRemoteTest()->getCrawl()->limit .' found';        }
 
         return $label;
     }
