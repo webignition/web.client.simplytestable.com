@@ -55,7 +55,7 @@ class RequestListener
      * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
      * @return null
      */
-    public function onKernelRequest(GetResponseEvent $event) {                 
+    public function onKernelRequest(GetResponseEvent $event) {
         $this->event = $event;
         
         if (!$this->isApplicationController()) {
