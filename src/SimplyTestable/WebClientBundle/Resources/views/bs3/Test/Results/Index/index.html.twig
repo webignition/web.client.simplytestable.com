@@ -1,5 +1,7 @@
 {% extends 'SimplyTestableWebClientBundle::bs3/base.html.twig' %}
 
+{% set is_readonly = (is_owner == false) %}
+
 {% block title %}Results for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
 {% block stylesheets %}
@@ -76,16 +78,18 @@
                             <div class="row">
                                 <div class="col-lg-12 col-md-12 col-sm-4 col-xs-12 col-md-push-0 col-sm-push-8 col-xs-push-0 buttons">
                                     <div class="row">
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6 col-lg-push-0 col-md-push-0 col-sm-push-0 col-xs-push-6 retest-col">
-                                            <button id="retest-button" type="submit" class="btn btn-default btn-significant side-action" data-offset="0">
-                                                <i class="fa fa-fw fa-refresh"></i>
-                                                Re-test
-                                                <span>Using selected settings</span>
-                                            </button>
-                                        </div>
+                                        {% if is_owner or is_public_user_test %}
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6 col-lg-push-0 col-md-push-0 col-sm-push-0 col-xs-push-6 retest-col">
+                                                <button id="retest-button" type="submit" class="btn btn-default btn-significant side-action" data-offset="0">
+                                                    <i class="fa fa-fw fa-refresh"></i>
+                                                    Re-test
+                                                    <span>Using selected settings</span>
+                                                </button>
+                                            </div>
+                                        {% endif %}
 
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6 col-lg-pull-0 col-md-pull-0 col-sm-pull-0 col-xs-pull-6">
-                                            {% if is_owner and is_public_user_test == false %}
+                                            {% if is_owner and not is_public_user_test %}
                                                 {% set route = (is_public) ? 'app_test_lock' : 'app_test_unlock' %}
                                                 {% set icon = (is_public) ? 'lock' : 'unlock' %}
                                                 {% set label = (is_public) ? 'Lock' : 'Unlock' %}
@@ -100,12 +104,14 @@
                                                 </form>
                                             {% endif %}
 
-                                            <div class="history {% if is_owner and is_public_user_test == false %}history-with-owner{% endif %}">
-                                                <a href="{{ path('view_test_history_index_index', {'filter': test.website}) }}">
-                                                    {{ domain_test_count }} test{% if domain_test_count != 1%}s{% endif %} for this URL
-                                                    <i class="fa fa-caret-right"></i>
-                                                </a>
-                                            </div>
+                                            {% if is_owner or is_public_user_test %}
+                                                <div class="history {% if is_owner and is_public_user_test == false %}history-with-owner{% endif %}">
+                                                    <a href="{{ path('view_test_history_index_index', {'filter': test.website}) }}">
+                                                        {{ domain_test_count }} {% if is_public_user_test %}demo{% endif %} test{% if domain_test_count != 1%}s{% endif %} for this URL
+                                                        <i class="fa fa-caret-right"></i>
+                                                    </a>
+                                                </div>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
@@ -113,18 +119,22 @@
                                 <div class="col-lg-12 col-md-12 col-sm-8 col-xs-12 col-md-pull-0 col-sm-pull-4 col-xs-pull-0 test-options">
                                     {% if test_options['http-authentication'] is defined %}
                                         <div class="test-option">
-                                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/HttpAuthentication:http-authentication.html.twig' %}
+                                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/HttpAuthentication:http-authentication.html.twig' with {'read_only': not is_owner and not is_public_user_test} %}
                                         </div>
                                     {% endif %}
 
                                     {% if test_options['cookies'] is defined %}
                                         <div class="test-option">
-                                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/Cookies:cookies.html.twig' %}
+                                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/Cookies:cookies.html.twig' with {'read_only': not is_owner and not is_public_user_test } %}
                                         </div>
                                     {% endif %}
 
-                                    <span class="collapse-control collapsed link" data-toggle="collapse" data-target="#test-options">
-                                        Choose what to test (with advanced options)
+                                    <span id="test-options-control" class="collapse-control collapsed link" data-toggle="collapse" data-target="#test-options">
+                                        {% if is_owner or is_public_user_test %}
+                                            Choose what to test (with advanced options)
+                                        {% else %}
+                                            See what was tested
+                                        {% endif %}
                                         <i class="fa fa-caret-down"></i>
                                     </span>
                                 </div>

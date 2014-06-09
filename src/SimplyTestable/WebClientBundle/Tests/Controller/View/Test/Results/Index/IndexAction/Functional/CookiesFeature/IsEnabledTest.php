@@ -15,7 +15,7 @@ class IsEnabledTest extends BaseFunctionalTest {
     public function testIsEnabled() {
         $this->assertEquals(
             'enabled',
-            $this->getScopedCrawler()->filter('#cookies-action-badge .status')->text()
+            trim($this->getScopedCrawler()->filter('#cookies-action-badge .status')->text())
         );
     }
 

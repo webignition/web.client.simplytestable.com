@@ -9,20 +9,14 @@
     <i class="fa fa-fw fa-lock icon-primary"></i>
     HTTP authentication
 
-    {% if read_only %}
-        {% if test_authentication_enabled %}
-            <span class="status modal-control" data-for="http-authentication-options-modal">
-                enabled
-            </span>
-        {% else %}
-            not enabled
-        {% endif %}
-    {% else %}
-        <span class="status">{{ (test_authentication_enabled) ? 'enabled' : 'not enabled' }}</span>
-        <span class="modal-control" data-for="http-authentication-options-modal">
-            change
-        </span>
+    <span class="status">{{ (test_authentication_enabled) ? 'enabled' : 'not enabled' }}</span>
+
+    {% if not read_only %}
+    <span class="modal-control" data-for="http-authentication-options-modal">
+        change
+    </span>
     {% endif %}
+
 </div>
 
 <div class="modal" id="http-authentication-options-modal">

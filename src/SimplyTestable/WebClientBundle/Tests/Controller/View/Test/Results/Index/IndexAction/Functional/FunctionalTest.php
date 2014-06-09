@@ -6,7 +6,12 @@ use SimplyTestable\WebClientBundle\Tests\Controller\Base\FunctionalTest as BaseF
 
 abstract class FunctionalTest extends BaseFunctionalTest {
 
+    const RETEST_FEATURE_SELECTOR = '#retest-button';
     const LOCK_UNLOCK_FEATURE_SELECTOR = '#lock-unlock-button';
+    const COOKIES_OPTION_SELECTOR = '[data-for=cookies-options-modal]';
+    const HTTP_AUTH_OPTION_SELECTOR = '[data-for=http-authentication-options-modal]';
+    const HISTORY_LINK_SELECTOR = '.history';
+    const TEST_OPTIONS_SELECTOR = '#test-options-control';
 
     /**
      * user summary
@@ -55,18 +60,62 @@ abstract class FunctionalTest extends BaseFunctionalTest {
         ), $this->getRequestQueryData());
     }
 
-    protected function assertLockUnlockFeatureIsPresent() {
-        $this->assertEquals(
-            1,
-            $this->getScopedCrawler()->filter(self::LOCK_UNLOCK_FEATURE_SELECTOR)->count()
-        );
+    protected function assertRetestFeatureIsPresent() {
+        $this->assertElementBySelector(self::RETEST_FEATURE_SELECTOR, true);
     }
 
+    protected function assertRetestFeatureIsNotPresent() {
+        $this->assertElementBySelector(self::RETEST_FEATURE_SELECTOR, false);
+    }
+
+    protected function assertLockUnlockFeatureIsPresent() {
+        $this->assertElementBySelector(self::LOCK_UNLOCK_FEATURE_SELECTOR, true);
+    }
 
     protected function assertLockUnlockFeatureIsNotPresent() {
+        $this->assertElementBySelector(self::LOCK_UNLOCK_FEATURE_SELECTOR, false);
+    }
+
+    protected function assertCookiesOptionChangeControlIsPresent() {
+        $this->assertElementBySelector(self::COOKIES_OPTION_SELECTOR, true);
+    }
+
+    protected function assertCookiesOptionChangeControlIsNotPresent() {
+        $this->assertElementBySelector(self::COOKIES_OPTION_SELECTOR, false);
+    }
+
+    protected function assertHttpAuthOptionChangeControlIsPresent() {
+        $this->assertElementBySelector(self::HTTP_AUTH_OPTION_SELECTOR, true);
+    }
+
+    protected function assertHttpAuthOptionChangeControlIsNotPresent() {
+        $this->assertElementBySelector(self::HTTP_AUTH_OPTION_SELECTOR, false);
+    }
+
+    protected function assertHistoryLinkIsPresent() {
+        $this->assertElementBySelector(self::HISTORY_LINK_SELECTOR, true);
+    }
+
+    protected function assertHistoryLinkIsNotPresent() {
+        $this->assertElementBySelector(self::HISTORY_LINK_SELECTOR, false);
+    }
+
+    protected function assertTestOptionsChangeControlIsPresent() {
+        foreach ($this->getScopedCrawler()->filter(self::TEST_OPTIONS_SELECTOR) as $node) {
+            $this->assertDomNodeContainsText($node, 'Choose what to test (with advanced options)');
+        }
+    }
+
+    protected function assertTestOptionsChangeControlIsNotPresent() {
+        foreach ($this->getScopedCrawler()->filter(self::TEST_OPTIONS_SELECTOR) as $node) {
+            $this->assertDomNodeContainsText($node, 'See what was tested');
+        }
+    }
+
+    private function assertElementBySelector($selector, $isPresent) {
         $this->assertEquals(
-            0,
-            $this->getScopedCrawler()->filter(self::LOCK_UNLOCK_FEATURE_SELECTOR)->count()
+            ($isPresent) ? 1 : 0,
+            $this->getScopedCrawler()->filter($selector)->count()
         );
     }
 

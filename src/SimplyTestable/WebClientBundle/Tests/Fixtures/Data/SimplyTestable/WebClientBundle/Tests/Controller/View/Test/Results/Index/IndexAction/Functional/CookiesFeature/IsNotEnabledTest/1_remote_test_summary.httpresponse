@@ -3,7 +3,7 @@ Content-Type: application/json
 
 {
    "id":1,
-   "user":"public@simplytestable.com",
+   "user":"public",
    "website":"http:\/\/example.com\/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz",
    "state":"completed",
    "url_count":0,
