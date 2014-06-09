@@ -91,8 +91,6 @@ var testProgressTasksController = function () {
         };
 
         var retrieve = function (taskIds, callback) {
-            $('body').trigger('tasklist.retrieve.before');
-
             jQuery.ajax({
                 type: 'POST',
                 data:{
@@ -101,8 +99,6 @@ var testProgressTasksController = function () {
                 error: function(request, textStatus, errorThrown) {
                 },
                 success: function(data, textStatus, request) {
-                    $('body').trigger('tasklist.retrieve.after');
-
                     if (typeof callback === 'function') {
                         callback(data);
                     }
@@ -398,12 +394,6 @@ var testProgressTasksController = function () {
     $('body').on('tasklist.update.retrieve', function (event, data) {
         taskList.store($('.task', data));
         taskList.render(currentPage);
-    });
-
-    $('body').on('tasklist.retrieve.before', function () {
-    });
-
-    $('body').on('tasklist.retrieve.after', function () {
     });
 
     this.initialise = function () {
