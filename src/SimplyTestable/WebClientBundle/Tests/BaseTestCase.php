@@ -114,6 +114,7 @@ abstract class BaseTestCase extends WebTestCase {
         $request = $this->createWebRequest();        
         $request->attributes->set('_controller', $controllerClass.'::'.$controllerMethod);
         $request->attributes->set('_route', $routeName);
+        $request->headers->add($this->getRequestHeaders());
 
         foreach ($this->getRequestAttributes() as $key => $value) {
             $request->attributes->set($key, $value);
@@ -354,6 +355,11 @@ abstract class BaseTestCase extends WebTestCase {
 
 
     protected function getRequestAttributes() {
+        return array();
+    }
+
+
+    protected function getRequestHeaders() {
         return array();
     }
 
