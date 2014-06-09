@@ -141,7 +141,7 @@ var testProgressTasksController = function () {
         };
 
         var update = function (pageNumber) {
-            $('.task', taskLists[currentPage]).each(function () {
+            $('.task', taskLists[pageNumber]).each(function () {
                 var updatedTask = $(this);
                 var inPageTask = $('#' + updatedTask.attr('id'));
 
