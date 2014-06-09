@@ -46,20 +46,6 @@ $(document).ready(function() {
     };
 
     var setCompletionPercentValue = function () {
-//        if (latestTestData.remote_test.state === 'failed-no-sitemap') {
-//            if (!$('.progress').hasClass('progress-success')) {
-//                $('.progress').addClass('progress-success');
-//            }
-//        } else {
-//            if ($('.progress').hasClass('progress-success')) {
-//                $('.progress').removeClass('progress-success');
-//
-//                if (latestTestData.is_owner) {
-//                    $('#cancel-crawl-form').remove();
-//                }
-//            }
-//        }
-
         var completionPercentBar = $('#completion-percent-bar');
         completionPercentBar.attr('aria-valuenow', latestTestData.remote_test.completion_percent );
 
@@ -146,8 +132,6 @@ $(document).ready(function() {
 
     var initialiseTestSummary = function () {
         if (['queued', 'in-progress'].indexOf(latestTestData.test.state) !== -1) {
-            //console.log("cp01");
-
             $('.test-summary', '.test-options').css('visibility', 'visible');
         }
     };
@@ -194,10 +178,6 @@ $(document).ready(function() {
                 Accept : "application/json"
             },
             complete: function (request) {
-//                console.log('complete');
-//                if (request.getResponseHeader('content-type') && request.getResponseHeader('content-type').indexOf('application/json') === -1) {
-//                    location.reload();
-//                }
             },
             error: function(request, textStatus, errorThrown) {
             },
@@ -227,15 +207,7 @@ $(document).ready(function() {
                 initialiseTestSummary();
                 initialiseLiveResults();
                 setProgressBarStyle();
-//
-//                if (latestTestData.remote_test.state !== 'failed-no-sitemap') {
-//                    storeEstimatedTimeRemaining();
-//                }
-//
-//                if (latestTestData.remote_test.state === 'failed-no-sitemap' && latestTestData.is_owner === true) {
-//                    setCancelCrawlButton();
-//                }
-//
+
                 window.setTimeout(function() {
                     refreshTestSummary(10);
                 }, 3000);
