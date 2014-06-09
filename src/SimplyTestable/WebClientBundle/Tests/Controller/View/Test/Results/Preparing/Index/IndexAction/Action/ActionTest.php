@@ -16,4 +16,12 @@ abstract class ActionTest extends BaseActionTest {
             'test_id' => 1
         );
     }
+
+
+    protected function getRequestAttributes() {
+        return array(
+            'website' => 'http://example.com/',
+            'test_id' => 1
+        );
+    }
 }
