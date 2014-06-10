@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 
 /**
@@ -21,12 +22,12 @@ class RedirectController extends BaseController
     );    
    
     
-    public function testAction($website, $test_id = null) {                
+    public function testAction($website, $test_id = null) {
         $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
         $this->prepareNormalisedWebsiteAndTestId($website, $test_id);   
         
-        if ($this->hasWebsite() && !$this->hasTestId()) {            
+        if ($this->hasWebsite() && !$this->hasTestId()) {
             $latestRemoteTest = $this->getTestService()->getRemoteTestService()->retrieveLatest($this->website);                        
             if ($latestRemoteTest instanceof RemoteTest) {
                 return $this->redirect($this->generateUrl(
@@ -47,10 +48,20 @@ class RedirectController extends BaseController
             return $this->redirect($this->generateUrl('app', array(), true));
         }        
 
-        if ($this->hasWebsite() && $this->hasTestId()) {            
-            if (!$this->getTestService()->has($this->website, $this->test_id, $this->getUser())) {
+        if ($this->hasWebsite() && $this->hasTestId()) {
+            try {
+                if (!$this->getTestService()->has($this->website, $this->test_id, $this->getUser())) {
+                    return $this->redirect($this->getWebsiteUrl($website));
+                }
+            } catch (WebResourceException $webResourceException) {
+                $this->container->get('logger')->error('RedirectController::webResourceException ' . $webResourceException->getResponse()->getStatusCode());
+                $this->container->get('logger')->error('[request]');
+                $this->container->get('logger')->error($webResourceException->getRequest());
+                $this->container->get('logger')->error('[response]');
+                $this->container->get('logger')->error($webResourceException->getResponse());
+
                 return $this->redirect($this->getWebsiteUrl($website));
-            } 
+            }
 
             $test = $this->getTestService()->get($this->website, $this->test_id, $this->getUser());
 
@@ -95,8 +106,8 @@ class RedirectController extends BaseController
             $this->test_id = null;
             return;
         }
-        
-        if (ctype_digit($test_id)) {
+
+        if (is_int($test_id) || ctype_digit($test_id)) {
             $this->website = (string)$normalisedWebsite;
             $this->test_id = (int)$test_id;
             return;
