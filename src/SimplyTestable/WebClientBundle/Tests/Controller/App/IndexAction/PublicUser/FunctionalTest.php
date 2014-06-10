@@ -4,7 +4,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Controller\App\IndexAction\Public
 
 use SimplyTestable\WebClientBundle\Tests\Controller\App\IndexAction\FunctionalTest as BaseFunctionalTest;
 
-class FunctionalTest extends BaseFunctionalTest {
+abstract class FunctionalTest extends BaseFunctionalTest {
     
     public function setUp() {
         parent::setUp();

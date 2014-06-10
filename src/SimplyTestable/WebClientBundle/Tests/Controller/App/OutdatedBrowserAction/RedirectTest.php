@@ -4,7 +4,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Controller\App\OutdatedBrowserAct
 
 use SimplyTestable\WebClientBundle\Tests\BaseSimplyTestableTestCase;
 
-class RedirectTest extends BaseSimplyTestableTestCase {    
+abstract class RedirectTest extends BaseSimplyTestableTestCase {
     
     public function setUp() {
         parent::setUp();       

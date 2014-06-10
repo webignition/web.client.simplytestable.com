@@ -5,7 +5,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Controller\App\IndexAction;
 use SimplyTestable\WebClientBundle\Tests\Controller\App\ActionTest as BaseActionTest;
 use SimplyTestable\WebClientBundle\Model\User;
 
-class ActionTest extends BaseActionTest {
+abstract class ActionTest extends BaseActionTest {
     
     public function setUp() {
         parent::setUp();

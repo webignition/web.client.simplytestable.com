@@ -14,8 +14,8 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li class="text {% if app.request.get('_route') == 'app' %}active{% endif %}">
-                    <a href="{{ path('app') }}">
+                <li class="text {% if app.request.get('_route') == 'view_dashboard_index_index' %}active{% endif %}">
+                    <a href="{{ path('view_dashboard_index_index') }}">
                         <i class="fa fa-tachometer"></i>
                         {% if is_logged_in %}
                             Dashboard

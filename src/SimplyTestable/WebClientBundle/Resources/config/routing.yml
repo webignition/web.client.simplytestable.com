@@ -82,9 +82,9 @@ user_account_plan_subscribe:
     pattern:  /account/plan/subscribe/
     defaults: { _controller: SimplyTestableWebClientBundle:UserAccountPlan:subscribe }    
 
-app:
+view_dashboard_index_index:
     pattern:  /
-    defaults: { _controller: SimplyTestableWebClientBundle:App:index }
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Dashboard/Index:index }
     
 app_current:    
     pattern:  /current/

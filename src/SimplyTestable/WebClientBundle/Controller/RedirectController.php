@@ -52,7 +52,7 @@ class RedirectController extends BaseController
                 return $this->redirect($this->getRedirectorUrl($this->website, $test_id));                  
             }             
             
-            return $this->redirect($this->generateUrl('app', array(), true));
+            return $this->redirect($this->generateUrl('view_dashboard_index_index', array(), true));
         }        
 
         if ($this->hasWebsite() && $this->hasTestId()) {

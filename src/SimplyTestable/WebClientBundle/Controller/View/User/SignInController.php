@@ -13,7 +13,7 @@ class SignInController extends CacheableViewController implements IEFiltered {
     
     public function indexAction() {       
         if ($this->isLoggedIn()) {
-            return $this->redirect($this->generateUrl('app', array(), true));
+            return $this->redirect($this->generateUrl('view_dashboard_index_index', array(), true));
         }
         
         return $this->renderCacheableResponse($this->getTransientViewData());   

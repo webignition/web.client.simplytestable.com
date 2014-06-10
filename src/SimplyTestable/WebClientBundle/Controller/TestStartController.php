@@ -83,12 +83,12 @@ class TestStartController extends TestController
 
         if (!$this->hasWebsite() && $this->isTestStartRequest()) {
             $this->get('session')->setFlash('test_start_error', 'website-blank');
-            return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));
+            return $this->redirect($this->generateUrl('view_dashboard_index_index', $this->getRedirectValues($testOptions), true));
         }
         
         if ($testOptions->hasTestTypes() === false && $this->isTestStartRequest()) {
             $this->get('session')->setFlash('test_start_error', 'no-test-types-selected');
-            return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));                
+            return $this->redirect($this->generateUrl('view_dashboard_index_index', $this->getRedirectValues($testOptions), true));
         }
         
         try {
@@ -104,17 +104,17 @@ class TestStartController extends TestController
         } catch (\Guzzle\Http\Exception\CurlException $curlException) {
             $this->get('session')->setFlash('test_start_error', 'curl-error');
             $this->get('session')->setFlash('curl_error_code', $curlException->getErrorNo());
-            return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));
+            return $this->redirect($this->generateUrl('view_dashboard_index_index', $this->getRedirectValues($testOptions), true));
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {                            
             $this->get('session')->setFlash('test_start_error', 'web_resource_exception');
             
-            return $this->redirect($this->generateUrl('app', $this->getRedirectValues($testOptions), true));
+            return $this->redirect($this->generateUrl('view_dashboard_index_index', $this->getRedirectValues($testOptions), true));
         }
     }
     
     
     private function getStartRedirectUrl(\SimplyTestable\WebClientBundle\Model\TestOptions $testOptions) {
-        $url = $this->generateUrl('app', $this->getRedirectValues($testOptions), true);
+        $url = $this->generateUrl('view_dashboard_index_index', $this->getRedirectValues($testOptions), true);
         return str_replace(array(
             urlencode('{{cookie-name}}'),
             urlencode('{{cookie-value}}')

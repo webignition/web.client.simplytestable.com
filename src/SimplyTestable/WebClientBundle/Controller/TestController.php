@@ -50,7 +50,7 @@ class TestController extends BaseController
         try {
             if (!$this->getTestService()->has($this->getWebsite(), $this->getTestId())) {
                 return $this->redirect($this->generateUrl(
-                    'app',
+                    'view_dashboard_index_index',
                     array(),
                     true
                 ));
@@ -59,7 +59,7 @@ class TestController extends BaseController
             $test = $this->getTestService()->get($this->getWebsite(), $this->getTestId());            
             if (!$this->getTestService()->getRemoteTestService()->authenticate()) {           
                 return $this->redirect($this->generateUrl(
-                    'app',
+                    'view_dashboard_index_index',
                     array(),
                     true
                 ));
@@ -78,7 +78,7 @@ class TestController extends BaseController
         } catch (WebResourceException $webResourceException) {            
             if ($webResourceException->getResponse()->getStatusCode() == 403) {
                 return $this->redirect($this->generateUrl(
-                    'app',
+                    'view_dashboard_index_index',
                     array(),
                     true
                 ));                
@@ -127,7 +127,7 @@ class TestController extends BaseController
             ));           
         } catch (\SimplyTestable\WebClientBundle\Exception\UserServiceException $userServiceException) {
             return $this->redirect($this->generateUrl(
-                'app',
+                'view_dashboard_index_index',
                 array(),
                 true
             ));

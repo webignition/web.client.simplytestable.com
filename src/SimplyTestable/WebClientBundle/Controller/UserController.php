@@ -18,7 +18,7 @@ class UserController extends BaseViewController
     public function signOutSubmitAction() {
         $this->getUserService()->clearUser();
         
-        $response = $this->redirect($this->generateUrl('app', array(), true));         
+        $response = $this->redirect($this->generateUrl('view_dashboard_index_index', array(), true));
         $response->headers->clearCookie('simplytestable-user', '/', '.simplytestable.com');
         
         return $response;    
@@ -148,7 +148,7 @@ class UserController extends BaseViewController
         $redirectValues = json_decode(base64_decode($this->get('request')->request->get('redirect')), true);        
       
         if (!is_array($redirectValues) || !isset($redirectValues['route'])) {
-            return $this->redirect($this->generateUrl('app', array(), true));
+            return $this->redirect($this->generateUrl('view_dashboard_index_index', array(), true));
         }
 
         $parameters = isset($redirectValues['parameters']) ? $redirectValues['parameters'] : array();
@@ -246,7 +246,7 @@ class UserController extends BaseViewController
         $user->setPassword($password);
         $this->getUserService()->setUser($user);
         
-        $response = $this->redirect($this->generateUrl('app', array(), true));
+        $response = $this->redirect($this->generateUrl('view_dashboard_index_index', array(), true));
         
         if ($staySignedIn == "1") {
             $stringifiedUser = $this->getUserSerializerService()->serializeToString($user);
