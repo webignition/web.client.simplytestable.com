@@ -157,14 +157,22 @@ view_test_progress_index_index:
     pattern:  /{website}/{test_id}/progress/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Progress/Index:index }
     requirements:
-        website: ".+" 
+        website: ".+"
+
+view_test_results_index_index_verbose:
+    pattern:  /website/{website}/test_id/{test_id}/results/
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Index:index }
+    requirements:
+       website: ".+"
+       test_id: "\d+"
 
 view_test_results_index_index:
     pattern:  /{website}/{test_id}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Index:index }
     requirements:
        website: ".+"
-       
+       test_id: "\d+"
+
 app_test_lock:
     pattern:  /{website}/{test_id}/lock/
     defaults: { _controller: SimplyTestableWebClientBundle:Test:lock }  

@@ -32,8 +32,10 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     protected function modifyViewName($viewName) {
         return str_replace(array(
             ':Test',
+            'verbose.html.twig'
         ), array(
             ':bs3/Test',
+            'index.html.twig'
         ), $viewName);
     }
 
