@@ -21,7 +21,7 @@ class WithWebsiteAndTestIdTest extends ActionTest {
                 $test_id
             )
         ));
-    }    
+    }
 
 }
 

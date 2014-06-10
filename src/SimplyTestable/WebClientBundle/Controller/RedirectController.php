@@ -24,7 +24,12 @@ class RedirectController extends BaseController
     
     public function testAction($website, $test_id = null) {
         $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
-        
+
+        if ($this->isTaskResultsUrl($website)) {
+            extract($this->getWebsiteAndTestIdAndTaskIdFromWebsite($website));
+            return $this->redirect($this->getTaskResultsUrl($website, $test_id, $task_id));
+        }
+
         $this->prepareNormalisedWebsiteAndTestId($website, $test_id);   
         
         if ($this->hasWebsite() && !$this->hasTestId()) {
@@ -50,7 +55,7 @@ class RedirectController extends BaseController
 
         if ($this->hasWebsite() && $this->hasTestId()) {
             try {
-                if (!$this->getTestService()->has($this->website, $this->test_id, $this->getUser())) {
+                if (!$this->getTestService()->has($this->website, $this->test_id)) {
                     return $this->redirect($this->getWebsiteUrl($website));
                 }
             } catch (WebResourceException $webResourceException) {
@@ -72,9 +77,8 @@ class RedirectController extends BaseController
             }              
         }      
     }
-    
+
     public function taskAction($website, $test_id = null, $task_id = null) {
-        $this->getTestService()->setUser($this->getUser());
         return $this->redirect($this->getTaskResultsUrl($website, $test_id, $task_id));
     }
     
@@ -172,4 +176,29 @@ class RedirectController extends BaseController
     private function getTestService() {
         return $this->container->get('simplytestable.services.testservice');
     }
+
+
+    /**
+     * @param $website
+     * @return bool
+     */
+    private function isTaskResultsUrl($website) {
+        return preg_match('/\/[0-9]+\/[0-9]+\/results$/', $website) > 0;
+    }
+
+
+    private function getWebsiteAndTestIdAndTaskIdFromWebsite($website) {
+        $pathParts = explode('/', $website);
+        array_pop($pathParts);
+
+        $task_id = array_pop($pathParts);
+        $test_id = array_pop($pathParts);
+
+        return [
+            'website' => implode("/", $pathParts),
+            'test_id' => $test_id,
+            'task_id' => $task_id
+        ];
+    }
+
 }
