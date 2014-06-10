@@ -15,7 +15,7 @@ class MisinterpretedRequestWebsiteTest extends ActionTest {
 
         $this->performActionTest(array(
             'statusCode' => 302,
-            'redirectPath' => '/http://example.com//123/456/results/'
+            'redirectPath' => '/website/http://example.com//test_id/123/task_id/456/results/'
         ), array(
             'postData' => array(
                 'website' => $website,

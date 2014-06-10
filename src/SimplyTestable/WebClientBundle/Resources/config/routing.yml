@@ -130,13 +130,21 @@ view_test_results_partial_finishedsummary_dummy:
     pattern:  /test/finished-summary-dummy/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Partial/FinishedSummary/Dummy:index }
 
+view_test_task_results_index_index_verbose:
+    pattern:  /website/{website}/test_id/{test_id}/task_id/{task_id}/results/
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Task/Results/Index:index }
+    requirements:
+        website: ".+"
+        test_id: "\d+"
+        task_id: "\d+"
+
 view_test_task_results_index_index:
     pattern:  /{website}/{test_id}/{task_id}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Task/Results/Index:index }
     requirements:
         website: ".+"
         test_id: "\d+"
-        task_id: "\d+" 
+        task_id: "\d+"
         
 app_test_url_limit_notification:
     pattern:  /{website}/{test_id}/url-limit-notification/

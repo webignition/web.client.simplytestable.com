@@ -26,8 +26,10 @@ class RedirectController extends BaseController
         $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
 
         if ($this->isTaskResultsUrl($website)) {
-            extract($this->getWebsiteAndTestIdAndTaskIdFromWebsite($website));
-            return $this->redirect($this->getTaskResultsUrl($website, $test_id, $task_id));
+            return $this->redirect($this->generateUrl(
+                'view_test_task_results_index_index_verbose',
+                $this->getWebsiteAndTestIdAndTaskIdFromWebsite($website))
+            );
         }
 
         $this->prepareNormalisedWebsiteAndTestId($website, $test_id);   
