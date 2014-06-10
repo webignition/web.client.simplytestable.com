@@ -27,7 +27,7 @@ class ExceptionController extends Controller
      * @throws \InvalidArgumentException When the exception template does not exist
      */
     public function showAction(FlattenException $exception, DebugLoggerInterface $logger = null, $format = 'html')
-    {        
+    {
         if (!$this->container->get('kernel')->isDebug()) {
             $this->sendDeveloperEmail($exception);
         }       
@@ -117,7 +117,7 @@ class ExceptionController extends Controller
      * 
      * @param \Symfony\Component\HttpKernel\Exception\FlattenException $exception
      */
-    private function sendDeveloperEmail(FlattenException $exception) {                
+    private function sendDeveloperEmail(FlattenException $exception) {
         /* @var $message \MZ\PostmarkBundle\Postmark\Message */
         $message  = $this->get('postmark.message');
         $message->addTo('jon@simplytestable.com');
@@ -125,9 +125,10 @@ class ExceptionController extends Controller
         $message->setTextMessage($this->renderView('SimplyTestableWebClientBundle:Email:exception.txt.twig', array(
             'status_code' => $exception->getStatusCode(),
             'status_text' => '"status text"',
-            'exception' => $exception
-        )));        
-        
+            'exception' => $exception,
+            'request' => (string)$this->container->get('request')
+        )));
+
         $this->getPostmarkSenderService()->send($message);
     }
     
