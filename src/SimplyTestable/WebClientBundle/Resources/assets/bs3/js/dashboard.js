@@ -1,7 +1,24 @@
 $(document).ready(function() {
-//    $('form').submit(function (event) {
-//        event.preventDefault();
-//    });
+    $('.collapse-control').each(function () {
+        var control = $(this);
+        var detail = $(control.attr('data-target'));
+
+        detail.on('shown.bs.collapse', function (event) {
+            var target = $(event.target);
+            var control = $('[data-target=#' + target.attr('id') + ']');
+
+            $('.fa', control).remove();
+            control.append(' <i class="fa fa-caret-up"></i>');
+        });
+
+        detail.on('hidden.bs.collapse', function (event) {
+            var target = $(event.target);
+            var control = $('[data-target=#' + target.attr('id') + ']');
+
+            $('.fa', control).remove();
+            control.append(' <i class="fa fa-caret-down"></i>');
+        });
+    });
 
     $('.buttons button[type=submit]').click(function () {
         var button = $(this);

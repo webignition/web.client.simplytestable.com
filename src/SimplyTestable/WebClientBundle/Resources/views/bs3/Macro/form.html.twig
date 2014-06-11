@@ -1,0 +1,32 @@
+{% macro labelled_checkbox(label, name, test_options, hint, is_disabled) %}
+    {% set disable = (is_disabled) and (test_options[name] is not defined or not test_options[name]) %}
+    {% set check = test_options[name] is defined and test_options[name] %}
+
+    <label class="checkbox {% if disable %}disabled{% endif %}"
+           {% if hint %}title="{{ hint }}"{% endif %}>
+        <input type="checkbox"
+               name="{{ name }}"
+               value="1"
+                {% if check %} checked {% endif %}
+                {% if is_disabled %}disabled{% endif %}>
+        <span class="text">{{ label | raw }}</span>
+    </label>
+{% endmacro %}
+
+{% macro labelled_radio(label, name, value, test_options, title, is_disabled) %}
+    {% set disable = test_options[name] is not defined or ((is_disabled) and test_options[name] != value) %}
+    {% set check = test_options[name] is defined and test_options[name] == value %}
+
+    <label class="radio {% if disable %}disabled{% endif %}" {% if title is defined and not title == '' %}title="{{ title }}"{% endif %}>
+        <input {% if (is_disabled) %}disabled{% endif %} type="radio" name="{{ name }}" value="{{ value }}" {% if check %} checked {% endif %}>
+        {{ label }}
+    </label>
+{% endmacro %}
+
+{% macro labelled_radio_group(options, name, test_options, is_disabled) %}
+    {% import _self as form %}
+
+    {% for option in options %}
+        {{ form.labelled_radio(option.label, name, option.value, test_options, (option.title is defined) ? option.title : '', is_disabled) }}
+    {% endfor %}
+{% endmacro %}

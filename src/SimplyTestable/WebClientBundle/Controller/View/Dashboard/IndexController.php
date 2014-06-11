@@ -36,6 +36,8 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'available_task_types' => $this->getAvailableTaskTypes(),
             'task_types' => $this->container->getParameter('task_types'),
             'test_options' => $testOptions->__toKeyArray(),
+            'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
+            'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
         ];
 
         return $this->renderCacheableResponse($viewData);
@@ -82,7 +84,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             $this->testOptionsAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
             $this->testOptionsAdapter->setAvailableTaskTypes($this->getAvailableTaskTypes());
             $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
-            $this->testOptionsAdapter->setInvertInvertableOptions(true);
 
             if (isset($testOptionsParameters['features'])) {
                 $this->testOptionsAdapter->setAvailableFeatures($testOptionsParameters['features']);
@@ -100,6 +101,34 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     private function defaultAndPersistentTestOptionsToParameterBag() {
         $testOptionsParameters = $this->container->getParameter('test_options');
         return new \Symfony\Component\HttpFoundation\ParameterBag($this->getPersistentValues($testOptionsParameters['names_and_default_values']));
+    }
+
+
+    /**
+     *
+     * @return array
+     */
+    private function getCssValidationCommonCdnsToIgnore() {
+        if (!$this->container->hasParameter('css-validation-ignore-common-cdns')) {
+            return array();
+        }
+
+        return $this->container->getParameter('css-validation-ignore-common-cdns');
+    }
+
+
+    /**
+     *
+     * @return array
+     */
+    private function getJsStaticAnalysisCommonCdnsToIgnore() {
+
+
+        if (!$this->container->hasParameter('js-static-analysis-ignore-common-cdns')) {
+            return array();
+        }
+
+        return $this->container->getParameter('js-static-analysis-ignore-common-cdns');
     }
 
 }
