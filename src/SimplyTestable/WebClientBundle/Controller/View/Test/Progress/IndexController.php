@@ -73,7 +73,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
         $this->getTestOptionsAdapter()->setRequestData($this->getRemoteTest()->getOptions());
 
-        $viewData = array(
+        return $this->renderCacheableResponse([
             'website' => $this->getUrlViewValues($website),
             'test' => $this->getTest(),
             'this_url' => $this->getProgressUrl($website, $test_id),
@@ -84,9 +84,18 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
             'is_public_user_test' => $this->getTest()->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
-        );
-
-        return $this->renderCacheableResponse($viewData);
+            'default_css_validation_options' => array(
+                'ignore-warnings' => 1,
+                'vendor-extensions' => 'warn',
+                'ignore-common-cdns' => 1
+            ),
+            'default_js_static_analysis_options' => array(
+                'ignore-common-cdns' => 1,
+                'jslint-option-maxerr' => 50,
+                'jslint-option-indent' => 4,
+                'jslint-option-maxlen' => 256
+            ),
+        ]);
     }
 
 
