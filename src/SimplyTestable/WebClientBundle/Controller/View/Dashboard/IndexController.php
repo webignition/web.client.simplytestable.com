@@ -17,8 +17,9 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     }
     
     public function indexAction() {
-        var_dump("cp01");
-        exit();
+        $viewData = [];
+
+        return $this->renderCacheableResponse($viewData);
     }
 
     public function getCacheValidatorParameters() {        
