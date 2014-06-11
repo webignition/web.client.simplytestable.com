@@ -44,34 +44,79 @@
         {% endif %}
     </div>
 
-    {#<div class="header">#}
-        {#<div class="container">#}
-            {#<div class="row">#}
-                {#<div class="col-lg-12">#}
-                    {#<h1>#}
-                        {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/History:heading-content.html.twig' %}#}
-                    {#</h1>#}
+    <div class="header">
+        <div class="container">
+            <form id="test-start-form" method="post" action="{{ path('test_start') }}">
+                <div class="col-lg-10">
+                    <label for="website" class="sr-only">
+                        What website or page do you want to test?
+                    </label>
+                    <input id="website"
+                           type="text"
+                           name="website"
+                           class="form-control"
+                           placeholder="Enter the address of the site or web page you want to test">
 
-                    {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/History:url-filter.html.twig' %}#}
 
-                    {#{% if test_list.maxresults > 0 %}#}
-                        {#{% if pagination_page_numbers|length > 0 %}#}
-                            {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/History:pagination-content.html.twig' %}#}
-                        {#{% endif %}#}
-                    {#{% endif %}#}
-                {#</div>#}
-            {#</div>#}
-        {#</div>#}
-    {#</div>#}
+                            <p class="sr-only">What tests do you want to carry out?</p>
+                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Dashboard/TaskTypes:task-types.html.twig' %}
 
-    {#<div class="container">#}
-        {#<div class="row">#}
-            {#<div class="col-lg-8 col-md-10 col-sm-12" id="finished-tests">#}
-                {#{% for test in test_list.get %}#}
-                    {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Summary:finished.html.twig' %}#}
-                {#{% endfor %}#}
-            {#</div>#}
-        {#</div>#}
-    {#</div>#}
+                </div>
+                <div class="col-lg-2 buttons">
+                    <button class="btn btn-primary" type="submit" name="full-single" value="full">
+                        <i class="fa fa-fw fa-globe"></i>
+                        Test entire site
+                    </button>
+                    <button class="btn btn-default" type="submit" name="full-single" value="single">
+                        <i class="fa fa-fw fa-circle-o"></i>
+                        Test this page only
+                    </button>
+                </div>
+
+                <div class="row input-field">
+                    <div class="col-lg-12">
+
+                    </div>
+                </div>
+
+                    {#<div class="col-lg-12">#}
+                        {#<div class="input-group input-group-lg">#}
+                            {#<input type="text" class="form-control" placeholder="Enter the address of the site or web page you want to test">#}
+                            {#<span class="input-group-btn">#}
+                                {#<button class="btn btn-primary" type="submit" name="full-single" value="full">Test full site</button>#}
+                                {#<button class="btn btn-default" type="submit" name="full-single" value="single">Test this page only</button>#}
+                            {#</span>#}
+                        {#</div>#}
+                    {#</div>#}
+                    {#<div class="col-lg-8">#}
+                        {#<input type="text" class="form-control input-lg" placeholder="Enter the address of the site or web page you want to test">#}
+                    {#</div>#}
+                    {#<div class="col-lg-2">#}
+                        {#<div class="radio">#}
+                            {#<label>#}
+                                {#<input type="radio" name="full-single" value="full" checked>#}
+                                {#Test entire website#}
+                            {#</label>#}
+                        {#</div>#}
+                        {#<div class="radio">#}
+                            {#<label>#}
+                                {#<input type="radio" name="full-single" value="full">#}
+                                {#Test given page only#}
+                            {#</label>#}
+                        {#</div>#}
+                    {#</div>#}
+                    {#<div class="col-lg-2">#}
+                        {#<button type="submit" class="btn btn-primary">Start!</button>#}
+                    {#</div>#}
+
+                    <!--
+                    input field
+                    full/single radio
+                    go button
+                    -->
+            </form>
+        </div>
+    </div>
+
 
 {% endblock %}

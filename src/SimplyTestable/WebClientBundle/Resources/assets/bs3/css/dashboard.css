@@ -1,0 +1,45 @@
+#website {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    height: auto;
+}
+
+.input-field {
+    margin-bottom: 15px;
+}
+
+.buttons {
+    text-align: right;
+}
+
+.buttons button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.buttons .fa {
+    opacity: 0.8;
+}
+
+.task-type {
+    padding-right: 0;
+}
+
+.task-type .inner {
+    padding-left: 0;
+}
+
+.task-type label {
+    display: block;
+    margin: 0;
+    padding: 6px 12px 6px 26px;
+}
+
+.task-type .description {
+    display: block;
+    opacity: 0.8;
+    font-size: 90%;
+    margin-top: 4px;
+}

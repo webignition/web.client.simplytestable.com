@@ -7,7 +7,13 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 
 class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser {
-    
+
+    /**
+     *
+     * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     */
+    private $testOptionsAdapter = null;
+
     protected function modifyViewName($viewName) {
         return str_replace(
             ':Dashboard',
@@ -17,7 +23,20 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     }
     
     public function indexAction() {
-        $viewData = [];
+        $testStartError = '';
+
+        $this->getTestOptionsAdapter()->setRequestData($this->defaultAndPersistentTestOptionsToParameterBag());
+        if ($testStartError != '') {
+            $this->getTestOptionsAdapter()->setInvertInvertableOptions(true);
+        }
+
+        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
+
+        $viewData = [
+            'available_task_types' => $this->getAvailableTaskTypes(),
+            'task_types' => $this->container->getParameter('task_types'),
+            'test_options' => $testOptions->__toKeyArray(),
+        ];
 
         return $this->renderCacheableResponse($viewData);
     }
@@ -26,6 +45,61 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         return array(
             'rand' => rand()
         );
+    }
+
+
+    /**
+     *
+     * @return array
+     */
+    private function getAvailableTaskTypes() {
+        $this->getAvailableTaskTypeService()->setUser($this->getUser());
+        $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
+
+        return $this->getAvailableTaskTypeService()->get();
+    }
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
+     */
+    private function getAvailableTaskTypeService() {
+        return $this->container->get('simplytestable.services.availabletasktypeservice');
+    }
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     */
+    private function getTestOptionsAdapter() {
+        if (is_null($this->testOptionsAdapter)) {
+            $testOptionsParameters = $this->container->getParameter('test_options');
+
+            $this->testOptionsAdapter = $this->container->get('simplytestable.services.testoptions.adapter.request');
+
+            $this->testOptionsAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
+            $this->testOptionsAdapter->setAvailableTaskTypes($this->getAvailableTaskTypes());
+            $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
+            $this->testOptionsAdapter->setInvertInvertableOptions(true);
+
+            if (isset($testOptionsParameters['features'])) {
+                $this->testOptionsAdapter->setAvailableFeatures($testOptionsParameters['features']);
+            }
+        }
+
+        return $this->testOptionsAdapter;
+    }
+
+
+    /**
+     *
+     * @return \Symfony\Component\HttpFoundation\ParameterBag
+     */
+    private function defaultAndPersistentTestOptionsToParameterBag() {
+        $testOptionsParameters = $this->container->getParameter('test_options');
+        return new \Symfony\Component\HttpFoundation\ParameterBag($this->getPersistentValues($testOptionsParameters['names_and_default_values']));
     }
 
 }

@@ -1,0 +1,20 @@
+<div class="row">
+{% for task_type_key, task_type_name in available_task_types %}
+    <div class="col-lg-3 task-type">
+        <div class="checkbox inner">
+            <label>
+                <input type="checkbox"
+                       value="1"
+                       name="{{ task_type_key }}"
+                        {% if (test_options[task_type_key] is defined and test_options[task_type_key] == 1) %} checked {% endif %}>
+                <span class="name">{{ task_type_name|replace({'JS': 'JavaScript'}) }}</span>
+                <span class="description">
+                    {% if task_types[task_type_key] is defined and task_types[task_type_key]['description'] is defined %}
+                        {{ task_types[task_type_key]['description']|raw }}
+                    {% endif %}
+                </span>
+            </label>
+        </div>
+    </div>
+{% endfor %}
+</div>
