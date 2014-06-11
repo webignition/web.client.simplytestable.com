@@ -1,9 +1,9 @@
 $(document).ready(function() {
-    $('form').submit(function (event) {
-        event.preventDefault();
-    });
+//    $('form').submit(function (event) {
+//        event.preventDefault();
+//    });
 
-    $('.buttons button').click(function () {
+    $('.buttons button[type=submit]').click(function () {
         var button = $(this);
 
         $('.fa', button).removeClass('fa-globe').removeClass('fa-circle-o').addClass('fa-spinner fa-spin');

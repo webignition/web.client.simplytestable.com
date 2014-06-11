@@ -4,19 +4,19 @@
     height: auto;
 }
 
-.input-field {
-    margin-bottom: 15px;
-}
-
 .buttons {
     text-align: right;
 }
 
-.buttons button {
+.buttons button[type=submit] {
     display: block;
     width: 100%;
     text-align: left;
     margin-bottom: 15px;
+}
+
+.buttons .modal {
+    text-align: left;
 }
 
 .buttons .fa {
@@ -42,4 +42,22 @@
     opacity: 0.8;
     font-size: 90%;
     margin-top: 4px;
+}
+
+.buttons .options {
+    margin-top: 30px;
+}
+
+.test-option {
+    margin: 15px 0 0 0;
+}
+
+.modal-action-badge {
+    text-align: left;
+    padding-left: 13px;
+}
+
+.modal-action-badge .actions {
+    display: block;
+    padding-left: 23px;
 }

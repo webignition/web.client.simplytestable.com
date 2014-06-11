@@ -81,9 +81,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'state_label' => $this->getStateLabel(),
             'available_task_types' => $this->getAvailableTaskTypes(),
             'test_options' => $this->getTestOptionsAdapter()->getTestOptions()->__toKeyArray(),
-            'test_authentication_enabled' => $this->getRemoteTest()->hasParameter('http-auth-username'),
-            'test_cookies_enabled' => $this->getRemoteTest()->hasParameter('cookies'),
-            'test_cookies' => $this->getTestCookies(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
             'is_public_user_test' => $this->getTest()->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
@@ -193,19 +190,5 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         }
 
         return $this->container->getParameter('js-static-analysis-ignore-common-cdns');
-    }
-
-
-    private function getTestCookies() {
-        if ($this->getRemoteTest()->hasParameter('cookies')) {
-            return $this->getRemoteTest()->getParameter('cookies');
-        }
-
-        return array(
-            array(
-                'name' => null,
-                'value' => null
-            )
-        );
     }
 }

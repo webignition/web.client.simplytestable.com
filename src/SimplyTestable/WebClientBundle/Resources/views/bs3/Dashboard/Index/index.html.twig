@@ -46,8 +46,10 @@
 
     <div class="header">
         <div class="container">
+            {#{{ dump(test_options) }}#}
+
             <form id="test-start-form" method="post" action="{{ path('test_start') }}">
-                <div class="col-lg-10">
+                <div class="col-lg-9">
                     <label for="website" class="sr-only">
                         What website or page do you want to test?
                     </label>
@@ -62,7 +64,7 @@
                             {% include 'SimplyTestableWebClientBundle:bs3/Partials/Dashboard/TaskTypes:task-types.html.twig' %}
 
                 </div>
-                <div class="col-lg-2 buttons">
+                <div class="col-lg-3 buttons">
                     <button class="btn btn-primary" type="submit" name="full-single" value="full">
                         <i class="fa fa-fw fa-globe"></i>
                         Test entire site
@@ -71,49 +73,22 @@
                         <i class="fa fa-fw fa-circle-o"></i>
                         Test this page only
                     </button>
-                </div>
 
-                <div class="row input-field">
-                    <div class="col-lg-12">
+                    <div class="options">
+                        {% if test_options['http-authentication'] is defined %}
+                            <div class="test-option">
+                                {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/HttpAuthentication:http-authentication.html.twig' %}
+                            </div>
+                        {% endif %}
 
+                        {% if test_options['cookies'] is defined %}
+                            <div class="test-option">
+                                {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/Cookies:cookies.html.twig' %}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 
-                    {#<div class="col-lg-12">#}
-                        {#<div class="input-group input-group-lg">#}
-                            {#<input type="text" class="form-control" placeholder="Enter the address of the site or web page you want to test">#}
-                            {#<span class="input-group-btn">#}
-                                {#<button class="btn btn-primary" type="submit" name="full-single" value="full">Test full site</button>#}
-                                {#<button class="btn btn-default" type="submit" name="full-single" value="single">Test this page only</button>#}
-                            {#</span>#}
-                        {#</div>#}
-                    {#</div>#}
-                    {#<div class="col-lg-8">#}
-                        {#<input type="text" class="form-control input-lg" placeholder="Enter the address of the site or web page you want to test">#}
-                    {#</div>#}
-                    {#<div class="col-lg-2">#}
-                        {#<div class="radio">#}
-                            {#<label>#}
-                                {#<input type="radio" name="full-single" value="full" checked>#}
-                                {#Test entire website#}
-                            {#</label>#}
-                        {#</div>#}
-                        {#<div class="radio">#}
-                            {#<label>#}
-                                {#<input type="radio" name="full-single" value="full">#}
-                                {#Test given page only#}
-                            {#</label>#}
-                        {#</div>#}
-                    {#</div>#}
-                    {#<div class="col-lg-2">#}
-                        {#<button type="submit" class="btn btn-primary">Start!</button>#}
-                    {#</div>#}
-
-                    <!--
-                    input field
-                    full/single radio
-                    go button
-                    -->
             </form>
         </div>
     </div>

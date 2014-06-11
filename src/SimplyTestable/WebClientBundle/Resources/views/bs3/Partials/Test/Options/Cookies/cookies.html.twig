@@ -1,16 +1,31 @@
+{% if remote_test is defined %}
+    {% set test_cookies_enabled = remote_test.hasParameter('cookies') %}
+    {% set test_cookies = (remote_test.hasParameter('cookes') ? remote_test.parameter('cookies') : [{'name': '', 'value': ''}]) %}
+{% else %}
+    {% set test_cookies_enabled = false %}
+    {% set test_cookies = test_options.cookies %}
+{% endif %}
+
 {% if read_only is not defined %}
     {% set read_only = false %}
 {% endif %}
 
-<div id="cookies-action-badge">
+<div id="cookies-action-badge" class="modal-action-badge">
     <i class="fa fa-fw fa-adjust icon-primary"></i>
-    Custom cookies
-    <span class="status">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span>
-    {% if not read_only %}
-    <span class="modal-control" data-for="cookies-options-modal">
-        change
+    <span class="content">
+        Custom cookies
+
+        <span class="actions">
+            <span class="status">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span>
+
+            {% if not read_only %}
+                <span class="modal-control" data-for="cookies-options-modal">
+                    change
+                </span>
+            {% endif %}
+        </span>
+
     </span>
-    {% endif %}
 </div>
 
 <div class="modal" id="cookies-options-modal">

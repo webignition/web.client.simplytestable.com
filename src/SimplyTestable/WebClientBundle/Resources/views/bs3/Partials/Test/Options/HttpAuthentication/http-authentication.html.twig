@@ -1,22 +1,32 @@
-{% set has_http_auth_username = remote_test.hasParameter('http-auth-username') and remote_test.parameter('http-auth-username') !='' %}
-{% set has_http_auth_password = remote_test.hasParameter('http-auth-password') and remote_test.parameter('http-auth-password') !='' %}
+{% if remote_test is defined %}
+    {% set has_http_auth_username = remote_test.hasParameter('http-auth-username') and remote_test.parameter('http-auth-username') !='' %}
+    {% set has_http_auth_password = remote_test.hasParameter('http-auth-password') and remote_test.parameter('http-auth-password') !='' %}
+{% else %}
+    {% set has_http_auth_username = test_options['http-auth-username'] is defined and test_options['http-auth-username'] is not empty %}
+    {% set has_http_auth_password = test_options['http-auth-password'] is defined and test_options['http-auth-password'] is not empty %}
+{% endif %}
+
+{% set test_authentication_enabled = has_http_auth_username or has_http_auth_password %}
 
 {% if read_only is not defined %}
     {% set read_only = false %}
 {% endif %}
 
-<div id="http-authentication-action-badge">
+<div id="http-authentication-action-badge" class="modal-action-badge">
     <i class="fa fa-fw fa-lock icon-primary"></i>
-    HTTP authentication
+    <span class="content">
+        HTTP authentication
 
-    <span class="status">{{ (test_authentication_enabled) ? 'enabled' : 'not enabled' }}</span>
+        <span class="actions">
+            <span class="status">{{ (test_authentication_enabled) ? 'enabled' : 'not enabled' }}</span>
 
-    {% if not read_only %}
-    <span class="modal-control" data-for="http-authentication-options-modal">
-        change
+            {% if not read_only %}
+                <span class="modal-control" data-for="http-authentication-options-modal">
+                change
+            </span>
+            {% endif %}
+        </span>
     </span>
-    {% endif %}
-
 </div>
 
 <div class="modal" id="http-authentication-options-modal">

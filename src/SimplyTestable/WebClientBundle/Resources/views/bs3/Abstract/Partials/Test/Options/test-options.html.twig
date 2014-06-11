@@ -14,7 +14,7 @@
 {% endmacro %}
 
 {% macro labelled_radio(label, name, value, test_options, title, is_disabled) %}
-    {% set disable = (is_disabled) and test_options[name] != value %}
+    {% set disable = test_options[name] is not defined or ((is_disabled) and test_options[name] != value) %}
     {% set check = test_options[name] is defined and test_options[name] == value %}
 
     <label class="radio {% if disable %}disabled{% endif %}" {% if title is defined and not title == '' %}title="{{ title }}"{% endif %}>

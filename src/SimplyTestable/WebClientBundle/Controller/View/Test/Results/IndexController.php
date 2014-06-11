@@ -126,9 +126,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'tasks' => $tasks,
             'filtered_task_counts' => $this->getFilteredTaskCounts(),
             'domain_test_count' => $this->getTestService()->getRemoteTestService()->getFinishedCount($this->getTest()->getWebsite()),
-            'test_authentication_enabled' => $this->getRemoteTest()->hasParameter('http-auth-username'),
-            'test_cookies_enabled' => $this->getRemoteTest()->hasParameter('cookies'),
-            'test_cookies' => $this->getTestCookies(),
             'default_css_validation_options' => array(
                 'ignore-warnings' => 1,
                 'vendor-extensions' => 'warn',
@@ -343,31 +340,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
 
     /**
-     *
-     * @param array $tasks
-     * @return array
-     */
-    private function getTasksGroupedByUrl($tasks = array()) {
-        $tasksGroupedByUrl = array();
-        foreach ($tasks as $task) {
-            $url = new \webignition\NormalisedUrl\NormalisedUrl($task->getUrl());
-            $url->getConfiguration()->enableConvertIdnToUtf8();
-
-            $url = (string)$url;
-
-            /* @var $task Task */
-            if (!isset($tasksGroupedByUrl[$url])) {
-                $tasksGroupedByUrl[$url] = array();
-            }
-
-            $tasksGroupedByUrl[$url][] = $task;
-        }
-
-        return $tasksGroupedByUrl;
-    }
-
-
-    /**
      * @return string
      */
     private function getNormalisedRequestType() {
@@ -404,20 +376,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         $this->getTaskCollectionFilterService()->setOutcomeFilter($outcomeFilter);
 
         return $this->getTaskCollectionFilterService()->getRemoteIdCount();
-    }
-
-
-    private function getTestCookies() {
-        if ($this->getRemoteTest()->hasParameter('cookies')) {
-            return $this->getRemoteTest()->getParameter('cookies');
-        }
-
-        return array(
-            array(
-                'name' => null,
-                'value' => null
-            )
-        );
     }
 
 }
