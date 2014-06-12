@@ -23,17 +23,19 @@
 
     {% javascripts
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stModal.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormErrorHelper.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/modal.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/http-authentication-options-modal.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/cookie-options-modal.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/dashboard.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/form-helper.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 {% endblock %}
 
-{% block body_class %} {{ parent() }} full-width {% endblock %}
+{% block body_class %} {% if test_start_error is defined and test_start_error is not empty %}{{ test_start_error }}{% endif %} {{ parent() }} full-width {% endblock %}
 
 {% block body %}
     {{ parent() }}
@@ -46,10 +48,33 @@
 
     <div class="header">
         <div class="container">
-            {#{{ dump(test_options) }}#}
 
             <form id="test-start-form" method="post" action="{{ path('test_start') }}">
                 <div class="col-lg-9">
+
+                    {% if test_start_error is defined and test_start_error is not empty %}
+                        {% if test_start_error == 'website-blank' %}
+                            <div class="alert alert-danger alert-dismissable" data-for="website">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                <strong>Slow down!</strong> You're going to have to enter a website URL if we're going to get anything done here.
+                            </div>
+                        {% endif %}
+
+                        {% if test_start_error == 'web_resource_exception' %}
+                            <div class="alert alert-danger alert-dismissable" data-for="website">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                Sorry, looks like my testing system is in <strong>read-only</strong> mode whilst some maintenance is happening. Can you try again in a short while?
+                            </div>
+                        {% endif %}
+
+                        {% if test_start_error == 'no-test-types-selected' %}
+                            <div class="alert alert-danger alert-dismissable">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                <strong>Slow down!</strong> Check off the types of test you want to run.
+                            </div>
+                        {% endif %}
+                    {% endif %}
+
                     <label for="website" class="sr-only">
                         What website or page do you want to test?
                     </label>
@@ -57,7 +82,10 @@
                            type="text"
                            name="website"
                            class="form-control"
-                           placeholder="Enter the address of the site or web page you want to test">
+                           placeholder="Enter the address of the site or web page you want to test"
+                            {% if website is defined and website is not empty %}
+                                value="{{ website.raw }}"
+                            {% endif %}>
 
                             <p class="sr-only">What tests do you want to carry out?</p>
                             {% include 'SimplyTestableWebClientBundle:bs3/Partials/Dashboard/TaskTypes:task-types.html.twig' %}

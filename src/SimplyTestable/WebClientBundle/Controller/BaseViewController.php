@@ -262,7 +262,7 @@ abstract class BaseViewController extends BaseController
     
     /**
      *
-     * @param type $flashKey
+     * @param string $flashKey
      * @return string|null 
      */
     protected function getFlash($flashKey, $flush = true) {        

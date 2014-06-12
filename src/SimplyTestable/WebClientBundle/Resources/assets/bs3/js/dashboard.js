@@ -55,5 +55,29 @@ $(document).ready(function() {
         });
     });
 
-    $('#website').stFormHelper().select();
+    if ($('body.no-test-types-selected').length === 0) {
+        $('#website').stFormHelper().select();
+    }
+
+    $('body.no-test-types-selected .task-types').each(function () {
+        var container = $(this);
+        container.animate({ 'opacity':0.6}, function () {
+            container.animate({'opacity': 1.0}, function () {
+                container.animate({ 'opacity':0.6}, function () {
+                    container.animate({'opacity': 1.0});
+                });
+            });
+        });
+    });
+
+//    $('body.no-test-types-selected .task-type label').each(function () {
+//        var label = $(this);
+//        label.animate({
+//            'opacity':0.6
+//        }, function () {
+//            label.animate({
+//                'opacity':1
+//            });
+//        });
+//    });
 });
