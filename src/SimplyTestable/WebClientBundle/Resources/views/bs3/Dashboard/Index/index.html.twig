@@ -51,71 +51,44 @@
 
             <form id="test-start-form" method="post" action="{{ path('test_start') }}">
                 <div class="col-lg-9">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            {% if test_start_error is defined and test_start_error is not empty %}
-                                {% if test_start_error == 'website-blank' %}
-                                    <div class="alert alert-danger alert-dismissable" data-for="website">
-                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                                        <strong>Slow down!</strong> You're going to have to enter a website URL if we're going to get anything done here.
-                                    </div>
-                                {% endif %}
 
-                                {% if test_start_error == 'web_resource_exception' %}
-                                    <div class="alert alert-danger alert-dismissable" data-for="website">
-                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                                        Sorry, looks like my testing system is in <strong>read-only</strong> mode whilst some maintenance is happening. Can you try again in a short while?
-                                    </div>
-                                {% endif %}
+                    {% if test_start_error is defined and test_start_error is not empty %}
+                        {% if test_start_error == 'website-blank' %}
+                            <div class="alert alert-danger alert-dismissable" data-for="website">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                <strong>Slow down!</strong> You're going to have to enter a website URL if we're going to get anything done here.
+                            </div>
+                        {% endif %}
 
-                                {% if test_start_error == 'no-test-types-selected' %}
-                                    <div class="alert alert-danger alert-dismissable">
-                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                                        <strong>Slow down!</strong> Check off the types of test you want to run.
-                                    </div>
-                                {% endif %}
-                            {% endif %}
+                        {% if test_start_error == 'web_resource_exception' %}
+                            <div class="alert alert-danger alert-dismissable" data-for="website">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                Sorry, looks like my testing system is in <strong>read-only</strong> mode whilst some maintenance is happening. Can you try again in a short while?
+                            </div>
+                        {% endif %}
 
-                            <label for="website" class="sr-only">
-                                What website or page do you want to test?
-                            </label>
-                            <input id="website"
-                                   type="text"
-                                   name="website"
-                                   class="form-control"
-                                   placeholder="Enter the address of the site or web page you want to test"
-                                    {% if website is defined and website is not empty %}
+                        {% if test_start_error == 'no-test-types-selected' %}
+                            <div class="alert alert-danger alert-dismissable">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                <strong>Slow down!</strong> Check off the types of test you want to run.
+                            </div>
+                        {% endif %}
+                    {% endif %}
+
+                    <label for="website" class="sr-only">
+                        What website or page do you want to test?
+                    </label>
+                    <input id="website"
+                           type="text"
+                           name="website"
+                           class="form-control"
+                           placeholder="Enter the address of the site or web page you want to test"
+                            {% if website is defined and website is not empty %}
                                 value="{{ website.raw }}"
-                                    {% endif %}>
+                            {% endif %}>
 
                             <p class="sr-only">What tests do you want to carry out?</p>
                             {% include 'SimplyTestableWebClientBundle:bs3/Partials/Dashboard/TaskTypes:task-types.html.twig' %}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            {% import 'SimplyTestableWebClientBundle:bs3/Macro:form.html.twig' as form %}
-
-                            <div class="collapse-control-group">
-                        <span class="collapse-control collapsed link"
-                              data-toggle="collapse"
-                              data-target="#css-validation-options-advanced">
-                            <span class="content">Advanced CSS validation options</span>
-                            <i class="fa fa-fw fa-caret-down"></i>
-                        </span>
-
-                        <span class="collapse-control collapsed link"
-                              data-toggle="collapse"
-                              data-target="#js-static-analysis-options-advanced">
-                            <span class="content">Advanced JavaScript static analysis (and JSLint) options</span>
-                            <i class="fa fa-fw fa-caret-down"></i>
-                        </span>
-                            </div>
-
-                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/CssValidation:advanced-options.html.twig' with {'is_disabled': false, 'container_classes': ['test-options-set']} %}
-                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/JsStaticAnalysis:advanced-options.html.twig' with {'is_disabled': false, 'container_classes': ['test-options-set']} %}
-                        </div>
-                    </div>
                 </div>
                 <div class="col-lg-3 buttons">
                     <button class="btn btn-primary" type="submit" name="full-single" value="full">
@@ -141,7 +114,28 @@
                         {% endif %}
                     </div>
                 </div>
+                <div class="col-lg-12">
+                    {% import 'SimplyTestableWebClientBundle:bs3/Macro:form.html.twig' as form %}
 
+                    <div class="collapse-control-group">
+                        <span class="collapse-control collapsed link"
+                              data-toggle="collapse"
+                              data-target="#css-validation-options-advanced">
+                            <span class="content">Advanced CSS validation options</span>
+                            <i class="fa fa-fw fa-caret-down"></i>
+                        </span>
+
+                        <span class="collapse-control collapsed link"
+                              data-toggle="collapse"
+                              data-target="#js-static-analysis-options-advanced">
+                            <span class="content">Advanced JavaScript static analysis (and JSLint) options</span>
+                            <i class="fa fa-fw fa-caret-down"></i>
+                        </span>
+                    </div>
+
+                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/CssValidation:advanced-options.html.twig' with {'is_disabled': false, 'container_classes': ['test-options-set']} %}
+                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/JsStaticAnalysis:advanced-options.html.twig' with {'is_disabled': false, 'container_classes': ['test-options-set']} %}
+                </div>
 
             </form>
         </div>
