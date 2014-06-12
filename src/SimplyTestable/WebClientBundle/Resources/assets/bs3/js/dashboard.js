@@ -88,8 +88,16 @@ $(document).ready(function() {
 
     var formError = $('#test-start-form .alert');
     if (formError.length > 0) {
-        $('#test-start-form .collapse-control-group').css({
+        var collapseControlGroup = $('#test-start-form .collapse-control-group');
+
+        collapseControlGroup.css({
             'margin-top': formError.outerHeight() + 'px'
+        });
+
+        $('.close', formError).on('click', function () {
+            collapseControlGroup.css({
+                'margin-top': 0
+            });
         });
     }
 });
