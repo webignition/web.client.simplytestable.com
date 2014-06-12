@@ -66,6 +66,10 @@
     margin: 20px 0;
 }
 
+.collapse-control-group {
+    margin-top: 36px;
+}
+
 .collapse-control-group .collapse-control {
     border-right: 1px solid #ccc;
     padding: 0 4px 0 14px;
