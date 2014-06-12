@@ -1,4 +1,20 @@
 $(document).ready(function() {
+    $('#test-start-form').submit(function (event) {
+        var form = $(this);
+
+        $('input[type=checkbox]', this).each(function () {
+            var checkbox = $(this);
+
+            if (checkbox.is(':checked') === false) {
+                var hiddenInput = $('<input type="hidden">');
+                hiddenInput.attr('name', checkbox.attr('name'));
+                hiddenInput.val(0);
+
+                form.append(hiddenInput);
+            }
+        });
+    });
+
     $('.collapse-control-group .collapse-control').each(function () {
         var control = $(this);
         var detail = $(control.attr('data-target'));
