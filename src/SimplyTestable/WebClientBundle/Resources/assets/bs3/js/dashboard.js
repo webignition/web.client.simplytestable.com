@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    $('#test-start-form').submit(function (event) {
+    $('#test-start-form').submit(function () {
         var form = $(this);
 
         $('input[type=checkbox]', this).each(function () {
@@ -86,14 +86,10 @@ $(document).ready(function() {
         });
     });
 
-//    $('body.no-test-types-selected .task-type label').each(function () {
-//        var label = $(this);
-//        label.animate({
-//            'opacity':0.6
-//        }, function () {
-//            label.animate({
-//                'opacity':1
-//            });
-//        });
-//    });
+    var formError = $('#test-start-form .alert');
+    if (formError.length > 0) {
+        $('#test-start-form .collapse-control-group').css({
+            'margin-top': formError.outerHeight() + 'px'
+        });
+    }
 });
