@@ -89,16 +89,24 @@
                 <div class="col-lg-12">
                     {% import 'SimplyTestableWebClientBundle:bs3/Macro:form.html.twig' as form %}
 
-                    <span id="test-options-control"
-                          class="collapse-control collapsed link"
-                          data-toggle="collapse" data-target="#css-validation-options-advanced">
-                        Advanced CSS validation options
-                        <i class="fa fa-caret-down"></i>
-                    </span>
+                    <div class="collapse-control-group">
+                        <span class="collapse-control collapsed link"
+                              data-toggle="collapse"
+                              data-target="#css-validation-options-advanced">
+                            <span class="content">Advanced CSS validation options</span>
+                            <i class="fa fa-fw fa-caret-down"></i>
+                        </span>
+
+                        <span class="collapse-control collapsed link"
+                              data-toggle="collapse"
+                              data-target="#js-static-analysis-options-advanced">
+                            <span class="content">Advanced JavaScript static analysis (and JSLint) options</span>
+                            <i class="fa fa-fw fa-caret-down"></i>
+                        </span>
+                    </div>
 
                     {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/CssValidation:advanced-options.html.twig' with {'is_disabled': false, 'container_classes': ['test-options-set']} %}
-
-
+                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/JsStaticAnalysis:advanced-options.html.twig' with {'is_disabled': false, 'container_classes': ['test-options-set']} %}
                 </div>
 
             </form>
