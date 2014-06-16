@@ -28,10 +28,6 @@ class IndexController extends DashboardController {
 
         $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
 
-//        ini_set('xdebug.var_display_max_depth', 5);
-//        var_dump($this->getRecentActivity());
-//        exit();
-
         $viewData = [
             'available_task_types' => $this->getAvailableTaskTypes(),
             'task_types' => $this->container->getParameter('task_types'),

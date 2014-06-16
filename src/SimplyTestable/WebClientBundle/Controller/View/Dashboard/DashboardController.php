@@ -8,6 +8,8 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 
 abstract class DashboardController extends CacheableViewController implements IEFiltered, RequiresValidUser {
 
+    const RESULTS_PREPARATION_THRESHOLD = 10;
+
     /**
      * @var \SimplyTestable\WebClientBundle\Services\TestService
      */
@@ -141,9 +143,9 @@ abstract class DashboardController extends CacheableViewController implements IE
                 if ($remoteTest->isSingleUrl()) {
                     $this->getTaskService()->getCollection($test);
                 } else {
-                    if (($remoteTest->getTaskCount() - self::RESULTS_PREPARATION_THRESHOLD) - $test->getTaskCount()) {
-                        $this->getTaskService()->getCollection($test);
-                    }
+//                    if (($remoteTest->getTaskCount() - self::RESULTS_PREPARATION_THRESHOLD) - $test->getTaskCount()) {
+//                        $this->getTaskService()->getCollection($test);
+//                    }
                 }
             }
         }
@@ -212,6 +214,15 @@ abstract class DashboardController extends CacheableViewController implements IE
         }
 
         return $tests;
+    }
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TaskService
+     */
+    protected function getTaskService() {
+        return $this->container->get('simplytestable.services.taskservice');
     }
 
 }

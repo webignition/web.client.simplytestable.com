@@ -142,25 +142,8 @@ $(document).ready(function() {
     });
 
     if ($('.requires-results').length > 0) {
-        var getDummyContentUrl = function () {
-            var url = (window.location.protocol + "//" + window.location.hostname + window.location.pathname);
-
-            url = url.replace('/history/', '/test/finished-summary-dummy/')
-            url = url.replace(/\d+\/$/, '');
-
-            return url;
-        }
-
-        jQuery.ajax({
-            dataType: 'html',
-            error: function(request, textStatus, errorThrown) {
-            },
-            success: function(data, textStatus, request) {
-                $('.requires-results').each(function () {
-                    $(this).stResultPreparer().init($('.summary-stats', data));
-                });
-            },
-            url: getDummyContentUrl()
+        $('.requires-results').each(function () {
+            $(this).stResultPreparer().init();
         });
     }
 });

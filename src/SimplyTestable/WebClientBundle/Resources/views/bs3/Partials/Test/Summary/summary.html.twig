@@ -1,7 +1,11 @@
 {% set container_class %}row site state-{{ test.test.state }} {% block container_class %}{% endblock %}{% endset %}
 
-{% if was_not_started is not defined %}
-    was_not_started = false
+{% if icon is not defined %}
+    {% set icon = 'fa-spin fa-spinner' %}
+{% endif %}
+
+{% if url is not defined %}
+    {% set url = path('app_test_redirector', {'website': test.test.website, 'test_id':test.test.testId}) %}
 {% endif %}
 
 {% block test %}
@@ -9,12 +13,12 @@
 <div data-test-id="{{ test.test.testId }}" class="{{ container_class }}">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="row">
-            <a class="url" href="{{ path('view_test_results_index_index', {'website': test.test.website, 'test_id':test.test.testId}) }}">
-                <div class="col-lg-10">
-                    <i class="primary fa faw-fw fa-bar-chart-o"></i>
+            <a class="url" href="{{ url }}">
+                <div class="col-lg-9">
+                    <i class="primary fa faw-fw {{ icon }}"></i>
                     <span class="website">{{ test.test.formattedWebsite }}</span> (#{{ test.test.testId }})
                 </div>
-                <div class="col-lg-2 hidden-xs">
+                <div class="col-lg-3 button hidden-xs">
                     <span class="btn btn-default btn-sm">
                         {% block url_button_label %}url_button_label{% endblock %}
                         <i class="fa fa-caret-right"></i>
@@ -23,55 +27,11 @@
             </a>
         </div>
 
-            {% if test_list is defined and test_list.requiresresults(test.test) %}
-                <div class="row preparing">
-                    <div class="col-lg-12">
-                        <p class="summary">Preparing &hellip;</p>
-                        <div class="progress">
-                            <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
+        {% block pre_stats %}
+        {% endblock %}
 
-
-        <div class="row summary-stats">
-            {#{% if test_list is defined and test_list.requiresresults(test.test) %}#}
-            {#{% else %}#}
-                {% if was_not_started %}
-                    <div class="col-lg-12 reason">
-                        <p>
-                            Stopped before any tests were run.
-                        </p>
-                    </div>
-                {% elseif no_urls %}
-                    <div class="col-lg-12 reason">
-                        <p>
-                            No pages discovered for this demo test. Sign in to enable page discovery via crawling.
-                        </p>
-                    </div>
-                {% else %}
-                    {% block stats %}
-                    {% endblock %}
-                    {#<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 stat">#}
-                        {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:url-count.html.twig' with {'test': test.test, 'remote_test':test.remote_test} %}#}
-                    {#</div>#}
-                    {#<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 stat">#}
-                        {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:task-count.html.twig' with {'test': test.test, 'remote_test':test.remote_test} %}#}
-                    {#</div>#}
-                    {#<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 stat">#}
-                        {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:error-count.html.twig' with {'test': test.test} %}#}
-                    {#</div>#}
-                    {#<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 stat">#}
-                        {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:warning-count.html.twig' with {'test': test.test} %}#}
-                    {#</div>#}
-                    {#<div class="col-lg-4 col-md-4 col-sm-4 hidden-xs">#}
-                        {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:errors-by-task-type.html.twig' with {'test': test.test, 'remote_test':test.remote_test, 'type':null, 'filter':null} %}#}
-                    {#</div>#}
-                {% endif %}
-            {#{% endif %}#}
-        </div>
+        {% block stats %}
+        {% endblock %}
     </div>
 </div>
 {% endblock %}

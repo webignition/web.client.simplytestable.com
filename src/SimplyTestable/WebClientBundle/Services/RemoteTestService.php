@@ -322,11 +322,15 @@ class RemoteTestService extends CoreApplicationService {
                 'offset' => 0
         ));
 
-        $query = array(
-            'exclude-states' => array('rejected')
-        );
-
-        $requestUrl .= '?' . http_build_query($query);
+        $requestUrl .= '?' . http_build_query([
+                'exclude-states' => [
+                    'new',
+                    'preparing',
+                    'resolving',
+                    'resolved',
+                    'rejected'
+                ]
+            ]);
 
         $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
 

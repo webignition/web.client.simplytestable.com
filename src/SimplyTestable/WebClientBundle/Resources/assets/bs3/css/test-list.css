@@ -14,6 +14,10 @@
     color: #5cb85c;
 }
 
+.test-list .site.incomplete .primary {
+    color: #428bca;
+}
+
 .test-list .summary-stats .label {
     display: block;
     text-align: right;
@@ -70,4 +74,30 @@
     top: 50%;
     left: 15px;
     width: 100%;
+}
+
+.test-list .progress {
+    height:4px;
+    margin-bottom:0;
+}
+
+.test-list .button {
+    text-align: right;
+}
+
+.test-list .summary-col {
+    padding-left: 0;
+    padding-right: 8px;
+}
+
+.test-list .summary-col:first-of-type {
+    padding-left: 15px;
+}
+
+.test-list .summary-col .row {
+    margin-bottom: 15px;
+}
+
+.test-list .incomplete .progress {
+    margin-top: 12px;
 }

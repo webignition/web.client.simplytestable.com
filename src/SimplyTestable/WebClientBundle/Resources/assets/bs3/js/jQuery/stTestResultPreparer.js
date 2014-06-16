@@ -97,16 +97,13 @@
 
 
     var methods = {
-        init: function (dummy) {
+        init: function () {
             var test = $(this);
 
             checkStatus(test, function (data) {
                 $('.preparing .summary', test).html(getSummary(data.local_task_count, data.remote_task_count))
                 getNextRemoteTaskIdCollection(test);
             });
-
-//            $('.summary-stats', test).replaceWith(dummy);
-            //$('.summary-stats', test).before('<div class="row preparing"><div class="col-lg-12"><p class="summary">' + getSummary() + '</p><div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div></div></div></div>');
 
             return this;
         }
