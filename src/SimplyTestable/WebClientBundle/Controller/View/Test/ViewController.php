@@ -123,7 +123,7 @@ abstract class ViewController extends BaseViewController {
         );
 
         foreach ($schemeMarkers as $schemeMarker) {
-            if (substr($schemeMarker, 0, strlen($schemeMarker)) == $schemeMarker) {
+            if (substr($url, 0, strlen($schemeMarker)) == $schemeMarker) {
                 return substr($url, strlen($schemeMarker));
             }
         }
