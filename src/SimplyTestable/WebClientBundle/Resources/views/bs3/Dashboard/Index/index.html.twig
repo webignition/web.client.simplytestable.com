@@ -12,6 +12,8 @@
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-options.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/cookies-options-modal.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/btn-significant.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/summary-stats.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-list.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/dashboard.css'
     filter='cssrewrite' %}
     <link rel="stylesheet" href="{{ asset_url }}"/>
@@ -48,7 +50,6 @@
 
     <div class="header">
         <div class="container">
-
             <form id="test-start-form" method="post" action="{{ path('test_start') }}">
                 <div class="col-lg-9">
 
@@ -138,6 +139,30 @@
                 </div>
 
             </form>
+        </div>
+    </div>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 col-sm-12 test-list" id="recent-activity">
+                <h2>Recent activity</h2>
+
+                {% set test_finished_states = [
+                    'completed',
+                    'cancelled',
+                    'failed-no-sitemap',
+                    'rejected'
+                ] %}
+
+                {% for test in test_list.get %}
+                    {% if test.test.state in test_finished_states %}
+                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Summary:finished.html.twig' %}
+                    {% else %}
+                        {{ dump(test.test.state) }}
+                    {% endif %}
+                {% endfor %}
+            </div>
         </div>
     </div>
 

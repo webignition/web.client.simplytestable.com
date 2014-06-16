@@ -309,7 +309,29 @@ class RemoteTestService extends CoreApplicationService {
         $this->addAuthorisationToRequest($request);
         $this->webResourceService->get($request);       
         return true;        
-    } 
+    }
+
+
+    /**
+     * @param int $limit
+     * @return TestList
+     */
+    public function getRecent($limit = 3) {
+        $requestUrl = $this->getUrl('tests_list', array(
+                'limit' => $limit,
+                'offset' => 0
+        ));
+
+        $query = array(
+            'exclude-states' => array('rejected')
+        );
+
+        $requestUrl .= '?' . http_build_query($query);
+
+        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
+
+        return $this->getList($request);
+    }
     
     
     /**

@@ -126,9 +126,9 @@ view_test_results_partial_finishedsummary_index:
         website: ".+"
         test_id: "\d+"
 
-view_test_results_partial_finishedsummary_dummy:
-    pattern:  /test/finished-summary-dummy/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Partial/FinishedSummary/Dummy:index }
+#view_test_results_partial_finishedsummary_dummy:
+#    pattern:  /test/finished-summary-dummy/
+#    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Partial/FinishedSummary/Dummy:index }
 
 view_test_task_results_index_index_verbose:
     pattern:  /website/{website}/test_id/{test_id}/task_id/{task_id}/results/

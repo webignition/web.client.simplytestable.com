@@ -1,0 +1,73 @@
+.test-list .site {
+    padding-bottom: 40px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid #ddd;
+    margin-top: 40px;
+    overflow: hidden;
+}
+
+.test-list .site i.primary {
+    margin-right: 6px;
+}
+
+.test-list .site.finished .primary {
+    color: #5cb85c;
+}
+
+.test-list .summary-stats .label {
+    display: block;
+    text-align: right;
+    width: 100%;
+    margin: 0 0 10px 0;
+}
+
+.test-list .summary-stats .split .count {
+    text-align: right;
+    padding-right: 5px;
+    padding-left: 0;
+}
+
+.test-list .summary-stats .split .name {
+    padding-left: 0;
+    padding-right: 0;
+    text-align: left;
+    height: 20px;
+    margin-top: -2px;
+}
+
+.test-list .summary-stats .label .count {
+    font-size: 20px;
+    line-height: 20px;
+}
+
+.test-list .summary-prose .row {
+    margin-bottom: 6px;
+}
+
+.test-list .summary-prose .task-type-name {
+    text-align: right;
+    padding:0;
+}
+
+.test-list .summary-prose {
+    opacity: 0.8;
+}
+
+.test-list .summary-prose .counts {
+    padding: 0 0 0 5px;
+}
+
+.test-list .summary-prose .multiple .counts .count {
+    display: block;
+}
+
+.test-list .site.requires-results .summary-stats {
+    visibility: hidden;
+}
+
+.test-list .row.preparing {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    width: 100%;
+}

@@ -1,3 +1,13 @@
+h2 {
+    margin: 20px 0 20px 0;
+    font-size: 28px;
+}
+
+.header {
+    margin-bottom: 40px;
+    padding-top: 40px;
+}
+
 #website {
     padding-top: 10px;
     padding-bottom: 10px;

@@ -15,33 +15,65 @@
 {% endif %}
 
 {% if anchor is not defined %}
-    {%  set anchor = '#' %}
+    {%  set anchor = '' %}
 {% endif %}
 
 {% if stacked is not defined %}
     {% set stacked = false %}
 {% endif %}
 
+{% if include_icon is not defined %}
+    {% set include_icon = true %}
+{% endif %}
+
+{% if split is not defined %}
+    {% set split = false %}
+{% endif %}
+
 {% if count == 0 %}
-<span class="{% if stacked %}row{% endif %} label label-{{ count == 0 ? positive : negative }}">
-    <span class="{% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} count">{{ count|number_format }}</span>
-    <span class="{% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} name">{{ name }}{% if count != 1 %}{{ plural_suffix }}{% endif %}{{ name_suffix }}</span>
-    <span class="icon">
+<span class="{% if split %}split{% endif %} {% if stacked or split %}row{% endif %} label label-{{ count == 0 ? positive : negative }}">
+    <span class="{% if split %}col-lg-6 col-md-6 col-sm-6 col-xs-6{% endif %} {% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} count">
+        {{ count|number_format }}
+    </span>
+    <span class="{% if split %}col-lg-6 col-md-6 col-sm-6 col-xs-6{% endif %} {% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} name">
+        {{ name }}{% if count != 1 %}{{ plural_suffix }}{% endif %}{{ name_suffix }}
+    </span>
+
+    {% if include_icon %}
+        <span class="icon">
         {% if count == 0 %}
             <i class="fa fa-check"></i>
         {% else %}
             <i class="fa fa-caret-down"></i>
         {% endif %}
     </span>
+    {% endif %}
 </span>
 {% else %}
-    <a data-target="#test-list" data-target="#test-list" href="{{ anchor }}" class="{% if stacked %}row{% endif %} label label-{{ count == 0 ? positive : negative }}">
-        <span class="{% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} count">{{ count|number_format }}</span>
-        <span class="{% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} name">{{ name }}{% if count != 1 %}{{ plural_suffix }}{% endif %}{{ name_suffix }}</span>
-        <span class="icon">
+    {% if anchor is empty %}
+        <span class="{% if split %}split{% endif %} {% if stacked or split %}row{% endif %} label label-{{ count == 0 ? positive : negative }}">
+    {% else %}
+        <a data-target="#test-list" href="{{ anchor }}" class="{% if split %}split{% endif %} {% if stacked or split %}row{% endif %} label label-{{ count == 0 ? positive : negative }}">
+    {% endif %}
+
+        <span class="{% if split %}col-lg-6 col-md-6 col-sm-6 col-xs-6{% endif %} {% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} count">
+            {{ count|number_format }}
+        </span>
+        <span class="{% if split %}col-lg-6 col-md-6 col-sm-6 col-xs-6{% endif %} {% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} name">
+            {{ name }}{% if count != 1 %}{{ plural_suffix }}{% endif %}{{ name_suffix }}
+        </span>
+
+        {% if include_icon %}
+            <span class="icon">
             <i class="fa fa-caret-down"></i>
         </span>
-    </a>
+        {% endif %}
+
+    {% if anchor is not empty %}
+        </a>
+    {% else %}
+        </span>
+    {% endif %}
 {% endif %}
 
 

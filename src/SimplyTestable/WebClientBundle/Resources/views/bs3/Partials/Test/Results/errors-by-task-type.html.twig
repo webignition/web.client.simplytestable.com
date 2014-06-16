@@ -1,28 +1,36 @@
+{% if type is not defined %}
+    {% set type = '' %}
+{% endif %}
+
 {% set span_width %}{% if app.request.attributes.get('_route') == 'view_test_results_index_index' %}6{% else %}4{% endif %}{% endset %}
 {% set is_dashboard = (app.request.attributes.get('_route') != 'view_test_results_index_index') %}
 
-<div class="summary-container summary-prose">
-    {% if test.errorCount > 0 %}
-        <ul>
+<div class="summary-prose">
+    {% if test.errorCount > 0 or test.warningCount > 0 %}
+
         {% for task_type in remote_test.tasktypes %}
             {% set task_error_count = test.getErrorCountByTaskType(task_type | replace({'JavaScript static analysis': "JS static analysis"})) %}
+            {% set task_warning_count = test.getWarningCountByTaskType(task_type | replace({'JavaScript static analysis': "JS static analysis"})) %}
 
-            {% if (task_type | lower == type) %}
-                <li>
-                    {{ task_error_count }} {{ task_type }} error{% if task_error_count != 1 %}s{% endif %}
-                    {% if (task_error_count == 0) %}
-                    <i class="fa fa-check"></i>
-                    {% endif %}
-                </li>
-            {% else %}
-                <li>
-                    <a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId }) }}?filter={{ filter }}&type={{ task_type | lower }}">
-                        {{ task_error_count }} {{ task_type }} error{% if task_error_count != 1 %}s{% endif %}{% if is_dashboard %}<i class="fa fa-caret-right"></i>{% else %}{% if (task_error_count == 0) %}<i class="fa fa-check"></i>{% endif %}{% endif %}
-                    </a>
-                </li>
-            {% endif %}                       
-
-        {% endfor %}                    
-        </ul>
+            {% if task_error_count or task_warning_count %}
+                    <div class="row {% if task_error_count and task_warning_count %}multiple{% endif %}">
+                        <div class="col-lg-5 task-type-name">
+                            <span class="">
+                                {{ task_type }}:
+                            </span>
+                        </div>
+                        <div class="col-lg-7 counts">
+                            <span>
+                                {% if task_error_count %}
+                                    <span class="count">{{ task_error_count }} error{% if task_error_count > 1 %}s{% endif %}</span>
+                                {% endif %}
+                                {% if task_warning_count %}
+                                    <span class="count">{{ task_warning_count }} warning{% if task_warning_count > 1 %}s{% endif %}</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+            {% endif %}
+        {% endfor %}
     {% endif %}
-</div> 
+</div>

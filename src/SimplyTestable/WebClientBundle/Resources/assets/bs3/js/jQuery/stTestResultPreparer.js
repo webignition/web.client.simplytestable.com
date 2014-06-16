@@ -14,7 +14,7 @@
             return 'Preparing summary &hellip;';
         }
 
-        return 'Preparing summary &hellip; retrieved <strong class="local-task-count">'+ localTaskCount +'</strong> results of <strong class="remote-task-count">'+ remoteTaskCount +'</strong>';
+        return 'Preparing &hellip; collected <strong class="local-task-count">'+ localTaskCount +'</strong> results of <strong class="remote-task-count">'+ remoteTaskCount +'</strong>';
     };
 
     var displayTestSummary = function (test) {
@@ -105,8 +105,8 @@
                 getNextRemoteTaskIdCollection(test);
             });
 
-            $('.summary-stats', test).replaceWith(dummy);
-            $('.summary-stats', test).before('<div class="preparing"><p class="summary">' + getSummary() + '</p><div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div></div></div>');
+//            $('.summary-stats', test).replaceWith(dummy);
+            //$('.summary-stats', test).before('<div class="row preparing"><div class="col-lg-12"><p class="summary">' + getSummary() + '</p><div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div></div></div></div>');
 
             return this;
         }

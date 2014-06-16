@@ -163,5 +163,4 @@ $(document).ready(function() {
             url: getDummyContentUrl()
         });
     }
-
 });

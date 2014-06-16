@@ -1,21 +1,56 @@
+{% extends 'SimplyTestableWebClientBundle:bs3/Partials/Test/Summary:summary.html.twig' %}
+
 {% set was_not_started = test.test.state == 'cancelled' and test.remote_test.taskcount == test.remote_test.taskcountbystate.cancelled %}
 {% set no_urls = test.test.state == 'failed-no-sitemap' and test.remote_test.crawl is null %}
 
-<div data-test-id="{{ test.test.testId }}"
-     class="row site state-{{ test.test.state }} {% if was_not_started %}not-started{% endif %} {% if test_list is defined and test_list.requiresresults(test.test) %}requires-results{% endif %}">
+{% block container_class %}finished {% if was_not_started %}not-started{% endif %} {% if test_list is defined and test_list.requiresresults(test.test) %}requires-results{% endif %}{% endblock %}
+
+{% block url_button_label %}View full results{% endblock %}
+
+{% set results_url = path('view_test_results_index_index', {'website': test.test.website, 'test_id': 1}) %}
+
+{% block stats %}
+
+    <div class="col-lg-3">
+        {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+        with { 'count': test.test.urlCount, 'name':'url', 'include_icon': false, 'split': true, 'negative': 'plain', 'positive': 'plain' }
+        %}
+
+        {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+        with { 'count': test.test.taskCount, 'name':'task', 'include_icon': false, 'split': true, 'negative': 'plain', 'positive': 'plain' }
+        %}
+    </div>
+    <div class="col-lg-3">
+        {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+        with { 'count': test.test.errorCount, 'name':'error', 'anchor': [results_url, '?filter=with-errors#test-list']|join(''), 'include_icon': false, 'split': true }
+        %}
+
+        {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+        with { 'count': test.test.warningCount, 'name':'warning', 'anchor': [results_url, '?filter=with-warnings#test-list']|join(''), 'include_icon': false, 'split': true, 'negative': 'primary' }
+        %}
+    </div>
+    <div class="col-lg-6">
+        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:errors-by-task-type.html.twig' with {'test': test.test, 'remote_test':test.remote_test, 'type':null, 'filter':null} %}
+    </div>
+
+{% endblock %}
+
+{% block foo %}
+
+
 
     <div class="col-lg-12">
-        <div class="row">
-            <div class="col-lg-12">
-                <a class="url" href="{{ path('view_test_results_index_index', {'website': test.test.website, 'test_id':test.test.testId}) }}">
-                    <i class="fa fa-bar-chart-o"></i><span class="website">{{ test.test.formattedWebsite }}</span> (#{{ test.test.testId }})
-                    <span class="btn-wrapper">
-                        <span class="btn-spacer-left"></span>
-                        <span class="btn btn-default btn-sm">View full results <i class="fa fa-caret-right"></i></span>
-                    </span>
-                </a>
-            </div>
-        </div>
+        {#<div class="row">#}
+            {#<div class="col-lg-12">#}
+                {#<a class="url" href="{{ path('view_test_results_index_index', {'website': test.test.website, 'test_id':test.test.testId}) }}">#}
+                    {#<i class="primary fa faw-fw fa-bar-chart-o"></i><span class="website">{{ test.test.formattedWebsite }}</span> (#{{ test.test.testId }})#}
+                    {#<span class="btn-wrapper">#}
+                        {#<span class="btn-spacer-left"></span>#}
+                        {#<span class="btn btn-default btn-sm">View full results <i class="fa fa-caret-right"></i></span>#}
+                    {#</span>#}
+                {#</a>#}
+            {#</div>#}
+        {#</div>#}
         <div class="row summary-stats">
             {% if test_list is defined and test_list.requiresresults(test.test) %}
             {% else %}
@@ -53,58 +88,4 @@
 
     </div>
 
-</div>
-
-{#<div data-test-id="{{ test.test.testId }}"#}
-     {#class="site state-{{ test.test.state }} {% if was_not_started %}not-started{% endif %} {% if test_list is defined and test_list.requiresresults(test.test) %}requires-results{% endif %}">#}
-
-    {#<div class="wrapper">#}
-        {#<div>#}
-            {#<a class="url" href="{{ path('view_test_results_index_index', {'website': test.test.website, 'test_id':test.test.testId}) }}">#}
-                {#<i class="fa fa-bar-chart-o"></i><span class="website">{{ test.test.formattedWebsite }}</span>#}
-                {#(#{{ test.test.testId }})#}
-                {#<span class="btn-wrapper">#}
-                    {#<span class="btn-spacer"></span>#}
-                    {#<span class="btn btn-default btn-sm">View full results <i class="fa fa-caret-right"></i></span>#}
-                {#</span>#}
-            {#</a>#}
-
-            {#<div class="row summary-stats">#}
-                {#{% if test_list is defined and test_list.requiresresults(test.test) %}#}
-                {#{% else %}#}
-                    {#{% if was_not_started %}#}
-                {#<div class="col-lg-12">#}
-                        {#<p>#}
-                            {#Stopped before any tests were run.#}
-                        {#</p>#}
-                    {#</div>#}
-                    {#{% elseif no_urls %}#}
-                    {#<div class="col-lg-12">#}
-                        {#<p>#}
-                            {#No urls discovered.#}
-                        {#</p>#}
-                        {#</div>#}
-                    {#{% else %}#}
-                        {#<div class="col-lg-2">#}
-                            {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:url-count.html.twig' with {'test': test.test, 'remote_test':test.remote_test} %}#}
-                        {#</div>#}
-                        {#<div class="col-lg-2">#}
-                            {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:task-count.html.twig' with {'test': test.test, 'remote_test':test.remote_test} %}#}
-                        {#</div>#}
-                        {#<div class="col-lg-2">#}
-                            {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:error-count.html.twig' with {'test': test.test} %}#}
-                        {#</div>#}
-                        {#<div class="col-lg-2">#}
-                            {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:warning-count.html.twig' with {'test': test.test} %}#}
-                        {#</div>#}
-                        {#<div class="col-lg-2">#}
-                            {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:errors-by-task-type.html.twig' with {'test': test.test, 'remote_test':test.remote_test, 'type':null, 'filter':null} %}#}
-                        {#</div>#}
-
-                    {#{% endif %}#}
-                {#{% endif %}#}
-            {#</div>#}
-        {#</div>#}
-    {#</div>#}
-{#</div>#}
-
+{% endblock %}

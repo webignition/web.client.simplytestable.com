@@ -103,6 +103,11 @@ blockquote {
     border-left-color: #ccc;
 }
 
+.label-plain {
+    background-color: #ccc;
+    color: #222;
+}
+
 @media (max-width: 768px) {    
     .navbar a.btn,
     .navbar-form {
