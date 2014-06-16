@@ -18,6 +18,10 @@
     color: #428bca;
 }
 
+.test-list .site.state-crawling .primary {
+    color: #f8b426;
+}
+
 .test-list .summary-stats .label {
     display: block;
     text-align: right;
@@ -104,4 +108,8 @@
 
 .test-list .site {
     min-height: 200px;
+}
+
+.test-list .state-crawling .summary-stats {
+    opacity: 0.8;
 }

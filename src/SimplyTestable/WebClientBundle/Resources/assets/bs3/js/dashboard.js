@@ -213,6 +213,11 @@ $(document).ready(function() {
                 progressBar.css({
                     width: updatedTestCompletionPercent + '%'
                 });
+
+                if (currentTest.attr('data-state') === 'crawling') {
+                    $('.processed-url-count', currentTest).text($('.processed-url-count', updatedTest).text());
+                    $('.discovered-url-count', currentTest).text($('.discovered-url-count', updatedTest).text());
+                }
             });
 
             $('.site', getTestList()).each(function () {

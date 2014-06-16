@@ -9,6 +9,10 @@
     {% if test.test.state in test_finished_states %}
         {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Summary:finished.html.twig' %}
     {% else %}
-        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Summary:incomplete.html.twig' %}
+        {% if test.test.state == 'crawling' %}
+            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Summary:crawling.html.twig' %}
+        {% else %}
+            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Summary:incomplete.html.twig' %}
+        {% endif %}
     {% endif %}
 {% endfor %}
