@@ -149,20 +149,7 @@
             <div class="col-lg-8 col-md-10 col-sm-12 test-list" id="recent-activity">
                 <h2>Recent activity</h2>
 
-                {% set test_finished_states = [
-                    'completed',
-                    'cancelled',
-                    'failed-no-sitemap',
-                    'rejected'
-                ] %}
-
-                {% for test in test_list.get %}
-                    {% if test.test.state in test_finished_states %}
-                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Summary:finished.html.twig' %}
-                    {% else %}
-                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Summary:incomplete.html.twig' %}
-                    {% endif %}
-                {% endfor %}
+                {% include 'SimplyTestableWebClientBundle:bs3/Partials/Dashboard:recent-tests.html.twig' %}
             </div>
         </div>
     </div>

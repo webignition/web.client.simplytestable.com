@@ -8,9 +8,13 @@
     {% set url = path('app_test_redirector', {'website': test.test.website, 'test_id':test.test.testId}) %}
 {% endif %}
 
+{% if container_attributes is not defined %}
+    {% set container_attributes = '' %}
+{% endif %}
+
 {% block test %}
 
-<div data-test-id="{{ test.test.testId }}" class="{{ container_class }}">
+<div {{ container_attributes|raw }} data-test-id="{{ test.test.testId }}" data-state="{{ test.test.state }}" class="{{ container_class }}">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="row">
             <a class="url" href="{{ url }}">

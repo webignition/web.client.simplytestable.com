@@ -328,7 +328,8 @@ class RemoteTestService extends CoreApplicationService {
                     'preparing',
                     'resolving',
                     'resolved',
-                    'rejected'
+                    'rejected',
+                    'queued'
                 ]
             ]);
 

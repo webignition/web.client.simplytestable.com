@@ -1,6 +1,8 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Controller\View\Dashboard;
+namespace SimplyTestable\WebClientBundle\Controller\View\Dashboard\Partial;
+
+use SimplyTestable\WebClientBundle\Controller\View\Dashboard\DashboardController;
 
 class RecentTestsController extends DashboardController {
 

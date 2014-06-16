@@ -101,3 +101,7 @@
 .test-list .incomplete .progress {
     margin-top: 12px;
 }
+
+.test-list .site {
+    min-height: 200px;
+}

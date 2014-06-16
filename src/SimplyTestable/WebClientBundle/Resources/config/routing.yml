@@ -85,18 +85,22 @@ user_account_plan_subscribe:
 view_dashboard_index_index:
     pattern:  /
     defaults: { _controller: SimplyTestableWebClientBundle:View/Dashboard/Index:index }
+
+view_dashboard_partial_recenttests_index:
+    pattern:  /recent-tests/
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Dashboard/Partial/RecentTests:index }
     
-app_current:    
-    pattern:  /current/
-    defaults: { _controller: SimplyTestableWebClientBundle:App:current, _format: json  }
-    
-app_current_content:    
-    pattern:  /current-content/
-    defaults: { _controller: SimplyTestableWebClientBundle:App:currentContent }    
-    
-app_finished_content:    
-    pattern:  /finished-content/
-    defaults: { _controller: SimplyTestableWebClientBundle:App:finishedContent }      
+#app_current:
+#    pattern:  /current/
+#    defaults: { _controller: SimplyTestableWebClientBundle:App:current, _format: json  }
+#
+#app_current_content:
+#    pattern:  /current-content/
+#    defaults: { _controller: SimplyTestableWebClientBundle:App:currentContent }
+#
+#app_finished_content:
+#    pattern:  /finished-content/
+#    defaults: { _controller: SimplyTestableWebClientBundle:App:finishedContent }
 
 view_test_history_index_index:
     pattern:  /history/
@@ -112,12 +116,12 @@ app_history_websites:
     pattern:  /history/websites/
     defaults: { _controller: SimplyTestableWebClientBundle:TestHistory:websites, _format: json }     
     
-app_test_finished_summary:
-    pattern:  /{website}/{test_id}/finished-summary/
-    defaults: { _controller: SimplyTestableWebClientBundle:TestResults:finishedSummary }     
-    requirements:
-        website: ".+"
-        test_id: "\d+"
+#app_test_finished_summary:
+#    pattern:  /{website}/{test_id}/finished-summary/
+#    defaults: { _controller: SimplyTestableWebClientBundle:TestResults:finishedSummary }
+#    requirements:
+#        website: ".+"
+#        test_id: "\d+"
 
 view_test_results_partial_finishedsummary_index:
     pattern:  /{website}/{test_id}/finished-summary-bs3/
