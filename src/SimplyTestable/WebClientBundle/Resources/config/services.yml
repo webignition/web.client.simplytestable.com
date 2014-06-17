@@ -78,10 +78,19 @@ services:
   simplytestable.services.userserializerservice:
     class:  SimplyTestable\WebClientBundle\Services\UserSerializerService        
     arguments:
-        key: %secret%       
+        key: %secret%
+
+  simplytestable.services.testoptions.adapter.request.featureOptionsParser:
+    class:  SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser\OptionsParser
+
+  simplytestable.services.testoptions.adapter.request.cookieOptionsParser:
+    class:  SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser\CookieOptionsParser
         
   simplytestable.services.testoptions.adapter.request:
-    class:  SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+    class:  SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
+    calls:
+      - [addFeatureOptionsParser, ["@simplytestable.services.testoptions.adapter.request.featureOptionsParser"]]
+      - [addFeatureOptionsParser, ["@simplytestable.services.testoptions.adapter.request.cookieOptionsParser", "cookies"]]
         
   simplytestable.services.coreapplicationstatusservice:
     class:  SimplyTestable\WebClientBundle\Services\CoreApplicationStatusService          

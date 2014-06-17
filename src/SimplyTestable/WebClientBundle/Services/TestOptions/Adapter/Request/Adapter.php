@@ -1,10 +1,16 @@
 <?php
-namespace SimplyTestable\WebClientBundle\Services\TestOptions\Adapter;
+namespace SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request;
 
 use SimplyTestable\WebClientBundle\Model\TestOptions;
+use SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser\OptionsParser;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class Request {
+class Adapter {
+
+    /**
+     * @var OptionsParser[]
+     */
+    private $featureOptionsParsers;
     
     /**
      *
@@ -51,7 +57,20 @@ class Request {
      *
      * @var TestOptions
      */
-    private $testOptions = null;       
+    private $testOptions = null;
+
+
+    /**
+     * @param OptionsParser $parser
+     * @param null|string $featureKey
+     */
+    public function addFeatureOptionsParser(OptionsParser $parser, $featureKey = null) {
+        if (is_null($featureKey)) {
+            $featureKey = 'default';
+        }
+
+        $this->featureOptionsParsers[$featureKey] = $parser;
+    }
 
     
     
@@ -160,8 +179,13 @@ class Request {
         
         $features = $this->parseFeatures();
         foreach ($features as $featureKey => $featureOptions) {
-            $this->testOptions->addFeatureOptions($featureKey, $this->parseFeatureOptions($this->getFormKeyFromFeatureKey($featureKey)));
-        }  
+            $featureOptionsParser = $this->getFeatureOptionsParser($featureKey);
+            $featureOptionsParser->setRequestData($this->requestData);
+            $featureOptionsParser->setNamesAndDefaultValues($this->namesAndDefaultValues);
+            $featureOptionsParser->setFormKey($this->getFormKeyFromFeatureKey($featureKey));
+
+            $this->testOptions->addFeatureOptions($featureKey, $featureOptionsParser->getOptions());
+        }
         
         $testTypes = $this->parseTestTypes();
 
@@ -172,7 +196,20 @@ class Request {
         foreach ($this->availableTaskTypes as $testTypeKey => $testTypeName) {            
             $this->testOptions->addTestTypeOptions($testTypeKey, $this->parseTestTypeOptions($testTypeKey));
         }
-    } 
+    }
+
+
+    /**
+     * @param $featureKey
+     * @return OptionsParser
+     */
+    private function getFeatureOptionsParser($featureKey) {
+        if (isset($this->featureOptionsParsers[$featureKey])) {
+            return $this->featureOptionsParsers[$featureKey];
+        }
+
+        return $this->featureOptionsParsers['default'];
+    }
     
     private function getFormKeyFromFeatureKey($featureKey) {
         if (!isset($this->availableFeatures[$featureKey])) {
@@ -257,56 +294,6 @@ class Request {
     }
     
     
-    private function parseFeatureOptions($featureFormKey) {        
-        $featureOptions = array();
-       
-        // only handles parsing out feature options when at least something (the parent key) is present in the request data
-        // how to handle default feature options that are missing entirely from the request data?
-        
-        foreach ($this->requestData as $key => $value) {            
-            //var_dump($key, $featureFormKey, $this->requestKeyMatchesFeatureKey($key, $featureFormKey), array_key_exists($key, $this->namesAndDefaultValues));
-            
-            if ($this->requestKeyMatchesFeatureKey($key, $featureFormKey) && array_key_exists($key, $this->namesAndDefaultValues)) {               
-                
-                switch (gettype($this->namesAndDefaultValues[$key])) {
-                    case 'integer':
-                        $featureOptions[$key] = (int)$value;
-                        break;
-                    
-                    case 'array':
-                        $rawValues = (is_string($value)) ? explode("\n", $value) : $value;                        
-                        $featureOptions[$key] = $this->cleanRawValues($rawValues);
-                        break;
-                        
-                    default:
-                        $featureOptions[$key] = $value;
-                        break;
-                }
-            }
-        }
-        
-        return $featureOptions;
-    }
-    
-    
-    private function cleanRawValues($rawValues) {
-        $cleanedValues = array();
-        
-        foreach ($rawValues as $key => $rawValue) {
-            if (is_string($rawValue)) {
-                $value = trim($rawValue);
-                $cleanedValues[$key] = ($value == '') ? null : $value;
-            } elseif (is_array($rawValue)) {
-                $cleanedValues[$key] = $this->cleanRawValues($rawValue);
-            } else {
-                $cleanedValues[$key] = $rawValue;
-            }
-        }
-        
-        return $cleanedValues;
-    }
-    
-    
     /**
      * 
      * @param string $requestKey
@@ -319,17 +306,6 @@ class Request {
         }
         
         return substr($requestKey, 0, strlen($testTypeKey)) == $testTypeKey;
-    }
-    
-    
-    /**
-     * 
-     * @param string $requestKey
-     * @param string $featureFormKey
-     * @return boolean
-     */
-    private function requestKeyMatchesFeatureKey($requestKey, $featureFormKey) {        
-        return substr($requestKey, 0, strlen($featureFormKey)) == $featureFormKey;
     }
         
 }

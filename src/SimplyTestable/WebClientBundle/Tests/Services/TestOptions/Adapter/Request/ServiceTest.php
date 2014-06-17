@@ -30,7 +30,7 @@ abstract class ServiceTest extends BaseTestCase {
      * 
      * @return \SimplyTestable\WebClientBundle\Model\TestOptions
      */
-    protected function getTestOptions() {        
+    protected function getTestOptions() {
         $this->getRequestAdapter()->setRequestData($this->requestData);
 
         $testOptionsParameters = $this->container->getParameter('test_options');     
