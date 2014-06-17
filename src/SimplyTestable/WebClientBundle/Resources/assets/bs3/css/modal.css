@@ -6,9 +6,9 @@
    margin:0 0 10px 0;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 992px) {
     .modal .modal-dialog {
-        margin: 0;
+        margin: 0 auto;
     }
 
     .modal .modal-content {
