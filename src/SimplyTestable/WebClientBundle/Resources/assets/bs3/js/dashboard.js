@@ -71,9 +71,9 @@ $(document).ready(function() {
         });
     });
 
-    if ($('body.no-test-types-selected').length === 0) {
+    //if ($('body.no-test-types-selected').length === 0) {
         $('#website').stFormHelper().select();
-    }
+    //}
 
     $('body.no-test-types-selected .task-types').each(function () {
         var container = $(this);

@@ -112,24 +112,24 @@ h2 {
 }
 
 @media (max-width: 992px) {
-    #test-start-form .buttons {
-        margin-top: 30px;
-    }
+    /*#test-start-form .buttons {*/
+        /*margin-top: 30px;*/
+    /*}*/
 
-    #test-start-form .options {
-        margin-top: 0;
-    }
+    /*#test-start-form .options {*/
+        /*margin-top: 0;*/
+    /*}*/
 
-    #test-start-form .options .test-option:first-of-type {
-        margin-top: 0;
-    }
+    /*#test-start-form .options .test-option:first-of-type {*/
+        /*margin-top: 0;*/
+    /*}*/
 
-    #test-start-form .options .modal-action-badge {
-        padding-left:2px;
-    }
+    /*#test-start-form .options .modal-action-badge {*/
+        /*padding-left:2px;*/
+    /*}*/
 
-    #test-start-form .options .modal-action-badge .actions {
-        display: inline;
-        padding-left: 0;
-    }
+    /*#test-start-form .options .modal-action-badge .actions {*/
+        /*display: inline;*/
+        /*padding-left: 0;*/
+    /*}*/
 }
