@@ -78,7 +78,7 @@ h2 {
 }
 
 .collapse-control-group {
-    margin-top: -20px;
+    margin-top: 40px;
 }
 
 .collapse-control-group .collapse-control {
@@ -98,4 +98,14 @@ h2 {
 #recent-activity h2 {
     display: inline-block;
     margin-right: 12px;
+}
+
+.task-types .checkbox {
+    margin-bottom: 0;
+}
+
+@media (min-width: 1200px) {
+    .collapse-control-group {
+        margin-top: -20px;
+    }
 }
