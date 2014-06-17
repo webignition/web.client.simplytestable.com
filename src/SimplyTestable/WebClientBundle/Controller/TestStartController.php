@@ -48,9 +48,6 @@ class TestStartController extends TestController
         
         $this->getTestOptionsAdapter()->setRequestData($requestValues);
         $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
-
-        var_dump($testOptions->getFeatureOptions('cookies'));
-        exit();
         
         if ($this->isAddCookieRequest()) {
             return $this->redirect($this->getStartRedirectUrl($testOptions));
