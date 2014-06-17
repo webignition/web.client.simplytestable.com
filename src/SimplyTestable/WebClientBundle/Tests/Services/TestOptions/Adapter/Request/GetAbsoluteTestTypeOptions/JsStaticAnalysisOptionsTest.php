@@ -1,13 +1,17 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Services\TestOptions\RequestParserService\GetTestTypeOptions;
+namespace SimplyTestable\WebClientBundle\Tests\Services\TestOptions\Adapter\Request\GetTestTypeOptions;
 
-use SimplyTestable\WebClientBundle\Tests\Services\TestOptions\RequestParserService\AbstractTestOptionsTest;
+use SimplyTestable\WebClientBundle\Tests\Services\TestOptions\Adapter\Request\ServiceTest;
 
-class GetAbsolutetestTypeOptionsJsStaticAnalysisOptionsTest extends AbstractTestOptionsTest {    
+class JsStaticAnalysisOptionsTest extends ServiceTest {
+
+    public function setUp() {
+        parent::setUp();
+        $this->getRequestData()->set('js-static-analysis', '1');
+    }
 
     public function testJsStaticAnalysisDomainsToIgnoreOne() {
-        $this->getRequestData()->set('js-static-analysis', '1');
         $this->getRequestData()->set('js-static-analysis-domains-to-ignore', 'one.example.com');
         
         $jsStaticAnalysisOptions = $this->getJsStaticAnalysisAbsoluteTestTypeOptions();
@@ -16,7 +20,6 @@ class GetAbsolutetestTypeOptionsJsStaticAnalysisOptionsTest extends AbstractTest
     }
 
     public function testJsStaticAnalysisDomainsToIgnoreOneTwo() {
-        $this->getRequestData()->set('js-static-analysis', '1');
         $this->getRequestData()->set('js-static-analysis-domains-to-ignore', 'one.example.com'."\r\n".'two.example.com');
         
         $jsStaticAnalysisOptions = $this->getJsStaticAnalysisAbsoluteTestTypeOptions();
@@ -25,7 +28,6 @@ class GetAbsolutetestTypeOptionsJsStaticAnalysisOptionsTest extends AbstractTest
     }
     
     public function testJsStaticAnalysisIgnoreCommonCdnsTrue() {
-        $this->getRequestData()->set('js-static-analysis', '1');
         $this->getRequestData()->set('js-static-analysis-ignore-common-cdns', '1');
         
         $jsStaticAnalysisOptions = $this->getJsStaticAnalysisAbsoluteTestTypeOptions();
@@ -34,7 +36,6 @@ class GetAbsolutetestTypeOptionsJsStaticAnalysisOptionsTest extends AbstractTest
     }     
     
     public function testJsStaticAnalysisIgnoreCommonCdnsFalse() {
-        $this->getRequestData()->set('js-static-analysis', '1');
         $this->getRequestData()->set('js-static-analysis-ignore-common-cdns', '0');
         
         $jsStaticAnalysisOptions = $this->getJsStaticAnalysisAbsoluteTestTypeOptions();

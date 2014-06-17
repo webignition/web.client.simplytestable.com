@@ -1,13 +1,17 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Services\TestOptions\RequestParserService\GetAbsoluteTestTypeOptions;
+namespace SimplyTestable\WebClientBundle\Tests\Services\TestOptions\Adapter\Request\GetAbsoluteTestTypeOptions;
 
-use SimplyTestable\WebClientBundle\Tests\Services\TestOptions\RequestParserService\AbstractTestOptionsTest;
+use SimplyTestable\WebClientBundle\Tests\Services\TestOptions\Adapter\Request\ServiceTest;
 
-class GetAbsolutetestTypeOptionsCssValidationOptionsTest extends AbstractTestOptionsTest {
+class CssValidationOptionsTest extends ServiceTest {
 
-    public function testCssValidationIgnoreWarningsTrue() {        
+    public function setUp() {
+        parent::setUp();
         $this->getRequestData()->set('css-validation', '1');
+    }
+
+    public function testCssValidationIgnoreWarningsTrue() {
         $this->getRequestData()->set('css-validation-ignore-warnings', '1');
         
         $cssValidationOptions = $this->getCssValidationAbsoluteTestTypeOptions();
@@ -16,7 +20,6 @@ class GetAbsolutetestTypeOptionsCssValidationOptionsTest extends AbstractTestOpt
     }    
     
     public function testCssValidationIgnoreWarningsFalse() {
-        $this->getRequestData()->set('css-validation', '1');
         $this->getRequestData()->set('css-validation-ignore-warnings', '0');
         
         $cssValidationOptions = $this->getCssValidationAbsoluteTestTypeOptions();
@@ -25,7 +28,6 @@ class GetAbsolutetestTypeOptionsCssValidationOptionsTest extends AbstractTestOpt
     }    
     
     public function testCssValidationVendorExtensionsIgnore() {
-        $this->getRequestData()->set('css-validation', '1');
         $this->getRequestData()->set('css-validation-vendor-extensions', 'ignore');
         
         $cssValidationOptions = $this->getCssValidationAbsoluteTestTypeOptions();
@@ -34,16 +36,13 @@ class GetAbsolutetestTypeOptionsCssValidationOptionsTest extends AbstractTestOpt
     }    
     
     public function testCssValidationVendorExtensionsWarn() {
-        $this->getRequestData()->set('css-validation', '1');
         $this->getRequestData()->set('css-validation-vendor-extensions', 'warn');
-        
         $cssValidationOptions = $this->getCssValidationAbsoluteTestTypeOptions();
         
         $this->assertEquals('warn', $cssValidationOptions['vendor-extensions']);
     }
     
     public function testCssValidationVendorExtensionsError() {
-        $this->getRequestData()->set('css-validation', '1');
         $this->getRequestData()->set('css-validation-vendor-extensions', 'error');
         
         $cssValidationOptions = $this->getCssValidationAbsoluteTestTypeOptions();
@@ -52,7 +51,6 @@ class GetAbsolutetestTypeOptionsCssValidationOptionsTest extends AbstractTestOpt
     }
     
     public function testCssValidationDomainsToIgnoreOne() {
-        $this->getRequestData()->set('css-validation', '1');
         $this->getRequestData()->set('css-validation-domains-to-ignore', 'one.example.com');
         
         $cssValidationOptions = $this->getCssValidationAbsoluteTestTypeOptions();
@@ -61,7 +59,6 @@ class GetAbsolutetestTypeOptionsCssValidationOptionsTest extends AbstractTestOpt
     }
 
     public function testCssValidationDomainsToIgnoreOneTwo() {
-        $this->getRequestData()->set('css-validation', '1');
         $this->getRequestData()->set('css-validation-domains-to-ignore', 'one.example.com'."\r\n".'two.example.com');
         
         $cssValidationOptions = $this->getCssValidationAbsoluteTestTypeOptions();
@@ -70,7 +67,6 @@ class GetAbsolutetestTypeOptionsCssValidationOptionsTest extends AbstractTestOpt
     }
     
     public function testCssValidationIgnoreCommonCdnsTrue() {
-        $this->getRequestData()->set('css-validation', '1');
         $this->getRequestData()->set('css-validation-ignore-common-cdns', '1');
         
         $cssValidationOptions = $this->getCssValidationAbsoluteTestTypeOptions();
@@ -79,7 +75,6 @@ class GetAbsolutetestTypeOptionsCssValidationOptionsTest extends AbstractTestOpt
     }     
     
     public function testCssValidationIgnoreCommonCdnsFalse() {
-        $this->getRequestData()->set('css-validation', '1');
         $this->getRequestData()->set('css-validation-ignore-common-cdns', '0');
         
         $cssValidationOptions = $this->getCssValidationAbsoluteTestTypeOptions();
