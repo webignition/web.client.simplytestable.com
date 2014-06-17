@@ -113,3 +113,7 @@
 .test-list .state-crawling .summary-stats {
     opacity: 0.8;
 }
+
+.test-list .summary-stats .label {
+    padding-right:inherit;
+}
