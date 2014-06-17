@@ -93,3 +93,8 @@ h2 {
     padding-right: 0;
     border-right: none;
 }
+
+#recent-activity h2 {
+    display: inline-block;
+    margin-right: 12px;
+}

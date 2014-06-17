@@ -167,7 +167,7 @@ $(document).ready(function() {
                 var testId = updatedTest.attr('data-test-id');
 
                 if (!hasCurrentTest(testId)) {
-                    $('h2', getTestList()).after(updatedTest.clone());
+                    getTestList().prepend(updatedTest.clone());
                     return;
                 }
 

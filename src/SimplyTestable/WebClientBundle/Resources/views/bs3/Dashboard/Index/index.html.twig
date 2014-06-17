@@ -146,10 +146,13 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-md-10 col-sm-12 test-list" id="recent-activity">
+            <div class="col-lg-8 col-md-10 col-sm-12" id="recent-activity">
                 <h2>Recent activity</h2>
+                <a href="{{ path('view_test_history_index_index') }}">Full test history <i class="fa fa-caret-right"></i></a>
 
-                {% include 'SimplyTestableWebClientBundle:bs3/Partials/Dashboard:recent-tests.html.twig' %}
+                <div class="test-list">
+                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Dashboard:recent-tests.html.twig' %}
+                </div>
             </div>
         </div>
     </div>
