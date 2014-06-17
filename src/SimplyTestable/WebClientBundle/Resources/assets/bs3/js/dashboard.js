@@ -86,21 +86,6 @@ $(document).ready(function() {
         });
     });
 
-    var formError = $('#test-start-form .alert');
-    if (formError.length > 0) {
-        var collapseControlGroup = $('#test-start-form .collapse-control-group');
-
-        collapseControlGroup.css({
-            'margin-top': (formError.outerHeight() - 20) + 'px'
-        });
-
-        $('.close', formError).on('click', function () {
-            collapseControlGroup.css({
-                'margin-top': '-20px'
-            });
-        });
-    }
-
     if ($('.requires-results').length > 0) {
         $('.requires-results').each(function () {
             $(this).stResultPreparer().init();

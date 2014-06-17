@@ -6,7 +6,7 @@ class IndexController extends DashboardController {
 
     /**
      *
-     * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
      */
     private $testOptionsAdapter = null;
 
@@ -26,12 +26,19 @@ class IndexController extends DashboardController {
             $this->getTestOptionsAdapter()->setInvertInvertableOptions(true);
         }
 
-        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
+        $testOptions = $this->getTestOptionsAdapter()->getTestOptions()->__toKeyArray();
+
+        if (!isset($testOptions['cookies']) || count($testOptions['cookies']) === 0) {
+            $testOptions['cookies'] = [[
+                'name' => null,
+                'value' => null
+            ]];
+        }
 
         $viewData = [
             'available_task_types' => $this->getAvailableTaskTypes(),
             'task_types' => $this->container->getParameter('task_types'),
-            'test_options' => $testOptions->__toKeyArray(),
+            'test_options' => $testOptions,
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
             'test_start_error' => $testStartError,
@@ -72,7 +79,7 @@ class IndexController extends DashboardController {
 
     /**
      *
-     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
      */
     private function getTestOptionsAdapter() {
         if (is_null($this->testOptionsAdapter)) {
