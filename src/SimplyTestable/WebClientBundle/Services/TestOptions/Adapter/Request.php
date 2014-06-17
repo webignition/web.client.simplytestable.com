@@ -2,12 +2,13 @@
 namespace SimplyTestable\WebClientBundle\Services\TestOptions\Adapter;
 
 use SimplyTestable\WebClientBundle\Model\TestOptions;
+use Symfony\Component\HttpFoundation\ParameterBag;
 
 class Request {
     
     /**
      *
-     * @var \Symfony\Component\HttpFoundation\ParameterBag
+     * @var ParameterBag
      */
     private $requestData = array();
     
@@ -56,9 +57,9 @@ class Request {
     
     /**
      * 
-     * @param \Symfony\Component\HttpFoundation\ParameterBag $requestData
+     * @param ParameterBag $requestData
      */
-    public function setRequestData(\Symfony\Component\HttpFoundation\ParameterBag $requestData) {
+    public function setRequestData(ParameterBag $requestData) {
         $this->requestData = $requestData;
     }
     
@@ -163,7 +164,7 @@ class Request {
         }  
         
         $testTypes = $this->parseTestTypes();
-        
+
         foreach ($testTypes as $testTypeKey => $testTypeName) {
             $this->testOptions->addTestType($testTypeKey, $testTypeName);
         }        
@@ -189,7 +190,7 @@ class Request {
     private function parseTestTypes() {        
         $testTypes = array();
         
-        foreach ($this->availableTaskTypes as $testTypeKey => $testTypeName) {                                    
+        foreach ($this->availableTaskTypes as $testTypeKey => $testTypeName) {
             if (filter_var($this->requestData->get($testTypeKey), FILTER_VALIDATE_BOOLEAN)) {
                 $testTypes[$testTypeKey] = $testTypeName;
             }
