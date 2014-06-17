@@ -117,3 +117,10 @@
 .test-list .summary-stats .label {
     padding-right:inherit;
 }
+
+@media (max-width: 768px) {
+    .test-list .site {
+        padding-bottom: 0;
+        min-height: 160px;
+    }
+}
