@@ -37,7 +37,7 @@ class CookieOptionsParser extends OptionsParser {
                 return false;
             }
 
-            return !empty(trim($cookie[$fieldName]));
+            return trim($cookie[$fieldName]) !== '';
         }
     }
 
