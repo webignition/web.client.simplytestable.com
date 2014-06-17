@@ -14,12 +14,12 @@
 
             {% if task_error_count or task_warning_count %}
                     <div class="row {% if task_error_count and task_warning_count %}multiple{% endif %}">
-                        <div class="col-lg-5 task-type-name">
+                        <div class="col-lg-5 col-md-5 task-type-name">
                             <span class="">
                                 {{ task_type }}:
                             </span>
                         </div>
-                        <div class="col-lg-7 counts">
+                        <div class="col-lg-7 col-md-7 counts">
                             <span>
                                 {% if task_error_count %}
                                     <span class="count">{{ task_error_count }} error{% if task_error_count > 1 %}s{% endif %}</span>
