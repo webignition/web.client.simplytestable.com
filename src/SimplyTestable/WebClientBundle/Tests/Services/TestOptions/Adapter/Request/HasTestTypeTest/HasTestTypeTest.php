@@ -6,11 +6,6 @@ use SimplyTestable\WebClientBundle\Tests\Services\TestOptions\Adapter\Request\Se
 
 abstract class HasTestTypeTest extends ServiceTest {
 
-    abstract protected function getRequestHasHtmlValidation();
-    abstract protected function getRequestHasCssValidation();
-    abstract protected function getRequestHasJsStaticAnalysis();
-    abstract protected function getRequestHasLinkIntegrity();
-
     /**
      * @var \SimplyTestable\WebClientBundle\Model\TestOptions
      */
@@ -69,5 +64,31 @@ abstract class HasTestTypeTest extends ServiceTest {
         if (!$this->getRequestHasLinkIntegrity()) {
             $this->assertFalse($this->testOptions->hasTestType('Link integrity'));
         }
+    }
+
+
+    /**
+     * @return string
+     */
+    private function getRequestTestTypesBitmapFromClassName() {
+        $classNameParts = explode('\\', get_class($this));
+        return str_replace(['Has', 'Test'], '', $classNameParts[count($classNameParts) - 1]);
+    }
+
+
+    private function getRequestHasHtmlValidation() {
+        return substr($this->getRequestTestTypesBitmapFromClassName(), 0, 1) == 1;
+    }
+
+    private function getRequestHasCssValidation() {
+        return substr($this->getRequestTestTypesBitmapFromClassName(), 1, 1) == 1;
+    }
+
+    private function getRequestHasJsStaticAnalysis() {
+        return substr($this->getRequestTestTypesBitmapFromClassName(), 2, 1) == 1;
+    }
+
+    private function getRequestHasLinkIntegrity() {
+        return substr($this->getRequestTestTypesBitmapFromClassName(), 3, 1) == 1;
     }
 }
