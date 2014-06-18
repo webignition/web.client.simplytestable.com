@@ -1,27 +1,8 @@
 {% extends 'SimplyTestableWebClientBundle::Exception/base.html.twig' %}
 
-{% block body_class %} error error404 {{ parent() }}{% endblock %}
+{% set heading = 'HTTP 404: Simply Not Found' %}
 
-{% block leader_heading %}
-    404:Simply Not Found
-{% endblock %}
-    
-{% block intro_content %}  
-{% endblock %}
-    
-{% block inner_content %}
-<section>
-<i class="icon icon-search"></i>    
-<h2>
-    Can't find any <em>{{ requestUri }}</em> here
-</h2>
-<p>
-    I've sent an email off to my makers to let them know. If anyone can fix this, they
-    can.
-</p>
-</section>
-<div class="clearfix"></div>
-{% endblock %}
-
-{% block sidebar %}
-{% endblock %}     
+{% set lead_paragraphs = [
+['Can\'t find any <em>', requestUri, '</em> here.']|join(''),
+'I\'ve sent an email off to my makers to let them know. If anyone can fix this, they can.'
+] %}
