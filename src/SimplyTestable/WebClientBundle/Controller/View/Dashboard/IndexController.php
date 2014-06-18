@@ -2,7 +2,12 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Dashboard;
 
-class IndexController extends DashboardController {
+use Symfony\Component\HttpFoundation\ParameterBag;
+use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
+use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+use SimplyTestable\WebClientBundle\Controller\View\CacheableViewController;
+
+class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser {
 
     /**
      *
@@ -19,10 +24,26 @@ class IndexController extends DashboardController {
     }
     
     public function indexAction() {
-        $testStartError = $this->getFlash('test_start_error', true);
+        return $this->renderCacheableResponse([
+            'available_task_types' => $this->getAvailableTaskTypes(),
+            'task_types' => $this->container->getParameter('task_types'),
+            'test_options' => $this->getTestOptionsArray(),
+            'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
+            'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
+            'test_start_error' => $this->getFlash('test_start_error'),
+            'website' => $this->getUrlViewValues($this->getPersistentValue('website'))
+        ]);
+    }
 
-        $this->getTestOptionsAdapter()->setRequestData($this->defaultAndPersistentTestOptionsToParameterBag());
-        if ($testStartError != '') {
+
+    private function getTestOptionsArray() {
+        $testOptionsParameterBag = new ParameterBag(
+            $this->getDefaultedRequestValues($this->container->getParameter('test_options')['names_and_default_values'])
+        );
+
+        $this->getTestOptionsAdapter()->setRequestData($testOptionsParameterBag);
+
+        if ($this->hasTestStartError()) {
             $this->getTestOptionsAdapter()->setInvertInvertableOptions(true);
         }
 
@@ -35,23 +56,27 @@ class IndexController extends DashboardController {
             ]];
         }
 
-        $viewData = [
-            'available_task_types' => $this->getAvailableTaskTypes(),
-            'task_types' => $this->container->getParameter('task_types'),
-            'test_options' => $testOptions,
-            'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
-            'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
-            'test_start_error' => $testStartError,
-            'website' => $this->getUrlViewValues($this->getPersistentValue('website'))
-        ];
-
-        return $this->renderCacheableResponse($viewData);
+        return $testOptions;
     }
 
-    public function getCacheValidatorParameters() {        
-        return array(
-            'rand' => rand()
-        );
+    public function getCacheValidatorParameters() {
+        return [
+            'test_start_error' => $this->getFlash('test_start_error', false),
+            'website' => $this->getRequest()->query->has('website') ? $this->getRequest()->query->get('website') : '',
+            'available_task_types' => json_encode($this->getAvailableTaskTypes()),
+            'task_types' => json_encode($this->container->getParameter('task_types')),
+            'test_options' => json_encode($this->getTestOptionsArray()),
+            'css_validation_ignore_common_cdns' => json_encode($this->getCssValidationCommonCdnsToIgnore()),
+            'js_static_analysis_ignore_common_cdns' => json_encode($this->getJsStaticAnalysisCommonCdnsToIgnore()),
+        ];
+    }
+
+
+    /**
+     * @return bool
+     */
+    private function hasTestStartError() {
+        return !is_null($this->getFlash('test_start_error', false));
     }
 
 
@@ -101,16 +126,6 @@ class IndexController extends DashboardController {
 
     /**
      *
-     * @return \Symfony\Component\HttpFoundation\ParameterBag
-     */
-    private function defaultAndPersistentTestOptionsToParameterBag() {
-        $testOptionsParameters = $this->container->getParameter('test_options');
-        return new \Symfony\Component\HttpFoundation\ParameterBag($this->getPersistentValues($testOptionsParameters['names_and_default_values']));
-    }
-
-
-    /**
-     *
      * @return array
      */
     private function getCssValidationCommonCdnsToIgnore() {
@@ -134,6 +149,94 @@ class IndexController extends DashboardController {
         }
 
         return $this->container->getParameter('js-static-analysis-ignore-common-cdns');
+    }
+
+
+    /**
+     *
+     * @param string $url
+     * @return string[]
+     */
+    private function getUrlViewValues($url = null) {
+        if (is_null($url) || trim($url) === '') {
+            return array();
+        }
+
+        $websiteUrl = new \webignition\NormalisedUrl\NormalisedUrl($url);
+        $websiteUrl->getConfiguration()->enableConvertIdnToUtf8();
+
+        $utf8Raw = (string)$websiteUrl;
+        $utf8Truncated_40 = $this->getTruncatedString($utf8Raw, 40);
+        $utf8Truncated_50 = $this->getTruncatedString($utf8Raw, 50);
+        $utf8Truncated_64 = $this->getTruncatedString($utf8Raw, 64);
+
+        $utf8Schemeless = $this->trimUrl($utf8Raw);
+
+        $utf8SchemelessTruncated_40 = $this->getTruncatedString($utf8Schemeless, 40);
+        $utf8SchemelessTruncated_50 = $this->getTruncatedString($utf8Schemeless, 50);
+        $utf8SchemelessTruncated_64 = $this->getTruncatedString($utf8Schemeless, 64);
+
+        return array(
+            'raw' => $url,
+            'utf8' => array(
+                'raw' => $utf8Raw,
+                'truncated_40' => $utf8Truncated_40,
+                'truncated_50' => $utf8Truncated_50,
+                'truncated_64' => $utf8Truncated_64,
+                'is_truncated_40' => ($utf8Raw != $utf8Truncated_40),
+                'is_truncated_50' => ($utf8Raw != $utf8Truncated_50),
+                'is_truncated_64' => ($utf8Raw != $utf8Truncated_64),
+                'schemeless' => array(
+                    'raw' => $utf8Schemeless,
+                    'truncated_40' => $utf8SchemelessTruncated_40,
+                    'truncated_50' => $utf8SchemelessTruncated_50,
+                    'truncated_64' => $utf8SchemelessTruncated_64,
+                    'is_truncated_40' => ($utf8Schemeless != $utf8SchemelessTruncated_40),
+                    'is_truncated_50' => ($utf8Schemeless != $utf8SchemelessTruncated_50),
+                    'is_truncated_64' => ($utf8Schemeless != $utf8SchemelessTruncated_64)
+                )
+            )
+        );
+    }
+
+
+    private function trimUrl($url) {
+        $url = $this->getSchemelessUrl($url);
+
+        if (substr($url, strlen($url) - 1) == '/') {
+            $url = substr($url, 0, strlen($url) - 1);
+        }
+
+        return $url;
+    }
+
+    private function getTruncatedString($input, $maxLength = 64) {
+        if (mb_strlen($input) <= $maxLength) {
+            return $input;
+        }
+
+        return mb_substr($input, 0, $maxLength);
+    }
+
+
+    /**
+     *
+     * @param string $url
+     * @return string
+     */
+    private function getSchemelessUrl($url) {
+        $schemeMarkers = array(
+            'http://',
+            'https://'
+        );
+
+        foreach ($schemeMarkers as $schemeMarker) {
+            if (substr($schemeMarker, 0, strlen($schemeMarker)) == $schemeMarker) {
+                return substr($url, strlen($schemeMarker));
+            }
+        }
+
+        return $url;
     }
 
 }

@@ -31,4 +31,20 @@ abstract class CacheableViewController extends BaseViewController implements Cac
         return (is_null($this->request)) ? $this->get('request') : $this->request;
     }
 
+
+    /**
+     *
+     * @param array $definition
+     * @return array
+     */
+    protected function getDefaultedRequestValues($definition) {
+        $values = array();
+
+        foreach ($definition as $key => $default) {
+            $values[$key] = ($this->getRequest()->query->has($key)) ? $this->getRequest()->query->get($key) : $default;
+        }
+
+        return $values;
+    }
+
 }

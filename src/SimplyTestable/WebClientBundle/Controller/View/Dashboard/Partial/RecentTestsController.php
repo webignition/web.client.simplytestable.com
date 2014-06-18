@@ -2,9 +2,15 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Dashboard\Partial;
 
-use SimplyTestable\WebClientBundle\Controller\View\Dashboard\DashboardController;
+use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 
-class RecentTestsController extends DashboardController {
+class RecentTestsController extends BaseViewController implements RequiresValidUser {
+
+    /**
+     * @var \SimplyTestable\WebClientBundle\Services\TestService
+     */
+    private $testService;
 
     protected function modifyViewName($viewName) {
         return str_replace(
@@ -18,12 +24,6 @@ class RecentTestsController extends DashboardController {
         return $this->renderCacheableResponse([
             'test_list' => $this->getRecentActivity()
         ]);
-    }
-
-    public function getCacheValidatorParameters() {        
-        return array(
-            'rand' => rand()
-        );
     }
 
     private function getRecentActivity() {
@@ -41,15 +41,34 @@ class RecentTestsController extends DashboardController {
             if ($testList->requiresResults($test)) {
                 if ($remoteTest->isSingleUrl()) {
                     $this->getTaskService()->getCollection($test);
-                } else {
-//                    if (($remoteTest->getTaskCount() - self::RESULTS_PREPARATION_THRESHOLD) - $test->getTaskCount()) {
-//                        $this->getTaskService()->getCollection($test);
-//                    }
                 }
             }
         }
 
         return $testList;
+    }
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TaskService
+     */
+    private function getTaskService() {
+        return $this->container->get('simplytestable.services.taskservice');
+    }
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TestService
+     */
+    private function getTestService() {
+        if (is_null($this->testService)) {
+            $this->testService = $this->container->get('simplytestable.services.testservice');
+            $this->testService->getRemoteTestService()->setUser($this->getUserService()->getUser());
+        }
+
+        return $this->testService;
     }
 
 }
