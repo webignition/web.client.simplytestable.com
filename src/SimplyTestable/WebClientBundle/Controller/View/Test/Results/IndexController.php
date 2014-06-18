@@ -25,7 +25,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
     /**
      *
-     * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
      */
     private $testOptionsAdapter = null;
 
@@ -231,7 +231,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
     /**
      *
-     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
      */
     private function getTestOptionsAdapter() {
         if (is_null($this->testOptionsAdapter)) {

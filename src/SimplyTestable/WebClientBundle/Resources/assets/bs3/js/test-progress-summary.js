@@ -167,7 +167,7 @@ $(document).ready(function() {
         var getProgressUpdateUrl = function() {
             var url = [
                 getProgressUrl(),
-                '?output=json&timestamp=' + now.getTime()
+                '?timestamp=' + now.getTime()
             ].join('');
 
             return url;

@@ -24,7 +24,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
     /**
      *
-     * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
      */
     private $testOptionsAdapter = null;
 
@@ -44,10 +44,16 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
     public function indexAction($website, $test_id) {
         if ($this->getTest()->getWebsite() != $website) {
-            return $this->redirect($this->generateUrl('app_test_redirector', array(
-                'website' => $this->getTest()->getWebsite(),
-                'test_id' => $test_id
-            ), true));
+            if  ($this->isXmlHttpRequest()) {
+                return $this->renderResponse($this->getRequest(), [
+                    'this_url' => $this->getProgressUrl($this->getTest()->getWebsite(), $test_id)
+                ]);
+            } else {
+                return $this->redirect($this->generateUrl('view_test_progress_index_index', array(
+                    'website' => $this->getTest()->getWebsite(),
+                    'test_id' => $test_id
+                ), true));
+            }
         }
 
         if ($this->getTestService()->isFinished($this->getTest())) {
@@ -76,7 +82,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         return $this->renderCacheableResponse([
             'website' => $this->getUrlViewValues($website),
             'test' => $this->getTest(),
-            'this_url' => $this->getProgressUrl($website, $test_id),
+            'this_url' => $this->getProgressUrl($this->getTest()->getWebsite(), $test_id),
             'remote_test' => $this->requestIsForApplicationJson($this->getRequest()) ? $this->getRemoteTest()->__toArray() : $this->getRemoteTest(),
             'state_label' => $this->getStateLabel(),
             'available_task_types' => $this->getAvailableTaskTypes(),
@@ -96,6 +102,13 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
                 'jslint-option-maxlen' => 256
             ),
         ]);
+    }
+
+    /**
+     * @return bool
+     */
+    private function isXmlHttpRequest() {
+        return $this->getRequest()->headers->has('X-Requested-With') && $this->getRequest()->headers->get('X-Requested-With') == 'XMLHttpRequest';
     }
 
 
@@ -133,7 +146,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
     /**
      *
-     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
      */
     private function getTestOptionsAdapter() {
         if (is_null($this->testOptionsAdapter)) {
