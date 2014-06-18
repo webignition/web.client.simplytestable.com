@@ -42,8 +42,7 @@ class IndexController extends DashboardController {
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
             'test_start_error' => $testStartError,
-            'website' => $this->getUrlViewValues($this->getPersistentValue('website')),
-            'test_list' => $this->getRecentActivity()
+            'website' => $this->getUrlViewValues($this->getPersistentValue('website'))
         ];
 
         return $this->renderCacheableResponse($viewData);
