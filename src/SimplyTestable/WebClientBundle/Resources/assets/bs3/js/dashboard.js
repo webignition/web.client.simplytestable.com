@@ -108,6 +108,15 @@ $(document).ready(function() {
 
         /**
          *
+         * @returns {Number}
+         */
+        var getTestListLength = function () {
+            return $('.site', getTestList()).length;
+        };
+
+
+        /**
+         *
          * @param testId
          * @returns {jQuery|HTMLElement}
          */
@@ -147,6 +156,18 @@ $(document).ready(function() {
 
 
         var updateTestList = function () {
+            if (getTestListLength() === 0) {
+                $($('.site', updatedTestList).get().reverse()).each(function () {
+                    getTestList().prepend($(this).clone());
+                });
+
+                $('.requires-results').each(function () {
+                    $(this).stResultPreparer().init();
+                });
+
+                return;
+            }
+
             $('.site', updatedTestList).each(function () {
                 var updatedTest = $(this);
                 var testId = updatedTest.attr('data-test-id');
