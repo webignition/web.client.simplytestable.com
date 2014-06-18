@@ -177,7 +177,7 @@ services:
         router: "@router"
         mailService: "@simplytestable.services.mail.service"
     tags:
-      - { name: kernel.event_listener, event: stripe.customer.subscription.created, method: onCustomerSubscriptionCreated }                    
+      - { name: kernel.event_listener, event: stripe.customer.subscription.created, method: onCustomerSubscriptionCreated }
       - { name: kernel.event_listener, event: stripe.customer.subscription.deleted, method: onCustomerSubscriptionDeleted }                    
       - { name: kernel.event_listener, event: stripe.customer.subscription.trial_will_end, method: onCustomerSubscriptionTrialWillEnd }           
       - { name: kernel.event_listener, event: stripe.customer.subscription.updated, method: onCustomerSubscriptionUpdated }           
@@ -214,3 +214,8 @@ services:
     arguments:
         entityManager: "@doctrine.orm.entity_manager"
         logger: "@logger"
+
+  simplytestable.services.tasktypeservice:
+    class:  SimplyTestable\WebClientBundle\Services\TaskTypeService
+    calls:
+      - [setTaskTypes, [%task_types%]]
