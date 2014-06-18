@@ -5,7 +5,7 @@ Content-Type: application/json
    "id":1,
    "user":"user@example.com",
    "website":"http:\/\/example.com\/",
-   "state":"completed",
+   "state":"in-progress",
    "url_count":0,
    "task_count":10,
    "task_count_by_state":{

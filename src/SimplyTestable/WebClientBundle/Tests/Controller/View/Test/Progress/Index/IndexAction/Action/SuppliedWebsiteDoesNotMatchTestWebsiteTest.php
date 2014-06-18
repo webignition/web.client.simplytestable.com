@@ -9,7 +9,7 @@ class SuppliedWebsiteDoesNotMatchTestWebsiteTest extends RedirectTest {
 
 
     protected function getExpectedResponseLocation() {
-        return 'http://localhost/http://example.com//1/';
+        return 'http://localhost/http://example.com//1/progress/';
     }
 
     protected function getActionMethodArguments() {
