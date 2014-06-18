@@ -153,6 +153,9 @@ $(document).ready(function() {
 
                 if (!hasCurrentTest(testId)) {
                     getTestList().prepend(updatedTest.clone());
+                    $('.requires-results').each(function () {
+                        $(this).stResultPreparer().init();
+                    });
                     return;
                 }
 
@@ -220,6 +223,8 @@ $(document).ready(function() {
             error: function(request, textStatus, errorThrown) {
             },
             success: function(data, textStatus, request) {
+                $('.fa-spinner', getTestList()).remove();
+
                 updatedTestList = $('<div>').append(data);
 
                 updateTestList();
