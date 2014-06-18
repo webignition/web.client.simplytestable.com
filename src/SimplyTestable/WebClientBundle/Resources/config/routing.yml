@@ -89,18 +89,6 @@ view_dashboard_index_index:
 view_dashboard_partial_recenttests_index:
     pattern:  /recent-tests/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Dashboard/Partial/RecentTests:index }
-    
-#app_current:
-#    pattern:  /current/
-#    defaults: { _controller: SimplyTestableWebClientBundle:App:current, _format: json  }
-#
-#app_current_content:
-#    pattern:  /current-content/
-#    defaults: { _controller: SimplyTestableWebClientBundle:App:currentContent }
-#
-#app_finished_content:
-#    pattern:  /finished-content/
-#    defaults: { _controller: SimplyTestableWebClientBundle:App:finishedContent }
 
 view_test_history_index_index:
     pattern:  /history/
@@ -286,8 +274,4 @@ app_website:
     pattern:  /{website}/
     defaults: { _controller: SimplyTestableWebClientBundle:Redirect:test }  
     requirements:
-        website: ".+"         
-        
-outdated_browser:
-    pattern:  /outdated-browser/
-    defaults: { _controller: SimplyTestableWebClientBundle:App:outdatedBrowser }
+        website: ".+"
