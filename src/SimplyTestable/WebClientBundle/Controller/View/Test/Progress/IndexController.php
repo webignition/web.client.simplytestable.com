@@ -49,28 +49,22 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
     public function indexAction($website, $test_id) {
         if ($this->getTest()->getWebsite() != $website) {
-            if  ($this->isXmlHttpRequest()) {
-                return $this->renderResponse($this->getRequest(), [
-                    'this_url' => $this->getProgressUrl($this->getTest()->getWebsite(), $test_id)
-                ]);
-            } else {
-                return $this->redirect($this->generateUrl('view_test_progress_index_index', array(
-                    'website' => $this->getTest()->getWebsite(),
-                    'test_id' => $test_id
-                ), true));
-            }
+            return $this->issueRedirect($this->generateUrl('view_test_progress_index_index', array(
+                'website' => $this->getTest()->getWebsite(),
+                'test_id' => $test_id
+            ), true));
         }
 
         if ($this->getTestService()->isFinished($this->getTest())) {
             if ($this->getTest()->getState() !== 'failed-no-sitemap') {
-                return $this->redirect($this->generateUrl('view_test_results_index_index', array(
+                return $this->issueRedirect($this->generateUrl('view_test_results_index_index', array(
                     'website' => $this->getTest()->getWebsite(),
                     'test_id' => $test_id
                 ), true));
             }
 
             if ($this->getUserService()->isPublicUser($this->getUser())) {
-                return $this->redirect($this->generateUrl('view_test_results_index_index', array(
+                return $this->issueRedirect($this->generateUrl('view_test_results_index_index', array(
                     'website' => $this->getTest()->getWebsite(),
                     'test_id' => $test_id
                 ), true));
@@ -110,12 +104,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         ]);
     }
 
-    /**
-     * @return bool
-     */
-    private function isXmlHttpRequest() {
-        return $this->getRequest()->headers->has('X-Requested-With') && $this->getRequest()->headers->get('X-Requested-With') == 'XMLHttpRequest';
-    }
 
 
     public function getCacheValidatorParameters() {
@@ -199,7 +187,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         return $this->container->getParameter('js-static-analysis-ignore-common-cdns');
     }
 
-
     /**
      * @return \SimplyTestable\WebClientBundle\Services\TaskTypeService
      */
@@ -215,4 +202,5 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
         return $this->taskTypeService;
     }
+
 }
