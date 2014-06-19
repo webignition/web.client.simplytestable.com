@@ -226,3 +226,4 @@ services:
     class:  SimplyTestable\WebClientBundle\Services\TaskTypeService
     calls:
       - [setTaskTypes, [%task_types%]]
+      - [setEarlyAccessUsers, [%early_access_users%]]
