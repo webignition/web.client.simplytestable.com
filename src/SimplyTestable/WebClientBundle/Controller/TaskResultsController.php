@@ -27,50 +27,7 @@ class TaskResultsController extends TaskController
         
         return new Response();
     }
-    
-    
-    public function statusAction($website, $test_id)
-    {
-        if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
-            return $this->sendNotFoundResponse();
-        } 
-        
-        try {
-            $test = $this->getTestService()->get($website, $test_id, $this->getUser());            
-        } catch (UserServiceException $e) {
-            return $this->sendNotFoundResponse();            
-        }
-        
-        $remoteTest = $this->getTestService()->getRemoteTestService()->get();
-        
-        $localTaskCount = $test->getTaskCount();
-        $completionPercent = round(($localTaskCount / $remoteTest->getTaskCount()) * 100, $this->getCompletionPercentPrecision($remoteTest->getTaskCount()));
-        $remainingTasksToRetrieveCount = $remoteTest->getTaskCount() - $localTaskCount;
-        
-        return new Response($this->getSerializer()->serialize(array(
-            'completion-percent' => $completionPercent,
-            'remaining-tasks-to-retrieve-count' => $remainingTasksToRetrieveCount,
-            'local-task-count' => $localTaskCount,
-            'remote-task-count' => $remoteTest->getTaskCount()            
-        ), 'json'));
-    }
-    
-    
-    /**
-     * 
-     * @param int $remoteTaskCount
-     * @return int
-     */
-    private function getCompletionPercentPrecision($remoteTaskCount) {        
-        if ($remoteTaskCount <= 10000) {
-            return 0;
-        }
-        
-        return 2;
-        
-        return (int)floor(log10($remoteTaskCount)) - 1;        
-    }
-    
+
     
     /**
      *

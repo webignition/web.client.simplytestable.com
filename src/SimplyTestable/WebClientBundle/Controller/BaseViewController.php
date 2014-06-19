@@ -8,11 +8,18 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Model\CacheValidatorIdentifier;
 use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
+use SimplyTestable\WebClientBundle\Services\ResponseFormatService;
 
 use webignition\NormalisedUrl\NormalisedUrl;
 
-abstract class BaseViewController extends BaseController
-{    
+abstract class BaseViewController extends BaseController {
+
+    /**
+     * @var ResponseFormatService
+     */
+    private $responseFormatService;
+
+
     private $template;
 
 
@@ -123,22 +130,24 @@ abstract class BaseViewController extends BaseController
      * @return Response
      */
     protected function renderResponse(Request $request, array $additionalParameters = array()) {
-        if ($request->headers->has('accept')) {
-            $negotiator   = new FormatNegotiator();
-            $priorities   = array('text/html', 'application/json', '*/*');
-            $format = $negotiator->getBest($request->headers->get('accept'), $priorities);
-
-            if ($format->getValue() != 'text/html' && in_array($format->getValue(), $this->getAllowedContentTypes())) {
-                $response = new Response($this->getSerializer()->serialize($additionalParameters, 'json'));
-                $response->headers->set('Content-Type', $format->getValue());
-                return $response;
-            }
+        if ($this->getResponseFormatService()->isDefaultResponseFormat()) {
+            return parent::render($this->getViewName(), array_merge($this->getDefaultViewParameters(), $additionalParameters));
         }
 
-        return parent::render($this->getViewName(), array_merge($this->getDefaultViewParameters(), $additionalParameters));
+        if ($this->getResponseFormatService()->hasAllowedResponseFormat()) {
+            $responseContentType = $this->getResponseFormatService()->getRequestedResponseFormat();
+
+            $response = new Response($this->getSerializer()->serialize($additionalParameters, $responseContentType->getSubtype()));
+            $response->headers->set('Content-Type', (string)$responseContentType);
+            return $response;
+        }
     }
 
 
+    /**
+     * @param Request $request
+     * @return bool
+     */
     protected function requestIsForApplicationJson(Request $request) {
         if (!$request->headers->has('accept')) {
             return false;
@@ -150,12 +159,25 @@ abstract class BaseViewController extends BaseController
 
         return $format->getValue() == 'application/json';
     }
+
+
+    /**
+     * @return ResponseFormatService
+     */
+    protected function getResponseFormatService() {
+        if (is_null($this->responseFormatService)) {
+            $this->responseFormatService = $this->container->get('simplytestable.services.responseFormatService');
+            $this->getResponseFormatService()->setAllowedContentTypes($this->getAllowedContentTypes());
+        }
+
+        return $this->responseFormatService;
+    }
     
     
     /**
      * 
      * @param array $additionalParameters
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */    
     protected function renderCacheableResponse(array $additionalParameters = array()) {
         return $this->getCacheableResponseService()->getCachableResponse(
@@ -164,6 +186,25 @@ abstract class BaseViewController extends BaseController
                 $additionalParameters
             )
         );        
+    }
+
+
+    /**
+     * @param array $additionalParameters
+     * @return Response
+     */
+    protected function renderUncacheableResponse(array $additionalParameters = array()) {
+        $response = $this->renderResponse(
+            $this->getRequest(),
+            $additionalParameters
+        );
+
+        $response->setPublic();
+        $response->setMaxAge(0);
+        $response->headers->addCacheControlDirective('must-revalidate', true);
+        $response->headers->addCacheControlDirective('no-cache', true);
+
+        return $response;
     }
     
     

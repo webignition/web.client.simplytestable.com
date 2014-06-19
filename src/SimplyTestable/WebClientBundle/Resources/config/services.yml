@@ -6,77 +6,77 @@ services:
     class:   SimplyTestable\WebClientBundle\Services\WebResourceService
     arguments:
         httpClientService: "@simplytestable.services.httpClientService"
-        contentTypeWebResourceMap: %content_type_web_resource_map%    
+        contentTypeWebResourceMap: %content_type_web_resource_map%
 
   simplytestable.services.testservice:
-    class:   SimplyTestable\WebClientBundle\Services\TestService  
+    class:   SimplyTestable\WebClientBundle\Services\TestService
     arguments:
         entityManager: "@doctrine.orm.entity_manager"
         logger: "@logger"
-        taskService: "@simplytestable.services.taskservice" 
-        remoteTestService: "@simplytestable.services.remotetestservice" 
-        
+        taskService: "@simplytestable.services.taskservice"
+        remoteTestService: "@simplytestable.services.remotetestservice"
+
   simplytestable.services.remotetestservice:
-    class:   SimplyTestable\WebClientBundle\Services\RemoteTestService  
+    class:   SimplyTestable\WebClientBundle\Services\RemoteTestService
     arguments:
         parameters: %core_application%
-        webResourceService: "@simplytestable.services.webresourceservice"      
+        webResourceService: "@simplytestable.services.webresourceservice"
 
   simplytestable.services.taskservice:
-    class:   SimplyTestable\WebClientBundle\Services\TaskService  
+    class:   SimplyTestable\WebClientBundle\Services\TaskService
     arguments:
-        entityManager: "@doctrine.orm.entity_manager"  
+        entityManager: "@doctrine.orm.entity_manager"
         parameters: %core_application%
-        webResourceService: "@simplytestable.services.webresourceservice"            
+        webResourceService: "@simplytestable.services.webresourceservice"
         taskOutputResultParserService: "@simplytestable.services.taskoutputresultparserfactoryservice"
-        
+
   simplytestable.services.taskcollectionfilterservice:
-    class:   SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService  
+    class:   SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService
     arguments:
-        entityManager: "@doctrine.orm.entity_manager"  
+        entityManager: "@doctrine.orm.entity_manager"
         parameters: %core_application%
-        webResourceService: "@simplytestable.services.webresourceservice"            
-        taskOutputResultParserService: "@simplytestable.services.taskoutputresultparserfactoryservice"        
+        webResourceService: "@simplytestable.services.webresourceservice"
+        taskOutputResultParserService: "@simplytestable.services.taskoutputresultparserfactoryservice"
 
   simplytestable.services.taskoutputresultparserfactoryservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory
     arguments:
       drivers: %task-output-result-parsers%
-      
+
   simplytestable.services.cachevalidatorheadersservice:
-    class:   SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService  
+    class:   SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService
     arguments:
-        entityManager: "@doctrine.orm.entity_manager"      
-        
+        entityManager: "@doctrine.orm.entity_manager"
+
   simplytestable.services.resqueQueueService:
     class:   SimplyTestable\WebClientBundle\Services\ResqueQueueService
     arguments:
       queueManager: "@glit_resque.queue_manager"
       logger: "@logger"
-      resquePrefix: "%glit_resque.prefix%"                      
-    
+      resquePrefix: "%glit_resque.prefix%"
+
   simplytestable.services.userservice:
-    class:  SimplyTestable\WebClientBundle\Services\UserService        
+    class:  SimplyTestable\WebClientBundle\Services\UserService
     arguments:
         parameters: %core_application%
-        webResourceService: "@simplytestable.services.webresourceservice"   
+        webResourceService: "@simplytestable.services.webresourceservice"
         adminUserUsername: %admin_user_username%
         adminUserPassword: %admin_user_password%
         session: "@session"
         userSerializerService: "@simplytestable.services.userserializerservice"
-        
+
   simplytestable.services.useremailchangerequestservice:
-    class:  SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService        
+    class:  SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService
     arguments:
         parameters: %core_application%
-        webResourceService: "@simplytestable.services.webresourceservice"   
+        webResourceService: "@simplytestable.services.webresourceservice"
         adminUserUsername: %admin_user_username%
         adminUserPassword: %admin_user_password%
         session: "@session"
-        userSerializerService: "@simplytestable.services.userserializerservice"        
-        
+        userSerializerService: "@simplytestable.services.userserializerservice"
+
   simplytestable.services.userserializerservice:
-    class:  SimplyTestable\WebClientBundle\Services\UserSerializerService        
+    class:  SimplyTestable\WebClientBundle\Services\UserSerializerService
     arguments:
         key: %secret%
 
@@ -85,49 +85,49 @@ services:
 
   simplytestable.services.testoptions.adapter.request.cookieOptionsParser:
     class:  SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser\CookieOptionsParser
-        
+
   simplytestable.services.testoptions.adapter.request:
     class:  SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
     calls:
       - [addFeatureOptionsParser, ["@simplytestable.services.testoptions.adapter.request.featureOptionsParser"]]
       - [addFeatureOptionsParser, ["@simplytestable.services.testoptions.adapter.request.cookieOptionsParser", "cookies"]]
-        
+
   simplytestable.services.coreapplicationstatusservice:
-    class:  SimplyTestable\WebClientBundle\Services\CoreApplicationStatusService          
+    class:  SimplyTestable\WebClientBundle\Services\CoreApplicationStatusService
     arguments:
         parameters: %core_application%
-        webResourceService: "@simplytestable.services.webresourceservice"       
-        
+        webResourceService: "@simplytestable.services.webresourceservice"
+
   simplytestable.services.userplansubscriptionservice:
-    class:  SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService        
+    class:  SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService
     arguments:
         parameters: %core_application%
-        webResourceService: "@simplytestable.services.webresourceservice"   
+        webResourceService: "@simplytestable.services.webresourceservice"
         adminUserUsername: %admin_user_username%
         adminUserPassword: %admin_user_password%
         session: "@session"
-        userSerializerService: "@simplytestable.services.userserializerservice"         
-        
+        userSerializerService: "@simplytestable.services.userserializerservice"
+
   simplytestable.services.useraccountcardservice:
-    class:  SimplyTestable\WebClientBundle\Services\UserAccountCardService        
+    class:  SimplyTestable\WebClientBundle\Services\UserAccountCardService
     arguments:
         parameters: %core_application%
-        webResourceService: "@simplytestable.services.webresourceservice"   
+        webResourceService: "@simplytestable.services.webresourceservice"
         adminUserUsername: %admin_user_username%
         adminUserPassword: %admin_user_password%
         session: "@session"
-        userSerializerService: "@simplytestable.services.userserializerservice"              
-        
+        userSerializerService: "@simplytestable.services.userserializerservice"
+
   simplytestable.services.userstripeeventservice:
     class:  SimplyTestable\WebClientBundle\Services\UserStripeEventService
     arguments:
         parameters: %core_application%
-        webResourceService: "@simplytestable.services.webresourceservice"   
+        webResourceService: "@simplytestable.services.webresourceservice"
         adminUserUsername: %admin_user_username%
         adminUserPassword: %admin_user_password%
         session: "@session"
-        userSerializerService: "@simplytestable.services.userserializerservice"            
-        
+        userSerializerService: "@simplytestable.services.userserializerservice"
+
   simplytestable.services.urlcheckerservice:
     class:  SimplyTestable\WebClientBundle\Services\UrlCheckerService
     arguments:
@@ -136,39 +136,39 @@ services:
   simplytestable.services.documentationurlcheckerservice:
     class:  SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService
     arguments:
-        webResourceService: "@simplytestable.services.webresourceservice"          
+        webResourceService: "@simplytestable.services.webresourceservice"
 
   simplytestable.services.mailchimpservice:
     class:   SimplyTestable\WebClientBundle\Services\MailChimp\Service
-    arguments: 
+    arguments:
         apiKey: %mailchimp_api_key%
         listRecipientsService: "@simplytestable.services.mailchimp.listRecipients"
 #        lists:
 #            updates: %mailchimp_updates_list_id%
 #            announcements: %mailchimp_announcements_list_id%
-#            introduction: %mailchimp_introduction_list_id%   
-            
+#            introduction: %mailchimp_introduction_list_id%
+
   simplytestable.services.availabletasktypeservice:
     class:   SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
-    arguments: 
-        allTaskTypes: "%available_task_types%"           
+    arguments:
+        allTaskTypes: "%available_task_types%"
         earlyAccessUsers: "%early_access_users%"
-        
+
   simplytestable.services.mail.configuration:
     class:   SimplyTestable\WebClientBundle\Services\Mail\Configuration
-    arguments: 
-        configuration: "%mail%"         
-        
+    arguments:
+        configuration: "%mail%"
+
   simplytestable.services.postmark.sender:
     class:   SimplyTestable\WebClientBundle\Services\Postmark\Sender
-        
+
   simplytestable.services.mail.service:
     class:   SimplyTestable\WebClientBundle\Services\Mail\Service
     arguments:
         mailConfiguration: "@simplytestable.services.mail.configuration"
         postmarkMessage: "@postmark.message"
         postmarkSender: "@simplytestable.services.postmark.sender"
-    
+
   simplytestable.listener.stripeEvent:
     class:   SimplyTestable\WebClientBundle\EventListener\Stripe\Listener
     arguments:
@@ -178,22 +178,22 @@ services:
         mailService: "@simplytestable.services.mail.service"
     tags:
       - { name: kernel.event_listener, event: stripe.customer.subscription.created, method: onCustomerSubscriptionCreated }
-      - { name: kernel.event_listener, event: stripe.customer.subscription.deleted, method: onCustomerSubscriptionDeleted }                    
-      - { name: kernel.event_listener, event: stripe.customer.subscription.trial_will_end, method: onCustomerSubscriptionTrialWillEnd }           
-      - { name: kernel.event_listener, event: stripe.customer.subscription.updated, method: onCustomerSubscriptionUpdated }           
-      - { name: kernel.event_listener, event: stripe.invoice.payment_succeeded, method: onInvoicePaymentSucceeded }           
-      - { name: kernel.event_listener, event: stripe.invoice.payment_failed, method: onInvoicePaymentFailed }     
-      
+      - { name: kernel.event_listener, event: stripe.customer.subscription.deleted, method: onCustomerSubscriptionDeleted }
+      - { name: kernel.event_listener, event: stripe.customer.subscription.trial_will_end, method: onCustomerSubscriptionTrialWillEnd }
+      - { name: kernel.event_listener, event: stripe.customer.subscription.updated, method: onCustomerSubscriptionUpdated }
+      - { name: kernel.event_listener, event: stripe.invoice.payment_succeeded, method: onInvoicePaymentSucceeded }
+      - { name: kernel.event_listener, event: stripe.invoice.payment_failed, method: onInvoicePaymentFailed }
+
   simplytestable.services.cacheableResponseService:
-    class:  SimplyTestable\WebClientBundle\Services\CacheableResponseService           
-      
+    class:  SimplyTestable\WebClientBundle\Services\CacheableResponseService
+
   simplytestable.controller.action_listener:
     class: SimplyTestable\WebClientBundle\EventListener\RequestListener
-    arguments:        
+    arguments:
         kernel: @kernel
     tags:
-      - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }      
-      
+      - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
   simplytestable.listener.mailchimpEvent:
     class:   SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener
     arguments:
@@ -208,12 +208,19 @@ services:
   simplytestable.services.mailchimp.listRecipients:
     class:   SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService
     calls:
-      - [addListIdentifier, ['announcements', %mailchimp_announcements_list_id%]]    
-      - [addListIdentifier, ['updates', %mailchimp_updates_list_id%]]    
-      - [addListIdentifier, ['introduction', %mailchimp_introduction_list_id%]]    
+      - [addListIdentifier, ['announcements', %mailchimp_announcements_list_id%]]
+      - [addListIdentifier, ['updates', %mailchimp_updates_list_id%]]
+      - [addListIdentifier, ['introduction', %mailchimp_introduction_list_id%]]
     arguments:
         entityManager: "@doctrine.orm.entity_manager"
         logger: "@logger"
+
+  simplytestable.services.responseFormatService:
+    class:   SimplyTestable\WebClientBundle\Services\ResponseFormatService
+    calls:
+      - [setRequest, [@request]]
+    public: true
+    scope: request
 
   simplytestable.services.tasktypeservice:
     class:  SimplyTestable\WebClientBundle\Services\TaskTypeService

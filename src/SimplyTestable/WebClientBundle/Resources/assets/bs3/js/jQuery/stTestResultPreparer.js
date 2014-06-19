@@ -39,7 +39,7 @@
                     });
                 });
             },
-            url: getBaseUrl(test) + '/finished-summary-bs3/'
+            url: getBaseUrl(test) + '/finished-summary/'
         });
     };
 

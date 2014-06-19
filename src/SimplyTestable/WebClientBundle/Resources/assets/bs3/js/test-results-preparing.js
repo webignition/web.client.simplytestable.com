@@ -19,7 +19,7 @@ $(document).ready(function() {
     };
 
     var getRetrievalStatusUrl = function() {
-        return getTaskResultsRetrieveUrl() + 'status/';
+        return window.location.href.replace('/preparing/', '/preparing/stats/');
     };
 
     var getResultsUrl = function() {
@@ -28,23 +28,22 @@ $(document).ready(function() {
 
     var getRetrievalStatus = function() {
         jQuery.ajax({
-            dataType: 'json',
             error: function(request, textStatus, errorThrown) {
             },
             success: function(data, textStatus, request) {
                 console.log(data);
 
-                $('#completion-percent-value').text(data['completion-percent']);
+                $('#completion-percent-value').text(data['completion_percent']);
 
-                getProgressBar().attr('data-remaining-tasks-to-retrieve-count', data['remaining-tasks-to-retrieve-count']);
+                getProgressBar().attr('data-remaining-tasks-to-retrieve-count', data['remaining_tasks_to_retrieve_count']);
 
 
                 getProgressBar().css({
-                    'width': data['completion-percent'] + '%'
+                    'width': data['completion_percent'] + '%'
                 });
 
-                $('#local-task-count').text(data['local-task-count']);
-                $('#remote-task-count').text(data['remote-task-count']);
+                $('#local-task-count').text(data['local_task_count']);
+                $('#remote-task-count').text(data['remote_task_count']);
 
                 initialise();
             },

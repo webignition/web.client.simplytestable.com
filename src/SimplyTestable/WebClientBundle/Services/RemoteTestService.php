@@ -470,12 +470,12 @@ class RemoteTestService extends CoreApplicationService {
         }
         
         return $count;         
-    }      
-    
-    
+    }
+
+
     /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Model\TestList
+     * @param \Guzzle\Http\Message\Request $request
+     * @return array
      */
     private function getWebsitesList(\Guzzle\Http\Message\Request $request) {        
         $this->addAuthorisationToRequest($request);
