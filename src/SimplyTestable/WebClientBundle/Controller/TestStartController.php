@@ -16,9 +16,14 @@ class TestStartController extends TestController
     
     /**
      *
-     * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
      */
     private $testOptionsAdapter = null;
+
+    /**
+     * @var \SimplyTestable\WebClientBundle\Services\TaskTypeService
+     */
+    private $taskTypeService = null;
     
     
     public function startNewAction()
@@ -36,22 +41,8 @@ class TestStartController extends TestController
     {        
         $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
         
-        if ($this->isAddCookieRequest()) {
-            $customCookies = $requestValues->get('cookies');            
-            $customCookies[] = array(
-                'name' => '{{cookie-name}}',
-                'value' => '{{cookie-value}}'
-            );
-            
-            $requestValues->set('cookies', $customCookies);
-        }        
-        
         $this->getTestOptionsAdapter()->setRequestData($requestValues);
         $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
-        
-        if ($this->isAddCookieRequest()) {
-            return $this->redirect($this->getStartRedirectUrl($testOptions));
-        }
         
         if ($testOptions->hasFeatureOptions(self::HTTP_AUTH_FEATURE_NAME)) {
             $httpAuthFeatureOptions = $testOptions->getFeatureOptions(self::HTTP_AUTH_FEATURE_NAME);
@@ -81,12 +72,12 @@ class TestStartController extends TestController
             $testOptions->setFeatureOptions(self::COOKIES_FEATURE_NAME, $cookieFeatureOptions);
         }
 
-        if (!$this->hasWebsite() && $this->isTestStartRequest()) {
+        if (!$this->hasWebsite()) {
             $this->get('session')->setFlash('test_start_error', 'website-blank');
             return $this->redirect($this->generateUrl('view_dashboard_index_index', $this->getRedirectValues($testOptions), true));
         }
         
-        if ($testOptions->hasTestTypes() === false && $this->isTestStartRequest()) {
+        if ($testOptions->hasTestTypes() === false) {
             $this->get('session')->setFlash('test_start_error', 'no-test-types-selected');
             return $this->redirect($this->generateUrl('view_dashboard_index_index', $this->getRedirectValues($testOptions), true));
         }
@@ -113,31 +104,13 @@ class TestStartController extends TestController
     }
     
     
-    private function getStartRedirectUrl(\SimplyTestable\WebClientBundle\Model\TestOptions $testOptions) {
-        $url = $this->generateUrl('view_dashboard_index_index', $this->getRedirectValues($testOptions), true);
-        return str_replace(array(
-            urlencode('{{cookie-name}}'),
-            urlencode('{{cookie-value}}')
-        ), '', $url);
-    }
-    
-    
-    /**
-     * 
-     * @return boolean
-     */
-    private function isTestStartRequest() {
-        return !$this->isAddCookieRequest();
-    }
-    
-    
-    /**
-     * 
-     * @return boolean
-     */
-    private function isAddCookieRequest() {
-        return !is_null($this->getRequestValue('add-cookie'));
-    }
+//    private function getStartRedirectUrl(\SimplyTestable\WebClientBundle\Model\TestOptions $testOptions) {
+//        $url = $this->generateUrl('view_dashboard_index_index', $this->getRedirectValues($testOptions), true);
+//        return str_replace(array(
+//            urlencode('{{cookie-name}}'),
+//            urlencode('{{cookie-value}}')
+//        ), '', $url);
+//    }
     
     
     /**
@@ -237,7 +210,7 @@ class TestStartController extends TestController
     
     /**
      *
-     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
      */
     private function getTestOptionsAdapter() {
         if (is_null($this->testOptionsAdapter)) {
@@ -246,7 +219,7 @@ class TestStartController extends TestController
             $this->testOptionsAdapter = $this->container->get('simplytestable.services.testoptions.adapter.request');
         
             $this->testOptionsAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-            $this->testOptionsAdapter->setAvailableTaskTypes($this->getAvailableTaskTypes());
+            $this->testOptionsAdapter->setAvailableTaskTypes($this->getTaskTypeService()->getAvailable());
             $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
             $this->testOptionsAdapter->setInvertInvertableOptions(true);
             
@@ -259,23 +232,39 @@ class TestStartController extends TestController
     } 
     
     
+//    /**
+//     *
+//     * @return array
+//     */
+//    private function getAvailableTaskTypes() {
+//        $this->getAvailableTaskTypeService()->setUser($this->getUser());
+//        $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
+//
+//        return $this->getAvailableTaskTypeService()->get();
+//    }
+//
+//
+//    /**
+//     *
+//     * @return \SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
+//     */
+//    private function getAvailableTaskTypeService() {
+//        return $this->container->get('simplytestable.services.availabletasktypeservice');
+//    }
+
     /**
-     * 
-     * @return array
+     * @return \SimplyTestable\WebClientBundle\Services\TaskTypeService
      */
-    private function getAvailableTaskTypes() {
-        $this->getAvailableTaskTypeService()->setUser($this->getUser());
-        $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
-        
-        return $this->getAvailableTaskTypeService()->get();    
-    }    
-    
-    
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
-     */
-    private function getAvailableTaskTypeService() {
-        return $this->container->get('simplytestable.services.availabletasktypeservice');
-    }       
+    private function getTaskTypeService() {
+        if (is_null($this->taskTypeService)) {
+            $this->taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
+            $this->taskTypeService->setUser($this->getUser());
+
+            if (!$this->getUser()->equals($this->getUserService()->getPublicUser())) {
+                $this->taskTypeService->setUserIsAuthenticated();
+            }
+        }
+
+        return $this->taskTypeService;
+    }
 }

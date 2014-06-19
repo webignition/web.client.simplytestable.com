@@ -87,18 +87,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     }
 
 
-//    /**
-//     *
-//     * @return array
-//     */
-//    private function getAvailableTaskTypes() {
-//        $this->getAvailableTaskTypeService()->setUser($this->getUser());
-//        $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
-//
-//        return $this->getAvailableTaskTypeService()->get();
-//    }
-
-
     /**
      *
      * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter

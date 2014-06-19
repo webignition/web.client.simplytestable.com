@@ -6,7 +6,7 @@
 
                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-6 task-type {% if not is_available %}not-available{% endif %}">
                     <div class="checkbox inner">
-                        <label title="{{ task_type_details.description|striptags }}{% if not is_available %} (free account required){% endif %}">
+                        <label title="{{ task_type_details.description|striptags }}{% if not is_available %} (account required){% endif %}">
                             <input type="checkbox"
                                    value="1"
                                    name="{{ task_type_key }}"

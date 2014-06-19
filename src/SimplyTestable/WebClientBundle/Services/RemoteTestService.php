@@ -52,7 +52,7 @@ class RemoteTestService extends CoreApplicationService {
                 '/'
             );            
         }
-        
+
 
 
         $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_start', array(

@@ -325,15 +325,15 @@ class TestOptions {
         
         if ($this->hasTestTypes()) {
             $optionsAsArray['test-types'] = $this->getTestTypes();
-            
-            foreach ($this->testTypes as $testTypeKey => $testType) {                                            
+
+            foreach ($this->testTypes as $testTypeKey => $testType) {
                 if (!isset($optionsAsArray['test-type-options'])) {
                     $optionsAsArray['test-type-options'] = array();
                 }
             }
-            
-            foreach ($this->availableTaskTypes as $taskTypeKey => $taskTypeName) { 
-                $optionsAsArray['test-type-options'][$taskTypeName] = $this->getAbsoluteTestTypeOptions($taskTypeKey, false);
+
+            foreach ($this->availableTaskTypes as $taskTypeKey => $taskTypeDetails) {
+                $optionsAsArray['test-type-options'][$taskTypeDetails['name']] = $this->getAbsoluteTestTypeOptions($taskTypeKey, false);
             }
         }
         

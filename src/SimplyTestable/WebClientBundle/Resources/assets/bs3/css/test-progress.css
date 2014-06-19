@@ -137,6 +137,18 @@ h2 {
     width: auto;
 }
 
+.task-types .fa {
+    opacity: 0.6;
+}
+
+.task-types .not-available {
+    opacity: 0.6;
+}
+
+.task-types .task-type {
+    margin-bottom: 6px;
+}
+
 
 @media (min-width: 992px) {
     .side-actions {

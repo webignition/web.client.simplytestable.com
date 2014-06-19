@@ -23,6 +23,11 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     );
 
     /**
+     * @var \SimplyTestable\WebClientBundle\Services\TaskTypeService
+     */
+    private $taskTypeService = null;
+
+    /**
      *
      * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
      */
@@ -85,7 +90,8 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'this_url' => $this->getProgressUrl($this->getTest()->getWebsite(), $test_id),
             'remote_test' => $this->requestIsForApplicationJson($this->getRequest()) ? $this->getRemoteTest()->__toArray() : $this->getRemoteTest(),
             'state_label' => $this->getStateLabel(),
-            'available_task_types' => $this->getAvailableTaskTypes(),
+            'available_task_types' => $this->getTaskTypeService()->getAvailable(),
+            'task_types' => $this->getTaskTypeService()->get(),
             'test_options' => $this->getTestOptionsAdapter()->getTestOptions()->__toKeyArray(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
@@ -155,7 +161,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             $this->testOptionsAdapter = $this->container->get('simplytestable.services.testoptions.adapter.request');
 
             $this->testOptionsAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-            $this->testOptionsAdapter->setAvailableTaskTypes($this->getAvailableTaskTypes());
+            $this->testOptionsAdapter->setAvailableTaskTypes($this->getTaskTypeService()->getAvailable());
             $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
             $this->testOptionsAdapter->setInvertInvertableOptions(true);
 
@@ -165,27 +171,6 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         }
 
         return $this->testOptionsAdapter;
-    }
-
-
-    /**
-     *
-     * @return array
-     */
-    private function getAvailableTaskTypes() {
-        $this->getAvailableTaskTypeService()->setUser($this->getUser());
-        $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
-
-        return $this->getAvailableTaskTypeService()->get();
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
-     */
-    private function getAvailableTaskTypeService() {
-        return $this->container->get('simplytestable.services.availabletasktypeservice');
     }
 
 
@@ -212,5 +197,22 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         }
 
         return $this->container->getParameter('js-static-analysis-ignore-common-cdns');
+    }
+
+
+    /**
+     * @return \SimplyTestable\WebClientBundle\Services\TaskTypeService
+     */
+    private function getTaskTypeService() {
+        if (is_null($this->taskTypeService)) {
+            $this->taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
+            $this->taskTypeService->setUser($this->getUser());
+
+            if (!$this->getUser()->equals($this->getUserService()->getPublicUser())) {
+                $this->taskTypeService->setUserIsAuthenticated();
+            }
+        }
+
+        return $this->taskTypeService;
     }
 }
