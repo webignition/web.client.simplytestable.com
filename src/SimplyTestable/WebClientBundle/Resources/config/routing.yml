@@ -216,12 +216,6 @@ task_results_retrieve:
     defaults: { _controller: SimplyTestableWebClientBundle:TaskResults:retrieve }  
     requirements:
        website: ".+"  
-       
-task_results_retrieve_status:
-    pattern:  /{website}/{test_id}/results/retrieve/status/
-    defaults: { _controller: SimplyTestableWebClientBundle:TaskResults:status }  
-    requirements:
-       website: ".+"
 
 view_test_task_tasklist_index_index:
     pattern:  /{website}/{test_id}/tasklist/
