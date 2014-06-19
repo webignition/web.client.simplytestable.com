@@ -30,4 +30,27 @@ abstract class CacheableViewController extends ViewController implements Cacheab
         return (is_null($this->request)) ? $this->get('request') : $this->request;
     }
 
+
+    /**
+     * @return bool
+     */
+    protected function isXmlHttpRequest() {
+        return $this->getRequest()->headers->has('X-Requested-With') && $this->getRequest()->headers->get('X-Requested-With') == 'XMLHttpRequest';
+    }
+
+
+    /**
+     * @param string $locationValue
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
+    protected function issueRedirect($locationValue) {
+        if  ($this->isXmlHttpRequest()) {
+            return $this->renderResponse($this->getRequest(), [
+                'this_url' => $locationValue
+            ]);
+        }
+
+        return $this->redirect($locationValue);
+    }
+
 }
