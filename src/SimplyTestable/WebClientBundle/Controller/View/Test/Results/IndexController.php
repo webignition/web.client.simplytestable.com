@@ -24,6 +24,12 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
 
     /**
+     * @var \SimplyTestable\WebClientBundle\Services\TaskTypeService
+     */
+    private $taskTypeService = null;
+
+
+    /**
      *
      * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
      */
@@ -118,9 +124,9 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'type_label' => $this->getTaskTypeLabel($this->getRequestType()),
             'filter' => $this->getRequestFilter(),
             'filter_label' => ucwords(str_replace('-', ' ', $this->getRequestFilter())),
-            'task_types' => $this->container->getParameter('task_types'),
+            'available_task_types' => $this->getTaskTypeService()->getAvailable(),
+            'task_types' => $this->getTaskTypeService()->get(),
             'test_options' => $testOptions->__toKeyArray(),
-            'available_task_types' => $this->getAvailableTaskTypes(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
             'tasks' => $tasks,
@@ -240,7 +246,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             $this->testOptionsAdapter = $this->container->get('simplytestable.services.testoptions.adapter.request');
 
             $this->testOptionsAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-            $this->testOptionsAdapter->setAvailableTaskTypes($this->getAvailableTaskTypes());
+            $this->testOptionsAdapter->setAvailableTaskTypes($this->getTaskTypeService()->getAvailable());
             $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
             $this->testOptionsAdapter->setInvertInvertableOptions(true);
 
@@ -253,25 +259,25 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     }
 
 
-    /**
-     *
-     * @return array
-     */
-    private function getAvailableTaskTypes() {
-        $this->getAvailableTaskTypeService()->setUser($this->getUser());
-        $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
-
-        return $this->getAvailableTaskTypeService()->get();
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
-     */
-    private function getAvailableTaskTypeService() {
-        return $this->container->get('simplytestable.services.availabletasktypeservice');
-    }
+//    /**
+//     *
+//     * @return array
+//     */
+//    private function getAvailableTaskTypes() {
+//        $this->getAvailableTaskTypeService()->setUser($this->getUser());
+//        $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
+//
+//        return $this->getAvailableTaskTypeService()->get();
+//    }
+//
+//
+//    /**
+//     *
+//     * @return \SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
+//     */
+//    private function getAvailableTaskTypeService() {
+//        return $this->container->get('simplytestable.services.availabletasktypeservice');
+//    }
 
 
     /**
@@ -376,6 +382,23 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         $this->getTaskCollectionFilterService()->setOutcomeFilter($outcomeFilter);
 
         return $this->getTaskCollectionFilterService()->getRemoteIdCount();
+    }
+
+
+    /**
+     * @return \SimplyTestable\WebClientBundle\Services\TaskTypeService
+     */
+    private function getTaskTypeService() {
+        if (is_null($this->taskTypeService)) {
+            $this->taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
+            $this->taskTypeService->setUser($this->getUser());
+
+            if (!$this->getUser()->equals($this->getUserService()->getPublicUser())) {
+                $this->taskTypeService->setUserIsAuthenticated();
+            }
+        }
+
+        return $this->taskTypeService;
     }
 
 }

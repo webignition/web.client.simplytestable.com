@@ -1,22 +1,4 @@
 $(document).ready(function() {
-//    var getDeviceSize = function () {
-//        if ($('#device-size-lg').css('visibility') === 'visible') {
-//            return 'lg';
-//        }
-//
-//        if ($('#device-size-md').css('visibility') === 'visible') {
-//            return 'md';
-//        }
-//
-//        if ($('#device-size-sm').css('visibility') === 'visible') {
-//            return 'sm';
-//        }
-//
-//        if ($('#device-size-xs').css('visibility') === 'visible') {
-//            return 'xs';
-//        }
-//    }
-
     $('.collapse-control').each(function () {
         var control = $(this);
         var detail = $(control.attr('data-target'));
@@ -39,16 +21,25 @@ $(document).ready(function() {
     });
 
     var greatestBadgeWidth = 0;
+    var greatestBadgeOuterWidth = 0;
 
     $('.task-type-summary .badge').each(function () {
         var badge = $(this);
         if (badge.width() > greatestBadgeWidth) {
             greatestBadgeWidth = badge.width();
         }
+
+        if (badge.outerWidth() > greatestBadgeOuterWidth) {
+            greatestBadgeOuterWidth = badge.outerWidth();
+        }
     });
 
     $('.task-type-summary .badge').each(function () {
         $(this).width(greatestBadgeWidth);
+    });
+
+    $('.task-type-summary .not-available-icon').each(function () {
+        $(this).width(greatestBadgeOuterWidth);
     });
 
     $('#retest-button').click(function () {

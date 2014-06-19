@@ -153,11 +153,11 @@
                         </div>
 
                         {% if 'css-validation' in available_task_types|keys %}
-                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/CssValidation:advanced-options.html.twig' with {'is_disabled': false, 'container_classes': ['test-options-set']} %}
+                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/css-validation:advanced-options.html.twig' with {'is_disabled': false, 'container_classes': ['test-options-set']} %}
                         {% endif %}
 
                         {% if 'js-static-analysis' in available_task_types|keys %}
-                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/JsStaticAnalysis:advanced-options.html.twig' with {'is_disabled': false, 'container_classes': ['test-options-set']} %}
+                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/js-static-analysis:advanced-options.html.twig' with {'is_disabled': false, 'container_classes': ['test-options-set']} %}
                         {% endif %}
 
                     </div>

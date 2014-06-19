@@ -6,18 +6,9 @@
 
 {% block prefix %}{% endblock %}
 
-{% if 'html-validation' in available_task_types|keys %}
-    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/HtmlValidation:test-options.html.twig' %}
-{% endif %}
+{% for task_type_key, task_type_details in task_types %}
+    {% set is_available = task_type_key in available_task_types|keys %}
+    {% set task_type_options_view = ['SimplyTestableWebClientBundle:bs3/Partials/Test/Options/', task_type_key, ':test-options.html.twig']|join('') %}
 
-{% if 'css-validation' in available_task_types|keys %}
-    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/CssValidation:test-options.html.twig' %}
-{% endif %}
-
-{% if 'js-static-analysis' in available_task_types|keys %}
-    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/JsStaticAnalysis:test-options.html.twig' %}
-{% endif %}
-
-{% if 'link-integrity' in available_task_types|keys %}
-    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/LinkIntegrity:test-options.html.twig' %}
-{% endif %}
+    {% include task_type_options_view %}
+{% endfor %}

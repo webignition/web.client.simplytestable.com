@@ -1,0 +1,23 @@
+{% set disable = (is_disabled) and (test_options['link-integrity'] is not defined or not test_options['link-integrity']) %}
+
+<div class="test-options-set task-type-option {% if disable %}test-options-set-disabled{% endif %} {% if not is_available %}not-available{% endif %}" id="link-integrity-options">
+    <label class="checkbox {% if disable %}disabled{% endif %}">
+        {% if is_available %}
+            <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="link-integrity" {% if (test_options['link-integrity'] is defined and test_options['link-integrity'] == 1) %} checked {% endif %} />
+        {% else %}
+            <i class="fa fa-minus-circle"></i>
+        {% endif %}
+
+        <span class="task-type-name">
+            Link integrity
+            {% if not is_available %}
+                {% if disable %}
+                    (account required)
+                {% else %}
+                    (sign in to enable)
+                {% endif %}
+            {% endif %}
+        </span>
+        <span class="help-block">Check all links in a web page, report those that do not work</span>
+    </label>
+</div>

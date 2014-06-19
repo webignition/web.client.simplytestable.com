@@ -13,9 +13,9 @@
                                     {% if (test_options[task_type_key] is defined and test_options[task_type_key] == 1) %} checked {% endif %}>
                             <span class="name">{{ task_type_details.name|replace({'JS': 'JavaScript'}) }}</span>
                             <span class="description">
-                                {% if not is_available %}
-                                    <i class="fa fa-user"></i>
-                                {% endif %}
+                                {#{% if not is_available %}#}
+                                    {#<i class="fa fa-minus-circle"></i>#}
+                                {#{% endif %}#}
                                 {{ task_type_details.description|raw }}
                             </span>
                         </label>

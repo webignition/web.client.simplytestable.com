@@ -239,6 +239,15 @@ a.clear-type .fa {
     margin-bottom: 20px;
 }
 
+.task-type-summary .not-available-icon {
+    display: inline-block;
+    text-align: right;
+}
+
+.task-type-summary .not-available-icon .fa {
+    opacity: 0.6;
+}
+
 @media (min-width: 1200px) {
     .side-actions {
         position: static;

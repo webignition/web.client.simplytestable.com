@@ -1,0 +1,37 @@
+{% set disable = is_disabled and (test_options['js-static-analysis'] is not defined or not test_options['js-static-analysis']) %}
+
+<div class="test-options-set task-type-option {% if disable %}test-options-set-disabled{% endif %} {% if not is_available %}not-available{% endif %}" id="js-static-analysis-validation-options">
+    <label class="checkbox {% if disable %}disabled{% endif %}">
+        {% if is_available %}
+            <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="js-static-analysis" {% if (test_options['js-static-analysis'] is defined and test_options['js-static-analysis'] == 1) %} checked {% endif %} />
+        {% else %}
+            <i class="fa fa-minus-circle"></i>
+        {% endif %}
+
+        <span class="task-type-name">
+            JavaScript static analysis
+            {% if not is_available %}
+                {% if disable %}
+                    (account required)
+                {% else %}
+                    (sign in to enable)
+                {% endif %}
+            {% endif %}
+        </span>
+        <span class="help-block">Analyse the quality of your JavaScript with <a href="http://www.jslint.com/lint.html">JSLint</a></span>
+    </label>
+
+    {% if is_enabled or (is_disabled and test_options['js-static-analysis'] is defined and test_options['js-static-analysis'] == 1) %}
+
+        <div class="test-options-advanced" {% if has_http_auth %}style="display:none;"{% endif %}>
+            <span class="collapse-control collapsed link" data-toggle="collapse" data-target="#js-static-analysis-options-advanced">
+                Advanced JS static analysis and JSLint options
+                <i class="fa fa-caret-down"></i>
+            </span>
+
+            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/js-static-analysis:advanced-options.html.twig' %}
+
+        </div>
+
+    {% endif %}
+</div>

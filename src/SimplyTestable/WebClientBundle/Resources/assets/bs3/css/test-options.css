@@ -54,6 +54,13 @@
     margin-top: 20px;
 }
 
+.test-options-set.not-available .fa-minus-circle {
+    float:left;
+    margin-left: -20px;
+    opacity: 0.4;
+    margin-top: 2px;
+}
+
 input.inline-short {
     display:inline;
     width:50px;
