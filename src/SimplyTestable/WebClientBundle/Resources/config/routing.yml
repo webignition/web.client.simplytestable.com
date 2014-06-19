@@ -203,14 +203,14 @@ view_test_results_preparing_index_index:
     pattern:  /{website}/{test_id}/results/preparing/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Preparing/Index:index }
     requirements:
-       website: ".+"       
-       
-app_results_preparing_stats:
+       website: ".+"
+
+view_test_results_preparingstats_index:
     pattern:  /{website}/{test_id}/results/preparing/stats/
-    defaults: { _controller: SimplyTestableWebClientBundle:App:prepareResultsStats, _format: json }  
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/PreparingStats:index, _format: json }
     requirements:
-       website: ".+"        
-       
+       website: ".+"
+
 task_results_retrieve:
     pattern:  /{website}/{test_id}/results/retrieve/
     defaults: { _controller: SimplyTestableWebClientBundle:TaskResults:retrieve }  

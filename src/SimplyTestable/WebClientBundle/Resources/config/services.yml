@@ -185,7 +185,7 @@ services:
       - { name: kernel.event_listener, event: stripe.invoice.payment_failed, method: onInvoicePaymentFailed }     
       
   simplytestable.services.cacheableResponseService:
-    class:  SimplyTestable\WebClientBundle\Services\CacheableResponseService           
+    class:  SimplyTestable\WebClientBundle\Services\CacheableResponseService
       
   simplytestable.controller.action_listener:
     class: SimplyTestable\WebClientBundle\EventListener\RequestListener
@@ -214,3 +214,10 @@ services:
     arguments:
         entityManager: "@doctrine.orm.entity_manager"
         logger: "@logger"
+
+  simplytestable.services.responseFormatService:
+    class:   SimplyTestable\WebClientBundle\Services\ResponseFormatService
+    calls:
+      - [setRequest, [@request]]
+    public: true
+    scope: request

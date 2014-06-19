@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\EventListener;
 
+use SimplyTestable\WebClientBundle\Interfaces\Controller\ForceJsonResponse;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -65,7 +66,7 @@ class RequestListener
         if ($this->isIeFilteredController() && $this->isUsingOldIE()) {
             $this->event->setResponse($this->getRedirectResponseToOutdatedBrowserPage());
         }
-        
+
         $this->getUserService()->setUserFromRequest($this->event->getRequest());
 
         try {
@@ -169,16 +170,15 @@ class RequestListener
         
         $this->event->getRequest()->headers->set('if-none-match', $modifiedEtag);          
     }
-    
-    
+
     /**
-     * 
+     *
      * @return boolean
      */
-    private function isIeFilteredController() {        
-        return $this->getController() instanceof IEFilteredController;   
+    private function isIeFilteredController() {
+        return $this->getController() instanceof IEFilteredController;
     }
-    
+
     
     /**
      * 
