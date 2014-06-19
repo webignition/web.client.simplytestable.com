@@ -132,23 +132,34 @@
                         {% import 'SimplyTestableWebClientBundle:bs3/Macro:form.html.twig' as form %}
 
                         <div class="collapse-control-group">
-                        <span class="collapse-control collapsed link"
-                              data-toggle="collapse"
-                              data-target="#css-validation-options-advanced">
-                            <span class="content">Advanced CSS validation options</span>
-                            <i class="fa fa-fw fa-caret-down"></i>
-                        </span>
+                            {% if 'css-validation' in available_task_types|keys %}
+                                <span class="collapse-control collapsed link"
+                                      data-toggle="collapse"
+                                      data-target="#css-validation-options-advanced">
+                                    <span class="content">Advanced CSS validation options</span>
+                                    <i class="fa fa-fw fa-caret-down"></i>
+                                </span>
+                            {% endif %}
 
-                        <span class="collapse-control collapsed link"
-                              data-toggle="collapse"
-                              data-target="#js-static-analysis-options-advanced">
-                            <span class="content">Advanced JavaScript static analysis (and JSLint) options</span>
-                            <i class="fa fa-fw fa-caret-down"></i>
-                        </span>
+
+                            {% if 'js-static-analysis' in available_task_types|keys %}
+                                <span class="collapse-control collapsed link"
+                                      data-toggle="collapse"
+                                      data-target="#js-static-analysis-options-advanced">
+                                    <span class="content">Advanced JavaScript static analysis (and JSLint) options</span>
+                                    <i class="fa fa-fw fa-caret-down"></i>
+                                </span>
+                            {% endif %}
                         </div>
 
-                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/CssValidation:advanced-options.html.twig' with {'is_disabled': false, 'container_classes': ['test-options-set']} %}
-                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/JsStaticAnalysis:advanced-options.html.twig' with {'is_disabled': false, 'container_classes': ['test-options-set']} %}
+                        {% if 'css-validation' in available_task_types|keys %}
+                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/CssValidation:advanced-options.html.twig' with {'is_disabled': false, 'container_classes': ['test-options-set']} %}
+                        {% endif %}
+
+                        {% if 'js-static-analysis' in available_task_types|keys %}
+                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/JsStaticAnalysis:advanced-options.html.twig' with {'is_disabled': false, 'container_classes': ['test-options-set']} %}
+                        {% endif %}
+
                     </div>
                 </div>
             </form>

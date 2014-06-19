@@ -1,20 +1,23 @@
 <div class="row task-types">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="row">
-            {% for task_type_key, task_type_name in available_task_types %}
-                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-6 task-type">
+            {% for task_type_key, task_type_details in task_types %}
+                {% set is_available = task_type_key in available_task_types|keys %}
+
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-6 task-type {% if not is_available %}not-available{% endif %}">
                     <div class="checkbox inner">
-                        <label>
+                        <label title="{{ task_type_details.description|striptags }}{% if not is_available %} (free account required){% endif %}">
                             <input type="checkbox"
                                    value="1"
                                    name="{{ task_type_key }}"
                                     {% if (test_options[task_type_key] is defined and test_options[task_type_key] == 1) %} checked {% endif %}>
-                            <span class="name">{{ task_type_name|replace({'JS': 'JavaScript'}) }}</span>
-                <span class="description">
-                    {% if task_types[task_type_key] is defined and task_types[task_type_key]['description'] is defined %}
-                        {{ task_types[task_type_key]['description']|raw }}
-                    {% endif %}
-                </span>
+                            <span class="name">{{ task_type_details.name|replace({'JS': 'JavaScript'}) }}</span>
+                            <span class="description">
+                                {% if not is_available %}
+                                    <i class="fa fa-user"></i>
+                                {% endif %}
+                                {{ task_type_details.description|raw }}
+                            </span>
                         </label>
                     </div>
                 </div>

@@ -15,6 +15,13 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
      */
     private $testOptionsAdapter = null;
 
+
+    /**
+     * @var \SimplyTestable\WebClientBundle\Services\TaskTypeService
+     */
+    private $taskTypeService = null;
+
+
     protected function modifyViewName($viewName) {
         return str_replace(
             ':Dashboard',
@@ -25,8 +32,8 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     
     public function indexAction() {
         return $this->renderCacheableResponse([
-            'available_task_types' => $this->getAvailableTaskTypes(),
-            'task_types' => $this->container->getParameter('task_types'),
+            'available_task_types' => $this->getTaskTypeService()->getAvailable(),
+            'task_types' => $this->getTaskTypeService()->get(),
             'test_options' => $this->getTestOptionsArray(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
@@ -63,7 +70,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         return [
             'test_start_error' => $this->getFlash('test_start_error', false),
             'website' => $this->getRequest()->query->has('website') ? $this->getRequest()->query->get('website') : '',
-            'available_task_types' => json_encode($this->getAvailableTaskTypes()),
+            'available_task_types' => json_encode($this->getTaskTypeService()->getAvailable()),
             'task_types' => json_encode($this->container->getParameter('task_types')),
             'test_options' => json_encode($this->getTestOptionsArray()),
             'css_validation_ignore_common_cdns' => json_encode($this->getCssValidationCommonCdnsToIgnore()),
@@ -80,25 +87,16 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     }
 
 
-    /**
-     *
-     * @return array
-     */
-    private function getAvailableTaskTypes() {
-        $this->getAvailableTaskTypeService()->setUser($this->getUser());
-        $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
-
-        return $this->getAvailableTaskTypeService()->get();
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
-     */
-    private function getAvailableTaskTypeService() {
-        return $this->container->get('simplytestable.services.availabletasktypeservice');
-    }
+//    /**
+//     *
+//     * @return array
+//     */
+//    private function getAvailableTaskTypes() {
+//        $this->getAvailableTaskTypeService()->setUser($this->getUser());
+//        $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
+//
+//        return $this->getAvailableTaskTypeService()->get();
+//    }
 
 
     /**
@@ -112,7 +110,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             $this->testOptionsAdapter = $this->container->get('simplytestable.services.testoptions.adapter.request');
 
             $this->testOptionsAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-            $this->testOptionsAdapter->setAvailableTaskTypes($this->getAvailableTaskTypes());
+            $this->testOptionsAdapter->setAvailableTaskTypes($this->getTaskTypeService()->getAvailable());
             $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
 
             if (isset($testOptionsParameters['features'])) {
@@ -237,6 +235,23 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         }
 
         return $url;
+    }
+
+
+    /**
+     * @return \SimplyTestable\WebClientBundle\Services\TaskTypeService
+     */
+    private function getTaskTypeService() {
+        if (is_null($this->taskTypeService)) {
+            $this->taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
+            $this->taskTypeService->setUser($this->getUser());
+
+            if (!$this->getUser()->equals($this->getUserService()->getPublicUser())) {
+                $this->taskTypeService->setUserIsAuthenticated();
+            }
+        }
+
+        return $this->taskTypeService;
     }
 
 }
