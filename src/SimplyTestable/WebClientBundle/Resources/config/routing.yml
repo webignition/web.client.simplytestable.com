@@ -126,10 +126,10 @@ view_test_task_results_index_index:
         website: ".+"
         test_id: "\d+"
         task_id: "\d+"
-        
-app_test_url_limit_notification:
+
+view_test_partial_notification_urlimit_index:
     pattern:  /{website}/{test_id}/url-limit-notification/
-    defaults: { _controller: SimplyTestableWebClientBundle:TestNotification:urlLimit }  
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Partial/Notification/UrlLimit:index }
     requirements:
         website: ".+"
         test_id: "\d+"
