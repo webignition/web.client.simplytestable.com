@@ -103,16 +103,9 @@ app_history:
 app_history_websites:
     pattern:  /history/websites/
     defaults: { _controller: SimplyTestableWebClientBundle:TestHistory:websites, _format: json }     
-    
-#app_test_finished_summary:
-#    pattern:  /{website}/{test_id}/finished-summary/
-#    defaults: { _controller: SimplyTestableWebClientBundle:TestResults:finishedSummary }
-#    requirements:
-#        website: ".+"
-#        test_id: "\d+"
 
 view_test_results_partial_finishedsummary_index:
-    pattern:  /{website}/{test_id}/finished-summary-bs3/
+    pattern:  /{website}/{test_id}/finished-summary/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Partial/FinishedSummary/Index:index }
     requirements:
         website: ".+"
