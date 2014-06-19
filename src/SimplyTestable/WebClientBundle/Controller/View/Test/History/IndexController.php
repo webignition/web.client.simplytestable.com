@@ -56,7 +56,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'test_list' => $this->getTestList(),
             'pagination_page_numbers' => $this->getTestList()->getPageNumbers(),
             'filter' => $this->getRequest()->get('filter'),
-            'websites_source' => $this->generateUrl('app_history_websites', array(), true)
+            'websites_source' => $this->generateUrl('view_test_history_websitelist_index', array(), true)
         );
     }
 
