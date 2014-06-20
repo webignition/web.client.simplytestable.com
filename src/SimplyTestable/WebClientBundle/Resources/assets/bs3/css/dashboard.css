@@ -126,6 +126,14 @@ h2 {
 }
 
 @media (max-width: 768px) {
+    .header {
+        padding-top: 15px;
+    }
+
+    .task-types {
+        margin-top: 15px;
+    }
+
     .collapse-control-group .collapse-control {
         border-right: none;
         display: block;
@@ -151,5 +159,10 @@ h2 {
 
     .modal .cta .btn-last {
         margin-bottom: 0;
+    }
+
+    .task-types .checkbox {
+        margin-bottom: 0;
+        margin-top: 0;
     }
 }
