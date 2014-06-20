@@ -6,6 +6,12 @@
    margin:0 0 10px 0;
 }
 
+.modal .cta {
+    padding: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
 @media (max-width: 992px) {
     .modal .modal-dialog {
         margin: 0 auto;
@@ -14,5 +20,16 @@
     .modal .modal-content {
         border-radius: 0;
         border: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal-body {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .modal-body .form-group:last-of-type {
+        margin-bottom: 0;
     }
 }

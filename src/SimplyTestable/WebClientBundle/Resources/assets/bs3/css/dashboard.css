@@ -107,6 +107,14 @@ h2 {
     margin-top: 20px;
 }
 
+.task-type .account-required {
+    opacity: 0.6;
+}
+
+.modal .cta .btn {
+    width: 100%;
+}
+
 @media (min-width: 1200px) {
     #test-start-form .buttons .btn-container {
         padding-right:0;
@@ -135,5 +143,13 @@ h2 {
 
     #test-start-form .buttons .btn-container .btn {
         padding-left: 6px;
+    }
+
+    .modal .cta .btn {
+        margin-bottom: 20px;
+    }
+
+    .modal .cta .btn-last {
+        margin-bottom: 0;
     }
 }

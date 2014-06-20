@@ -4,14 +4,20 @@
             {% for task_type_key, task_type_details in task_types %}
                 {% set is_available = task_type_key in available_task_types|keys %}
 
-                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-6 task-type {% if not is_available %}not-available{% endif %}">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-6 task-type {{ task_type_key }} {% if not is_available %}not-available modal-button{% endif %}"
+                     {% if not is_available %}data-for="{{ task_type_key }}-account-required-modal"{% endif %}>
                     <div class="checkbox inner">
                         <label title="{{ task_type_details.description|striptags }}{% if not is_available %} (account required){% endif %}">
                             <input type="checkbox"
                                    value="1"
                                    name="{{ task_type_key }}"
                                     {% if (test_options[task_type_key] is defined and test_options[task_type_key] == 1) %} checked {% endif %}>
-                            <span class="name">{{ task_type_details.name|replace({'JS': 'JavaScript'}) }}</span>
+                            <span class="name">
+                                {{ task_type_details.name|replace({'JS': 'JavaScript'}) }}
+                                {% if not is_available %}
+                                    <span class="account-required">(account required)</span>
+                                {% endif %}
+                            </span>
                             <span class="description">
                                 {#{% if not is_available %}#}
                                     {#<i class="fa fa-minus-circle"></i>#}

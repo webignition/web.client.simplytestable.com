@@ -4,17 +4,21 @@
         init: function () {
 
             $(this).each(function () {
-                var modalControl = $(this);
-
-                var modal = $('#' + modalControl.attr('data-for'));
+                var modalAction = $(this);
+                var modal = $('#' + modalAction.attr('data-for'));
 
                 $('.modal-content', modal).css({
                     'display':'block'
                 });
-                var controlLink = $('<a href="#" data-for="' + modalControl.attr('data-for') + '">' + modalControl.html() + ' <i class="fa fa-caret-right"></i></a>');
-                modalControl.replaceWith(controlLink);
 
-                controlLink.click(function (event) {
+                if (modalAction.is('.modal-control')) {
+                    var controlLink = $('<a href="#" data-for="' + modalAction.attr('data-for') + '">' + modalAction.html() + ' <i class="fa fa-caret-right"></i></a>');
+                    modalAction.replaceWith(controlLink);
+
+                    modalAction = controlLink;
+                }
+
+                modalAction.click(function (event) {
                     modal.modal({
                         backdrop: true,
                         keyboard: true

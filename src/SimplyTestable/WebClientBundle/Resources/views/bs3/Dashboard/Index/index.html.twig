@@ -14,6 +14,7 @@
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/btn-significant.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/summary-stats.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-list.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/cta.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/dashboard.css'
     filter='cssrewrite' %}
     <link rel="stylesheet" href="{{ asset_url }}"/>
@@ -95,6 +96,15 @@
                     <div class="col-lg-8 col-md-8 col-sm-6">
                         <p class="sr-only">What tests do you want to carry out?</p>
                         {% include 'SimplyTestableWebClientBundle:bs3/Partials/Dashboard/TaskTypes:task-types.html.twig' %}
+
+                        {% if 'js-static-analysis' not in available_task_types|keys %}
+                            {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:js-static-analysis.html.twig' %}
+                        {% endif %}
+
+                        {% if 'link-integrity' not in available_task_types|keys %}
+                            {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:link-integrity.html.twig' %}
+                        {% endif %}
+
                     </div>
                     <div class="col-lg-4 col-md-4 col-sm-6">
                         <div class="row buttons">

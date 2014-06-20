@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    $('.modal-control').stModal().init();
+    $('.modal-control, .modal-button').stModal().init();
 
     $('body').keyup(function (event) {
         if (event.which === 27) {
