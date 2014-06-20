@@ -10,6 +10,10 @@
     {% set read_only = false %}
 {% endif %}
 
+{% if data_for_attribute is not defined %}
+    {% set data_for_attribute = 'cookies-options-modal' %}
+{% endif %}
+
 <div id="cookies-action-badge" class="modal-action-badge">
     <i class="fa fa-fw fa-adjust icon-primary"></i>
     <span class="content">
@@ -19,7 +23,7 @@
             <span class="status">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span>
 
             {% if not read_only %}
-                <span class="modal-control" data-for="cookies-options-modal">
+                <span class="modal-control" data-for="">
                     change
                 </span>
             {% endif %}

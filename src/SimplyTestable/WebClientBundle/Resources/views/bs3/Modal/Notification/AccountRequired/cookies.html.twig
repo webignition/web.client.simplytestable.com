@@ -1,0 +1,32 @@
+{% extends 'SimplyTestableWebClientBundle:bs3/Abstract/Modal/Notification:account-required.html.twig' %}
+
+{% set id = 'cookies-account-required-modal' %}
+
+{% block modal_header %}
+    <h3>Unlock Custom Cookies</h3>
+{% endblock %}
+
+{% block modal_body %}
+    <div class="cta row">
+        <div class="col-lg-12">
+            <p class="lead">
+                For sites that use cookies for authentication or for user-specific content.
+                Available to all account holders.
+            </p>
+        </div>
+        <div class="col-lg-6">
+            <a class="btn btn-primary btn-lg" href="{{ path('view_user_signin_index') }}">
+                <span class="primary">Sign in</span>
+                <span class="byline">To unlock custom cookies.</span>
+                <i class="fa fa-sign-in"></i>
+            </a>
+        </div>
+        <div class="col-lg-6">
+            <a href="{{ path('view_user_signup_index_index') }}" class="btn btn-lg btn-cta btn-success">
+                <span class="primary">Create an account</span>
+                <span class="byline">Free. Get started in seconds.</span>
+                <i class="fa fa-user"></i>
+            </a>
+        </div>
+    </div>
+{% endblock %}

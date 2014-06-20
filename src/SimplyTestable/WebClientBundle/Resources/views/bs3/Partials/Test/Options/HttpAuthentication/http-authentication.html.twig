@@ -12,6 +12,10 @@
     {% set read_only = false %}
 {% endif %}
 
+{% if data_for_attribute is not defined %}
+    {% set data_for_attribute = 'http-authentication-options-modal' %}
+{% endif %}
+
 <div id="http-authentication-action-badge" class="modal-action-badge">
     <i class="fa fa-fw fa-lock icon-primary"></i>
     <span class="content">
@@ -21,7 +25,7 @@
             <span class="status">{{ (test_authentication_enabled) ? 'enabled' : 'not enabled' }}</span>
 
             {% if not read_only %}
-                <span class="modal-control" data-for="http-authentication-options-modal">
+                <span class="modal-control" data-for="{{ data_for_attribute }}">
                 change
             </span>
             {% endif %}
