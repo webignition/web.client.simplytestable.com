@@ -23,7 +23,7 @@
             <span class="status">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span>
 
             {% if not read_only %}
-                <span class="modal-control" data-for="">
+                <span class="modal-control" data-for="{{ data_for_attribute }}">
                     change
                 </span>
             {% endif %}
