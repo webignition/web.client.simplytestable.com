@@ -1,7 +1,7 @@
 <div class="task-type-summary">
 
     {% for task_type_key, task_type_details in task_types %}
-        {% set is_available = task_type_key in available_task_types|keys or is_public %}
+        {% set is_available = task_type_key in available_task_types|keys %}
         {% set is_selected = is_available and test_options[task_type_key] is defined %}
 
         {% set task_type_error_count = 0 %}

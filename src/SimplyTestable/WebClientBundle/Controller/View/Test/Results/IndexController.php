@@ -124,7 +124,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'type_label' => $this->getTaskTypeLabel($this->getRequestType()),
             'filter' => $this->getRequestFilter(),
             'filter_label' => ucwords(str_replace('-', ' ', $this->getRequestFilter())),
-            'available_task_types' => $this->getTaskTypeService()->getAvailable(),
+            'available_task_types' => $this->getAvailableTaskTypes(),
             'task_types' => $this->getTaskTypeService()->get(),
             'test_options' => $testOptions->__toKeyArray(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
@@ -246,7 +246,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             $this->testOptionsAdapter = $this->container->get('simplytestable.services.testoptions.adapter.request');
 
             $this->testOptionsAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-            $this->testOptionsAdapter->setAvailableTaskTypes($this->getTaskTypeService()->getAvailable());
+            $this->testOptionsAdapter->setAvailableTaskTypes($this->getAvailableTaskTypes());
             $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
             $this->testOptionsAdapter->setInvertInvertableOptions(true);
 
@@ -259,25 +259,26 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     }
 
 
-//    /**
-//     *
-//     * @return array
-//     */
-//    private function getAvailableTaskTypes() {
-//        $this->getAvailableTaskTypeService()->setUser($this->getUser());
-//        $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
-//
-//        return $this->getAvailableTaskTypeService()->get();
-//    }
-//
-//
-//    /**
-//     *
-//     * @return \SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
-//     */
-//    private function getAvailableTaskTypeService() {
-//        return $this->container->get('simplytestable.services.availabletasktypeservice');
-//    }
+    /**
+     *
+     * @return array
+     */
+    private function getAvailableTaskTypes() {
+        if ($this->getTestService()->getRemoteTestService()->isPublic() && !$this->getTestService()->getRemoteTestService()->owns($this->getTest())) {
+            $availableTaskTypes = $this->getTaskTypeService()->get();
+            $remoteTestTaskTypes = $this->getRemoteTest()->getTaskTypes();
+
+            foreach ($availableTaskTypes as $taskTypeKey => $taskTypeDetails) {
+                if (!in_array($taskTypeDetails['name'], $remoteTestTaskTypes)) {
+                    unset($availableTaskTypes[$taskTypeKey]);
+                }
+            }
+
+            return $availableTaskTypes;
+        }
+
+        return $this->getTaskTypeService()->getAvailable();
+    }
 
 
     /**
