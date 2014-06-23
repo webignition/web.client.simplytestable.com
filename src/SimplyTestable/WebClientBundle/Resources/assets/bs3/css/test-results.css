@@ -248,6 +248,10 @@ a.clear-type .fa {
     opacity: 0.6;
 }
 
+.modal .cta .btn {
+    width: 100%;
+}
+
 @media (min-width: 1200px) {
     .side-actions {
         position: static;

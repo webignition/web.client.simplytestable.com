@@ -15,6 +15,7 @@
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/cookies-options-modal.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/btn-significant.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/task-list.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/cta.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-results.css'
     filter='cssrewrite' %}
     <link rel="stylesheet" href="{{ asset_url }}"/>
@@ -119,12 +120,22 @@
                                 <div class="col-lg-12 col-md-12 col-sm-8 col-xs-12 col-md-pull-0 col-sm-pull-4 col-xs-pull-0 test-options">
                                     {% if test_options['http-authentication'] is defined %}
                                         <div class="test-option">
+                                            {% if not is_logged_in %}
+                                                {% set data_for_attribute = 'http-authentication-account-required-modal' %}
+                                                {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:http-authentication.html.twig' %}
+                                            {% endif %}
+
                                             {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/HttpAuthentication:http-authentication.html.twig' with {'read_only': not is_owner and not is_public_user_test} %}
                                         </div>
                                     {% endif %}
 
                                     {% if test_options['cookies'] is defined %}
                                         <div class="test-option">
+                                            {% if not is_logged_in %}
+                                                {% set data_for_attribute = 'cookies-account-required-modal' %}
+                                                {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:cookies.html.twig' %}
+                                            {% endif %}
+
                                             {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/Cookies:cookies.html.twig' with {'read_only': not is_owner and not is_public_user_test } %}
                                         </div>
                                     {% endif %}
