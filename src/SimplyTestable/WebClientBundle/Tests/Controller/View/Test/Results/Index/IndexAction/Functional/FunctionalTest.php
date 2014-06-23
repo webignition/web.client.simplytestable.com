@@ -8,8 +8,10 @@ abstract class FunctionalTest extends BaseFunctionalTest {
 
     const RETEST_FEATURE_SELECTOR = '#retest-button';
     const LOCK_UNLOCK_FEATURE_SELECTOR = '#lock-unlock-button';
-    const COOKIES_OPTION_SELECTOR = '[data-for=cookies-options-modal]';
-    const HTTP_AUTH_OPTION_SELECTOR = '[data-for=http-authentication-options-modal]';
+    const COOKIES_AVAILABLE_OPTION_SELECTOR = '[data-for=cookies-options-modal]';
+    const COOKIES_NOT_AVAILABLE_OPTION_SELECTOR = '[data-for=cookies-account-required-modal]';
+    const HTTP_AUTH_AVAILABLE_OPTION_SELECTOR = '[data-for=http-authentication-options-modal]';
+    const HTTP_AUTH_NOT_AVAILABLE_OPTION_SELECTOR = '[data-for=http-authentication-account-required-modal]';
     const HISTORY_LINK_SELECTOR = '.history';
     const TEST_OPTIONS_SELECTOR = '#test-options-control';
 
@@ -76,20 +78,36 @@ abstract class FunctionalTest extends BaseFunctionalTest {
         $this->assertElementBySelector(self::LOCK_UNLOCK_FEATURE_SELECTOR, false);
     }
 
-    protected function assertCookiesOptionChangeControlIsPresent() {
-        $this->assertElementBySelector(self::COOKIES_OPTION_SELECTOR, true);
+    protected function assertCookiesOptionAvailableChangeControlIsPresent() {
+        $this->assertElementBySelector(self::COOKIES_AVAILABLE_OPTION_SELECTOR, true);
     }
 
-    protected function assertCookiesOptionChangeControlIsNotPresent() {
-        $this->assertElementBySelector(self::COOKIES_OPTION_SELECTOR, false);
+    protected function assertCookiesOptionAvailableChangeControlIsNotPresent() {
+        $this->assertElementBySelector(self::COOKIES_AVAILABLE_OPTION_SELECTOR, false);
     }
 
-    protected function assertHttpAuthOptionChangeControlIsPresent() {
-        $this->assertElementBySelector(self::HTTP_AUTH_OPTION_SELECTOR, true);
+    protected function assertCookiesOptionNotAvailableChangeControlIsPresent() {
+        $this->assertElementBySelector(self::COOKIES_NOT_AVAILABLE_OPTION_SELECTOR, true);
     }
 
-    protected function assertHttpAuthOptionChangeControlIsNotPresent() {
-        $this->assertElementBySelector(self::HTTP_AUTH_OPTION_SELECTOR, false);
+    protected function assertCookiesOptionNotAvailableChangeControlIsNotPresent() {
+        $this->assertElementBySelector(self::COOKIES_NOT_AVAILABLE_OPTION_SELECTOR, false);
+    }
+
+    protected function assertHttpAuthOptionAvailableChangeControlIsPresent() {
+        $this->assertElementBySelector(self::HTTP_AUTH_AVAILABLE_OPTION_SELECTOR, true);
+    }
+
+    protected function assertHttpAuthOptionAvailableChangeControlIsNotPresent() {
+        $this->assertElementBySelector(self::HTTP_AUTH_AVAILABLE_OPTION_SELECTOR, false);
+    }
+
+    protected function assertHttpAuthOptionNotAvailableChangeControlIsPresent() {
+        $this->assertElementBySelector(self::HTTP_AUTH_NOT_AVAILABLE_OPTION_SELECTOR, true);
+    }
+
+    protected function assertHttpAuthOptionNotAvailableChangeControlIsNotPresent() {
+        $this->assertElementBySelector(self::HTTP_AUTH_NOT_AVAILABLE_OPTION_SELECTOR, false);
     }
 
     protected function assertHistoryLinkIsPresent() {

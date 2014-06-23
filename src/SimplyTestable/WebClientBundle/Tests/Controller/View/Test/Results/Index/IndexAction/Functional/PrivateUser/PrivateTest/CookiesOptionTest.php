@@ -6,7 +6,11 @@ use SimplyTestable\WebClientBundle\Tests\Controller\View\Test\Results\Index\Inde
 
 class CookiesOptionTest extends BaseFunctionalTest {
 
-    public function testCookiesOptionChangeControlIsPresent() {
-        $this->assertCookiesOptionChangeControlIsPresent();
+    public function testCookiesAvailableChangeControlIsPresent() {
+        $this->assertCookiesOptionAvailableChangeControlIsPresent();
+    }
+
+    public function testCookiesNotAvailableChangeControlIsNotPresent() {
+        $this->assertCookiesOptionNotAvailableChangeControlIsNotPresent();
     }
 }

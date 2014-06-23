@@ -6,8 +6,12 @@ use SimplyTestable\WebClientBundle\Tests\Controller\View\Test\Results\Index\Inde
 
 class HttpAuthOptionTest extends BaseFunctionalTest {
 
-    public function testHttpAuthOptionChangeControlIsNotPresent() {
-        $this->assertHttpAuthOptionChangeControlIsNotPresent();
+    public function testHttpAuthAvailableChangeControlIsNotPresent() {
+        $this->assertHttpAuthOptionAvailableChangeControlIsNotPresent();
+    }
+
+    public function testHttpAuthNotAvailableChangeControlIsNotPresent() {
+        $this->assertHttpAuthOptionNotAvailableChangeControlIsNotPresent();
     }
     
 }
