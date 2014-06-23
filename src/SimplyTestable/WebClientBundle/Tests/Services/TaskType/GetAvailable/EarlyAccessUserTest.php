@@ -20,7 +20,7 @@ class EarlyAccessUserTest extends GetAvailableTest {
             'css-validation',
             'js-static-analysis',
             'link-integrity',
-            'foo-bar'
+            'test-foo-bar'
         ];
     }
 

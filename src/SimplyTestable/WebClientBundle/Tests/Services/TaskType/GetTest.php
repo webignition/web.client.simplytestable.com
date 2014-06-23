@@ -10,7 +10,7 @@ class GetTest extends ServiceTest {
             'css-validation',
             'js-static-analysis',
             'link-integrity',
-            'foo-bar'
+            'test-foo-bar'
         ], array_keys($this->getTaskTypeService()->get()));
     }
 
