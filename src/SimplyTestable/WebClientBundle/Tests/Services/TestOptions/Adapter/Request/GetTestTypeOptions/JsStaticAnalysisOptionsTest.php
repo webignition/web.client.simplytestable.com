@@ -9,6 +9,7 @@ class JsStaticAnalysisOptionsTest extends ServiceTest {
     public function setUp() {
         parent::setUp();
         $this->getRequestData()->set('js-static-analysis', '1');
+        $this->getTaskTypeService()->setUserIsAuthenticated(true);
     }
 
     public function testJsStaticAnalysisDomainsToIgnoreOne() {

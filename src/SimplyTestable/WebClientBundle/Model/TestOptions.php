@@ -118,7 +118,13 @@ class TestOptions {
      * @return boolean
      */
     public function hasTestType($testType) {
-        return in_array($testType, $this->testTypes);
+        foreach ($this->testTypes as $testTypeKey => $testTypeDetails) {
+            if ($testTypeDetails['name'] == $testType) {
+                return true;
+            }
+        }
+
+        return false;
     }    
     
     

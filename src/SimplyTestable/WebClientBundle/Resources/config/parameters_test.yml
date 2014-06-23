@@ -22,7 +22,7 @@ parameters:
         name: "Link integrity"
         description: "Check all links in a web page, report those that do not work"
         access-level: authenticated
-      foo-bar:
+      test-foo-bar:
         name: "Foo Bar"
         description: "Verify that foo and bar"
         access-level: early-access

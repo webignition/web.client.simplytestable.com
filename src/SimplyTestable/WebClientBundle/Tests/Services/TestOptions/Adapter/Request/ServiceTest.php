@@ -11,6 +11,12 @@ abstract class ServiceTest extends BaseTestCase {
      * @var \Symfony\Component\HttpFoundation\ParameterBag
      */
     private $requestData;
+
+
+    /**
+     * @var \SimplyTestable\WebClientBundle\Services\TaskTypeService
+     */
+    private $taskTypeService = null;
     
     public function setUp() {
         parent::setUp();
@@ -36,7 +42,7 @@ abstract class ServiceTest extends BaseTestCase {
         $testOptionsParameters = $this->container->getParameter('test_options');     
 
         $this->getRequestAdapter()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-        $this->getRequestAdapter()->setAvailableTaskTypes($this->getAvailableTaskTypes());
+        $this->getRequestAdapter()->setAvailableTaskTypes($this->getTaskTypeService()->getAvailable());
         $this->getRequestAdapter()->setAvailableFeatures($this->getAvailableFeatures());
         
         return $this->getRequestAdapter()->getTestOptions();
@@ -45,21 +51,12 @@ abstract class ServiceTest extends BaseTestCase {
     
     /**
      *
-     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request
+     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
      */
     protected function getRequestAdapter() {
         return $this->container->get('simplytestable.services.testoptions.adapter.request');
     }  
-    
-    
-    /**
-     * 
-     * @return array
-     */
-    protected function getAvailableTaskTypes() {
-        return $this->getAvailableTaskTypeService()->get();    
-    } 
-    
+
     
     /**
      * 
@@ -69,14 +66,29 @@ abstract class ServiceTest extends BaseTestCase {
         $testOptionsParameters = $this->container->getParameter('test_options');  
         return $testOptionsParameters['features'];        
     }
-    
-    
+
+    /**
+     * @return \SimplyTestable\WebClientBundle\Services\TaskTypeService
+     */
+    protected function getTaskTypeService() {
+        if (is_null($this->taskTypeService)) {
+            $this->taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
+            $this->taskTypeService->setUser($this->getUserService()->getPublicUser());
+
+//            if (!$this->getUser()->equals($this->getUserService()->getPublicUser())) {
+//                $this->taskTypeService->setUserIsAuthenticated();
+//            }
+        }
+
+        return $this->taskTypeService;
+    }
+
     /**
      *
-     * @return \SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
+     * @return \SimplyTestable\WebClientBundle\Services\UserService
      */
-    protected function getAvailableTaskTypeService() {
-        return $this->container->get('simplytestable.services.availabletasktypeservice');
+    private function getUserService() {
+        return $this->container->get('simplytestable.services.userservice');
     }
 
 }

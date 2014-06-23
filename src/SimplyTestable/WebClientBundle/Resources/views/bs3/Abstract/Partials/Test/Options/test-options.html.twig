@@ -7,8 +7,10 @@
 {% block prefix %}{% endblock %}
 
 {% for task_type_key, task_type_details in task_types %}
-    {% set is_available = task_type_key in available_task_types|keys %}
-    {% set task_type_options_view = ['SimplyTestableWebClientBundle:bs3/Partials/Test/Options/', task_type_key, ':test-options.html.twig']|join('') %}
+    {% if not task_type_key|slice(0, 'test-'|length) == 'test-' %}
+        {% set is_available = task_type_key in available_task_types|keys %}
+        {% set task_type_options_view = ['SimplyTestableWebClientBundle:bs3/Partials/Test/Options/', task_type_key, ':test-options.html.twig']|join('') %}
 
-    {% include task_type_options_view %}
+        {% include task_type_options_view %}
+    {% endif %}
 {% endfor %}

@@ -229,28 +229,8 @@ class TestStartController extends TestController
         }
         
         return $this->testOptionsAdapter;
-    } 
-    
-    
-//    /**
-//     *
-//     * @return array
-//     */
-//    private function getAvailableTaskTypes() {
-//        $this->getAvailableTaskTypeService()->setUser($this->getUser());
-//        $this->getAvailableTaskTypeService()->setIsAuthenticated($this->isLoggedIn());
-//
-//        return $this->getAvailableTaskTypeService()->get();
-//    }
-//
-//
-//    /**
-//     *
-//     * @return \SimplyTestable\WebClientBundle\Services\AvailableTaskTypeService
-//     */
-//    private function getAvailableTaskTypeService() {
-//        return $this->container->get('simplytestable.services.availabletasktypeservice');
-//    }
+    }
+
 
     /**
      * @return \SimplyTestable\WebClientBundle\Services\TaskTypeService

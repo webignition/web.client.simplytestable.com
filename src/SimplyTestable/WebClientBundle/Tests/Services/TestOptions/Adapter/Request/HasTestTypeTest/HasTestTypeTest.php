@@ -21,10 +21,10 @@ abstract class HasTestTypeTest extends ServiceTest {
 
         $testOptionsParameters = $this->container->getParameter('test_options');
 
-        $this->getAvailableTaskTypeService()->setIsAuthenticated(true);
+        $this->getTaskTypeService()->setUserIsAuthenticated();
 
         $this->getRequestAdapter()->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-        $this->getRequestAdapter()->setAvailableTaskTypes($this->getAvailableTaskTypes());
+        $this->getRequestAdapter()->setAvailableTaskTypes($this->getTaskTypeService()->getAvailable());
         $this->getRequestAdapter()->setRequestData($this->getRequestData());
 
         $this->testOptions = $this->getRequestAdapter()->getTestOptions();
