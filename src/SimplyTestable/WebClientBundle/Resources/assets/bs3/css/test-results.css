@@ -65,6 +65,16 @@ h2 {
 
 .task-type-summary .task-type-name {
     text-align: right;
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.task-type-summary .task-type-count {
+    padding-right: 0;
+}
+
+.task-type-summary .not-available {
+    opacity: 0.6;
 }
 
 .task-type-summary .row {
@@ -252,7 +262,7 @@ a.clear-type .fa {
     width: 100%;
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 992px) {
     .side-actions {
         position: static;
     }
@@ -297,7 +307,7 @@ a.clear-type .fa {
     }
 
     .task-type-summary .task-type-count {
-        padding-left: 0;
+        padding-left: 15px;
     }
 
     .summary-stats .label .icon {

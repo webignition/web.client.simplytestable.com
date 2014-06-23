@@ -23,7 +23,7 @@
         <div class="row">
             <span class="col-lg-4 col-md-6 col-sm-6 col-xs-6 task-type-name">{{ task_type_details.name }}</span>
 
-            <span class="col-lg-8 col-md-6 col-sm-6 col-xs-6 task-type-count {{ task_type_error_count > 0 and task_type_warning_count > 0 ? 'multiple' : '' }}">
+            <span class="col-lg-8 col-md-6 col-sm-6 col-xs-6 task-type-count {{ task_type_error_count > 0 and task_type_warning_count > 0 ? 'multiple' : '' }} {{ not is_available ? 'not-available' : '' }}">
 
                 {% if is_selected %}
                     {% if task_type_error_count == 0 %}
@@ -41,9 +41,9 @@
                     {% endif %}
                 {% else %}
                     {% if not is_available %}
-                    <span class="not-available-icon">
-                        <i class="fa fa-fw fa-minus-circle"></i>
-                    </span>
+                    {#<span class="not-available-icon">#}
+                        {#<i class="fa fa-fw fa-minus-circle"></i>#}
+                    {#</span>#}
                     sign in to enable
                     {% endif %}
                 {% endif %}
