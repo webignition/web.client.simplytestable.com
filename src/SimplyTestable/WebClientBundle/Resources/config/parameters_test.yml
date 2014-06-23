@@ -26,14 +26,6 @@ parameters:
         name: "Foo Bar"
         description: "Verify that foo and bar"
         access-level: early-access
-  available_task_types:
-    default:
-      html-validation: "HTML validation"
-      css-validation: "CSS validation"
-      js-static-analysis: "JS static analysis"     
-    early_access:       
-    authenticated:      
-      link-integrity: "Link integrity"         
   core_application:
     urls:
       base: http://null
