@@ -61,6 +61,12 @@
     margin-top: 2px;
 }
 
+#test-options .full-single-options-set .col-lg-6,
+#test-options .full-single-options-set .col-md-6,
+#test-options .full-single-options-set .col-sm-6 {
+    padding-left: 0;
+}
+
 input.inline-short {
     display:inline;
     width:50px;

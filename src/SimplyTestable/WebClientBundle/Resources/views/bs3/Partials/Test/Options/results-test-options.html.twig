@@ -1,7 +1,7 @@
 {% extends 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Options:test-options.html.twig' %}
 
 {% block prefix %}
-    <div class="row test-options-set">
+    <div class="row test-options-set full-single-options-set">
         <div class="col-lg-6 col-md-6 col-sm-6">
             <label class="radio">
                 <input type="radio" name="full-single" value="full" {% if remote_test.type == 'Full site' %}checked{% endif %}> Full site test
