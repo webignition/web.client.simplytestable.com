@@ -440,6 +440,15 @@ class UserController extends BaseViewController
                 'email' => $email,
             )
         );
+
+        $this->getResqueQueueService()->add(
+            'SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob',
+            'email-list-subscribe',
+            array(
+                'listId' => 'introduction',
+                'email' => $email,
+            )
+        );
         
         $this->get('session')->setFlash('user_signin_confirmation', 'user-activated');
         
