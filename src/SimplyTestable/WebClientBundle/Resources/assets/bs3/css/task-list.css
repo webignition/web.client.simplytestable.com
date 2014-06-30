@@ -45,7 +45,10 @@
     color: #5cb85c;
 }
 
-.failed .meta .state .fa {
+.failed .meta .state .fa,
+.failed-no-retry-available .meta .state .fa,
+.failed-retry-available .meta .state .fa,
+.failed-retry-limit-reached .meta .state .fa {
     color: #c9302c;
 }
 
