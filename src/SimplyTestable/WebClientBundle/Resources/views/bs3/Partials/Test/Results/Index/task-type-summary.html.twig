@@ -35,7 +35,7 @@
                     {% endif %}
 
                     {% if task_type_warning_count > 0 %}
-                    <a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-warnings', 'type': task_type_name|lower }) }}">
+                    <a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-warnings', 'type': task_type_details.name|lower }) }}">
                         <span class="badge badge-warnings">{{ task_type_warning_count|number_format }}</span> warning{% if task_type_warning_count != 1 %}s{% endif %}
                     </a>
                     {% endif %}
