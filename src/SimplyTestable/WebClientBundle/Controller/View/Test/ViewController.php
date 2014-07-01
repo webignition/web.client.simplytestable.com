@@ -142,12 +142,10 @@ abstract class ViewController extends BaseViewController {
         if ($this->getUserService()->isLoggedIn()) {
             return $this->render(
                 'SimplyTestableWebClientBundle:bs3/Test/Results:not-authorised.html.twig',
-                array(
-                    'public_site' => $this->container->getParameter('public_site'),
-                    'is_logged_in' => false,
+                array_merge($this->getDefaultViewParameters(), [
                     'test_id' => $this->getRequest()->attributes->get('test_id'),
-                    'website' => $this->getRequest()->attributes->get('website')
-                )
+                    'website' => $this->getUrlViewValues($this->getRequest()->attributes->get('website')),
+                ])
             );
         }
 
