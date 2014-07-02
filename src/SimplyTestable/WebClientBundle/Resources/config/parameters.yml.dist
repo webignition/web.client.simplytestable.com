@@ -40,6 +40,7 @@ parameters:
       user_exists: /user/{email}/exists/    
       user_reset_password: /user/reset-password/{token}/
       user: /user/{email}/
+      user_authenticate: /user/{email}/authenticate/
       user_is_enabled: /user/{email}/enabled/
       test_latest: /job/{canonical-url}/latest/
       user_email_change_request_get: /user/{email}/email-change-request/

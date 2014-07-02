@@ -208,18 +208,16 @@ class UserService extends CoreApplicationService {
     
     /**
      * 
-     * @param string $email
-     * @param string $password
      * @return boolean
      */
     public function authenticate() {
-        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('user', array(
+        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('user_authenticate', array(
             'email' => $this->getUser()->getUsername(),
             'password' => $this->getUser()->getPassword()
         )));
         
         $this->addAuthorisationToRequest($request);
-        
+
         try {
             $response = $request->send();            
         } catch (\Guzzle\Http\Exception\ClientErrorResponseException $clientErrorResponseException) {
