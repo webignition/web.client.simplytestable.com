@@ -149,15 +149,7 @@
     <table class="table">
         <tbody>
             <tr>
-                <th>Full-site test jobs per site</th>
-                <td>Unlimited</td>
-            </tr>
-            <tr>
-                <th>Single-URL tests</th>
-                <td>Unlimited</td>
-            </tr>
-            <tr>
-                <th>URLs per test job</th>
+                <th>Pages examine per test</th>
                 <td>{% if user_summary.planConstraints.urls_per_job is defined %}{{ user_summary.planConstraints.urls_per_job }}{% else %}Unlimited{% endif %}</td>
             </tr>
             <tr>
