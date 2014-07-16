@@ -1,3 +1,7 @@
+body {
+    position: relative;
+}
+
 h1 {
     font-size: 32px;
     line-height: 44px;
@@ -13,6 +17,37 @@ h3 {
     font-size: 18px;
     line-height: 24px;
     opacity: 0.7;    
+}
+
+.affix {
+    top: 80px;
+}
+
+.sidenav {
+    padding-top: 22px;
+}
+
+.sidenav .nav .nav>li>a {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 30px;
+    /*font-size: 12px;*/
+    font-weight: 400;
+}
+.sidenav .nav>li>a {
+    display: block;
+    padding: 4px 20px 4px 20px;
+    /*font-size: 13px;*/
+    font-weight: 500;
+    color: #999;
+}
+
+.sidenav .nav>.active>a {
+    padding-left: 18px;
+    font-weight: 700;
+    color: #0088cc;
+    background-color: transparent;
+    border-left: 2px solid #0088cc;
 }
 
 /*

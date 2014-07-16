@@ -17,6 +17,19 @@
     {% endstylesheets %}
 {% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+
+    {% javascripts
+    '@SimplyTestableWebClientBundle/Resources/assets/vendor/jquery-scrollto/jquery.scrollTo-1.4.12/jquery.scrollTo.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/user-account.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block body_attrs %}data-spy="scroll" data-offset="100"{% endblock %}
+
 {% block body%}    
     {{ parent() }}
     <div class="container">
@@ -26,33 +39,99 @@
             </div>
         </div>
 
+        <!--
+        Email address and password
+        Payment details
+         - Summary
+         - Change
+        News subscriptions
+         - Product announcements
+         - Weekly
+        Plan
+         - Summary
+         - Monthly allowances
+         - Upgrade/Downgrade
+        Team
+         - Create
+        -->
+
         <div class="row">
-            <div class="col-md-6">                
-                <div class="account-section account-details">
-                    <h2>Account details</h2>
-                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:account-details.html.twig' %}                    
-                </div>
-                <div class="account-section payment-details">
-                    <h2>Payment details</h2>
-                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:payment-details.html.twig' %} 
-                </div>  
-                {% if stripe_event_data['invoice'] is defined %}
-                <div class="plan-section latest-invoice">
-                    <h2>Latest invoice</h2>
-                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:latest-invoice.html.twig' %} 
-                </div>
-                {% endif %}                
-                <div class="account-section news-subscriptions">
-                    <h2>News subscriptions</h2>
-                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:news-subscriptions.html.twig' %} 
-                </div>                 
+            <div class="col-lg-3 sidenav">
+                <ul class="nav" data-spy="affix" data-offset-top="100">
+                    <li>
+                        <a href="#email-address-and-password">Email address and password</a>
+                    </li>
+                    <li>
+                        <a href="#plan">Plan: {{ plan_presentation_name }}</a>
+                        <ul class="nav">
+                            <li><a href="#plan-overview">Overview</a></li>
+                            <li><a href="#plan-allowances">Allowances</a></li>
+                            <li><a href="#plan-upgrade-downgrade">Upgrade/downgrade</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#payment-details">Payment details</a>
+                        <ul class="nav">
+                            <li><a href="#payment-details-overview">Card summary</a></li>
+                            <li><a href="#payment-details-change">Change/update card</a></li>
+                            <li><a href="#payment-latest-invoice">Latest invoice</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#news-subscriptions">News subscriptions</a>
+                        <ul class="nav">
+                            <li><a href="#news-subscriptions-product-announcements">Product announcements</a></li>
+                            <li><a href="#news-subscriptions-weekly-updates">Weekly updates</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
             </div>
-            <div class="col-md-6">
-                <div class="account-section plan-details">
-                    <h2>Plan: {{ plan_presentation_name }}</h2>
-                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:plan-details.html.twig' %}                    
-                </div>                
+            <div class="col-lg-9">
+                <h2 id="email-address-and-password">Email address and password</h2>
+
+                {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:account-details.html.twig' %}
+
+                <h2 id="plan">Plan: {{ plan_presentation_name }}</h2>
+
+                {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:plan-details.html.twig' %}
+
+                <h2 id="payment-details">Payment details</h2>
+
+                {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:payment-details.html.twig' %}
+
+                <h2 id="news-subscriptions">News subscriptions</h2>
+
+                {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:news-subscriptions.html.twig' %}
+
             </div>
+
+            {#<div class="col-md-6">                #}
+                {#<div class="account-section account-details">#}
+                    {#<h2>Account details</h2>#}
+                    {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:account-details.html.twig' %}                    #}
+                {#</div>#}
+                {#<div class="account-section payment-details">#}
+                    {#<h2>Payment details</h2>#}
+                    {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:payment-details.html.twig' %} #}
+                {#</div>  #}
+                {#{% if stripe_event_data['invoice'] is defined %}#}
+                {#<div class="plan-section latest-invoice">#}
+                    {#<h2>Latest invoice</h2>#}
+                    {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:latest-invoice.html.twig' %} #}
+                {#</div>#}
+                {#{% endif %}                #}
+                {#<div class="account-section news-subscriptions">#}
+                    {#<h2>News subscriptions</h2>#}
+                    {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:news-subscriptions.html.twig' %} #}
+                {#</div>                 #}
+            {#</div>#}
+            {#<div class="col-md-6">#}
+                {#<div class="account-section plan-details">#}
+                    {#<h2>Plan: {{ plan_presentation_name }}</h2>#}
+                    {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:plan-details.html.twig' %}                    #}
+                {#</div>                #}
+            {#</div>#}
         </div>
     </div>
 {% endblock %}
