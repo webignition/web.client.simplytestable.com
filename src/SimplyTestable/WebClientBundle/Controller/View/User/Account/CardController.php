@@ -25,7 +25,8 @@ class CardController extends BaseViewController implements RequiresPrivateUser, 
             'countries' => $this->getCountries(),
             'is_logged_in' => true,
             'expiry_year_start' => $currentYear,
-            'expiry_year_end' => $currentYear + 10
+            'expiry_year_end' => $currentYear + 10,
+            'plan_presentation_name' => $this->getPlanPresentationName($userSummary->getPlan()->getAccountPlan()->getName()),
         ), $this->getViewFlashValues(array(
             'user_account_card_exception_message',
             'user_account_card_exception_param',
@@ -285,6 +286,16 @@ class CardController extends BaseViewController implements RequiresPrivateUser, 
      */
     protected function getUserAccountCardService() {
         return $this->get('simplytestable.services.useraccountcardservice');
-    }    
+    }
+
+
+    /**
+     *
+     * @param string $plan
+     * @return string
+     */
+    private function getPlanPresentationName($plan) {
+        return ucwords($plan);
+    }
 
 }
