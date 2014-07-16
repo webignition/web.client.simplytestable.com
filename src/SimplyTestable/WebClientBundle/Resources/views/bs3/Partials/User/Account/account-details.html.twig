@@ -173,7 +173,7 @@
     <div class="form-group">
         {% if email_change_request is defined %} 
             <label for="email" class="{{ label_col_class }} control-label">Email</label>
-            <p class="{{ field_col_class }} form-control-static">email@example.com</p>
+            <p class="{{ field_col_class }} form-control-static">{{ user.username }}</p>
         {% else %}               
             <label for="email" class="{{ label_col_class }} control-label">Email</label>
             <div class="{{ field_col_class }}">
