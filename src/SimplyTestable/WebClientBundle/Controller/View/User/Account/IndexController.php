@@ -127,4 +127,10 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
         return $this->get('simplytestable.services.useremailchangerequestservice');
     }
 
+
+    protected function getAllowedContentTypes() {
+        return array_merge(['application/json'], parent::getAllowedContentTypes());
+    }
+
+
 }

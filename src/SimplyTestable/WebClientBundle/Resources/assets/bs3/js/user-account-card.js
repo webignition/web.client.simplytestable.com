@@ -131,7 +131,6 @@ $(document).ready(function() {
 
             jQuery.ajax({
                 type:'POST',
-                dataType: 'json',
                 error: function(request, textStatus, errorThrown) {
                 },
                 success: function(data, textStatus, request) {
@@ -162,7 +161,10 @@ $(document).ready(function() {
 
                     return false;
                 },
-                url: window.location.pathname + response.id + '/associate/?output=json'
+                url: window.location.pathname + response.id + '/associate/',
+                headers: {
+                    'Accept':'application/json'
+                }
             });
         });
 

@@ -27,18 +27,19 @@ h3 {
     padding-top: 22px;
 }
 
+.sidenav .nav .nav .nav>li>a {
+    padding-left: 42px;
+
+}
+
 .sidenav .nav .nav>li>a {
     padding-top: 4px;
     padding-bottom: 4px;
     padding-left: 30px;
-    /*font-size: 12px;*/
-    font-weight: 400;
 }
 .sidenav .nav>li>a {
     display: block;
     padding: 4px 20px 4px 20px;
-    /*font-size: 13px;*/
-    font-weight: 500;
     color: #999;
 }
 
