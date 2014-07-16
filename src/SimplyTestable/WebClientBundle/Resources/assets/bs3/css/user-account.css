@@ -50,6 +50,10 @@ h3 {
     border-left: 2px solid #0088cc;
 }
 
+.plan-section {
+    margin-bottom: 60px;
+}
+
 /*
    Need background colour on opaqued items in IE otherwise it doesn't
    know what colour to anti-alias against.

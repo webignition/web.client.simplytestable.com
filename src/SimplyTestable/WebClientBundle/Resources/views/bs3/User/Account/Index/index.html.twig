@@ -2,9 +2,9 @@
 
 {% block title %}Your account ({{ user.username }}) - {{ parent() }}{% endblock %}
 
-{% set label_col_class = 'col-lg-2 col-md-3 col-sm-4' %}
-{% set field_col_class = 'col-lg-5 col-md-6 col-sm-8' %}
-{% set submit_col_class = 'col-lg-offset-2 col-lg-5 col-md-offset-3 col-md-6 col-sm-offset-4 col-sm-8' %}
+{% set label_col_class = 'col-lg-3 col-md-3 col-sm-4' %}
+{% set field_col_class = 'col-lg-9 col-md-6 col-sm-8' %}
+{% set submit_col_class = 'col-lg-offset-3 col-lg-9 col-md-offset-3 col-md-6 col-sm-offset-4 col-sm-8' %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -28,7 +28,7 @@
     {% endjavascripts %}
 {% endblock %}
 
-{% block body_attrs %}data-spy="scroll" data-offset="100"{% endblock %}
+{% block body_attrs %}data-spy="scroll" data-target=".sidenav" data-offset="100"{% endblock %}
 
 {% block body%}    
     {{ parent() }}
@@ -64,7 +64,6 @@
                     <li>
                         <a href="#plan">Plan: {{ plan_presentation_name }}</a>
                         <ul class="nav">
-                            <li><a href="#plan-overview">Overview</a></li>
                             <li><a href="#plan-allowances">Allowances</a></li>
                             <li><a href="#plan-upgrade-downgrade">Upgrade/downgrade</a></li>
                         </ul>
@@ -87,14 +86,17 @@
                 </ul>
 
             </div>
-            <div class="col-lg-9 col-md-8 col-sm-7">
-                <h2 id="email-address-and-password">Email address and password</h2>
+            <div class="col-lg-6 col-md-8 col-sm-7 plan-content">
+                <div class="plan-section">
+                    <h2 id="email-address-and-password">Email address and password</h2>
+                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:account-details.html.twig' %}
+                </div>
 
-                {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:account-details.html.twig' %}
+                <div class="plan-section">
+                    <h2 id="plan">Plan: {{ plan_presentation_name }}</h2>
+                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:plan-details.html.twig' %}
+                </div>
 
-                <h2 id="plan">Plan: {{ plan_presentation_name }}</h2>
-
-                {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:plan-details.html.twig' %}
 
                 <h2 id="payment-details">Payment details</h2>
 

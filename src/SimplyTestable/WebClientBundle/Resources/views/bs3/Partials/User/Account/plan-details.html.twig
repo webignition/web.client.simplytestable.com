@@ -128,7 +128,7 @@
     </div>        
 {% endif %}
 
-<div class="plan-section">
+<div>
     <p>
         You are on the <strong>{{ user_summary.plan.accountplan.name }}</strong> plan{% if user_summary.plan.accountplan.name == 'basic' %}. This is <strong>free of charge</strong> and always will be.
         {% else %}
@@ -144,8 +144,8 @@
     </p>            
 </div>
 
-<div class="plan-section plan-details-monthly-allowances">
-    <h3>Monthly allowances</h3>
+<div id="plan-allowances">
+    <h3>Allowances</h3>
     <table class="table">
         <tbody>
             <tr>
@@ -175,8 +175,8 @@
     </table>             
 </div>
 
-<div class="plan-section plan-details-change-plan">
-    <h3>Change plan</h3>
+<div id="plan-upgrade-downgrade">
+    <h3>Upgrade/downgrade</h3>
 
     {% if user_summary.plan.accountplan.name == 'basic' %}
         {% if user_summary.plan.startTrialPeriod > 0  %}

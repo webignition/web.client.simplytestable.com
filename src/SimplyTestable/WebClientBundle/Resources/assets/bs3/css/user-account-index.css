@@ -19,13 +19,13 @@
     opacity: 0.7;
 }
 
-.plan-details-monthly-allowances table tr th {
+#plan-allowances table tr th {
     font-weight: normal;
     padding-left: 0;
     width:40%;
 }
 
-.plan-details-change-plan form {
+#plan-upgrade-downgrade form {
     margin-bottom: 12px;
 }
 
@@ -91,3 +91,6 @@
     }
 }
 
+.plan-content {
+    padding-bottom: 2000px;
+}
