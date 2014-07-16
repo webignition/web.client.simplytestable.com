@@ -70,11 +70,13 @@
                     </li>
                     <li>
                         <a href="#payment-details">Payment details</a>
-                        <ul class="nav">
-                            <li><a href="#payment-details-overview">Card summary</a></li>
-                            <li><a href="#payment-details-change">Change/update card</a></li>
-                            <li><a href="#payment-latest-invoice">Latest invoice</a></li>
-                        </ul>
+                        {% if not (user_summary.plan.accountplan.name == 'basic' and user_summary.plan.hasTrialPeriodAvailable) %}
+                            <ul class="nav">
+                                <li><a href="#payment-details-overview">Card summary</a></li>
+                                <li><a href="#payment-details-change">Change/update card</a></li>
+                                <li><a href="#payment-latest-invoice">Latest invoice</a></li>
+                            </ul>
+                        {% endif %}
                     </li>
                     <li>
                         <a href="#news-subscriptions">News subscriptions</a>
@@ -97,10 +99,10 @@
                     {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:plan-details.html.twig' %}
                 </div>
 
-
-                <h2 id="payment-details">Payment details</h2>
-
-                {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:payment-details.html.twig' %}
+                <div class="plan-section">
+                    <h2 id="payment-details">Payment details</h2>
+                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:payment-details.html.twig' %}
+                </div>
 
                 <h2 id="news-subscriptions">News subscriptions</h2>
 
