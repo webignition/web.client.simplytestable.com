@@ -74,7 +74,9 @@
                             <ul class="nav">
                                 <li><a href="#payment-details-overview">Card summary</a></li>
                                 <li><a href="#payment-details-change">Change/update card</a></li>
-                                <li><a href="#payment-latest-invoice">Latest invoice</a></li>
+                                {% if stripe_event_data['invoice'] is defined %}
+                                    <li><a href="#payment-latest-invoice">Latest invoice</a></li>
+                                {% endif %}
                             </ul>
                         {% endif %}
                     </li>
