@@ -6,16 +6,16 @@
     margin-bottom: 40px;
 }
 
-.news-subscriptions .checkbox {
+#news-subscriptions .checkbox {
     margin-bottom: 20px;
 }
 
-.news-subscriptions .checkbox strong {
+#news-subscriptions .checkbox strong {
     display:block;
     font-weight: normal;
 }
 
-.news-subscriptions .checkbox span {
+#news-subscriptions .checkbox span {
     opacity: 0.7;
 }
 
@@ -92,5 +92,5 @@
 }
 
 .plan-content {
-    padding-bottom: 2000px;
+    padding-bottom: 800px;
 }
