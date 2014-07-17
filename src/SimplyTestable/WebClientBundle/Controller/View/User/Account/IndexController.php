@@ -39,6 +39,11 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
             'user_account_card_exception_code'
         )));
 
+        if ($userSummary->getTeamSummary()->isInTeam()) {
+            $this->getTeamService()->setUser($this->getUser());
+            $viewData['team'] = $this->getTeamService()->getTeam();
+        }
+
         if ($this->getUserEmailChangeRequestService()->hasEmailChangeRequest($this->getUser()->getUsername())) {
             $viewData['email_change_request'] = $this->getUserEmailChangeRequestService()->getEmailChangeRequest($this->getUser()->getUsername());
             $viewData['token'] = $this->get('request')->query->get('token');
@@ -130,6 +135,15 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
 
     protected function getAllowedContentTypes() {
         return array_merge(['application/json'], parent::getAllowedContentTypes());
+    }
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TeamService
+     */
+    private function getTeamService() {
+        return $this->container->get('simplytestable.services.teamservice');
     }
 
 
