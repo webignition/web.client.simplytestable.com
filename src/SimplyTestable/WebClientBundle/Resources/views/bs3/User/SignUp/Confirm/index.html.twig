@@ -1,6 +1,6 @@
 {% extends 'SimplyTestableWebClientBundle::bs3/Abstract/single-page-dialog.html.twig' %}
 
-{% block title %}Confirm sign up for {{ app.request.get('email')|lower }} - {{ parent() }}{% endblock %}
+{% block title %}Confirm sign up for {{ email }} - {{ parent() }}{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
@@ -25,18 +25,18 @@
                 <strong>Hello!</strong>
             </p>
             <p>
-                There's no account for <strong>{{ app.request.get('email')|lower }}</strong>.
+                There's no account for <strong>{{ email }}</strong>.
                 Good news - we can do that for you if you like.
             </p>
             <form role="form" class="single-button-form" method="get" action="{{ path('view_user_signup_index_index') }}">
-                <div> 
-                    <input type="hidden" name="email" value="{{ app.request.get('email')|lower }}" />
+                <div>
+                    <input type="hidden" name="email" value="{{ email }}" />
                     <button class="btn btn-success" type="submit">Yes, sign me up please!</button>
-                </div>      
-            </form>            
+                </div>
+            </form>
 
-        </div>                
-    {% endif %}    
+        </div>
+    {% endif %}
 
     {% if token_resend_error is defined and token_resend_error == 'postmark-failure' %}
         <div class="alert alert-info">
@@ -45,26 +45,26 @@
                 <strong>Sorry, that didn't work</strong>
             </p>
             <p>
-                We tried to re-send your sign up confirmation email to "{{ app.request.get('email')|lower }}"
+                We tried to re-send your sign up confirmation email to "{{ email }}"
                 but it didn't work.
             </p>
             <p>
                 Could you try again?
-            </p>            
+            </p>
         </div>
     {% endif %}
 
-    <form role="form" method="post" action="{{ path('sign_up_confirm_submit', { 'email': app.request.get('email')|lower}) }}" novalidate>
+    <form role="form" method="post" action="{{ path('sign_up_confirm_submit', { 'email': email}) }}" novalidate>
 
         {% if token_resend_confirmation is defined and token_resend_confirmation is not empty %}
             <div class="alert alert-success" data-for="token">
                 <button type="button" class="close" data-dismiss="alert">×</button>
-                <p><strong>Done!</strong></p><p>Activation code sent to <strong> {{ app.request.get('email')|lower }}</strong>.</p>
+                <p><strong>Done!</strong></p><p>Activation code sent to <strong> {{ email }}</strong>.</p>
                 <p>
                     Enter it below or click the activation link in the email.
-                </p>                   
-            </div>                        
-        {% endif %}    
+                </p>
+            </div>
+        {% endif %}
 
         {% if user_create_confirmation is defined and user_create_confirmation is not empty or has_notification == false %}
             <div class="alert alert-success">
@@ -73,44 +73,44 @@
                     <strong>Nearly there</strong>.
                 </p>
                 <p>
-                    We've emailed an activation code to <strong> {{ app.request.get('email')|lower }}</strong>.
+                    We've emailed an activation code to <strong> {{ email }}</strong>.
                 </p>
                 <p>
                     Enter it below or click the activation link in the email.
-                </p>            
+                </p>
             </div>
-        {% endif %}  
+        {% endif %}
 
         {% if user_token_error is defined and user_token_error is not empty %}
             {% if user_token_error == 'blank-token' %}
                 <div class="alert alert-danger" data-for="token">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <strong>Slow down!</strong> You're going to have to enter your activation code below.
-                </div>                
-            {% endif %}                                                   
+                </div>
+            {% endif %}
 
             {% if user_token_error == 'failed-read-only' %}
                 <div class="alert alert-error">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <p><strong>Sorry, I can't do that right now</strong></p>
                     <p>
-                        We're in a <strong>read-only</strong> state whilst some 
+                        We're in a <strong>read-only</strong> state whilst some
                         <strong>maintenance</strong> is going on.
                     </p>
                     <p>
                         Give it a go again soon, this won't take long.
                     </p>
-                </div>                
-            {% endif %}     
+                </div>
+            {% endif %}
 
             {% if user_token_error == 'invalid-token' %}
                 <div class="alert alert-danger" data-for="token">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <p><strong>Hmmm.</strong> I'm not sure that's the right activation code.</p>
                     <p>There's a button below to have your activation code re-sent. Maybe try that?</p>
-                </div>                
-            {% endif %}       
-        {% endif %}     
+                </div>
+            {% endif %}
+        {% endif %}
 
         <div class="form-group-collection form-group-collection-single">
             <div class="input-group input-group-larger">
@@ -118,13 +118,13 @@
                 <span class="input-group-btn">
                     <button class="btn btn-primary" type="submit">Activate!</button>
                 </span>
-            </div>                
-        </div>    
-    </form> 
+            </div>
+        </div>
+    </form>
 
-    <div class="additional input-additional ">    
-        <form role="form" method="post" action="{{ path('sign_up_confirm_resend', { 'email': app.request.get('email')|lower}) }}">
-            <button class="btn btn-default" type="submit">I can't find it, email it again!</button>            
-        </form>    
+    <div class="additional input-additional ">
+        <form role="form" method="post" action="{{ path('sign_up_confirm_resend', { 'email': email}) }}">
+            <button class="btn btn-default" type="submit">I can't find it, email it again!</button>
+        </form>
     </div> 
 {% endblock %}

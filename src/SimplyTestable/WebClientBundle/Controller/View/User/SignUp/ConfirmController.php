@@ -43,7 +43,8 @@ class ConfirmController extends CacheableViewController implements IEFiltered {
             'user_create_confirmation' => $this->getFlash('user_create_confirmation', $flush),
             'user_token_error' => $this->getFlash('user_token_error', $flush),
             'token_resend_error' => $this->getFlash('token_resend_error', $flush),            
-            'token' => trim($this->getRequest()->query->get('token')), 
+            'token' => trim($this->getRequest()->query->get('token')),
+            'email' => strtolower(trim($this->getRequest()->attributes->get('email'))),
         );
     }
 
