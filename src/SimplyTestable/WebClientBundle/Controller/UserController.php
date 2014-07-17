@@ -270,7 +270,7 @@ class UserController extends BaseViewController
     public function signUpSubmitAction() {
         $plan = trim($this->get('request')->request->get('plan'));
         
-        $email = trim($this->get('request')->request->get('email'));        
+        $email = strtolower(trim($this->get('request')->request->get('email')));
         if ($email == '') {
             $this->get('session')->setFlash('user_create_error', 'blank-email');
             return $this->redirect($this->generateUrl('view_user_signup_index_index', array(
