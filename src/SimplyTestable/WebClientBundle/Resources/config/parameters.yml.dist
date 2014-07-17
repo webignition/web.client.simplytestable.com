@@ -56,6 +56,11 @@ parameters:
       test_retest: /job/{canonical-url}/{test_id}/re-test/
       tests_list_websites: /jobs/list/websites/
       tests_list_count: /jobs/list/count/
+      team_create: /team/create/
+      teaminvite_accept: /team/invite/accept/
+      teaminvite_get: /team/invite/{invitee_email}/
+      team_remove: /team/remove/{member_email}/
+      team_leave: /team/leave/
   public_site:
     urls:
       home: http://simplytestable.com/
