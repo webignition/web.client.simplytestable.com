@@ -77,6 +77,10 @@ view_user_account_card_index:
 view_user_account_team_index_index:
     pattern:  /account/team/
     defaults: { _controller: SimplyTestableWebClientBundle:View/User/Account/Team/Index:index }
+
+action_user_account_team_create:
+    pattern: /account/team/create/
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:create }
     
 user_account_card_associate:
     pattern:  /account/card/{stripe_card_token}/associate/

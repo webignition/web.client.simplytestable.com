@@ -217,3 +217,9 @@ services:
     calls:
       - [setTaskTypes, [%task_types%]]
       - [setEarlyAccessUsers, [%early_access_users%]]
+
+  simplytestable.services.teamservice:
+    class:   SimplyTestable\WebClientBundle\Services\TeamService
+    arguments:
+        parameters: %core_application%
+        webResourceService: "@simplytestable.services.webresourceservice"

@@ -21,6 +21,7 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
         return $this->renderResponse($this->getRequest(), [
             'plan_presentation_name' => $this->getPlanPresentationName($userSummary->getPlan()->getAccountPlan()->getName()),
             'user_summary' => $userSummary,
+            'team_create_error' => $this->getFlash('team_create_error', true),
         ]);
     }
 
