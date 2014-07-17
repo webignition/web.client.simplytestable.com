@@ -58,6 +58,7 @@ parameters:
       test_retest: /job/{canonical-url}/{test_id}/re-test/      
       tests_list_websites: /jobs/list/websites/      
       tests_list_count: /jobs/list/count/
+      team_get: /team/
       team_create: /team/create/
       teaminvite_accept: /team/invite/accept/
       teaminvite_get: /team/invite/{invitee_email}/
