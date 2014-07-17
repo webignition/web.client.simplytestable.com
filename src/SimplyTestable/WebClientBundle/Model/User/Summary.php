@@ -2,6 +2,7 @@
 namespace SimplyTestable\WebClientBundle\Model\User;
 
 use SimplyTestable\WebClientBundle\Model\Object;
+use SimplyTestable\WebClientBundle\Model\User\Team\Summary as TeamSummary;
 
 class Summary extends Object {
     
@@ -18,6 +19,10 @@ class Summary extends Object {
         
         if ($this->hasDataProperty('user_plan')) {
             $this->setDataProperty('user_plan', new Plan($this->getDataProperty('user_plan')));
+        }
+
+        if ($this->hasDataProperty('team_summary')) {
+            $this->setDataProperty('team_summary', new TeamSummary($this->getDataProperty('team_summary')));
         }
     }
     
@@ -117,6 +122,14 @@ class Summary extends Object {
      */
     public function getPlanConstraints() {
         return $this->getDataProperty('plan_constraints');
+    }
+
+
+    /**
+     * @return TeamSummary
+     */
+    public function getTeamSummary() {
+        return $this->getDataProperty('team_summary');
     }
     
 }

@@ -17,7 +17,7 @@
         <a href="#team">Team</a>
         <ul class="nav">
             {% if not (user_summary.getTeamSummary.isInTeam or user_summary.getTeamSummary.hasInvite) %}
-                <li class="active"><a href="{{ path('view_user_account_team_index_index') }}">Create your team</a></li>
+                <li class="{{ is_account_team ? 'active' : ''}}"><a href="{{ path('view_user_account_team_index_index') }}">Create your team</a></li>
             {% endif %}
 
             {#{% if user_summary.getTeamSummary.isInTeam %}#}

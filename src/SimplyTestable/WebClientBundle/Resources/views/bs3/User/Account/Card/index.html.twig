@@ -7,7 +7,7 @@
 {% set intro_width_class = 'col-lg-offset-3 col-md-offset-4 col-sm-offset-3' %}
 
 {% block title %}Your card details ({{ user.username }}) - {{ parent() }}{% endblock %}
-{% block heading %}{{ parent() }}: your card details{% endblock %}
+{% block heading %}<a href="{{ path('view_user_account_index_index') }}">{{ parent() }}</a>: your card details{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}

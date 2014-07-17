@@ -16,7 +16,22 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
     }
 
     public function indexAction() {
-        return new Response('');
+        $userSummary = $this->getUserService()->getSummary($this->getUser());
+
+        return $this->renderResponse($this->getRequest(), [
+            'plan_presentation_name' => $this->getPlanPresentationName($userSummary->getPlan()->getAccountPlan()->getName()),
+            'user_summary' => $userSummary,
+        ]);
+    }
+
+
+    /**
+     *
+     * @param string $plan
+     * @return string
+     */
+    private function getPlanPresentationName($plan) {
+        return ucwords($plan);
     }
 
 }

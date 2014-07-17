@@ -1,0 +1,12 @@
+{% if user_summary.getTeamSummary.isInTeam %}
+    is in team
+{% elseif user_summary.getTeamSummary.hasInvite %}
+    has invite
+{% else %}
+    <p>
+        You don't belong to a team.  Someone already on a team can invite you to join their team, or
+        you can create a new team.
+    </p>
+
+    <a class="btn btn-default" href="{{ path('view_user_account_team_index_index') }}">Create your team</a>
+{% endif %}

@@ -1,0 +1,29 @@
+{% extends 'SimplyTestableWebClientBundle::bs3/User/Account/base.html.twig' %}
+
+{% block title %}Your team ({{ user.username }}) - {{ parent() }}{% endblock %}
+{% block heading %}<a href="{{ path('view_user_account_index_index') }}">{{ parent() }}</a>: your team{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {% stylesheets
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/user-account.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/user-account-team.css'
+    filter='cssrewrite' %}
+    <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+    {% javascripts
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormErrorHelper.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/form-helper.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/user-account-team.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block account_content %}
+{% endblock %}
