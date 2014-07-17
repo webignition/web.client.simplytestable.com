@@ -29,6 +29,13 @@ class ActionTest extends BaseActionTest {
             'email' => 'user@example.com'
         );
     }
+
+
+    protected function getRequestAttributes() {
+        return array(
+            'email' => 'user@example.com'
+        );
+    }
         
 }
 
