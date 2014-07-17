@@ -25,7 +25,7 @@ class UserController extends BaseViewController
     }    
     
     public function signInSubmitAction() {
-        $email = trim($this->get('request')->request->get('email')); 
+        $email = strtolower(trim($this->get('request')->request->get('email')));
         $redirect = trim($this->get('request')->request->get('redirect')); 
         $staySignedIn = trim($this->get('request')->request->get('stay-signed-in')) == '' ? 0 : 1; 
 

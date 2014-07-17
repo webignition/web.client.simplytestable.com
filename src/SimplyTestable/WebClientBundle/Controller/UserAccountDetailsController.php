@@ -325,7 +325,7 @@ class UserAccountDetailsController extends AbstractUserAccountController
      * @return string
      */
     private function getRequestEmailAddress() {        
-        return trim($this->get('request')->request->get('email'));
+        return strtolower(trim($this->get('request')->request->get('email')));
     }
     
     
