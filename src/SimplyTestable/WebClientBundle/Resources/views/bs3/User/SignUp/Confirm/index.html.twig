@@ -1,6 +1,6 @@
 {% extends 'SimplyTestableWebClientBundle::bs3/Abstract/single-page-dialog.html.twig' %}
 
-{% block title %}Confirm sign up for {{ app.request.get('email') }} - {{ parent() }}{% endblock %}
+{% block title %}Confirm sign up for {{ app.request.get('email')|lower }} - {{ parent() }}{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
@@ -17,7 +17,6 @@
 {% endblock %}
 
 {% block content %}
-    {#    <h1>Confirm sign up for {{ app.request.get('email') }}</h1>#}
     <h1>Confirm sign up</h1>
 
     {% if user_error is defined and user_error == 'invalid-user' %}
@@ -26,12 +25,12 @@
                 <strong>Hello!</strong>
             </p>
             <p>
-                There's no account for <strong>{{ app.request.get('email') }}</strong>.
+                There's no account for <strong>{{ app.request.get('email')|lower }}</strong>.
                 Good news - we can do that for you if you like.
             </p>
             <form role="form" class="single-button-form" method="get" action="{{ path('view_user_signup_index_index') }}">
                 <div> 
-                    <input type="hidden" name="email" value="{{ app.request.get('email') }}" />
+                    <input type="hidden" name="email" value="{{ app.request.get('email')|lower }}" />
                     <button class="btn btn-success" type="submit">Yes, sign me up please!</button>
                 </div>      
             </form>            
@@ -46,7 +45,7 @@
                 <strong>Sorry, that didn't work</strong>
             </p>
             <p>
-                We tried to re-send your sign up confirmation email to "{{ app.request.get('email') }}"
+                We tried to re-send your sign up confirmation email to "{{ app.request.get('email')|lower }}"
                 but it didn't work.
             </p>
             <p>
@@ -55,12 +54,12 @@
         </div>
     {% endif %}
 
-    <form role="form" method="post" action="{{ path('sign_up_confirm_submit', { 'email': app.request.get('email')}) }}" novalidate>
+    <form role="form" method="post" action="{{ path('sign_up_confirm_submit', { 'email': app.request.get('email')|lower}) }}" novalidate>
 
         {% if token_resend_confirmation is defined and token_resend_confirmation is not empty %}
             <div class="alert alert-success" data-for="token">
                 <button type="button" class="close" data-dismiss="alert">×</button>
-                <p><strong>Done!</strong></p><p>Activation code sent to <strong> {{ app.request.get('email') }}</strong>.</p>
+                <p><strong>Done!</strong></p><p>Activation code sent to <strong> {{ app.request.get('email')|lower }}</strong>.</p>
                 <p>
                     Enter it below or click the activation link in the email.
                 </p>                   
@@ -74,7 +73,7 @@
                     <strong>Nearly there</strong>.
                 </p>
                 <p>
-                    We've emailed an activation code to <strong> {{ app.request.get('email') }}</strong>.
+                    We've emailed an activation code to <strong> {{ app.request.get('email')|lower }}</strong>.
                 </p>
                 <p>
                     Enter it below or click the activation link in the email.
@@ -124,7 +123,7 @@
     </form> 
 
     <div class="additional input-additional ">    
-        <form role="form" method="post" action="{{ path('sign_up_confirm_resend', { 'email': app.request.get('email')}) }}">                        
+        <form role="form" method="post" action="{{ path('sign_up_confirm_resend', { 'email': app.request.get('email')|lower}) }}">
             <button class="btn btn-default" type="submit">I can't find it, email it again!</button>            
         </form>    
     </div> 
