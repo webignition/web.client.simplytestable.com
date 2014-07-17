@@ -41,7 +41,7 @@ class IndexController extends CacheableViewController implements IEFiltered {
         return array(
             'user_create_error' => $this->getFlash('user_create_error', $flush),
             'user_create_confirmation' => $this->getFlash('user_create_confirmation', $flush),
-            'email' => trim($this->getRequest()->query->get('email')),
+            'email' => strtolower(trim($this->getRequest()->query->get('email'))),
             'plan' => trim($this->getRequest()->query->get('plan')),
             'redirect' => trim($this->getRequest()->query->get('redirect'))
         );
