@@ -18,11 +18,18 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
     public function indexAction() {
         $userSummary = $this->getUserService()->getSummary($this->getUser());
 
-        return $this->renderResponse($this->getRequest(), [
+        $viewData = [
             'plan_presentation_name' => $this->getPlanPresentationName($userSummary->getPlan()->getAccountPlan()->getName()),
             'user_summary' => $userSummary,
             'team_create_error' => $this->getFlash('team_create_error', true),
-        ]);
+        ];
+
+        if ($userSummary->getTeamSummary()->isInTeam()) {
+            $this->getTeamService()->setUser($this->getUser());
+            $viewData['team'] = $this->getTeamService()->getTeam();
+        }
+
+        return $this->renderResponse($this->getRequest(), $viewData);
     }
 
 
@@ -33,6 +40,15 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
      */
     private function getPlanPresentationName($plan) {
         return ucwords($plan);
+    }
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TeamService
+     */
+    private function getTeamService() {
+        return $this->container->get('simplytestable.services.teamservice');
     }
 
 }

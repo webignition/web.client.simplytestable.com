@@ -40,7 +40,7 @@
     </div>
 
     <div class="plan-section">
-        <h2 id="team">Team</h2>
+        <h2 id="team">Team{% if user_summary.getTeamSummary.isInTeam %}: {{ team.name }}{% endif %}</h2>
         {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Team:team-details.html.twig' %}
     </div>
 
