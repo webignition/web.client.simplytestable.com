@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
 use SimplyTestable\WebClientBundle\Controller\BaseController;
+use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServiceException;
 
 class TeamController extends BaseController {
 
@@ -34,7 +35,22 @@ class TeamController extends BaseController {
             return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
         }
 
-        $invite = $this->getTeamService()->getInvite($invitee);
+        try {
+            $invite = $this->getTeamService()->getInvite($invitee);
+        } catch (TeamServiceException $teamServiceException) {
+            if ($teamServiceException->isInviteeIsATeamLeaderException()) {
+                $flashData = [
+                    'status' => 'error',
+                    'error' => 'invitee-is-a-team-leader',
+                    'invitee' => $invitee
+                ];
+
+                $this->get('session')->getFlashBag()->set('team_invite_get', $flashData);
+                return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+            }
+        }
+
+
 
         try {
             $this->sendInviteEmail($invite['user'], $invite['team']);

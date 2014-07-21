@@ -1,8 +1,8 @@
 <?php
 namespace SimplyTestable\WebClientBundle\Services;
 
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
+use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServiceException;
 
 class TeamService extends CoreApplicationService {
 
@@ -21,17 +21,8 @@ class TeamService extends CoreApplicationService {
             ));
 
         $this->addAuthorisationToRequest($request);
-
-        try {
-            $response = $request->send();
-            return $response->getStatusCode() == 200 ? true : $response->getStatusCode();
-        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
-            if ($badResponseException->getResponse()->getStatusCode() == 401) {
-                throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
-            }
-
-            return $badResponseException->getResponse()->getStatusCode();
-        }
+        $response = $request->send();
+        return $response->getStatusCode() == 200 ? true : $response->getStatusCode();
     }
 
 
@@ -47,8 +38,13 @@ class TeamService extends CoreApplicationService {
         try {
             return $request->send()->json();
         } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
-            if ($badResponseException->getResponse()->getStatusCode() == 401) {
-                throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
+            $response = $badResponseException->getResponse();
+
+            if ($response->getStatusCode() == 400 && $response->hasHeader('X-TeamInviteGet-Error-Code')) {
+                throw new TeamServiceException(
+                    (string)$response->getHeader('X-TeamInviteGet-Error-Message'),
+                    (int)(string)$response->getHeader('X-TeamInviteGet-Error-Code')
+                );
             }
 
             throw $badResponseException;
