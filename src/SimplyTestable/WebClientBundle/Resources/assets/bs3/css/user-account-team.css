@@ -1,5 +1,9 @@
 .no-team-no-invite .account-content form {
-    margin: 20px 0 40px 0;
+    margin: 20px 0 10px 0;
+}
+
+.no-team-no-invite #team-detail {
+    margin-top: 10px;
 }
 
 .team-leader .account-content form {
