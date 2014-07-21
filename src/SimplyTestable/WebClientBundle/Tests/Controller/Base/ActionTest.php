@@ -219,4 +219,17 @@ abstract class ActionTest extends BaseTest {
         return $this->getMailService()->getSender()->getLastMessage();
     }
 
+
+    protected function assertHasFlashValue($key) {
+        $value = $this->container->get('session')->getFlashBag()->peek($key);
+
+        $this->assertTrue(is_array($value), "Flash key '$key' is not set");
+        $this->assertTrue(count($value) > 0,  "Flash key '$key' is empty");
+    }
+
+
+    protected function assertFlashValueIs($key, $value) {
+        $this->assertEquals($value, $this->container->get('session')->getFlashBag()->peek($key));
+    }
+
 }

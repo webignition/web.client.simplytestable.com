@@ -4,14 +4,6 @@ namespace SimplyTestable\WebClientBundle\Tests\Controller\Action\User\Account\Te
 
 class ExistingUserTest extends ActionTest {
 
-    public function testHasResponseLocationHeader() {
-        $this->assertResponseHasLocationHeader();
-    }
-
-    public function testResponseLocationHeaderValue() {
-        $this->assertResponseLocationHeader('/account/team/');
-    }
-
     public function testHasSingleMessageInMailServiceHistory() {
         $this->assertEquals(1, $this->getMailService()->getSender()->getHistory()->count());
     }
@@ -24,9 +16,16 @@ class ExistingUserTest extends ActionTest {
         $this->assertLastMailMessageSubjectContains('You have been invited to join the Team Name team');
     }
 
-
     public function testMailContent() {
         $this->assertLastMailMessageTextContains('You have been invited to join the Team Name team');
+    }
+
+    public function testFlashValue() {
+        $this->assertFlashValueIs('team_invite_get', [
+            'status' => 'success',
+            'invitee' => 'invitee@example.com',
+            'team' => 'Team Name'
+        ]);
     }
 
     protected function preCall() {
@@ -37,10 +36,6 @@ class ExistingUserTest extends ActionTest {
         return array(
             $this->getTeamInviteGetHttpResponseFixture()
         );
-    }
-
-    protected function getExpectedResponseStatusCode() {
-        return 302;
     }
 
 

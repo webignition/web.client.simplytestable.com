@@ -22,8 +22,19 @@ class TeamController extends BaseController {
 
 
     public function inviteMemberAction() {
-        $email = trim($this->getRequest()->request->get('email'));
-        $invite = $this->getTeamService()->getInvite($email);
+        $invitee = trim($this->getRequest()->request->get('email'));
+
+        if ($invitee == $this->getUser()->getUsername()) {
+            $flashData = [
+                'status' => 'error',
+                'error' => 'invite-self'
+            ];
+
+            $this->get('session')->getFlashBag()->set('team_invite_get', $flashData);
+            return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+        }
+
+        $invite = $this->getTeamService()->getInvite($invitee);
 
         try {
             $this->sendInviteEmail($invite['user'], $invite['team']);
