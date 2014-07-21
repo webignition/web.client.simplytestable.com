@@ -85,6 +85,10 @@ action_user_account_team_create:
 action_user_account_team_invitemember:
     pattern: /account/team/invite-member/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:inviteMember }
+
+action_user_account_team_declineinvite:
+    pattern: /account/team/invite/decline/
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:declineInvite }
     
 user_account_card_associate:
     pattern:  /account/card/{stripe_card_token}/associate/

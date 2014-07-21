@@ -67,6 +67,11 @@ class TeamController extends BaseController {
     }
 
 
+    public function declineInviteAction() {
+
+    }
+
+
     /**
      * @return \SimplyTestable\WebClientBundle\Services\TeamService
      */
