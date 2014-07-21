@@ -2,7 +2,15 @@
 {% set is_account_card = app.request.attributes.get('_route') == 'view_user_account_card_index' %}
 {% set is_account_team = app.request.attributes.get('_route') == 'view_user_account_team_index_index' %}
 
-<ul class="nav" data-spy="affix" data-offset-top="100">
+{% set default_active = '#email-address-and-password' %}
+{% set active_scope = '#sidenav' %}
+
+{% if is_account_team %}
+    {% set default_active = '#create' %}
+    {% set active_scope = '#sidenav-team' %}
+{% endif %}
+
+<ul class="nav" data-spy="affix" data-offset-top="100" id="sidenav" data-default-active="{{ default_active }}" data-active-scope="{{ active_scope }}">
     <li>
         <a href="{{ not is_account_main ? path('view_user_account_index_index') : '' }}#email-address-and-password">Email address and password</a>
     </li>
@@ -13,27 +21,27 @@
             <li><a href="{{ not is_account_main ? path('view_user_account_index_index' ) : '' }}#plan-upgrade-downgrade">Upgrade/downgrade</a></li>
         </ul>
     </li>
-    <li class="{{ is_account_team ? 'active' : ''}}">
+    <li class="{{ is_account_team ? 'active' : ''}}" id="sidenav-team">
         <a href="#team">
             Team{% if user_summary.getTeamSummary.isInTeam %}: {{ team.name }}{% endif %}
         </a>
         <ul class="nav">
             {% if not (user_summary.getTeamSummary.isInTeam or user_summary.getTeamSummary.hasInvite) %}
-                <li class="{{ is_account_team ? 'active' : ''}}"><a href="{{ path('view_user_account_team_index_index') }}">Create your team</a></li>
+                <li>
+                    <a href="{{ (is_account_team) ? '' : path('view_user_account_team_index_index') }}#create">Create your team</a>
+                </li>
             {% endif %}
 
             {% if user_summary.getTeamSummary.isInTeam %}
                 {% if team.leader == user.username %}
-                    <li class="{{ is_account_team ? 'active' : ''}}"><a href="{{ path('view_user_account_team_index_index') }}">Manage</a></li>
+                    <li><a href="{{ path('view_user_account_team_index_index') }}">Manage</a></li>
                 {% else %}
 
                 {% endif %}
-
-
-            {% endif %}
-
-            {% if user_summary.getTeamSummary.hasInvite %}
-                <li class="{{ is_account_team ? 'active' : ''}}"><a href="{{ path('view_user_account_team_index_index') }}">Invites</a></li>
+            {% else %}
+                <li>
+                    <a href="{{ (is_account_team) ? '' : path('view_user_account_team_index_index') }}#invites">Invites</a>
+                </li>
             {% endif %}
         </ul>
     </li>

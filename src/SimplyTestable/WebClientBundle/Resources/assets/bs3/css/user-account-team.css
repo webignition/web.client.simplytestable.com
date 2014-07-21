@@ -13,3 +13,7 @@
 .has-invite .invites li {
     margin: 20px 0;
 }
+
+.account-content {
+    padding-bottom: 800px;
+}

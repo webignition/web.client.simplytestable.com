@@ -1,8 +1,12 @@
 $(document).ready(function() {
 
-    if ($('.sidenav .active').length === 0) {
-        $('.sidenav li:first').addClass('active');
+    var sideNav = $('#sidenav');
+    var sideNavActiveScope = sideNav.attr('data-active-scope');
+
+    if ($('.active', sideNavActiveScope).length === 0) {
+        $('li:first', sideNavActiveScope).addClass('active');
     }
+
 
     $('.sidenav a').click(function () {
         var target = $($(this).attr('href'));
