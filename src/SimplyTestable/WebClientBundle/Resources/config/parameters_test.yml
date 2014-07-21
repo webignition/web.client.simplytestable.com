@@ -61,9 +61,11 @@ parameters:
       team_get: /team/
       team_create: /team/create/
       teaminvite_accept: /team/invite/accept/
+      teaminvite_decline: /team/invite/decline/
       teaminvite_get: /team/invite/{invitee_email}/
       team_remove: /team/remove/{member_email}/
       team_leave: /team/leave/
+      teaminvite_userlist: /team/user/invites/
   public_site:
     urls:
       home: http://test.simplytestable.com/

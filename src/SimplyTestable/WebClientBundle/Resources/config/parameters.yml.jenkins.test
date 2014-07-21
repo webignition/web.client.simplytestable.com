@@ -59,9 +59,11 @@ parameters:
       team_get: /team/
       team_create: /team/create/
       teaminvite_accept: /team/invite/accept/
+      teaminvite_decline: /team/invite/decline/
       teaminvite_get: /team/invite/{invitee_email}/
       team_remove: /team/remove/{member_email}/
       team_leave: /team/leave/
+      teaminvite_userlist: /team/user/invites/
   public_site:
     urls:
       home: http://test.simplytestable.com/
@@ -122,6 +124,8 @@ parameters:
         subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled"                 
       stripe.customer.subscription.deleted-actioned_by=system:
         subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled, you've been dropped down to our free plan"
+      user_team_invite_invitation:
+        subject: "[Simply Testable] You have been invited to join the {{team_name}} team"
   css-validation-ignore-common-cdns:
    - ajax.aspnetcdn.com
    - ajax.googleapis.com
