@@ -5,3 +5,7 @@
 .team-leader .account-content form {
     margin: 20px 0 40px 0;
 }
+
+.has-invite .invites li {
+    margin: 20px 0;
+}
