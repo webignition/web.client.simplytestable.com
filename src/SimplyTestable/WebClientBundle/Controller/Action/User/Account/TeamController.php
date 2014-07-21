@@ -67,8 +67,12 @@ class TeamController extends BaseController {
     }
 
 
-    public function declineInviteAction() {
+    public function respondInviteAction() {
+        $team = trim($this->getRequest()->request->get('team'));
+        var_dump($team);
+        exit();
 
+        return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
     }
 
 

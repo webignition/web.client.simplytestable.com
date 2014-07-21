@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Controller\Action\User\Account\Team\DeclineInviteAction;
+namespace SimplyTestable\WebClientBundle\Tests\Controller\Action\User\Account\Team\RespondInviteAction;
 
 use SimplyTestable\WebClientBundle\Tests\Controller\Base\RoutingTest as BaseRoutingTest;
 
