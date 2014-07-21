@@ -163,6 +163,10 @@ Content-Type: application/json
          "used":0
       },
       "urls_per_job":50
+   },
+   "team_summary":{
+       "in":false,
+       "has_invite":false
    }
 }
 EOD;
