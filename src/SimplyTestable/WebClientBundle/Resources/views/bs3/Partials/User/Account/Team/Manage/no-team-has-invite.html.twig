@@ -6,10 +6,10 @@
     <p>
         You have been invited to join team <strong>{{ invites[0].team }}</strong>.
     </p>
-    <form role="form">
+    <form role="form" method="post" action="{{ path('action_user_account_team_respondinvite') }}">
         <input type="hidden" name="team" value="{{ invites[0].team }}">
-        <button type="submit" class="btn btn-success" name="accept-decline" value="accept">Accept invitation</button>
-        <button type="submit" class="btn btn-default" name="accept-decline" value="decline">Decline</button>
+        <button type="submit" class="btn btn-success" name="response" value="accept">Accept invitation</button>
+        <button type="submit" class="btn btn-default" name="response" value="decline">Decline</button>
     </form>
 {% else %}
     <p>
@@ -21,10 +21,10 @@
                 <p>
                     Invitation to team <strong>{{ invite.team }}</strong>:
                 </p>
-                <form role="form">
+                <form role="form" method="post" action="{{ path('action_user_account_team_respondinvite') }}">
                     <input type="hidden" name="team" value="{{ invite.team }}">
-                    <button type="submit" class="btn btn-success" name="accept-decline" value="accept">Accept invitation</button>
-                    <button type="submit" class="btn btn-default" name="accept-decline" value="decline">Decline</button>
+                    <button type="submit" class="btn btn-success" name="response" value="accept">Accept invitation</button>
+                    <button type="submit" class="btn btn-default" name="response" value="decline">Decline</button>
                 </form>
             </li>
         {% endfor %}

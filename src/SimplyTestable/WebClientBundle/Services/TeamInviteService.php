@@ -60,4 +60,24 @@ class TeamInviteService extends CoreApplicationService {
         return $invites;
     }
 
+
+    public function declineInvite(Invite $invite) {
+        $request = $this->webResourceService->getHttpClientService()->postRequest(
+            $this->getUrl('teaminvite_decline'),
+            null,
+            [
+                'team' => $invite->getTeam()
+            ]
+        );
+
+        $this->addAuthorisationToRequest($request);
+
+        try {
+            $this->webResourceService->get($request);
+            return true;
+        } catch (WebResourceException $webResourceException) {
+            return false;
+        }
+    }
+
 }

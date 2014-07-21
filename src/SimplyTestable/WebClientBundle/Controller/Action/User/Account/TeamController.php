@@ -68,9 +68,20 @@ class TeamController extends BaseController {
 
 
     public function respondInviteAction() {
+        $response = trim($this->getRequest()->request->get('response'));
+
+        if (!in_array($response, ['accept', 'decline'])) {
+            return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+        }
+
         $team = trim($this->getRequest()->request->get('team'));
-        var_dump($team);
-        exit();
+
+        if ($response == 'decline') {
+            $this->getTeamInviteService()->declineInvite(new Invite(json_decode(json_encode([
+                'user' => $this->getUser()->getUsername(),
+                'team' => $team
+            ]))));
+        }
 
         return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
     }
