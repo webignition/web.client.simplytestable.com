@@ -40,27 +40,24 @@ class TeamInviteService extends CoreApplicationService {
     }
 
 
-//    /**
-//     * @return Team
-//     * @throws \Exception
-//     * @throws \Guzzle\Http\Exception\CurlException
-//     */
-//    public function getTeam() {
-//        if (!isset($this->teams[$this->getUser()->getUsername()])) {
-//            $request = $this->webResourceService->getHttpClientService()->getRequest(
-//                $this->getUrl('team_get')
-//            );
-//
-//            $this->addAuthorisationToRequest($request);
-//
-//            try {
-//                $this->teams[$this->getUser()->getUsername()] = new Team($this->webResourceService->get($request)->getContentObject());
-//            } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-//                throw $curlException;
-//            }
-//        }
-//
-//        return $this->teams[$this->getUser()->getUsername()];
-//    }
+    /**
+     * @return Invite[]
+     */
+    public function getForUser() {
+        $request = $this->webResourceService->getHttpClientService()->getRequest(
+            $this->getUrl('teaminvite_userlist')
+        );
+
+        $this->addAuthorisationToRequest($request);
+
+        $inviteData = $this->webResourceService->get($request)->getContentObject();
+        $invites = [];
+
+        foreach ($inviteData as $rawInvite) {
+            $invites[] = new Invite($rawInvite);
+        }
+
+        return $invites;
+    }
 
 }

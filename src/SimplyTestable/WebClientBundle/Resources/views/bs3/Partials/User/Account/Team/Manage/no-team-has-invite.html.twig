@@ -1,0 +1,15 @@
+
+
+<h2>Accept or decline team {{ (invites|length == 1) ? 'invitation' : 'invites' }}</h2>
+
+{% if invites|length == 1 %}
+    <p>
+        You have been invited to join team <strong>{{ invites[0].team }}</strong>.
+    </p>
+    <form role="form">
+        <button type="submit" class="btn btn-success" name="accept-decline" value="accept">Accept invitation</button>
+        <button type="submit" class="btn btn-default" name="accept-decline" value="decline">Decline</button>
+    </form>
+{% else %}
+    many
+{% endif %}
