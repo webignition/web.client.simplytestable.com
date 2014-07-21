@@ -9,12 +9,16 @@
     </p>
     <a class="btn btn-default" href="{{ path('view_user_account_team_index_index') }}">Manage <i class="fa fa-caret-right"></i></a>
 {% elseif user_summary.getTeamSummary.hasInvite %}
-    has invite
+    <h3 id="team-invites">Invites</h3>
+    <p>
+        You have one or more invites to join existing teams.
+    </p>
+    <a class="btn btn-default" href="{{ path('view_user_account_team_index_index') }}">Accept or decline your invites <i class="fa fa-caret-right"></i></a>
 {% else %}
     <p>
         You don't belong to a team.  Someone already on a team can invite you to join their team, or
         you can create a new team.
     </p>
 
-    <a class="btn btn-default" href="{{ path('view_user_account_team_index_index') }}">Create your team</a>
+    <a class="btn btn-default" href="{{ path('view_user_account_team_index_index') }}">Create your team <i class="fa fa-caret-right"></i></a>
 {% endif %}

@@ -33,7 +33,7 @@
             {% endif %}
 
             {% if user_summary.getTeamSummary.hasInvite %}
-                <li><a href="">Has invite</a></li>
+                <li class="{{ is_account_team ? 'active' : ''}}"><a href="{{ path('view_user_account_team_index_index') }}">Invites</a></li>
             {% endif %}
         </ul>
     </li>
