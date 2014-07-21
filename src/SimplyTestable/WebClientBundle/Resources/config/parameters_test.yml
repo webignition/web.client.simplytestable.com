@@ -124,6 +124,8 @@ parameters:
         subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled"                 
       stripe.customer.subscription.deleted-actioned_by=system:
         subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled, you've been dropped down to our free plan"
+      user_team_invite_invitation:
+        subject: "[Simply Testable] You have been invited to join the {{team_name}} team"
   css-validation-ignore-common-cdns:
    - ajax.aspnetcdn.com
    - ajax.googleapis.com

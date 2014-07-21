@@ -22,13 +22,19 @@
                 <li class="{{ is_account_team ? 'active' : ''}}"><a href="{{ path('view_user_account_team_index_index') }}">Create your team</a></li>
             {% endif %}
 
-            {#{% if user_summary.getTeamSummary.isInTeam %}#}
-                {#<li><a href="">In team</a></li>#}
-            {#{% endif %}#}
+            {% if user_summary.getTeamSummary.isInTeam %}
+                {% if team.leader == user.username %}
+                    <li class="{{ is_account_team ? 'active' : ''}}"><a href="{{ path('view_user_account_team_index_index') }}">Manage</a></li>
+                {% else %}
 
-            {#{% if user_summary.getTeamSummary.hasInvite %}#}
-                {#<li><a href="">Has invite</a></li>#}
-            {#{% endif %}#}
+                {% endif %}
+
+
+            {% endif %}
+
+            {% if user_summary.getTeamSummary.hasInvite %}
+                <li><a href="">Has invite</a></li>
+            {% endif %}
         </ul>
     </li>
     <li class="{{ is_account_card ? 'active' : ''}}">

@@ -81,6 +81,10 @@ view_user_account_team_index_index:
 action_user_account_team_create:
     pattern: /account/team/create/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:create }
+
+action_user_account_team_invitemember:
+    pattern: /account/team/invite-member/
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:inviteMember }
     
 user_account_card_associate:
     pattern:  /account/card/{stripe_card_token}/associate/

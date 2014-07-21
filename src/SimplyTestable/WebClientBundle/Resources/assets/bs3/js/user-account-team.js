@@ -7,4 +7,12 @@ $(document).ready(function() {
         }
     }
 
+    if ($('body.in-team.team-leader').length === 1) {
+
+        var input = $('#email');
+        if (input.stFormHelper().isEmpty() || input.stFormErrorHelper().hasError()) {
+            input.stFormHelper().select();
+        }
+    }
+
 });

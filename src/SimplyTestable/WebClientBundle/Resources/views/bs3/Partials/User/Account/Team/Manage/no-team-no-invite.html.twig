@@ -1,0 +1,32 @@
+<h2>Create your team</h2>
+
+{% if team_create_error is defined %}
+    {% if team_create_error == 'blank-name' %}
+        <div class="alert alert-danger" data-for="name">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>Slow down!</strong> You're going to have to choose a name for your team.
+        </div>
+    {% endif %}
+{% endif %}
+
+<form role="form" method="post" action="{{ path('action_user_account_team_create') }}">
+    <label for="name">Choose a name for your team. Anything you like, must be unique.</label>
+    <div class="input-group">
+        <input type="text" class="form-control" name="name" id="name">
+            <span class="input-group-btn">
+                <button type="submit" class="btn btn-default" type="button">Create team</button>
+            </span>
+    </div>
+</form>
+
+<p>
+    A team is a group of people working together who share an account. Each person in a team can sign in independently.
+</p>
+
+<p>
+    Tests carried out are visible to everyone in a team, allowing you to easily collaborate on testing projects.
+</p>
+
+<p>
+    You can invite people to join your team once it has been created.
+</p>

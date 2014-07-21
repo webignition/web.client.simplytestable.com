@@ -168,69 +168,55 @@ abstract class ActionTest extends BaseTest {
             }
         }      
     }
-    
-    
-    
-    
-    
-//    /**
-//     * 
-//     * @param array $responseProperties
-//     * @param array $methodProperties
-//     * @return \Symfony\Component\HttpFoundation\Response
-//     */
-//    protected function performActionTest($responseProperties, $methodProperties = array()) {
-//        $actionName = $this->getActionName();
-//        $postData = isset($methodProperties['postData']) ? $methodProperties['postData'] : array();
-//        $queryData = isset($methodProperties['queryData']) ? $methodProperties['queryData'] : array();             
-//        $methodArguments = isset($methodProperties['methodArguments']) ? $methodProperties['methodArguments'] : array();
-//        
-//        $this->container->enterScope('request');
-//        
-//        $controller = $this->getCurrentController($postData, $queryData);
-//        
-//        /* @var $response \Symfony\Component\HttpFoundation\Response */
-//        $response = call_user_func_array(array($controller, $actionName), $methodArguments);
-//        
-//        $this->assertEquals($responseProperties['statusCode'], $response->getStatusCode());        
-//        
-//        if ($response->getStatusCode() == 302) {
-//            $redirectUrl = new \webignition\Url\Url($response->getTargetUrl());
-//            $this->assertEquals($responseProperties['redirectPath'], $redirectUrl->getPath());            
-//        }
-//        
-//        if (isset($responseProperties['flash'])) {
-//            foreach ($responseProperties['flash'] as $key => $expectedValue) {
-//                $this->assertEquals($expectedValue, $this->container->get('session')->getFlash($key));
-//            }
-//        }
-//        
-//        if (isset($responseProperties['cookies'])) {
-//            foreach ($responseProperties['cookies'] as $name => $properties) {
-//                $this->performCookieTest($name, $properties, $response);
-//            }
-//        }
-//        
-//        return $response;
-//    }
-//    
-//    private function performCookieTest($name, $properties, $response) {
-//        $cookieIsPresent = false;
-//        
-//        foreach ($response->headers->getCookies() as $cookie) {
-//            if ($cookie->getName() == $name) {
-//                $cookieIsPresent = true;
-//                
-//                if (isset($properties['value'])) {
-//                    $this->assertEquals($properties['value'], $cookie->getValue());
-//                }                  
-//            }
-//                                 
-//        }        
-//        
-//        if ($cookieIsPresent === false) {
-//            $this->fail('Cookie "'.$name.'" not present');
-//        }
-//    }
+
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\Mail\Service
+     */
+    protected function getMailService() {
+        return $this->container->get('simplytestable.services.mail.service');
+    }
+
+
+    protected function assertLastMailMessageTextContains($value) {
+        $this->assertLastMailMessagePropertyContains('textMessage', $value);
+    }
+
+
+    protected function assertLastMailMessageSubjectContains($value) {
+        $this->assertLastMailMessagePropertyContains('subject', $value);
+    }
+
+
+    private function assertLastMailMessagePropertyContains($property, $value) {
+        $this->assertTrue(
+            substr_count($this->getLastMailMessageProperty($property), $value) > 0,
+            'Last mail message ' . $property . ' does not contain "'.$value.'"'
+        );
+    }
+
+
+    /**
+     * @param string $property
+     * @return string
+     */
+    private function getLastMailMessageProperty($property) {
+        $lastMessage = $this->getLastMailMessage();
+        $refObject = new \ReflectionObject($lastMessage);
+        $refProperty = $refObject->getProperty($property);
+        $refProperty->setAccessible(true);
+
+        return $refProperty->getValue($lastMessage);
+    }
+
+
+    /**
+     * @return \MZ\PostmarkBundle\Postmark\Message
+     */
+    private function getLastMailMessage() {
+        return $this->getMailService()->getSender()->getLastMessage();
+    }
 
 }
