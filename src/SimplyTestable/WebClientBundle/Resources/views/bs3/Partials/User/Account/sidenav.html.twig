@@ -26,12 +26,6 @@
             Team{% if user_summary.getTeamSummary.isInTeam %}: {{ team.name }}{% endif %}
         </a>
         <ul class="nav">
-            {% if not (user_summary.getTeamSummary.isInTeam or user_summary.getTeamSummary.hasInvite) %}
-                <li>
-                    <a href="{{ (is_account_team) ? '' : path('view_user_account_team_index_index') }}#create">Create your team</a>
-                </li>
-            {% endif %}
-
             {% if user_summary.getTeamSummary.isInTeam %}
                 {% if team.leader == user.username %}
                     <li><a href="{{ path('view_user_account_team_index_index') }}">Manage</a></li>
@@ -39,6 +33,9 @@
 
                 {% endif %}
             {% else %}
+                <li>
+                    <a href="{{ (is_account_team) ? '' : path('view_user_account_team_index_index') }}#create">Create your team</a>
+                </li>
                 <li>
                     <a href="{{ (is_account_team) ? '' : path('view_user_account_team_index_index') }}#invites">Invites</a>
                 </li>

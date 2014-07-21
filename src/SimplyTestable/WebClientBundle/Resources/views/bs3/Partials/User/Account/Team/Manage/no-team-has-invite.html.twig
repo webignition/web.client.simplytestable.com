@@ -1,32 +1,77 @@
+<div class="account-section">
+    <h2 id="create">Create your team</h2>
 
-
-<h2>Accept or decline team {{ (invites|length == 1) ? 'invitation' : 'invites' }}</h2>
-
-{% if invites|length == 1 %}
     <p>
-        You have been invited to join team <strong>{{ invites[0].team }}</strong>.
+        For sharing an account between people in an organisation.
+        <span class="collapse-control link" href="#" data-toggle="collapse" data-target="#team-detail">
+            What is a team?
+        </span>
     </p>
-    <form role="form" method="post" action="{{ path('action_user_account_team_respondinvite') }}">
-        <input type="hidden" name="team" value="{{ invites[0].team }}">
-        <button type="submit" class="btn btn-success" name="response" value="accept">Accept invitation</button>
-        <button type="submit" class="btn btn-default" name="response" value="decline">Decline</button>
+
+    <div id="team-detail" class="collapse">
+        <p>
+            A team is a group of people working together who share an account. Each person in a team can sign in independently.
+        </p>
+
+        <p>
+            Tests carried out are visible to everyone in a team, allowing you to easily collaborate on testing projects.
+        </p>
+
+        <p>
+            You can invite people to join your team once it has been created.
+        </p>
+    </div>
+
+    {% if team_create_error is defined %}
+        {% if team_create_error == 'blank-name' %}
+            <div class="alert alert-danger" data-for="name">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>Slow down!</strong> You're going to have to choose a name for your team.
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <form role="form" method="post" action="{{ path('action_user_account_team_create') }}">
+        <label for="name">Choose a name for your team. Anything you like, must be unique.</label>
+        <div class="input-group">
+            <input type="text" class="form-control" name="name" id="name">
+            <span class="input-group-btn">
+                <button type="submit" class="btn btn-default" type="button">Create team</button>
+            </span>
+        </div>
     </form>
-{% else %}
-    <p>
-        You have invites to join {{ invites|length }} teams. You can accept only one.
-    </p>
-    <ul class="list-unstyled invites">
-        {% for invite in invites %}
-            <li>
-                <p>
-                    Invitation to team <strong>{{ invite.team }}</strong>:
-                </p>
-                <form role="form" method="post" action="{{ path('action_user_account_team_respondinvite') }}">
-                    <input type="hidden" name="team" value="{{ invite.team }}">
-                    <button type="submit" class="btn btn-success" name="response" value="accept">Accept invitation</button>
-                    <button type="submit" class="btn btn-default" name="response" value="decline">Decline</button>
-                </form>
-            </li>
-        {% endfor %}
-    </ul>
-{% endif %}
+</div>
+
+<div class="account-section">
+    <h2 id="invites">Accept or decline team {{ (invites|length == 1) ? 'invitation' : 'invites' }}</h2>
+
+    {% if invites|length == 1 %}
+        <p>
+            You have been invited to join team <strong>{{ invites[0].team }}</strong>.
+        </p>
+        <form role="form" method="post" action="{{ path('action_user_account_team_respondinvite') }}">
+            <input type="hidden" name="team" value="{{ invites[0].team }}">
+            <button type="submit" class="btn btn-success" name="response" value="accept">Accept invitation</button>
+            <button type="submit" class="btn btn-default" name="response" value="decline">Decline</button>
+        </form>
+    {% else %}
+        <p>
+            You have invites to join {{ invites|length }} teams. You can accept only one.
+        </p>
+        <ul class="list-unstyled invites">
+            {% for invite in invites %}
+                <li>
+                    <p>
+                        Invitation to team <strong>{{ invite.team }}</strong>:
+                    </p>
+                    <form role="form" method="post" action="{{ path('action_user_account_team_respondinvite') }}">
+                        <input type="hidden" name="team" value="{{ invite.team }}">
+                        <button type="submit" class="btn btn-success" name="response" value="accept">Accept invitation</button>
+                        <button type="submit" class="btn btn-default" name="response" value="decline">Decline</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+
