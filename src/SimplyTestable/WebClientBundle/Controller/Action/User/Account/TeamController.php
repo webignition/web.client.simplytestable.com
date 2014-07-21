@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
 use SimplyTestable\WebClientBundle\Controller\BaseController;
 use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServiceException;
+use SimplyTestable\WebClientBundle\Model\Team\Invite;
 
 class TeamController extends BaseController {
 
@@ -24,6 +25,7 @@ class TeamController extends BaseController {
 
     public function inviteMemberAction() {
         $invitee = trim($this->getRequest()->request->get('email'));
+        $flashData = [];
 
         if ($invitee == $this->getUser()->getUsername()) {
             $flashData = [
@@ -36,7 +38,14 @@ class TeamController extends BaseController {
         }
 
         try {
-            $invite = $this->getTeamService()->getInvite($invitee);
+            $invite = $this->getTeamInviteService()->get($invitee);
+            $this->sendInviteEmail($invite);
+
+            $flashData = [
+                'status' => 'success',
+                'invitee' => $invite->getUser(),
+                'team' => $invite->getTeam()
+            ];
         } catch (TeamServiceException $teamServiceException) {
             if ($teamServiceException->isInviteeIsATeamLeaderException()) {
                 $flashData = [
@@ -44,23 +53,7 @@ class TeamController extends BaseController {
                     'error' => 'invitee-is-a-team-leader',
                     'invitee' => $invitee
                 ];
-
-                $this->get('session')->getFlashBag()->set('team_invite_get', $flashData);
-                return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
             }
-        }
-
-
-
-        try {
-            $this->sendInviteEmail($invite['user'], $invite['team']);
-
-            $flashData = [
-                'status' => 'success',
-                'invitee' => $invite['user'],
-                'team' => $invite['team']
-            ];
-
         } catch (\SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception $postmarkResponseException) {
             $flashData = [
                 'status' => 'error',
@@ -69,6 +62,7 @@ class TeamController extends BaseController {
         }
 
         $this->get('session')->getFlashBag()->set('team_invite_get', $flashData);
+
         return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
     }
 
@@ -82,21 +76,28 @@ class TeamController extends BaseController {
 
 
     /**
+     * @return \SimplyTestable\WebClientBundle\Services\TeamInviteService
+     */
+    private function getTeamInviteService() {
+        return $this->get('simplytestable.services.teaminviteservice');
+    }
+
+
+    /**
      *
-     * @param string $invitee
-     * @param  string $teamName
+     * @param Invite $invite
      * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
      */
-    private function sendInviteEmail($invitee, $teamName) {
+    private function sendInviteEmail(Invite $invite) {
         $sender = $this->getMailService()->getConfiguration()->getSender('default');
         $messageProperties = $this->getMailService()->getConfiguration()->getMessageProperties('user_team_invite_invitation');
 
         $message = $this->getMailService()->getNewMessage();
         $message->setFrom($sender['email'], $sender['name']);
-        $message->addTo($invitee);
-        $message->setSubject(str_replace('{{team_name}}', $teamName, $messageProperties['subject']));
+        $message->addTo($invite->getUser());
+        $message->setSubject(str_replace('{{team_name}}', $invite->getTeam(), $messageProperties['subject']));
         $message->setTextMessage($this->renderView('SimplyTestableWebClientBundle:Email:user-team-invite-invitation.txt.twig', array(
-            'team_name' => $teamName,
+            'team_name' => $invite->getTeam(),
             'account_team_page_url' => $this->generateUrl('view_user_account_team_index_index', [], true)
         )));
 

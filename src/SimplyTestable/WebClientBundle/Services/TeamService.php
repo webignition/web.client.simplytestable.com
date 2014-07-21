@@ -26,30 +26,7 @@ class TeamService extends CoreApplicationService {
     }
 
 
-    public function getInvite($inviteeEmail) {
-        $request = $this->webResourceService->getHttpClientService()->getRequest(
-            $this->getUrl('teaminvite_get', [
-                'invitee_email' => $inviteeEmail
-            ])
-        );
 
-        $this->addAuthorisationToRequest($request);
-
-        try {
-            return $request->send()->json();
-        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
-            $response = $badResponseException->getResponse();
-
-            if ($response->getStatusCode() == 400 && $response->hasHeader('X-TeamInviteGet-Error-Code')) {
-                throw new TeamServiceException(
-                    (string)$response->getHeader('X-TeamInviteGet-Error-Message'),
-                    (int)(string)$response->getHeader('X-TeamInviteGet-Error-Code')
-                );
-            }
-
-            throw $badResponseException;
-        }
-    }
 
 
     /**
