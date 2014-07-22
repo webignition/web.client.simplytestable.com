@@ -256,12 +256,16 @@ class UserService extends CoreApplicationService {
     }
     
     
-    public function activate($token) {   
+    public function activate($token, $password = null) {
         $this->setUser($this->getAdminUser());
+
+        $postBody = (is_null($password)) ? [] : ['password' => rawurlencode($password)];
         
-        $request = $this->webResourceService->getHttpClientService()->postRequest($this->getUrl('user_activate', array(
-            'token' => $token
-        )));
+        $request = $this->webResourceService->getHttpClientService()->postRequest(
+            $this->getUrl('user_activate', ['token' => $token]),
+            null,
+            $postBody
+        );
         
         $this->addAuthorisationToRequest($request);
         

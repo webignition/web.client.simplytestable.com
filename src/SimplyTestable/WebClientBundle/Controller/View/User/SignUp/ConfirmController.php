@@ -17,7 +17,8 @@ class ConfirmController extends CacheableViewController implements IEFiltered {
             'user_create_confirmation',
             'user_token_error',
             'token_resend_error',
-            'user_error'            
+            'user_error',
+            'user_activate_error'
         );
         
         $userError = ($this->getUserService()->exists($email)) ? '' : 'invalid-user';
@@ -38,12 +39,13 @@ class ConfirmController extends CacheableViewController implements IEFiltered {
     }
     
     
-    private function getTransientViewData($flush = true) {        
+    private function getTransientViewData($flush = true) {
         return array(
             'token_resend_confirmation' => $this->getFlash('token_resend_confirmation', $flush),
             'user_create_confirmation' => $this->getFlash('user_create_confirmation', $flush),
             'user_token_error' => $this->getFlash('user_token_error', $flush),
-            'token_resend_error' => $this->getFlash('token_resend_error', $flush),            
+            'token_resend_error' => $this->getFlash('token_resend_error', $flush),
+            'user_activate_error' => $this->getFlash('user_activate_error', $flush),
             'token' => trim($this->getRequest()->query->get('token')),
             'email' => strtolower(trim($this->getRequest()->attributes->get('email'))),
         );

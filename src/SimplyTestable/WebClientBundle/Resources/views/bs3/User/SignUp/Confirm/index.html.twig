@@ -112,14 +112,21 @@
             {% endif %}
         {% endif %}
 
+        {% if user_activate_error is defined and user_activate_error is not empty %}
+            <div class="alert alert-danger" data-for="password">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>Slow down!</strong> You're going to have to choose a password for your account.
+            </div>
+        {% endif %}
+
         {% if has_invites %}
             <div class="form-group">
                 <label for="password">Choose a password</label>
-                <input type="password" class="form-control" id="password" placeholder="Choose a password for your account">
+                <input type="password" class="form-control input-larger" id="password" name="password" placeholder="Choose a password for your account">
             </div>
             <div class="form-group">
                 <label for="token">Activation code (it was emailed to you)</label>
-                <input type="text" class="form-control" id="token" name="token" placeholder="Enter your activation code (it was emailed to you)" value="{{ token }}">
+                <input type="text" class="form-control input-larger" id="token" name="token" placeholder="Enter your activation code (it was emailed to you)" value="{{ token }}">
             </div>
             <button type="submit" class="btn btn-primary">Activate!</button>
         {% else %}
@@ -132,7 +139,6 @@
                 </div>
             </div>
         {% endif %}
-
 
     </form>
 

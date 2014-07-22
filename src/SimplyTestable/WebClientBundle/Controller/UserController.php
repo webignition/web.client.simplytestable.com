@@ -409,7 +409,7 @@ class UserController extends BaseViewController
     }    
     
     
-    public function signupConfirmSubmitAction($email) {       
+    public function signupConfirmSubmitAction($email) {
         if ($this->getUserService()->exists($email) === false) {
             $this->get('session')->setFlash('token_resend_error', 'invalid-user');
             return $this->redirect($this->generateUrl('view_user_signup_confirm_index', array('email' => $email), true));
@@ -420,8 +420,23 @@ class UserController extends BaseViewController
             $this->get('session')->setFlash('user_token_error', 'blank-token');
             return $this->redirect($this->generateUrl('view_user_signup_confirm_index', array('email' => $email), true));
         }
+
+        if ($this->getRequest()->request->has('password')) {
+            $password = trim($this->get('request')->get('password'));
+            if ($password == '') {
+                $this->get('session')->setFlash('user_activate_error', 'blank-password');
+                return $this->redirect(
+                    $this->generateUrl('view_user_signup_confirm_index', [
+                        'email' => $email,
+                        'token' => $token
+                    ], true)
+                );
+            }
+        } else {
+            $password = null;
+        }
         
-        $activationResponse = $this->getUserService()->activate($token);        
+        $activationResponse = $this->getUserService()->activate($token, $password);
         if ($this->requestFailedDueToReadOnly($activationResponse)) {
             $this->get('session')->setFlash('user_token_error', 'failed-read-only');
             return $this->redirect($this->generateUrl('view_user_signup_confirm_index', array('email' => $email), true));
@@ -431,7 +446,7 @@ class UserController extends BaseViewController
             $this->get('session')->setFlash('user_token_error', 'invalid-token');
             return $this->redirect($this->generateUrl('view_user_signup_confirm_index', array('email' => $email), true));
         }
-        
+
         $this->getResqueQueueService()->add(
             'SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob',
             'email-list-subscribe',
