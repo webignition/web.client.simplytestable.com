@@ -167,6 +167,12 @@ class TeamController extends BaseController {
     }
 
 
+    public function leaveAction() {
+        $this->getTeamService()->leave();
+        return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+    }
+
+
     /**
      * @return \SimplyTestable\WebClientBundle\Services\TeamService
      */

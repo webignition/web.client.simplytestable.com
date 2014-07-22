@@ -69,4 +69,24 @@ class TeamService extends CoreApplicationService {
         return $request->send()->getStatusCode() == 200;
     }
 
+
+    /**
+     * @return bool
+     */
+    public function leave() {
+        $request = $this->webResourceService->getHttpClientService()->postRequest(
+            $this->getUrl('team_leave')
+        );
+
+        $this->addAuthorisationToRequest($request);
+
+        try {
+            $request->send();
+            return true;
+        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+        }
+
+        return false;
+    }
+
 }

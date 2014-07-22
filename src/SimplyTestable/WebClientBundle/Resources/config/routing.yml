@@ -101,6 +101,10 @@ action_user_account_team_resendinvite:
 action_user_account_team_removemember:
     pattern: /account/team/member/remove/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:removeMember }
+
+action_user_account_team_leave:
+    pattern: /account/team/leave/
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:leave }
     
 user_account_card_associate:
     pattern:  /account/card/{stripe_card_token}/associate/

@@ -31,7 +31,10 @@
 
                 {% if team.leader == user.username %}
                     <li><a href="{{ (is_account_team) ? '' : path('view_user_account_team_index_index') }}#invites">Invites</a></li>
+                {% else %}
+                    <li><a href="{{ (is_account_team) ? '' : path('view_user_account_team_index_index') }}#leave">Leave team</a></li>
                 {% endif %}
+
             {% else %}
                 <li>
                     <a href="{{ (is_account_team) ? '' : path('view_user_account_team_index_index') }}#create">Create your team</a>
