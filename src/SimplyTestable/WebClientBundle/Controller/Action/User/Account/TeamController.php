@@ -105,6 +105,15 @@ class TeamController extends BaseController {
     }
 
 
+    public function removeMemberAction() {
+        $member = trim($this->getRequest()->request->get('user'));
+
+        $this->getTeamService()->removeFromTeam($member);
+
+        return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+    }
+
+
     public function resendInviteAction() {
         $invitee = trim($this->getRequest()->request->get('user'));
         $flashData = [];

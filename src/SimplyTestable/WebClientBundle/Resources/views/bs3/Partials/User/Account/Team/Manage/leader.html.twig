@@ -80,14 +80,15 @@
             These invites have yet to be accepted or declined:
         </p>
 
-        <ul class="invites list-unstyled">
+        <ul class="invites list-unstyled items">
             {% for invite in invites %}
-                <li class="invite">
+                <li class="invite item">
                     <div class="row">
-                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 user">
+                        <div class="col-lg-8 col-md-6 col-sm-6 col-xs-12 user">
+                            <i class="fa fa-flag"></i>
                             {{ invite.user }}
                         </div>
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-4 action remove">
+                        <div class="col-lg-2 col-md-3 col-sm-3 col-xs-4 action remove">
                             <form role="form" method="post" action="{{ path('action_user_account_team_removeinvite') }}">
                                 <input type="hidden" name="user" value="{{ invite.user }}">
                                 <button type="submit" class="btn btn-xs btn-danger">
@@ -95,7 +96,7 @@
                                 </button>
                             </form>
                         </div>
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-4 action resend">
+                        <div class="col-lg-2 col-md-3 col-sm-3 col-xs-4 action resend">
                             <form role="form" method="post" action="{{ path('action_user_account_team_resendinvite') }}">
                                 <input type="hidden" name="user" value="{{ invite.user }}">
                                 <button type="submit" class="btn btn-xs btn-default">

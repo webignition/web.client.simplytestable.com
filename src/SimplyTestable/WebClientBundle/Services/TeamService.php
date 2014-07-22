@@ -52,4 +52,21 @@ class TeamService extends CoreApplicationService {
         return $this->teams[$this->getUser()->getUsername()];
     }
 
+
+    /**
+     * @param string $member
+     * @return bool
+     */
+    public function removeFromTeam($member) {
+        $request = $this->webResourceService->getHttpClientService()->postRequest(
+            $this->getUrl('team_remove', [
+                'member_email' => $member
+            ])
+        );
+
+        $this->addAuthorisationToRequest($request);
+
+        return $request->send()->getStatusCode() == 200;
+    }
+
 }

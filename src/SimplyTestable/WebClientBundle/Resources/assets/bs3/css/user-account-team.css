@@ -24,21 +24,21 @@
     word-break: break-all;
 }
 
-.team-leader .invites .action {
-    text-align: right;
-}
-
 .team-leader .invites .actions form {
     display:inline;
 }
 
-.team-leader .invites .invite {
+.items .item {
     border-bottom: 1px solid #dedede;
     padding: 15px 0;
     opacity: 0.9;
 }
 
-.team-leader .invites .invite:hover {
+.items .item:last-of-type {
+    border-bottom: 0;
+}
+
+.items .item:hover {
     opacity: 1;
     background-color: #dedede;
     padding: 15px;
@@ -46,28 +46,13 @@
     margin-right: -15px;
 }
 
-.team-leader .invites .invite:last-of-type {
-    border-bottom: 0;
-}
-
-.members .person .fa-user {
+.items .item .fa {
     margin: 0 8px;
     opacity: 0.7;
 }
 
 .members .leader .fa-user {
     color: #f8b426;
-}
-
-
-
-.members .person {
-    border-bottom: 1px solid #dedede;
-    padding: 15px 0;
-}
-
-.members .person:last-of-type {
-    border-bottom: 0;
 }
 
 @media (max-width: 992px) {
@@ -78,7 +63,6 @@
 
 @media (max-width: 768px) {
     .team-leader .invites .action {
-        text-align: left;
         margin-top: 10px;
     }
 
