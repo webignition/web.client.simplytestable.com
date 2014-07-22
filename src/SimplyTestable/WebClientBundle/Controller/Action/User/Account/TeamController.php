@@ -54,6 +54,14 @@ class TeamController extends BaseController {
                     'invitee' => $invitee
                 ];
             }
+
+            if ($teamServiceException->isUserIsAlreadyOnATeamException()) {
+                $flashData = [
+                    'status' => 'error',
+                    'error' => 'invitee-is-already-on-a-team',
+                    'invitee' => $invitee
+                ];
+            }
         } catch (\SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception $postmarkResponseException) {
             $flashData = [
                 'status' => 'error',
