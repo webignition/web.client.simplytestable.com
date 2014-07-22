@@ -364,12 +364,12 @@ class UserService extends CoreApplicationService {
      * @return boolean
      * @throws CoreApplicationAdminRequestException
      */
-    public function isEnabled() {        
+    public function isEnabled($email = null) {
         if (!$this->exists()) {
             return false;
         }
-        
-        $email = $this->getUser()->getUsername();
+
+        $email = (is_null($email)) ? $this->getUser()->getUsername() : $email;
         
         if (!isset($this->enabledResultsCache[$email])) {
             $existsResult = $this->getAdminBooleanResponse($this->webResourceService->getHttpClientService()->postRequest($this->getUrl('user_is_enabled', array(

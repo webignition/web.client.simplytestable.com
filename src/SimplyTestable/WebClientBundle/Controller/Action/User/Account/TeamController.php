@@ -39,7 +39,13 @@ class TeamController extends BaseController {
 
         try {
             $invite = $this->getTeamInviteService()->get($invitee);
-            $this->sendInviteEmail($invite);
+
+            if ($this->getUserService()->isEnabled($invite->getUser())) {
+                $this->sendInviteEmail($invite);
+            } else {
+                $token = $this->getUserService()->getConfirmationToken($invitee);
+                $this->sendActivationEmail($invite, $token);
+            }
 
             $flashData = [
                 'status' => 'success',
@@ -128,7 +134,13 @@ class TeamController extends BaseController {
 
         try {
             $invite = $this->getTeamInviteService()->get($invitee);
-            $this->sendInviteEmail($invite);
+
+            if ($this->getUserService()->isEnabled($invite->getUser())) {
+                $this->sendInviteEmail($invite);
+            } else {
+                $token = $this->getUserService()->getConfirmationToken($invitee);
+                $this->sendActivationEmail($invite, $token);
+            }
 
             $flashData = [
                 'status' => 'success',
@@ -191,6 +203,34 @@ class TeamController extends BaseController {
 
         $this->getMailService()->getSender()->send($message);
     }
+
+
+    /**
+     * @param Invite $invite
+     * @param $token
+     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
+     */
+    private function sendActivationEmail(Invite $invite, $token) {
+        $sender = $this->getMailService()->getConfiguration()->getSender('default');
+        $messageProperties = $this->getMailService()->getConfiguration()->getMessageProperties('user_team_invite_newuser_invitation');
+
+        $confirmationUrl = $this->generateUrl('view_user_signup_confirm_index', array(
+                'email' => $invite->getUser()
+            ), true).'?token=' . $token;
+
+        $message = $this->getMailService()->getNewMessage();
+        $message->setFrom($sender['email'], $sender['name']);
+        $message->addTo($invite->getUser());
+        $message->setSubject(str_replace('{{team_name}}', $invite->getTeam(), $messageProperties['subject']));
+        $message->setTextMessage($this->renderView('SimplyTestableWebClientBundle:Email:user-team-invite-newuser-invitation.txt.twig', array(
+            'team_name' => $invite->getTeam(),
+            'account_team_page_url' => $this->generateUrl('view_user_account_team_index_index', [], true),
+            'confirmation_url' => $confirmationUrl
+        )));
+
+        $this->getMailService()->getSender()->send($message);
+    }
+
 
 
     /**
