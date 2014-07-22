@@ -31,7 +31,14 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
         }
 
         if ($userSummary->getTeamSummary()->isInTeam()) {
-            $viewData['team'] = $this->getTeamService()->getTeam();
+            $team = $this->getTeamService()->getTeam();
+
+            $viewData['team'] = $team;
+            $viewData['team_members'] = [];
+
+            if ($team->getLeader() == $this->getUser()->getUsername()) {
+                $viewData['invites'] = $this->getTeamInviteService()->getForTeam();
+            }
         }
 
         if ($userSummary->getTeamSummary()->hasInvite()) {

@@ -28,7 +28,9 @@
         <ul class="nav">
             {% if user_summary.getTeamSummary.isInTeam %}
                 {% if team.leader == user.username %}
-                    <li><a href="{{ path('view_user_account_team_index_index') }}">Manage</a></li>
+                    <li><a href="{{ (is_account_team) ? '' : path('view_user_account_team_index_index') }}#members">Members</a></li>
+                    <li><a href="{{ (is_account_team) ? '' : path('view_user_account_team_index_index') }}#invites">Outstanding invites</a></li>
+                    <li><a href="{{ (is_account_team) ? '' : path('view_user_account_team_index_index') }}#invites-send">Send an invite</a></li>
                 {% else %}
 
                 {% endif %}

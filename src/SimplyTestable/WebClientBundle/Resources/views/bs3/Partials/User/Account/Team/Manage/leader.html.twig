@@ -1,4 +1,53 @@
-<h2>Manage your team ({{ team.name }})</h2>
+<div class="account-section">
+    <h2 id="members">Members</h2>
+</div>
+
+<div class="account-section">
+    <h2 id="invites">Outstanding invites</h2>
+
+    {% if invites is defined and invites|length > 0 %}
+        <p>
+            These invites have yet to be accepted or declined:
+        </p>
+
+        <ul class="invites list-unstyled">
+            {% for invite in invites %}
+                <li class="invite">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 user">
+                            {{ invite.user }}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-4 action remove">
+                            <form role="form">
+                                <input type="hidden" name="user" value="{{ invite.user }}">
+                                <button type="submit" class="btn btn-xs btn-danger">
+                                    Remove
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-4 action resend">
+                            <form role="form">
+                                <input type="hidden" name="user" value="{{ invite.user }}">
+                                <button type="submit" class="btn btn-xs btn-default">
+                                    Re-send
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>
+            There are no outstanding team invites.
+        </p>
+    {% endif %}
+
+</div>
+
+<div class="account-section">
+    <h2 id="invites-send">Send an invite</h2>
+</div>
 
 {% if team_invite_get is defined %}
     {% if team_invite_get.status == 'success' %}
@@ -44,7 +93,7 @@
         and share this team account.
     </p>
 
-    <form role="form" method="post" action="{{ path('action_user_account_team_invitemember') }}">
+    <form class="issue-invite" role="form" method="post" action="{{ path('action_user_account_team_invitemember') }}">
         <label for="email">Who would you like to invite?</label>
         <div class="input-group">
             <input type="text" class="form-control" name="email" id="email" placeholder="Email address of new team member">

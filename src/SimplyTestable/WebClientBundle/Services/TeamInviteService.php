@@ -80,4 +80,25 @@ class TeamInviteService extends CoreApplicationService {
         }
     }
 
+
+    /**
+     * @return Invite[]
+     */
+    public function getForTeam() {
+        $request = $this->webResourceService->getHttpClientService()->getRequest(
+            $this->getUrl('team_invites')
+        );
+
+        $this->addAuthorisationToRequest($request);
+
+        $inviteData = $this->webResourceService->get($request)->getContentObject();
+        $invites = [];
+
+        foreach ($inviteData as $rawInvite) {
+            $invites[] = new Invite($rawInvite);
+        }
+
+        return $invites;
+    }
+
 }

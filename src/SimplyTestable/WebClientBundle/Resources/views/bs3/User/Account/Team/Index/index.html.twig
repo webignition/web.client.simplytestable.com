@@ -4,7 +4,12 @@
 {% endblock %}
 
 {% block title %}Your team ({{ user.username }}) - {{ parent() }}{% endblock %}
-{% block heading %}<a href="{{ path('view_user_account_index_index') }}">{{ parent() }}</a>: your team{% endblock %}
+{% block heading %}
+    <a href="{{ path('view_user_account_index_index') }}">{{ parent() }}</a>: your team
+    {% if user_summary.getTeamSummary.isInTeam and team is defined %}
+        ({{ team.name }})
+    {% endif %}
+{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
