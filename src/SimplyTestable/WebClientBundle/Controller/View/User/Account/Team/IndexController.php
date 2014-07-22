@@ -30,6 +30,11 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
             $viewData['team_invite_get'] = $teamInviteGetData;
         }
 
+        $teamInviteResendData = $this->get('session')->getFlashBag()->get('team_invite_resend');
+        if (is_array($teamInviteResendData) && count($teamInviteResendData)) {
+            $viewData['team_invite_resend'] = $teamInviteResendData;
+        }
+
         if ($userSummary->getTeamSummary()->isInTeam()) {
             $team = $this->getTeamService()->getTeam();
 

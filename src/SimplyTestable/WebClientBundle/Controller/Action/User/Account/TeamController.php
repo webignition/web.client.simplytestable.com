@@ -98,6 +98,39 @@ class TeamController extends BaseController {
     }
 
 
+    public function resendInviteAction() {
+        $invitee = trim($this->getRequest()->request->get('user'));
+        $flashData = [];
+
+        try {
+            $invite = $this->getTeamInviteService()->get($invitee);
+            $this->sendInviteEmail($invite);
+
+            $flashData = [
+                'status' => 'success',
+                'invitee' => $invite->getUser(),
+                'team' => $invite->getTeam()
+            ];
+        } catch (TeamServiceException $teamServiceException) {
+            if ($teamServiceException->isInviteeIsATeamLeaderException()) {
+                $flashData = [
+                    'status' => 'error',
+                    'error' => 'invitee-is-a-team-leader',
+                    'invitee' => $invitee
+                ];
+            }
+        } catch (\SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception $postmarkResponseException) {
+            $flashData = [
+                'status' => 'error',
+                'error' => 'invalid-email'
+            ];
+        }
+
+        $this->get('session')->getFlashBag()->set('team_invite_resend', $flashData);
+        return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+    }
+
+
     /**
      * @return \SimplyTestable\WebClientBundle\Services\TeamService
      */
