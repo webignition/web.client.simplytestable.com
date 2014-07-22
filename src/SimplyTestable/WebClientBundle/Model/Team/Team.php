@@ -12,7 +12,9 @@ class Team extends Object {
     public function __construct(\stdClass $data) {
         parent::__construct($data);
         if (is_null($this->getDataProperty('people'))) {
-            $this->setDataProperty('people', []);
+            $this->setDataProperty('people', [
+                $this->getLeader()
+            ]);
         }
 
     }
@@ -38,7 +40,7 @@ class Team extends Object {
      * @return string[]
      */
     public function getMembers() {
-        return $this->getDataProperty('people');
+        return $this->getDataProperty('members');
     }
 
 

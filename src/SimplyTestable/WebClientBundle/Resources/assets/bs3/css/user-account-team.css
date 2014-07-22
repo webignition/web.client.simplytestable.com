@@ -46,9 +46,27 @@
     margin-right: -15px;
 }
 
-
-
 .team-leader .invites .invite:last-of-type {
+    border-bottom: 0;
+}
+
+.members .person .fa-user {
+    margin: 0 8px;
+    opacity: 0.7;
+}
+
+.members .leader .fa-user {
+    color: #f8b426;
+}
+
+
+
+.members .person {
+    border-bottom: 1px solid #dedede;
+    padding: 15px 0;
+}
+
+.members .person:last-of-type {
     border-bottom: 0;
 }
 

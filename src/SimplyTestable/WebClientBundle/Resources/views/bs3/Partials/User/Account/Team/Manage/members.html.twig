@@ -1,0 +1,21 @@
+<div class="account-section">
+    <h2 id="members">Members</h2>
+
+    <ul class="list-unstyled members">
+        <li class="person leader">
+            <i class="fa fa-user"></i>
+            {{ team.leader }}
+            (team leader{% if team.leader == user.username %}, you{% endif %} )
+        </li>
+
+        {% for member in team.members %}
+            <li class="person member">
+                <i class="fa fa-user"></i>
+                {{ member }}
+                {% if member == user.username %}
+                    (you)
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>

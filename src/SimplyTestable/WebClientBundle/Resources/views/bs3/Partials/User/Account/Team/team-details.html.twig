@@ -7,7 +7,16 @@
     {% endif %}
     team <strong>{{ team.name }}</strong>.
     </p>
-    <a class="btn btn-default" href="{{ path('view_user_account_team_index_index') }}">Manage <i class="fa fa-caret-right"></i></a>
+
+    <a class="btn btn-default" href="{{ path('view_user_account_team_index_index') }}">
+    {% if team.leader == user.username %}
+        Manage members and invites
+    {% else %}
+        List members or leave team
+    {% endif %}
+    <i class="fa fa-caret-right"></i></a>
+
+
 {% elseif user_summary.getTeamSummary.hasInvite %}
     <h3 id="team-invites">Invites</h3>
     <p>
