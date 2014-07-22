@@ -8,6 +8,7 @@ class ActionTest extends BaseActionTest {
     
     protected function getHttpFixtureItems() {
         return array(
+            "HTTP/1.0 200 OK",
             "HTTP/1.0 200 OK"
         );
     }    
