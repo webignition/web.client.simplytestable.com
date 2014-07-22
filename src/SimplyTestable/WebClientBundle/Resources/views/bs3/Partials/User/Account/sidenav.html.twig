@@ -18,7 +18,11 @@
         <a href="{{ not is_account_main ? path('view_user_account_index_index' ) : '' }}#plan">Plan: {{ plan_presentation_name }}</a>
         <ul class="nav">
             <li><a href="{{ not is_account_main ? path('view_user_account_index_index' ) : '' }}#plan-allowances">Allowances</a></li>
-            <li><a href="{{ not is_account_main ? path('view_user_account_index_index' ) : '' }}#plan-upgrade-downgrade">Upgrade/downgrade</a></li>
+
+            {% if not user_summary.getTeamSummary.isInTeam or (user_summary.getTeamSummary.isInTeam and team.leader == user.username) %}
+                <li><a href="{{ not is_account_main ? path('view_user_account_index_index' ) : '' }}#plan-upgrade-downgrade">Upgrade/downgrade</a></li>
+            {% endif %}
+
         </ul>
     </li>
     <li class="{{ is_account_team ? 'active' : ''}}" id="sidenav-team">
