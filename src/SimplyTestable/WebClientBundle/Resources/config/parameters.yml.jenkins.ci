@@ -37,7 +37,8 @@ parameters:
       user_create: /user/create/
       user_get_token: /user/{email}/token/
       user_activate: /user/activate/{token}/
-      user_exists: /user/{email}/exists/    
+      user_exists: /user/{email}/exists/
+      user_hasinvites: /user/{email_canonical}/has-invites/
       user_reset_password: /user/reset-password/{token}/
       user: /user/{email}/
       user_authenticate: /user/{email}/authenticate/
@@ -127,6 +128,8 @@ parameters:
       stripe.customer.subscription.deleted-actioned_by=system:
         subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled, you've been dropped down to our free plan"
       user_team_invite_invitation:
+        subject: "[Simply Testable] You have been invited to join the {{team_name}} team"
+      user_team_invite_newuser_invitation:
         subject: "[Simply Testable] You have been invited to join the {{team_name}} team"
   css-validation-ignore-common-cdns:
    - ajax.aspnetcdn.com
