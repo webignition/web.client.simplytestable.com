@@ -312,6 +312,26 @@ class UserService extends CoreApplicationService {
         
         return $this->existsResultCache[$email];        
     }
+
+
+    /**
+     * @param null|string $email
+     * @return bool
+     */
+    public function hasInvites($email = null) {
+        if (!$this->hasUser()) {
+            return false;
+        }
+
+        $email = (is_null($email)) ? $this->getUser()->getUsername() : $email;
+
+        return $this->getAdminBooleanResponse(
+            $this->webResourceService->getHttpClientService()->postRequest(
+                $this->getUrl('user_hasinvites', ['email_canonical' => $email])
+            )
+        );
+
+    }
     
     
     /**

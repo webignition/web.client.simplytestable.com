@@ -21,7 +21,7 @@ class ConfirmController extends CacheableViewController implements IEFiltered {
         );
         
         $userError = ($this->getUserService()->exists($email)) ? '' : 'invalid-user';
-        
+
         $viewData = $this->getTransientViewData();
         $viewData['user_error'] = $userError;
         
@@ -30,7 +30,8 @@ class ConfirmController extends CacheableViewController implements IEFiltered {
             $viewData['user_error'] = 'invalid-user';
         }
         
-        $viewData['has_notification'] = $this->hasNotification($notificationKeys, $viewData);      
+        $viewData['has_notification'] = $this->hasNotification($notificationKeys, $viewData);
+        $viewData['has_invites'] = $this->getUserService()->hasInvites($email);
         
         return $this->renderCacheableResponse($viewData);
 
