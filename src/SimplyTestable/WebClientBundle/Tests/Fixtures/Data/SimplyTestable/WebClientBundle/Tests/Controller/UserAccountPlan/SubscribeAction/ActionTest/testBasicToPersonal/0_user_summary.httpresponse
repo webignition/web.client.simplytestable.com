@@ -1,0 +1,25 @@
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "email":"user@example.com",
+    "user_plan":{
+        "plan":{
+            "name":"basic",
+            "is_premium":false
+        },
+        "stripe_customer":"cus_3xZswUT4AVofI2",
+        "start_trial_period":30
+    },
+    "plan_constraints":{
+        "credits":{
+            "limit":5000,
+            "used":0
+        },
+        "urls_per_job":50
+    },
+    "team_summary":{
+        "in":false,
+        "has_invite":false
+    }
+}
