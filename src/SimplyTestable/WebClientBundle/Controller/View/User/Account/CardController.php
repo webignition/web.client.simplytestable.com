@@ -14,6 +14,14 @@ class CardController extends BaseViewController implements RequiresPrivateUser, 
     
     public function indexAction() {        
         $userSummary = $this->getUserService()->getSummary($this->getUser());
+        if ($userSummary->getTeamSummary()->isInTeam()) {
+            $this->getTeamService()->setUser($this->getUser());
+            $team = $this->getTeamService()->getTeam();
+
+            if ($team->getLeader() != $this->getUser()->getUsername()) {
+                return $this->redirect($this->generateUrl('view_user_account_index_index'));
+            }
+        }
 
         $currentYear = date('Y');
         
@@ -27,16 +35,12 @@ class CardController extends BaseViewController implements RequiresPrivateUser, 
             'expiry_year_start' => $currentYear,
             'expiry_year_end' => $currentYear + 10,
             'plan_presentation_name' => $this->getPlanPresentationName($userSummary->getPlan()->getAccountPlan()->getName()),
+            'team' => $team
         ), $this->getViewFlashValues(array(
             'user_account_card_exception_message',
             'user_account_card_exception_param',
             'user_account_card_exception_code'
         )));
-
-        if ($userSummary->getTeamSummary()->isInTeam()) {
-            $this->getTeamService()->setUser($this->getUser());
-            $viewData['team'] = $this->getTeamService()->getTeam();
-        }
 
         return $this->renderResponse($this->getRequest(), $viewData);
     }
