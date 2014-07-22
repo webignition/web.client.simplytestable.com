@@ -83,6 +83,13 @@ class TeamController extends BaseController {
             ]));
         }
 
+        if ($response == 'accept') {
+            $this->getTeamInviteService()->acceptInvite(new Invite([
+                'user' => $this->getUser()->getUsername(),
+                'team' => $team
+            ]));
+        }
+
         return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
     }
 

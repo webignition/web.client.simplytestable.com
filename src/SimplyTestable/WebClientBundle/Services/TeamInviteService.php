@@ -81,6 +81,26 @@ class TeamInviteService extends CoreApplicationService {
     }
 
 
+    public function acceptInvite(Invite $invite) {
+        $request = $this->webResourceService->getHttpClientService()->postRequest(
+            $this->getUrl('teaminvite_accept'),
+            null,
+            [
+                'team' => $invite->getTeam()
+            ]
+        );
+
+        $this->addAuthorisationToRequest($request);
+
+        try {
+            $this->webResourceService->get($request);
+            return true;
+        } catch (WebResourceException $webResourceException) {
+            return false;
+        }
+    }
+
+
     /**
      * @return Invite[]
      */
