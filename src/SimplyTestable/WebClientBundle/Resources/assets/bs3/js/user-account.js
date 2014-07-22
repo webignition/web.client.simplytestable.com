@@ -7,25 +7,29 @@ $(document).ready(function() {
         $('li:first', sideNavActiveScope).addClass('active');
     }
 
-
     $('.sidenav a').click(function () {
-        var target = $($(this).attr('href'));
+        var href = $(this).attr('href');
+        if (href.substr(0, 1) === '#') {
+            var target = $(href);
+            if (target.length) {
+                $.scrollTo(target, {
+                    'offset':-80
+                });
 
-        $.scrollTo(target, {
-            'offset':-80
-        });
+                window.location.hash = target.attr('id');
 
-        window.location.hash = target.attr('id');
-
-        return false;
+                return false;
+            }
+        }
     });
 
     if ($(window.location.hash).length) {
         var target = $(window.location.hash);
-
-        $.scrollTo(target, {
-            'offset':-80
-        });
+        if (target.length) {
+            $.scrollTo(target, {
+                'offset':-80
+            });
+        }
     }
 
 });
