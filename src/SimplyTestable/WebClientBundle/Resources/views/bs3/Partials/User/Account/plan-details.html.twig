@@ -147,6 +147,13 @@
                 {% endif %}
             {% endif %}
         </p>
+
+        {% if user_summary.getTeamSummary.isInTeam %}
+            <p>
+                The resources of this plan are shared with your team.
+            </p>
+        {% endif %}
+
     {% endif %}
 </div>
 
