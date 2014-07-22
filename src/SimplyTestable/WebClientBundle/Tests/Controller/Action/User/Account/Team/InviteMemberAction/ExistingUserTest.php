@@ -34,7 +34,9 @@ class ExistingUserTest extends ActionTest {
 
     protected function getHttpFixtureItems() {
         return array(
-            $this->getTeamInviteGetHttpResponseFixture()
+            $this->getTeamInviteGetHttpResponseFixture(),
+            'HTTP/1.0 200 OK',
+            'HTTP/1.0 200 OK'
         );
     }
 
