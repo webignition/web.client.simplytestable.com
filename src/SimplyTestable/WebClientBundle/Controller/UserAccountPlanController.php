@@ -14,12 +14,21 @@ class UserAccountPlanController extends AbstractUserAccountController
         $redirectResponse = $this->redirect($this->generateUrl('view_user_account_index_index', array(), true));
         
         $userSummary = $this->getUserService()->getSummary($this->getUser());
-        
+
         if ($userSummary->hasPlan() && $userSummary->getPlan()->getAccountPlan()->getName() == $this->get('request')->request->get('plan')) {
             $this->get('logger')->err('UserAccountPlanController::subscribeAction::already on selected plan');
             $this->get('session')->setFlash('plan_subscribe_success', 'already-on-plan');
             return $redirectResponse;
-        }        
+        }
+
+        if ($userSummary->getTeamSummary()->isInTeam()) {
+            $this->getTeamService()->setUser($this->getUser());
+            $team = $this->getTeamService()->getTeam();
+
+            if ($team->getLeader() != $this->getUser()->getUsername()) {
+                return $redirectResponse;
+            }
+        }
 
         try {
             $response = $this->getUserPlanSubscriptionService()->subscribe($this->getUser(), $this->get('request')->request->get('plan'));
@@ -49,5 +58,14 @@ class UserAccountPlanController extends AbstractUserAccountController
      */
     protected function getUserPlanSubscriptionService() {
         return $this->get('simplytestable.services.userplansubscriptionservice');
+    }
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TeamService
+     */
+    private function getTeamService() {
+        return $this->container->get('simplytestable.services.teamservice');
     }
 }
