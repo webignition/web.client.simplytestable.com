@@ -101,4 +101,22 @@ class TeamInviteService extends CoreApplicationService {
         return $invites;
     }
 
+
+    public function removeForUser(Invite $invite) {
+        $request = $this->webResourceService->getHttpClientService()->postRequest(
+            $this->getUrl('teaminvite_remove', [
+                'invitee_email' => $invite->getUser()
+            ])
+        );
+
+        $this->addAuthorisationToRequest($request);
+
+        try {
+            $this->webResourceService->get($request);
+            return true;
+        } catch (WebResourceException $webResourceException) {
+            return false;
+        }
+    }
+
 }

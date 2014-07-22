@@ -18,7 +18,7 @@
                             {{ invite.user }}
                         </div>
                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-4 action remove">
-                            <form role="form">
+                            <form role="form" method="post" action="{{ path('action_user_account_team_removeinvite') }}">
                                 <input type="hidden" name="user" value="{{ invite.user }}">
                                 <button type="submit" class="btn btn-xs btn-danger">
                                     Remove

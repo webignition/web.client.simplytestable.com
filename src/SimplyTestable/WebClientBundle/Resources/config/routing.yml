@@ -89,6 +89,10 @@ action_user_account_team_invitemember:
 action_user_account_team_respondinvite:
     pattern: /account/team/invite/respond/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:respondInvite }
+
+action_user_account_team_removeinvite:
+    pattern: /account/team/invite/remove/
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:removeInvite }
     
 user_account_card_associate:
     pattern:  /account/card/{stripe_card_token}/associate/

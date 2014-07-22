@@ -65,6 +65,7 @@ parameters:
       team_leave: /team/leave/
       teaminvite_userlist: /team/user/invites/
       team_invites: /team/invites/
+      teaminvite_remove: /team/invite/{invitee_email}/remove
   public_site:
     urls:
       home: http://ci.simplytestable.com/

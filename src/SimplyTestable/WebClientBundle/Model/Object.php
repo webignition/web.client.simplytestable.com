@@ -12,9 +12,13 @@ abstract class Object {
     
     /**
      * 
-     * @param \stdClass $data
+     * @param \stdClass|array $data
      */
-    public function __construct(\stdClass $data) {
+    public function __construct($data) {
+        if (is_array($data)) {
+            $data = json_decode(json_encode($data));
+        }
+
         $this->data = $data;
     }   
     

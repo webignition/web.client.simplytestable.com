@@ -77,11 +77,22 @@ class TeamController extends BaseController {
         $team = trim($this->getRequest()->request->get('team'));
 
         if ($response == 'decline') {
-            $this->getTeamInviteService()->declineInvite(new Invite(json_decode(json_encode([
+            $this->getTeamInviteService()->declineInvite(new Invite([
                 'user' => $this->getUser()->getUsername(),
                 'team' => $team
-            ]))));
+            ]));
         }
+
+        return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+    }
+
+
+    public function removeInviteAction() {
+        $invitee = trim($this->getRequest()->request->get('user'));
+
+        $this->getTeamInviteService()->removeForUser(new Invite([
+            'user' => $invitee
+        ]));
 
         return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
     }
