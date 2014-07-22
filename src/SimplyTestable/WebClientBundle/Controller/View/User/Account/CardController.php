@@ -34,13 +34,16 @@ class CardController extends BaseViewController implements RequiresPrivateUser, 
             'is_logged_in' => true,
             'expiry_year_start' => $currentYear,
             'expiry_year_end' => $currentYear + 10,
-            'plan_presentation_name' => $this->getPlanPresentationName($userSummary->getPlan()->getAccountPlan()->getName()),
-            'team' => $team
+            'plan_presentation_name' => $this->getPlanPresentationName($userSummary->getPlan()->getAccountPlan()->getName())
         ), $this->getViewFlashValues(array(
             'user_account_card_exception_message',
             'user_account_card_exception_param',
             'user_account_card_exception_code'
         )));
+
+        if ($userSummary->getTeamSummary()->isInTeam()) {
+            $viewData['team'] = $team;
+        }
 
         return $this->renderResponse($this->getRequest(), $viewData);
     }
