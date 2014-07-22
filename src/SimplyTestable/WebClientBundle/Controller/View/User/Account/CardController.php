@@ -33,6 +33,11 @@ class CardController extends BaseViewController implements RequiresPrivateUser, 
             'user_account_card_exception_code'
         )));
 
+        if ($userSummary->getTeamSummary()->isInTeam()) {
+            $this->getTeamService()->setUser($this->getUser());
+            $viewData['team'] = $this->getTeamService()->getTeam();
+        }
+
         return $this->renderResponse($this->getRequest(), $viewData);
     }
 
@@ -296,6 +301,15 @@ class CardController extends BaseViewController implements RequiresPrivateUser, 
      */
     private function getPlanPresentationName($plan) {
         return ucwords($plan);
+    }
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TeamService
+     */
+    private function getTeamService() {
+        return $this->container->get('simplytestable.services.teamservice');
     }
 
 }
