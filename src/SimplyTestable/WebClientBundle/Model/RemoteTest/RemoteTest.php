@@ -435,7 +435,7 @@ class RemoteTest extends AbstractStandardObject {
      */
     public function getOwners() {
         if (is_null($this->owners)) {
-            $this->owners = new ArrayCollection($this->getProperty('owners'));
+            $this->owners = new ArrayCollection(is_array($this->getProperty('owners')) ? $this->getProperty('owners') : []);
         }
 
         return $this->owners;
