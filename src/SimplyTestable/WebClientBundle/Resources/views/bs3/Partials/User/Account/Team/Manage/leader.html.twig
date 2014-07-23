@@ -40,6 +40,20 @@
             </div>
         {% endif %}
 
+        {% if team_invite_get.error == 'invitee-has-a-premium-plan' %}
+            <div class="alert alert-danger" data-for="email">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <p>
+                    <strong>Sorry, you can't invite {{ team_invite_get.invitee }}</strong>
+                </p>
+                <p>
+                    The person you want to invite has their own paid subscription. People
+                    with paid suscriptions can't join teams as it really, really confuses
+                    things.
+                </p>
+            </div>
+        {% endif %}
+
     {% endif %}
 {% endif %}
 

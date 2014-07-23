@@ -68,6 +68,15 @@ class TeamController extends BaseController {
                     'invitee' => $invitee
                 ];
             }
+
+            if ($teamServiceException->isInviteeHasAPremiumPlanException()) {
+                $flashData = [
+                    'status' => 'error',
+                    'error' => 'invitee-has-a-premium-plan',
+                    'invitee' => $invitee
+                ];
+            }
+
         } catch (\SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception $postmarkResponseException) {
             $flashData = [
                 'status' => 'error',
