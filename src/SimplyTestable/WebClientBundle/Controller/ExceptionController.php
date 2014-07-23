@@ -48,7 +48,8 @@ class ExceptionController extends Controller
                 'logger'         => $logger,
                 'currentContent' => $currentContent,
                 'requestUri' => $this->container->get('request')->getRequestUri(),
-                'public_site' => $this->container->getParameter('public_site')
+                'public_site' => $this->container->getParameter('public_site'),
+                'external_links' => $this->container->getParameter('external_links')
             )
         );
     }
