@@ -3,6 +3,7 @@ namespace SimplyTestable\WebClientBundle\Model\RemoteTest;
 
 use SimplyTestable\WebClientBundle\Entity\TimePeriod;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class RemoteTest extends AbstractStandardObject {
     
@@ -17,6 +18,12 @@ class RemoteTest extends AbstractStandardObject {
         'failed',
         'skipped'
     );
+
+
+    /**
+     * @var ArrayCollection
+     */
+    private $owners = null;
     
     
     /**
@@ -420,6 +427,18 @@ class RemoteTest extends AbstractStandardObject {
      */
     public function isSingleUrl() {
         return $this->getType() == 'Single URL';
+    }
+
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getOwners() {
+        if (is_null($this->owners)) {
+            $this->owners = new ArrayCollection($this->getProperty('owners'));
+        }
+
+        return $this->owners;
     }
     
 }

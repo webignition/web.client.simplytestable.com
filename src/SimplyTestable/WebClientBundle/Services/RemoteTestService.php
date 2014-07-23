@@ -5,6 +5,7 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\TestList;
 use SimplyTestable\WebClientBundle\Model\TestOptions;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 
 class RemoteTestService extends CoreApplicationService {
     
@@ -146,7 +147,7 @@ class RemoteTestService extends CoreApplicationService {
     /**
      * 
      * @return boolean
-     * @throws \SimplyTestable\WebClientBundle\Services\WebResourceException
+     * @throws WebResourceException
      */
     public function owns() {
         if ($this->getUser()->getUsername() == $this->getTest()->getUser()) {
@@ -154,7 +155,7 @@ class RemoteTestService extends CoreApplicationService {
         }
         
         try {
-            return $this->getUser()->getUsername() == $this->get()->getUser();         
+            return $this->get()->getOwners()->contains($this->getUser()->getUsername());
         } catch (WebResourceException $webResourceException) {            
             if ($webResourceException->getCode() == 403) {
                 return false;
