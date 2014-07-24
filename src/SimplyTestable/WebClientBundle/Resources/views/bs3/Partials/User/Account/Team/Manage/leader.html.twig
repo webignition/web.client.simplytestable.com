@@ -14,7 +14,7 @@
     {% endif %}
 
     {% if team_invite_get.status == 'error' %}
-        {% if team_invite_get.error == 'invalid-invitee' %}
+        {% if team_invite_get.error in ['invalid-invitee', 'invalid-email'] %}
             <div class="alert alert-danger" data-for="email">
                 <button type="button" class="close" data-dismiss="alert">×</button>
                 <strong>Hmmm.</strong> I'm not convinced that <strong>{{ team_invite_get.invitee }}</strong> is a valid email address.

@@ -11,16 +11,15 @@ class Sender {
      * @var \Doctrine\Common\Collections\ArrayCollection
      */
     private $history = null;
-    
-    
+
+
     /**
-     * 
      * @param \MZ\PostmarkBundle\Postmark\Message $message
-     * @return \SimplyTestable\WebClientBundle\Model\Postmark\Response
+     * @return PostmarkResponse
+     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
      */
     public function send(\MZ\PostmarkBundle\Postmark\Message $message) {
         $response = new PostmarkResponse($this->getJsonRespnse($message));
-        
         $this->getHistory()->add(array(
             'message' => $message,
             'response' => $response

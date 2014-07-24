@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Controller\BaseController;
 use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServiceException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use Egulias\EmailValidator\EmailValidator;
+use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 
 class TeamController extends BaseController {
 
@@ -89,11 +90,20 @@ class TeamController extends BaseController {
                 ];
             }
 
-        } catch (\SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception $postmarkResponseException) {
-            $flashData = [
-                'status' => 'error',
-                'error' => 'invalid-email'
-            ];
+        } catch (PostmarkResponseException $postmarkResponseException) {
+            if ($postmarkResponseException->isInvalidEmailAddressException()) {
+                $flashData = [
+                    'status' => 'error',
+                    'error' => 'invalid-email',
+                    'invitee' => $invitee,
+                ];
+            }
+
+            $invite = new Invite([
+                'user' => $invitee
+            ]);
+
+            $this->getTeamInviteService()->removeForUser($invite);
         }
 
         $this->get('session')->getFlashBag()->set('team_invite_get', $flashData);
