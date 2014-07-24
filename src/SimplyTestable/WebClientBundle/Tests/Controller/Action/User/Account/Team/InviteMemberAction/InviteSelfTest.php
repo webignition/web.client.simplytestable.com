@@ -11,6 +11,10 @@ class InviteSelfTest extends ActionTest {
         ]);
     }
 
+    public function testHasNoMessagesInMailServiceHistory() {
+        $this->assertEquals(0, $this->getMailService()->getSender()->getHistory()->count());
+    }
+
     protected function preCall() {
         $this->getUserService()->setUser($this->makeUser());
     }
