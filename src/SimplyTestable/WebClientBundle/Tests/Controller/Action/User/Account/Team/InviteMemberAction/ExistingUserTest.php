@@ -4,6 +4,12 @@ namespace SimplyTestable\WebClientBundle\Tests\Controller\Action\User\Account\Te
 
 class ExistingUserTest extends ActionTest {
 
+    protected function getRequestPostData() {
+        return [
+            'email' => 'invitee@example.com'
+        ];
+    }
+
     public function testHasSingleMessageInMailServiceHistory() {
         $this->assertEquals(1, $this->getMailService()->getSender()->getHistory()->count());
     }

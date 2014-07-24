@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 use SimplyTestable\WebClientBundle\Controller\BaseController;
 use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServiceException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
+use Egulias\EmailValidator\EmailValidator;
 
 class TeamController extends BaseController {
 
@@ -26,6 +27,17 @@ class TeamController extends BaseController {
     public function inviteMemberAction() {
         $invitee = trim($this->getRequest()->request->get('email'));
         $flashData = [];
+
+        if (!$this->isEmailValid($invitee)) {
+            $flashData = [
+                'status' => 'error',
+                'error' => 'invalid-invitee',
+                'invitee' => $invitee,
+            ];
+
+            $this->get('session')->getFlashBag()->set('team_invite_get', $flashData);
+            return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+        }
 
         if ($invitee == $this->getUser()->getUsername()) {
             $flashData = [
@@ -254,6 +266,17 @@ class TeamController extends BaseController {
      */
     private function getMailService() {
         return $this->get('simplytestable.services.mail.service');
+    }
+
+
+    /**
+     *
+     * @param string $email
+     * @return boolean
+     */
+    private function isEmailValid($email) {
+        $validator = new EmailValidator;
+        return $validator->isValid($email);
     }
 
 }
