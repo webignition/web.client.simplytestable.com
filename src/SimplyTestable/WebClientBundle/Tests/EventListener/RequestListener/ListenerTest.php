@@ -11,9 +11,19 @@ abstract class ListenerTest extends BaseSimplyTestableTestCase {
     public function setUp() {
         parent::setUp();
         $this->removeAllTests();
+
+        if (count($this->getHttpFixtureItems()) > 0) {
+            $this->setHttpFixtures($this->buildHttpFixtureSet($this->getHttpFixtureItems()));
+        }
+
         $this->callListener();        
     }
-    
+
+    protected function getHttpFixtureItems() {
+        return [];
+    }
+
+
     abstract protected function getControllerActionString();
     abstract protected function getControllerRouteString();
     

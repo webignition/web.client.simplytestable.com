@@ -4,6 +4,12 @@ namespace SimplyTestable\WebClientBundle\Tests\EventListener\RequestListener\OnK
 
 class RequestWithoutUserIsRedirectedTest extends RequiresPrivateUserTest {
 
+    protected function getHttpFixtureItems() {
+        return [
+            'HTTP/1.0 200 OK'
+        ];
+    }
+
     protected function getControllerActionString() {
         return 'SimplyTestable\WebClientBundle\Controller\View\User\Account\IndexController::indexAction';
     }

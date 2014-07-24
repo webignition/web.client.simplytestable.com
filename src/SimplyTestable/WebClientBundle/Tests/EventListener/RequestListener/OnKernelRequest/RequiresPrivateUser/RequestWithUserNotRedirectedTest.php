@@ -3,6 +3,12 @@
 namespace SimplyTestable\WebClientBundle\Tests\EventListener\RequestListener\OnKernelRequest\RequiresPrivateUser;
 
 class RequestWithUserNotRedirectedTest extends RequiresPrivateUserTest {
+
+    protected function getHttpFixtureItems() {
+        return [
+            'HTTP/1.0 200 OK'
+        ];
+    }
     
     protected function buildEvent() {     
         $user = $this->makeUser();
