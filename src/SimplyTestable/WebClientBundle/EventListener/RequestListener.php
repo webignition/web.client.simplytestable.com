@@ -48,13 +48,13 @@ class RequestListener
      */
     public function __construct(Kernel $kernel) {
         $this->kernel = $kernel;
-    }    
-
+    }
     
+
     /**
-     * 
-     * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
-     * @return null
+     * @param GetResponseEvent $event
+     * @throws \Exception
+     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
      */
     public function onKernelRequest(GetResponseEvent $event) {
         $this->event = $event;
@@ -117,11 +117,11 @@ class RequestListener
                 throw $webResourceException;
             }
         }
-        
+
         if ($this->isRequiresPrivateUserController() && !$this->getUserService()->isLoggedIn()) {
-            $this->kernel->getContainer()->get('session')->setFlash('user_signin_error', 'account-not-logged-in');            
-            $this->event->setResponse($this->getUserSignInRedirectResponse());            
-            return;             
+            $this->kernel->getContainer()->get('session')->setFlash('user_signin_error', 'account-not-logged-in');
+            $this->event->setResponse($this->getUserSignInRedirectResponse());
+            return;
         }
     }
 
@@ -236,7 +236,7 @@ class RequestListener
      * @return boolean
      */
     private function isRequiresValidUserController() {
-        return $this->getController() instanceof RequiresValidUserController;
+        return $this->getController() instanceof RequiresValidUserController or $this->isRequiresPrivateUserController();
     }
 
 
