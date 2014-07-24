@@ -45,10 +45,18 @@ sign_up_submit:
 view_user_signup_confirm_index:
     pattern:  /signup/confirm/{email}/
     defaults: { _controller: SimplyTestableWebClientBundle:View/User/SignUp/Confirm:index }
+
+view_user_signup_invite_index:
+    pattern:  /signup/invite/{token}/
+    defaults: { _controller: SimplyTestableWebClientBundle:View/User/SignUp/Invite:index }
     
 sign_up_confirm_submit:
     pattern:  /signup/confirm/{email}/submit/
-    defaults: { _controller: SimplyTestableWebClientBundle:User:signUpConfirmSubmit }     
+    defaults: { _controller: SimplyTestableWebClientBundle:User:signUpConfirmSubmit }
+
+action_signup_team_invite_accept:
+    pattern: /signup/invite/{token}/accept/
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/SignUp/Team/Invite:accept }
     
 sign_up_confirm_resend:
     pattern:  /signup/confirm/{email}/resend/

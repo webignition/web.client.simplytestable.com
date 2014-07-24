@@ -1,0 +1,11 @@
+.intro {
+    margin: 40px 0;
+}
+
+.no-invite .alert {
+    margin: 40px 0;
+}
+
+.no-invite .alert ul {
+    margin-top: 20px;
+}

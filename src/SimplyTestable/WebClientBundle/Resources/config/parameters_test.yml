@@ -69,6 +69,8 @@ parameters:
       teaminvite_userlist: /team/user/invites/
       team_invites: /team/invites/
       teaminvite_remove: /team/invite/{invitee_email}/remove/
+      teaminvite_getbytoken: /team/invite/bytoken/{token}/
+      teaminvite_activateandaccept: /team/invite/activate/accept/
   public_site:
     urls:
       home: http://test.simplytestable.com/

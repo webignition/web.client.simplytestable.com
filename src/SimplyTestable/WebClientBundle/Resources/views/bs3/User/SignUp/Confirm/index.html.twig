@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Confirm sign up {% if has_invites %}and choose your password{% endif %}</h1>
+    <h1>Confirm sign up</h1>
 
     {% if user_error is defined and user_error == 'invalid-user' %}
         <div class="alert alert-info">
@@ -112,39 +112,19 @@
             {% endif %}
         {% endif %}
 
-        {% if user_activate_error is defined and user_activate_error is not empty %}
-            <div class="alert alert-danger" data-for="password">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <strong>Slow down!</strong> You're going to have to choose a password for your account.
+        <div class="form-group-collection form-group-collection-single">
+            <div class="input-group input-group-larger">
+                <input type="text" class="form-control" id="token" name="token" placeholder="Enter your activation code (it was emailed to you)" value="{{ token }}">
+            <span class="input-group-btn">
+                <button class="btn btn-primary" type="submit">Activate!</button>
+            </span>
             </div>
-        {% endif %}
-
-        {% if has_invites %}
-            <div class="form-group">
-                <label for="password">Choose a password</label>
-                <input type="password" class="form-control input-larger" id="password" name="password" placeholder="Choose a password for your account">
-            </div>
-            <div class="form-group">
-                <label for="token">Activation code (it was emailed to you)</label>
-                <input type="text" class="form-control input-larger" id="token" name="token" placeholder="Enter your activation code (it was emailed to you)" value="{{ token }}">
-            </div>
-            <button type="submit" class="btn btn-primary">Activate!</button>
-        {% else %}
-            <div class="form-group-collection form-group-collection-single">
-                <div class="input-group input-group-larger">
-                    <input type="text" class="form-control" id="token" name="token" placeholder="Enter your activation code (it was emailed to you)" value="{{ token }}">
-                <span class="input-group-btn">
-                    <button class="btn btn-primary" type="submit">Activate!</button>
-                </span>
-                </div>
-            </div>
-        {% endif %}
-
+        </div>
     </form>
 
     <div class="additional input-additional ">
         <form role="form" method="post" action="{{ path('sign_up_confirm_resend', { 'email': email}) }}">
             <button class="btn btn-default" type="submit">I can't find my activation code, email it again!</button>
         </form>
-    </div> 
+    </div>
 {% endblock %}

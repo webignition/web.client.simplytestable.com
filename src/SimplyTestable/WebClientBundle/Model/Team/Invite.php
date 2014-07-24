@@ -20,5 +20,13 @@ class Invite extends Object {
     public function getTeam() {
         return $this->getDataProperty('team');
     }
+
+
+    /**
+     * @return string
+     */
+    public function getToken() {
+        return $this->getDataProperty('token');
+    }
     
 }

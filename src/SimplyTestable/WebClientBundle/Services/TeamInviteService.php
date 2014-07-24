@@ -4,8 +4,32 @@ namespace SimplyTestable\WebClientBundle\Services;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServiceException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 
 class TeamInviteService extends CoreApplicationService {
+
+    /**
+     *
+     * @var UserService
+     */
+    private $userService;
+
+
+    /**
+     * @var Invite[]
+     */
+    private $inviteCache = [];
+
+
+    public function __construct(
+        $parameters,
+        WebResourceService $webResourceService,
+        UserService $userService
+    ) {
+        parent::__construct($parameters, $webResourceService);
+        $this->userService = $userService;
+    }
 
 
     /**
@@ -137,6 +161,70 @@ class TeamInviteService extends CoreApplicationService {
         } catch (WebResourceException $webResourceException) {
             return false;
         }
+    }
+
+
+    /**
+     * @param string $token
+     * @return Invite
+     */
+    public function getForToken($token) {
+        if (!isset($this->inviteCache[$token])) {
+            $decodedResponse = json_decode($this->getAdminResponse($this->webResourceService->getHttpClientService()->getRequest($this->getUrl('teaminvite_getbytoken', [
+                'token' => $token
+            ])))->getBody());
+
+            if ($decodedResponse instanceof \stdClass) {
+                $this->inviteCache[$token] = new Invite($decodedResponse);
+            } else {
+                $this->inviteCache[$token] = null;
+            }
+        }
+
+        return $this->inviteCache[$token];
+    }
+
+
+    /**
+     * @param $token
+     * @return bool
+     */
+    public function hasForToken($token) {
+        return !is_null($this->getForToken($token));
+    }
+
+
+    /**
+     *
+     * @param \Guzzle\Http\Message\Request $request
+     * @return boolean
+     * @throws CoreApplicationAdminRequestException
+     */
+    private function getAdminResponse(\Guzzle\Http\Message\Request $request) {
+        $currentUser = $this->getUser();
+
+        $this->setUser($this->userService->getAdminUser());
+        $this->addAuthorisationToRequest($request);
+
+        try {
+            $response = $request->send();
+        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+            $response = $badResponseException->getResponse();
+        }
+
+        if (!is_null($currentUser)) {
+            $this->setUser($currentUser);
+        }
+
+        if ($response->getStatusCode() == 401) {
+            throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
+        }
+
+        if (is_null($response)) {
+            return null;
+        }
+
+        return $response;
     }
 
 }

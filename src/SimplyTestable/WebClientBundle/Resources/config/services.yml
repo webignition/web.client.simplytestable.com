@@ -229,3 +229,4 @@ services:
     arguments:
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
+        userService: "@simplytestable.services.userservice"

@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestExceptio
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
 use webignition\Model\Stripe\Customer as StripeCustomer;
+use SimplyTestable\WebClientBundle\Model\Team\Invite;
 
 class UserService extends CoreApplicationService {
     
@@ -256,15 +257,11 @@ class UserService extends CoreApplicationService {
     }
     
     
-    public function activate($token, $password = null) {
+    public function activate($token) {
         $this->setUser($this->getAdminUser());
 
-        $postBody = (is_null($password)) ? [] : ['password' => rawurlencode($password)];
-        
         $request = $this->webResourceService->getHttpClientService()->postRequest(
-            $this->getUrl('user_activate', ['token' => $token]),
-            null,
-            $postBody
+            $this->getUrl('user_activate', ['token' => $token])
         );
         
         $this->addAuthorisationToRequest($request);
@@ -288,12 +285,33 @@ class UserService extends CoreApplicationService {
         }         
         
         return $response->getStatusCode() == 200 ? true : $response->getStatusCode();        
-    }    
-    
-    
+    }
+
+
+    public function activateAndAccept(Invite $invite, $password) {
+        $request = $this->webResourceService->getHttpClientService()->postRequest(
+            $this->getUrl('teaminvite_activateandaccept'),
+            null,
+            [
+                'token' => $invite->getToken(),
+                'password' => rawurlencode($password)
+            ]
+        );
+
+        try {
+            $request->send();
+            return true;
+        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+            return $badResponseException->getResponse()->getStatusCode();
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            return $curlException->getErrorNo();
+        }
+    }
+
+
     /**
-     * 
-     * @return boolean
+     * @param null $email
+     * @return bool|null
      * @throws CoreApplicationAdminRequestException
      */
     public function exists($email = null) {        
@@ -381,15 +399,15 @@ class UserService extends CoreApplicationService {
         
         return $response;            
     }    
-    
-    
+
+
     /**
-     * 
-     * @return boolean
+     * @param null $email
+     * @return bool|null
      * @throws CoreApplicationAdminRequestException
      */
     public function isEnabled($email = null) {
-        if (!$this->exists()) {
+        if (!$this->exists($email)) {
             return false;
         }
 
