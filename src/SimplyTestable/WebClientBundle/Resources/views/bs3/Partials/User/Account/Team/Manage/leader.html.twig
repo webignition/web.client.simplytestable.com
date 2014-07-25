@@ -1,5 +1,7 @@
 {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Team/Manage:members.html.twig' %}
 
+{% set has_notification = team_invite_get is defined and team_invite_get is not empty %}
+
 <div class="account-section">
     <h2 id="invites">Invites</h2>
 
@@ -148,7 +150,7 @@
     <form class="issue-invite" role="form" method="post" action="{{ path('action_user_account_team_invitemember') }}">
         <label for="email">Who would you like to invite?</label>
         <div class="input-group">
-            <input type="text" class="form-control" name="email" id="email" placeholder="Email address of new team member">
+            <input type="text" class="form-control {{ has_notification ? 'focus' : '' }}" name="email" id="email" placeholder="Email address of new team member">
             <span class="input-group-btn">
                 <button type="submit" class="btn btn-default" type="button">Send invite</button>
             </span>
