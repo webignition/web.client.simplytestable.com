@@ -127,6 +127,10 @@
             <div class="form-group-collection form-group-submit-collection">
                 <button type="submit" class="btn btn-primary">Join team {{ invite.team }}!</button>
 
+                <label class="checkbox">
+                    <input type="checkbox" {% if stay_signed_in != "0" %}checked="checked"{% endif %} name="stay-signed-in" value="1"><span>Stay signed in</span>
+                </label>
+
                 <p class="terms-notice additional">
                     By making use of this website you agree to the <a href="{{ external_links.terms }}">terms of service</a>.
                 </p>

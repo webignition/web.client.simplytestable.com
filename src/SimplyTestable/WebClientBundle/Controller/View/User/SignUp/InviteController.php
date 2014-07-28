@@ -19,7 +19,8 @@ class InviteController extends CacheableViewController implements IEFiltered {
             'invite_accept_failure' => $this->getFlash('invite_accept_failure', true),
             'token' => $token,
             'invite' => $this->getTeamInviteService()->getForToken($token),
-            'has_invite' => $this->getTeamInviteService()->hasForToken($token)
+            'has_invite' => $this->getTeamInviteService()->hasForToken($token),
+            'stay_signed_in' => $this->getRequest()->query->get('stay-signed-in')
         ];
 
         return $this->renderCacheableResponse($viewData);
@@ -34,7 +35,8 @@ class InviteController extends CacheableViewController implements IEFiltered {
             'invite_accept_failure' => $this->getFlash('invite_accept_failure', false),
             'token' => $token,
             'invite' => json_encode($this->getTeamInviteService()->getForToken($token)),
-            'has_invite' => json_encode($this->getTeamInviteService()->hasForToken($token))
+            'has_invite' => json_encode($this->getTeamInviteService()->hasForToken($token)),
+            'stay_signed_in' => $this->getRequest()->query->get('stay-signed-in')
         );
     }
 

@@ -7,8 +7,12 @@ use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServi
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
+use SimplyTestable\WebClientBundle\Model\User;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class InviteController extends BaseController {
+
+    const ONE_YEAR_IN_SECONDS = 31536000;
 
     public function acceptAction($token) {
         if (!$this->getTeamInviteService()->hasForToken($token)) {
@@ -53,17 +57,33 @@ class InviteController extends BaseController {
             )
         );
 
-        $this->get('session')->setFlash('user_signin_confirmation', 'user-activated');
+        $user = new User();
+        $user->setUsername($invite->getUser());
+        $user->setPassword($password);
 
-        $redirectParameters = array(
-            'email' => $invite->getUser()
-        );
+        $this->getUserService()->setUser($user);
 
-        if (!is_null($this->get('request')->cookies->get('simplytestable-redirect'))) {
-            $redirectParameters['redirect'] = $this->get('request')->cookies->get('simplytestable-redirect');
+        $staySignedIn = trim($this->get('request')->request->get('stay-signed-in')) == '' ? 0 : 1;
+
+        $response = $this->redirect($this->generateUrl('view_dashboard_index_index', [], true));
+
+        if ($staySignedIn == "1") {
+            $stringifiedUser = $this->getUserSerializerService()->serializeToString($user);
+
+            $cookie = new Cookie(
+                'simplytestable-user',
+                $stringifiedUser,
+                time() + self::ONE_YEAR_IN_SECONDS,
+                '/',
+                '.simplytestable.com',
+                false,
+                true
+            );
+
+            $response->headers->setCookie($cookie);
         }
 
-        return $this->redirect($this->generateUrl('view_user_signin_index', $redirectParameters, true));
+        return $response;
     }
 
 

@@ -9,3 +9,9 @@
 .no-invite .alert ul {
     margin-top: 20px;
 }
+
+.form-group-submit-collection label {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 6px;
+}
