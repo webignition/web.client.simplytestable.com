@@ -120,21 +120,9 @@ class RequestListener
 
         if ($this->isRequiresPrivateUserController() && !$this->getUserService()->isLoggedIn()) {
             $this->kernel->getContainer()->get('session')->setFlash('user_signin_error', 'account-not-logged-in');
-            $this->event->setResponse($this->getUserSignInRedirectResponse());
+            $this->event->setResponse($this->getController()->getUserSignInRedirectResponse());
             return;
         }
-    }
-
-    /**
-     * 
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    private function getUserSignInRedirectResponse() {
-        return new RedirectResponse($this->getController()->generateUrl('view_user_signin_index', array(
-            'redirect' => base64_encode(json_encode(array(
-                'route' => 'view_user_account_index_index')
-            ))
-        ), true));
     }
     
     

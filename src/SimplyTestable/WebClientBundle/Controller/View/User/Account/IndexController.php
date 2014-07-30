@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Controller\View\User\Account;
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class IndexController extends BaseViewController implements RequiresPrivateUser, IEFiltered {
     
@@ -12,6 +13,16 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
 
     protected function modifyViewName($viewName) {
         return str_replace(':User', ':bs3/User', $viewName);
+    }
+
+    /**
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function getUserSignInRedirectResponse() {
+        return new RedirectResponse($this->generateUrl('view_user_signin_index', [
+            'redirect' => base64_encode(json_encode(['route' => 'view_user_account_index_index']))
+        ], true));
     }
 
     public function indexAction() {
