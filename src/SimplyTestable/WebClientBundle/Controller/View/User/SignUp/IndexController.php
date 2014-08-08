@@ -16,7 +16,23 @@ class IndexController extends CacheableViewController implements IEFiltered {
     }
     
     public function indexAction() {
-        $response = $this->renderCacheableResponse($this->getTransientViewData());
+        $viewData = [
+            'user_create_error' => $this->getFlash('user_create_error'),
+            'user_create_confirmation' => $this->getFlash('user_create_confirmation'),
+            'email' => strtolower(trim($this->getRequest()->query->get('email'))),
+            'plan' => trim($this->getRequest()->query->get('plan')),
+            'redirect' => trim($this->getRequest()->query->get('redirect')),
+            'has_discount_code' => $this->hasDiscountCode()
+        ];
+
+        if ($this->hasDiscountCode()) {
+//            var_dump($this->getDiscountCodeDataFromCookie());
+//            exit();
+
+            $viewData['discount_code'] = $this->getDiscountCodeDataFromCookie();
+        }
+
+        $response = $this->renderCacheableResponse($viewData);
         
         $redirect = trim($this->get('request')->query->get('redirect'));        
         if ($redirect !== '') {
@@ -35,24 +51,52 @@ class IndexController extends CacheableViewController implements IEFiltered {
         
         return $response;
     }
-    
-    
-    private function getTransientViewData($flush = true) {        
-        return array(
-            'user_create_error' => $this->getFlash('user_create_error', $flush),
-            'user_create_confirmation' => $this->getFlash('user_create_confirmation', $flush),
-            'email' => strtolower(trim($this->getRequest()->query->get('email'))),
-            'plan' => trim($this->getRequest()->query->get('plan')),
-            'redirect' => trim($this->getRequest()->query->get('redirect'))
-        );
-    }
-    
-    
 
+
+    /**
+     * @return bool
+     */
+    private function hasDiscountCode() {
+        $discountCodeData = $this->getDiscountCodeDataFromCookie();
+        return !empty($discountCodeData);
+    }
+
+
+    private function getDiscountCodeDataFromCookie() {
+        if (!$this->getRequest()->cookies->has('simplytestable-signup-code')) {
+            return [];
+        }
+
+        $this->getDiscountCodeService()->setDiscountCode($this->getRequest()->cookies->get('simplytestable-signup-code'));
+
+        return $this->getDiscountCodeService()->getDataForDiscountCode();
+//
+//        return [
+//            'code' => $discountCode,
+//            'active' => $this->getDiscountCodeService()->isActive($discountCode),
+//            'has' => $this->getDiscountCodeService()->has($discountCode),
+//            'intro' => $this->getDiscountCodeService()->getIntro($discountCode)
+//        ];
+    }
 
     
     public function getCacheValidatorParameters() {        
-        return $this->getTransientViewData(false);
+        return [
+            'user_create_error' => $this->getFlash('user_create_error', false),
+            'user_create_confirmation' => $this->getFlash('user_create_confirmation', false),
+            'email' => strtolower(trim($this->getRequest()->query->get('email'))),
+            'plan' => trim($this->getRequest()->query->get('plan')),
+            'redirect' => trim($this->getRequest()->query->get('redirect')),
+            'discount_code' => json_encode($this->getDiscountCodeDataFromCookie())
+        ];
+    }
+
+
+    /**
+     * @return \SimplyTestable\WebClientBundle\Services\DiscountCodeService
+     */
+    private function getDiscountCodeService() {
+        return $this->container->get('simplytestable.services.discountCodeService');
     }
 
 }

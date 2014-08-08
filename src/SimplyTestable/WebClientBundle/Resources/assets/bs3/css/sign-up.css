@@ -20,6 +20,10 @@
     display:block;
 }
 
+.alert-discount-code {
+    margin-bottom: 20px;
+}
+
 @media (max-width: 768px) {
 
     .plans-link {

@@ -33,14 +33,28 @@
         Private tests, additional types of test, your own test history.
         <a class="account-benefits-link" href="{{ [public_site.urls.home,public_site.urls.account_benefits]|join('') }}">Account benefits <i class="fa fa-caret-right"></i></a>
     </p>
-{#    <p>
-        Keep track of the tests you've started, find past test
-        results, easily re-test when you make changes.
-    </p>#}
-    <p>
-        30-day free trial on all premium plans.
-{#        Choose any premium plan free for the first 30 days.#}
-    </p>
+
+    {% if has_discount_code %}
+        <div class="alert alert-info alert-discount-code">
+            <p>
+                {{ discount_code.intro|raw }}
+            </p>
+        </div>
+
+    {% endif %}
+
+    {% if not has_discount_code %}
+        <p>
+            30-day free trial on all premium plans.
+        </p>
+    {% endif %}
+    {#<p>#}
+
+            {#{{ discount_code.intro }}#}
+        {#{% else %}#}
+
+        {#{% endif %}#}
+    {#</p>#}
 
     <form role="form" method="post" action="{{ path('sign_up_submit') }}" novalidate>
 

@@ -230,3 +230,8 @@ services:
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
         userService: "@simplytestable.services.userservice"
+
+  simplytestable.services.discountCodeService:
+    class:  SimplyTestable\WebClientBundle\Services\DiscountCodeService
+    calls:
+      - [setDiscountCodes, [%discount_codes%]]
