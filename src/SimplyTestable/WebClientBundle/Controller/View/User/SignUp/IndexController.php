@@ -16,21 +16,45 @@ class IndexController extends CacheableViewController implements IEFiltered {
     }
     
     public function indexAction() {
+
+//        ini_set('xdebug.var_display_max_depth', 5);
+//        $plans = $this->getPlansService()->listPremiumOnly()->getList();
+//
+//        var_dump($plans);
+//        exit();
+
+
         $viewData = [
             'user_create_error' => $this->getFlash('user_create_error'),
             'user_create_confirmation' => $this->getFlash('user_create_confirmation'),
             'email' => strtolower(trim($this->getRequest()->query->get('email'))),
-            'plan' => trim($this->getRequest()->query->get('plan')),
+            'plan' => $this->getRequestedPlan(),
             'redirect' => trim($this->getRequest()->query->get('redirect')),
             'has_discount_code' => $this->hasDiscountCode()
         ];
 
-        if ($this->hasDiscountCode()) {
-//            var_dump($this->getDiscountCodeDataFromCookie());
-//            exit();
+        $this->getPlansService()->listPremiumOnly();
 
-            $viewData['discount_code'] = $this->getDiscountCodeDataFromCookie();
+        if ($this->hasDiscountCode()) {
+            $discountCode = $this->getDiscountCodeDataFromCookie();
+
+
+
+            $priceModifier = 1 - ($discountCode['percent_off'] / 100);
+
+
+
+
+
+            //var_dump($discountCode['percent_off'], $priceModifier);
+
+            $viewData['discount_code'] = $discountCode;
+
+
+            $this->getPlansService()->setPriceModifier($priceModifier);
         }
+
+        $viewData['plans'] = $this->getPlansService()->getList();
 
         $response = $this->renderCacheableResponse($viewData);
         
@@ -54,6 +78,20 @@ class IndexController extends CacheableViewController implements IEFiltered {
 
 
     /**
+     * @return string
+     */
+    private function getRequestedPlan() {
+        $plan = trim($this->getRequest()->query->get('plan'));
+
+        if (!in_array($plan, ['personal', 'agency', 'business'])) {
+            return 'personal';
+        }
+
+        return $plan;
+    }
+
+
+    /**
      * @return bool
      */
     private function hasDiscountCode() {
@@ -70,13 +108,6 @@ class IndexController extends CacheableViewController implements IEFiltered {
         $this->getDiscountCodeService()->setDiscountCode($this->getRequest()->cookies->get('simplytestable-signup-code'));
 
         return $this->getDiscountCodeService()->getDataForDiscountCode();
-//
-//        return [
-//            'code' => $discountCode,
-//            'active' => $this->getDiscountCodeService()->isActive($discountCode),
-//            'has' => $this->getDiscountCodeService()->has($discountCode),
-//            'intro' => $this->getDiscountCodeService()->getIntro($discountCode)
-//        ];
     }
 
     
@@ -85,7 +116,7 @@ class IndexController extends CacheableViewController implements IEFiltered {
             'user_create_error' => $this->getFlash('user_create_error', false),
             'user_create_confirmation' => $this->getFlash('user_create_confirmation', false),
             'email' => strtolower(trim($this->getRequest()->query->get('email'))),
-            'plan' => trim($this->getRequest()->query->get('plan')),
+            'plan' => $this->getRequestedPlan(),
             'redirect' => trim($this->getRequest()->query->get('redirect')),
             'discount_code' => json_encode($this->getDiscountCodeDataFromCookie())
         ];
@@ -97,6 +128,15 @@ class IndexController extends CacheableViewController implements IEFiltered {
      */
     private function getDiscountCodeService() {
         return $this->container->get('simplytestable.services.discountCodeService');
+    }
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\PlansService
+     */
+    private function getPlansService() {
+        return $this->container->get('simplytestable.services.plansService');
     }
 
 }

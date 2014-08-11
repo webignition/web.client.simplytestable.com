@@ -235,3 +235,8 @@ services:
     class:  SimplyTestable\WebClientBundle\Services\DiscountCodeService
     calls:
       - [setDiscountCodes, [%discount_codes%]]
+
+  simplytestable.services.plansService:
+    class:  SimplyTestable\WebClientBundle\Services\PlansService
+    calls:
+      - [setPlansData, [%plans%]]

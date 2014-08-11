@@ -3,8 +3,8 @@ namespace SimplyTestable\WebClientBundle\Model;
 
 use SimplyTestable\WebClientBundle\Model\Object;
 
-class AccountPlan extends Object {    
-    
+class AccountPlan extends Object {
+
     /**
      * 
      * @return string
@@ -20,6 +20,30 @@ class AccountPlan extends Object {
      */
     public function getIsPremium() {
         return $this->getDataProperty('is_premium');
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getPrice() {
+        return (int)$this->getDataProperty('price');
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getUrlsPerJob() {
+        return (int)$this->getDataProperty('urls_per_job');
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getCreditsPerMonth() {
+        return (int)$this->getDataProperty('credits_per_month');
     }
     
 }

@@ -27,7 +27,7 @@ abstract class Object {
      * 
      * @return \stdClass
      */
-    protected function getData() {
+    public function getData() {
         return $this->data;
     }
     
