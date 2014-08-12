@@ -218,11 +218,12 @@
                 <form role="form" method="post" action="{{ path('user_account_plan_subscribe') }}">
                     <div class="input-group">
                         <select name="plan" class="form-control">
-                            <option value="basic" {% if user_summary.plan.accountplan.name == 'basic' %}selected{% endif %}>Basic (&pound;0)</option>
-                            <option value="personal" {% if user_summary.plan.accountplan.name == 'personal' %}selected{% endif %}>Personal (&pound;{{ plans.personal.price }})</option>
-                            <option value="agency" {% if user_summary.plan.accountplan.name == 'agency' %}selected{% endif %}>Agency (&pound;{{ plans.agency.price }})</option>
-                            <option value="business" {% if user_summary.plan.accountplan.name == 'business' %}selected{% endif %}>Business (&pound;{{ plans.business.price }})</option>
-                            <option value="enterprise" {% if user_summary.plan.accountplan.name == 'enterprise' %}selected{% endif %}>Enterprise (&pound;{{ plans.enterprise.price }})</option>
+                            {% for currentPlan in plans %}
+                                <option value="{{ currentPlan.accountPlan.name|lower }}" {% if user_summary.plan.accountplan.name == currentPlan.accountPlan.name|lower %}selected{% endif %}>
+                                    {{ currentPlan.accountPlan.name }}
+                                    ({% if currentPlan.price == 0 %}Free{% else %}&pound;{{ (currentPlan.price / 100)|number_format(2) }} per month{% endif %})
+                                </option>
+                            {% endfor %}
                         </select>
                         <span class="input-group-btn">
                             <button class="btn btn-default" type="submit">Subscribe</button>
