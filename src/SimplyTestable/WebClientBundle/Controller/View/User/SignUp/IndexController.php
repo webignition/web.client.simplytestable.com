@@ -16,49 +16,27 @@ class IndexController extends CacheableViewController implements IEFiltered {
     }
     
     public function indexAction() {
-
-//        ini_set('xdebug.var_display_max_depth', 5);
-//        $plans = $this->getPlansService()->listPremiumOnly()->getList();
-//
-//        var_dump($plans);
-//        exit();
-
-
         $viewData = [
             'user_create_error' => $this->getFlash('user_create_error'),
             'user_create_confirmation' => $this->getFlash('user_create_confirmation'),
             'email' => strtolower(trim($this->getRequest()->query->get('email'))),
             'plan' => $this->getRequestedPlan(),
             'redirect' => trim($this->getRequest()->query->get('redirect')),
-            'has_discount_code' => $this->hasDiscountCode()
+            'has_coupon' => $this->getCouponService()->has()
         ];
 
         $this->getPlansService()->listPremiumOnly();
 
-        if ($this->hasDiscountCode()) {
-            $discountCode = $this->getDiscountCodeDataFromCookie();
-
-
-
-            $priceModifier = 1 - ($discountCode['percent_off'] / 100);
-
-
-
-
-
-            //var_dump($discountCode['percent_off'], $priceModifier);
-
-            $viewData['discount_code'] = $discountCode;
-
-
-            $this->getPlansService()->setPriceModifier($priceModifier);
+        if ($this->getCouponService()->has()) {
+            $viewData['coupon'] = $this->getCouponService()->get();
+            $this->getPlansService()->setPriceModifier($viewData['coupon']->getPriceModifier());
         }
 
         $viewData['plans'] = $this->getPlansService()->getList();
 
         $response = $this->renderCacheableResponse($viewData);
-        
-        $redirect = trim($this->get('request')->query->get('redirect'));        
+
+        $redirect = trim($this->get('request')->query->get('redirect'));
         if ($redirect !== '') {
             $cookie = new Cookie(
                 'simplytestable-redirect',
@@ -69,10 +47,10 @@ class IndexController extends CacheableViewController implements IEFiltered {
                 false,
                 true
             );
-            
-            $response->headers->setCookie($cookie);            
+
+            $response->headers->setCookie($cookie);
         }
-        
+
         return $response;
     }
 
@@ -90,27 +68,6 @@ class IndexController extends CacheableViewController implements IEFiltered {
         return $plan;
     }
 
-
-    /**
-     * @return bool
-     */
-    private function hasDiscountCode() {
-        $discountCodeData = $this->getDiscountCodeDataFromCookie();
-        return !empty($discountCodeData);
-    }
-
-
-    private function getDiscountCodeDataFromCookie() {
-        if (!$this->getRequest()->cookies->has('simplytestable-signup-code')) {
-            return [];
-        }
-
-        $this->getDiscountCodeService()->setDiscountCode($this->getRequest()->cookies->get('simplytestable-signup-code'));
-
-        return $this->getDiscountCodeService()->getDataForDiscountCode();
-    }
-
-    
     public function getCacheValidatorParameters() {        
         return [
             'user_create_error' => $this->getFlash('user_create_error', false),
@@ -118,16 +75,16 @@ class IndexController extends CacheableViewController implements IEFiltered {
             'email' => strtolower(trim($this->getRequest()->query->get('email'))),
             'plan' => $this->getRequestedPlan(),
             'redirect' => trim($this->getRequest()->query->get('redirect')),
-            'discount_code' => json_encode($this->getDiscountCodeDataFromCookie())
+            'coupon' => ($this->getCouponService()->has()) ? $this->getCouponService()->get()->__toString() : ''
         ];
     }
 
 
     /**
-     * @return \SimplyTestable\WebClientBundle\Services\DiscountCodeService
+     * @return \SimplyTestable\WebClientBundle\Services\CouponService
      */
-    private function getDiscountCodeService() {
-        return $this->container->get('simplytestable.services.discountCodeService');
+    private function getCouponService() {
+        return $this->container->get('simplytestable.services.couponService');
     }
 
 

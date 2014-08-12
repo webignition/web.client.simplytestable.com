@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
 use webignition\Model\Stripe\Customer as StripeCustomer;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
+use SimplyTestable\WebClientBundle\Model\Coupon;
 
 class UserService extends CoreApplicationService {
     
@@ -229,7 +230,7 @@ class UserService extends CoreApplicationService {
     }
     
     
-    public function create($email, $password, $plan, $coupon = null) {
+    public function create($email, $password, $plan, Coupon $coupon = null) {
         $requestData = [
             'email' => rawurlencode($email),
             'password' => rawurlencode($password),
@@ -237,7 +238,7 @@ class UserService extends CoreApplicationService {
         ];
 
         if (!is_null($coupon)) {
-            $requestData['coupon'] = $coupon;
+            $requestData['coupon'] = $coupon->getCode();
         }
 
         $request = $this->webResourceService->getHttpClientService()->postRequest(

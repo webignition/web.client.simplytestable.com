@@ -34,10 +34,10 @@
         <a class="account-benefits-link" href="{{ [public_site.urls.home,public_site.urls.account_benefits]|join('') }}">Account benefits <i class="fa fa-caret-right"></i></a>
     </p>
 
-    {% if has_discount_code %}
-        <div class="alert alert-info alert-discount-code">
+    {% if has_coupon %}
+        <div class="alert alert-info alert-coupon">
             <p>
-                {{ discount_code.intro|raw }}
+                {{ coupon.intro|raw }}
             </p>
         </div>
 
@@ -128,7 +128,7 @@
                                 <label>
                                     <input type="radio" name="plan" value="{{ currentPlan.accountPlan.name|lower }}" {{ currentPlan.accountPlan.name|lower == plan ? 'checked' : '' }}>
 
-                                    {% if has_discount_code %}
+                                    {% if has_coupon %}
                                         <span class="name">
                                             {{ currentPlan.accountPlan.name }}
                                             - <del>&pound;{{ (currentPlan.accountPlan.price / 100)|number_format(2) }}</del> &pound;{{ (currentPlan.price / 100)|number_format(2) }} per month
