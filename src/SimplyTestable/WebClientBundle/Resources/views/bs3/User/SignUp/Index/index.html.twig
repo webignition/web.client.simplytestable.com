@@ -126,7 +126,7 @@
                         <div class="col-lg-12">
                             <div class="radio">
                                 <label>
-                                    <input type="radio" name="plan" value="currentPlan.accountPlan.name|lower" {{ currentPlan.accountPlan.name|lower == plan ? 'checked' : '' }}>
+                                    <input type="radio" name="plan" value="{{ currentPlan.accountPlan.name|lower }}" {{ currentPlan.accountPlan.name|lower == plan ? 'checked' : '' }}>
 
                                     {% if has_discount_code %}
                                         <span class="name">
