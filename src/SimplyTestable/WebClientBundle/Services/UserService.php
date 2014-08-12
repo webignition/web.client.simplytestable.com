@@ -229,16 +229,23 @@ class UserService extends CoreApplicationService {
     }
     
     
-    public function create($email, $password, $plan = null) {
-        $request = $this->webResourceService->getHttpClientService()->postRequest(
-                $this->getUrl('user_create'),
-                null,
-                array(
+    public function create($email, $password, $plan, $coupon = null) {
+        $requestData = [
             'email' => rawurlencode($email),
             'password' => rawurlencode($password),
             'plan' => $plan
-        ));
-        
+        ];
+
+        if (!is_null($coupon)) {
+            $requestData['coupon'] = $coupon;
+        }
+
+        $request = $this->webResourceService->getHttpClientService()->postRequest(
+            $this->getUrl('user_create'),
+            null,
+            $requestData
+        );
+
         $this->addAuthorisationToRequest($request);        
         $request->getParams()->set('redirect.disable', true);
         

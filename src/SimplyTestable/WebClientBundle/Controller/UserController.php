@@ -294,11 +294,20 @@ class UserController extends BaseViewController
                 'email' => $email,
                 'plan' => $plan 
             ), true));               
-        }        
+        }
+
+        $discountCode = null;
+
+        if ($this->hasDiscountCode()) {
+            $discountCodeData = $this->getDiscountCodeDataFromCookie();
+            if ($discountCodeData['active']) {
+                $discountCode = $discountCodeData['code'];
+            }
+        }
         
         $this->getUserService()->setUser($this->getUserService()->getPublicUser());
-        $createResponse = $this->getUserService()->create($email, $password, $plan);        
-        
+        $createResponse = $this->getUserService()->create($email, $password, $plan, $discountCode);
+
         if ($this->userCreationUserAlreadyExists($createResponse)) {
             $this->get('session')->setFlash('user_create_confirmation', 'user-exists');
             return $this->redirect($this->generateUrl('view_user_signup_index_index', array('email' => $email), true));
@@ -524,5 +533,33 @@ class UserController extends BaseViewController
      */        
     private function getResqueQueueService() {
         return $this->container->get('simplytestable.services.resqueQueueService');
-    }      
+    }
+
+
+    /**
+     * @return bool
+     */
+    private function hasDiscountCode() {
+        $discountCodeData = $this->getDiscountCodeDataFromCookie();
+        return !empty($discountCodeData);
+    }
+
+
+    private function getDiscountCodeDataFromCookie() {
+        if (!$this->getRequest()->cookies->has('simplytestable-signup-code')) {
+            return [];
+        }
+
+        $this->getDiscountCodeService()->setDiscountCode($this->getRequest()->cookies->get('simplytestable-signup-code'));
+
+        return $this->getDiscountCodeService()->getDataForDiscountCode();
+    }
+
+
+    /**
+     * @return \SimplyTestable\WebClientBundle\Services\DiscountCodeService
+     */
+    private function getDiscountCodeService() {
+        return $this->container->get('simplytestable.services.discountCodeService');
+    }
 }
