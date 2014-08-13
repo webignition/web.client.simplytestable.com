@@ -160,28 +160,22 @@ parameters:
       credits_per_month: 500
     personal:
       name: Personal
-      price: 9
+      price: 900
       description_brief: For small scale projects
       urls_per_job: 50
       credits_per_month: 5000
     agency:
       name: Agency
-      price: 19
+      price: 1900
       description_brief: Great for small organisations
       urls_per_job: 250
       credits_per_month: 20000
     business:
       name: Business
-      price: 59
+      price: 5900
       description_brief: Best value for professionals
       urls_per_job: 2500
       credits_per_month: 100000
-    enterprise:
-      name: Enterprise
-      price: 299
-      description_brief: Full corporate treatment
-      urls_per_job: 10000
-      credits_per_month: unlimited
   documentation_site:
     urls:
       home: http://help.simplytestable.com/
@@ -260,4 +254,9 @@ parameters:
         - js-static-analysis-jslint-option-white
         - js-static-analysis-jslint-option-anon   
   link-integrity-exclude-domains:
-   - instagram.com    
+   - instagram.com
+  coupons:
+   TMS:
+     percent_off: 20
+     active: true
+     intro: "<p><strong>Hey there TMS listener!</strong> You get 20% off the lifetime of your account.</p>"
