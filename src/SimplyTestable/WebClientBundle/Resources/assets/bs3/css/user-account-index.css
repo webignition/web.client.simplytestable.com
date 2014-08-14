@@ -74,6 +74,10 @@
     opacity: 0.7;
 }
 
+.latest-invoice .invoice .value {
+    text-align: right;
+}
+
 @media (max-width: 992px) {
     .plan-details-change-plan .plans-link {
         display: block;
