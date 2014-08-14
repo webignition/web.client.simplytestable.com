@@ -11,7 +11,7 @@ class UserAccountPlanController extends AbstractUserAccountController
             return $notLoggedInResponse;
         }
         
-        $redirectResponse = $this->redirect($this->generateUrl('view_user_account_index_index', array(), true));
+        $redirectResponse = $this->redirect($this->generateUrl('view_user_account_plan_index', array(), true) . '#plan-upgrade-downgrade');
         
         $userSummary = $this->getUserService()->getSummary($this->getUser());
 
