@@ -1,0 +1,31 @@
+{% if plan_subscribe_success is defined and plan_subscribe_success != '' %}
+    {% if plan_subscribe_success == 'already-on-plan' %}
+        <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p><strong>You're already there!</strong></p>
+            <p>
+                You've already on the <strong>{{ user_summary.plan.accountplan.name }}</strong> plan.
+            </p>
+        </div>
+    {% else %}
+        <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p><strong>All done!</strong></p>
+            <p>
+                You've changed to the <strong>{{ user_summary.plan.accountplan.name }}</strong> plan.
+            </p>
+        </div>
+    {% endif %}
+{% endif %}
+
+{% if plan_subscribe_error is defined and plan_subscribe_error != '' %}
+    {% if plan_subscribe_error == '403' %}
+        <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <p><strong>That didn't work</strong></p>
+            <p>
+                Looks like we're having trouble talking to our subscription service.
+            </p>
+        </div>
+    {% endif %}
+{% endif %}

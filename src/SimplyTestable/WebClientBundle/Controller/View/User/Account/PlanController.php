@@ -26,54 +26,19 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
     public function indexAction() {
         $userSummary = $this->getUserService()->getSummary($this->getUser());
 
-        // user_summary.stripecustomer.hasDiscount
-
         if ($userSummary->hasStripeCustomer() && $userSummary->getStripeCustomer()->hasDiscount()) {
             $priceModifier = (100 - $userSummary->getStripeCustomer()->getDiscount()->getCoupon()->getPercentOff()) / 100;
-
-//            var_dump($priceModifier);
-//            exit();
-
-
-//            $viewData['coupon'] = $this->getCouponService()->get();
             $this->getPlansService()->setPriceModifier($priceModifier);
         }
-//        if ($userSummary->getTeamSummary()->isInTeam()) {
-//            $this->getTeamService()->setUser($this->getUser());
-//            $team = $this->getTeamService()->getTeam();
-//
-//            if ($team->getLeader() != $this->getUser()->getUsername()) {
-//                return $this->redirect($this->generateUrl('view_user_account_index_index'));
-//            }
-//        }
-//
-//        $currentYear = date('Y');
-//
-//        $viewData = array_merge(array(
-//            'public_site' => $this->container->getParameter('public_site'),
-//            'user' => $this->getUser(),
-//            'user_summary' => $userSummary,
-//            'stripe_publishable_key' => $this->container->getParameter('stripe_publishable_key'),
-//            'countries' => $this->getCountries(),
-//            'is_logged_in' => true,
-//            'expiry_year_start' => $currentYear,
-//            'expiry_year_end' => $currentYear + 10,
-//            'plan_presentation_name' => $this->getPlanPresentationName($userSummary->getPlan()->getAccountPlan()->getName())
-//        ), $this->getViewFlashValues(array(
-//            'user_account_card_exception_message',
-//            'user_account_card_exception_param',
-//            'user_account_card_exception_code'
-//        )));
-//
-//        if ($userSummary->getTeamSummary()->isInTeam()) {
-//            $viewData['team'] = $team;
-//        }
 
-        $viewData = [
+        $viewData = array_merge([
             'user_summary' => $userSummary,
             'plan_presentation_name' => $this->getPlanPresentationName($userSummary->getPlan()->getAccountPlan()->getName()),
             'plans' => $this->getPlansService()->listPremiumOnly()->getList(),
-        ];
+        ], $this->getViewFlashValues(array(
+            'plan_subscribe_error',
+            'plan_subscribe_success'
+        )));
 
         return $this->renderResponse($this->getRequest(), $viewData);
     }

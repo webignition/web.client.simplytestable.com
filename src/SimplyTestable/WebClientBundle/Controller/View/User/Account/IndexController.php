@@ -42,8 +42,6 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
             'user_account_details_update_notice',
             'user_account_details_update_email',
             'user_account_details_update_email_confirm_notice',
-            'plan_subscribe_error',
-            'plan_subscribe_success',
             'user_account_card_exception_message',
             'user_account_card_exception_param',
             'user_account_card_exception_code'

@@ -55,6 +55,9 @@
         <div class="plan-section" id="plan-upgrade-downgrade">
             <h2>Upgrade/downgrade</h2>
 
+            {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Plan:card-error-notifications.html.twig' %}
+            {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Plan:change-notifications.html.twig' %}
+
             {% if user_summary.plan.accountplan.name == 'basic' %}
                 {% if user_summary.plan.startTrialPeriod > 0  %}
                     {% if user_summary.plan.startTrialPeriod == 365 %}
