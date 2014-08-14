@@ -128,127 +128,17 @@
     </div>        
 {% endif %}
 
-<div>
-    {% if user_summary.getTeamSummary.isInTeam and team.leader != user.username %}
-        <p>
-            Your team is on the <strong>{{ user_summary.plan.accountplan.name }}</strong> plan.
-        </p>
-    {% else %}
-        <p>
-            You are on the <strong>{{ user_summary.plan.accountplan.name }}</strong> plan{% if user_summary.plan.accountplan.name == 'basic' %}. This is <strong>free of charge</strong> and always will be.
-        {% else %}
-            {% if user_summary.stripecustomer.hasDiscount %}
-                {% set plan_price = (user_summary.stripecustomer.subscription.plan.amount * (100 - user_summary.stripecustomer.discount.coupon.percentoff) / 100) %}
+{% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Plan:summary.html.twig' %}
 
-                at <del>&pound;{{ (user_summary.stripecustomer.subscription.plan.amount / 100)|number_format(2) }}</del>
-                <strong>&pound;{{ (plan_price / 100)|number_format(2) }}</strong>
-            {% else %}
-                at <strong>&pound;{{ (user_summary.stripecustomer.subscription.plan.amount / 100)|number_format(2) }}</strong>
-            {% endif %}
-            <strong>per {{ user_summary.stripecustomer.subscription.plan.interval }}</strong>.
-        {% endif %}
+<h3 id="plan-allowances">Allowances</h3>
+{% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Plan:allowances.html.twig' %}
 
-        {% if user_summary.stripecustomer.hasDiscount %}
-            You have a {{ user_summary.stripecustomer.discount.coupon.percentoff }}% lifetime discount from coupon {{ user_summary.stripecustomer.discount.coupon.id }}.
-        {% endif %}
-        </p>
-
-
-        {% if user_summary.stripecustomer.subscription.status is defined %}
-            {% if user_summary.stripecustomer.subscription.status == 'trialing' %}
-                <p>
-                You are on day <strong>{{ user_summary.dayOfTrialPeriod }}</strong> of your <strong>{{ user_summary.plan.startTrialPeriod }}</strong> day trial                                                                                                                                                      ending <strong>{{ user_summary.stripecustomer.subscription.trialperiod.end|date("d") }} {{ user_summary.stripecustomer.subscription.trialperiod.end|date("F") }} {{ user_summary.stripecustomer.subscription.trialperiod.end|date("Y") }}</strong>.
-                </p>
-            {% endif %}
-        {% endif %}
-
-
-        {% if user_summary.getTeamSummary.isInTeam %}
-            <p>
-                The resources of this plan are shared with your team.
-            </p>
-        {% endif %}
-
-    {% endif %}
-</div>
-
-<div id="plan-allowances">
-    <h3>Allowances</h3>
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Pages examined per test</th>
-                <td>{% if user_summary.planConstraints.urls_per_job is defined %}{{ user_summary.planConstraints.urls_per_job }}{% else %}Unlimited{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Credits</th>
-                <td>
-                    {% if user_summary.planConstraints.credits is defined %}
-                        {{ user_summary.planConstraints.credits.used|number_format(0) }} of 
-                        {{ user_summary.planConstraints.credits.limit|number_format(0) }} used ({{ (user_summary.planConstraints.credits.used / user_summary.planConstraints.credits.limit) * 100 }}%)
-                    {% else %}
-                        Unlimited
-                    {% endif %}                                
-                </td>
-            </tr>                
-        </tbody>            
-    </table>             
-</div>
-
-{% if not user_summary.getTeamSummary.isInTeam or (user_summary.getTeamSummary.isInTeam and team.leader == user.username) %}
 <div id="plan-upgrade-downgrade">
     <h3>Upgrade/downgrade</h3>
 
-    {% if user_summary.plan.accountplan.name == 'basic' %}
-        {% if user_summary.plan.startTrialPeriod > 0  %}
-            {% if user_summary.plan.startTrialPeriod == 365 %}
-                <div class="alert alert-success">
-                    <p><strong>Special offer!</strong></p>
-                    <p>
-                        Upgrade before {{ premium_plan_launch_offer_end }} to get a 12 month trial (usually 30 days).
-                    </p>
-                </div>    
-            {% endif %}
+    <p>
+        Need to test larger sites or need to run a greater amount of tests?
+    </p>
 
-            <p>
-                Try any premium plan free for <strong>{{ user_summary.plan.startTrialPeriod }}</strong> day{% if user_summary.plan.startTrialPeriod != 1%}s{% endif %}.
-            </p>                             
-        {% endif %}
-    {% else %}
-    {% endif %}
-
-        {% if user_summary.plan.accountplan.name !='basic' %}
-            {% if plan.summary is defined %}
-                {% set trial_days_remaining = plan.summary.trial_period_days - plan.summary.days_of_trial_period + 1 %}
-                {% if trial_days_remaining > 0 %}
-                    <p>
-                        Switch between premium plans free for up to <strong>{{ trial_days_remaining }}</strong> day{% if trial_days_remaining != 1%}s{% endif %}.
-                    </p>
-                {% endif %}
-            {% endif %}
-        {% endif %}
-
-        <div class="row">
-            <div class="col-md-8 col-sm-6">
-                <form role="form" method="post" action="{{ path('user_account_plan_subscribe') }}">
-                    <div class="input-group">
-                        <select name="plan" class="form-control">
-                            {% for currentPlan in plans %}
-                                <option value="{{ currentPlan.accountPlan.name|lower }}" {% if user_summary.plan.accountplan.name == currentPlan.accountPlan.name|lower %}selected{% endif %}>
-                                    {{ currentPlan.accountPlan.name }}
-                                    ({% if currentPlan.price == 0 %}Free{% else %}&pound;{{ (currentPlan.price / 100)|number_format(2) }} per month{% endif %})
-                                </option>
-                            {% endfor %}
-                        </select>
-                        <span class="input-group-btn">
-                            <button class="btn btn-default" type="submit">Subscribe</button>
-                        </span>
-                    </div>
-                </form>
-            </div>
-            <div class="col-md-12 col-sm-6">
-                <a class="plans-link" href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">View plan and pricing details <i class="fa fa-caret-right"></i></a>
-            </div>
-        </div>
+    <a class="btn btn-default" href="{{ path('view_user_account_plan_index') }}#plan-upgrade-downgrade">Change your plan <i class="fa fa-caret-right"></i></a>
 </div>
-{% endif %}

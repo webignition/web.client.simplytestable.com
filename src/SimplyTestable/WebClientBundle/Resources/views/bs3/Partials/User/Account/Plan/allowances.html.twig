@@ -1,0 +1,21 @@
+<div class="plan-allowances">
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>Pages examined per test</th>
+            <td>{% if user_summary.planConstraints.urls_per_job is defined %}{{ user_summary.planConstraints.urls_per_job }}{% else %}Unlimited{% endif %}</td>
+        </tr>
+        <tr>
+            <th>Credits</th>
+            <td>
+                {% if user_summary.planConstraints.credits is defined %}
+                    {{ user_summary.planConstraints.credits.used|number_format(0) }} of
+                    {{ user_summary.planConstraints.credits.limit|number_format(0) }} used ({{ (user_summary.planConstraints.credits.used / user_summary.planConstraints.credits.limit) * 100 }}%)
+                {% else %}
+                    Unlimited
+                {% endif %}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

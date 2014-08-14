@@ -1,0 +1,45 @@
+{% set with_id = true %}
+
+<div {% if with_id %}id="plan-summary{% endif %}">
+    {% if user_summary.getTeamSummary.isInTeam and team.leader != user.username %}
+        <p>
+            Your team is on the <strong>{{ user_summary.plan.accountplan.name }}</strong> plan.
+        </p>
+    {% else %}
+        <p>
+            You are on the <strong>{{ user_summary.plan.accountplan.name }}</strong> plan{% if user_summary.plan.accountplan.name == 'basic' %}. This is <strong>free of charge</strong> and always will be.
+        {% else %}
+            {% if user_summary.stripecustomer.hasDiscount %}
+                {% set plan_price = (user_summary.stripecustomer.subscription.plan.amount * (100 - user_summary.stripecustomer.discount.coupon.percentoff) / 100) %}
+
+                at <del>&pound;{{ (user_summary.stripecustomer.subscription.plan.amount / 100)|number_format(2) }}</del>
+                <strong>&pound;{{ (plan_price / 100)|number_format(2) }}</strong>
+            {% else %}
+                at <strong>&pound;{{ (user_summary.stripecustomer.subscription.plan.amount / 100)|number_format(2) }}</strong>
+            {% endif %}
+            <strong>per {{ user_summary.stripecustomer.subscription.plan.interval }}</strong>.
+            {% endif %}
+
+            {% if user_summary.stripecustomer.hasDiscount %}
+                You have a {{ user_summary.stripecustomer.discount.coupon.percentoff }}% lifetime discount from coupon {{ user_summary.stripecustomer.discount.coupon.id }}.
+            {% endif %}
+        </p>
+
+
+        {% if user_summary.stripecustomer.subscription.status is defined %}
+            {% if user_summary.stripecustomer.subscription.status == 'trialing' %}
+                <p>
+                    You are on day <strong>{{ user_summary.dayOfTrialPeriod }}</strong> of your <strong>{{ user_summary.plan.startTrialPeriod }}</strong> day trial                                                                                                                                                      ending <strong>{{ user_summary.stripecustomer.subscription.trialperiod.end|date("d") }} {{ user_summary.stripecustomer.subscription.trialperiod.end|date("F") }} {{ user_summary.stripecustomer.subscription.trialperiod.end|date("Y") }}</strong>.
+                </p>
+            {% endif %}
+        {% endif %}
+
+
+        {% if user_summary.getTeamSummary.isInTeam %}
+            <p>
+                The resources of this plan are shared with your team.
+            </p>
+        {% endif %}
+
+    {% endif %}
+</div>

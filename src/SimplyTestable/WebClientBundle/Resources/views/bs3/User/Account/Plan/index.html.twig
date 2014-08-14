@@ -1,0 +1,115 @@
+{% extends 'SimplyTestableWebClientBundle::bs3/User/Account/base.html.twig' %}
+
+{% block body_class %}{% if user_summary.getTeamSummary.isInTeam %}{{ 'in-team' }}{% if true %} {{ (team.leader == user.username) ? 'team-leader' : 'team-member' }}{% endif %}{% elseif user_summary.getTeamSummary.hasInvite %}{{ 'has-invite' }}{% else %}{{ 'no-team-no-invite' }}{% endif %}
+{% endblock %}
+
+{% block title %}Plan: {{ plan_presentation_name }} ({{ user.username }}) - {{ parent() }}{% endblock %}
+{% block heading %}
+    <a href="{{ path('view_user_account_index_index') }}">{{ parent() }}</a>: plan: {{ plan_presentation_name|lower }}
+    {% if user_summary.getTeamSummary.isInTeam and team is defined %}
+        ({{ team.name }})
+    {% endif %}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {% stylesheets
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/plan-selection.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/user-account.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/user-account-plan.css'
+    filter='cssrewrite' %}
+    <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {% javascripts
+    '@SimplyTestableWebClientBundle/Resources/assets/vendor/jquery-scrollto/jquery.scrollTo-1.4.12/jquery.scrollTo.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormErrorHelper.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/form-helper.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/user-account.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/user-account-plan.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/plan-selection.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block account_content %}
+
+    <div class="plan-section">
+        <h2 id="plan-summary">Summary</h2>
+        {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Plan:summary.html.twig' with {with_id: false} %}
+    </div>
+
+    <div class="plan-section">
+        <h2 id="plan-allowances">Allowances</h2>
+        {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Plan:allowances.html.twig' %}
+    </div>
+
+    {% if not user_summary.getTeamSummary.isInTeam or (user_summary.getTeamSummary.isInTeam and team.leader == user.username) %}
+        <div class="plan-section" id="plan-upgrade-downgrade">
+            <h2>Upgrade/downgrade</h2>
+
+            {% if user_summary.plan.accountplan.name == 'basic' %}
+                {% if user_summary.plan.startTrialPeriod > 0  %}
+                    {% if user_summary.plan.startTrialPeriod == 365 %}
+                        <div class="alert alert-success">
+                            <p><strong>Special offer!</strong></p>
+                            <p>
+                                Upgrade before {{ premium_plan_launch_offer_end }} to get a 12 month trial (usually 30 days).
+                            </p>
+                        </div>
+                    {% endif %}
+
+                    <p>
+                        Try any premium plan free for <strong>{{ user_summary.plan.startTrialPeriod }}</strong> day{% if user_summary.plan.startTrialPeriod != 1%}s{% endif %}.
+                    </p>
+                {% endif %}
+            {% else %}
+            {% endif %}
+
+            {% if user_summary.plan.accountplan.name !='basic' %}
+                {% if plan.summary is defined %}
+                    {% set trial_days_remaining = plan.summary.trial_period_days - plan.summary.days_of_trial_period + 1 %}
+                    {% if trial_days_remaining > 0 %}
+                        <p>
+                            Switch between premium plans free for up to <strong>{{ trial_days_remaining }}</strong> day{% if trial_days_remaining != 1%}s{% endif %}.
+                        </p>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+
+            <form id="upgrade-downgrade-form" role="form" method="post" action="{{ path('user_account_plan_subscribe') }}">
+
+                {% include 'SimplyTestableWebClientBundle:bs3/Partials/Plan:selection.html.twig' with {
+                    selected_plan: user_summary.plan.accountplan.name,
+                    current_plan: user_summary.plan.accountplan.name,
+                    has_coupon: user_summary.stripecustomer.hasDiscount,
+                    has_active_discount: user_summary.stripecustomer.hasDiscount,
+                    disable_selected: true
+                } %}
+
+                <button type="submit" class="btn btn-default">Change plan <i class="fa fa-caret-right"></i></button>
+
+            </form>
+
+            {% if not (user_summary.plan.accountplan.name == 'basic') %}
+                <div class="secondary">
+                    <form role="form" method="post" action="{{ path('user_account_plan_subscribe') }}">
+                        <input type="hidden" name="plan" value="basic">
+                        <button type="submit" class="btn btn-default">Cancel subscription <i class="fa fa-times-circle"></i></button>
+                    </form>
+                </div>
+            {% endif %}
+
+
+
+        </div>
+    {% endif %}
+
+{% endblock %}

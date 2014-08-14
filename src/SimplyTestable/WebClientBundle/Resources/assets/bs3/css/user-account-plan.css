@@ -1,0 +1,27 @@
+.plan-allowances th {
+    font-weight: normal;
+    padding-left: 0;
+    width:40%;
+}
+
+.account-content {
+    padding-bottom: 800px;
+}
+
+#upgrade-downgrade-form button {
+    margin-top: 30px;
+}
+
+#plan-upgrade-downgrade .secondary {
+    border-top: 1px solid #ddd;
+    margin-top: 40px;
+    padding-top: 40px;
+}
+
+.plan.checked div.radio {
+    background-color: #eee;
+}
+
+button .fa-times-circle {
+    opacity: 0.6;
+}

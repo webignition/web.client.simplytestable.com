@@ -113,6 +113,10 @@ action_user_account_team_removemember:
 action_user_account_team_leave:
     pattern: /account/team/leave/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:leave }
+
+view_user_account_plan_index:
+    pattern:  /account/plan/
+    defaults: { _controller: SimplyTestableWebClientBundle:View/User/Account/Plan:index }
     
 user_account_card_associate:
     pattern:  /account/card/{stripe_card_token}/associate/

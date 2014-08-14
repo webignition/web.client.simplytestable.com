@@ -35,7 +35,6 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
             'stripe' => $this->container->getParameter('stripe'),
             'this_url' => $this->generateUrl('view_user_account_index_index', array(), true),
             'premium_plan_launch_offer_end' => $this->container->getParameter('premium_plan_launch_offer_end'),
-            'plans' => $this->getPlansService()->getList(),
             'mailchimp_updates_subscribed' => $this->getMailchimpService()->listContains('updates', $this->getUser()->getUsername()),
             'mailchimp_announcements_subscribed' => $this->getMailchimpService()->listContains('announcements', $this->getUser()->getUsername()),
             'card_expiry_month' => $this->getCardExpiryMonth($userSummary)
@@ -156,14 +155,5 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
     private function getTeamService() {
         return $this->container->get('simplytestable.services.teamservice');
     }
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\PlansService
-     */
-    private function getPlansService() {
-        return $this->container->get('simplytestable.services.plansService');
-    }
-
 
 }

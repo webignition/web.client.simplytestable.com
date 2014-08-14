@@ -19,7 +19,7 @@
     opacity: 0.7;
 }
 
-#plan-allowances table tr th {
+.plan-allowances th {
     font-weight: normal;
     padding-left: 0;
     width:40%;

@@ -1,0 +1,47 @@
+{% if has_active_discount is not defined %}
+    {% set has_active_discount = false %}
+{% endif %}
+
+{% if current_plan is not defined %}
+    {% set current_plan = '' %}
+{% endif %}
+
+{% if has_active_discount %}
+    <p>
+        You have a {{ user_summary.stripecustomer.discount.coupon.percentoff }}% lifetime discount from coupon {{ user_summary.stripecustomer.discount.coupon.id }}.
+    </p>
+{% endif %}
+
+{% for currentPlan in plans|reverse %}
+    {% set is_selected = currentPlan.accountPlan.name|lower == selected_plan %}
+    {% set is_current = currentPlan.accountPlan.name|lower == current_plan %}
+
+    <div class="row plan {{ (is_current) ? 'current' : '' }} {{ (is_selected) ? 'checked' : '' }}">
+        <div class="col-lg-12">
+            <div class="radio">
+                <label>
+                    <input type="radio"
+                           name="plan"
+                           value="{{ currentPlan.accountPlan.name|lower }}" {{ is_selected ? 'checked' : '' }}>
+
+                    {% if has_coupon %}
+                        <span class="name">
+                            {{ currentPlan.accountPlan.name }}
+                            - <del>&pound;{{ (currentPlan.accountPlan.price / 100)|number_format(2) }}</del> &pound;{{ (currentPlan.price / 100)|number_format(2) }} per month
+                            (Save &pound;{{ (((currentPlan.accountPlan.price - currentPlan.price) * 12) / 100)|number_format(2) }} per year)
+                        </span>
+                    {% else %}
+                        <span class="name">
+                            {{ currentPlan.accountPlan.name }}
+                            - &pound;{{ (currentPlan.accountPlan.price / 100)|number_format(2) }} per month
+                        </span>
+                    {% endif %}
+                    <span class="features">
+                        {{ currentPlan.accountPlan.urlsPerJob|number_format }} pages per test,
+                        {{ currentPlan.accountPlan.creditsPerMonth|number_format }} credits
+                    </span>
+                </label>
+            </div>
+        </div>
+    </div>
+{% endfor %}

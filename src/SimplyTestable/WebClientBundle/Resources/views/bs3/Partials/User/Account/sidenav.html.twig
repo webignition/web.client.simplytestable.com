@@ -1,6 +1,7 @@
 {% set is_account_main = app.request.attributes.get('_route') == 'view_user_account_index_index' %}
 {% set is_account_card = app.request.attributes.get('_route') == 'view_user_account_card_index' %}
 {% set is_account_team = app.request.attributes.get('_route') == 'view_user_account_team_index_index' %}
+{% set is_account_plan = app.request.attributes.get('_route') == 'view_user_account_plan_index' %}
 
 {% set default_active = '#email-address-and-password' %}
 {% set active_scope = '#sidenav' %}
@@ -14,19 +15,19 @@
     <li>
         <a href="{{ not is_account_main ? path('view_user_account_index_index') : '' }}#email-address-and-password">Email address and password</a>
     </li>
-    <li>
+    <li class="{{ is_account_plan ? 'active' : ''}}">
         <a href="{{ not is_account_main ? path('view_user_account_index_index' ) : '' }}#plan">Plan: {{ plan_presentation_name }}</a>
         <ul class="nav">
-            <li><a href="{{ not is_account_main ? path('view_user_account_index_index' ) : '' }}#plan-allowances">Allowances</a></li>
+            <li><a href="{{ (not is_account_main and not is_account_plan) ? path('view_user_account_index_index' ) : '' }}#plan-allowances">Allowances</a></li>
 
             {% if not user_summary.getTeamSummary.isInTeam or (user_summary.getTeamSummary.isInTeam and team.leader == user.username) %}
-                <li><a href="{{ not is_account_main ? path('view_user_account_index_index' ) : '' }}#plan-upgrade-downgrade">Upgrade/downgrade</a></li>
+                <li><a href="{{ (not is_account_main and not is_account_plan) ? path('view_user_account_index_index' ) : '' }}#plan-upgrade-downgrade">Upgrade/downgrade</a></li>
             {% endif %}
 
         </ul>
     </li>
     <li class="{{ is_account_team ? 'active' : ''}}" id="sidenav-team">
-        <a href="#team">
+        <a href="{{ not is_account_main ? path('view_user_account_index_index') : '' }}#team">
             Team{% if user_summary.getTeamSummary.isInTeam %}: {{ team.name }}{% endif %}
         </a>
         <ul class="nav">
