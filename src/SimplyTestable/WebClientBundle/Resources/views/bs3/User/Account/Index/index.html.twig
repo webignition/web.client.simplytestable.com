@@ -47,6 +47,13 @@
     <div class="plan-section">
         <h2 id="payment-details">Payment details</h2>
         {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:payment-details.html.twig' %}
+
+        {% if stripe_event_data['invoice'] is defined %}
+            <div class="latest-invoice">
+                <h3 id="payment-latest-invoice">Latest invoice</h3>
+                {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:latest-invoice.html.twig' %}
+            </div>
+        {% endif %}
     </div>
 
     <div class="plan-section" id="news-subscriptions">
