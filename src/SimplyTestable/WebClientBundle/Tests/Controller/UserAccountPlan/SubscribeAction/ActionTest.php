@@ -31,7 +31,7 @@ class ActionTest extends BaseActionTest {
         
         $this->performActionTest(array(
             'statusCode' => 302,
-            'redirectPath' => '/account/',
+            'redirectPath' => '/account/plan/',
             'flash' => array(
                 'plan_subscribe_error' => 403
             )
@@ -48,7 +48,7 @@ class ActionTest extends BaseActionTest {
         
         $this->performActionTest(array(
             'statusCode' => 302,
-            'redirectPath' => '/account/'
+            'redirectPath' => '/account/plan/'
         ), array(
             'postData' => array(
                 'plan' => 'personal'
