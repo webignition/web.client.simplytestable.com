@@ -10,8 +10,6 @@
     {% endif %}
 </p>
 
-{#{{ dump(invoice.discount) }}#}
-
 <table class="table invoice">
     <tbody>
         {% for line in invoice.getLines.getItems %}
@@ -31,10 +29,6 @@
                 <td>
                     {{ invoice.discount.coupon.id }}
                     {{ invoice.discount.coupon.percentoff }}% off
-                    {#{% if line.type == 'subscription' %}#}
-                        {#Subscription to {{ line.plan.name|lower }} plan {% if line.amount == 0 %}(free trial){% endif %}#}
-                        {#<br><span>{{ line.period.start|date("j F Y") }} to {{ line.period.end|date("j F Y") }}</span>#}
-                    {#{% endif %}#}
                 </td>
                 <td class="value">
                     {% set discount = invoice.subtotal * (invoice.discount.coupon.percentoff / 100) %}
