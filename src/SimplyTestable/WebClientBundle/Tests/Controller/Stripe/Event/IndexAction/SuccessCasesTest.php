@@ -173,10 +173,35 @@ class SuccessCasesTest extends ActionTest {
                 'invoice_id' => 'in_2nL671LyaO5mbg'     
                 )
         ));         
-    }       
+    }
+
+
+    public function testInvoicePaymentSucceededWithoutDiscountEventReturns200() {
+        $this->performActionTest(array(
+            'statusCode' => 200
+        ), array(
+            'postData' => array(
+                'user' => 'user@example.com',
+                'event' => 'invoice.payment_succeeded',
+                'lines' => array(
+                    array(
+                        'proration' => 0,
+                        'plan_name' => 'Personal',
+                        'period_start' => 1379776581,
+                        'period_end' => 1380368580,
+                        'amount' => 900
+                    )
+                ),
+                'total' => 900,
+                'amount_due' => 900,
+                'invoice_id' => 'in_2nL671LyaO5mbg',
+                'has_discount' => 0
+            )
+        ));
+    }
     
     
-    public function testInvoicePaymentSucceededEventReturns200() {
+    public function testInvoicePaymentSucceededWithDiscountEventReturns200() {
         $this->performActionTest(array(
             'statusCode' => 200
         ), array(
@@ -194,7 +219,13 @@ class SuccessCasesTest extends ActionTest {
                 ),
                 'total' => 900,
                 'amount_due' => 900, 
-                'invoice_id' => 'in_2nL671LyaO5mbg'     
+                'invoice_id' => 'in_2nL671LyaO5mbg',
+                'has_discount' => 1,
+                'discount' => [
+                    'coupon' => 'FOO',
+                    'percent_off' => '50',
+                    'discount' => '100'
+                ]
                 )
         ));         
     }
