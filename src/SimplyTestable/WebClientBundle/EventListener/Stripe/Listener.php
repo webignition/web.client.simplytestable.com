@@ -62,7 +62,7 @@ class Listener
     
     private function getViewPath($parameterKeys = null) {        
         if (is_array($parameterKeys)) {
-            $parameterisedParts = array();        
+            $parameterisedParts = array();
             foreach ($parameterKeys as $key) {
                 if ($this->event->getData()->has($key)) {
                     $parameterisedParts[] = $key . '=' . $this->event->getData()->get($key);
@@ -259,17 +259,25 @@ class Listener
     
     public function onInvoicePaymentSucceeded(\SimplyTestable\WebClientBundle\Event\Stripe\Event $event) {                
         $this->event = $event;
-        
+
         $viewParameters = array(
             'plan_name' => strtolower($event->getData()->get('plan_name')),
             'account_url' => $this->router->generate('view_user_account_index_index', array(), true),
             'invoice_lines' => $this->getInvoiceLinesContent($event->getData()->get('lines')),
-            'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id'))
+            'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id')),
+            'subtotal' => (int)$event->getData()->get('subtotal'),
+            'total_line' => $this->getInvoiceTotalLine((int)$event->getData()->get('total')),
         );
+
+        if ($this->event->getData()->has('discount')) {
+            $viewParameters['discount_line'] = $this->getInvoiceDiscountContent($event->getData()->get('discount'));
+        }
         
         $this->issueNotification($this->getSubject(array(
             'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id'))
-        )), $this->templating->render($this->getViewPath(), $viewParameters));
+        )), $this->templating->render($this->getViewPath([
+            'has_discount'
+        ]), $viewParameters));
     }  
     
     
@@ -342,6 +350,16 @@ class Listener
         }
         
         return implode("\n", $contentLines);
-    }    
+    }
+
+
+    private function getInvoiceDiscountContent($discount) {
+        return ' * ' . $discount['percent_off'] . '% off with coupon ' . $discount['coupon'] . ' (-£' . (number_format($discount['discount'] / 100, 2)) . ')';
+    }
+
+
+    private function getInvoiceTotalLine($total) {
+        return "   =====================\n".' * Total: £' . number_format($total / 100, 2);
+    }
 
 }
