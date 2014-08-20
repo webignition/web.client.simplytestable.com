@@ -24,7 +24,7 @@
         </tr>            
         {% endfor %}
 
-        {% if invoice.hasDiscount %}
+        {% if invoice.hasDiscount and invoice.total > 0 %}
             <tr>
                 <td>
                     {{ invoice.discount.coupon.id }}
