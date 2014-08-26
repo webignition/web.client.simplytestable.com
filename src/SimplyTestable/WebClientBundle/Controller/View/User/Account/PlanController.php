@@ -40,6 +40,11 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
             'plan_subscribe_success'
         )));
 
+        if ($userSummary->getTeamSummary()->isInTeam()) {
+            $this->getTeamService()->setUser($this->getUser());
+            $viewData['team'] = $this->getTeamService()->getTeam();
+        }
+
         return $this->renderResponse($this->getRequest(), $viewData);
     }
 
@@ -60,6 +65,15 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
      */
     private function getPlansService() {
         return $this->container->get('simplytestable.services.plansService');
+    }
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\TeamService
+     */
+    private function getTeamService() {
+        return $this->container->get('simplytestable.services.teamservice');
     }
 
 }

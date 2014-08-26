@@ -1,8 +1,5 @@
 {% extends 'SimplyTestableWebClientBundle::bs3/User/Account/base.html.twig' %}
 
-{% block body_class %}{% if user_summary.getTeamSummary.isInTeam %}{{ 'in-team' }}{% if true %} {{ (team.leader == user.username) ? 'team-leader' : 'team-member' }}{% endif %}{% elseif user_summary.getTeamSummary.hasInvite %}{{ 'has-invite' }}{% else %}{{ 'no-team-no-invite' }}{% endif %}
-{% endblock %}
-
 {% block title %}Plan: {{ plan_presentation_name }} ({{ user.username }}) - {{ parent() }}{% endblock %}
 {% block heading %}
     <a href="{{ path('view_user_account_index_index') }}">{{ parent() }}</a>: plan: {{ plan_presentation_name|lower }}
