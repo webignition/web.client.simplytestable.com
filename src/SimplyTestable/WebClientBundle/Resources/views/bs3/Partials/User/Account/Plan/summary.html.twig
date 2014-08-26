@@ -3,7 +3,8 @@
 <div {% if with_id %}id="plan-summary{% endif %}">
     {% if user_summary.getTeamSummary.isInTeam and team.leader != user.username %}
         <p>
-            Your team is on the <strong>{{ user_summary.plan.accountplan.name }}</strong> plan.
+            Your team is on the <strong>{{ user_summary.plan.accountplan.name }}</strong> plan. Chat
+            with your <a href="maito:{{ team.leader }}">team leader</a> if you think an upgrade is needed.
         </p>
     {% else %}
         <p>

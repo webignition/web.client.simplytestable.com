@@ -1,11 +1,10 @@
 {% if user_summary.getTeamSummary.isInTeam %}
     <p>
     {% if team.leader == user.username %}
-        You're the leader of
+        You're the leader of team <strong>{{ team.name }}</strong>.
     {% else %}
-        You're a member of
+        You're a member of team <strong>{{ team.name }}</strong> managed by <a href="mailto:{{ team.leader }}">{{ team.leader }}</a>.
     {% endif %}
-    team <strong>{{ team.name }}</strong>.
     </p>
 
     <a class="btn btn-default" href="{{ path('view_user_account_team_index_index') }}">
