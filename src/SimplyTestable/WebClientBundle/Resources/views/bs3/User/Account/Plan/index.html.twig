@@ -96,6 +96,8 @@
 
                 <button type="submit" class="btn btn-default">Change plan <i class="fa fa-caret-right"></i></button>
 
+                <a class="plans-link" href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">View plan and pricing details <i class="fa fa-caret-right"></i></a>
+
             </form>
 
             {% if not (user_summary.plan.accountplan.name == 'basic') %}
