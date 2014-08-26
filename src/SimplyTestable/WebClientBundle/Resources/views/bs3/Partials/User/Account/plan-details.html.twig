@@ -3,12 +3,14 @@
 <h3 id="plan-allowances">Allowances</h3>
 {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Plan:allowances.html.twig' %}
 
-<div id="plan-upgrade-downgrade">
-    <h3>Upgrade/downgrade</h3>
+{% if (user_summary.getTeamSummary.isInTeam and team.leader == user.username) or not user_summary.getTeamSummary.isInTeam %}
+    <div id="plan-upgrade-downgrade">
+        <h3>Upgrade/downgrade</h3>
 
-    <p>
-        Need to test larger sites or need to run a greater amount of tests?
-    </p>
+        <p>
+            Need to test larger sites or need to run a greater amount of tests?
+        </p>
 
-    <a class="btn btn-default" href="{{ path('view_user_account_plan_index') }}#plan-upgrade-downgrade">Change your plan <i class="fa fa-caret-right"></i></a>
-</div>
+        <a class="btn btn-default" href="{{ path('view_user_account_plan_index') }}#plan-upgrade-downgrade">Change your plan <i class="fa fa-caret-right"></i></a>
+    </div>
+{% endif %}
