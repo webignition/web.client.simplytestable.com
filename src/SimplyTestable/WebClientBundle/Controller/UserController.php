@@ -330,7 +330,14 @@ class UserController extends BaseViewController
             $this->get('session')->setFlash('user_create_confirmation', 'user-created');
             return $this->redirect($this->generateUrl('view_user_signup_confirm_index', array('email' => $email), true));
         } catch (\SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception $postmarkResponseException) {
-            $this->get('session')->setFlash('user_create_error', 'invalid-email');
+            if ($postmarkResponseException->isNotAllowedToSendException()) {
+                $this->get('session')->setFlash('user_create_error', 'postmark-not-allowed-to-send');
+            } elseif ($postmarkResponseException->isInactiveRecipientException()) {
+                $this->get('session')->setFlash('user_create_error', 'postmark-inactive-recipient');
+            } else {
+                $this->get('session')->setFlash('user_create_error', 'invalid-email');
+            }
+
             return $this->redirect($this->generateUrl('view_user_signup_index_index', array(
                 'email' => $email,
                 'plan' => $plan 

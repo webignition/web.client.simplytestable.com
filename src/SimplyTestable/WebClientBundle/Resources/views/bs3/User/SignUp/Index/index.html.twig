@@ -75,12 +75,53 @@
                 </div>                
             {% endif %}        
 
+            {% if user_create_error == 'postmark-not-allowed-to-send' %}
+                <div class="alert alert-info" data-for="email">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+
+                    <p>
+                        <strong>Well, this is embarrassing.</strong>
+                    </p>
+
+                    <p>
+                        I can't send email at the moment. Neither can I email my makers so that they can fix this. Awkward.
+                    </p>
+
+                    <p>
+                        You're a nice person. Could you <a href="{{ external_links.contact_email }}">email my makers</a> so that they can fix this?
+                    </p>
+                </div>
+            {% endif %}
+
+            {% if user_create_error == 'postmark-inactive-recipient' %}
+                <div class="alert alert-danger" data-for="email">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+
+                    <p>
+                        <strong>Hmmm. That's not going to work.</strong>
+                    </p>
+
+                    <p>
+                        I can't send a confirmation email to <strong>{{ email }}</strong>.
+                    </p>
+
+                    <p>
+                        Perhaps your mailbox is full, perhaps the email address doesn't exist.
+                    </p>
+
+                    <p>
+                        Maybe try with a different email address?
+                    </p>
+
+                </div>
+            {% endif %}
+
             {% if user_create_error == 'invalid-email' %}
                 <div class="alert alert-danger" data-for="email">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <strong>Hmmm.</strong> I'm not convinced that <strong>{{ email }}</strong> is a valid email address.
-                </div>                
-            {% endif %}                
+                </div>
+            {% endif %}
 
             {% if user_create_error == 'create-failed' %}
                 <div class="alert alert-danger" data-for="email">
@@ -124,38 +165,6 @@
                 </p>
 
                 {% include 'SimplyTestableWebClientBundle:bs3/Partials/Plan:selection.html.twig' with {selected_plan: plan} %}
-
-                {#{% for currentPlan in plans %}#}
-                    {#<div class="row plan {{ (currentPlan.accountPlan.name|lower == plan) ? 'checked' : '' }}">#}
-                        {#<div class="col-lg-12">#}
-                            {#<div class="radio">#}
-                                {#<label>#}
-                                    {#<input type="radio" name="plan" value="{{ currentPlan.accountPlan.name|lower }}" {{ currentPlan.accountPlan.name|lower == plan ? 'checked' : '' }}>#}
-
-                                    {#{% if has_coupon %}#}
-                                        {#<span class="name">#}
-                                            {#{{ currentPlan.accountPlan.name }}#}
-                                            {#- <del>&pound;{{ (currentPlan.accountPlan.price / 100)|number_format(2) }}</del> &pound;{{ (currentPlan.price / 100)|number_format(2) }} per month#}
-                                            {#(Save &pound;{{ (((currentPlan.accountPlan.price - currentPlan.price) * 12) / 100)|number_format(2) }} per year)#}
-
-                                        {#</span>#}
-                                    {#{% else %}#}
-                                        {#<span class="name">#}
-                                            {#{{ currentPlan.accountPlan.name }}#}
-                                            {#- &pound;{{ (currentPlan.accountPlan.price / 100)|number_format(2) }} per month#}
-                                        {#</span>#}
-                                    {#{% endif %}#}
-
-                                    {#<span class="features">#}
-                                        {#{{ currentPlan.accountPlan.urlsPerJob|number_format }} pages per test,#}
-                                        {#{{ currentPlan.accountPlan.creditsPerMonth|number_format }} credits#}
-                                    {#</span>#}
-                                {#</label>#}
-                            {#</div>#}
-                        {#</div>#}
-                    {#</div>#}
-                {#{% endfor %}#}
-
             </div>
         </div>
 
