@@ -57,11 +57,11 @@ sign_up_confirm_submit:
 action_signup_team_invite_accept:
     pattern: /signup/invite/{token}/accept/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/SignUp/Team/Invite:accept }
-    
-sign_up_confirm_resend:
+
+action_signup_user_confirm_resend:
     pattern:  /signup/confirm/{email}/resend/
-    defaults: { _controller: SimplyTestableWebClientBundle:User:signUpConfirmResend }
-    
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/SignUp/User/Confirm:resend }
+
 user_account_details_update:
     pattern:  /account/details/update/
     defaults: { _controller: SimplyTestableWebClientBundle:UserAccountDetails:update }          

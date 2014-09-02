@@ -38,20 +38,83 @@
         </div>
     {% endif %}
 
-    {% if token_resend_error is defined and token_resend_error == 'postmark-failure' %}
-        <div class="alert alert-info">
-            <button type="button" class="close" data-dismiss="alert">×</button>
-            <p>
-                <strong>Sorry, that didn't work</strong>
-            </p>
-            <p>
-                We tried to re-send your sign up confirmation email to "{{ email }}"
-                but it didn't work.
-            </p>
-            <p>
-                Could you try again?
-            </p>
-        </div>
+    {% if token_resend_error is defined and token_resend_error is not empty %}
+        {% if token_resend_error == 'postmark-failure' %}
+            <div class="alert alert-info">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <p>
+                    <strong>Sorry, that didn't work</strong>
+                </p>
+                <p>
+                    We tried to re-send your sign up confirmation email to <strong>{{ email }}</strong>
+                    but it didn't work.
+                </p>
+                <p>
+                    Could you try again?
+                </p>
+            </div>
+        {% endif %}
+
+        {% if token_resend_error == 'postmark-not-allowed-to-send' %}
+            <div class="alert alert-info" data-for="email">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+
+                <p>
+                    <strong>Well, this is embarrassing.</strong>
+                </p>
+
+                <p>
+                    I can't send email at the moment. Neither can I email my makers so that they can fix this. Awkward.
+                </p>
+
+                <p>
+                    You're a nice person. Could you <a href="{{ external_links.contact_email }}">email my makers</a> so that they can fix this?
+                </p>
+            </div>
+        {% endif %}
+
+        {% if token_resend_error == 'postmark-inactive-recipient' %}
+            <div class="alert alert-danger" data-for="email">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+
+                <p>
+                    <strong>Hmmm. That's not going to work.</strong>
+                </p>
+
+                <p>
+                    I can't send a confirmation email to <strong>{{ email }}</strong>.
+                </p>
+
+                <p>
+                    Perhaps your mailbox is full, perhaps the email address doesn't exist.
+                </p>
+
+                <p>
+                    Maybe try again later?
+                </p>
+
+            </div>
+        {% endif %}
+
+
+        {% if token_resend_error == 'core-app-invalid-credentials' %}
+            <div class="alert alert-info" data-for="email">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+
+                <p>
+                    <strong>Oops</strong>
+                </p>
+
+                <p>
+                    I can't do that right now; I haven't been configured correctly.
+                </p>
+
+                <p>
+                    I've sent my makers an email so that they can give me the right settings.
+                </p>
+
+            </div>
+        {% endif %}
     {% endif %}
 
     <form role="form" method="post" action="{{ path('sign_up_confirm_submit', { 'email': email}) }}" novalidate>
@@ -123,7 +186,7 @@
     </form>
 
     <div class="additional input-additional ">
-        <form role="form" method="post" action="{{ path('sign_up_confirm_resend', { 'email': email}) }}">
+        <form role="form" method="post" action="{{ path('action_signup_user_confirm_resend', { 'email': email}) }}">
             <button class="btn btn-default" type="submit">I can't find my activation code, email it again!</button>
         </form>
     </div>

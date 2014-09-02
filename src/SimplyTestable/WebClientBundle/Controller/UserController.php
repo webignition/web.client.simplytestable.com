@@ -344,29 +344,7 @@ class UserController extends BaseViewController
             ), true));
         }
     }
-    
-    
-    public function signupConfirmResendAction($email) {
-        if ($this->getUserService()->exists($email) === false) {
-            $this->get('session')->setFlash('token_resend_error', 'invalid-user');
-            return $this->redirect($this->generateUrl('view_user_signup_confirm_index', array('email' => $email), true));
-        }
-        
-        $token = $this->getUserService()->getConfirmationToken($email);        
-        
-        try {
-            $this->sendConfirmationToken($email, $token);        
-            $this->get('session')->setFlash('token_resend_confirmation', 'sent');      
 
-            return new \Symfony\Component\HttpFoundation\RedirectResponse($this->generateUrl('view_user_signup_confirm_index', array(
-                'email' => $email
-            )));    
-        } catch (\SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception $postmarkResponseException) {
-            $this->get('session')->setFlash('token_resend_error', 'postmark-failure');
-            return $this->redirect($this->generateUrl('view_user_signup_confirm_index', array('email' => $email), true));
-        }
-    }
-    
     
     /**
      * 
