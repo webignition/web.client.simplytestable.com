@@ -28,8 +28,8 @@
         Follow the instructions in the email to choose a new password.
     </p>    
 
-    <form role="form" method="post" action="{{ path('reset_password_submit') }}">
-        {% if user_reset_password_error is defined and user_reset_password_error != '' %}
+    <form role="form" method="post" action="{{ path('action_user_resetpassword_index_request') }}">
+        {% if user_reset_password_error is defined and user_reset_password_error is not empty %}
             {% if user_reset_password_error == 'blank-email' %}
                 <div class="alert alert-danger" data-for="email">
                     <button type="button" class="close" data-dismiss="alert">×</button>
@@ -51,10 +51,86 @@
                     <p>Are you sure you
                         entered the right email address?</p>
                 </div>                
-            {% endif %}          
+            {% endif %}
+
+            {% if user_reset_password_error == 'postmark-failure' %}
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p>
+                        <strong>Sorry, that didn't work</strong>
+                    </p>
+                    <p>
+                        We tried to re-send your password reset confirmation email to <strong>{{ email }}</strong>
+                        but it didn't work.
+                    </p>
+                    <p>
+                        Could you try again?
+                    </p>
+                </div>
+            {% endif %}
+
+            {% if user_reset_password_error == 'postmark-not-allowed-to-send' %}
+                <div class="alert alert-info" data-for="email">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+
+                    <p>
+                        <strong>Well, this is embarrassing.</strong>
+                    </p>
+
+                    <p>
+                        I can't send email at the moment. Neither can I email my makers so that they can fix this. Awkward.
+                    </p>
+
+                    <p>
+                        You're a nice person. Could you <a href="{{ external_links.contact_email }}">email my makers</a> so that they can fix this?
+                    </p>
+                </div>
+            {% endif %}
+
+            {% if user_reset_password_error == 'postmark-inactive-recipient' %}
+                <div class="alert alert-danger" data-for="email">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+
+                    <p>
+                        <strong>Hmmm. That's not going to work.</strong>
+                    </p>
+
+                    <p>
+                        I can't send a confirmation email to <strong>{{ email }}</strong>.
+                    </p>
+
+                    <p>
+                        Perhaps your mailbox is full, perhaps the email address doesn't exist.
+                    </p>
+
+                    <p>
+                        Maybe try again later?
+                    </p>
+
+                </div>
+            {% endif %}
+
+            {% if user_reset_password_error == 'core-app-invalid-credentials' %}
+                <div class="alert alert-info" data-for="email">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+
+                    <p>
+                        <strong>Oops</strong>
+                    </p>
+
+                    <p>
+                        I can't do that right now; I haven't been configured correctly.
+                    </p>
+
+                    <p>
+                        I've sent my makers an email so that they can give me the right settings.
+                    </p>
+
+                </div>
+            {% endif %}
         {% endif %}  
 
-        {% if user_reset_password_confirmation is defined and user_reset_password_confirmation != '' %}
+        {% if user_reset_password_confirmation is defined and user_reset_password_confirmation is not empty %}
             {% if user_reset_password_confirmation == 'token-sent' %}
                 <div class="alert alert-success">
                     <button type="button" class="close" data-dismiss="alert">×</button>

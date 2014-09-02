@@ -154,41 +154,7 @@ class UserController extends BaseViewController
         $parameters = isset($redirectValues['parameters']) ? $redirectValues['parameters'] : array();
         return $this->redirect($this->generateUrl($redirectValues['route'], $parameters, true));
     }   
-    
 
-    public function resetPasswordSubmitAction() {                
-        $email = trim($this->get('request')->request->get('email'));        
-
-        if ($email == '') {
-            $this->get('session')->setFlash('user_reset_password_error', 'blank-email');
-            return $this->redirect($this->generateUrl('view_user_resetpassword_index_index', array(), true));
-        }                
-        
-        if (!$this->isEmailValid($email)) {
-            $this->get('session')->setFlash('user_reset_password_error', 'invalid-email');
-            return $this->redirect($this->generateUrl('view_user_resetpassword_index_index', array(
-                'email' => $email
-            ), true));              
-        }
-        
-        if ($this->getUserService()->exists($email) === false) {
-            $this->get('session')->setFlash('user_reset_password_error', 'invalid-user');
-            return $this->redirect($this->generateUrl('view_user_resetpassword_index_index', array('email' => $email), true));
-        }    
-        
-        $token = $this->getUserService()->getConfirmationToken($email);
-        try {
-            $this->sendPasswordResetConfirmationToken($email, $token);            
-            $this->get('session')->setFlash('user_reset_password_confirmation', 'token-sent');
-            return $this->redirect($this->generateUrl('view_user_resetpassword_index_index', array('email' => $email), true));
-        } catch (\SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception $postmarkResponseException) {
-            $this->get('session')->setFlash('user_reset_password_error', 'invalid-email');
-            return $this->redirect($this->generateUrl('view_user_resetpassword_index_index', array(
-                'email' => $email
-            ), true));             
-        }
-    }  
-    
     
     public function resetPasswordChooseSubmitAction() {
         $email = trim($this->get('request')->request->get('email'));        
@@ -379,29 +345,6 @@ class UserController extends BaseViewController
     private function getMailService() {
         return $this->get('simplytestable.services.mail.service');
     }
-    
-    
-    private function sendPasswordResetConfirmationToken($email, $token) {        
-        $sender = $this->getMailService()->getConfiguration()->getSender('default');
-        $messageProperties = $this->getMailService()->getConfiguration()->getMessageProperties('user_reset_password');
-  
-        $confirmationUrl = $this->generateUrl('view_user_resetpassword_choose_index', array(
-            'email' => $email,
-            'token' => $token
-        ), true);
-        
-        $message = $this->getMailService()->getNewMessage();
-        $message->setFrom($sender['email'], $sender['name']);
-        $message->addTo($email);
-        $message->setSubject($messageProperties['subject']);
-        $message->setTextMessage($this->renderView('SimplyTestableWebClientBundle:Email:reset-password-confirmation.txt.twig', array(
-            'confirmation_url' => $confirmationUrl,
-            'email' => $email
-        )));
-        
-        $this->getMailService()->getSender()->send($message);     
-    }    
-    
     
     public function signupConfirmSubmitAction($email) {
         if ($this->getUserService()->exists($email) === false) {
