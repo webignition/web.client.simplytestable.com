@@ -9,7 +9,7 @@ use SimplyTestable\WebClientBundle\Tests\Controller\Base\FunctionalTest as BaseF
  * curl errors
  *
  */
-class FunctionalTest extends BaseFunctionalTest {
+abstract class FunctionalTest extends BaseFunctionalTest {
 
     const WEBSITE = 'http://example.com/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz';
 
