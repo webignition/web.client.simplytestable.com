@@ -38,8 +38,9 @@ class TeamController extends BaseController implements RequiresPrivateUser {
 
 
     public function inviteMemberAction() {
+        $redirectResponse = $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+
         $invitee = trim($this->getRequest()->request->get('email'));
-        $flashData = [];
 
         if (!$this->isEmailValid($invitee)) {
             $flashData = [
@@ -49,7 +50,7 @@ class TeamController extends BaseController implements RequiresPrivateUser {
             ];
 
             $this->get('session')->getFlashBag()->set('team_invite_get', $flashData);
-            return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+            return $redirectResponse;
         }
 
         if ($invitee == $this->getUser()->getUsername()) {
@@ -59,7 +60,7 @@ class TeamController extends BaseController implements RequiresPrivateUser {
             ];
 
             $this->get('session')->getFlashBag()->set('team_invite_get', $flashData);
-            return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+            return $redirectResponse;
         }
 
         try {
@@ -77,38 +78,17 @@ class TeamController extends BaseController implements RequiresPrivateUser {
                 'team' => $invite->getTeam()
             ];
         } catch (TeamServiceException $teamServiceException) {
-            if ($teamServiceException->isInviteeIsATeamLeaderException()) {
-                $flashData = [
-                    'status' => 'error',
-                    'error' => 'invitee-is-a-team-leader',
-                    'invitee' => $invitee
-                ];
-            }
-
-            if ($teamServiceException->isUserIsAlreadyOnATeamException()) {
-                $flashData = [
-                    'status' => 'error',
-                    'error' => 'invitee-is-already-on-a-team',
-                    'invitee' => $invitee
-                ];
-            }
-
-            if ($teamServiceException->isInviteeHasAPremiumPlanException()) {
-                $flashData = [
-                    'status' => 'error',
-                    'error' => 'invitee-has-a-premium-plan',
-                    'invitee' => $invitee
-                ];
-            }
-
+            $flashData = [
+                'status' => 'error',
+                'error' => $this->getFlashErrorCodeFromTeamServiceException($teamServiceException),
+                'invitee' => $invitee
+            ];
         } catch (PostmarkResponseException $postmarkResponseException) {
-            if ($postmarkResponseException->isInvalidEmailAddressException()) {
-                $flashData = [
-                    'status' => 'error',
-                    'error' => 'invalid-email',
-                    'invitee' => $invitee,
-                ];
-            }
+            $flashData = [
+                'status' => 'error',
+                'error' => $this->getFlashErrorCodeFromPostmarkResponseException($postmarkResponseException),
+                'invitee' => $invitee,
+            ];
 
             $invite = new Invite([
                 'user' => $invitee
@@ -119,8 +99,47 @@ class TeamController extends BaseController implements RequiresPrivateUser {
 
         $this->get('session')->getFlashBag()->set('team_invite_get', $flashData);
 
-        return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+        return $redirectResponse;
     }
+
+
+    /**
+     * @param PostmarkResponseException $postmarkResponseException
+     * @return string
+     */
+    private function getFlashErrorCodeFromPostmarkResponseException(PostmarkResponseException $postmarkResponseException) {
+        if ($postmarkResponseException->isNotAllowedToSendException()) {
+            return 'postmark-not-allowed-to-send';
+        } elseif ($postmarkResponseException->isInactiveRecipientException()) {
+            return 'postmark-inactive-recipient';
+        } elseif ($postmarkResponseException->isInvalidEmailAddressException()) {
+            return 'invalid-email';
+        }
+
+        return 'postmark-failure';
+    }
+
+
+    /**
+     * @param TeamServiceException $teamServiceException
+     * @return string
+     */
+    private function getFlashErrorCodeFromTeamServiceException(TeamServiceException $teamServiceException) {
+        if ($teamServiceException->isInviteeIsATeamLeaderException()) {
+            return 'invitee-is-a-team-leader';
+        }
+
+        if ($teamServiceException->isUserIsAlreadyOnATeamException()) {
+            return 'invitee-is-already-on-a-team';
+        }
+
+        if ($teamServiceException->isInviteeHasAPremiumPlanException()) {
+            return 'invitee-has-a-premium-plan';
+        }
+
+        return 'invitee-unknown-error';
+    }
+
 
 
     public function respondInviteAction() {
