@@ -7,8 +7,20 @@ use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServi
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
+use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class TeamController extends BaseController {
+class TeamController extends BaseController implements RequiresPrivateUser {
+
+    /**
+     *
+     * @return RedirectResponse
+     */
+    public function getUserSignInRedirectResponse() {
+        return new RedirectResponse($this->generateUrl('view_user_signin_index', [
+            'redirect' => base64_encode(json_encode(['route' => 'view_user_account_index_index']))
+        ], true));
+    }
 
     public function createAction() {
         $name = trim($this->getRequest()->request->get('name'));
