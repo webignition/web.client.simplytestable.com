@@ -28,24 +28,6 @@ abstract class ListenerTest extends BaseTestCase {
     protected function getListener() {
         return $this->container->get('simplytestable.listener.stripeEvent');
     }
-    
-    
-    /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Services\Mail\Service
-     */
-    protected function getMailService() {
-        return $this->container->get('simplytestable.services.mail.service');
-    }
-    
-    
-    protected function assertNotificationMessageContains($value) {
-        $lastMessage = $this->getMailService()->getSender()->getLastMessage();
-        $refObject = new \ReflectionObject($lastMessage);
-        $refProperty = $refObject->getProperty('textMessage');
-        $refProperty->setAccessible(true);
-        
-        $this->assertTrue(substr_count($refProperty->getValue($lastMessage), $value) > 0, 'Notification message does not contain "'.$value.'"');
-    }    
+
     
 }

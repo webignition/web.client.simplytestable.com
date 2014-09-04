@@ -29,9 +29,17 @@
 {% endblock %}
 
 {% block account_content %}
-    <div class="plan-section">
+    <div class="plan-section" id="email-address-and-password-section">
         <h2 id="email-address-and-password">Email address and password</h2>
-        {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:account-details.html.twig' %}
+
+        <div class="plan-section">
+            {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:email.html.twig' %}
+        </div>
+
+        <div class="plan-section">
+            {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:password.html.twig' %}
+        </div>
+
     </div>
 
     <div class="plan-section">

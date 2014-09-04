@@ -78,6 +78,19 @@
     text-align: right;
 }
 
+.confirm-email-change .secondary {
+    border-top: 1px solid #ddd;
+    margin-top: 20px;
+}
+
+#email-address-and-password-section .alert-postmark-inactive-recipient .actions {
+    margin-top: 20px;
+}
+
+#email-address-and-password-section .plan-section {
+    margin-bottom: 40px;
+}
+
 @media (max-width: 992px) {
     .plan-details-change-plan .plans-link {
         display: block;

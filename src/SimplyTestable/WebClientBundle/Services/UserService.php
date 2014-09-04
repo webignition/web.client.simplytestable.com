@@ -167,15 +167,13 @@ class UserService extends CoreApplicationService {
         
         return true;
     }
-    
-    
-    
+
+
     /**
-     * 
-     * @param string $token
-     * @param string $password
-     * @return null|boolean
-     * @throws UserServiceException
+     * @param $token
+     * @param $password
+     * @return bool|int|null
+     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
      */
     public function resetPassword($token, $password) {        
         $request = $this->webResourceService->getHttpClientService()->postRequest(
@@ -187,16 +185,16 @@ class UserService extends CoreApplicationService {
         );
         
         $this->addAuthorisationToRequest($request);
-        
+
         try {
-            $response = $request->send();          
+            $response = $request->send();
             return ($response->getStatusCode() == 200) ? true : $response->getStatusCode();
         } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
             if ($badResponseException->getResponse()->getStatusCode() == 401) {
                 throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
             }
-            
-            return $badResponseException->getResponse()->getStatusCode();            
+
+            return $badResponseException->getResponse()->getStatusCode();
         } catch (\Guzzle\Http\Exception\CurlException $curlException) {
             return $curlException->getErrorNo();
         }
