@@ -204,14 +204,6 @@ class ActionTest extends BaseActionTest {
 
     }
 
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\Mail\Service
-     */
-    private function getMailService() {
-        return $this->container->get('simplytestable.services.mail.service');
-    }
 }
 
 
