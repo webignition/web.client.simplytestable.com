@@ -5,7 +5,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Entity\MailChimp\ListRecipients;
 use SimplyTestable\WebClientBundle\Tests\BaseSimplyTestableTestCase;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 
-class EntityTest extends BaseSimplyTestableTestCase {   
+abstract class EntityTest extends BaseSimplyTestableTestCase {
     
     
     /**
