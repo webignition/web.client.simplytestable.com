@@ -180,6 +180,47 @@
                 </div>
             {% endif %}
 
+            {% if team_invite_resend.error == 'postmark-not-allowed-to-send' %}
+                <div class="alert alert-info" data-for="email">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+
+                    <p>
+                        <strong>Well, this is embarrassing.</strong>
+                    </p>
+
+                    <p>
+                        I can't send email at the moment. Neither can I email my makers so that they can fix this. Awkward.
+                    </p>
+
+                    <p>
+                        You're a nice person. Could you <a href="{{ external_links.contact_email }}">email my makers</a> so that they can fix this?
+                    </p>
+                </div>
+            {% endif %}
+
+            {% if team_invite_resend.error == 'postmark-inactive-recipient' %}
+                <div class="alert alert-danger" data-for="email">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+
+                    <p>
+                        <strong>Hmmm. That's not going to work.</strong>
+                    </p>
+
+                    <p>
+                        I can't send a confirmation email to <strong>{{ team_invite_resend.invitee }}</strong>.
+                    </p>
+
+                    <p>
+                        Perhaps their mailbox is full, perhaps the email address doesn't exist.
+                    </p>
+
+                    <p>
+                        Maybe try again later?
+                    </p>
+
+                </div>
+            {% endif %}
+
         {% endif %}
     {% endif %}
 

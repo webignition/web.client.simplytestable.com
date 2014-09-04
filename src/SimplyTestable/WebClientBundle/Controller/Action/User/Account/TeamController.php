@@ -215,10 +215,11 @@ class TeamController extends BaseController implements RequiresPrivateUser {
                     'invitee' => $invitee
                 ];
             }
-        } catch (\SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception $postmarkResponseException) {
+        } catch (PostmarkResponseException $postmarkResponseException) {
             $flashData = [
                 'status' => 'error',
-                'error' => 'invalid-email'
+                'error' => $this->getFlashErrorCodeFromPostmarkResponseException($postmarkResponseException),
+                'invitee' => $invitee,
             ];
         }
 
