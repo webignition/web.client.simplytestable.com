@@ -13,7 +13,6 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     const TASK_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TaskController';    
     const TEST_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\TestController';    
     const USER_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\UserController';
-    const USER_ACCOUNT_DETAILS_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\UserAccountDetailsController';
     const USER_ACCOUNT_PLAN_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\UserAccountPlanController';
     const REDIRECT_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\RedirectController';
     const STRIPE_EVENT_CONTROLLER_NAME = 'SimplyTestable\WebClientBundle\Controller\Stripe\EventController';
@@ -134,18 +133,7 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     protected function getUserController($methodName, $postData = array()) {
         return $this->getController(self::USER_CONTROLLER_NAME, $methodName, $postData);
     }      
-    
-    
-    /**
-     *
-     * @param string $methodName
-     * @param array $postData
-     * @return \SimplyTestable\WebClientBundle\Controller\UserAccountDetailsController
-     */
-    protected function getUserAccountDetailsController($methodName, $postData = array()) {
-        return $this->getController(self::USER_ACCOUNT_DETAILS_CONTROLLER_NAME, $methodName, $postData);
-    }   
-    
+
     
     /**
      *
@@ -171,7 +159,7 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
      * 
      * @param string $controllerName
      * @param string $methodName
-     * @return Symfony\Bundle\FrameworkBundle\Controller\Controller
+     * @return \Symfony\Bundle\FrameworkBundle\Controller\Controller
      */
     protected function getController($controllerName, $methodName, array $postData = array(), array $queryData = array()) {   
         $cookieData = array();
