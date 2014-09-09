@@ -284,12 +284,31 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
         
         $this->getTestService()->getEntityManager()->flush();
     }
+
+
+    protected function removeAllListRecipients() {
+        $listRecipientSets = $this->getMailchimpListRecipientsService()->getEntityRepository()->findAll();
+
+        foreach ($listRecipientSets as $listRecipientSet) {
+            $this->getTestService()->getEntityManager()->remove($listRecipientSet);
+        }
+
+        $this->getTestService()->getEntityManager()->flush();
+    }
     
     protected function makeUser() {
         $user = new \SimplyTestable\WebClientBundle\Model\User();
         $user->setUsername('user@example.com');
         $user->setPassword('password');
         return $user;
-    }  
+    }
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService
+     */
+    protected function getMailchimpListRecipientsService() {
+        return $this->container->get('simplytestable.services.mailchimp.listRecipients');
+    }
 
 }

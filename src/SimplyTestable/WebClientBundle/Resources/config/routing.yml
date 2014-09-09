@@ -61,10 +61,10 @@ action_signup_team_invite_accept:
 action_signup_user_confirm_resend:
     pattern:  /signup/confirm/{email}/resend/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/SignUp/User/Confirm:resend }
-    
-user_subscription_choices_update:
+
+action_user_account_newssubscriptions_update:
     pattern:  /account/news-subscriptions/update/
-    defaults: { _controller: SimplyTestableWebClientBundle:UserNewsSubscriptions:update }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/NewsSubscriptions:update }
 
 action_user_account_emailchange_request:
     pattern:  /account/details/update/email/request/

@@ -171,7 +171,7 @@ class ListRecipientsService {
     /**
      * 
      * @param string $listId
-     * @return SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients|null
+     * @return \SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients|null
      */
     private function getEntityByListId($listId) {
         return $this->getEntityRepository()->findOneBy(array(

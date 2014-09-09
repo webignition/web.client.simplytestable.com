@@ -24,7 +24,7 @@ class Service {
     
     /**
      *
-     * @var \SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService 
+     * @var ListRecipientsService
      */
     private $listRecipientsService;
     
@@ -73,14 +73,17 @@ class Service {
         if ($this->listContains($listName, $email)) {
             return true;
         }
-        
-        $this->getClient()->subscribe(array(
-            'id' => $this->listRecipientsService->getListId($listName),
-            'email' => array(
-                'email' => $email
-            ),
-            'double_optin' => false
-        ));
+
+        try {
+            $this->getClient()->subscribe(array(
+                'id' => $this->listRecipientsService->getListId($listName),
+                'email' => array(
+                    'email' => $email
+                ),
+                'double_optin' => false
+            ));
+        } catch (\ZfrMailChimp\Exception\Ls\AlreadySubscribedException $alreadySubscribedException) {
+        }
         
         return true;      
     }

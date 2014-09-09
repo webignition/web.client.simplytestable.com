@@ -311,13 +311,17 @@ abstract class BaseViewController extends BaseController {
             $flashMessages = $this->get('session')->getFlashBag()->get($flashKey);         
         } else {
             $flashMessages = $this->get('session')->getFlashBag()->peek($flashKey);         
-        }        
-        
-        if (!isset($flashMessages[0])) {
+        }
+
+        if (!count($flashMessages)) {
             return '';
         }
+
+        if (count($flashMessages) === 1 && key($flashMessages) === 0) {
+            return $flashMessages[0];
+        }
         
-        return $flashMessages[0];
+        return $flashMessages;
     }   
     
     

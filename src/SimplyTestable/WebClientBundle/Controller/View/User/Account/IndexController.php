@@ -48,7 +48,8 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
             'user_account_details_resend_email_change_notice',
             'user_account_details_resend_email_change_error',
             'user_account_details_update_email_request_notice',
-            'user_account_details_update_password_request_notice'
+            'user_account_details_update_password_request_notice',
+            'user_account_newssubscriptions_update'
         )));
 
         if ($userSummary->getTeamSummary()->isInTeam()) {
