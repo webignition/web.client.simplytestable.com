@@ -4,11 +4,6 @@ require 'fileutils'
 task :default do  
   puts 'Building ...'
   fetch_dependencies
-  get_composer 
-  run_commands([
-    "./composer.phar install",
-    "php app/console simplytestable:cachevalidator:clear"
-  ])
 end
 
 task :rebuild do
@@ -111,18 +106,6 @@ def vendor_is_archive(url)
   end  
   
   return vendor_is_github_zipball(url)
-end
-
-def get_composer
-  if File.file?("composer.phar")
-    run_commands([
-        "./composer.phar self-update"
-    ])
-  else
-    run_commands([
-        "curl -s https://getcomposer.org/installer | php"
-    ])
-  end
 end
 
 def run_commands(commands)
