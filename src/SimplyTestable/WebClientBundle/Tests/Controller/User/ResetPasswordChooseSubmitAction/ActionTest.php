@@ -105,7 +105,7 @@ class ActionTest extends BaseActionTest {
         ))->resetPasswordChooseSubmitAction();
         $this->assertEquals(302, $response->getStatusCode()); 
         
-        $this->assertEquals('invalid-token', $this->container->get('session')->getFlashBag()->get('user_reset_password_error'));
+        $this->assertEquals('invalid-token', $this->container->get('session')->getFlashBag()->get('user_reset_password_error')[0]);
         $responseUrl = new \webignition\Url\Url($response->getTargetUrl());
         $this->assertEquals('/reset-password/user@example.com/valid-token/', $responseUrl->getPath());          
     }
