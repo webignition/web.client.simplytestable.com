@@ -6,21 +6,23 @@
     },
     "require": {
         "php": ">=5.4.0",
-        "symfony/symfony": "2.2.*",
+        "symfony/symfony": "2.3.*",
         "doctrine/orm": "~2.2,>=2.2.3",
         "doctrine/doctrine-bundle": "1.2.*",
         "twig/extensions": "1.0.*",
-        "symfony/assetic-bundle": "2.1.*",
-        "symfony/monolog-bundle": "2.2.*",
-        "sensio/distribution-bundle": "2.2.*",
-        "sensio/framework-extra-bundle": "2.2.*",
-        "sensio/generator-bundle": "2.2.*",
-        "jms/security-extra-bundle": "1.4.*",
-        "jms/di-extra-bundle": "1.3.*",
+        "symfony/assetic-bundle": "2.3.*",
+        "symfony/monolog-bundle": "2.3.*",
+        "sensio/distribution-bundle": "2.3.*",
+        "sensio/framework-extra-bundle": "2.3.*",
+        "sensio/generator-bundle": "2.3.*",
+        "incenteev/composer-parameter-handler": "~2.0",
+        "jms/security-extra-bundle": "1.5.*",
+        "jms/di-extra-bundle": "1.4.*",
+        "doctrine/migrations": "dev-master",
+        "doctrine/doctrine-migrations-bundle": "dev-master",
         "webignition/url":">=1.9.10,<2.0",
         "webignition/web-json-model":">=0.1,<2.0",
         "jms/serializer-bundle": "0.9.0",
-        "webignition/simplytestable-base-migrations-bundle":"~1.3",
         "webignition/resque-bundle":"*",
         "webignition/is-http-status-code":"0.2",
         "guzzle/guzzle":"3.8.0",
@@ -36,6 +38,9 @@
         "jeremykendall/php-domain-parser": "1.2.1",
         "willdurand/negotiation": "1.3.3"
     },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0"
+    },
     "repositories": [
         {
             "type": "vcs",
@@ -44,6 +49,7 @@
     ],    
     "scripts": {
         "post-install-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
@@ -51,6 +57,7 @@
             "php app/console assetic:dump"
         ],
         "post-update-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
@@ -65,6 +72,12 @@
     "prefer-stable": true,
     "extra": {
         "symfony-app-dir": "app",
-        "symfony-web-dir": "web"
+        "symfony-web-dir": "web",
+        "incenteev-parameters": {
+            "file": "app/config/parameters.yml"
+        },
+        "branch-alias": {
+            "dev-master": "2.3-dev"
+        }
     }
 }
