@@ -2,38 +2,43 @@
 
 namespace Application\Migrations;
 
-use SimplyTestable\BaseMigrationsBundle\Migration\BaseMigration,
+use Doctrine\DBAL\Migrations\AbstractMigration,
     Doctrine\DBAL\Schema\Schema;
 
 /**
  * Auto-generated Migration: Please modify to your need!
  */
-class Version20120925115659 extends BaseMigration
-{
+class Version20120925115659 extends AbstractMigration {
+
+    private $statements = [
+        'mysql' => [
+            'up' => [
+                "ALTER TABLE TaskOutput ADD errorCount INT NOT NULL"
+            ],
+            'down' => [
+                "ALTER TABLE TaskOutput DROP errorCount"
+            ]
+        ],
+        'sqlite' => [
+            'up' => [
+                "ALTER TABLE TaskOutput ADD errorCount INT NOT NULL DEFAULT 0"
+            ],
+            'down' => []
+        ]
+    ];
+
     public function up(Schema $schema)
-    {        
-        $this->statements['mysql'] = array(
-            "ALTER TABLE TaskOutput ADD errorCount INT NOT NULL"            
-        );
-        
-        $this->statements['sqlite'] = array(
-            "ALTER TABLE TaskOutput ADD errorCount INT NOT NULL DEFAULT 0"
-        );        
-        
-   
-        parent::up($schema);
+    {
+        foreach ($this->statements[$this->connection->getDatabasePlatform()->getName()]['up'] as $statement) {
+            $this->addSql($statement);
+        }
     }
 
     public function down(Schema $schema)
     {
-        $this->statements['mysql'] = array(
-            "ALTER TABLE TaskOutput DROP errorCount"            
-        );
-        
-        $this->statements['sqlite'] = array(
-            "SELECT 1 + 1"
-        );
-        
-        parent::down($schema);
+        foreach ($this->statements[$this->connection->getDatabasePlatform()->getName()]['down'] as $statement) {
+            $this->addSql($statement);
+        }
     }
+
 }

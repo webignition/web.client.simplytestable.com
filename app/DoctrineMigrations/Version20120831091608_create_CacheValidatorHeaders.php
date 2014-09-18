@@ -2,41 +2,55 @@
 
 namespace Application\Migrations;
 
-use SimplyTestable\BaseMigrationsBundle\Migration\BaseMigration,
+use Doctrine\DBAL\Migrations\AbstractMigration,
     Doctrine\DBAL\Schema\Schema;
 
 /**
  * Auto-generated Migration: Please modify to your need!
  */
-class Version20120831091608_create_CacheValidatorHeaders extends BaseMigration
-{
+class Version20120831091608_create_CacheValidatorHeaders extends AbstractMigration {
+
+    private $statements = [
+        'mysql' => [
+            'up' => [
+                "CREATE TABLE CacheValidatorHeaders (
+                    id INT AUTO_INCREMENT NOT NULL,
+                    identifier VARCHAR(255) NOT NULL,
+                    lastModifiedDate DATETIME NOT NULL,
+                    PRIMARY KEY(id),
+                    UNIQUE INDEX identifier_idx (identifier))
+                    DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE = InnoDB"
+            ],
+            'down' => [
+                "DROP TABLE CacheValidatorHeaders"
+            ]
+        ],
+        'sqlite' => [
+            'up' => [
+                "CREATE TABLE CacheValidatorHeaders (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    identifier VARCHAR(255) NOT NULL COLLATE NOCASE,
+                    lastModifiedDate DATETIME NOT NULL)",
+                "CREATE UNIQUE INDEX identifier_idx ON CacheValidatorHeaders (identifier)"
+            ],
+            'down' => [
+                "DROP TABLE CacheValidatorHeaders"
+            ]
+        ]
+    ];
+
     public function up(Schema $schema)
-    {      
-        
-        $this->statements['mysql'] = array(
-            "CREATE TABLE CacheValidatorHeaders (
-                id INT AUTO_INCREMENT NOT NULL,
-                identifier VARCHAR(255) NOT NULL,
-                lastModifiedDate DATETIME NOT NULL,
-                PRIMARY KEY(id),
-                UNIQUE INDEX identifier_idx (identifier))
-                DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE = InnoDB"
-        );
-        
-        $this->statements['sqlite'] = array(
-            "CREATE TABLE CacheValidatorHeaders (
-                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                identifier VARCHAR(255) NOT NULL COLLATE NOCASE,
-                lastModifiedDate DATETIME NOT NULL)",
-            "CREATE UNIQUE INDEX identifier_idx ON CacheValidatorHeaders (identifier)"
-        );
-        
-        parent::up($schema);
+    {
+        foreach ($this->statements[$this->connection->getDatabasePlatform()->getName()]['up'] as $statement) {
+            $this->addSql($statement);
+        }
     }
 
     public function down(Schema $schema)
     {
-        $this->addCommonStatement("DROP TABLE CacheValidatorHeaders");        
-        parent::down($schema);
+        foreach ($this->statements[$this->connection->getDatabasePlatform()->getName()]['down'] as $statement) {
+            $this->addSql($statement);
+        }
     }
+
 }
