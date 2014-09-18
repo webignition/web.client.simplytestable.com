@@ -26,7 +26,7 @@ class TeamController extends BaseController implements RequiresPrivateUser {
         $name = trim($this->getRequest()->request->get('name'));
 
         if ($name == '') {
-            $this->get('session')->setFlash('team_create_error', 'blank-name');
+            $this->get('session')->getFlashBag()->set('team_create_error', 'blank-name');
             return $this->redirect($this->generateUrl('view_user_account_team_index_index', [], true));
         }
 

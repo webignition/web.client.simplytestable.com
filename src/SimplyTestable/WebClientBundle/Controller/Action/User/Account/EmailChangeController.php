@@ -23,18 +23,18 @@ class EmailChangeController extends AccountCredentialsChangeController {
         $redirectResponse = $this->redirect($this->generateUrl('view_user_account_index_index', [], true));
 
         if ($this->getRequestEmailAddress() === '') {
-            $this->get('session')->setFlash('user_account_details_update_email_request_notice', 'blank-email');
+            $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'blank-email');
             return $redirectResponse;
         }
 
         if ($this->getRequestEmailAddress() == $this->getUser()->getUsername()) {
-            $this->get('session')->setFlash('user_account_details_update_email_request_notice', 'same-email');
+            $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'same-email');
             return $redirectResponse;
         }
 
         if (!$this->isEmailValid($this->getRequestEmailAddress())) {
-            $this->get('session')->setFlash('user_account_details_update_email_request_notice', 'invalid-email');
-            $this->get('session')->setFlash('user_account_details_update_email', $this->getRequestEmailAddress());
+            $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'invalid-email');
+            $this->get('session')->getFlashBag()->set('user_account_details_update_email', $this->getRequestEmailAddress());
             return $redirectResponse;
         }
 
@@ -44,31 +44,31 @@ class EmailChangeController extends AccountCredentialsChangeController {
         if ($response === true) {
             try {
                 $this->sendEmailChangeConfirmationToken();
-                $this->get('session')->setFlash('user_account_details_update_email_request_notice', 'email-done');
+                $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'email-done');
             } catch (PostmarkResponseException $postmarkResponseException) {
                 $this->getUserEmailChangeRequestService()->cancelEmailChangeRequest();
 
                 if ($postmarkResponseException->isNotAllowedToSendException()) {
-                    $this->get('session')->setFlash('user_account_details_update_email_request_notice', 'postmark-not-allowed-to-send');
+                    $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'postmark-not-allowed-to-send');
                 } elseif ($postmarkResponseException->isInactiveRecipientException()) {
-                    $this->get('session')->setFlash('user_account_details_update_email_request_notice', 'postmark-inactive-recipient');
+                    $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'postmark-inactive-recipient');
                 } elseif ($postmarkResponseException->isInvalidEmailAddressException()) {
-                    $this->get('session')->setFlash('user_account_details_update_email_request_notice', 'invalid-email');
+                    $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'invalid-email');
                 } else {
-                    $this->get('session')->setFlash('user_account_details_update_email_request_notice', 'postmark-failure');
+                    $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'postmark-failure');
                 }
 
-                $this->get('session')->setFlash('user_account_details_update_email', $this->getRequestEmailAddress());
+                $this->get('session')->getFlashBag()->set('user_account_details_update_email', $this->getRequestEmailAddress());
             }
         } else {
             switch ($response) {
                 case 409:
-                    $this->get('session')->setFlash('user_account_details_update_email_request_notice', 'email-taken');
-                    $this->get('session')->setFlash('user_account_details_update_email', $this->getRequestEmailAddress());
+                    $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'email-taken');
+                    $this->get('session')->getFlashBag()->set('user_account_details_update_email', $this->getRequestEmailAddress());
                     break;
 
                 default:
-                    $this->get('session')->setFlash('user_account_details_update_email_request_notice', 'unknown');
+                    $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'unknown');
             }
         }
 
@@ -79,16 +79,16 @@ class EmailChangeController extends AccountCredentialsChangeController {
     public function resendAction() {
         try {
             $this->sendEmailChangeConfirmationToken();
-            $this->get('session')->setFlash('user_account_details_resend_email_change_notice', 're-sent');
+            $this->get('session')->getFlashBag()->set('user_account_details_resend_email_change_notice', 're-sent');
         } catch (PostmarkResponseException $postmarkResponseException) {
             if ($postmarkResponseException->isNotAllowedToSendException()) {
-                $this->get('session')->setFlash('user_account_details_resend_email_change_error', 'postmark-not-allowed-to-send');
+                $this->get('session')->getFlashBag()->set('user_account_details_resend_email_change_error', 'postmark-not-allowed-to-send');
             } elseif ($postmarkResponseException->isInactiveRecipientException()) {
-                $this->get('session')->setFlash('user_account_details_resend_email_change_error', 'postmark-inactive-recipient');
+                $this->get('session')->getFlashBag()->set('user_account_details_resend_email_change_error', 'postmark-inactive-recipient');
             } elseif ($postmarkResponseException->isInvalidEmailAddressException()) {
-                $this->get('session')->setFlash('user_account_details_resend_email_change_error', 'invalid-email');
+                $this->get('session')->getFlashBag()->set('user_account_details_resend_email_change_error', 'invalid-email');
             } else {
-                $this->get('session')->setFlash('user_account_details_resend_email_change_error', 'postmark-failure');
+                $this->get('session')->getFlashBag()->set('user_account_details_resend_email_change_error', 'postmark-failure');
             }
         }
 
@@ -104,13 +104,13 @@ class EmailChangeController extends AccountCredentialsChangeController {
         $redirectResponse =  $this->redirect($this->generateUrl('view_user_account_index_index', [], true));
 
         if ($this->getRequestToken() === '') {
-            $this->get('session')->setFlash('user_account_details_update_email_confirm_notice', 'invalid-token');
+            $this->get('session')->getFlashBag()->set('user_account_details_update_email_confirm_notice', 'invalid-token');
             return $redirectResponse;
         }
 
         $emailChangeRequest = $this->getUserEmailChangeRequestService()->getEmailChangeRequest($this->getUser()->getUsername());
         if ($this->getRequestToken() !== $emailChangeRequest['token']) {
-            $this->get('session')->setFlash('user_account_details_update_email_confirm_notice', 'invalid-token');
+            $this->get('session')->getFlashBag()->set('user_account_details_update_email_confirm_notice', 'invalid-token');
             return $redirectResponse;
         }
 
@@ -118,10 +118,10 @@ class EmailChangeController extends AccountCredentialsChangeController {
 
         if ($result !== true) {
             if ($result == 409) {
-                $this->get('session')->setFlash('user_account_details_update_email_confirm_notice', 'email-taken');
-                $this->get('session')->setFlash('user_account_details_update_email', $emailChangeRequest['new_email']);
+                $this->get('session')->getFlashBag()->set('user_account_details_update_email_confirm_notice', 'email-taken');
+                $this->get('session')->getFlashBag()->set('user_account_details_update_email', $emailChangeRequest['new_email']);
             } else {
-                $this->get('session')->setFlash('user_account_details_update_email_confirm_notice', 'unknown');
+                $this->get('session')->getFlashBag()->set('user_account_details_update_email_confirm_notice', 'unknown');
             }
 
             return $redirectResponse;
@@ -156,7 +156,7 @@ class EmailChangeController extends AccountCredentialsChangeController {
             $redirectResponse->headers->setCookie($this->getUserAuthenticationCookie());
         }
 
-        $this->get('session')->setFlash('user_account_details_update_email_confirm_notice', 'success');
+        $this->get('session')->getFlashBag()->set('user_account_details_update_email_confirm_notice', 'success');
 
 
         return $redirectResponse;
@@ -165,7 +165,7 @@ class EmailChangeController extends AccountCredentialsChangeController {
 
     public function cancelAction() {
         $this->getUserEmailChangeRequestService()->cancelEmailChangeRequest();
-        $this->get('session')->setFlash('user_account_details_cancel_email_change_notice', 'cancelled');
+        $this->get('session')->getFlashBag()->set('user_account_details_cancel_email_change_notice', 'cancelled');
         return $this->redirect($this->generateUrl('view_user_account_index_index', array(), true));
     }
 

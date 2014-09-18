@@ -11,12 +11,12 @@ class PasswordChangeController extends AccountCredentialsChangeController {
         $redirectResponse = $this->redirect($this->generateUrl('view_user_account_index_index', [], true));
 
         if (!$this->hasRequestCurrentPassword() || !$this->hasRequestNewPassword()) {
-            $this->get('session')->setFlash('user_account_details_update_password_request_notice', 'password-missing');
+            $this->get('session')->getFlashBag()->set('user_account_details_update_password_request_notice', 'password-missing');
             return $redirectResponse;
         }
 
         if ($this->getRequestCurrentPassword() != $this->getUser()->getPassword()) {
-            $this->get('session')->setFlash('user_account_details_update_password_request_notice', 'password-invalid');
+            $this->get('session')->getFlashBag()->set('user_account_details_update_password_request_notice', 'password-invalid');
             return $redirectResponse;
         }
 
@@ -32,16 +32,16 @@ class PasswordChangeController extends AccountCredentialsChangeController {
                 $redirectResponse->headers->setCookie($this->getUserAuthenticationCookie());
             }
 
-            $this->get('session')->setFlash('user_account_details_update_password_request_notice', 'password-done');
+            $this->get('session')->getFlashBag()->set('user_account_details_update_password_request_notice', 'password-done');
 
         } else {
             switch ($passwordResetResponse) {
                 case 503:
-                    $this->get('session')->setFlash('user_account_details_update_password_request_notice', 'password-failed-read-only');
+                    $this->get('session')->getFlashBag()->set('user_account_details_update_password_request_notice', 'password-failed-read-only');
                     break;
 
                 default:
-                    $this->get('session')->setFlash('user_account_details_update_password_request_notice', 'unknown');
+                    $this->get('session')->getFlashBag()->set('user_account_details_update_password_request_notice', 'unknown');
             }
         }
 

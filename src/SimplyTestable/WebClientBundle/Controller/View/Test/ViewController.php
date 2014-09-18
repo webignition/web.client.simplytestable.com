@@ -157,7 +157,7 @@ abstract class ViewController extends BaseViewController {
             )
         ));
 
-        $this->container->get('session')->setFlash('user_signin_error', 'test-not-logged-in');
+        $this->container->get('session')->getFlashBag()->set('user_signin_error', 'test-not-logged-in');
 
         return new RedirectResponse($this->generateUrl('view_user_signin_index', array(
             'redirect' => base64_encode($redirectParameters)

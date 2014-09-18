@@ -55,7 +55,7 @@ class NewsSubscriptionsController extends BaseController implements RequiresPriv
             $this->getMailchimpListRecipientsService()->persistAndFlush($listRecipients);
         }
 
-        $this->get('session')->setFlash('user_account_newssubscriptions_update', $flashData);
+        $this->get('session')->getFlashBag()->set('user_account_newssubscriptions_update', $flashData);
 
         return $this->redirect($this->generateUrl('view_user_account_index_index', array(), true) . '#news-subscriptions');
     }

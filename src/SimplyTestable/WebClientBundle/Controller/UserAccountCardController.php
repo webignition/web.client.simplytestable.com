@@ -28,9 +28,9 @@ class UserAccountCardController extends AbstractUserAccountController {
                 return $response;
 
             } else {
-                $this->get('session')->setFlash('user_account_card_exception_message', $userAccountCardException->getMessage());
-                $this->get('session')->setFlash('user_account_card_exception_param', $userAccountCardException->getParam());
-                $this->get('session')->setFlash('user_account_card_exception_code', $userAccountCardException->getCode());                
+                $this->get('session')->getFlashBag()->set('user_account_card_exception_message', $userAccountCardException->getMessage());
+                $this->get('session')->getFlashBag()->set('user_account_card_exception_param', $userAccountCardException->getParam());
+                $this->get('session')->getFlashBag()->set('user_account_card_exception_code', $userAccountCardException->getCode());
                 return $this->redirect($this->generateUrl('view_user_account_card_index', array(), true));
             }
         }

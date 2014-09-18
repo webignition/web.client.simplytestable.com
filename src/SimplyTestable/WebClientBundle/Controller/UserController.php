@@ -30,7 +30,7 @@ class UserController extends BaseViewController
         $staySignedIn = trim($this->get('request')->request->get('stay-signed-in')) == '' ? 0 : 1; 
 
         if ($email == '') {
-            $this->get('session')->setFlash('user_signin_error', 'blank-email');
+            $this->get('session')->getFlashBag()->set('user_signin_error', 'blank-email');
             return $this->redirect($this->generateUrl('view_user_signin_index', array(
                 'redirect' => $redirect,
                 'stay-signed-in' => $staySignedIn
@@ -38,7 +38,7 @@ class UserController extends BaseViewController
         } 
         
         if (!$this->isEmailValid($email)) {
-            $this->get('session')->setFlash('user_signin_error', 'invalid-email');
+            $this->get('session')->getFlashBag()->set('user_signin_error', 'invalid-email');
             return $this->redirect($this->generateUrl('view_user_signin_index', array(
                 'email' => $email,
                 'redirect' => $redirect,
@@ -49,7 +49,7 @@ class UserController extends BaseViewController
         $password = trim($this->get('request')->request->get('password'));        
 
         if ($password == '') {
-            $this->get('session')->setFlash('user_signin_error', 'blank-password');
+            $this->get('session')->getFlashBag()->set('user_signin_error', 'blank-password');
             return $this->redirect($this->generateUrl('view_user_signin_index', array(
                 'email' => $email,
                 'redirect' => $redirect,
@@ -62,7 +62,7 @@ class UserController extends BaseViewController
         $user->setPassword($password);
         
         if ($this->getUserService()->isPublicUser($user)) {
-            $this->get('session')->setFlash('user_signin_error', 'public-user');
+            $this->get('session')->getFlashBag()->set('user_signin_error', 'public-user');
             return $this->redirect($this->generateUrl('view_user_signin_index', array(
                 'email' => $email,
                 'redirect' => $redirect,
@@ -75,7 +75,7 @@ class UserController extends BaseViewController
         if (!$this->getUserService()->authenticate()) {
             if (!$this->getUserService()->exists()) {
                 $this->getUserService()->clearUser();
-                $this->get('session')->setFlash('user_signin_error', 'invalid-user');
+                $this->get('session')->getFlashBag()->set('user_signin_error', 'invalid-user');
                 return $this->redirect($this->generateUrl('view_user_signin_index', array(
                     'email' => $email,
                     'redirect' => $redirect,
@@ -85,7 +85,7 @@ class UserController extends BaseViewController
 
             if ($this->getUserService()->isEnabled()) {
                 $this->getUserService()->clearUser();
-                $this->get('session')->setFlash('user_signin_error', 'authentication-failure');
+                $this->get('session')->getFlashBag()->set('user_signin_error', 'authentication-failure');
                 return $this->redirect($this->generateUrl('view_user_signin_index', array(
                     'email' => $email,
                     'redirect' => $redirect,
@@ -98,7 +98,7 @@ class UserController extends BaseViewController
 
             $this->sendConfirmationToken($email, $token);                  
 
-            $this->get('session')->setFlash('user_signin_error', 'user-not-enabled');          
+            $this->get('session')->getFlashBag()->set('user_signin_error', 'user-not-enabled');
 
             return $this->redirect($this->generateUrl('view_user_signin_index', array(
                 'email' => $email,
@@ -112,7 +112,7 @@ class UserController extends BaseViewController
             $token = $this->getUserService()->getConfirmationToken($email);        
             $this->sendConfirmationToken($email, $token);                  
 
-            $this->get('session')->setFlash('user_signin_error', 'user-not-enabled');
+            $this->get('session')->getFlashBag()->set('user_signin_error', 'user-not-enabled');
             return $this->redirect($this->generateUrl('view_user_signin_index', array(
                 'email' => $email,
                 'redirect' => $redirect,
@@ -168,7 +168,7 @@ class UserController extends BaseViewController
         $token = $this->getUserService()->getConfirmationToken($email);             
         
         if ($token != $inputToken) {
-            $this->get('session')->setFlash('user_reset_password_error', 'invalid-token');
+            $this->get('session')->getFlashBag()->set('user_reset_password_error', 'invalid-token');
             return $this->redirect($this->generateUrl('view_user_resetpassword_choose_index', array(
                 'email' => $email,
                 'token' => $inputToken,
@@ -179,7 +179,7 @@ class UserController extends BaseViewController
         $password = trim($this->get('request')->request->get('password'));
         
         if ($password == '') {
-            $this->get('session')->setFlash('user_reset_password_error', 'blank-password');
+            $this->get('session')->getFlashBag()->set('user_reset_password_error', 'blank-password');
             return $this->redirect($this->generateUrl('view_user_resetpassword_choose_index', array(
                 'email' => $email,
                 'token' => $inputToken,
@@ -190,7 +190,7 @@ class UserController extends BaseViewController
         $passwordResetResponse = $this->getUserService()->resetPassword($token, $password);        
         
         if ($this->requestFailedDueToReadOnly($passwordResetResponse)) {
-            $this->get('session')->setFlash('user_reset_password_error', 'failed-read-only');
+            $this->get('session')->getFlashBag()->set('user_reset_password_error', 'failed-read-only');
             return $this->redirect($this->generateUrl('view_user_resetpassword_choose_index', array(
                 'email' => $email,
                 'token' => $inputToken,
@@ -199,7 +199,7 @@ class UserController extends BaseViewController
         }
         
         if ($passwordResetResponse === 404) {
-            $this->get('session')->setFlash('user_reset_password_error', 'invalid-token');
+            $this->get('session')->getFlashBag()->set('user_reset_password_error', 'invalid-token');
             return $this->redirect($this->generateUrl('view_user_resetpassword_choose_index', array(
                 'email' => $email,
                 'token' => $inputToken,
@@ -238,14 +238,14 @@ class UserController extends BaseViewController
         
         $email = strtolower(trim($this->get('request')->request->get('email')));
         if ($email == '') {
-            $this->get('session')->setFlash('user_create_error', 'blank-email');
+            $this->get('session')->getFlashBag()->set('user_create_error', 'blank-email');
             return $this->redirect($this->generateUrl('view_user_signup_index_index', array(
                 'plan' => $plan 
             ), true));             
         }
         
         if (!$this->isEmailValid($email)) {
-            $this->get('session')->setFlash('user_create_error', 'invalid-email');
+            $this->get('session')->getFlashBag()->set('user_create_error', 'invalid-email');
             return $this->redirect($this->generateUrl('view_user_signup_index_index', array(
                 'email' => $email,
                 'plan' => $plan 
@@ -254,8 +254,8 @@ class UserController extends BaseViewController
         
         $password = trim($this->get('request')->request->get('password'));
         if ($password == '') {
-            $this->get('session')->setFlash('user_create_prefil', $email);
-            $this->get('session')->setFlash('user_create_error', 'blank-password');
+            $this->get('session')->getFlashBag()->set('user_create_prefil', $email);
+            $this->get('session')->getFlashBag()->set('user_create_error', 'blank-password');
             return $this->redirect($this->generateUrl('view_user_signup_index_index', array(
                 'email' => $email,
                 'plan' => $plan 
@@ -275,17 +275,17 @@ class UserController extends BaseViewController
         $createResponse = $this->getUserService()->create($email, $password, $plan, $coupon);
 
         if ($this->userCreationUserAlreadyExists($createResponse)) {
-            $this->get('session')->setFlash('user_create_confirmation', 'user-exists');
+            $this->get('session')->getFlashBag()->set('user_create_confirmation', 'user-exists');
             return $this->redirect($this->generateUrl('view_user_signup_index_index', array('email' => $email), true));
         }
         
         if ($this->requestFailedDueToReadOnly($createResponse)) {
-            $this->get('session')->setFlash('user_create_error', 'create-failed-read-only');
+            $this->get('session')->getFlashBag()->set('user_create_error', 'create-failed-read-only');
             return $this->redirect($this->generateUrl('view_user_signup_index_index', array('email' => $email), true));
         }        
                 
         if ($this->userCreationFailed($createResponse)) {
-            $this->get('session')->setFlash('user_create_error', 'create-failed');
+            $this->get('session')->getFlashBag()->set('user_create_error', 'create-failed');
             return $this->redirect($this->generateUrl('view_user_signup_index_index', array('email' => $email), true));
         }
         
@@ -293,15 +293,15 @@ class UserController extends BaseViewController
         
         try {
             $this->sendConfirmationToken($email, $token);         
-            $this->get('session')->setFlash('user_create_confirmation', 'user-created');
+            $this->get('session')->getFlashBag()->set('user_create_confirmation', 'user-created');
             return $this->redirect($this->generateUrl('view_user_signup_confirm_index', array('email' => $email), true));
         } catch (\SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception $postmarkResponseException) {
             if ($postmarkResponseException->isNotAllowedToSendException()) {
-                $this->get('session')->setFlash('user_create_error', 'postmark-not-allowed-to-send');
+                $this->get('session')->getFlashBag()->set('user_create_error', 'postmark-not-allowed-to-send');
             } elseif ($postmarkResponseException->isInactiveRecipientException()) {
-                $this->get('session')->setFlash('user_create_error', 'postmark-inactive-recipient');
+                $this->get('session')->getFlashBag()->set('user_create_error', 'postmark-inactive-recipient');
             } else {
-                $this->get('session')->setFlash('user_create_error', 'invalid-email');
+                $this->get('session')->getFlashBag()->set('user_create_error', 'invalid-email');
             }
 
             return $this->redirect($this->generateUrl('view_user_signup_index_index', array(
@@ -348,20 +348,20 @@ class UserController extends BaseViewController
     
     public function signupConfirmSubmitAction($email) {
         if ($this->getUserService()->exists($email) === false) {
-            $this->get('session')->setFlash('token_resend_error', 'invalid-user');
+            $this->get('session')->getFlashBag()->set('token_resend_error', 'invalid-user');
             return $this->redirect($this->generateUrl('view_user_signup_confirm_index', array('email' => $email), true));
         }
         
         $token = trim($this->get('request')->get('token'));
         if ($token == '') {
-            $this->get('session')->setFlash('user_token_error', 'blank-token');
+            $this->get('session')->getFlashBag()->set('user_token_error', 'blank-token');
             return $this->redirect($this->generateUrl('view_user_signup_confirm_index', array('email' => $email), true));
         }
 
         if ($this->getRequest()->request->has('password')) {
             $password = trim($this->get('request')->get('password'));
             if ($password == '') {
-                $this->get('session')->setFlash('user_activate_error', 'blank-password');
+                $this->get('session')->getFlashBag()->set('user_activate_error', 'blank-password');
                 return $this->redirect(
                     $this->generateUrl('view_user_signup_confirm_index', [
                         'email' => $email,
@@ -375,12 +375,12 @@ class UserController extends BaseViewController
         
         $activationResponse = $this->getUserService()->activate($token, $password);
         if ($this->requestFailedDueToReadOnly($activationResponse)) {
-            $this->get('session')->setFlash('user_token_error', 'failed-read-only');
+            $this->get('session')->getFlashBag()->set('user_token_error', 'failed-read-only');
             return $this->redirect($this->generateUrl('view_user_signup_confirm_index', array('email' => $email), true));
         }
         
         if ($activationResponse == false) {
-            $this->get('session')->setFlash('user_token_error', 'invalid-token');
+            $this->get('session')->getFlashBag()->set('user_token_error', 'invalid-token');
             return $this->redirect($this->generateUrl('view_user_signup_confirm_index', array('email' => $email), true));
         }
 
@@ -402,7 +402,7 @@ class UserController extends BaseViewController
             )
         );
         
-        $this->get('session')->setFlash('user_signin_confirmation', 'user-activated');
+        $this->get('session')->getFlashBag()->set('user_signin_confirmation', 'user-activated');
         
         $redirectParameters = array(
             'email' => $email

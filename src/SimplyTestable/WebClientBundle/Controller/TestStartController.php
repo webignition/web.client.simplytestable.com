@@ -73,12 +73,12 @@ class TestStartController extends TestController
         }
 
         if (!$this->hasWebsite()) {
-            $this->get('session')->setFlash('test_start_error', 'website-blank');
+            $this->get('session')->getFlashBag()->set('test_start_error', 'website-blank');
             return $this->redirect($this->generateUrl('view_dashboard_index_index', $this->getRedirectValues($testOptions), true));
         }
         
         if ($testOptions->hasTestTypes() === false) {
-            $this->get('session')->setFlash('test_start_error', 'no-test-types-selected');
+            $this->get('session')->getFlashBag()->set('test_start_error', 'no-test-types-selected');
             return $this->redirect($this->generateUrl('view_dashboard_index_index', $this->getRedirectValues($testOptions), true));
         }
         
@@ -93,11 +93,11 @@ class TestStartController extends TestController
                 true
             ));
         } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-            $this->get('session')->setFlash('test_start_error', 'curl-error');
-            $this->get('session')->setFlash('curl_error_code', $curlException->getErrorNo());
+            $this->get('session')->getFlashBag()->set('test_start_error', 'curl-error');
+            $this->get('session')->getFlashBag()->set('curl_error_code', $curlException->getErrorNo());
             return $this->redirect($this->generateUrl('view_dashboard_index_index', $this->getRedirectValues($testOptions), true));
         } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {                            
-            $this->get('session')->setFlash('test_start_error', 'web_resource_exception');
+            $this->get('session')->getFlashBag()->set('test_start_error', 'web_resource_exception');
             
             return $this->redirect($this->generateUrl('view_dashboard_index_index', $this->getRedirectValues($testOptions), true));
         }

@@ -35,7 +35,7 @@ abstract class ActionTest extends BaseTest {
         
         if (isset($responseProperties['flash'])) {
             foreach ($responseProperties['flash'] as $key => $expectedValue) {
-                $this->assertEquals($expectedValue, $this->container->get('session')->getFlash($key));
+                $this->assertEquals($expectedValue, $this->container->get('session')->getFlashBag()->get($key));
             }
         }
         

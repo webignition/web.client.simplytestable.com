@@ -63,7 +63,7 @@ class TestViewController extends BaseViewController
             )
         ));
 
-        $this->get('session')->setFlash('user_signin_error', 'test-not-logged-in');
+        $this->get('session')->getFlashBag()->set('user_signin_error', 'test-not-logged-in');
 
         $outcome->setResponse($this->redirect($this->generateUrl('view_user_signin_index', array(
             'redirect' => base64_encode($redirectParameters)

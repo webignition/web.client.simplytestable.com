@@ -13,12 +13,12 @@ class IndexController extends BaseController {
         $email = trim($this->get('request')->request->get('email'));
 
         if ($email == '') {
-            $this->get('session')->setFlash('user_reset_password_error', 'blank-email');
+            $this->get('session')->getFlashBag()->set('user_reset_password_error', 'blank-email');
             return $this->redirect($this->generateUrl('view_user_resetpassword_index_index', array(), true));
         }
 
         if (!$this->isEmailValid($email)) {
-            $this->get('session')->setFlash('user_reset_password_error', 'invalid-email');
+            $this->get('session')->getFlashBag()->set('user_reset_password_error', 'invalid-email');
             return $this->redirect($this->generateUrl('view_user_resetpassword_index_index', array(
                 'email' => $email
             ), true));
@@ -26,15 +26,15 @@ class IndexController extends BaseController {
 
         try {
             if ($this->getUserService()->exists($email) === false) {
-                $this->get('session')->setFlash('user_reset_password_error', 'invalid-user');
+                $this->get('session')->getFlashBag()->set('user_reset_password_error', 'invalid-user');
                 return $this->redirect($this->generateUrl('view_user_resetpassword_index_index', array('email' => $email), true));
             }
         } catch (CoreApplicationAdminRequestException $coreApplicationAdminRequestException) {
             if ($coreApplicationAdminRequestException->isInvalidCredentialsException()) {
-                $this->get('session')->setFlash('user_reset_password_error', 'core-app-invalid-credentials');
+                $this->get('session')->getFlashBag()->set('user_reset_password_error', 'core-app-invalid-credentials');
                 $this->sendInvalidAdminCredentialsNotification();
             } else {
-                $this->get('session')->setFlash('user_reset_password_error', 'core-app-unknown-error');
+                $this->get('session')->getFlashBag()->set('user_reset_password_error', 'core-app-unknown-error');
             }
 
             return $this->redirect($this->generateUrl('view_user_resetpassword_index_index', array('email' => $email), true));
@@ -44,17 +44,17 @@ class IndexController extends BaseController {
 
         try {
             $this->sendPasswordResetConfirmationToken($email, $token);
-            $this->get('session')->setFlash('user_reset_password_confirmation', 'token-sent');
+            $this->get('session')->getFlashBag()->set('user_reset_password_confirmation', 'token-sent');
             return $this->redirect($this->generateUrl('view_user_resetpassword_index_index', array('email' => $email), true));
         } catch (PostmarkResponseException $postmarkResponseException) {
             if ($postmarkResponseException->isNotAllowedToSendException()) {
-                $this->get('session')->setFlash('user_reset_password_error', 'postmark-not-allowed-to-send');
+                $this->get('session')->getFlashBag()->set('user_reset_password_error', 'postmark-not-allowed-to-send');
             } elseif ($postmarkResponseException->isInactiveRecipientException()) {
-                $this->get('session')->setFlash('user_reset_password_error', 'postmark-inactive-recipient');
+                $this->get('session')->getFlashBag()->set('user_reset_password_error', 'postmark-inactive-recipient');
             } elseif ($postmarkResponseException->isInvalidEmailAddressException()) {
-                $this->get('session')->setFlash('user_reset_password_error', 'invalid-email');
+                $this->get('session')->getFlashBag()->set('user_reset_password_error', 'invalid-email');
             } else {
-                $this->get('session')->setFlash('user_reset_password_error', 'postmark-failure');
+                $this->get('session')->getFlashBag()->set('user_reset_password_error', 'postmark-failure');
             }
 
             return $this->redirect($this->generateUrl('view_user_resetpassword_index_index', array(

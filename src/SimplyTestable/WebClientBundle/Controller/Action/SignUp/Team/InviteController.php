@@ -21,7 +21,7 @@ class InviteController extends BaseController {
 
         $password = trim($this->getRequest()->request->get('password'));
         if ($password == '') {
-            $this->get('session')->setFlash('invite_accept_error', 'blank-password');
+            $this->get('session')->getFlashBag()->set('invite_accept_error', 'blank-password');
             return $this->redirect($this->generateUrl('view_user_signup_invite_index', [
                 'token' => $token
             ], true));
@@ -32,8 +32,8 @@ class InviteController extends BaseController {
         $response = $this->getUserService()->activateAndAccept($invite, $password);
 
         if ($response !== true) {
-            $this->get('session')->setFlash('invite_accept_error', 'failure');
-            $this->get('session')->setFlash('invite_accept_failure', $response);
+            $this->get('session')->getFlashBag()->set('invite_accept_error', 'failure');
+            $this->get('session')->getFlashBag()->set('invite_accept_failure', $response);
             return $this->redirect($this->generateUrl('view_user_signup_invite_index', [
                 'token' => $token
             ], true));

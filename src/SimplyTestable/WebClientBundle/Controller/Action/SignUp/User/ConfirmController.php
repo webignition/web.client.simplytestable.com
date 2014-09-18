@@ -16,15 +16,15 @@ class ConfirmController extends BaseController {
 
         try {
             if ($this->getUserService()->exists($email) === false) {
-                $this->get('session')->setFlash('token_resend_error', 'invalid-user');
+                $this->get('session')->getFlashBag()->set('token_resend_error', 'invalid-user');
                 return $redirectResponse;
             }
         } catch (CoreApplicationAdminRequestException $coreApplicationAdminRequestException) {
             if ($coreApplicationAdminRequestException->isInvalidCredentialsException()) {
-                $this->get('session')->setFlash('token_resend_error', 'core-app-invalid-credentials');
+                $this->get('session')->getFlashBag()->set('token_resend_error', 'core-app-invalid-credentials');
                 $this->sendInvalidAdminCredentialsNotification();
             } else {
-                $this->get('session')->setFlash('token_resend_error', 'core-app-unknown-error');
+                $this->get('session')->getFlashBag()->set('token_resend_error', 'core-app-unknown-error');
             }
 
             return $redirectResponse;
@@ -34,16 +34,16 @@ class ConfirmController extends BaseController {
 
         try {
             $this->sendConfirmationToken($email, $token);
-            $this->get('session')->setFlash('token_resend_confirmation', 'sent');
+            $this->get('session')->getFlashBag()->set('token_resend_confirmation', 'sent');
 
             return $redirectResponse;
         } catch (PostmarkResponseException $postmarkResponseException) {
             if ($postmarkResponseException->isNotAllowedToSendException()) {
-                $this->get('session')->setFlash('token_resend_error', 'postmark-not-allowed-to-send');
+                $this->get('session')->getFlashBag()->set('token_resend_error', 'postmark-not-allowed-to-send');
             } elseif ($postmarkResponseException->isInactiveRecipientException()) {
-                $this->get('session')->setFlash('token_resend_error', 'postmark-inactive-recipient');
+                $this->get('session')->getFlashBag()->set('token_resend_error', 'postmark-inactive-recipient');
             } else {
-                $this->get('session')->setFlash('token_resend_error', 'postmark-failure');
+                $this->get('session')->getFlashBag()->set('token_resend_error', 'postmark-failure');
             }
 
             return $redirectResponse;

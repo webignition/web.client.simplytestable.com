@@ -119,7 +119,7 @@ class RequestListener
         }
 
         if ($this->isRequiresPrivateUserController() && !$this->getUserService()->isLoggedIn()) {
-            $this->kernel->getContainer()->get('session')->setFlash('user_signin_error', 'account-not-logged-in');
+            $this->kernel->getContainer()->get('session')->getFlashBag()->set('user_signin_error', 'account-not-logged-in');
             $this->event->setResponse($this->getController()->getUserSignInRedirectResponse());
             return;
         }
