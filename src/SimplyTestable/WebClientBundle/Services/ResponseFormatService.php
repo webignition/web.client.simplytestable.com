@@ -29,8 +29,10 @@ class ResponseFormatService {
     /**
      * @param Request $request
      */
-    public function setRequest(Request $request) {
-        $this->request = $request;
+    public function setRequest(Request $request = null) {
+        if ($request instanceof Request) {
+            $this->request = $request;
+        }
     }
 
 
