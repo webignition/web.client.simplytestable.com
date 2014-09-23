@@ -23,7 +23,6 @@
         "webignition/url":">=1.9.10,<2.0",
         "webignition/web-json-model":">=0.1,<2.0",
         "jms/serializer-bundle": "0.9.0",
-        "webignition/resque-bundle":"*",
         "webignition/is-http-status-code":"0.2",
         "guzzle/guzzle":"3.8.0",
         "webignition/internet-media-type":">=0.1,<2.0",        
@@ -36,7 +35,10 @@
         "doctrine/collections":"*",
         "webignition/php-stripe-models":">=0.2.3,<1.0",
         "jeremykendall/php-domain-parser": "1.2.1",
-        "willdurand/negotiation": "1.3.3"
+        "willdurand/negotiation": "1.3.3",
+        "chrisboulton/php-resque": "dev-master",
+        "chrisboulton/php-resque-scheduler": "dev-master",
+        "bcc/resque-bundle": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0"

@@ -51,9 +51,9 @@ services:
   simplytestable.services.resqueQueueService:
     class:   SimplyTestable\WebClientBundle\Services\ResqueQueueService
     arguments:
-      queueManager: "@glit_resque.queue_manager"
-      logger: "@logger"
-      resquePrefix: "%glit_resque.prefix%"
+#      queueManager: "@glit_resque.queue_manager"
+#      logger: "@logger"
+#      resquePrefix: "%glit_resque.prefix%"
 
   simplytestable.services.userservice:
     class:  SimplyTestable\WebClientBundle\Services\UserService

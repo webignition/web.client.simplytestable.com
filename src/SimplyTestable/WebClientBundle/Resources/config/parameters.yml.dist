@@ -1,8 +1,5 @@
-glit_resque:
-  prefix: "SimplyTestable\WebClientBundle"
-
 parameters:
-  resque_pid: "simplytestable_webclientbundle" 
+  bcc_resque_prefix: web.client.simplytestable.com
   early_access_users:
     - "jon@webignition.net"
   task_types:

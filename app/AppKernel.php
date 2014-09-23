@@ -21,8 +21,8 @@ class AppKernel extends Kernel
             new SimplyTestable\WebClientBundle\SimplyTestableWebClientBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle($this),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
-            new Glit\ResqueBundle\GlitResqueBundle(),
-            new MZ\PostmarkBundle\MZPostmarkBundle()
+            new MZ\PostmarkBundle\MZPostmarkBundle(),
+            new BCC\ResqueBundle\BCCResqueBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
