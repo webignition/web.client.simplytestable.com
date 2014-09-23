@@ -1,5 +1,5 @@
 parameters:
-  bcc_resque_prefix: web.client.simplytestable.com
+  bcc_resque_prefix: webclient
   resque-job-class-map:
     "email-list-subscribe": "SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob"
     "email-list-unsubscribe": "SimplyTestable\WebClientBundle\Resque\Job\EmailListUnsubscribeJob"
