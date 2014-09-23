@@ -384,21 +384,24 @@ class UserController extends BaseViewController
             return $this->redirect($this->generateUrl('view_user_signup_confirm_index', array('email' => $email), true));
         }
 
-        $this->getResqueQueueService()->add(
-            'SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob',
-            'email-list-subscribe',
-            array(
-                'listId' => 'announcements',
-                'email' => $email,
+        $this->getResqueQueueService()->enqueue(
+            $this->getResqueJobFactoryService()->create(
+              'email-list-subscribe',
+                array(
+                    'listId' => 'announcements',
+                    'email' => $email,
+                )
             )
         );
 
-        $this->getResqueQueueService()->add(
-            'SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob',
-            'email-list-subscribe',
-            array(
-                'listId' => 'introduction',
-                'email' => $email,
+
+        $this->getResqueQueueService()->enqueue(
+            $this->getResqueJobFactoryService()->create(
+                'email-list-subscribe',
+                array(
+                    'listId' => 'introduction',
+                    'email' => $email,
+                )
             )
         );
         
@@ -457,10 +460,19 @@ class UserController extends BaseViewController
     
     /**
      *
-     * @return \SimplyTestable\WebClientBundle\Services\ResqueQueueService
+     * @return \SimplyTestable\WebClientBundle\Services\Resque\QueueService
      */        
     private function getResqueQueueService() {
-        return $this->container->get('simplytestable.services.resqueQueueService');
+        return $this->container->get('simplytestable.services.resque.queueService');
+    }
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\Resque\JobFactoryService
+     */
+    private function getResqueJobFactoryService() {
+        return $this->container->get('simplytestable.services.resque.jobFactoryService');
     }
 
 

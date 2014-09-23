@@ -39,21 +39,24 @@ class InviteController extends BaseController {
             ], true));
         }
 
-        $this->getResqueQueueService()->add(
-            'SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob',
-            'email-list-subscribe',
-            array(
-                'listId' => 'announcements',
-                'email' => $invite->getUser(),
+        $this->getResqueQueueService()->enqueue(
+            $this->getResqueJobFactoryService()->create(
+                'email-list-subscribe',
+                array(
+                    'listId' => 'announcements',
+                    'email' => $invite->getUser(),
+                )
             )
         );
 
-        $this->getResqueQueueService()->add(
-            'SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob',
-            'email-list-subscribe',
-            array(
-                'listId' => 'introduction',
-                'email' => $invite->getUser(),
+
+        $this->getResqueQueueService()->enqueue(
+            $this->getResqueJobFactoryService()->create(
+                'email-list-subscribe',
+                array(
+                    'listId' => 'introduction',
+                    'email' => $invite->getUser(),
+                )
             )
         );
 
@@ -97,10 +100,19 @@ class InviteController extends BaseController {
 
     /**
      *
-     * @return \SimplyTestable\WebClientBundle\Services\ResqueQueueService
+     * @return \SimplyTestable\WebClientBundle\Services\Resque\QueueService
      */
     private function getResqueQueueService() {
-        return $this->container->get('simplytestable.services.resqueQueueService');
+        return $this->container->get('simplytestable.services.resque.queueService');
+    }
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\Resque\JobFactoryService
+     */
+    private function getResqueJobFactoryService() {
+        return $this->container->get('simplytestable.services.resque.jobFactoryService');
     }
 
 }

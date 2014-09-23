@@ -130,21 +130,23 @@ class EmailChangeController extends AccountCredentialsChangeController {
         $oldEmail = $this->getUser()->getUsername();
         $newEmail = $emailChangeRequest['new_email'];
 
-        $this->getResqueQueueService()->add(
-            'SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob',
-            'email-list-subscribe',
-            array(
-                'listId' => 'announcements',
-                'email' => $newEmail,
+        $this->getResqueQueueService()->enqueue(
+            $this->getResqueJobFactoryService()->create(
+                'email-list-subscribe',
+                array(
+                    'listId' => 'announcements',
+                    'email' => $newEmail,
+                )
             )
         );
 
-        $this->getResqueQueueService()->add(
-            'SimplyTestable\WebClientBundle\Resque\Job\EmailListUnsubscribeJob',
-            'email-list-unsubscribe',
-            array(
-                'listId' => 'announcements',
-                'email' => $oldEmail,
+        $this->getResqueQueueService()->enqueue(
+            $this->getResqueJobFactoryService()->create(
+                'email-list-unsubscribe',
+                array(
+                    'listId' => 'announcements',
+                    'email' => $oldEmail,
+                )
             )
         );
 
@@ -244,10 +246,19 @@ class EmailChangeController extends AccountCredentialsChangeController {
 
     /**
      *
-     * @return \SimplyTestable\WebClientBundle\Services\ResqueQueueService
+     * @return \SimplyTestable\WebClientBundle\Services\Resque\QueueService
      */
     private function getResqueQueueService() {
-        return $this->container->get('simplytestable.services.resqueQueueService');
+        return $this->container->get('simplytestable.services.resque.queueService');
+    }
+
+
+    /**
+     *
+     * @return \SimplyTestable\WebClientBundle\Services\Resque\JobFactoryService
+     */
+    private function getResqueJobFactoryService() {
+        return $this->container->get('simplytestable.services.resque.jobFactoryService');
     }
 
 

@@ -2,26 +2,25 @@
 
 namespace SimplyTestable\WebClientBundle\Resque\Job;
 
-use SimplyTestable\WebClientBundle\Exception\EmailListSubscribeException;
+use SimplyTestable\WebClientBundle\Command\EmailList\SubscribeCommand;
 
-class EmailListSubscribeJob extends CommandLineJob {    
-    
+class EmailListSubscribeJob extends CommandJob {
+
     const QUEUE_NAME = 'email-list-subscribe';
-    const COMMAND = 'php app/console simplytestable:emaillist:subscribe';
-    
+
     protected function getQueueName() {
         return self::QUEUE_NAME;
     }
-    
-    protected function getArgumentOrder() {
-        return array('listId', 'email');
-    }
-    
+
     protected function getCommand() {
-        return self::COMMAND;
+        return new SubscribeCommand();
     }
-    
-    protected function failureHandler($output, $returnValue) {
-        throw new EmailListSubscribeException(implode("\n", $output), $returnValue);
-    }   
+
+    protected function getCommandArgs() {
+        return [
+            'listId' => $this->args['listId'],
+            'email' => $this->args['email']
+        ];
+    }
+
 }
