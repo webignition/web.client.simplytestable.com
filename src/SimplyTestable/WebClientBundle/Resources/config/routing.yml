@@ -219,7 +219,7 @@ view_test_results_index_index:
        test_id: "\d+"
 
 view_test_results_bytasktype_index:
-    pattern:  /{website}/{test_id}/results/{task_type}/
+    pattern:  /{website}/{test_id}/results/bytype/{task_type}/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/ByTaskType:index }
     requirements:
        website: ".+"
