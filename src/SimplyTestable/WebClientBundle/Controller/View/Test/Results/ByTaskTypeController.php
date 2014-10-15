@@ -66,6 +66,7 @@ class ByTaskTypeController extends CacheableViewController implements IEFiltered
             'is_public_user_test' => $this->getTest()->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
             'website' => $this->getUrlViewValues($website),
             'test' => $this->getTest(),
+            'task_type' => $this->getSelectedTaskType($task_type)
         ];
 
         return $this->renderCacheableResponse($viewData);
@@ -81,15 +82,24 @@ class ByTaskTypeController extends CacheableViewController implements IEFiltered
      * @return bool
      */
     private function isTaskTypeSelected($taskType) {
+        return !is_null($this->getSelectedTaskType($taskType));
+    }
+
+
+    /**
+     * @param string $taskType
+     * @return null
+     */
+    private function getSelectedTaskType($taskType) {
         $remoteTaskTypes = $this->getRemoteTest()->getTaskTypes();
 
         foreach ($remoteTaskTypes as $remoteTaskType) {
             if (strtolower($remoteTaskType) == strtolower($taskType)) {
-                return true;
+                return $remoteTaskType;
             }
         }
 
-        return false;
+        return null;
     }
 
 }
