@@ -2,14 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results;
 
-use SimplyTestable\WebClientBundle\Controller\View\Test\CacheableViewController;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner {
+class IndexController extends ResultsController {
 
     const RESULTS_PREPARATION_THRESHOLD = 100;
 
@@ -45,36 +42,15 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         ), $viewName);
     }
 
+    public function getRequestWebsiteMismatchResponse() {
+        return new RedirectResponse($this->generateUrl('app_test_redirector', array(
+            'website' => $this->getRequest()->attributes->get('website'),
+            'test_id' => $this->getRequest()->attributes->get('test_id')
+        ), true));
+    }
+
 
     public function indexAction($website, $test_id) {
-        if ($this->getTest()->getState() == 'failed-no-sitemap') {
-            return $this->issueRedirect($this->generateUrl('view_test_results_failednourlsdetected_index_index', array(
-                'website' => $website,
-                'test_id' => $test_id
-            ), true));
-        }
-
-        if ($this->getTest()->getState() == 'rejected') {
-            return $this->issueRedirect($this->generateUrl('view_test_results_rejected_index_index', array(
-                'website' => $website,
-                'test_id' => $test_id
-            ), true));
-        }
-
-        if ($this->getTest()->getWebsite() != $website) {
-            return $this->issueRedirect($this->generateUrl('app_test_redirector', array(
-                'website' => $this->getTest()->getWebsite(),
-                'test_id' => $test_id
-            ), true));
-        }
-
-        if (!$this->getTestService()->isFinished($this->getTest())) {
-            return $this->issueRedirect($this->generateUrl('view_test_progress_index_index', array(
-                'website' => $this->getTest()->getWebsite(),
-                'test_id' => $test_id
-            ), true));
-        }
-
         if (($this->getRemoteTest()->getTaskCount() - self::RESULTS_PREPARATION_THRESHOLD) > $this->getTest()->getTaskCount()) {
             $urlParameters = array(
                 'website' => $this->getTest()->getWebsite(),

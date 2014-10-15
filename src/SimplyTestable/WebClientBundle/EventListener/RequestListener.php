@@ -2,7 +2,6 @@
 
 namespace SimplyTestable\WebClientBundle\EventListener;
 
-use SimplyTestable\WebClientBundle\Interfaces\Controller\ForceJsonResponse;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -10,12 +9,13 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser as RequiresPrivateUserController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser as RequiresValidUserController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner as RequiresValidTestOwnerController;
+use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresCompletedTest as RequiresCompletedTestController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Cacheable as CacheableController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered as IEFilteredController;
 
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
-
 use SimplyTestable\WebClientBundle\Model\CacheValidatorIdentifier;
+use SimplyTestable\WebClientBundle\Entity\Test\Test;
 
 class RequestListener
 {   
@@ -118,6 +118,31 @@ class RequestListener
             }
         }
 
+        if ($this->isRequiresCompletedTestController()) {
+            $this->getController()->setRequest($this->event->getRequest());
+            $test = $this->getTest();
+
+            if ($test->getState() == 'failed-no-sitemap') {
+                $this->event->setResponse($this->getController()->getFailedNoSitemapTestResponse());
+                return;
+            }
+
+            if ($test->getState() == 'rejected') {
+                $this->event->setResponse($this->getController()->getRejectedTestResponse());
+                return;
+            }
+
+            if (!$this->getTestService()->isFinished($test)) {
+                $this->event->setResponse($this->getController()->getNotFinishedTestResponse());
+                return;
+            }
+
+            if ($this->getTest()->getWebsite() != $this->event->getRequest()->attributes->get('website')) {
+                $this->event->setResponse($this->getController()->getRequestWebsiteMismatchResponse());
+                return;
+            }
+        }
+
         if ($this->isRequiresPrivateUserController() && !$this->getUserService()->isLoggedIn()) {
             $this->kernel->getContainer()->get('session')->getFlashBag()->set('user_signin_error', 'account-not-logged-in');
             $this->event->setResponse($this->getController()->getUserSignInRedirectResponse());
@@ -127,7 +152,7 @@ class RequestListener
     
     
     private function setRequestCacheValidatorHeaders() { 
-        $this->getController()->setRequest($this->event->getRequest());        
+        $this->getController()->setRequest($this->event->getRequest());
         $cacheValidatorParameters = $this->getController()->getCacheValidatorParameters();
 
         if ($this->event->getRequest()->headers->has('accept')) {
@@ -234,6 +259,15 @@ class RequestListener
     private function isRequiresValidTestOwnerController() {
         return $this->getController() instanceof RequiresValidTestOwnerController;
     }
+
+
+    /**
+     * @return boolean
+     */
+    private function isRequiresCompletedTestController() {
+        return $this->getController() instanceof RequiresCompletedTestController;
+    }
+
 
     
     /**
@@ -350,6 +384,17 @@ class RequestListener
      */
     private function getCacheableResponseService() {
         return $this->kernel->getContainer()->get('simplytestable.services.cacheableResponseService');
-    }    
+    }
+
+
+    /**
+     * @return Test
+     */
+    private function getTest() {
+        return $this->getTestService()->get(
+            $this->event->getRequest()->attributes->get('website'),
+            $this->event->getRequest()->attributes->get('test_id')
+        );
+    }
 
 }

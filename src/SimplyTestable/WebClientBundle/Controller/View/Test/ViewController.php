@@ -184,6 +184,10 @@ abstract class ViewController extends BaseViewController {
      * @return bool|\SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest
      */
     protected function getRemoteTest() {
+        if (is_null($this->getTestService()->getRemoteTestService()->getTest())) {
+            $this->getTest();
+        }
+
         return $this->getTestService()->getRemoteTestService()->get();
     }
 

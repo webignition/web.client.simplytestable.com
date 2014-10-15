@@ -2,14 +2,15 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results;
 
-use SimplyTestable\WebClientBundle\Controller\View\Test\CacheableViewController;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
-use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use Symfony\Component\HttpFoundation\Response;
+//use SimplyTestable\WebClientBundle\Controller\View\Test\CacheableViewController;
+//use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+//use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
+//use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
+//use SimplyTestable\WebClientBundle\Entity\Test\Test;
+//use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class ByTaskTypeController extends CacheableViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner {
+class ByTaskTypeController extends ResultsController {
 
     const DEFAULT_FILTER = 'by-page';
 
@@ -28,28 +29,17 @@ class ByTaskTypeController extends CacheableViewController implements IEFiltered
     }
 
 
+    public function getRequestWebsiteMismatchResponse() {
+        return new RedirectResponse($this->generateUrl('view_test_results_bytasktype_index', array(
+            'website' => $this->getRequest()->attributes->get('website'),
+            'test_id' => $this->getRequest()->attributes->get('test_id'),
+            'task_type' => $this->getRequest()->attributes->get('task_type'),
+            'filter' => $this->hasValidRequestFilter() ? $this->getRequestFilter() : self::DEFAULT_FILTER
+        ), true));
+    }
+
+
     public function indexAction($website, $test_id, $task_type) {
-        if ($this->getTest()->getState() == 'failed-no-sitemap') {
-            return $this->issueRedirect($this->generateUrl('view_test_results_failednourlsdetected_index_index', array(
-                'website' => $website,
-                'test_id' => $test_id
-            ), true));
-        }
-
-        if ($this->getTest()->getState() == 'rejected') {
-            return $this->issueRedirect($this->generateUrl('view_test_results_rejected_index_index', array(
-                'website' => $website,
-                'test_id' => $test_id
-            ), true));
-        }
-
-        if (!$this->getTestService()->isFinished($this->getTest())) {
-            return $this->issueRedirect($this->generateUrl('view_test_progress_index_index', array(
-                'website' => $this->getTest()->getWebsite(),
-                'test_id' => $test_id
-            ), true));
-        }
-
         $task_type = str_replace('+', ' ', $task_type);
 
         if (!$this->isTaskTypeSelected($task_type)) {
@@ -59,14 +49,6 @@ class ByTaskTypeController extends CacheableViewController implements IEFiltered
             ), true));
         }
 
-        if ($this->getTest()->getWebsite() != $website) {
-            return $this->issueRedirect($this->generateUrl('view_test_results_bytasktype_index', array(
-                'website' => $this->getTest()->getWebsite(),
-                'test_id' => $test_id,
-                'task_type' => $task_type,
-                'filter' => $this->hasValidRequestFilter() ? $this->getRequestFilter() : self::DEFAULT_FILTER
-            ), true));
-        }
 
         if (!$this->hasValidRequestFilter()) {
             return $this->issueRedirect($this->generateUrl('view_test_results_bytasktype_index', array(

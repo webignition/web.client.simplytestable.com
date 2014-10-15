@@ -2,26 +2,26 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Controller\View\Test\Results\ByTaskType\IndexAction\Action;
 
-class RejectedTest extends RedirectTest {
+class NoFilterTest extends RedirectTest {
 
     protected function getExpectedResponseLocation() {
-        return 'http://localhost/http://example.com//1/results/rejected/';
+        return 'http://localhost/http://example.com//1/results/html%20validation/?filter=by-page';
     }
 
 
     protected function getActionMethodArguments() {
         return array(
-            'website' => 'http://example.com/',
+            'website' => 'http://www.example.com/',
             'test_id' => 1,
-            'task_type' => 'foo'
+            'task_type' => 'html validation'
         );
     }
 
     protected function getRequestAttributes() {
         return array(
-            'website' => 'http://example.com/',
+            'website' => 'http://www.example.com/',
             'test_id' => 1,
-            'task_type' => 'foo'
+            'task_type' => 'html validation'
         );
     }
 
