@@ -21,7 +21,15 @@ class ByTaskTypeController extends CacheableViewController implements IEFiltered
 
 
     public function indexAction($website, $test_id, $task_type) {
-        return new Response();
+        $isOwner = $this->getTestService()->getRemoteTestService()->owns($this->getTest());
+
+        $viewData = [
+            'is_owner' => $isOwner,
+            'website' => $this->getUrlViewValues($website),
+            'test' => $this->getTest(),
+        ];
+
+        return $this->renderCacheableResponse($viewData);
     }
 
     public function getCacheValidatorParameters() {

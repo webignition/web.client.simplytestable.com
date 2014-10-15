@@ -1,0 +1,567 @@
+{% extends 'SimplyTestableWebClientBundle::bs3/base.html.twig' %}
+
+{% set is_readonly = (is_owner == false) %}
+
+{% block title %}Results for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {% stylesheets
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/modal.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/full-width.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/summary-stats.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-options.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/cookies-options-modal.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/btn-significant.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/task-list.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/cta.css'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-results.css'
+    filter='cssrewrite' %}
+    <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {% javascripts
+    '@SimplyTestableWebClientBundle/Resources/assets/vendor/jquery-scrollto/jquery.scrollTo-1.4.12/jquery.scrollTo.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stModal.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/modal.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/http-authentication-options-modal.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/cookie-options-modal.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/test-results.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block body_class %} {{ parent() }} full-width {% endblock %}
+
+{% block body %}
+    {{ parent() }}
+
+    <div class="alert-container">
+        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic/Notification/Conditional:url-limit.html.twig' %}
+        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic/Notification/Conditional:read-only-test.html.twig' %}
+    </div>
+
+    {#<div class="header">#}
+        {#<div class="container">#}
+            {#<div class="row">#}
+                {#<div class="col-lg-12">#}
+                    {#<span id="device-size-lg"></span>#}
+                    {#<span id="device-size-md"></span>#}
+                    {#<span id="device-size-sm"></span>#}
+                    {#<span id="device-size-xs"></span>#}
+
+                    {#<h1>#}
+                        {#Report for#}
+                        {#<span id="test-url" title="{{website.raw}}">{{ website.utf8.schemeless.raw }}</span>#}
+                        {#<span id="test-id">(#{{ test.testId }})</span>#}
+                    {#</h1>#}
+
+                    {#<div class="row details">#}
+                        {#<div class="col-lg-8 col-md-7 col-sm-12 col-xs-12">#}
+                            {#<div class="row">#}
+                                {#<div class="col-lg-4 col-md-5 col-sm-6 col-xs-12">#}
+                                    {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index:summary-stats.html.twig' with {'stacked': true} %}#}
+                                {#</div>#}
+                                {#<div class="col-lg-8 col-md-7 col-sm-6 col-xs-12">#}
+                                    {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index:task-type-summary.html.twig' %}#}
+                                {#</div>#}
+                            {#</div>#}
+                        {#</div>#}
+                        {#<div class="clearfix visible-xs"></div>#}
+                        {#<div class="col-lg-4 col-md-5 col-sm-12 side-actions">#}
+                            {#<div class="row">#}
+                                {#<div class="col-lg-12 col-md-12 col-sm-4 col-xs-12 col-md-push-0 col-sm-push-8 col-xs-push-0 buttons">#}
+                                    {#<div class="row">#}
+                                        {#{% if is_owner or is_public_user_test %}#}
+                                            {#<div class="col-lg-12 col-md-12 col-sm-12 col-xs-6 col-lg-push-0 col-md-push-0 col-sm-push-0 col-xs-push-6 retest-col">#}
+                                                {#<button id="retest-button" type="submit" class="btn btn-default btn-significant side-action" data-offset="0">#}
+                                                    {#<i class="fa fa-fw fa-refresh"></i>#}
+                                                    {#Re-test#}
+                                                    {#<span>Using selected settings</span>#}
+                                                {#</button>#}
+                                            {#</div>#}
+                                        {#{% endif %}#}
+
+                                        {#<div class="col-lg-12 col-md-12 col-sm-12 col-xs-6 col-lg-pull-0 col-md-pull-0 col-sm-pull-0 col-xs-pull-6">#}
+                                            {#{% if is_owner and not is_public_user_test %}#}
+                                                {#{% set route = (is_public) ? 'app_test_lock' : 'app_test_unlock' %}#}
+                                                {#{% set icon = (is_public) ? 'lock' : 'unlock' %}#}
+                                                {#{% set label = (is_public) ? 'Lock' : 'Unlock' %}#}
+                                                {#{% set description = (is_public) ? 'Make this test private' : 'Make this test public' %}#}
+
+                                                {#<form id="lock-unlock" action="{{ path(route, { 'website': test.website, 'test_id': test.testId }) }}">#}
+                                                    {#<button id="lock-unlock-button" type="submit" class="btn btn-default btn-significant side-action" data-offset="70">#}
+                                                        {#<i class="fa fa-fw fa-{{ icon }}"></i>#}
+                                                        {#{{ label }}#}
+                                                        {#<span>{{ description }}</span>#}
+                                                    {#</button>#}
+                                                {#</form>#}
+                                            {#{% endif %}#}
+
+                                            {#{% if is_owner or is_public_user_test %}#}
+                                                {#<div class="history {% if is_owner and is_public_user_test == false %}history-with-owner{% endif %}">#}
+                                                    {#<a href="{{ path('view_test_history_index_index', {'filter': test.website}) }}">#}
+                                                        {#{{ domain_test_count }} {% if is_public_user_test %}demo{% endif %} test{% if domain_test_count != 1%}s{% endif %} for this URL#}
+                                                        {#<i class="fa fa-caret-right"></i>#}
+                                                    {#</a>#}
+                                                {#</div>#}
+                                            {#{% endif %}#}
+                                        {#</div>#}
+                                    {#</div>#}
+                                {#</div>#}
+
+                                {#<div class="col-lg-12 col-md-12 col-sm-8 col-xs-12 col-md-pull-0 col-sm-pull-4 col-xs-pull-0 test-options">#}
+                                    {#{% if test_options['http-authentication'] is defined %}#}
+                                        {#<div class="test-option">#}
+                                            {#{% if not is_logged_in %}#}
+                                                {#{% set data_for_attribute = 'http-authentication-account-required-modal' %}#}
+                                                {#{% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:http-authentication.html.twig' %}#}
+                                            {#{% endif %}#}
+
+                                            {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/HttpAuthentication:http-authentication.html.twig' with {'read_only': not is_owner and not is_public_user_test} %}#}
+                                        {#</div>#}
+                                    {#{% endif %}#}
+
+                                    {#{% if test_options['cookies'] is defined %}#}
+                                        {#<div class="test-option">#}
+                                            {#{% if not is_logged_in %}#}
+                                                {#{% set data_for_attribute = 'cookies-account-required-modal' %}#}
+                                                {#{% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:cookies.html.twig' %}#}
+                                            {#{% endif %}#}
+
+                                            {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/Cookies:cookies.html.twig' with {'read_only': not is_owner and not is_public_user_test } %}#}
+                                        {#</div>#}
+                                    {#{% endif %}#}
+
+                                    {#<span id="test-options-control" class="collapse-control collapsed link" data-toggle="collapse" data-target="#test-options">#}
+                                        {#{% if is_owner or is_public_user_test %}#}
+                                            {#Choose what to test (with advanced options)#}
+                                        {#{% else %}#}
+                                            {#See what was tested#}
+                                        {#{% endif %}#}
+                                        {#<i class="fa fa-caret-down"></i>#}
+                                    {#</span>#}
+                                {#</div>#}
+                            {#</div>#}
+
+                        {#</div>#}
+                    {#</div>#}
+
+                    {#<form id="retest-form" role="form" method="post" action="{{ path('test_start') }}">#}
+                        {#<input type="hidden" name="website" value="{{ test.website }}" />#}
+
+                        {#<div id="test-options" class="collapse">#}
+                            {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options:results-test-options.html.twig' %}#}
+                        {#</div>#}
+
+                        {#{% if 'js-static-analysis' not in available_task_types|keys %}#}
+                            {#{% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:js-static-analysis.html.twig' %}#}
+                        {#{% endif %}#}
+
+                        {#{% if 'link-integrity' not in available_task_types|keys %}#}
+                            {#{% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:link-integrity.html.twig' %}#}
+                        {#{% endif %}#}
+                    {#</form>#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+    {#</div>#}
+
+    {#<div class="container">#}
+        {#<div class="row">#}
+            {#{% if remote_test.taskcount > 0 %}#}
+                {#<div class="col-lg-12" id="finished-tests">#}
+                    {#<span id="test-list"></span>#}
+                    {#<h2 class="hidden-xs">#}
+                        {#{% if (filter == 'all' and type is empty) %}#}
+                            {#All results#}
+                        {#{% elseif (filter == 'all') %}#}
+                            {#<span>{{ type_label }}</span> results#}
+                        {#{% else %}#}
+                            {#<span>{{ type_label }}</span>#}
+                            {#{% if filter == 'skipped' or filter == 'cancelled' %}#}
+                                {#tests that were#}
+                            {#{% else %}#}
+                                {#results#}
+                            {#{% endif %}#}
+                            {#{{ filter_label|lower }}#}
+                        {#{% endif %}#}
+                    {#</h2>#}
+
+                    {#{% if (type is not null) %}#}
+                        {#<a class="clear-type badge" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': filter }) }}">#}
+                            {#clear &ldquo;{{ type|replace({'html': 'HTML', 'css': 'CSS', 'js': 'JS'}) }}&rdquo; filter#}
+                            {#<i class="fa fa-times"></i>#}
+                        {#</a>#}
+                    {#{% endif %}#}
+
+                    {#{% if tasks is defined %}#}
+                        {#<ul class="nav nav-tabs {{ filter }} hidden-xs hidden-sm    ">#}
+                            {#<li class="tasks-all {% if (filter == 'all') %} active {% endif %}">#}
+                                {#<a data-target="#test-list" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'all', 'type': type }) }}#test-list">#}
+                                    {#All <span class="badge">{{ filtered_task_counts.all }}</span>#}
+                                {#</a>#}
+                            {#</li>#}
+                            {#{% if filtered_task_counts.with_errors > 0 %}#}
+                            {#<li class="tasks-with-errors {% if (filter == 'with-errors') %} active {% endif %}">#}
+                                {#<a data-target="#test-list" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-errors', 'type': type }) }}#test-list">#}
+                                    {#With errors <span class="badge alert-danger">{{ filtered_task_counts.with_errors }}</span>#}
+                                {#</a>#}
+                            {#</li>#}
+                            {#{% endif %}#}
+                            {#{% if filtered_task_counts.with_warnings > 0 %}#}
+                            {#<li class="tasks-with-warnings {% if (filter == 'with-warnings') %} active {% endif %}">#}
+                                {#<a data-target="#test-list" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-warnings', 'type': type }) }}#test-list">#}
+                                    {#With warnings <span class="badge alert-info">{{ filtered_task_counts.with_warnings }}</span>#}
+                                {#</a>#}
+                            {#</li>#}
+                            {#{% endif %}#}
+                            {#{% if filtered_task_counts.without_errors > 0 %}#}
+                            {#<li class="tasks-without-errors {% if (filter == 'without-errors') %} active {% endif %}">#}
+                                {#<a data-target="#test-list" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'without-errors', 'type': type }) }}#test-list">#}
+                                    {#Without errors <span class="badge alert-success">{{ filtered_task_counts.without_errors }}</span>#}
+                                {#</a>#}
+                            {#</li>#}
+                            {#{% endif %}#}
+                            {#{% if filtered_task_counts.skipped > 0 %}#}
+                                {#<li class="tasks-skipped {% if (filter == 'skipped') %} active {% endif %}">#}
+                                    {#<a data-target="#test-list" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'skipped', 'type': type }) }}#test-list">#}
+                                        {#Skipped <span class="badge">{{ filtered_task_counts.skipped }}</span>#}
+                                    {#</a>#}
+                                {#</li>#}
+                            {#{% endif %}#}
+                            {#{% if filtered_task_counts.cancelled > 0 %}#}
+                                {#<li class="tasks-cancelled {% if (filter == 'cancelled') %} active {% endif %}">#}
+                                    {#<a data-target="#test-list" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'cancelled', 'type': type }) }}#test-list">#}
+                                        {#Cancelled <span class="badge">{{ filtered_task_counts.cancelled }}</span>#}
+                                    {#</a>#}
+                                {#</li>#}
+                            {#{% endif %}#}
+                        {#</ul>#}
+
+                        {#<div class="hidden-lg hidden-md tabs">#}
+                            {#<a class="btn btn-default {{ filter == 'all' ? 'selected' : '' }}"#}
+                               {#data-target="#test-list"#}
+                               {#href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'all', 'type': type }) }}#test-list">#}
+                                {#All <span class="badge">{{ filtered_task_counts.all }}</span>#}
+                            {#</a>#}
+
+                            {#{% if filtered_task_counts.with_errors > 0 %}#}
+                            {#<a class="btn btn-default alert-danger {{ filter == 'with-errors' ? 'selected' : '' }}"#}
+                               {#data-target="#test-list"#}
+                               {#href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-errors', 'type': type }) }}#test-list">#}
+                                {#With errors <span class="badge alert-danger">{{ filtered_task_counts.with_errors }}</span>#}
+                            {#</a>#}
+                            {#{% endif %}#}
+
+                            {#{% if filtered_task_counts.with_warnings > 0 %}#}
+                            {#<a class="btn btn-default alert-info {{ filter == 'with-warnings' ? 'selected' : '' }}"#}
+                               {#data-target="#test-list"#}
+                               {#href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-warnings', 'type': type }) }}#test-list">#}
+                                {#With warnings <span class="badge alert-info">{{ filtered_task_counts.with_warnings }}</span>#}
+                            {#</a>#}
+                            {#{% endif %}#}
+
+                            {#{% if filtered_task_counts.without_errors > 0 %}#}
+                            {#<a class="btn btn-default alert-success {{ filter == 'without-errors' ? 'selected' : '' }}"#}
+                               {#data-target="#test-list"#}
+                               {#href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'without-errors', 'type': type }) }}#test-list">#}
+                                {#Without errors <span class="badge alert-success">{{ filtered_task_counts.without_errors }}</span>#}
+                            {#</a>#}
+                            {#{% endif %}#}
+
+                            {#{% if filtered_task_counts.skipped > 0 %}#}
+                            {#<a class="btn btn-default {{ filter == 'skipped' ? 'selected' : '' }}"#}
+                               {#data-target="#test-list"#}
+                               {#href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'skipped', 'type': type }) }}#test-list">#}
+                                {#Skipped <span class="badge">{{ filtered_task_counts.skipped }}</span>#}
+                            {#</a>#}
+                            {#{% endif %}#}
+
+                            {#{% if filtered_task_counts.cancelled > 0 %}#}
+                            {#<a class="btn btn-default {{ filter == 'cancelled' ? 'selected' : '' }}"#}
+                               {#data-target="#test-list"#}
+                               {#href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'cancelled', 'type': type }) }}#test-list">#}
+                                {#Cancelled <span class="badge">{{ filtered_task_counts.cancelled }}</span>#}
+                            {#</a>#}
+                            {#{% endif %}#}
+                        {#</div>#}
+                    {#{% endif %}#}
+
+                    {#{% if tasks is empty %}#}
+                        {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index/TaskList:none.html.twig' %}#}
+                    {#{% else %}#}
+                        {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/TaskList:task-list.html.twig' %}#}
+                    {#{% endif %}#}
+
+
+                {#</div>#}
+            {#{% endif %}#}
+        {#</div>#}
+    {#</div>    {#<div class="header">#}
+        {#<div class="container">#}
+            {#<div class="row">#}
+                {#<div class="col-lg-12">#}
+                    {#<span id="device-size-lg"></span>#}
+                    {#<span id="device-size-md"></span>#}
+                    {#<span id="device-size-sm"></span>#}
+                    {#<span id="device-size-xs"></span>#}
+
+                    {#<h1>#}
+                        {#Report for#}
+                        {#<span id="test-url" title="{{website.raw}}">{{ website.utf8.schemeless.raw }}</span>#}
+                        {#<span id="test-id">(#{{ test.testId }})</span>#}
+                    {#</h1>#}
+
+                    {#<div class="row details">#}
+                        {#<div class="col-lg-8 col-md-7 col-sm-12 col-xs-12">#}
+                            {#<div class="row">#}
+                                {#<div class="col-lg-4 col-md-5 col-sm-6 col-xs-12">#}
+                                    {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index:summary-stats.html.twig' with {'stacked': true} %}#}
+                                {#</div>#}
+                                {#<div class="col-lg-8 col-md-7 col-sm-6 col-xs-12">#}
+                                    {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index:task-type-summary.html.twig' %}#}
+                                {#</div>#}
+                            {#</div>#}
+                        {#</div>#}
+                        {#<div class="clearfix visible-xs"></div>#}
+                        {#<div class="col-lg-4 col-md-5 col-sm-12 side-actions">#}
+                            {#<div class="row">#}
+                                {#<div class="col-lg-12 col-md-12 col-sm-4 col-xs-12 col-md-push-0 col-sm-push-8 col-xs-push-0 buttons">#}
+                                    {#<div class="row">#}
+                                        {#{% if is_owner or is_public_user_test %}#}
+                                            {#<div class="col-lg-12 col-md-12 col-sm-12 col-xs-6 col-lg-push-0 col-md-push-0 col-sm-push-0 col-xs-push-6 retest-col">#}
+                                                {#<button id="retest-button" type="submit" class="btn btn-default btn-significant side-action" data-offset="0">#}
+                                                    {#<i class="fa fa-fw fa-refresh"></i>#}
+                                                    {#Re-test#}
+                                                    {#<span>Using selected settings</span>#}
+                                                {#</button>#}
+                                            {#</div>#}
+                                        {#{% endif %}#}
+
+                                        {#<div class="col-lg-12 col-md-12 col-sm-12 col-xs-6 col-lg-pull-0 col-md-pull-0 col-sm-pull-0 col-xs-pull-6">#}
+                                            {#{% if is_owner and not is_public_user_test %}#}
+                                                {#{% set route = (is_public) ? 'app_test_lock' : 'app_test_unlock' %}#}
+                                                {#{% set icon = (is_public) ? 'lock' : 'unlock' %}#}
+                                                {#{% set label = (is_public) ? 'Lock' : 'Unlock' %}#}
+                                                {#{% set description = (is_public) ? 'Make this test private' : 'Make this test public' %}#}
+
+                                                {#<form id="lock-unlock" action="{{ path(route, { 'website': test.website, 'test_id': test.testId }) }}">#}
+                                                    {#<button id="lock-unlock-button" type="submit" class="btn btn-default btn-significant side-action" data-offset="70">#}
+                                                        {#<i class="fa fa-fw fa-{{ icon }}"></i>#}
+                                                        {#{{ label }}#}
+                                                        {#<span>{{ description }}</span>#}
+                                                    {#</button>#}
+                                                {#</form>#}
+                                            {#{% endif %}#}
+
+                                            {#{% if is_owner or is_public_user_test %}#}
+                                                {#<div class="history {% if is_owner and is_public_user_test == false %}history-with-owner{% endif %}">#}
+                                                    {#<a href="{{ path('view_test_history_index_index', {'filter': test.website}) }}">#}
+                                                        {#{{ domain_test_count }} {% if is_public_user_test %}demo{% endif %} test{% if domain_test_count != 1%}s{% endif %} for this URL#}
+                                                        {#<i class="fa fa-caret-right"></i>#}
+                                                    {#</a>#}
+                                                {#</div>#}
+                                            {#{% endif %}#}
+                                        {#</div>#}
+                                    {#</div>#}
+                                {#</div>#}
+
+                                {#<div class="col-lg-12 col-md-12 col-sm-8 col-xs-12 col-md-pull-0 col-sm-pull-4 col-xs-pull-0 test-options">#}
+                                    {#{% if test_options['http-authentication'] is defined %}#}
+                                        {#<div class="test-option">#}
+                                            {#{% if not is_logged_in %}#}
+                                                {#{% set data_for_attribute = 'http-authentication-account-required-modal' %}#}
+                                                {#{% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:http-authentication.html.twig' %}#}
+                                            {#{% endif %}#}
+
+                                            {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/HttpAuthentication:http-authentication.html.twig' with {'read_only': not is_owner and not is_public_user_test} %}#}
+                                        {#</div>#}
+                                    {#{% endif %}#}
+
+                                    {#{% if test_options['cookies'] is defined %}#}
+                                        {#<div class="test-option">#}
+                                            {#{% if not is_logged_in %}#}
+                                                {#{% set data_for_attribute = 'cookies-account-required-modal' %}#}
+                                                {#{% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:cookies.html.twig' %}#}
+                                            {#{% endif %}#}
+
+                                            {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/Cookies:cookies.html.twig' with {'read_only': not is_owner and not is_public_user_test } %}#}
+                                        {#</div>#}
+                                    {#{% endif %}#}
+
+                                    {#<span id="test-options-control" class="collapse-control collapsed link" data-toggle="collapse" data-target="#test-options">#}
+                                        {#{% if is_owner or is_public_user_test %}#}
+                                            {#Choose what to test (with advanced options)#}
+                                        {#{% else %}#}
+                                            {#See what was tested#}
+                                        {#{% endif %}#}
+                                        {#<i class="fa fa-caret-down"></i>#}
+                                    {#</span>#}
+                                {#</div>#}
+                            {#</div>#}
+
+                        {#</div>#}
+                    {#</div>#}
+
+                    {#<form id="retest-form" role="form" method="post" action="{{ path('test_start') }}">#}
+                        {#<input type="hidden" name="website" value="{{ test.website }}" />#}
+
+                        {#<div id="test-options" class="collapse">#}
+                            {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options:results-test-options.html.twig' %}#}
+                        {#</div>#}
+
+                        {#{% if 'js-static-analysis' not in available_task_types|keys %}#}
+                            {#{% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:js-static-analysis.html.twig' %}#}
+                        {#{% endif %}#}
+
+                        {#{% if 'link-integrity' not in available_task_types|keys %}#}
+                            {#{% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:link-integrity.html.twig' %}#}
+                        {#{% endif %}#}
+                    {#</form>#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+    {#</div>#}
+
+    {#<div class="container">#}
+        {#<div class="row">#}
+            {#{% if remote_test.taskcount > 0 %}#}
+                {#<div class="col-lg-12" id="finished-tests">#}
+                    {#<span id="test-list"></span>#}
+                    {#<h2 class="hidden-xs">#}
+                        {#{% if (filter == 'all' and type is empty) %}#}
+                            {#All results#}
+                        {#{% elseif (filter == 'all') %}#}
+                            {#<span>{{ type_label }}</span> results#}
+                        {#{% else %}#}
+                            {#<span>{{ type_label }}</span>#}
+                            {#{% if filter == 'skipped' or filter == 'cancelled' %}#}
+                                {#tests that were#}
+                            {#{% else %}#}
+                                {#results#}
+                            {#{% endif %}#}
+                            {#{{ filter_label|lower }}#}
+                        {#{% endif %}#}
+                    {#</h2>#}
+
+                    {#{% if (type is not null) %}#}
+                        {#<a class="clear-type badge" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': filter }) }}">#}
+                            {#clear &ldquo;{{ type|replace({'html': 'HTML', 'css': 'CSS', 'js': 'JS'}) }}&rdquo; filter#}
+                            {#<i class="fa fa-times"></i>#}
+                        {#</a>#}
+                    {#{% endif %}#}
+
+                    {#{% if tasks is defined %}#}
+                        {#<ul class="nav nav-tabs {{ filter }} hidden-xs hidden-sm    ">#}
+                            {#<li class="tasks-all {% if (filter == 'all') %} active {% endif %}">#}
+                                {#<a data-target="#test-list" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'all', 'type': type }) }}#test-list">#}
+                                    {#All <span class="badge">{{ filtered_task_counts.all }}</span>#}
+                                {#</a>#}
+                            {#</li>#}
+                            {#{% if filtered_task_counts.with_errors > 0 %}#}
+                            {#<li class="tasks-with-errors {% if (filter == 'with-errors') %} active {% endif %}">#}
+                                {#<a data-target="#test-list" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-errors', 'type': type }) }}#test-list">#}
+                                    {#With errors <span class="badge alert-danger">{{ filtered_task_counts.with_errors }}</span>#}
+                                {#</a>#}
+                            {#</li>#}
+                            {#{% endif %}#}
+                            {#{% if filtered_task_counts.with_warnings > 0 %}#}
+                            {#<li class="tasks-with-warnings {% if (filter == 'with-warnings') %} active {% endif %}">#}
+                                {#<a data-target="#test-list" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-warnings', 'type': type }) }}#test-list">#}
+                                    {#With warnings <span class="badge alert-info">{{ filtered_task_counts.with_warnings }}</span>#}
+                                {#</a>#}
+                            {#</li>#}
+                            {#{% endif %}#}
+                            {#{% if filtered_task_counts.without_errors > 0 %}#}
+                            {#<li class="tasks-without-errors {% if (filter == 'without-errors') %} active {% endif %}">#}
+                                {#<a data-target="#test-list" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'without-errors', 'type': type }) }}#test-list">#}
+                                    {#Without errors <span class="badge alert-success">{{ filtered_task_counts.without_errors }}</span>#}
+                                {#</a>#}
+                            {#</li>#}
+                            {#{% endif %}#}
+                            {#{% if filtered_task_counts.skipped > 0 %}#}
+                                {#<li class="tasks-skipped {% if (filter == 'skipped') %} active {% endif %}">#}
+                                    {#<a data-target="#test-list" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'skipped', 'type': type }) }}#test-list">#}
+                                        {#Skipped <span class="badge">{{ filtered_task_counts.skipped }}</span>#}
+                                    {#</a>#}
+                                {#</li>#}
+                            {#{% endif %}#}
+                            {#{% if filtered_task_counts.cancelled > 0 %}#}
+                                {#<li class="tasks-cancelled {% if (filter == 'cancelled') %} active {% endif %}">#}
+                                    {#<a data-target="#test-list" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'cancelled', 'type': type }) }}#test-list">#}
+                                        {#Cancelled <span class="badge">{{ filtered_task_counts.cancelled }}</span>#}
+                                    {#</a>#}
+                                {#</li>#}
+                            {#{% endif %}#}
+                        {#</ul>#}
+
+                        {#<div class="hidden-lg hidden-md tabs">#}
+                            {#<a class="btn btn-default {{ filter == 'all' ? 'selected' : '' }}"#}
+                               {#data-target="#test-list"#}
+                               {#href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'all', 'type': type }) }}#test-list">#}
+                                {#All <span class="badge">{{ filtered_task_counts.all }}</span>#}
+                            {#</a>#}
+
+                            {#{% if filtered_task_counts.with_errors > 0 %}#}
+                            {#<a class="btn btn-default alert-danger {{ filter == 'with-errors' ? 'selected' : '' }}"#}
+                               {#data-target="#test-list"#}
+                               {#href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-errors', 'type': type }) }}#test-list">#}
+                                {#With errors <span class="badge alert-danger">{{ filtered_task_counts.with_errors }}</span>#}
+                            {#</a>#}
+                            {#{% endif %}#}
+
+                            {#{% if filtered_task_counts.with_warnings > 0 %}#}
+                            {#<a class="btn btn-default alert-info {{ filter == 'with-warnings' ? 'selected' : '' }}"#}
+                               {#data-target="#test-list"#}
+                               {#href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-warnings', 'type': type }) }}#test-list">#}
+                                {#With warnings <span class="badge alert-info">{{ filtered_task_counts.with_warnings }}</span>#}
+                            {#</a>#}
+                            {#{% endif %}#}
+
+                            {#{% if filtered_task_counts.without_errors > 0 %}#}
+                            {#<a class="btn btn-default alert-success {{ filter == 'without-errors' ? 'selected' : '' }}"#}
+                               {#data-target="#test-list"#}
+                               {#href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'without-errors', 'type': type }) }}#test-list">#}
+                                {#Without errors <span class="badge alert-success">{{ filtered_task_counts.without_errors }}</span>#}
+                            {#</a>#}
+                            {#{% endif %}#}
+
+                            {#{% if filtered_task_counts.skipped > 0 %}#}
+                            {#<a class="btn btn-default {{ filter == 'skipped' ? 'selected' : '' }}"#}
+                               {#data-target="#test-list"#}
+                               {#href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'skipped', 'type': type }) }}#test-list">#}
+                                {#Skipped <span class="badge">{{ filtered_task_counts.skipped }}</span>#}
+                            {#</a>#}
+                            {#{% endif %}#}
+
+                            {#{% if filtered_task_counts.cancelled > 0 %}#}
+                            {#<a class="btn btn-default {{ filter == 'cancelled' ? 'selected' : '' }}"#}
+                               {#data-target="#test-list"#}
+                               {#href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'cancelled', 'type': type }) }}#test-list">#}
+                                {#Cancelled <span class="badge">{{ filtered_task_counts.cancelled }}</span>#}
+                            {#</a>#}
+                            {#{% endif %}#}
+                        {#</div>#}
+                    {#{% endif %}#}
+
+                    {#{% if tasks is empty %}#}
+                        {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index/TaskList:none.html.twig' %}#}
+                    {#{% else %}#}
+                        {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/TaskList:task-list.html.twig' %}#}
+                    {#{% endif %}#}
+
+
+                {#</div>#}
+            {#{% endif %}#}
+        {#</div>#}
+    {#</div>#}
+
+{% endblock %}

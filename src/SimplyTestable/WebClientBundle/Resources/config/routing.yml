@@ -218,6 +218,14 @@ view_test_results_index_index:
        website: ".+"
        test_id: "\d+"
 
+view_test_results_bytasktype_index:
+    pattern:  /{website}/{test_id}/results/{task_type}/
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/ByTaskType:index }
+    requirements:
+       website: ".+"
+       test_id: "\d+"
+       task_type: ".+"
+
 app_test_lock:
     pattern:  /{website}/{test_id}/lock/
     defaults: { _controller: SimplyTestableWebClientBundle:Test:lock }  
