@@ -224,7 +224,6 @@ view_test_results_bytasktype_index:
     requirements:
        website: ".+"
        test_id: "\d+"
-       task_type: ".+"
 
 app_test_lock:
     pattern:  /{website}/{test_id}/lock/

@@ -21,8 +21,6 @@ class ByTaskTypeController extends CacheableViewController implements IEFiltered
 
 
     public function indexAction($website, $test_id, $task_type) {
-        $this->getTest();
-
         if ($this->getTest()->getState() == 'failed-no-sitemap') {
             return $this->issueRedirect($this->generateUrl('view_test_results_failednourlsdetected_index_index', array(
                 'website' => $website,
@@ -44,6 +42,8 @@ class ByTaskTypeController extends CacheableViewController implements IEFiltered
             ), true));
         }
 
+        $task_type = str_replace('+', ' ', $task_type);
+
         if (!$this->isTaskTypeSelected($task_type)) {
             return $this->redirect($this->generateUrl('view_test_results_index_index', array(
                 'website' => $website,
@@ -58,10 +58,6 @@ class ByTaskTypeController extends CacheableViewController implements IEFiltered
                 'task_type' => $task_type
             ), true));
         }
-
-
-
-
 
         $isOwner = $this->getTestService()->getRemoteTestService()->owns($this->getTest());
 
