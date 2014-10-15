@@ -218,13 +218,6 @@ view_test_results_index_index:
        website: ".+"
        test_id: "\d+"
 
-view_test_results_bytasktype_index:
-    pattern:  /{website}/{test_id}/results/bytype/{task_type}/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/ByTaskType:index }
-    requirements:
-       website: ".+"
-       test_id: "\d+"
-
 app_test_lock:
     pattern:  /{website}/{test_id}/lock/
     defaults: { _controller: SimplyTestableWebClientBundle:Test:lock }  
@@ -271,7 +264,14 @@ task_results_retrieve:
     pattern:  /{website}/{test_id}/results/retrieve/
     defaults: { _controller: SimplyTestableWebClientBundle:TaskResults:retrieve }  
     requirements:
-       website: ".+"  
+       website: ".+"
+
+view_test_results_bytasktype_index:
+    pattern:  /{website}/{test_id}/results/{task_type}/
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/ByTaskType:index }
+    requirements:
+       website: ".+"
+       test_id: "\d+"
 
 view_test_task_tasklist_index_index:
     pattern:  /{website}/{test_id}/tasklist/
