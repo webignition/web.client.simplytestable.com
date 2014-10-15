@@ -23,15 +23,26 @@ class ByTaskTypeController extends CacheableViewController implements IEFiltered
     public function indexAction($website, $test_id, $task_type) {
         $this->getTest();
 
-        // check state
-        // requires valid task type
+        if ($this->getTest()->getState() == 'failed-no-sitemap') {
+            return $this->issueRedirect($this->generateUrl('view_test_results_failednourlsdetected_index_index', array(
+                'website' => $website,
+                'test_id' => $test_id
+            ), true));
+        }
+
+        if ($this->getTest()->getState() == 'rejected') {
+            return $this->issueRedirect($this->generateUrl('view_test_results_rejected_index_index', array(
+                'website' => $website,
+                'test_id' => $test_id
+            ), true));
+        }
+
         if (!$this->isTaskTypeSelected($task_type)) {
             return $this->redirect($this->generateUrl('view_test_results_index_index', array(
                 'website' => $website,
                 'test_id' => $test_id
             ), true));
         }
-
 
         $isOwner = $this->getTestService()->getRemoteTestService()->owns($this->getTest());
 
