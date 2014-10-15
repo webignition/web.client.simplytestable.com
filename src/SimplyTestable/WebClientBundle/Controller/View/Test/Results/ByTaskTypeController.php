@@ -37,12 +37,31 @@ class ByTaskTypeController extends CacheableViewController implements IEFiltered
             ), true));
         }
 
+        if (!$this->getTestService()->isFinished($this->getTest())) {
+            return $this->issueRedirect($this->generateUrl('view_test_progress_index_index', array(
+                'website' => $this->getTest()->getWebsite(),
+                'test_id' => $test_id
+            ), true));
+        }
+
         if (!$this->isTaskTypeSelected($task_type)) {
             return $this->redirect($this->generateUrl('view_test_results_index_index', array(
                 'website' => $website,
                 'test_id' => $test_id
             ), true));
         }
+
+        if ($this->getTest()->getWebsite() != $website) {
+            return $this->issueRedirect($this->generateUrl('view_test_results_bytasktype_index', array(
+                'website' => $this->getTest()->getWebsite(),
+                'test_id' => $test_id,
+                'task_type' => $task_type
+            ), true));
+        }
+
+
+
+
 
         $isOwner = $this->getTestService()->getRemoteTestService()->owns($this->getTest());
 

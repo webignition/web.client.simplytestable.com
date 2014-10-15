@@ -15,6 +15,6 @@ abstract class RedirectTest extends ActionTest {
     }
 
     public function testResponseLocation() {
-        $this->assertEquals($this->response->headers->get('location'), $this->getExpectedResponseLocation());
+        $this->assertEquals($this->getExpectedResponseLocation(), $this->response->headers->get('location'));
     }
 }
