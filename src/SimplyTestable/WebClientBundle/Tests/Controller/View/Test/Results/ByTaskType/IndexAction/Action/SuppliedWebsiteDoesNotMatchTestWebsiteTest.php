@@ -5,7 +5,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Controller\View\Test\Results\ByTa
 class SuppliedWebsiteDoesNotMatchTestWebsiteTest extends RedirectTest {
 
     protected function getExpectedResponseLocation() {
-        return 'http://localhost/http://example.com//1/results/html%20validation/';
+        return 'http://localhost/http://example.com//1/results/html%20validation/?filter=by-page';
     }
 
 

@@ -11,6 +11,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ByTaskTypeController extends CacheableViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner {
 
+    const DEFAULT_FILTER = 'by-page';
+
+    private $allowedFilters = [
+        'by-page',
+        'by-error'
+    ];
+
+
     protected function modifyViewName($viewName) {
         return str_replace(array(
             ':Test'
@@ -55,7 +63,17 @@ class ByTaskTypeController extends CacheableViewController implements IEFiltered
             return $this->issueRedirect($this->generateUrl('view_test_results_bytasktype_index', array(
                 'website' => $this->getTest()->getWebsite(),
                 'test_id' => $test_id,
-                'task_type' => $task_type
+                'task_type' => $task_type,
+                'filter' => $this->hasValidRequestFilter() ? $this->getRequestFilter() : self::DEFAULT_FILTER
+            ), true));
+        }
+
+        if (!$this->hasValidRequestFilter()) {
+            return $this->issueRedirect($this->generateUrl('view_test_results_bytasktype_index', array(
+                'website' => $this->getTest()->getWebsite(),
+                'test_id' => $test_id,
+                'task_type' => $task_type,
+                'filter' => self::DEFAULT_FILTER
             ), true));
         }
 
@@ -100,6 +118,22 @@ class ByTaskTypeController extends CacheableViewController implements IEFiltered
         }
 
         return null;
+    }
+
+
+    /**
+     * @return string
+     */
+    private function getRequestFilter() {
+        return trim($this->getRequest()->query->get('filter'));
+    }
+
+
+    /**
+     * @return bool
+     */
+    private function hasValidRequestFilter() {
+        return in_array($this->getRequestFilter(), $this->allowedFilters);
     }
 
 }
