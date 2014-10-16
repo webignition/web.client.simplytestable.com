@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\EventListener;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser as RequiresPrivateUserController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser as RequiresValidUserController;
@@ -57,6 +58,10 @@ class RequestListener
      * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
      */
     public function onKernelRequest(GetResponseEvent $event) {
+        if ($event->getRequestType() == HttpKernelInterface::SUB_REQUEST) {
+            return;
+        }
+
         $this->event = $event;
         
         if (!$this->isApplicationController()) {
