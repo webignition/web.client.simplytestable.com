@@ -8,8 +8,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class IndexController extends ResultsController {
 
-    const RESULTS_PREPARATION_THRESHOLD = 100;
-
     private $filters = array(
         'with-errors',
         'with-warnings',
@@ -18,19 +16,6 @@ class IndexController extends ResultsController {
         'skipped',
         'cancelled',
     );
-
-
-    /**
-     * @var \SimplyTestable\WebClientBundle\Services\TaskTypeService
-     */
-    private $taskTypeService = null;
-
-
-    /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
-     */
-    private $testOptionsAdapter = null;
 
     protected function modifyViewName($viewName) {
         return str_replace(array(
@@ -51,36 +36,6 @@ class IndexController extends ResultsController {
 
 
     public function indexAction($website, $test_id) {
-        if (($this->getRemoteTest()->getTaskCount() - self::RESULTS_PREPARATION_THRESHOLD) > $this->getTest()->getTaskCount()) {
-            $urlParameters = array(
-                'website' => $this->getTest()->getWebsite(),
-                'test_id' => $test_id
-            );
-
-            if ($this->get('request')->query->has('output')) {
-                $urlParameters['output'] = $this->get('request')->query->get('output');
-            }
-
-            return $this->redirect($this->generateUrl('view_test_results_preparing_index_index', $urlParameters, true));
-        } else {
-            $this->getTaskService()->getCollection($this->getTest());
-        }
-
-        $isOwner = $this->getTestService()->getRemoteTestService()->owns($this->getTest());
-
-        $this->getTestOptionsAdapter()->setRequestData($this->getRemoteTest()->getOptions());
-        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
-
-        $remoteTaskIds = ($this->getRequestFilter() == 'all' && is_null($this->getRequestType()))
-            ? null
-            : $this->getFilteredTaskCollectionRemoteIds(
-                $this->getTest(),
-                $this->getRequestFilter(),
-                $this->getRequestType()
-            );
-
-        $tasks = $this->getTaskService()->getCollection($this->getTest(), $remoteTaskIds);
-
         if ($this->getRawRequestFilter() != $this->getRequestFilter()) {
             return $this->redirect($this->generateUrl('view_test_results_index_index', array(
                 'website' => $website,
@@ -89,20 +44,29 @@ class IndexController extends ResultsController {
             ), true));
         }
 
+        if ($this->requiresPreparation()) {
+            return $this->getPreparationRedirectResponse();
+        }
+
+        $this->getTaskService()->getCollection($this->getTest());
+        $tasks = $this->getTaskService()->getCollection($this->getTest(), $this->getRemoteTaskIds());
+
+        $this->getTestOptionsAdapter()->setRequestData($this->getRemoteTest()->getOptions());
+
         $viewData = array(
             'website' => $this->getUrlViewValues($website),
             'test' => $this->getTest(),
             'is_public' => $this->getTestService()->getRemoteTestService()->isPublic(),
             'is_public_user_test' => $this->getTest()->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
             'remote_test' => $this->getRemoteTest(),
-            'is_owner' => $isOwner,
+            'is_owner' => $this->getTestService()->getRemoteTestService()->owns($this->getTest()),
             'type' => $this->getRequestType(),
             'type_label' => $this->getTaskTypeLabel($this->getRequestType()),
             'filter' => $this->getRequestFilter(),
             'filter_label' => ucwords(str_replace('-', ' ', $this->getRequestFilter())),
             'available_task_types' => $this->getAvailableTaskTypes(),
             'task_types' => $this->getTaskTypeService()->get(),
-            'test_options' => $testOptions->__toKeyArray(),
+            'test_options' => $this->getTestOptionsAdapter()->getTestOptions()->__toKeyArray(),
             'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
             'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
             'tasks' => $tasks,
@@ -211,51 +175,6 @@ class IndexController extends ResultsController {
         return 'without-errors';
     }
 
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
-     */
-    private function getTestOptionsAdapter() {
-        if (is_null($this->testOptionsAdapter)) {
-            $testOptionsParameters = $this->container->getParameter('test_options');
-
-            $this->testOptionsAdapter = $this->container->get('simplytestable.services.testoptions.adapter.request');
-
-            $this->testOptionsAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-            $this->testOptionsAdapter->setAvailableTaskTypes($this->getAvailableTaskTypes());
-            $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
-            $this->testOptionsAdapter->setInvertInvertableOptions(true);
-
-            if (isset($testOptionsParameters['features'])) {
-                $this->testOptionsAdapter->setAvailableFeatures($testOptionsParameters['features']);
-            }
-        }
-
-        return $this->testOptionsAdapter;
-    }
-
-
-    /**
-     *
-     * @return array
-     */
-    private function getAvailableTaskTypes() {
-        if ($this->getTestService()->getRemoteTestService()->isPublic() && !$this->getTestService()->getRemoteTestService()->owns($this->getTest())) {
-            $availableTaskTypes = $this->getTaskTypeService()->get();
-            $remoteTestTaskTypes = $this->getRemoteTest()->getTaskTypes();
-
-            foreach ($availableTaskTypes as $taskTypeKey => $taskTypeDetails) {
-                if (!in_array($taskTypeDetails['name'], $remoteTestTaskTypes)) {
-                    unset($availableTaskTypes[$taskTypeKey]);
-                }
-            }
-
-            return $availableTaskTypes;
-        }
-
-        return $this->getTaskTypeService()->getAvailable();
-    }
-
 
     /**
      *
@@ -295,30 +214,6 @@ class IndexController extends ResultsController {
         );
 
         return $taskTypeLabel;
-    }
-
-
-    private function getFilteredTaskCollectionRemoteIds(Test $test, $taskOutcomeFilter, $taskTypeFilter) {
-        if ($taskTypeFilter == 'javascript static analysis') {
-            $taskTypeFilter = 'js static analysis';
-        }
-
-        $this->getTaskCollectionFilterService()->setOutcomeFilter($taskOutcomeFilter);
-        $this->getTaskCollectionFilterService()->setTypeFilter($taskTypeFilter);
-
-        return $this->getTaskCollectionFilterService()->getRemoteIds();
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService
-     */
-    private function getTaskCollectionFilterService() {
-        $service = $this->container->get('simplytestable.services.taskcollectionfilterservice');
-        $service->setTest($this->getTest());
-
-        return $service;
     }
 
 
@@ -363,19 +258,17 @@ class IndexController extends ResultsController {
 
 
     /**
-     * @return \SimplyTestable\WebClientBundle\Services\TaskTypeService
+     * @return int[]|null
      */
-    private function getTaskTypeService() {
-        if (is_null($this->taskTypeService)) {
-            $this->taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
-            $this->taskTypeService->setUser($this->getUser());
-
-            if (!$this->getUser()->equals($this->getUserService()->getPublicUser())) {
-                $this->taskTypeService->setUserIsAuthenticated();
-            }
+    private function getRemoteTaskIds() {
+        if ($this->getRequestFilter() == 'all' && is_null($this->getRequestType())) {
+            return null;
         }
 
-        return $this->taskTypeService;
+        return $this->getFilteredTaskCollectionRemoteIds(
+            $this->getRequestFilter(),
+            $this->getRequestType()
+        );
     }
 
 }

@@ -1,0 +1,25 @@
+.task {
+    margin: 10px -15px 20px 0;
+}
+
+.by-page-list .url {
+    color: #333;
+}
+
+.by-page-list li:hover .url {
+    color: #000;
+}
+
+.url-container {
+    padding-right: 0;
+}
+
+.count-container {
+    padding-left: 0;
+}
+
+.url-container,
+.count-container {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 20px;
+}

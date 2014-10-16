@@ -6,7 +6,7 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results;
 //use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 //use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 //use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
-//use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Entity\Test\Test;
 //use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -34,12 +34,12 @@ class ByTaskTypeController extends ResultsController {
             'website' => $this->getRequest()->attributes->get('website'),
             'test_id' => $this->getRequest()->attributes->get('test_id'),
             'task_type' => $this->getRequest()->attributes->get('task_type'),
-            'filter' => $this->hasValidRequestFilter() ? $this->getRequestFilter() : self::DEFAULT_FILTER
+            'filter' => $this->hasValidFilter() ? $this->getFilter() : self::DEFAULT_FILTER
         ), true));
     }
 
 
-    public function indexAction($website, $test_id, $task_type) {
+    public function indexAction($website, $test_id, $task_type, $filter) {
         $task_type = str_replace('+', ' ', $task_type);
 
         if (!$this->isTaskTypeSelected($task_type)) {
@@ -49,8 +49,7 @@ class ByTaskTypeController extends ResultsController {
             ), true));
         }
 
-
-        if (!$this->hasValidRequestFilter()) {
+        if (!$this->hasValidFilter()) {
             return $this->issueRedirect($this->generateUrl('view_test_results_bytasktype_index', array(
                 'website' => $this->getTest()->getWebsite(),
                 'test_id' => $test_id,
@@ -59,21 +58,30 @@ class ByTaskTypeController extends ResultsController {
             ), true));
         }
 
-        $isOwner = $this->getTestService()->getRemoteTestService()->owns($this->getTest());
+        if ($this->requiresPreparation()) {
+            return $this->getPreparationRedirectResponse();
+        }
+
+        $this->getTaskService()->getCollection($this->getTest());
+        $tasks = $this->getTaskService()->getCollection($this->getTest(), $this->getRemoteTaskIds());
 
         $viewData = [
-            'is_owner' => $isOwner,
+            'is_owner' => $this->getTestService()->getRemoteTestService()->owns($this->getTest()),
             'is_public_user_test' => $this->getTest()->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
             'website' => $this->getUrlViewValues($website),
             'test' => $this->getTest(),
-            'task_type' => $this->getSelectedTaskType($task_type)
+            'task_type' => $this->getSelectedTaskType($task_type),
+            'filter' => $this->getFilter(),
+            'tasks' => $tasks,
         ];
 
         return $this->renderCacheableResponse($viewData);
     }
 
     public function getCacheValidatorParameters() {
-        return [];
+        return [
+            'rand' => rand()
+        ];
     }
 
 
@@ -106,16 +114,30 @@ class ByTaskTypeController extends ResultsController {
     /**
      * @return string
      */
-    private function getRequestFilter() {
-        return trim($this->getRequest()->query->get('filter'));
+    private function getFilter() {
+        return trim($this->getRequest()->attributes->get('filter'));
     }
 
 
     /**
      * @return bool
      */
-    private function hasValidRequestFilter() {
-        return in_array($this->getRequestFilter(), $this->allowedFilters);
+    private function hasValidFilter() {
+        return in_array($this->getFilter(), $this->allowedFilters);
     }
+
+
+    /**
+     * @return int[]|null
+     */
+    private function getRemoteTaskIds() {
+        return $this->getFilteredTaskCollectionRemoteIds(
+            'with-errors',
+            str_replace('+', ' ', strtolower($this->getRequest()->attributes->get('task_type')))
+        );
+    }
+
+
+
 
 }

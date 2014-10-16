@@ -267,8 +267,8 @@ task_results_retrieve:
        website: ".+"
 
 view_test_results_bytasktype_index:
-    pattern:  /{website}/{test_id}/results/{task_type}/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/ByTaskType:index }
+    pattern:  /{website}/{test_id}/results/{task_type}/{filter}/
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/ByTaskType:index, filter: 'by-page' }
     requirements:
        website: ".+"
        test_id: "\d+"
