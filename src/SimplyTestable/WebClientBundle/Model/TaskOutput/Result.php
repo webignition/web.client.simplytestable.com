@@ -40,7 +40,7 @@ class Result {
     /**
      * Get collection of error messages
      *  
-     * @return array 
+     * @return Message[]
      */    
     public function getErrors() {
         return $this->getMessagesOfType(Message::TYPE_ERROR);

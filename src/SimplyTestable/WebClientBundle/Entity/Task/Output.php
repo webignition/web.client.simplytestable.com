@@ -168,6 +168,14 @@ class Output {
     {
         return $this->result;
     }
+
+
+    /**
+     * @return bool
+     */
+    public function hasResult() {
+        return !is_null($this->getResult());
+    }
     
     /**
      * Set error count

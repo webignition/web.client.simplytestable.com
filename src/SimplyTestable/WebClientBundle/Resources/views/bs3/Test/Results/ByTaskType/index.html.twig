@@ -80,27 +80,73 @@
                     </li>
                 </ul>
 
-                <ul class="tasks list-unstyled by-page-list">
-                    {% for task in tasks %}
-                        <li>
-                            <a href="{{ path('view_test_task_results_index_index', {'website': website.raw, 'test_id': test.testId, 'task_id': task.taskId}) }}">
-                                <div class="row task">
-                                    <div class="meta">
-                                        <div class="col-lg-10 url-container">
+                {% if filter == 'by-page' %}
+                    <ul class="tasks list-unstyled by-page-list">
+                        {% for task in tasks %}
+                            <li>
+                                <a href="{{ path('view_test_task_results_index_index', {'website': website.raw, 'test_id': test.testId, 'task_id': task.taskId}) }}">
+                                    <div class="row task">
+                                        <div class="meta">
+                                            <div class="col-lg-10 url-container">
                                     <span class="url">
                                         {{ task.url }}
                                     </span>
+                                            </div>
+                                            <div class="col-lg-2 count-container">
+                                                {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/TaskList/Task/SummaryLabels:completed.html.twig' %}
+                                            </div>
                                         </div>
-                                        <div class="col-lg-2 count-container">
-                                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/TaskList/Task/SummaryLabels:completed.html.twig' %}
-                                        </div>
-                                    </div>
 
-                                </div>
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
+                                    </div>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <ul class="tasks list-unstyled by-error-list">
+                        {% for error, url_set in error_url_map %}
+                            <li>
+                                <h3>{{ error }}</h3>
+
+                                <p>
+                                    Found {{ error_count[error] }} time{{ (error_count[error] == 1) ? '' : 's' }} in {{ url_set|length }} page{{ (url_set|length == 1) ? '' : 's' }}:
+                                </p>
+
+                                <ul class="list-unstyled url-list">
+                                    {% for url in url_set %}
+                                        <li>
+                                            {{ url }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+
+                            </li>
+                        {% endfor %}
+
+
+                        {#{% for task in tasks %}#}
+                            {#<li>#}
+                                {#<a href="{{ path('view_test_task_results_index_index', {'website': website.raw, 'test_id': test.testId, 'task_id': task.taskId}) }}">#}
+                                    {#<div class="row task">#}
+                                        {#<div class="meta">#}
+                                            {#<div class="col-lg-10 url-container">#}
+                                    {#<span class="url">#}
+                                        {#{{ task.url }}#}
+                                    {#</span>#}
+                                            {#</div>#}
+                                            {#<div class="col-lg-2 count-container">#}
+                                                {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/TaskList/Task/SummaryLabels:completed.html.twig' %}#}
+                                            {#</div>#}
+                                        {#</div>#}
+
+                                    {#</div>#}
+                                {#</a>#}
+                            {#</li>#}
+                        {#{% endfor %}#}
+                    </ul>
+                {% endif %}
+
+
             </div>
         </div>
     </div>

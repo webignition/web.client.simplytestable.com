@@ -95,7 +95,7 @@ class TaskService extends CoreApplicationService {
      *
      * @param Test $test
      * @param array $remoteTaskIds
-     * @return array 
+     * @return Task[]
      */
     public function getCollection(Test $test, $remoteTaskIds = null) {
         if (!is_array($remoteTaskIds)) {
