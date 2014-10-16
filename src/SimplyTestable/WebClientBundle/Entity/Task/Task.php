@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Entity\Task;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\SerializerBundle\Annotation as SerializerAnnotation;
 
+use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\TimePeriod;
 use SimplyTestable\WebClientBundle\Entity\Task\Output as TaskOutput;
 use webignition\NormalisedUrl\NormalisedUrl;
@@ -82,7 +83,7 @@ class Task {
     
     /**
      *
-     * @var SimplyTestable\WebClientBundle\Entity\TimePeriod
+     * @var TimePeriod
      * 
      * @ORM\OneToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\TimePeriod", cascade={"persist"})
      * @SerializerAnnotation\Expose
@@ -102,7 +103,7 @@ class Task {
     
     /**
      *
-     * @var SimplyTestable\WebClientBundle\Entity\Test\Test
+     * @var Test
      * 
      * @ORM\ManyToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\Test\Test", inversedBy="tasks")
      * @ORM\JoinColumn(name="test_id", referencedColumnName="id", nullable=false)     
@@ -237,10 +238,10 @@ class Task {
     /**
      * Set timePeriod
      *
-     * @param SimplyTestable\WebClientBundle\Entity\TimePeriod $timePeriod
+     * @param TimePeriod $timePeriod
      * @return Task
      */
-    public function setTimePeriod(\SimplyTestable\WebClientBundle\Entity\TimePeriod $timePeriod = null)
+    public function setTimePeriod(TimePeriod $timePeriod = null)
     {
         $this->timePeriod = $timePeriod;
     
@@ -250,7 +251,7 @@ class Task {
     /**
      * Get timePeriod
      *
-     * @return SimplyTestable\WebClientBundle\Entity\TimePeriod 
+     * @return TimePeriod
      */
     public function getTimePeriod()
     {
@@ -260,10 +261,10 @@ class Task {
     /**
      * Set output
      *
-     * @param SimplyTestable\WebClientBundle\Entity\Task\Output $output
+     * @param TaskOutput $output
      * @return Task
      */
-    public function setOutput(\SimplyTestable\WebClientBundle\Entity\Task\Output $output = null)
+    public function setOutput(TaskOutput $output = null)
     {
         $this->output = $output;
     
@@ -273,7 +274,7 @@ class Task {
     /**
      * Get output
      *
-     * @return SimplyTestable\WebClientBundle\Entity\Task\Output 
+     * @return TaskOutput
      */
     public function getOutput()
     {
@@ -283,10 +284,10 @@ class Task {
     /**
      * Set test
      *
-     * @param SimplyTestable\WebClientBundle\Entity\Test\Test $test
+     * @param Test $test
      * @return Task
      */
-    public function setTest(\SimplyTestable\WebClientBundle\Entity\Test\Test $test)
+    public function setTest(Test $test)
     {
         $this->test = $test;
     
@@ -296,7 +297,7 @@ class Task {
     /**
      * Get test
      *
-     * @return SimplyTestable\WebClientBundle\Entity\Test\Test 
+     * @return Test
      */
     public function getTest()
     {
