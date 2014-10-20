@@ -29,6 +29,10 @@
     padding-left: 15px;
 }
 
+.by-error-list .error {
+    margin-bottom: 60px;
+}
+
 .by-error-list li ul,
 .by-error-list li p {
     padding-left: 18px;
