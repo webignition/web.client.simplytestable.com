@@ -91,7 +91,7 @@ class ByTaskTypeController extends ResultsController {
                 }
 
                 if (!in_array($task->getUrl(), $errorUrlMap[$error->getMessage()])) {
-                    $errorUrlMap[$error->getMessage()][] = $task->getUrl();
+                    $errorUrlMap[$error->getMessage()][] = $this->getSchemelessUrl($task->getUrl());
                 }
 
                 if (!isset($errorCount[$error->getMessage()])) {
@@ -113,6 +113,20 @@ class ByTaskTypeController extends ResultsController {
             'rand' => rand()
         ];
     }
+
+
+    private function getSchemelessUrl($url) {
+        if (preg_match('/^https:\/\//', $url)) {
+            $url = preg_replace('/^https:\/\//', '', $url);
+        }
+
+        if (preg_match('/^http:\/\//', $url)) {
+            $url = preg_replace('/^http:\/\//', '', $url);
+        }
+
+        return $url;
+    }
+
 
 
     /**

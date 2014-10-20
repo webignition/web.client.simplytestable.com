@@ -34,10 +34,6 @@
     padding-left: 18px;
 }
 
-.by-error-list li ul {
-    opacity: 0.8;
-}
-
 .by-error-list li li {
     margin: 6px 0;
 }
