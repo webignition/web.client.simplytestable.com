@@ -74,39 +74,36 @@ class ByTaskTypeController extends ResultsController {
             'test' => $this->getTest(),
             'task_type' => $this->getSelectedTaskType($task_type),
             'filter' => $this->getFilter(),
+            'tasks' => $tasks
         ];
 
-        if ($this->getFilter() == self::FILTER_BY_PAGE) {
-            $viewData['tasks'] = $tasks;
-        } else {
-            $errorUrlMap = [];
-            $errorCount = [];
+        $errorUrlMap = [];
+        $errorCount = [];
 
-            foreach ($tasks as $task) {
-                if (!$task->getOutput()->hasResult()) {
-                    $this->getTaskService()->setParsedOutput($task);
-                }
-
-                foreach ($task->getOutput()->getResult()->getErrors() as $error) {
-                    if (!isset($errorUrlMap[$error->getMessage()])) {
-                        $errorUrlMap[$error->getMessage()] = [];
-                    }
-
-                    if (!in_array($task->getUrl(), $errorUrlMap[$error->getMessage()])) {
-                        $errorUrlMap[$error->getMessage()][] = $task->getUrl();
-                    }
-
-                    if (!isset($errorCount[$error->getMessage()])) {
-                        $errorCount[$error->getMessage()] = 0;
-                    }
-
-                    $errorCount[$error->getMessage()]++;
-                }
+        foreach ($tasks as $task) {
+            if (!$task->getOutput()->hasResult()) {
+                $this->getTaskService()->setParsedOutput($task);
             }
 
-            $viewData['error_url_map'] = $errorUrlMap;
-            $viewData['error_count'] = $errorCount;
+            foreach ($task->getOutput()->getResult()->getErrors() as $error) {
+                if (!isset($errorUrlMap[$error->getMessage()])) {
+                    $errorUrlMap[$error->getMessage()] = [];
+                }
+
+                if (!in_array($task->getUrl(), $errorUrlMap[$error->getMessage()])) {
+                    $errorUrlMap[$error->getMessage()][] = $task->getUrl();
+                }
+
+                if (!isset($errorCount[$error->getMessage()])) {
+                    $errorCount[$error->getMessage()] = 0;
+                }
+
+                $errorCount[$error->getMessage()]++;
+            }
         }
+
+        $viewData['error_url_map'] = $errorUrlMap;
+        $viewData['error_count'] = $errorCount;
 
         return $this->renderCacheableResponse($viewData);
     }
