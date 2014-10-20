@@ -67,6 +67,7 @@ h1 {
 .issue-list .issues li {
     border-bottom: 1px solid #eee;
     padding: 16px 0;
+    margin-left: -15px;
 }
 
 .issue-list .issues li:last-of-type {
@@ -130,6 +131,15 @@ h1 {
 
 .fixes-list .issues li {
     padding:0;
+    padding-left: 15px;
+}
+
+.filter-notice {
+    margin: 20px 0 -20px 0;
+}
+
+.filter-notice .message {
+    opacity: 0.8;
 }
 
 pre.prettyprint {
@@ -200,6 +210,14 @@ pre.prettyprint {
 
 .failed .lead {
     margin-top: 40px;
+}
+
+.issues .highlight {
+    background-color: #eee;
+}
+
+.issues .highlight .meta {
+    opacity: 1;
 }
 
 /*.summary-stats .row {*/

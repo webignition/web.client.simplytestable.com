@@ -23,6 +23,7 @@
     {% javascripts
     '@SimplyTestableWebClientBundle/Resources/assets/vendor/jquery-scrollto/jquery.scrollTo-1.4.12/jquery.scrollTo.js'
     '@SimplyTestableWebClientBundle/Resources/assets/vendor/google-code-prettify/google-code-prettify/prettify.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/spark-md5.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/test-task-results.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
@@ -101,7 +102,7 @@
         </div>
     </div>
 
-    <div class="container">
+    <div class="container issue-content">
         {% if is_failed %}
             {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Failed:failed.html.twig' %}
         {% else %}
