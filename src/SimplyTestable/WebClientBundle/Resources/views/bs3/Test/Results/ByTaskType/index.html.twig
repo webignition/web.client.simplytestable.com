@@ -109,7 +109,7 @@
                                 <h3>{{ error }}</h3>
 
                                 <p>
-                                    Found {{ error_count[error] }} time{{ (error_count[error] == 1) ? '' : 's' }} in {{ url_set|length }} page{{ (url_set|length == 1) ? '' : 's' }}:
+                                    Found {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:once-twice-x-times.html.twig' with {'value': error_count[error]} %} in {{ url_set|length }} page{{ (url_set|length == 1) ? '' : 's' }}:
                                 </p>
 
                                 <ul class="list-unstyled url-list">
