@@ -183,6 +183,14 @@ view_test_task_results_index_index:
         test_id: "\d+"
         task_id: "\d+"
 
+action_test_task_results_byurl_index:
+    pattern:  /{website}/{test_id}/{task_url}/results/
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/Test/Task/Results/ByUrl:index }
+    requirements:
+        website: ".+"
+        test_id: "\d+"
+        task_url: ".+"
+
 view_test_partial_notification_urlimit_index:
     pattern:  /{website}/{test_id}/url-limit-notification/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Partial/Notification/UrlLimit:index }
