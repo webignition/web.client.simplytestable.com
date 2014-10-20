@@ -90,8 +90,10 @@ class ByTaskTypeController extends ResultsController {
                     $errorUrlMap[$error->getMessage()] = [];
                 }
 
-                if (!in_array($task->getUrl(), $errorUrlMap[$error->getMessage()])) {
-                    $errorUrlMap[$error->getMessage()][] = $this->getSchemelessUrl($task->getUrl());
+                $presentationUrl = $this->getSchemelessUrl($task->getUrl());
+
+                if (!in_array($presentationUrl, $errorUrlMap[$error->getMessage()])) {
+                    $errorUrlMap[$error->getMessage()][] = $presentationUrl;
                 }
 
                 if (!isset($errorCount[$error->getMessage()])) {
