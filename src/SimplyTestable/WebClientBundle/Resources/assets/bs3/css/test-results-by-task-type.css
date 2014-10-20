@@ -35,6 +35,15 @@
 }
 
 .by-error-list li li {
-    margin: 6px 0;
+    padding-top: 3px;
+    padding-bottom: 3px;
     opacity: 0.8;
+}
+
+.caret-container {
+    margin-left:6px;
+}
+
+.caret-container:hover {
+    text-decoration: none;
 }

@@ -34,12 +34,13 @@
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/http-authentication-options-modal.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/cookie-options-modal.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/test-results.js'
+    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/test-results-by-task-type.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 {% endblock %}
 
-{% block body_class %} {{ parent() }} full-width {% endblock %}
+{% block body_class %} {{ parent() }} full-width task-type-{{ task_type|lower|replace({' ': '-'}) }} {% endblock %}
 
 {% block body %}
     {{ parent() }}
@@ -109,7 +110,7 @@
                 {% else %}
                     <ul class="tasks list-unstyled by-error-list">
                         {% for error, url_set in error_url_map %}
-                            <li>
+                            <li class="error">
                                 <h3>{{ error }}</h3>
 
                                 <p>
