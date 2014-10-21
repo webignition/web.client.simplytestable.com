@@ -14,7 +14,7 @@ class ByTaskTypeController extends ResultsController {
 
     const FILTER_BY_PAGE = 'by-page';
     const FILTER_BY_ERROR = 'by-error';
-    const DEFAULT_FILTER = self::FILTER_BY_PAGE;
+    const DEFAULT_FILTER = self::FILTER_BY_ERROR;
 
     private $allowedFilters = [
         self::FILTER_BY_PAGE,
@@ -79,10 +79,16 @@ class ByTaskTypeController extends ResultsController {
 
         $errorUrlMap = [];
         $errorCount = [];
+        $errorHashMap = [];
+        $taskErrorCount = [];
 
         foreach ($tasks as $task) {
             if (!$task->getOutput()->hasResult()) {
                 $this->getTaskService()->setParsedOutput($task);
+            }
+
+            if (!isset($taskErrorCount[$task->getUrl()])) {
+                $taskErrorCount[$task->getUrl()] = [];
             }
 
             foreach ($task->getOutput()->getResult()->getErrors() as $error) {
@@ -90,10 +96,18 @@ class ByTaskTypeController extends ResultsController {
                     $errorUrlMap[$error->getMessage()] = [];
                 }
 
-                $presentationUrl = $this->getSchemelessUrl($task->getUrl());
+                if (!isset($errorHashMap[$error->getMessage()])) {
+                    $errorHashMap[$error->getMessage()] = md5($error->getMessage());
+                }
 
-                if (!in_array($presentationUrl, $errorUrlMap[$error->getMessage()])) {
-                    $errorUrlMap[$error->getMessage()][] = $presentationUrl;
+                if (!isset($taskErrorCount[$task->getUrl()][$error->getMessage()])) {
+                    $taskErrorCount[$task->getUrl()][$error->getMessage()] = 0;
+                }
+
+                $taskErrorCount[$task->getUrl()][$error->getMessage()]++;
+
+                if (!in_array($task->getUrl(), $errorUrlMap[$error->getMessage()])) {
+                    $errorUrlMap[$error->getMessage()][] = $task->getUrl();
                 }
 
                 if (!isset($errorCount[$error->getMessage()])) {
@@ -106,6 +120,8 @@ class ByTaskTypeController extends ResultsController {
 
         $viewData['error_url_map'] = $errorUrlMap;
         $viewData['error_count'] = $errorCount;
+        $viewData['error_hash_map'] = $errorHashMap;
+        $viewData['task_error_count'] = $taskErrorCount;
 
         return $this->renderCacheableResponse($viewData);
     }

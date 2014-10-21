@@ -1,17 +1,22 @@
+.header .lead {
+    margin: 20px 0 -10px 0;
+}
+
 .task {
     margin: 10px -15px 20px 0;
 }
 
-.by-page-list .url {
+.url {
     color: #333;
 }
 
-.by-page-list li:hover .url {
+.task:hover .url{
     color: #000;
 }
 
 .url-container {
     padding-right: 0;
+    padding-left: 0;
 }
 
 .count-container {
@@ -50,4 +55,13 @@
 
 .caret-container:hover {
     text-decoration: none;
+}
+
+.tasks .task {
+    margin-top: 20px;
+    margin-left: 18px;
+}
+
+.by-error-list .lead {
+    margin-top: 20px;
 }
