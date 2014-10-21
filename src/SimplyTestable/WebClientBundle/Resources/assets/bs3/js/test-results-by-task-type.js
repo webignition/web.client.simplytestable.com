@@ -1,11 +1,11 @@
 $(document).ready(function() {
 
     $('.by-error-list li.error').each(function () {
-        var container = $(this);
-        var list = $('ul', container);
+        var error = $(this);
+        var list = $('.pages', error);
 
-        if ($('li', list).length > 10) {
-            var controller = $('p', container);
+        if ($('.page', list).length > 6) {
+            var controller = $('p', error);
             list.addClass('collapse');
 
             controller.click(function () {

@@ -123,26 +123,29 @@
                                     Found {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:once-twice-x-times.html.twig' with {'value': error_count[error]} %} in {{ url_set|length }} page{{ (url_set|length == 1) ? '' : 's' }}:
                                 </p>
 
-                                {% for url in url_set %}
-                                <a href="{{ path('action_test_task_results_byurl_index', {'website': website.raw, 'test_id': test.testId, 'task_url': url}) }}#{{ error_hash_map[error] }}">
-                                    <div class="row task">
-                                        <div class="meta">
-                                            <div class="col-lg-10 url-container">
+                                <div class="pages">
+                                    {% for url in url_set %}
+                                        <a class="page" href="{{ path('action_test_task_results_byurl_index', {'website': website.raw, 'test_id': test.testId, 'task_url': url}) }}#{{ error_hash_map[error] }}">
+                                            <div class="row task">
+                                                <div class="meta">
+                                                    <div class="col-lg-10 url-container">
                                                 <span class="url">
                                                     {{ url|replace({'http://': '', 'https://': ''}) }}
                                                 </span>
-                                            </div>
-                                            <div class="col-lg-2 count-container">
+                                                    </div>
+                                                    <div class="col-lg-2 count-container">
                                                 <span class="label label-danger">
                                                     {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': task_error_count[url][error], 'singular': 'occurrence'} %} <i class="fa fa-caret-right"></i>
                                                 </span>
+                                                    </div>
+                                                </div>
+
                                             </div>
-                                        </div>
+                                        </a>
+                                    {% endfor %}
+                                </div>
 
-                                    </div>
-                                </a>
 
-                                {% endfor %}
                             </li>
                         {% endfor %}
                     </ul>

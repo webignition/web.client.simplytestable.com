@@ -62,6 +62,10 @@
     margin-left: 18px;
 }
 
+.tasks .task:first-of-type {
+    margin-top: 0;
+}
+
 .by-error-list .lead {
     margin-top: 20px;
 }
