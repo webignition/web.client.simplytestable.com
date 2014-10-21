@@ -144,10 +144,8 @@ $(document).ready(function() {
             });
         });
 
-        return;
-
         if ($('.page', list).length > 6) {
-            var controller = $('p', error);
+            var controller = $('p.lead', error);
             list.addClass('collapse');
 
             controller.click(function () {
