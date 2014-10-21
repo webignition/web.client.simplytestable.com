@@ -3,8 +3,8 @@ $(document).ready(function() {
     var buildSortRowFromFirstTask = function (selector, scope, errorColumnNoun) {
         var firstRow = $(selector, scope).first().clone().addClass('sort');
 
-        $('.url-container', firstRow).html('<p class="sort-control sorted" data-sort-by="url" data-sort-by-type="string">Sorted by URL</p>');
-        $('.occurrences-container', firstRow).html('<p class="sort-control link" data-sort-by="occurrences" data-sort-by-type="number" data-sort-by-comparator-pattern="[0-9]+" data-sort-by-secondary="url">Sort by ' + errorColumnNoun + ' <i class="fa fa-caret-down"></i></p>');
+        $('.url-container', firstRow).html('<p class="sort-control link" data-sort-by="url" data-sort-by-type="string">Sort by URL</p>');
+        $('.occurrences-container', firstRow).html('<p class="sort-control sorted" data-sort-by="occurrences" data-sort-by-type="number" data-sort-by-comparator-pattern="[0-9]+" data-sort-by-secondary="url">Sorted by ' + errorColumnNoun + ' <i class="fa fa-caret-down"></i></p>');
 
         return firstRow;
     };

@@ -66,7 +66,7 @@ class ByTaskTypeController extends ResultsController {
         }
 
         $this->getTaskService()->getCollection($this->getTest());
-        $tasks = $this->sortTasksByUrl($this->getTaskService()->getCollection($this->getTest(), $this->getRemoteTaskIds()));
+        $tasks = $this->getSortedTasks($this->getTaskService()->getCollection($this->getTest(), $this->getRemoteTaskIds()));
 
         $viewData = [
             'is_owner' => $this->getTestService()->getRemoteTestService()->owns($this->getTest()),
@@ -143,19 +143,23 @@ class ByTaskTypeController extends ResultsController {
      * @param Task[] $tasks
      * @return Task[]
      */
-    private function sortTasksByUrl($tasks) {
+    private function getSortedTasks($tasks) {
         /* @var $tasks Task[] */
         $index = [];
 
         foreach ($tasks as $taskIndex => $task) {
-            $index[$taskIndex] = $task->getUrl();
+            if (!$task->getOutput()->hasResult()) {
+                $this->getTaskService()->setParsedOutput($task);
+            }
+
+            $index[$taskIndex] = $task->getOutput()->getResult()->getErrorCount();
         }
 
-        asort($index);
+        arsort($index);
 
         $sortedTasks = [];
 
-        foreach ($index as $taskIndex => $url) {
+        foreach ($index as $taskIndex => $value) {
             $sortedTasks[$taskIndex] = $tasks[$taskIndex];
         }
 
