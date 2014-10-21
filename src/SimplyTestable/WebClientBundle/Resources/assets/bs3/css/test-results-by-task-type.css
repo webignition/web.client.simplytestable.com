@@ -3,7 +3,7 @@
 }
 
 .task {
-    margin: 10px -15px 20px 0;
+    margin: 10px 0 20px 0;
 }
 
 .url {
@@ -57,8 +57,8 @@
     text-decoration: none;
 }
 
+.task.sort,
 .tasks .task {
-    margin-top: 20px;
     margin-left: 18px;
 }
 
@@ -78,4 +78,8 @@
 .sort .occurrences-container {
     border-bottom: 1px solid #aaa;
     padding-bottom: 10px;
+}
+
+.by-page .sort {
+    margin-top: 20px;
 }

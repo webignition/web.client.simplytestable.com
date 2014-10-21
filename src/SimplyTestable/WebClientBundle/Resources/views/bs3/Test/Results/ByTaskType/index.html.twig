@@ -40,7 +40,7 @@
     {% endjavascripts %}
 {% endblock %}
 
-{% block body_class %} {{ parent() }} full-width task-type-{{ task_type|lower|replace({' ': '-'}) }} {% endblock %}
+{% block body_class %} {{ parent() }} full-width task-type-{{ task_type|lower|replace({' ': '-'}) }} {{ filter }} {% endblock %}
 
 {% block body %}
     {{ parent() }}
@@ -95,7 +95,7 @@
                     <ul class="tasks list-unstyled by-page-list">
                         {% for task in tasks %}
                             <li>
-                                <a href="{{ path('view_test_task_results_index_index', {'website': website.raw, 'test_id': test.testId, 'task_id': task.taskId}) }}">
+                                <a class="page" href="{{ path('view_test_task_results_index_index', {'website': website.raw, 'test_id': test.testId, 'task_id': task.taskId}) }}">
                                     <div class="row task">
                                         <div class="meta">
                                             <div class="col-lg-10 url-container">

@@ -7,6 +7,7 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results;
 //use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 //use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Entity\Task\Task;
 //use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -65,7 +66,7 @@ class ByTaskTypeController extends ResultsController {
         }
 
         $this->getTaskService()->getCollection($this->getTest());
-        $tasks = $this->getTaskService()->getCollection($this->getTest(), $this->getRemoteTaskIds());
+        $tasks = $this->sortTasksByUrl($this->getTaskService()->getCollection($this->getTest(), $this->getRemoteTaskIds()));
 
         $viewData = [
             'is_owner' => $this->getTestService()->getRemoteTestService()->owns($this->getTest()),
@@ -138,18 +139,28 @@ class ByTaskTypeController extends ResultsController {
     }
 
 
-    private function getSchemelessUrl($url) {
-        if (preg_match('/^https:\/\//', $url)) {
-            $url = preg_replace('/^https:\/\//', '', $url);
+    /**
+     * @param Task[] $tasks
+     * @return Task[]
+     */
+    private function sortTasksByUrl($tasks) {
+        /* @var $tasks Task[] */
+        $index = [];
+
+        foreach ($tasks as $taskIndex => $task) {
+            $index[$taskIndex] = $task->getUrl();
         }
 
-        if (preg_match('/^http:\/\//', $url)) {
-            $url = preg_replace('/^http:\/\//', '', $url);
+        asort($index);
+
+        $sortedTasks = [];
+
+        foreach ($index as $taskIndex => $url) {
+            $sortedTasks[$taskIndex] = $tasks[$taskIndex];
         }
 
-        return $url;
+        return $sortedTasks;
     }
-
 
 
     /**
