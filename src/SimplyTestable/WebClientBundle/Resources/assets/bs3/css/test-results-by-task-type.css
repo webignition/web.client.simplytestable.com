@@ -19,12 +19,12 @@
     padding-left: 0;
 }
 
-.count-container {
+.occurrences-container {
     padding-left: 0;
 }
 
 .url-container,
-.count-container {
+.occurrences-container {
     border-bottom: 1px solid #ddd;
     padding-bottom: 20px;
 }
@@ -68,4 +68,14 @@
 
 .by-error-list .lead {
     margin-top: 20px;
+}
+
+.by-error-list .pages .sort p {
+    margin: 0 0 0 -15px;
+}
+
+.sort .url-container,
+.sort .occurrences-container {
+    border-bottom: 1px solid #aaa;
+    padding-bottom: 10px;
 }

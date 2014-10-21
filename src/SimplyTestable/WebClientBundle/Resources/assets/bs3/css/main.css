@@ -81,10 +81,13 @@ body.IE9 .input-group-larger .btn {
     color: #aaa;
 }
 
+p.link,
 span.link {
     color:#428bca;
 }
 
+p.link:focus,
+p.link:hover,
 span.link:focus,
 span.link:hover,
 .collapse-control.link:hover .content,

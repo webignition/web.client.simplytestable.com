@@ -118,6 +118,11 @@ class ByTaskTypeController extends ResultsController {
             }
         }
 
+        foreach ($errorUrlMap as $error => $urlList) {
+            sort($urlList);
+            $errorUrlMap[$error] = $urlList;
+        }
+
         $viewData['error_url_map'] = $errorUrlMap;
         $viewData['error_count'] = $errorCount;
         $viewData['error_hash_map'] = $errorHashMap;
