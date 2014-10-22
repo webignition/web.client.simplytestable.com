@@ -9,7 +9,7 @@
         <code>{{ message.context|raw }}</code><br>
     {% endif %}
 
-    {#{{ message|split("\n")|join("<br>")|replace({"\t": '<span class="tab"></span>'})|raw }}#}
-
-    {{ message|raw }}
+    <span class="message">
+        {{ message|raw }}
+    </span>
 </div>
