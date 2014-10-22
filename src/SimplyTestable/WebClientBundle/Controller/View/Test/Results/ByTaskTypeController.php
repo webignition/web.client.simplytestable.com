@@ -20,9 +20,11 @@ class ByTaskTypeController extends ResultsController {
 
     protected function modifyViewName($viewName) {
         return str_replace(array(
-            ':Test'
+            ':Test',
+            'default'
         ), array(
-            ':bs3/Test'
+            ':bs3/Test',
+            'index'
         ), $viewName);
     }
 
@@ -31,13 +33,13 @@ class ByTaskTypeController extends ResultsController {
         return new RedirectResponse($this->generateUrl('view_test_results_bytasktype_index', array(
             'website' => $this->getRequest()->attributes->get('website'),
             'test_id' => $this->getRequest()->attributes->get('test_id'),
-            'task_type' => $this->getRequest()->attributes->get('task_type'),
+            'task_type' => str_replace(' ', '+', $this->getRequest()->attributes->get('task_type')),
             'filter' => $this->hasValidFilter() ? $this->getFilter() : self::DEFAULT_FILTER
         ), true));
     }
 
 
-    public function indexAction($website, $test_id, $task_type, $filter) {
+    public function indexAction($website, $test_id, $task_type, $filter = null) {
         $task_type = str_replace('+', ' ', $task_type);
 
         if (!$this->isTaskTypeSelected($task_type)) {
@@ -51,7 +53,7 @@ class ByTaskTypeController extends ResultsController {
             return $this->issueRedirect($this->generateUrl('view_test_results_bytasktype_index', array(
                 'website' => $this->getTest()->getWebsite(),
                 'test_id' => $test_id,
-                'task_type' => $task_type,
+                'task_type' => str_replace(' ', '+', $task_type),
                 'filter' => self::DEFAULT_FILTER
             ), true));
         }
@@ -70,8 +72,7 @@ class ByTaskTypeController extends ResultsController {
         }
 
         $errorTaskMaps = new ErrorTaskMapCollection($tasks);
-        $errorTaskMaps->sortMapsByOccurrenceCount();
-        $errorTaskMaps->sortByOccurrenceCount();
+        $errorTaskMaps->sortMapsByOccurrenceCount()->sortByOccurrenceCount();
 
         $viewData = [
             'is_owner' => $this->getTestService()->getRemoteTestService()->owns($this->getTest()),

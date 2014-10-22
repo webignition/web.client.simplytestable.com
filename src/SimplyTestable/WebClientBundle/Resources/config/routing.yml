@@ -274,9 +274,16 @@ task_results_retrieve:
     requirements:
        website: ".+"
 
+view_test_results_bytasktype_index_default:
+    pattern:  /{website}/{test_id}/results/{task_type}/
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/ByTaskType:index, filter: 'default' }
+    requirements:
+       website: ".+"
+       test_id: "\d+"
+
 view_test_results_bytasktype_index:
     pattern:  /{website}/{test_id}/results/{task_type}/{filter}/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/ByTaskType:index, filter: 'by-page' }
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/ByTaskType:index }
     requirements:
        website: ".+"
        test_id: "\d+"
