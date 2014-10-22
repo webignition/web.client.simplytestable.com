@@ -95,22 +95,36 @@ class ErrorTaskMapCollection  {
     }
 
 
+    /**
+     * @return $this
+     */
     public function sortMapsByUrl() {
         foreach ($this->getErrorTaskMaps() as $errorTaskMap) {
             $errorTaskMap->sortByUrl();
         }
+
+        return $this;
     }
 
 
+    /**
+     * @return $this
+     */
     public function sortMapsByOccurrenceCount() {
         foreach ($this->getErrorTaskMaps() as $errorTaskMap) {
             $errorTaskMap->sortByOccurrenceCount();
         }
+
+        return $this;
     }
 
 
+    /**
+     * @return $this
+     */
     public function sortByOccurrenceCount() {
         $this->sortFromIndex($this->getOccurrenceCountSortIndex());
+        return $this;
     }
 
 
