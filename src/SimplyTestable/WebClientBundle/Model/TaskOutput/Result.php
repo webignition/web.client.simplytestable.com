@@ -45,6 +45,24 @@ class Result {
     public function getErrors() {
         return $this->getMessagesOfType(Message::TYPE_ERROR);
     }
+
+
+    /**
+     * @param string $message
+     * @return int
+     */
+    public function getCountByMessage($message) {
+        $comparator = strtolower($message);
+        $count = 0;
+
+        foreach ($this->getErrors() as $error) {
+            if (strtolower($error->getMessage()) == $comparator) {
+                $count++;
+            }
+        }
+
+        return $count;
+    }
     
     
     /**

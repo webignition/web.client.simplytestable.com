@@ -68,7 +68,7 @@
                     </h1>
 
                     <p class="lead">
-                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': error_url_map|length, 'singular': 'unique error'} %} found in {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': tasks|length, 'singular': 'page'} %}.
+                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': error_task_maps.uniqueErrorCount, 'singular': 'unique error'} %} found in {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': tasks|length, 'singular': 'page'} %}.
                     </p>
                 </div>
             </div>
@@ -81,7 +81,7 @@
                 <ul class="nav nav-tabs" role="tablist">
                     <li class="{{ filter == 'by-error' ? 'active' : '' }}">
                         <a href="{{ path('view_test_results_bytasktype_index', {'website': website.raw, 'test_id': test.testId, 'task_type': task_type|lower|replace({' ':'+'}), 'filter': 'by-error'}) }}">
-                            By error ({% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': error_url_map|length, 'singular': 'unique error'} %})
+                            By error ({% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': error_task_maps.uniqueErrorCount, 'singular': 'unique error'} %})
                         </a>
                     </li>
                     <li class="{{ filter == 'by-page' ? 'active' : '' }}">
@@ -115,39 +115,75 @@
                     </ul>
                 {% else %}
                     <ul class="tasks list-unstyled by-error-list">
-                        {% for error, url_set in error_url_map %}
+                        {% for error_task_map in error_task_maps.errorTaskMaps %}
                             <li class="error">
-                                <h3>{{ error }}</h3>
+                                <h3>{{ error_task_map.message }}</h3>
 
                                 <p class="lead">
-                                    Found <span class="error-count" data-count="{{ error_count[error] }}">{% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:once-twice-x-times.html.twig' with {'value': error_count[error]} %}</span> in {{ url_set|length }} page{{ (url_set|length == 1) ? '' : 's' }}<span class="colon">:</span>
+                                    Found
+                                    <span class="error-count" data-count="{{ error_task_map.cumulativeOccurrenceCount }}">
+                                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:once-twice-x-times.html.twig' with {'value': error_task_map.cumulativeOccurrenceCount} %}
+                                    </span>
+                                    in
+                                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': error_task_map.tasks.count, 'singular': 'page'} %}<span class="colon">:</span>
                                 </p>
 
                                 <div class="pages">
-                                    {% for url in url_set %}
-                                        <a class="page" href="{{ path('action_test_task_results_byurl_index', {'website': website.raw, 'test_id': test.testId, 'task_url': url}) }}#{{ error_hash_map[error] }}">
+                                    {% for task in error_task_map.tasks %}
+                                        <a class="page" href="{{ path('action_test_task_results_byurl_index', {'website': website.raw, 'test_id': test.testId, 'task_url': task.url}) }}#{{ error_task_map.messageHash }}">
                                             <div class="row task">
                                                 <div class="meta">
                                                     <div class="col-lg-9 url-container">
-                                                <span class="url">
-                                                    {{ url|replace({'http://': '', 'https://': ''}) }}
-                                                </span>
+                                                        <span class="url">
+                                                            {{ task.url|replace({'http://': '', 'https://': ''}) }}
+                                                        </span>
                                                     </div>
                                                     <div class="col-lg-3 occurrences-container">
-                                                <span class="label label-danger">
-                                                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': task_error_count[url][error], 'singular': 'occurrence'} %} <i class="fa fa-caret-right"></i>
-                                                </span>
+                                                    <span class="label label-danger">
+                                                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': task.output.result.countByMessage(error_task_map.message), 'singular': 'occurrence'} %} <i class="fa fa-caret-right"></i>
+                                                    </span>
                                                     </div>
                                                 </div>
-
                                             </div>
                                         </a>
                                     {% endfor %}
                                 </div>
-
-
                             </li>
                         {% endfor %}
+
+                        {#{% for error, url_set in error_url_map %}#}
+                            {#<li class="error">#}
+                                {#<h3>{{ error }}</h3>#}
+
+                                {#<p class="lead">#}
+                                    {#Found <span class="error-count" data-count="{{ error_count[error] }}">{% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:once-twice-x-times.html.twig' with {'value': error_count[error]} %}</span> in {{ url_set|length }} page{{ (url_set|length == 1) ? '' : 's' }}<span class="colon">:</span>#}
+                                {#</p>#}
+
+                                {#<div class="pages">#}
+                                    {#{% for url in url_set %}#}
+                                        {#<a class="page" href="{{ path('action_test_task_results_byurl_index', {'website': website.raw, 'test_id': test.testId, 'task_url': url}) }}#{{ error_hash_map[error] }}">#}
+                                            {#<div class="row task">#}
+                                                {#<div class="meta">#}
+                                                    {#<div class="col-lg-9 url-container">#}
+                                                {#<span class="url">#}
+                                                    {#{{ url|replace({'http://': '', 'https://': ''}) }}#}
+                                                {#</span>#}
+                                                    {#</div>#}
+                                                    {#<div class="col-lg-3 occurrences-container">#}
+                                                {#<span class="label label-danger">#}
+                                                    {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': task_error_count[url][error], 'singular': 'occurrence'} %} <i class="fa fa-caret-right"></i>#}
+                                                {#</span>#}
+                                                    {#</div>#}
+                                                {#</div>#}
+
+                                            {#</div>#}
+                                        {#</a>#}
+                                    {#{% endfor %}#}
+                                {#</div>#}
+
+
+                            {#</li>#}
+                        {#{% endfor %}#}
                     </ul>
                 {% endif %}
             </div>

@@ -167,31 +167,6 @@ $(document).ready(function() {
     };
 
     var initialiseByErrorList = function () {
-        var sortByOccurrenceCount = function () {
-            var index = [];
-            var originalErrorList = $('.by-error-list li.error');
-            var errors = originalErrorList.clone();
-
-            errors.each(function (position) {
-                var error = $(this);
-                index.push({'position': position, 'value': parseInt($('.error-count', error).attr('data-count'), 10)});
-            });
-
-            index.sort(function(a,b) {
-                return a.value - b.value;
-            }).reverse();
-
-            originalErrorList.remove();
-
-            for (var indexIndex = 0; indexIndex < index.length; indexIndex++) {
-                $('.by-error-list').append(
-                    errors.get(index[indexIndex].position)
-                );
-            }
-        };
-
-        sortByOccurrenceCount();
-
         $('.by-error-list li.error').each(function () {
             var error = $(this);
             var list = $('.pages', error);

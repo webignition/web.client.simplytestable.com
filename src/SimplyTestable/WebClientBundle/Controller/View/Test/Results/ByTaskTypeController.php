@@ -8,6 +8,7 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results;
 //use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
+use SimplyTestable\WebClientBundle\Model\Test\Task\ErrorTaskMapCollection;
 //use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -68,6 +69,16 @@ class ByTaskTypeController extends ResultsController {
         $this->getTaskService()->getCollection($this->getTest());
         $tasks = $this->getSortedTasks($this->getTaskService()->getCollection($this->getTest(), $this->getRemoteTaskIds()));
 
+        foreach ($tasks as $task) {
+            if (!$task->getOutput()->hasResult()) {
+                $this->getTaskService()->setParsedOutput($task);
+            }
+        }
+
+        $errorTaskMaps = new ErrorTaskMapCollection($tasks);
+        $errorTaskMaps->sortMapsByOccurrenceCount();
+        $errorTaskMaps->sortByOccurrenceCount();
+
         $viewData = [
             'is_owner' => $this->getTestService()->getRemoteTestService()->owns($this->getTest()),
             'is_public_user_test' => $this->getTest()->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
@@ -75,59 +86,9 @@ class ByTaskTypeController extends ResultsController {
             'test' => $this->getTest(),
             'task_type' => $this->getSelectedTaskType($task_type),
             'filter' => $this->getFilter(),
-            'tasks' => $tasks
+            'tasks' => $tasks,
+            'error_task_maps' => $errorTaskMaps
         ];
-
-        $errorUrlMap = [];
-        $errorCount = [];
-        $errorHashMap = [];
-        $taskErrorCount = [];
-
-        foreach ($tasks as $task) {
-            if (!$task->getOutput()->hasResult()) {
-                $this->getTaskService()->setParsedOutput($task);
-            }
-
-            if (!isset($taskErrorCount[$task->getUrl()])) {
-                $taskErrorCount[$task->getUrl()] = [];
-            }
-
-            foreach ($task->getOutput()->getResult()->getErrors() as $error) {
-                if (!isset($errorUrlMap[$error->getMessage()])) {
-                    $errorUrlMap[$error->getMessage()] = [];
-                }
-
-                if (!isset($errorHashMap[$error->getMessage()])) {
-                    $errorHashMap[$error->getMessage()] = md5($error->getMessage());
-                }
-
-                if (!isset($taskErrorCount[$task->getUrl()][$error->getMessage()])) {
-                    $taskErrorCount[$task->getUrl()][$error->getMessage()] = 0;
-                }
-
-                $taskErrorCount[$task->getUrl()][$error->getMessage()]++;
-
-                if (!in_array($task->getUrl(), $errorUrlMap[$error->getMessage()])) {
-                    $errorUrlMap[$error->getMessage()][] = $task->getUrl();
-                }
-
-                if (!isset($errorCount[$error->getMessage()])) {
-                    $errorCount[$error->getMessage()] = 0;
-                }
-
-                $errorCount[$error->getMessage()]++;
-            }
-        }
-
-        foreach ($errorUrlMap as $error => $urlList) {
-            sort($urlList);
-            $errorUrlMap[$error] = $urlList;
-        }
-
-        $viewData['error_url_map'] = $errorUrlMap;
-        $viewData['error_count'] = $errorCount;
-        $viewData['error_hash_map'] = $errorHashMap;
-        $viewData['task_error_count'] = $taskErrorCount;
 
         return $this->renderCacheableResponse($viewData);
     }
