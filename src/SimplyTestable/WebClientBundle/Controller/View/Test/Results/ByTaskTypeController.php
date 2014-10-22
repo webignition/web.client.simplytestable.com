@@ -90,7 +90,10 @@ class ByTaskTypeController extends ResultsController {
 
     public function getCacheValidatorParameters() {
         return [
-            'rand' => rand()
+            'website' => $this->getRequest()->attributes->get('website'),
+            'test_id' => $this->getRequest()->attributes->get('test_id'),
+            'task_type' => str_replace(' ', '+', $this->getRequest()->attributes->get('task_type')),
+            'filter' => $this->hasValidFilter() ? $this->getFilter() : self::DEFAULT_FILTER
         ];
     }
 
