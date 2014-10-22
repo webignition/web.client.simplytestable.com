@@ -8,7 +8,7 @@ class IsEnabledTest extends BaseFunctionalTest {
 
     protected function getRequestQueryData() {
         return array(
-            'filter' => 'with-errors'
+            'filter' => 'without-errors'
         );
     }
 

@@ -10,7 +10,7 @@ class ResultsPresentedTest extends ActionTest {
 
     protected function getRequestQueryData() {
         return array(
-            'filter' => 'with-errors'
+            'filter' => 'without-errors'
         );
     }
 

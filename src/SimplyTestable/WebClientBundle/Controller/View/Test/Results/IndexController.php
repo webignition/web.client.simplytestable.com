@@ -36,16 +36,16 @@ class IndexController extends ResultsController {
 
 
     public function indexAction($website, $test_id) {
+        if ($this->requiresPreparation()) {
+            return $this->getPreparationRedirectResponse();
+        }
+
         if ($this->getRawRequestFilter() != $this->getRequestFilter()) {
             return $this->redirect($this->generateUrl('view_test_results_index_index', array(
                 'website' => $website,
                 'test_id' => $test_id,
                 'filter' => $this->getDefaultRequestFilter()
             ), true));
-        }
-
-        if ($this->requiresPreparation()) {
-            return $this->getPreparationRedirectResponse();
         }
 
         $this->getTaskService()->getCollection($this->getTest());
