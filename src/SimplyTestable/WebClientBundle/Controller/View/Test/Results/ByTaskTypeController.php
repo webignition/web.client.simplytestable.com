@@ -49,7 +49,7 @@ class ByTaskTypeController extends ResultsController {
             ), true));
         }
 
-        if (!$this->hasValidFilter()) {
+        if (!$this->hasValidFilter() && !$this->hasNoFilter()) {
             return $this->issueRedirect($this->generateUrl('view_test_results_bytasktype_index', array(
                 'website' => $this->getTest()->getWebsite(),
                 'test_id' => $test_id,
@@ -80,7 +80,7 @@ class ByTaskTypeController extends ResultsController {
             'website' => $this->getUrlViewValues($website),
             'test' => $this->getTest(),
             'task_type' => $this->getSelectedTaskType($task_type),
-            'filter' => $this->getFilter(),
+            'filter' => $this->hasValidFilter() ? $this->getFilter() : self::DEFAULT_FILTER,
             'tasks' => $tasks,
             'error_task_maps' => $errorTaskMaps
         ];
@@ -165,6 +165,14 @@ class ByTaskTypeController extends ResultsController {
      */
     private function hasValidFilter() {
         return in_array($this->getFilter(), $this->allowedFilters);
+    }
+
+
+    /**
+     * @return bool
+     */
+    private function hasNoFilter() {
+        return $this->getFilter() == '';
     }
 
 

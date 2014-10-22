@@ -276,7 +276,7 @@ task_results_retrieve:
 
 view_test_results_bytasktype_index_default:
     pattern:  /{website}/{test_id}/results/{task_type}/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/ByTaskType:index, filter: 'default' }
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/ByTaskType:index }
     requirements:
        website: ".+"
        test_id: "\d+"

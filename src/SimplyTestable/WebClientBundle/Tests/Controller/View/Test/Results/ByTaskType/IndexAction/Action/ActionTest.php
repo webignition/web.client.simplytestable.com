@@ -14,7 +14,8 @@ abstract class ActionTest extends BaseActionTest {
         return array(
             'website' => 'http://example.com/',
             'test_id' => 1,
-            'task_type' => 'html validation'
+            'task_type' => 'html validation',
+            'filter' => 'by-error'
         );
     }
 
@@ -22,7 +23,8 @@ abstract class ActionTest extends BaseActionTest {
         return array(
             'website' => 'http://example.com/',
             'test_id' => 1,
-            'task_type' => 'html validation'
+            'task_type' => 'html validation',
+            'filter' => 'by-error'
         );
     }
 

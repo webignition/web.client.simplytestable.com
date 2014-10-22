@@ -2,12 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Controller\View\Test\Results\ByTaskType\IndexAction\Action;
 
-class NoFilterTest extends RedirectTest {
-
-    protected function getExpectedResponseLocation() {
-        return 'http://localhost/http://example.com//1/results/html+validation/by-error/';
-    }
-
+class NoFilterTest extends ActionTest {
 
     protected function getActionMethodArguments() {
         return array(
