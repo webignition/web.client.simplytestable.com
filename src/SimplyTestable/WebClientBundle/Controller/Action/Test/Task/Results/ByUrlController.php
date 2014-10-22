@@ -6,14 +6,15 @@ use SimplyTestable\WebClientBundle\Controller\BaseController;
 
 class ByUrlController extends BaseController {
 
-    public function indexAction($website, $test_id, $task_url) {
+    public function indexAction($website, $test_id, $task_url, $task_type) {
         $test = $this->getTestService()->getEntityRepository()->findOneBy([
             'testId' => $test_id
         ]);
 
         $task = $this->getTaskService()->getEntityRepository()->findOneBy([
             'test' => $test,
-            'url' => $task_url
+            'url' => $task_url,
+            'type' => $task_type
         ]);
 
         if (is_null($task)) {

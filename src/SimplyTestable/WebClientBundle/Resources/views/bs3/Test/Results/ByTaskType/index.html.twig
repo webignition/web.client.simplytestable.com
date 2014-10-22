@@ -130,7 +130,7 @@
 
                                 <div class="pages">
                                     {% for task in error_task_map.tasks %}
-                                        <a class="page" href="{{ path('action_test_task_results_byurl_index', {'website': website.raw, 'test_id': test.testId, 'task_url': task.url}) }}#{{ error_task_map.messageHash }}">
+                                        <a class="page" href="{{ path('action_test_task_results_byurl_index', {'website': website.raw, 'test_id': test.testId, 'task_url': task.url, 'task_type': task_type|lower}) }}#{{ error_task_map.messageHash }}">
                                             <div class="row task">
                                                 <div class="meta">
                                                     <div class="col-lg-9 url-container">
