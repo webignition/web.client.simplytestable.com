@@ -2,14 +2,8 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results;
 
-//use SimplyTestable\WebClientBundle\Controller\View\Test\CacheableViewController;
-//use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
-//use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
-//use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
-use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Model\Test\Task\ErrorTaskMapCollection;
-//use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class ByTaskTypeController extends ResultsController {
