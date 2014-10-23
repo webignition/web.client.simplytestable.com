@@ -30,7 +30,14 @@
     {% endjavascripts %}
 {% endblock %}
 
-{% block body_class %} {{ parent() }} full-width {% endblock %}
+{% set task_type_key = task.type|lower|replace({' ': '-'}) %}
+
+{% set filter_selectors = {
+    'html-validation':'p',
+    'css-validation':'.message'
+} %}
+
+{% block body_class %} {{ parent() }} {{ task_type_key }} full-width {% endblock %}
 
 {% block body %}
     {{ parent() }}
@@ -102,7 +109,7 @@
         </div>
     </div>
 
-    <div class="container issue-content">
+    <div class="container issue-content" {% if filter_selectors[task_type_key] is defined %} data-filter-selector="{{ filter_selectors[task_type_key] }}" {% endif %}>
         {% if is_failed %}
             {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Failed:failed.html.twig' %}
         {% else %}

@@ -1,85 +1,114 @@
 $(document).ready(function() {
-    var generateUniqueErrorHash = function (error) {
-        var sourceHash = SparkMD5.hash(error);
+    var filterErrors = function () {
+        var generateUniqueErrorHash = function (error) {
+            var sourceHash = SparkMD5.hash(error);
 
-        if ($('#' + sourceHash).length === 0) {
-            return sourceHash;
-        }
-
-        var suffixDigit = 1;
-        var modifiedHash = sourceHash + '-' + suffixDigit;
-
-        while ($('#' + modifiedHash).length) {
-            suffixDigit++;
-            modifiedHash = sourceHash + '-' + suffixDigit;
-        }
-
-        return modifiedHash;
-    };
-
-    var issuesList = $('.error-list .issues li, .warning-list .issues li');
-
-    issuesList.each(function () {
-        var issue = $(this);
-        var content = jQuery.trim($('p', issue).text());
-
-        var hash = generateUniqueErrorHash(content);
-        issue.attr('id', hash);
-
-        if (window.location.hash) {
-            var comparator = window.location.hash.replace('#', '');
-
-            if (hash.indexOf(comparator) !== -1) {
-                $('body').addClass('filtered');
-                issue.addClass('highlight');
+            if ($('#' + sourceHash).length === 0) {
+                return sourceHash;
             }
-        }
-    });
 
+            var suffixDigit = 1;
+            var modifiedHash = sourceHash + '-' + suffixDigit;
 
-    if ($('body').is('.filtered') && window.location.hash) {
-        issuesList.not('.highlight').addClass('hidden');
+            while ($('#' + modifiedHash).length) {
+                suffixDigit++;
+                modifiedHash = sourceHash + '-' + suffixDigit;
+            }
 
-        var fixesList = $('.fixes-list li');
+            return modifiedHash;
+        };
 
-        fixesList.each(function () {
-            var fix = $(this);
-            var content = jQuery.trim($('a', fix).text());
+        var filterSelector = $('.issue-content').attr('data-filter-selector');
+        var issuesList = $('.error-list .issues li, .warning-list .issues li');
+
+        issuesList.each(function () {
+            var issue = $(this);
+            var content = jQuery.trim($(filterSelector, issue).text());
 
             var hash = generateUniqueErrorHash(content);
-            var comparator = window.location.hash.replace('#', '');
+            issue.attr('id', hash);
 
-            if (hash.indexOf(comparator) === -1) {
-                fix.addClass('hidden');
+            if (window.location.hash) {
+                var comparator = window.location.hash.replace('#', '');
+
+                if (hash.indexOf(comparator) !== -1) {
+                    $('body').addClass('filtered');
+                    issue.addClass('highlight');
+                } else {
+                    issue.remove();
+                }
             }
         });
 
-        var errorCount = $('.error-list li').not('.hidden').length + '';
-        $('.error-list .alert-danger').text(errorCount);
-        $('a[href=#errors] .count').text(errorCount);
-        $('a[href=#errors] .name').text((errorCount == 1) ? 'error' : 'errors');
+        var body = $('body');
 
-        var warningCount = $('.warning-list li').not('.hidden').length + '';
-        $('a[href=#warnings] .count').text(warningCount);
-        $('a[href=#warnings] .name').text((warningCount == 1) ? 'warning' : 'warnings');
+        if (body.is('.filtered') && window.location.hash) {
+            if (body.is('.html-validation')) {
+                var fixesList = $('.fixes-list li');
 
-        if ($('.fixes-list li').not('.hidden').length) {
-            $('.alert-fixes').text(1);
-            $('.label-fixes .count').text(1);
-            $('.label-fixes .name').text('fix');
-        } else {
-            $('#fixes').remove();
-            $('a[href=#fixes]').remove();
+                fixesList.each(function () {
+                    var fix = $(this);
+                    var content = jQuery.trim($('a', fix).text());
+
+                    var hash = generateUniqueErrorHash(content);
+                    var comparator = window.location.hash.replace('#', '');
+
+                    if (hash.indexOf(comparator) === -1) {
+                        fix.remove();
+                    }
+                });
+
+                var errorCount = $('.error-list li').length + '';
+                $('.error-list .alert-danger').text(errorCount);
+                $('a[href=#errors] .count').text(errorCount);
+                $('a[href=#errors] .name').text((errorCount == 1) ? 'error' : 'errors');
+
+                var warningCount = $('.warning-list li').length + '';
+                $('a[href=#warnings] .count').text(warningCount);
+                $('a[href=#warnings] .name').text((warningCount == 1) ? 'warning' : 'warnings');
+
+                if ($('.fixes-list li').length) {
+                    $('.alert-fixes').text(1);
+                    $('.label-fixes .count').text(1);
+                    $('.label-fixes .name').text('fix');
+                } else {
+                    $('#fixes').remove();
+                    $('a[href=#fixes]').remove();
+                }
+            }
+
+            if (body.is('.css-validation')) {
+                var errorCount = $('.error-list .issues li, .warning-list .issues li').length;
+                $('h2 .alert-danger').text(errorCount);
+
+                $('.error-group').each(function () {
+                    var listItem = $(this);
+                    var errors = $('.error', listItem);
+
+                    if (errors.length === 0) {
+                        listItem.remove();
+                        return;
+                    }
+
+                    $('.alert-danger', listItem).text(errors.length);
+                });
+            }
+
+            var filteredError = $(filterSelector, $(issuesList).filter('.highlight').first()).html();
+
+            $('.issue-content').prepend(
+                $('<p class="filter-notice lead">Showing only <span class="message">"' + jQuery.trim(filteredError) + '"</span> errors. <a href="">Show all.</span></p>')
+            );
+
+            window.scrollTo(0, 0);
         }
+    };
 
-        var filteredError = $('p', $(issuesList).filter('.highlight').first()).html();
 
-        $('.issue-content').prepend(
-            $('<p class="filter-notice lead">Showing only <span class="message">"' + jQuery.trim(filteredError) + '"</span> errors. <a href="">Show all.</span></p>')
-        );
-
-        window.scrollTo(0, 0);
+    if ($('.issue-content').attr('data-filter-selector')) {
+        filterErrors();
     }
+
 
     $('.summary-stats a').click(function () {
         var target = $($(this).attr('href'));

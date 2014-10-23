@@ -1,6 +1,6 @@
 <ul class="refs grouped-issues collapse in" id="error-list-content">
     {% for ref,errors in errors_by_ref %}
-        <li>
+        <li class="error-group">
             <h3>
                 <a href="{{ ref|escape('html') }}">
                     <i class="fa fa-file-code-o"></i>{{ (ref is empty) ? task.url : ref }}
@@ -10,7 +10,7 @@
 
             <ul class="issues css-validation-issues">
                 {% for message in errors %}
-                    <li>
+                    <li class="error">
                         {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded/ErrorList/css-validation:error.html.twig' %}
                     </li>
                 {% endfor %}
