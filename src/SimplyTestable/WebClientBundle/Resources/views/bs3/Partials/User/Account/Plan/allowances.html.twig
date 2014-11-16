@@ -3,7 +3,7 @@
         <tbody>
         <tr>
             <th>Pages examined per test</th>
-            <td>{% if user_summary.planConstraints.urls_per_job is defined %}{{ user_summary.planConstraints.urls_per_job }}{% else %}Unlimited{% endif %}</td>
+            <td>{% if user_summary.planConstraints.urls_per_job is defined %}{{ user_summary.planConstraints.urls_per_job|number_format }}{% else %}Unlimited{% endif %}</td>
         </tr>
         <tr>
             <th>Credits</th>
