@@ -24,6 +24,14 @@ class AccountPlan extends Object {
 
 
     /**
+     * @return bool
+     */
+    public function getIsCustom() {
+        return preg_match('/-custom$/', $this->getName()) > 0;
+    }
+
+
+    /**
      * @return int
      */
     public function getPrice() {

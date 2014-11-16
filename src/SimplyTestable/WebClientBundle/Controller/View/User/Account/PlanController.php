@@ -26,6 +26,10 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
     public function indexAction() {
         $userSummary = $this->getUserService()->getSummary($this->getUser());
 
+        if ($userSummary->getPlan()->getAccountPlan()->getIsCustom()) {
+            return new RedirectResponse($this->generateUrl('view_user_account_index_index', true));
+        }
+
         if ($userSummary->hasStripeCustomer() && $userSummary->getStripeCustomer()->hasDiscount()) {
             $priceModifier = (100 - $userSummary->getStripeCustomer()->getDiscount()->getCoupon()->getPercentOff()) / 100;
             $this->getPlansService()->setPriceModifier($priceModifier);
