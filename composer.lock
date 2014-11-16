@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4ca405a1e7658f4151e9872f6182210a",
+    "hash": "da24873d2ba972f2778588803886f76e",
     "packages": [
         {
             "name": "bcc/resque-bundle",
@@ -2694,16 +2694,16 @@
         },
         {
             "name": "webignition/php-stripe-models",
-            "version": "0.2.4",
+            "version": "0.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/php-stripe-models.git",
-                "reference": "4eaa1b972d067c4b0dd4ca3fb608edcd75add636"
+                "reference": "d284b91641dd74a1411a71ba048a2faa8e7c3862"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/php-stripe-models/zipball/4eaa1b972d067c4b0dd4ca3fb608edcd75add636",
-                "reference": "4eaa1b972d067c4b0dd4ca3fb608edcd75add636",
+                "url": "https://api.github.com/repos/webignition/php-stripe-models/zipball/d284b91641dd74a1411a71ba048a2faa8e7c3862",
+                "reference": "d284b91641dd74a1411a71ba048a2faa8e7c3862",
                 "shasum": ""
             },
             "require": {
@@ -2737,7 +2737,7 @@
                 "model",
                 "stripe"
             ],
-            "time": "2014-08-19 16:49:41"
+            "time": "2014-11-16 13:28:32"
         },
         {
             "name": "webignition/quoted-string",
@@ -3916,9 +3916,7 @@
             "time": "2014-03-07 15:35:33"
         }
     ],
-    "aliases": [
-
-    ],
+    "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
         "doctrine/migrations": 20,
@@ -3933,7 +3931,5 @@
     "platform": {
         "php": ">=5.4.0"
     },
-    "platform-dev": [
-
-    ]
+    "platform-dev": []
 }
