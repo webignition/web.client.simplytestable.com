@@ -262,3 +262,6 @@ parameters:
      percent_off: 20
      active: true
      intro: "<p><strong>Hey there TMS listener!</strong> You get 20% off the lifetime of your account.</p>"
+  currency_map:
+     gbp: "&#163;"
+     usd: "&#36;"
