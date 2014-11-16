@@ -39,6 +39,7 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
             'user_summary' => $userSummary,
             'plan_presentation_name' => $this->getPlanPresentationName($userSummary->getPlan()->getAccountPlan()->getName()),
             'plans' => $this->getPlansService()->listPremiumOnly()->getList(),
+            'currency_map' => $this->container->getParameter('currency_map')
         ], $this->getViewFlashValues(array(
             'plan_subscribe_error',
             'plan_subscribe_success'
