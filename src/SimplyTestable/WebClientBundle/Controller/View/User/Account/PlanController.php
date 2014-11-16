@@ -55,6 +55,11 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
      * @return string
      */
     private function getPlanPresentationName($plan) {
+        if (substr_count($plan, '-custom')) {
+            $planParts = explode('-custom', $plan);
+            return $planParts[0];
+        }
+
         return ucwords($plan);
     }
 
