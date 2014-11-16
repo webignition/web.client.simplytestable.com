@@ -27,7 +27,7 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
 
     public function indexAction() {
         $userSummary = $this->getUserService()->getSummary();
-        
+
         $viewData = array_merge(array(
             'user_summary' => $userSummary,
             'plan_presentation_name' => $this->getPlanPresentationName($userSummary->getPlan()->getAccountPlan()->getName()),
@@ -118,6 +118,11 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
      * @return string
      */
     private function getPlanPresentationName($plan) {
+        if (substr_count($plan, '-custom')) {
+            $planParts = explode('-custom', $plan);
+            return $planParts[0];
+        }
+
         return ucwords($plan);
     }
     
