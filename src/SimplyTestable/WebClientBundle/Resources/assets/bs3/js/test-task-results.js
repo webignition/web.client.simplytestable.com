@@ -43,6 +43,12 @@ $(document).ready(function() {
         var body = $('body');
 
         if (body.is('.filtered') && window.location.hash) {
+            var filteredError = $(filterSelector, $(issuesList).filter('.highlight').first()).html();
+
+            $('.issue-content').prepend(
+                $('<p class="filter-notice lead">Showing only <span class="message">"' + jQuery.trim(filteredError) + '"</span> errors. <a href="">Show all.</span></p>')
+            );
+
             if (body.is('.html-validation')) {
                 var fixesList = $('.fixes-list li');
 
@@ -77,9 +83,11 @@ $(document).ready(function() {
                 }
             }
 
-            if (body.is('.css-validation')) {
+            if (body.is('.css-validation') || body.is('.js-static-analysis')) {
                 var errorCount = $('.error-list .issues li, .warning-list .issues li').length;
                 $('h2 .alert-danger').text(errorCount);
+                $('a[href=#errors] .count').text(errorCount);
+                $('a[href=#errors] .name').text((errorCount == 1) ? 'error' : 'errors');
 
                 $('.error-group').each(function () {
                     var listItem = $(this);
@@ -93,12 +101,6 @@ $(document).ready(function() {
                     $('.alert-danger', listItem).text(errors.length);
                 });
             }
-
-            var filteredError = $(filterSelector, $(issuesList).filter('.highlight').first()).html();
-
-            $('.issue-content').prepend(
-                $('<p class="filter-notice lead">Showing only <span class="message">"' + jQuery.trim(filteredError) + '"</span> errors. <a href="">Show all.</span></p>')
-            );
 
             window.scrollTo(0, 0);
         }
