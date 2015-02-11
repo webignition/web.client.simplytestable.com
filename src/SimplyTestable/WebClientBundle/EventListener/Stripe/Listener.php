@@ -7,7 +7,7 @@ use Symfony\Component\HttpKernel\Log\LoggerInterface as Logger;
 class Listener
 {
     const VIEW_BASE_PATH = 'SimplyTestableWebClientBundle:Email/Stripe/Event/';
-    
+    const DEFAULT_CURRENCY_SYMBOL = '£';
     
     /**
      *
@@ -42,11 +42,22 @@ class Listener
      * @var \SimplyTestable\WebClientBundle\Event\Stripe\Event
      */
     private $event;
-    
-    
+
+
     /**
-     *
+     * @var array
+     */
+    private $currencySymbolMap = [
+        'gbp' => '£',
+        'usd' => '$'
+    ];
+
+
+    /**
      * @param Logger $logger
+     * @param \Symfony\Bundle\TwigBundle\TwigEngine $templating
+     * @param \Symfony\Bundle\FrameworkBundle\Routing\Router $router
+     * @param \SimplyTestable\WebClientBundle\Services\Mail\Service $mailService
      */
     public function __construct(
             Logger $logger,
@@ -142,13 +153,14 @@ class Listener
         $subject = $this->getSubject(array(
             'plan_name' => strtolower($event->getData()->get('plan_name'))
         ));
-        
+
         $viewParameters = array(
             'plan_name' => strtolower($event->getData()->get('plan_name')),
             'trial_period_days' => $event->getData()->get('trial_period_days'),
             'trial_end' => $this->getFormattedDateString($event->getData()->get('trial_end')),            
             'amount' => $this->getFormattedAmount($event->getData()->get('amount')),            
-            'account_url' => $this->router->generate('view_user_account_index_index', array(), true)
+            'account_url' => $this->router->generate('view_user_account_index_index', array(), true),
+            'currency_symbol' => $this->getCurrencySymbol($event->getData()->get('currency'))
         );
         
         $viewPathParameters = array(
@@ -360,6 +372,19 @@ class Listener
 
     private function getInvoiceTotalLine($total) {
         return "   =====================\n".' * Total: £' . number_format($total / 100, 2);
+    }
+
+
+    /**
+     * @param string $currency
+     * @return string
+     */
+    private function getCurrencySymbol($currency) {
+        if (!isset($this->currencySymbolMap[$currency])) {
+            return self::DEFAULT_CURRENCY_SYMBOL;
+        }
+
+        return $this->currencySymbolMap[$currency];
     }
 
 }
