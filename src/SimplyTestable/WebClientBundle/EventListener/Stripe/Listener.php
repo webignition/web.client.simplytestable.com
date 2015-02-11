@@ -219,7 +219,8 @@ class Listener
                 'new_plan' => strtolower($event->getData()->get('new_plan')),           
                 'old_plan' => strtolower($event->getData()->get('old_plan')),
                 'new_amount' => $this->getFormattedAmount($event->getData()->get('new_amount')),
-                'trial_end' => $this->getFormattedDateString($event->getData()->get('trial_end'))
+                'trial_end' => $this->getFormattedDateString($event->getData()->get('trial_end')),
+                'currency_symbol' => $this->getCurrencySymbol($event->getData()->get('currency'))
             );        
 
             $this->issueNotification($subject, $this->templating->render($this->getViewPath(array(
@@ -241,7 +242,8 @@ class Listener
             $viewParameters = array(
                 'plan_name' => strtolower($event->getData()->get('plan_name')),
                 'plan_amount' => $this->getFormattedAmount($event->getData()->get('plan_amount')),
-                'account_url' => $this->router->generate('view_user_account_index_index', array(), true)
+                'account_url' => $this->router->generate('view_user_account_index_index', array(), true),
+                'currency_symbol' => $this->getCurrencySymbol($event->getData()->get('currency'))
             );
             
             $this->issueNotification($subject, $this->templating->render($this->getViewPath(array(

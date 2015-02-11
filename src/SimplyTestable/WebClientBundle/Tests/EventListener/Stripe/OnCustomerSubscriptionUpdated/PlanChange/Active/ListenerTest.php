@@ -1,8 +1,12 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\EventListener\Stripe\OnCustomerSubscriptionUpdated\PlanChange;
+namespace SimplyTestable\WebClientBundle\Tests\EventListener\Stripe\OnCustomerSubscriptionUpdated\PlanChange\Active;
 
-class ActiveTest extends ListenerTest {
+use SimplyTestable\WebClientBundle\Tests\EventListener\Stripe\OnCustomerSubscriptionUpdated\PlanChange\ListenerTest as BaseListenerTest;
+
+class ListenerTest extends BaseListenerTest {
+
+    // add currency tests
 
     protected function getListenerData() {
         return array_merge(
@@ -13,7 +17,7 @@ class ActiveTest extends ListenerTest {
         );
     }
 
-    private function getExpectedFormattedAmount() {
+    protected function getExpectedFormattedAmount() {
         return number_format(self::AMOUNT / 100, 2);
     }
 
