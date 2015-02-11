@@ -6,6 +6,10 @@ use SimplyTestable\WebClientBundle\Tests\EventListener\Stripe\ListenerTest as Ba
 
 class ListenerTest extends BaseListenerTest {
 
+    const LINE_AMOUNT = 900;
+    const TOTAL = 900;
+    const AMOUNT_DUE = 900;
+
     public function setUp() {
         parent::setUp();
 
@@ -20,11 +24,11 @@ class ListenerTest extends BaseListenerTest {
                     'plan_name' => 'Personal',
                     'period_start' => 1379776581,
                     'period_end' => 1380368580,
-                    'amount' => 900
+                    'amount' => self::LINE_AMOUNT
                 ]
             ],
-            'total' => 900,
-            'amount_due' => 900,
+            'total' => self::TOTAL,
+            'amount_due' => self::AMOUNT_DUE,
             'invoice_id' => 'in_2nL671LyaO5mbg',
             'currency' => 'gbp'
         ];
@@ -45,6 +49,10 @@ class ListenerTest extends BaseListenerTest {
     protected function getListenerMethodName() {
         $namespaceParts = explode('\\', __NAMESPACE__);
         return $namespaceParts[count($namespaceParts) - 1];
+    }
+
+    protected function getExpectedFormattedLineAmount() {
+        return number_format(self::LINE_AMOUNT / 100, 2);
     }
 
 

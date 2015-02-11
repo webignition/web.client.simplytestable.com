@@ -265,7 +265,7 @@ class Listener
         $viewParameters = array(         
             'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id')),
             'account_url' => $this->router->generate('view_user_account_index_index', array(), true),
-            'invoice_lines' => $this->getInvoiceLinesContent($event->getData()->get('lines')),
+            'invoice_lines' => $this->getInvoiceLinesContent($event->getData()->get('lines'), $event->getData()->get('currency')),
         );
         
         $this->issueNotification($subject, $this->templating->render($this->getViewPath(), $viewParameters));
@@ -278,7 +278,7 @@ class Listener
         $viewParameters = array(
             'plan_name' => strtolower($event->getData()->get('plan_name')),
             'account_url' => $this->router->generate('view_user_account_index_index', array(), true),
-            'invoice_lines' => $this->getInvoiceLinesContent($event->getData()->get('lines')),
+            'invoice_lines' => $this->getInvoiceLinesContent($event->getData()->get('lines'), $event->getData()->get('currency')),
             'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id')),
             'subtotal' => (int)$event->getData()->get('subtotal'),
             'total_line' => $this->getInvoiceTotalLine((int)$event->getData()->get('total')),
@@ -348,11 +348,11 @@ class Listener
         $this->mailService->getSender()->send($message);        
     }
     
-    private function getInvoiceLinesContent($invoiceLines) {
+    private function getInvoiceLinesContent($invoiceLines, $currency) {
         $contentLines = array();
         
         foreach ($invoiceLines as $invoiceLine) {
-            $contentLine = ' * ' . $invoiceLine['plan_name'] . ' plan subscription, ' . $this->getFormattedDateString($invoiceLine['period_start']) . ' to ' . $this->getFormattedDateString($invoiceLine['period_end']) . ' (£';
+            $contentLine = ' * ' . $invoiceLine['plan_name'] . ' plan subscription, ' . $this->getFormattedDateString($invoiceLine['period_start']) . ' to ' . $this->getFormattedDateString($invoiceLine['period_end']) . ' (' . $this->getCurrencySymbol($currency) . '';
             $contentLine .= $this->getFormattedAmount($invoiceLine['amount']);
             
             if (isset($invoiceLine['proration']) && $invoiceLine['proration']) {
