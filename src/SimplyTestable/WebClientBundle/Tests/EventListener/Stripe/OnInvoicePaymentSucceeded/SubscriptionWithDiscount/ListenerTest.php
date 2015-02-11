@@ -1,8 +1,10 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\EventListener\Stripe\OnInvoicePaymentSucceeded;
+namespace SimplyTestable\WebClientBundle\Tests\EventListener\Stripe\OnInvoicePaymentSucceeded\SubscriptionWithDiscount;
 
-class SubscriptionWithDiscountTest extends ListenerTest {
+use SimplyTestable\WebClientBundle\Tests\EventListener\Stripe\OnInvoicePaymentSucceeded\ListenerTest as BaseListenerTest;
+
+abstract class ListenerTest extends BaseListenerTest {
 
     protected function getStripeEventData() {
         return [
@@ -24,23 +26,19 @@ class SubscriptionWithDiscountTest extends ListenerTest {
                 'percent_off' => '20',
                 'discount' => 180
             ],
-            'has_discount' => 1
+            'has_discount' => 1,
+            'currency' => $this->getCurrency()
         ];
     }
 
-    public function testMailServiceHasHistory() {
-        $this->assertEquals(1, $this->getMailService()->getSender()->getHistory()->count());
-    }
-    
-    public function testMailServiceHasNoError() {
-        $this->assertFalse($this->getMailService()->getSender()->getLastResponse()->isError());
-    }
+    abstract protected function getCurrency();
+    abstract protected function getExpectedCurrencySymbol();
 
     public function testNotificationMessageContainsDiscountLine() {
-        $this->assertNotificationMessageContains('20% off with coupon TMS (-£1.80)');
+        $this->assertNotificationMessageContains('20% off with coupon TMS (-' . $this->getExpectedCurrencySymbol() . '1.80)');
     }
 
     public function testNotificationMessageContainsTotalLine() {
-        $this->assertNotificationMessageContains('Total: £7.20');
+        $this->assertNotificationMessageContains('Total: ' . $this->getExpectedCurrencySymbol() . '7.20');
     }
 }

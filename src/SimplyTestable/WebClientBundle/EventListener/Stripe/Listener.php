@@ -281,11 +281,11 @@ class Listener
             'invoice_lines' => $this->getInvoiceLinesContent($event->getData()->get('lines'), $event->getData()->get('currency')),
             'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id')),
             'subtotal' => (int)$event->getData()->get('subtotal'),
-            'total_line' => $this->getInvoiceTotalLine((int)$event->getData()->get('total')),
+            'total_line' => $this->getInvoiceTotalLine((int)$event->getData()->get('total'), $event->getData()->get('currency')),
         );
 
         if ($this->event->getData()->has('discount')) {
-            $viewParameters['discount_line'] = $this->getInvoiceDiscountContent($event->getData()->get('discount'));
+            $viewParameters['discount_line'] = $this->getInvoiceDiscountContent($event->getData()->get('discount'), $event->getData()->get('currency'));
         }
         
         $this->issueNotification($this->getSubject(array(
@@ -368,13 +368,13 @@ class Listener
     }
 
 
-    private function getInvoiceDiscountContent($discount) {
-        return ' * ' . $discount['percent_off'] . '% off with coupon ' . $discount['coupon'] . ' (-£' . (number_format($discount['discount'] / 100, 2)) . ')';
+    private function getInvoiceDiscountContent($discount, $currency) {
+        return ' * ' . $discount['percent_off'] . '% off with coupon ' . $discount['coupon'] . ' (-' . $this->getCurrencySymbol($currency) . '' . (number_format($discount['discount'] / 100, 2)) . ')';
     }
 
 
-    private function getInvoiceTotalLine($total) {
-        return "   =====================\n".' * Total: £' . number_format($total / 100, 2);
+    private function getInvoiceTotalLine($total, $currency) {
+        return "   =====================\n".' * Total: ' . $this->getCurrencySymbol($currency) . '' . number_format($total / 100, 2);
     }
 
 
