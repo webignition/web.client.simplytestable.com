@@ -7,7 +7,7 @@ use Symfony\Component\HttpKernel\Log\LoggerInterface as Logger;
 class Listener
 {
     const VIEW_BASE_PATH = 'SimplyTestableWebClientBundle:Email/Stripe/Event/';
-    
+    const DEFAULT_CURRENCY_SYMBOL = '£';
     
     /**
      *
@@ -42,11 +42,22 @@ class Listener
      * @var \SimplyTestable\WebClientBundle\Event\Stripe\Event
      */
     private $event;
-    
-    
+
+
     /**
-     *
+     * @var array
+     */
+    private $currencySymbolMap = [
+        'gbp' => '£',
+        'usd' => '$'
+    ];
+
+
+    /**
      * @param Logger $logger
+     * @param \Symfony\Bundle\TwigBundle\TwigEngine $templating
+     * @param \Symfony\Bundle\FrameworkBundle\Routing\Router $router
+     * @param \SimplyTestable\WebClientBundle\Services\Mail\Service $mailService
      */
     public function __construct(
             Logger $logger,
@@ -142,13 +153,14 @@ class Listener
         $subject = $this->getSubject(array(
             'plan_name' => strtolower($event->getData()->get('plan_name'))
         ));
-        
+
         $viewParameters = array(
             'plan_name' => strtolower($event->getData()->get('plan_name')),
             'trial_period_days' => $event->getData()->get('trial_period_days'),
             'trial_end' => $this->getFormattedDateString($event->getData()->get('trial_end')),            
             'amount' => $this->getFormattedAmount($event->getData()->get('amount')),            
-            'account_url' => $this->router->generate('view_user_account_index_index', array(), true)
+            'account_url' => $this->router->generate('view_user_account_index_index', array(), true),
+            'currency_symbol' => $this->getCurrencySymbol($event->getData()->get('currency'))
         );
         
         $viewPathParameters = array(
@@ -174,7 +186,8 @@ class Listener
         $viewParameters = array(
             'plan_name' => strtolower($event->getData()->get('plan_name')),           
             'plan_amount' => $this->getFormattedAmount($event->getData()->get('plan_amount')),            
-            'account_url' => $this->router->generate('view_user_account_index_index', array(), true)
+            'account_url' => $this->router->generate('view_user_account_index_index', array(), true),
+            'currency_symbol' => $this->getCurrencySymbol($event->getData()->get('plan_currency'))
         );        
         
         $this->issueNotification($subject, $this->templating->render($this->getViewPath(array(
@@ -206,7 +219,8 @@ class Listener
                 'new_plan' => strtolower($event->getData()->get('new_plan')),           
                 'old_plan' => strtolower($event->getData()->get('old_plan')),
                 'new_amount' => $this->getFormattedAmount($event->getData()->get('new_amount')),
-                'trial_end' => $this->getFormattedDateString($event->getData()->get('trial_end'))
+                'trial_end' => $this->getFormattedDateString($event->getData()->get('trial_end')),
+                'currency_symbol' => $this->getCurrencySymbol($event->getData()->get('currency'))
             );        
 
             $this->issueNotification($subject, $this->templating->render($this->getViewPath(array(
@@ -228,7 +242,8 @@ class Listener
             $viewParameters = array(
                 'plan_name' => strtolower($event->getData()->get('plan_name')),
                 'plan_amount' => $this->getFormattedAmount($event->getData()->get('plan_amount')),
-                'account_url' => $this->router->generate('view_user_account_index_index', array(), true)
+                'account_url' => $this->router->generate('view_user_account_index_index', array(), true),
+                'currency_symbol' => $this->getCurrencySymbol($event->getData()->get('currency'))
             );
             
             $this->issueNotification($subject, $this->templating->render($this->getViewPath(array(
@@ -250,7 +265,7 @@ class Listener
         $viewParameters = array(         
             'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id')),
             'account_url' => $this->router->generate('view_user_account_index_index', array(), true),
-            'invoice_lines' => $this->getInvoiceLinesContent($event->getData()->get('lines')),
+            'invoice_lines' => $this->getInvoiceLinesContent($event->getData()->get('lines'), $event->getData()->get('currency')),
         );
         
         $this->issueNotification($subject, $this->templating->render($this->getViewPath(), $viewParameters));
@@ -263,14 +278,14 @@ class Listener
         $viewParameters = array(
             'plan_name' => strtolower($event->getData()->get('plan_name')),
             'account_url' => $this->router->generate('view_user_account_index_index', array(), true),
-            'invoice_lines' => $this->getInvoiceLinesContent($event->getData()->get('lines')),
+            'invoice_lines' => $this->getInvoiceLinesContent($event->getData()->get('lines'), $event->getData()->get('currency')),
             'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id')),
             'subtotal' => (int)$event->getData()->get('subtotal'),
-            'total_line' => $this->getInvoiceTotalLine((int)$event->getData()->get('total')),
+            'total_line' => $this->getInvoiceTotalLine((int)$event->getData()->get('total'), $event->getData()->get('currency')),
         );
 
         if ($this->event->getData()->has('discount')) {
-            $viewParameters['discount_line'] = $this->getInvoiceDiscountContent($event->getData()->get('discount'));
+            $viewParameters['discount_line'] = $this->getInvoiceDiscountContent($event->getData()->get('discount'), $event->getData()->get('currency'));
         }
         
         $this->issueNotification($this->getSubject(array(
@@ -333,11 +348,11 @@ class Listener
         $this->mailService->getSender()->send($message);        
     }
     
-    private function getInvoiceLinesContent($invoiceLines) {
+    private function getInvoiceLinesContent($invoiceLines, $currency) {
         $contentLines = array();
         
         foreach ($invoiceLines as $invoiceLine) {
-            $contentLine = ' * ' . $invoiceLine['plan_name'] . ' plan subscription, ' . $this->getFormattedDateString($invoiceLine['period_start']) . ' to ' . $this->getFormattedDateString($invoiceLine['period_end']) . ' (£';
+            $contentLine = ' * ' . $invoiceLine['plan_name'] . ' plan subscription, ' . $this->getFormattedDateString($invoiceLine['period_start']) . ' to ' . $this->getFormattedDateString($invoiceLine['period_end']) . ' (' . $this->getCurrencySymbol($currency) . '';
             $contentLine .= $this->getFormattedAmount($invoiceLine['amount']);
             
             if (isset($invoiceLine['proration']) && $invoiceLine['proration']) {
@@ -353,13 +368,26 @@ class Listener
     }
 
 
-    private function getInvoiceDiscountContent($discount) {
-        return ' * ' . $discount['percent_off'] . '% off with coupon ' . $discount['coupon'] . ' (-£' . (number_format($discount['discount'] / 100, 2)) . ')';
+    private function getInvoiceDiscountContent($discount, $currency) {
+        return ' * ' . $discount['percent_off'] . '% off with coupon ' . $discount['coupon'] . ' (-' . $this->getCurrencySymbol($currency) . '' . (number_format($discount['discount'] / 100, 2)) . ')';
     }
 
 
-    private function getInvoiceTotalLine($total) {
-        return "   =====================\n".' * Total: £' . number_format($total / 100, 2);
+    private function getInvoiceTotalLine($total, $currency) {
+        return "   =====================\n".' * Total: ' . $this->getCurrencySymbol($currency) . '' . number_format($total / 100, 2);
+    }
+
+
+    /**
+     * @param string $currency
+     * @return string
+     */
+    private function getCurrencySymbol($currency) {
+        if (!isset($this->currencySymbolMap[$currency])) {
+            return self::DEFAULT_CURRENCY_SYMBOL;
+        }
+
+        return $this->currencySymbolMap[$currency];
     }
 
 }

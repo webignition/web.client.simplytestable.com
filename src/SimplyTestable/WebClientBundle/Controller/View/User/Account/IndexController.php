@@ -27,7 +27,7 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
 
     public function indexAction() {
         $userSummary = $this->getUserService()->getSummary();
-        
+
         $viewData = array_merge(array(
             'user_summary' => $userSummary,
             'plan_presentation_name' => $this->getPlanPresentationName($userSummary->getPlan()->getAccountPlan()->getName()),
@@ -37,7 +37,8 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
             'premium_plan_launch_offer_end' => $this->container->getParameter('premium_plan_launch_offer_end'),
             'mailchimp_updates_subscribed' => $this->getMailchimpService()->listContains('updates', $this->getUser()->getUsername()),
             'mailchimp_announcements_subscribed' => $this->getMailchimpService()->listContains('announcements', $this->getUser()->getUsername()),
-            'card_expiry_month' => $this->getCardExpiryMonth($userSummary)
+            'card_expiry_month' => $this->getCardExpiryMonth($userSummary),
+            'currency_map' => $this->container->getParameter('currency_map')
         ), $this->getViewFlashValues(array(
             'user_account_details_update_notice',
             'user_account_details_update_email',
@@ -118,6 +119,11 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
      * @return string
      */
     private function getPlanPresentationName($plan) {
+        if (substr_count($plan, '-custom')) {
+            $planParts = explode('-custom', $plan);
+            return $planParts[0];
+        }
+
         return ucwords($plan);
     }
     

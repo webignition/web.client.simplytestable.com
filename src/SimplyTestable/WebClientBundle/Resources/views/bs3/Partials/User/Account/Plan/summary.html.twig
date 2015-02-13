@@ -10,13 +10,15 @@
         <p>
             You are on the <strong>{{ user_summary.plan.accountplan.name }}</strong> plan{% if user_summary.plan.accountplan.name == 'basic' %}. This is <strong>free of charge</strong> and always will be.
         {% else %}
+            {% set currency_symbol = currency_map[user_summary.stripecustomer.subscription.plan.currency] %}
+
             {% if user_summary.stripecustomer.hasDiscount %}
                 {% set plan_price = (user_summary.stripecustomer.subscription.plan.amount * (100 - user_summary.stripecustomer.discount.coupon.percentoff) / 100) %}
 
-                at <del>&pound;{{ (user_summary.stripecustomer.subscription.plan.amount / 100)|number_format(2) }}</del>
-                <strong>&pound;{{ (plan_price / 100)|number_format(2) }}</strong>
+                at <del>{{ currency_symbol|raw }}{{ (user_summary.stripecustomer.subscription.plan.amount / 100)|number_format(2) }}</del>
+                <strong>{{ currency_symbol|raw }}{{ (plan_price / 100)|number_format(2) }}</strong>
             {% else %}
-                at <strong>&pound;{{ (user_summary.stripecustomer.subscription.plan.amount / 100)|number_format(2) }}</strong>
+                at <strong>{{ currency_symbol|raw }}{{ (user_summary.stripecustomer.subscription.plan.amount / 100)|number_format(2) }}</strong>
             {% endif %}
             <strong>per {{ user_summary.stripecustomer.subscription.plan.interval }}</strong>.
             {% endif %}

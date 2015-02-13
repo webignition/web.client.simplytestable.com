@@ -26,6 +26,10 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
     public function indexAction() {
         $userSummary = $this->getUserService()->getSummary($this->getUser());
 
+        if ($userSummary->getPlan()->getAccountPlan()->getIsCustom()) {
+            return new RedirectResponse($this->generateUrl('view_user_account_index_index', true));
+        }
+
         if ($userSummary->hasStripeCustomer() && $userSummary->getStripeCustomer()->hasDiscount()) {
             $priceModifier = (100 - $userSummary->getStripeCustomer()->getDiscount()->getCoupon()->getPercentOff()) / 100;
             $this->getPlansService()->setPriceModifier($priceModifier);
@@ -35,6 +39,7 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
             'user_summary' => $userSummary,
             'plan_presentation_name' => $this->getPlanPresentationName($userSummary->getPlan()->getAccountPlan()->getName()),
             'plans' => $this->getPlansService()->listPremiumOnly()->getList(),
+            'currency_map' => $this->container->getParameter('currency_map')
         ], $this->getViewFlashValues(array(
             'plan_subscribe_error',
             'plan_subscribe_success'
@@ -55,6 +60,11 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
      * @return string
      */
     private function getPlanPresentationName($plan) {
+        if (substr_count($plan, '-custom')) {
+            $planParts = explode('-custom', $plan);
+            return $planParts[0];
+        }
+
         return ucwords($plan);
     }
 

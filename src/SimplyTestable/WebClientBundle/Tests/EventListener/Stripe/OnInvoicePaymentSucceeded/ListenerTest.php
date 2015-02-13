@@ -32,4 +32,13 @@ abstract class ListenerTest extends BaseListenerTest {
         $this->callListener($this->getStripeEventData());
     }
 
+
+    public function testMailServiceHasHistory() {
+        $this->assertEquals(1, $this->getMailService()->getSender()->getHistory()->count());
+    }
+
+    public function testMailServiceHasNoError() {
+        $this->assertFalse($this->getMailService()->getSender()->getLastResponse()->isError());
+    }
+
 }
