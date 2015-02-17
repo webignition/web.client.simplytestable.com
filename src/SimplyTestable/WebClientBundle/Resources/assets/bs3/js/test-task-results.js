@@ -102,6 +102,16 @@ $(document).ready(function() {
                 });
             }
 
+            if (body.is('.js-static-analysis')) {
+                $('.grouped-issues .issues').each(function () {
+                    var issuesList = $(this);
+
+                    if ($('li', issuesList).length === 0) {
+                        issuesList.closest('li').remove();
+                    }
+                });
+            }
+
             window.scrollTo(0, 0);
         }
     };

@@ -6,17 +6,19 @@
                     <i class="fa fa-file-code-o"></i>{{ (context is empty) ? task.url : context }}
                 </a>
             </h3>
+
+            <ul class="issues js-static-analysis-issues">
+                {% for error in errors %}
+                    {% if ((error.message | replace({'Stopping': ''})) == error.message and (error.message | replace({'Too many errors': ''})) == error.message) %}
+                        <li>
+                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded/ErrorList/js-static-analysis:error.html.twig' %}
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
         </li>
 
-        <ul class="issues js-static-analysis-issues">
-            {% for error in errors %}
-                {% if ((error.message | replace({'Stopping': ''})) == error.message and (error.message | replace({'Too many errors': ''})) == error.message) %}
-                <li>
-                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded/ErrorList/js-static-analysis:error.html.twig' %}
-                </li>
-                {% endif %}
-            {% endfor %}
-        </ul>
+
         {#<div>#}
             {#<h3><i class="{% if errors[0].isException %}icon icon-ban-circle{% else %}icon icon-file{% endif %}"></i> {% if context == 'inline' %}Inline in your HTML{% else %}{{ context }}{% endif %}:</h3>#}
             {#<ul class="errors">#}
