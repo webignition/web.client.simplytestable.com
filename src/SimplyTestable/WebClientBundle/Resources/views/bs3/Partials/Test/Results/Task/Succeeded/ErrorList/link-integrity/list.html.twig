@@ -4,7 +4,7 @@
             <ul>
                 {% for state,errors in errors_by_class %}
                     {% set has_description = link_state_descriptions[class] is defined and link_state_descriptions[class][state] is defined %}
-                    {% set description = link_state_descriptions[class][state] %}
+                    {% set description = has_description ? link_state_descriptions[class][state] : '' %}
 
                 <li>
                     <h3>
@@ -13,7 +13,7 @@
 
                     <div class="row">
                         <div class="col-lg-12">
-                            {% if has_description and has_description[1] is defined %}
+                            {% if has_description and description[1] is defined %}
                             <p>
                                 {{ description[1] }}
                             </p>
