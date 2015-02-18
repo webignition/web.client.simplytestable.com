@@ -35,7 +35,8 @@
 {% set filter_selectors = {
     'html-validation':'p',
     'css-validation':'.message',
-    'js-static-analysis':'.message'
+    'js-static-analysis':'.message',
+    'link-integrity':'.raw-error-message'
 } %}
 
 {% block body_class %} {{ parent() }} {{ task_type_key }} full-width {% endblock %}

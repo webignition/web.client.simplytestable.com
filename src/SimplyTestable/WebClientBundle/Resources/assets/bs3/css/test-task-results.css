@@ -232,6 +232,18 @@ pre.prettyprint {
     /*float:none;*/
 /*}*/
 
+.link-integrity-issue-list .error-group {
+
+}
+
+.issue-list .link-integrity-issues .issues-section {
+    padding-left: 15px;
+}
+
+.link-integrity-issues .urls li {
+    margin-left: inherit;
+}
+
 @media (min-width: 992px) {
     .issue-list .meta {
         font-family: Menlo, Monaco, Consolas, monospace;

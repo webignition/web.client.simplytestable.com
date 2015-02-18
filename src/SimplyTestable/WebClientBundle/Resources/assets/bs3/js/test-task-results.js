@@ -19,7 +19,7 @@ $(document).ready(function() {
         };
 
         var filterSelector = $('.issue-content').attr('data-filter-selector');
-        var issuesList = $('.error-list .issues li, .warning-list .issues li');
+        var issuesList = $('.error-list .issues > li, .warning-list .issues > li');
 
         issuesList.each(function () {
             var issue = $(this);
@@ -110,6 +110,17 @@ $(document).ready(function() {
                         issuesList.closest('li').remove();
                     }
                 });
+            }
+
+            if (body.is('.link-integrity')) {
+                var errorCount = $('.error-list .issues > li').length;
+
+                console.log(errorCount);
+
+                $('h2 .alert-danger').text(errorCount);
+                $('a[href=#errors] .count').text(errorCount);
+                $('a[href=#errors] .name').text((errorCount == 1) ? 'error' : 'errors');
+
             }
 
             window.scrollTo(0, 0);
