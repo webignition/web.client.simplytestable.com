@@ -9,7 +9,7 @@
 
 {% block url_button_label %}View full results{% endblock %}
 
-{% set results_url = path('view_test_results_index_index', {'website': test.test.website, 'test_id': 1}) %}
+{% set results_url = path('view_test_results_index_index', {'website': test.test.website, 'test_id': test.test.testid}) %}
 
 {% block pre_stats %}
     {% if test_list is defined and test_list.requiresresults(test.test) %}
