@@ -42,7 +42,9 @@ abstract class BaseTestCase extends WebTestCase {
         
         foreach ($this->getCommands() as $command) {
             $this->application->add($command);
-        }          
+        }
+
+        $this->container->get('doctrine')->getConnection()->beginTransaction();
     }
     
     
@@ -339,8 +341,9 @@ abstract class BaseTestCase extends WebTestCase {
     
     public function tearDown() {
         parent::tearDown();
-        
+
         if (!is_null($this->container)) {
+            $this->container->get('doctrine')->getConnection()->rollback();
             $this->container->get('doctrine')->getConnection()->close();
         }
         

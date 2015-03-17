@@ -8,10 +8,6 @@ abstract class ActionTest extends BaseActionTest {
 
     abstract protected function getExpectedFlashValues();
 
-    public function preCall() {
-        $this->removeAllListRecipients();
-    }
-
     public function getExpectedResponseStatusCode() {
         return 302;
     }

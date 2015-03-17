@@ -8,7 +8,6 @@ abstract class BaseTest extends BaseSimplyTestableTestCase {
       
     public function setUp() {
         parent::setUp();
-        $this->removeAllTests();
         $this->container->enterScope('request');        
     }
     

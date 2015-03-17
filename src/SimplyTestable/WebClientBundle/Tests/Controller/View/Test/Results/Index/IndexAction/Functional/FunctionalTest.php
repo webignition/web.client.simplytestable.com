@@ -47,7 +47,6 @@ abstract class FunctionalTest extends BaseFunctionalTest {
 
     public function setUp() {
         parent::setUp();
-        $this->removeAllTests();
 
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath()));
 

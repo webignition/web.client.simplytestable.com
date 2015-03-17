@@ -263,38 +263,7 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase {
     protected function getTaskService() {
         return $this->container->get('simplytestable.services.taskservice');
     }      
-    
-    protected function removeAllTasks() {        
-        $tasks = $this->getTaskService()->getEntityRepository()->findAll();        
-        foreach ($tasks as $task) {
-            $this->getTaskService()->getEntityManager()->remove($task);
-        }
-        
-        $this->getTaskService()->getEntityManager()->flush();
-    }      
-    
-    protected function removeAllTests() {        
-        $this->removeAllTasks();
-        
-        $tests = $this->getTestService()->getEntityRepository()->findAll();
-        
-        foreach ($tests as $test) {
-            $this->getTestService()->getEntityManager()->remove($test);
-        }
-        
-        $this->getTestService()->getEntityManager()->flush();
-    }
 
-
-    protected function removeAllListRecipients() {
-        $listRecipientSets = $this->getMailchimpListRecipientsService()->getEntityRepository()->findAll();
-
-        foreach ($listRecipientSets as $listRecipientSet) {
-            $this->getTestService()->getEntityManager()->remove($listRecipientSet);
-        }
-
-        $this->getTestService()->getEntityManager()->flush();
-    }
     
     protected function makeUser() {
         $user = new \SimplyTestable\WebClientBundle\Model\User();
