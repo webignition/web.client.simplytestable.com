@@ -25,7 +25,7 @@
         "jms/serializer-bundle": "0.9.0",
         "webignition/is-http-status-code":"0.2",
         "guzzle/guzzle":"3.8.0",
-        "webignition/internet-media-type":">=0.1,<2.0",        
+        "webignition/internet-media-type":">=0.1,<2.0",
         "jasonlewis/expressive-date": "1.0.*",
         "webignition/html-validation-error-normaliser":"dev-master",
         "webignition/html-validation-error-linkifier":"dev-master",
@@ -49,7 +49,7 @@
             "type": "vcs",
             "url": "https://github.com/webignition/ResqueBundle"
         }
-    ],    
+    ],
     "scripts": {
         "post-install-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
@@ -66,7 +66,8 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "php app/console assetic:dump"
-        ]       
+        ],
+        "test": "php vendor/phpunit/phpunit/phpunit -c app --colors"
     },
     "config": {
         "bin-dir": "bin"
