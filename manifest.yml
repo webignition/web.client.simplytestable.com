@@ -3,5 +3,5 @@ src/SimplyTestable/WebClientBundle/Resources/assets/vendor:
   internet-explorer-opacity-polyfill: https://github.com/bladeSk/internet-explorer-opacity-polyfill.git
   jquery-placeholder: https://github.com/diy/jquery-placeholder.git
   jquery-scrollto: https://github.com/flesler/jquery.scrollTo/archive/1.4.12.zip
-  google-code-prettify: https://google-code-prettify.googlecode.com/files/prettify-small-4-Mar-2013.tar.bz2
+  google-code-prettify: https://github.com/google/code-prettify/releases/download/2013-03-04/prettify-small-4-Mar-2013.tar.bz2
   color-themes-for-google-code-prettify: https://github.com/jmblog/color-themes-for-google-code-prettify/archive/v1.0.zip
