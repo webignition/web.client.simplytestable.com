@@ -203,13 +203,13 @@ services:
 
   simplytestable.services.mailchimp.listRecipients:
     class:   SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService
-    calls:
-      - [addListIdentifier, ['announcements', %mailchimp_announcements_list_id%]]
-      - [addListIdentifier, ['updates', %mailchimp_updates_list_id%]]
-      - [addListIdentifier, ['introduction', %mailchimp_introduction_list_id%]]
     arguments:
         entityManager: "@doctrine.orm.entity_manager"
         logger: "@logger"
+        listIdentifiers:
+          announcements: "%mailchimp_announcements_list_id%"
+          updates: "%mailchimp_updates_list_id%"
+          introduction: "%mailchimp_introduction_list_id%"
 
   simplytestable.services.responseFormatService:
     class:   SimplyTestable\WebClientBundle\Services\ResponseFormatService
