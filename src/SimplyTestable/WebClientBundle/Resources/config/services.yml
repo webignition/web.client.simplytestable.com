@@ -195,6 +195,7 @@ services:
     arguments:
         logger: "@logger"
         mailchimpListRecipientsService: "@simplytestable.services.mailchimp.listRecipients"
+        entityManager: '@doctrine.orm.entity_manager'
     tags:
       - { name: kernel.event_listener, event: mailchimp.subscribe, method: onSubscribe }
       - { name: kernel.event_listener, event: mailchimp.unsubscribe, method: onUnsubscribe }
