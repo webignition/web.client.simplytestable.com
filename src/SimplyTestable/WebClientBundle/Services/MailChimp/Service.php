@@ -2,58 +2,34 @@
 namespace SimplyTestable\WebClientBundle\Services\MailChimp;
 
 use ZfrMailChimp\Client\MailChimpClient;
-use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
 
-class Service {
-    
+class Service
+{
     const LIST_MEMBERS_MAX_LIMIT = 100;
-    
+
     /**
-     *
-     * @var string
-     */
-    private $apiKey;
-    
-    
-    /**
-     *
-     * @var MailChimpClient 
+     * @var MailChimpClient
      */
     private $client;
-    
-    
+
     /**
      *
      * @var ListRecipientsService
      */
     private $listRecipientsService;
-    
-    
+
     /**
-     * 
-     * @param string $apiKey
+     * @param MailChimpClient $mailChimpClient
+     * @param ListRecipientsService $listRecipientsService
      */
-    public function __construct($apiKey, ListRecipientsService $listRecipientsService) {
-        $this->apiKey = $apiKey;
+    public function __construct(MailChimpClient $mailChimpClient, ListRecipientsService $listRecipientsService)
+    {
+        $this->client = $mailChimpClient;
         $this->listRecipientsService = $listRecipientsService;
-    }    
-    
-    
-    /**
-     * 
-     * @return MailChimpClient
-     */
-    public function getClient() {
-        if (is_null($this->client)) {
-            $this->client = new MailChimpClient($this->apiKey);
-        }
-        
-        return $this->client;
     }
-    
-    
+
     /**
-     * 
+     *
      * @param string $listName
      * @param string $email
      * @return boolean
@@ -61,21 +37,21 @@ class Service {
     public function listContains($listName, $email) {
         return $this->listRecipientsService->get($listName)->contains($email);
     }
-    
-    
+
+
     /**
-     * 
+     *
      * @param string $listName
      * @param string $email
      * @return boolean
      */
-    public function subscribe($listName, $email) {        
+    public function subscribe($listName, $email) {
         if ($this->listContains($listName, $email)) {
             return true;
         }
 
         try {
-            $this->getClient()->subscribe(array(
+            $this->client->subscribe(array(
                 'id' => $this->listRecipientsService->getListId($listName),
                 'email' => array(
                     'email' => $email
@@ -84,13 +60,13 @@ class Service {
             ));
         } catch (\ZfrMailChimp\Exception\Ls\AlreadySubscribedException $alreadySubscribedException) {
         }
-        
-        return true;      
+
+        return true;
     }
-    
-    
+
+
     /**
-     * 
+     *
      * @param string $listName
      * @param string $email
      * @return boolean
@@ -99,21 +75,21 @@ class Service {
         if (!$this->listContains($listName, $email)) {
             return true;
         }
-   
-        $this->getClient()->unsubscribe(array(
+
+        $this->client->unsubscribe(array(
             'id' => $this->listRecipientsService->getListId($listName),
             'email' => array(
                 'email' => $email
             ),
             'delete_member' => false
         ));
-        
+
         return true;
     }
-    
-    
+
+
     /**
-     * 
+     *
      * @param string $listName
      * @return array
      */
@@ -121,26 +97,26 @@ class Service {
         $listLength = null;
         $currentPage = 0;
         $members = array();
-        
+
         while (is_null($listLength) || count($members) < $listLength) {
-            $response = $this->getClient()->getListMembers(array(
+            $response = $this->client->getListMembers(array(
                 'id' => $this->listRecipientsService->getListId($listName),
                 'opts' => array(
                     'limit' => self::LIST_MEMBERS_MAX_LIMIT,
                     'start' => $currentPage
                 )
             ));
-            
+
             if (is_null($listLength)) {
                 $listLength = $response['total'];
             }
-            
+
             $currentPage++;
-            
+
             $members = array_merge($members, $response['data']);
         }
-        
+
         return $members;
-    }  
-    
+    }
+
 }

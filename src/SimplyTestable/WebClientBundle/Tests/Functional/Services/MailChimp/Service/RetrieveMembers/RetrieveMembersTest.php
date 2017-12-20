@@ -11,7 +11,7 @@ abstract class RetrieveMembersTest extends ServiceTest {
 
         $this->setHttpFixtures(
             $this->getHttpFixtures($this->getFixturesDataPath($this->getName())),
-            $this->getMailchimpService()->getClient()
+            $this->container->get('simplytestable.services.mailchimp.client')
         );
     }
 
