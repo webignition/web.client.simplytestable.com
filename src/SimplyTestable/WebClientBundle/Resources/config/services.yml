@@ -144,10 +144,15 @@ services:
     arguments:
         webResourceService: "@simplytestable.services.webresourceservice"
 
+  simplytestable.services.mailchimp.client:
+    class: ZfrMailChimp\Client\MailChimpClient
+    arguments:
+      apiKey: "%mailchimp_api_key%"
+
   simplytestable.services.mailchimpservice:
     class:   SimplyTestable\WebClientBundle\Services\MailChimp\Service
     arguments:
-        apiKey: %mailchimp_api_key%
+        mailChimpClient: '@simplytestable.services.mailchimp.client'
         listRecipientsService: "@simplytestable.services.mailchimp.listRecipients"
 
   simplytestable.services.mail.configuration:

@@ -1,13 +1,13 @@
 services:
-  
+
   simplytestable.services.httpClientService:
-    class:  SimplyTestable\WebClientBundle\Services\TestHttpClientService        
-    
+    class:  SimplyTestable\WebClientBundle\Services\TestHttpClientService
+
   simplytestable.services.postmark.sender:
     class:   SimplyTestable\WebClientBundle\Services\Postmark\TestSender
 
   simplytestable.services.mailchimpservice:
     class:   SimplyTestable\WebClientBundle\Services\MailChimp\TestService
     arguments:
-        apiKey: %mailchimp_api_key%
+        mailChimpClient: '@simplytestable.services.mailchimp.client'
         listRecipientsService: "@simplytestable.services.mailchimp.listRecipients"
