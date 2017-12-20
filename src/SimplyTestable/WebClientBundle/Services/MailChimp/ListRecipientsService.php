@@ -63,26 +63,6 @@ class ListRecipientsService {
         return $this->entityRepository;
     }
 
-
-    /**
-     *
-     * @param string $listId
-     * @return \SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService
-     */
-    public function removeList($listId) {
-        $entity = $this->getEntityRepository()->findOneBy(array(
-            'listId' => $listId
-        ));
-
-        if ($entity) {
-            $this->entityManager->remove($entity);
-            $this->entityManager->flush($entity);
-        }
-
-        return $this;
-    }
-
-
     /**
      *
      * @param \SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients $listRecipients
