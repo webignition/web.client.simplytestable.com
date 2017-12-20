@@ -27,7 +27,10 @@ class UserNewsSubscriptionsController extends AbstractUserAccountController
         foreach (['announcements', 'updates'] as $listName) {
             $subscribeChoice = filter_var($this->get('request')->request->get($listName), FILTER_VALIDATE_BOOLEAN);
 
-            if ($this->subscribeChoiceMatchesCurrentSubscription($listName, $username, $subscribeChoice)) {
+            $listRecipients = $mailChimpListRecipientsService->get($listName);
+            $isSubscribed = $listRecipients->contains($username);
+
+            if ($subscribeChoice === $isSubscribed) {
                 continue;
             }
 
@@ -46,26 +49,5 @@ class UserNewsSubscriptionsController extends AbstractUserAccountController
         }
 
         return $this->redirect($this->generateUrl('view_user_account_index_index', array(), true));
-    }
-
-    /**
-     *
-     * @param string $listName
-     * @param string $email
-     * @param boolean $subscribeChoice
-     * @return boolean
-     */
-    private function subscribeChoiceMatchesCurrentSubscription($listName, $email, $subscribeChoice)
-    {
-        return $subscribeChoice === $this->getMailchimpService()->listContains($listName, $email);
-    }
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\MailChimp\Service
-     */
-    private function getMailchimpService()
-    {
-        return $this->container->get('simplytestable.services.mailchimpservice');
     }
 }
