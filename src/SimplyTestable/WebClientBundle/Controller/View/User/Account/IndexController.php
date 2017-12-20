@@ -8,7 +8,7 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class IndexController extends BaseViewController implements RequiresPrivateUser, IEFiltered {
-    
+
     const STRIPE_CARD_CHECK_KEY_POSTFIX = '_check';
 
     protected function modifyViewName($viewName) {
@@ -28,15 +28,24 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
     public function indexAction() {
         $userSummary = $this->getUserService()->getSummary();
 
+        $mailChimpListRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
+        $updatesListRecipients = $mailChimpListRecipientsService->get('updates');
+        $announcementsListRecipients = $mailChimpListRecipientsService->get('announcements');
+
+        $user = $this->getUser();
+        $username = $user->getUsername();
+
         $viewData = array_merge(array(
             'user_summary' => $userSummary,
-            'plan_presentation_name' => $this->getPlanPresentationName($userSummary->getPlan()->getAccountPlan()->getName()),
+            'plan_presentation_name' => $this->getPlanPresentationName(
+                $userSummary->getPlan()->getAccountPlan()->getName()
+            ),
             'stripe_event_data' => $this->getUserStripeEvents($userSummary),
             'stripe' => $this->container->getParameter('stripe'),
             'this_url' => $this->generateUrl('view_user_account_index_index', array(), true),
             'premium_plan_launch_offer_end' => $this->container->getParameter('premium_plan_launch_offer_end'),
-            'mailchimp_updates_subscribed' => $this->getMailchimpService()->listContains('updates', $this->getUser()->getUsername()),
-            'mailchimp_announcements_subscribed' => $this->getMailchimpService()->listContains('announcements', $this->getUser()->getUsername()),
+            'mailchimp_updates_subscribed' => $updatesListRecipients->contains($username),
+            'mailchimp_announcements_subscribed' => $announcementsListRecipients->contains($username),
             'card_expiry_month' => $this->getCardExpiryMonth($userSummary),
             'currency_map' => $this->container->getParameter('currency_map')
         ), $this->getViewFlashValues(array(
@@ -59,24 +68,24 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
         }
 
         if ($this->getUserEmailChangeRequestService()->hasEmailChangeRequest($this->getUser()->getUsername())) {
-            $viewData['email_change_request'] = $this->getUserEmailChangeRequestService()->getEmailChangeRequest($this->getUser()->getUsername());
+            $viewData['email_change_request'] = $this->getUserEmailChangeRequestService()->getEmailChangeRequest($username);
             $viewData['token'] = $this->get('request')->query->get('token');
         }
 
         return $this->renderResponse($this->getRequest(), $viewData);
     }
 
-    
+
     private function getUserStripeEvents(\SimplyTestable\WebClientBundle\Model\User\Summary $userSummary) {
         if (!$userSummary->hasStripeCustomer()) {
             return array();
         }
-        
+
         if (!$userSummary->getStripeCustomer()->hasSubscription()) {
             return array();
         }
-        
-        $stripeEvents = array();       
+
+        $stripeEvents = array();
 
         $eventKeys = array(
             'invoice.updated',
@@ -90,13 +99,13 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
             }
         }
 
-        
+
         return $stripeEvents;
     }
-    
-    
+
+
     /**
-     * 
+     *
      * @param \SimplyTestable\WebClientBundle\Model\User\Summary $userSummary
      * @return string|null
      */
@@ -104,17 +113,17 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
         if (!$userSummary->hasStripeCustomer()) {
             return null;
         }
-        
+
         if (!$userSummary->getStripeCustomer()->hasActiveCard()) {
             return null;
         }
-        
-        return \DateTime::createFromFormat('!m', $userSummary->getStripeCustomer()->getActiveCard()->getExpiryMonth())->format('F');               
+
+        return \DateTime::createFromFormat('!m', $userSummary->getStripeCustomer()->getActiveCard()->getExpiryMonth())->format('F');
     }
 
 
     /**
-     * 
+     *
      * @param string $plan
      * @return string
      */
@@ -126,25 +135,25 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
 
         return ucwords($plan);
     }
-    
+
     /**
-     * 
+     *
      * @return \SimplyTestable\WebClientBundle\Services\UserStripeEventService
      */
     private function getUserStripeEventService() {
         return $this->container->get('simplytestable.services.userstripeeventservice');
-    }    
+    }
 
     /**
-     * 
+     *
      * @return \SimplyTestable\WebClientBundle\Services\MailChimp\Service
      */
     private function getMailchimpService() {
         return $this->container->get('simplytestable.services.mailchimpservice');
     }
-    
+
     /**
-     * 
+     *
      * @return \SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService
      */
     protected function getUserEmailChangeRequestService() {

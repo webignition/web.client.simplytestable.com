@@ -29,7 +29,7 @@ class NewsSubscriptionsController extends BaseController implements RequiresPriv
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
 
         $user = $this->getUser();
-        $userName = $user->getUsername();
+        $username = $user->getUsername();
 
         $flashData = [];
 
@@ -38,7 +38,10 @@ class NewsSubscriptionsController extends BaseController implements RequiresPriv
 
             $flashData[$listName] = [];
 
-            if ($this->subscribeChoiceMatchesCurrentSubscription($listName, $userName, $subscribeChoice)) {
+            $listRecipients = $mailChimpListRecipientsService->get($listName);
+            $isSubscribed = $listRecipients->contains($username);
+
+            if ($subscribeChoice === $isSubscribed) {
                 $flashData[$listName] = $subscribeChoice ? 'already-subscribed' : 'already-unsubscribed';
                 continue;
             }
@@ -47,9 +50,9 @@ class NewsSubscriptionsController extends BaseController implements RequiresPriv
 
             if ($subscribeChoice === true) {
                 try {
-                    $mailChimpService->subscribe($listName, $userName);
+                    $mailChimpService->subscribe($listName, $username);
                     $flashData[$listName] = 'subscribed';
-                    $listRecipients->addRecipient($userName);
+                    $listRecipients->addRecipient($username);
                 } catch (InvalidImportException $invalidImportException) {
                     if ($invalidImportException->getCode() == 220) {
                         $flashData[$listName] = 'subscribe-failed-banned';
@@ -58,9 +61,9 @@ class NewsSubscriptionsController extends BaseController implements RequiresPriv
                     }
                 }
             } else {
-                $mailChimpService->unsubscribe($listName, $userName);
+                $mailChimpService->unsubscribe($listName, $username);
                 $flashData[$listName] = 'unsubscribed';
-                $listRecipients->removeRecipient($userName);
+                $listRecipients->removeRecipient($username);
             }
 
             $entityManager->persist($listRecipients);
@@ -71,37 +74,4 @@ class NewsSubscriptionsController extends BaseController implements RequiresPriv
 
         return $this->redirect($this->generateUrl('view_user_account_index_index', array(), true) . '#news-subscriptions');
     }
-
-
-    /**
-     *
-     * @param string $listName
-     * @param string $email
-     * @param boolean $subscribeChoice
-     * @return boolean
-     */
-    private function subscribeChoiceMatchesCurrentSubscription($listName, $email, $subscribeChoice) {
-        return $subscribeChoice === $this->getMailchimpService()->listContains($listName, $email);
-    }
-
-
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\MailChimp\Service
-     */
-    private function getMailchimpService() {
-        return $this->container->get('simplytestable.services.mailchimpservice');
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService
-     */
-    private function getMailchimpListRecipientsService() {
-        return $this->container->get('simplytestable.services.mailchimp.listRecipients');
-    }
-
 }

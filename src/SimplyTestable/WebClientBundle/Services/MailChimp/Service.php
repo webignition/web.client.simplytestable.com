@@ -34,19 +34,9 @@ class Service
      * @param string $email
      * @return boolean
      */
-    public function listContains($listName, $email) {
-        return $this->listRecipientsService->get($listName)->contains($email);
-    }
-
-
-    /**
-     *
-     * @param string $listName
-     * @param string $email
-     * @return boolean
-     */
     public function subscribe($listName, $email) {
-        if ($this->listContains($listName, $email)) {
+        $listRecipients = $this->listRecipientsService->get($listName);
+        if ($listRecipients->contains($email)) {
             return true;
         }
 
@@ -72,7 +62,8 @@ class Service
      * @return boolean
      */
     public function unsubscribe($listName, $email) {
-        if (!$this->listContains($listName, $email)) {
+        $listRecipients = $this->listRecipientsService->get($listName);
+        if (!$listRecipients->contains($email)) {
             return true;
         }
 
