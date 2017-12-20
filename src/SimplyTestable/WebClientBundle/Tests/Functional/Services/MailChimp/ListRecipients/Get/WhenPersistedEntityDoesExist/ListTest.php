@@ -39,8 +39,6 @@ abstract class ListTest extends KnownListTest {
         $entityManager->persist($this->listRecipients);
         $entityManager->flush();
 
-        $this->getMailChimpListRecipientsService()->getEntityRepository()->clear();
-
         $this->listRecipients = $this->getMailChimpListRecipientsService()->get($this->getListName());
     }
 
