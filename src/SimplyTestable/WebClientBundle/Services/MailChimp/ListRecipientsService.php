@@ -65,18 +65,6 @@ class ListRecipientsService {
 
     /**
      *
-     * @param \SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients $listRecipients
-     * @return \SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService
-     */
-    public function persistAndFlush(ListRecipients $listRecipients) {
-        $this->entityManager->persist($listRecipients);
-        $this->entityManager->flush($listRecipients);
-
-        return $this;
-    }
-
-    /**
-     *
      * @param string $name
      * @return boolean
      */

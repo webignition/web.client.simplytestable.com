@@ -2,23 +2,30 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\MailChimp\Service;
 
-class ListContainsTest extends ServiceTest {   
+use Doctrine\ORM\EntityManagerInterface;
 
-    
-    public function testListDoesContain() {        
+class ListContainsTest extends ServiceTest {
+
+
+    public function testListDoesContain() {
         $email = 'user@example.com';
         $listName = 'updates';
-        
-        $listRecipients = $this->getMailChimpListRecipientsService()->get($listName);        
+
+        $listRecipients = $this->getMailChimpListRecipientsService()->get($listName);
         $listRecipients->addRecipient($email);
-        $this->getMailChimpListRecipientsService()->persistAndFlush($listRecipients);
+
+        /* @var EntityManagerInterface $entityManager */
+        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+
+        $entityManager->persist($listRecipients);
+        $entityManager->flush();
 
         $this->assertTrue($this->getMailchimpService()->listContains($listName, $email));
     }
-    
 
-    public function testListDoesNotContain() {        
+
+    public function testListDoesNotContain() {
         $this->assertFalse($this->getMailchimpService()->listContains('updates', 'foo@bar.com'));
-    }      
+    }
 
 }

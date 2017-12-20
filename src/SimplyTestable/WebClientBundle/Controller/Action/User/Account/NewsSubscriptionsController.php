@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
+use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Controller\BaseController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -19,7 +20,17 @@ class NewsSubscriptionsController extends BaseController implements RequiresPriv
         ], true));
     }
 
-    public function updateAction() {
+    public function updateAction()
+    {
+        $mailChimpListRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
+        $mailChimpService = $this->container->get('simplytestable.services.mailchimpservice');
+
+        /* @var EntityManagerInterface $entityManager */
+        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+
+        $user = $this->getUser();
+        $userName = $user->getUsername();
+
         $flashData = [];
 
         foreach (['announcements', 'updates'] as $listName) {
@@ -27,18 +38,18 @@ class NewsSubscriptionsController extends BaseController implements RequiresPriv
 
             $flashData[$listName] = [];
 
-            if ($this->subscribeChoiceMatchesCurrentSubscription($listName, $this->getUser()->getUsername(), $subscribeChoice)) {
+            if ($this->subscribeChoiceMatchesCurrentSubscription($listName, $userName, $subscribeChoice)) {
                 $flashData[$listName] = $subscribeChoice ? 'already-subscribed' : 'already-unsubscribed';
                 continue;
             }
 
-            $listRecipients = $this->getMailchimpListRecipientsService()->get($listName);
+            $listRecipients = $mailChimpListRecipientsService->get($listName);
 
             if ($subscribeChoice === true) {
                 try {
-                    $this->getMailchimpService()->subscribe($listName, $this->getUser()->getUsername());
+                    $mailChimpService->subscribe($listName, $userName);
                     $flashData[$listName] = 'subscribed';
-                    $listRecipients->addRecipient($this->getUser()->getUsername());
+                    $listRecipients->addRecipient($userName);
                 } catch (InvalidImportException $invalidImportException) {
                     if ($invalidImportException->getCode() == 220) {
                         $flashData[$listName] = 'subscribe-failed-banned';
@@ -47,12 +58,13 @@ class NewsSubscriptionsController extends BaseController implements RequiresPriv
                     }
                 }
             } else {
-                $this->getMailchimpService()->unsubscribe($listName, $this->getUser()->getUsername());
+                $mailChimpService->unsubscribe($listName, $userName);
                 $flashData[$listName] = 'unsubscribed';
-                $listRecipients->removeRecipient($this->getUser()->getUsername());
+                $listRecipients->removeRecipient($userName);
             }
 
-            $this->getMailchimpListRecipientsService()->persistAndFlush($listRecipients);
+            $entityManager->persist($listRecipients);
+            $entityManager->flush();
         }
 
         $this->get('session')->getFlashBag()->set('user_account_newssubscriptions_update', $flashData);

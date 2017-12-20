@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User\Account\NewsSubscriptions\UpdateAction\IsUpdated;
 
+use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User\Account\NewsSubscriptions\UpdateAction\ActionTest;
 
 
@@ -28,8 +29,12 @@ abstract class IsUpdatedTest extends ActionTest {
             $updatesRecipients->addRecipient($user->getUsername());
         }
 
-        $this->getMailchimpListRecipientsService()->persistAndFlush($announcementsRecipients);
-        $this->getMailchimpListRecipientsService()->persistAndFlush($updatesRecipients);
+        /* @var EntityManagerInterface $entityManager */
+        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+
+        $entityManager->persist($announcementsRecipients);
+        $entityManager->persist($updatesRecipients);
+        $entityManager->flush();
     }
 
     protected function getExpectedFlashValues() {

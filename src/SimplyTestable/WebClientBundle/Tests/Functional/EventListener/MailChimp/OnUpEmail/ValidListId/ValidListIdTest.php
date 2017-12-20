@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\EventListener\MailChimp\OnUpEmail\ValidListId;
 
+use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Tests\Functional\EventListener\MailChimp\OnUpEmail\OnUpEmailTest;
 
 abstract class ValidListIdTest extends OnUpEmailTest {
@@ -25,7 +26,11 @@ abstract class ValidListIdTest extends OnUpEmailTest {
         $listRecipients = $this->getMailChimpListRecipientsService()->get($this->getListName());
         $listRecipients->addRecipient($this->oldEmail);
 
-        $this->getMailChimpListRecipientsService()->persistAndFlush($listRecipients);
+        /* @var EntityManagerInterface $entityManager */
+        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+
+        $entityManager->persist($listRecipients);
+        $entityManager->flush();
 
         $this->assertTrue($listRecipients->contains($this->oldEmail));
 
