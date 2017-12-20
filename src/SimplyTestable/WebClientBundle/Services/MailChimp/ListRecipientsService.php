@@ -50,19 +50,6 @@ class ListRecipientsService {
         $this->listNameToListIdMap = $listIdentifiers;
     }
 
-
-    /**
-     *
-     * @return \Doctrine\ORM\EntityRepository
-     */
-    public function getEntityRepository() {
-        if (is_null($this->entityRepository)) {
-            $this->entityRepository = $this->entityManager->getRepository(self::ENTITY_NAME);
-        }
-
-        return $this->entityRepository;
-    }
-
     /**
      *
      * @param string $name
@@ -124,7 +111,9 @@ class ListRecipientsService {
      * @return \SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients|null
      */
     private function getEntityByListId($listId) {
-        return $this->getEntityRepository()->findOneBy(array(
+        $entityRepository = $this->entityManager->getRepository(ListRecipients::class);
+
+        return $entityRepository->findOneBy(array(
             'listId' => $listId
         ));
     }
