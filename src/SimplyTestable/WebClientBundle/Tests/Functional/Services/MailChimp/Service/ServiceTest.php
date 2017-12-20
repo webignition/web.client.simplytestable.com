@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
 
 abstract class ServiceTest extends BaseSimplyTestableTestCase {
 
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         $entities = $this->getMailChimpListRecipientsService()->getEntityRepository()->findAll();
 

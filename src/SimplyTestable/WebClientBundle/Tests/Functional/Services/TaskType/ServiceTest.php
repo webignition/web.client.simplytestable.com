@@ -24,7 +24,7 @@ abstract class ServiceTest extends BaseTestCase {
 //    private $availableTaskTypes = array();
 
 
-//    public function setUp() {
+//    protected function setUp() {
 //        parent::setUp();
 //        //$this->taskTypes = $this->getTaskTypeService()->get();
 //        //$this->availableTaskTypes = $this->getTaskTypeService()->getAvailable();

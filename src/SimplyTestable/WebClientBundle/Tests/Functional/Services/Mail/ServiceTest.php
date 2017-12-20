@@ -13,7 +13,7 @@ class ServiceTest extends BaseSimplyTestableTestCase
      */
     private $mailService;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
 

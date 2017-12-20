@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
 
 abstract class BaseTest extends BaseSimplyTestableTestCase
 {
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->container->enterScope('request');

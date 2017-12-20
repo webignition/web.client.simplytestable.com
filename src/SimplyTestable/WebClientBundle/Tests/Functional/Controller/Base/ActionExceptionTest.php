@@ -11,7 +11,7 @@ abstract class ActionExceptionTest extends BaseTest {
      */
     protected $exception;
     
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
 
         if (count($this->getHttpFixtureItems()) > 0) {

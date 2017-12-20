@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Tests\Functional\Controller\Base\RequiresPriv
 
 class RequiresPrivateUserTest extends BaseRequiresPrivateUserTest {
     
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         $this->setHttpFixtures($this->buildHttpFixtureSet(array(
             "HTTP/1.1 200 OK",

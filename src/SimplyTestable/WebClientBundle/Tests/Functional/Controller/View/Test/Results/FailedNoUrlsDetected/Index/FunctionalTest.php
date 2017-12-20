@@ -8,7 +8,7 @@ class FunctionalTest extends BaseFunctionalTest {
 
     const WEBSITE = 'http://example.com/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz';
 
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath()));
     }

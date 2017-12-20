@@ -18,7 +18,7 @@ abstract class ServiceTest extends BaseTestCase {
      */
     private $taskTypeService = null;
     
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         $this->requestData = new \Symfony\Component\HttpFoundation\ParameterBag();
     }

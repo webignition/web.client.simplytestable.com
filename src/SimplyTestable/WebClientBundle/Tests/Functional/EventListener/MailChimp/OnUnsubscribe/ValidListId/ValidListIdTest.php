@@ -12,7 +12,7 @@ abstract class ValidListIdTest extends OnUnsubscribeTest {
      */
     private $email = 'user@example.com';
     
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         
         $listRecipients = $this->getMailChimpListRecipientsService()->get($this->getListName());

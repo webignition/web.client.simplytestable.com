@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Tests\Functional\EventListener\Stripe\Listene
 
 abstract class ListenerTest extends BaseListenerTest {
 
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
 
         $this->callListener($this->getListenerData());
@@ -15,9 +15,9 @@ abstract class ListenerTest extends BaseListenerTest {
     protected function getListenerData() {
         return [];
     }
-    
+
     /**
-     * 
+     *
      * @return string
      */
     protected function getEventName() {
@@ -40,5 +40,5 @@ abstract class ListenerTest extends BaseListenerTest {
     public function testHasNoMailError() {
         $this->assertFalse($this->getMailService()->getSender()->getLastResponse()->isError());
     }
-    
+
 }

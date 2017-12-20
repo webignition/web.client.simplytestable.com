@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Tests\Functional\EventListener\Stripe\OnCusto
 
 abstract class ListenerTest extends BaseListenerTest {
 
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
 
         $this->callListener(array(

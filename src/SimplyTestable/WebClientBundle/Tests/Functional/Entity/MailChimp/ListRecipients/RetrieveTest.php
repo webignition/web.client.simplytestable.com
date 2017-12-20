@@ -25,7 +25,7 @@ class RetrieveTest extends EntityTest
      */
     private $entityId;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
 

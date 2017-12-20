@@ -9,7 +9,7 @@ abstract class ListenerTest extends BaseListenerTest {
     const AMOUNT = 900;
     const DEFAULT_CURRENCY = 'gbp';
 
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
 
         $this->callListener(array(

@@ -7,17 +7,17 @@ use SimplyTestable\WebClientBundle\Tests\Functional\EventListener\Stripe\Listene
 abstract class ListenerTest extends BaseListenerTest {
 
     abstract protected function getStripeEventData();
-    
+
     /**
-     * 
+     *
      * @return string
      */
     protected function getEventName() {
         return 'invoice.payment_succeeded';
-    }     
-    
+    }
+
     /**
-     * 
+     *
      * @return string
      */
     protected function getListenerMethodName() {
@@ -26,7 +26,7 @@ abstract class ListenerTest extends BaseListenerTest {
     }
 
 
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
 
         $this->callListener($this->getStripeEventData());

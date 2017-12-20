@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Tests\Functional\Controller\TestStart\ActionT
 
 class ActionTest extends BaseActionTest {      
     
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         
         if ($this->hasCustomFixturesDataPath($this->getName())) {

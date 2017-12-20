@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Tests\Functional\Controller\Redirect\ActionTe
 
 abstract class ActionTest extends BaseActionTest {
 
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
 
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath()));

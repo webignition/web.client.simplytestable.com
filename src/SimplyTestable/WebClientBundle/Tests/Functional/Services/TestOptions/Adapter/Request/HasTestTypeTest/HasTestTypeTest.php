@@ -11,7 +11,7 @@ abstract class HasTestTypeTest extends ServiceTest {
      */
     private $testOptions;
 
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
 
         $this->getRequestData()->set('html-validation', $this->getRequestHasHtmlValidation() ? '1' : '0');

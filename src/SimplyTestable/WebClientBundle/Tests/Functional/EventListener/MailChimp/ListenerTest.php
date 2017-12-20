@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 abstract class ListenerTest extends BaseTestCase {
     
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         $entities = $this->getMailChimpListRecipientsService()->getEntityRepository()->findAll();
         
