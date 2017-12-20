@@ -24,7 +24,7 @@ abstract class ListTest extends KnownListTest {
     );
     
     
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         $this->listRecipients = $this->getMailChimpListRecipientsService()->get($this->getListName());
         

@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Tests\Functional\Services\TestOptions\Adapter
 
 class JsStaticAnalysisOptionsTest extends ServiceTest {
 
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         $this->getRequestData()->set('js-static-analysis', '1');
         $this->getTaskTypeService()->setUserIsAuthenticated(true);
@@ -30,23 +30,23 @@ class JsStaticAnalysisOptionsTest extends ServiceTest {
             $this->getJsStaticAnalysisAbsoluteTestTypeOptions()['domains-to-ignore']
         );
     }
-    
+
     public function testJsStaticAnalysisIgnoreCommonCdnsTrue() {
         $this->getRequestData()->set('js-static-analysis-ignore-common-cdns', '1');
         $this->assertEquals('1', $this->getJsStaticAnalysisAbsoluteTestTypeOptions()['ignore-common-cdns']);
-    }     
-    
+    }
+
     public function testJsStaticAnalysisIgnoreCommonCdnsFalse() {
         $this->getRequestData()->set('js-static-analysis-ignore-common-cdns', '0');
         $this->assertEquals('0', $this->getJsStaticAnalysisAbsoluteTestTypeOptions()['ignore-common-cdns']);
-    }  
-    
-    
+    }
+
+
     /**
-     * 
+     *
      * @return array
      */
     private function getJsStaticAnalysisAbsoluteTestTypeOptions() {
         return $this->getTestOptions()->getAbsoluteTestTypeOptions('js-static-analysis', false);
-    }  
+    }
 }

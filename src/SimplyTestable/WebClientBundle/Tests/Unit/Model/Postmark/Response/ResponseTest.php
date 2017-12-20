@@ -12,7 +12,7 @@ abstract class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     protected $response;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->response = new PostmarkResponse($this->getJsonResponse());
     }

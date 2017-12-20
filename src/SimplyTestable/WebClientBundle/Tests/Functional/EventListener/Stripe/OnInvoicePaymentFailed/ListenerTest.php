@@ -10,7 +10,7 @@ class ListenerTest extends BaseListenerTest {
     const TOTAL = 900;
     const AMOUNT_DUE = 900;
 
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
 
         $this->callListener($this->getListenerData());
@@ -33,9 +33,9 @@ class ListenerTest extends BaseListenerTest {
             'currency' => 'gbp'
         ];
     }
-    
+
     /**
-     * 
+     *
      * @return string
      */
     protected function getEventName() {
@@ -63,5 +63,5 @@ class ListenerTest extends BaseListenerTest {
     public function testHasNoMailError() {
         $this->assertFalse($this->getMailService()->getSender()->getLastResponse()->isError());
     }
-    
+
 }

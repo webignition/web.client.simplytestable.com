@@ -9,7 +9,7 @@ abstract class FunctionalTest extends BaseFunctionalTest {
     const WEBSITE = 'http://example.com/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz';
     const TASK_ID = 2;
 
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
 
         $this->setHttpFixtures(array_merge(

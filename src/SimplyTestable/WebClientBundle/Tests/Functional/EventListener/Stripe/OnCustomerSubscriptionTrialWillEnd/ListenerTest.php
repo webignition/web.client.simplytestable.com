@@ -8,7 +8,7 @@ class ListenerTest extends BaseListenerTest {
 
     const AMOUNT = 1900;
 
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
 
         $this->callListener($this->getListenerData());
@@ -23,9 +23,9 @@ class ListenerTest extends BaseListenerTest {
             'plan_currency' => 'gbp'
         ];
     }
-    
+
     /**
-     * 
+     *
      * @return string
      */
     protected function getEventName() {
@@ -59,5 +59,5 @@ class ListenerTest extends BaseListenerTest {
     public function testNotificationMessageContainsFormattedAmount() {
         $this->assertNotificationMessageContains($this->getExpectedFormattedAmount());
     }
-    
+
 }

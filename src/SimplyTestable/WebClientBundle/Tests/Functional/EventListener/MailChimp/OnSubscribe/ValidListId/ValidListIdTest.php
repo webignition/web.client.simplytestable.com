@@ -13,7 +13,7 @@ abstract class ValidListIdTest extends OnSubscribeTest {
     private $email = 'user@example.com';
     
     
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         $this->callListener(array(
             'data' => array(

@@ -14,7 +14,7 @@ abstract class EventTest extends \PHPUnit_Framework_TestCase {
      */
     protected $event;
 
-    public function setUp() {
+    protected function setUp() {
         $this->event = new MailChimpEvent(new ParameterBag($this->getEventPostData()));
     }
 
