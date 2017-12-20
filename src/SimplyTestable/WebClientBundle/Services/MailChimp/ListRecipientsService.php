@@ -37,9 +37,9 @@ class ListRecipientsService {
 
     /**
      * @param EntityManager $entityManager
-     * @param LoggerInterface $logger
+    * @param LoggerInterface $logger
      * @param array $listIdentifiers
-     */
+    */
     public function __construct(
         EntityManager $entityManager,
         LoggerInterface $logger,
@@ -103,16 +103,6 @@ class ListRecipientsService {
     public function hasListIdentifier($name) {
         return array_key_exists($name, $this->listNameToListIdMap);
     }
-
-
-    /**
-     *
-     * @return array
-     */
-    public function getListNames() {
-        return array_keys($this->listNameToListIdMap);
-    }
-
 
     /**
      *
