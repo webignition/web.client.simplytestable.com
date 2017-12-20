@@ -27,8 +27,8 @@ install:
   - php app/console doctrine:migrations:migrate --no-interaction
 
 before_script:
-  - php bin/console --env=test cache:clear --no-warmup
-  - php bin/console --env=test cache:warmup
+  - php app/console --env=test cache:clear --no-warmup
+  - php app/console --env=test cache:warmup
 
 script:
   - composer test
