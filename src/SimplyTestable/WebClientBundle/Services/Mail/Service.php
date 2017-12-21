@@ -63,4 +63,12 @@ class Service
     {
         return $this->postmarkSender;
     }
+
+    /**
+     * @param PostmarkMessage $message
+     */
+    public function setPostmarkMessage(PostmarkMessage $message)
+    {
+        $this->postmarkMessage = $message;
+    }
 }

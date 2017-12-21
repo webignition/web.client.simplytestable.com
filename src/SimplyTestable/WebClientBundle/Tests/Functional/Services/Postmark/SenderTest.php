@@ -2,8 +2,8 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\Postmark;
 
-use Mockery\Mock;
 use SimplyTestable\WebClientBundle\Services\Postmark\Sender;
+use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
@@ -67,9 +67,13 @@ class SenderTest extends BaseSimplyTestableTestCase
     {
         return [
             'invalid to address' => [
-                'message' => $this->createPostmarkMessage([
-                    'ErrorCode' => 300,
-                    'Message' => "Invalid 'To' address: 'foo@example'.",
+                'message' => MockFactory::createPostmarkMessage([
+                    'send' => [
+                        'return' => json_encode([
+                            'ErrorCode' => 300,
+                            'Message' => "Invalid 'To' address: 'foo@example'.",
+                        ]),
+                    ]
                 ]),
                 'expectedExceptionMessage' => "Invalid 'To' address: 'foo@example'.",
                 'expectedExceptionCode' => 300,
@@ -101,7 +105,11 @@ class SenderTest extends BaseSimplyTestableTestCase
     {
         return [
             'success' => [
-                'message' => $this->createPostmarkMessage($this->sendSuccessResponseData),
+                'message' => MockFactory::createPostmarkMessage([
+                    'send' => [
+                        'return' => json_encode($this->sendSuccessResponseData),
+                    ],
+                ]),
                 'expectedExceptionMessage' => "Invalid 'To' address: 'foo@example'.",
                 'expectedExceptionCode' => 300,
             ],
@@ -110,26 +118,14 @@ class SenderTest extends BaseSimplyTestableTestCase
 
     public function testGetLastMessageGetLastResponse()
     {
-        $message = $this->createPostmarkMessage($this->sendSuccessResponseData);
+        $message = MockFactory::createPostmarkMessage([
+            'send' => [
+                'return' => json_encode($this->sendSuccessResponseData),
+            ],
+        ]);
         $response = $this->postmarkSender->send($message);
 
         $this->assertEquals($message, $this->postmarkSender->getLastMessage());
         $this->assertEquals($response, $this->postmarkSender->getLastResponse());
-    }
-
-    /**
-     * @param array $responseData
-     *
-     * @return Mock|PostmarkMessage
-     */
-    private function createPostmarkMessage(array $responseData)
-    {
-        /* @var PostmarkMessage|Mock $message */
-        $message = \Mockery::mock(PostmarkMessage::class);
-        $message
-            ->shouldReceive('send')
-            ->andReturn(json_encode($responseData));
-
-        return $message;
     }
 }
