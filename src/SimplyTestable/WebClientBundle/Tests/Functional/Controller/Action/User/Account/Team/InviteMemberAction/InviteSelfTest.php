@@ -12,7 +12,9 @@ class InviteSelfTest extends ActionTest {
     }
 
     public function testHasNoMessagesInMailServiceHistory() {
-        $this->assertEquals(0, $this->getMailService()->getSender()->getHistory()->count());
+        $postmarkSender = $this->container->get('simplytestable.services.postmark.sender');
+        $this->assertNull($postmarkSender->getLastMessage());
+        $this->assertNull($postmarkSender->getLastResponse());
     }
 
     protected function preCall() {

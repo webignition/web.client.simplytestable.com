@@ -11,7 +11,9 @@ class InvalidEmailTest extends ActionTest {
     }
 
     public function testHasSingleMessageInMailServiceHistory() {
-        $this->assertEquals(1, $this->getMailService()->getSender()->getHistory()->count());
+        $postmarkSender = $this->container->get('simplytestable.services.postmark.sender');
+        $this->assertNotNull($postmarkSender->getLastMessage());
+        $this->assertNotNull($postmarkSender->getLastResponse());
     }
 
 
