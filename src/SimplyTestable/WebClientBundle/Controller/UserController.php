@@ -10,10 +10,12 @@ use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 use SimplyTestable\WebClientBundle\Model\User;
 use Symfony\Component\HttpFoundation\Cookie;
 use Egulias\EmailValidator\EmailValidator;
+use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 
 class UserController extends BaseViewController
 {
     const ONE_YEAR_IN_SECONDS = 31536000;
+
     const FLASH_BAG_SIGN_IN_ERROR_KEY = 'user_signin_error';
     const FLASH_BAG_SIGN_IN_ERROR_MESSAGE_EMAIL_BLANK = 'blank-email';
     const FLASH_BAG_SIGN_IN_ERROR_MESSAGE_EMAIL_INVALID = 'invalid-email';
@@ -22,6 +24,19 @@ class UserController extends BaseViewController
     const FLASH_BAG_SIGN_IN_ERROR_MESSAGE_INVALID_USER = 'invalid-user';
     const FLASH_BAG_SIGN_IN_ERROR_MESSAGE_AUTHENTICATION_FAILURE = 'authentication-failure';
     const FLASH_BAG_SIGN_IN_ERROR_MESSAGE_USER_NOT_ENABLED = 'user-not-enabled';
+
+    const FLASH_BAG_SIGN_UP_ERROR_KEY = 'user_create_error';
+    const FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_BLANK = 'blank-email';
+    const FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_INVALID = 'invalid-email';
+    const FLASH_BAG_SIGN_UP_ERROR_MESSAGE_PASSWORD_BLANK = 'blank-password';
+    const FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_READ_ONLY = 'create-failed-read-only';
+    const FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_UNKNOWN = 'create-failed';
+    const FLASH_BAG_SIGN_UP_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND = 'postmark-not-allowed-to-send';
+    const FLASH_BAG_SIGN_UP_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT = 'postmark-inactive-recipient';
+
+    const FLASH_BAG_SIGN_UP_SUCCESS_KEY = 'user_create_confirmation';
+    const FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS = 'user-exists';
+    const FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED = 'user-created';
 
     public function signOutSubmitAction() {
         $this->getUserService()->clearUser();
@@ -278,82 +293,136 @@ class UserController extends BaseViewController
         return $response;
     }
 
-    public function signUpSubmitAction() {
-        $plan = trim($this->get('request')->request->get('plan'));
+    public function signUpSubmitAction()
+    {
+        $session = $this->container->get('session');
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $couponService = $this->container->get('simplytestable.services.couponservice');
 
-        $email = strtolower(trim($this->get('request')->request->get('email')));
-        if ($email == '') {
-            $this->get('session')->getFlashBag()->set('user_create_error', 'blank-email');
-            return $this->redirect($this->generateUrl('view_user_signup_index_index', array(
-                'plan' => $plan
-            ), true));
+        $request = $this->container->get('request');
+        $requestData = $request->request;
+
+        $plan = trim($requestData->get('plan'));
+        $email = strtolower(trim($requestData->get('email')));
+        $password = trim($requestData->get('password'));
+
+        if (empty($email)) {
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_SIGN_UP_ERROR_KEY,
+                self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_BLANK
+            );
+
+            return $this->redirect($this->generateUrl('view_user_signup_index_index', [
+                'plan' => $plan,
+            ], true));
         }
 
         if (!$this->isEmailValid($email)) {
-            $this->get('session')->getFlashBag()->set('user_create_error', 'invalid-email');
-            return $this->redirect($this->generateUrl('view_user_signup_index_index', array(
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_SIGN_UP_ERROR_KEY,
+                self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_INVALID
+            );
+
+            return $this->redirect($this->generateUrl('view_user_signup_index_index', [
                 'email' => $email,
-                'plan' => $plan
-            ), true));
+                'plan' => $plan,
+            ], true));
         }
 
-        $password = trim($this->get('request')->request->get('password'));
-        if ($password == '') {
-            $this->get('session')->getFlashBag()->set('user_create_prefil', $email);
-            $this->get('session')->getFlashBag()->set('user_create_error', 'blank-password');
-            return $this->redirect($this->generateUrl('view_user_signup_index_index', array(
+        if (empty($password)) {
+            $session->getFlashBag()->set('user_create_prefil', $email);
+
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_SIGN_UP_ERROR_KEY,
+                self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_PASSWORD_BLANK
+            );
+
+            return $this->redirect($this->generateUrl('view_user_signup_index_index', [
                 'email' => $email,
-                'plan' => $plan
-            ), true));
+                'plan' => $plan,
+            ], true));
         }
 
+        $couponService->setRequest($request);
         $coupon = null;
 
-        if ($this->getCouponService()->has()) {
-            $coupon = $this->getCouponService()->get();
+        if ($couponService->has()) {
+            $coupon = $couponService->get();
             if (!$coupon->isActive()) {
                 $coupon = null;
             }
         }
 
-        $this->getUserService()->setUser($this->getUserService()->getPublicUser());
-        $createResponse = $this->getUserService()->create($email, $password, $plan, $coupon);
+        $userService->setUser($userService->getPublicUser());
+        $createResponse = $userService->create($email, $password, $plan, $coupon);
 
         if ($this->userCreationUserAlreadyExists($createResponse)) {
-            $this->get('session')->getFlashBag()->set('user_create_confirmation', 'user-exists');
-            return $this->redirect($this->generateUrl('view_user_signup_index_index', array('email' => $email), true));
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_SIGN_UP_SUCCESS_KEY,
+                self::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS
+            );
+
+            return $this->redirect($this->generateUrl('view_user_signup_index_index', ['email' => $email], true));
         }
 
         if ($this->requestFailedDueToReadOnly($createResponse)) {
-            $this->get('session')->getFlashBag()->set('user_create_error', 'create-failed-read-only');
-            return $this->redirect($this->generateUrl('view_user_signup_index_index', array('email' => $email), true));
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_SIGN_UP_ERROR_KEY,
+                self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_READ_ONLY
+            );
+
+            return $this->redirect($this->generateUrl('view_user_signup_index_index', [
+                'email' => $email,
+                'plan' => $plan,
+            ], true));
         }
 
         if ($this->userCreationFailed($createResponse)) {
-            $this->get('session')->getFlashBag()->set('user_create_error', 'create-failed');
-            return $this->redirect($this->generateUrl('view_user_signup_index_index', array('email' => $email), true));
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_SIGN_UP_ERROR_KEY,
+                self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_UNKNOWN
+            );
+
+            return $this->redirect($this->generateUrl('view_user_signup_index_index', [
+                'email' => $email,
+                'plan' => $plan,
+            ], true));
         }
 
-        $token = $this->getUserService()->getConfirmationToken($email);
+        $token = $userService->getConfirmationToken($email);
 
         try {
             $this->sendConfirmationToken($email, $token);
-            $this->get('session')->getFlashBag()->set('user_create_confirmation', 'user-created');
-            return $this->redirect($this->generateUrl('view_user_signup_confirm_index', array('email' => $email), true));
-        } catch (\SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception $postmarkResponseException) {
+        } catch (PostmarkResponseException $postmarkResponseException) {
             if ($postmarkResponseException->isNotAllowedToSendException()) {
-                $this->get('session')->getFlashBag()->set('user_create_error', 'postmark-not-allowed-to-send');
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_SIGN_UP_ERROR_KEY,
+                    self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND
+                );
             } elseif ($postmarkResponseException->isInactiveRecipientException()) {
-                $this->get('session')->getFlashBag()->set('user_create_error', 'postmark-inactive-recipient');
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_SIGN_UP_ERROR_KEY,
+                    self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT
+                );
             } else {
-                $this->get('session')->getFlashBag()->set('user_create_error', 'invalid-email');
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_SIGN_UP_ERROR_KEY,
+                    self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_INVALID
+                );
             }
 
-            return $this->redirect($this->generateUrl('view_user_signup_index_index', array(
+            return $this->redirect($this->generateUrl('view_user_signup_index_index', [
                 'email' => $email,
                 'plan' => $plan
-            ), true));
+            ], true));
         }
+
+        $session->getFlashBag()->set(
+            self::FLASH_BAG_SIGN_UP_SUCCESS_KEY,
+            self::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED
+        );
+
+        return $this->redirect($this->generateUrl('view_user_signup_confirm_index', ['email' => $email], true));
     }
 
     /**
@@ -525,13 +594,5 @@ class UserController extends BaseViewController
      */
     private function getResqueJobFactoryService() {
         return $this->container->get('simplytestable.services.resque.jobFactoryService');
-    }
-
-
-    /**
-     * @return \SimplyTestable\WebClientBundle\Services\CouponService
-     */
-    private function getCouponService() {
-        return $this->container->get('simplytestable.services.couponService');
     }
 }

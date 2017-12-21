@@ -245,10 +245,8 @@ services:
 
   simplytestable.services.couponService:
     class:  SimplyTestable\WebClientBundle\Services\CouponService
-    scope: request
     calls:
       - [setCouponData, [%coupons%]]
-      - [setRequest, ["@request"]]
 
   simplytestable.services.plansService:
     class:  SimplyTestable\WebClientBundle\Services\PlansService
