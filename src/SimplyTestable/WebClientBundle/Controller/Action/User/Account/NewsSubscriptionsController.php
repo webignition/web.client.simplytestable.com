@@ -8,13 +8,13 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use ZfrMailChimp\Exception\Ls\InvalidImportException;
 
-class NewsSubscriptionsController extends BaseController implements RequiresPrivateUser {
-
+class NewsSubscriptionsController extends BaseController implements RequiresPrivateUser
+{
     /**
-     *
      * @return RedirectResponse
      */
-    public function getUserSignInRedirectResponse() {
+    public function getUserSignInRedirectResponse()
+    {
         return new RedirectResponse($this->generateUrl('view_user_signin_index', [
             'redirect' => base64_encode(json_encode(['route' => 'view_user_account_index_index']))
         ], true));
@@ -35,7 +35,6 @@ class NewsSubscriptionsController extends BaseController implements RequiresPriv
 
         foreach (['announcements', 'updates'] as $listName) {
             $subscribeChoice = filter_var($this->get('request')->request->get($listName), FILTER_VALIDATE_BOOLEAN);
-
             $flashData[$listName] = [];
 
             $listRecipients = $mailChimpListRecipientsService->get($listName);
@@ -72,6 +71,12 @@ class NewsSubscriptionsController extends BaseController implements RequiresPriv
 
         $this->get('session')->getFlashBag()->set('user_account_newssubscriptions_update', $flashData);
 
-        return $this->redirect($this->generateUrl('view_user_account_index_index', array(), true) . '#news-subscriptions');
+        $redirectUrl = $this->generateUrl(
+            'view_user_account_index_index',
+            [],
+            true
+        );
+
+        return $this->redirect($redirectUrl . '#news-subscriptions');
     }
 }

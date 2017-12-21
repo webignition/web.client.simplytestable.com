@@ -2,6 +2,7 @@
 namespace SimplyTestable\WebClientBundle\Services\MailChimp;
 
 use ZfrMailChimp\Client\MailChimpClient;
+use ZfrMailChimp\Exception\Ls\AlreadySubscribedException;
 
 class Service
 {
@@ -32,71 +33,73 @@ class Service
      *
      * @param string $listName
      * @param string $email
-     * @return boolean
+     *
+     * @return bool
      */
-    public function subscribe($listName, $email) {
+    public function subscribe($listName, $email)
+    {
         $listRecipients = $this->listRecipientsService->get($listName);
         if ($listRecipients->contains($email)) {
             return true;
         }
 
         try {
-            $this->client->subscribe(array(
+            $this->client->subscribe([
                 'id' => $this->listRecipientsService->getListId($listName),
-                'email' => array(
+                'email' => [
                     'email' => $email
-                ),
+                ],
                 'double_optin' => false
-            ));
-        } catch (\ZfrMailChimp\Exception\Ls\AlreadySubscribedException $alreadySubscribedException) {
+            ]);
+        } catch (AlreadySubscribedException $alreadySubscribedException) {
         }
 
         return true;
     }
 
-
     /**
-     *
      * @param string $listName
      * @param string $email
-     * @return boolean
+     *
+     * @return bool
      */
-    public function unsubscribe($listName, $email) {
+    public function unsubscribe($listName, $email)
+    {
         $listRecipients = $this->listRecipientsService->get($listName);
         if (!$listRecipients->contains($email)) {
             return true;
         }
 
-        $this->client->unsubscribe(array(
+        $this->client->unsubscribe([
             'id' => $this->listRecipientsService->getListId($listName),
-            'email' => array(
+            'email' => [
                 'email' => $email
-            ),
+            ],
             'delete_member' => false
-        ));
+        ]);
 
         return true;
     }
 
-
     /**
-     *
      * @param string $listName
-     * @return array
+     *
+     * @return string[]
      */
-    public function retrieveMembers($listName) {
+    public function retrieveMembers($listName)
+    {
         $listLength = null;
         $currentPage = 0;
-        $members = array();
+        $members = [];
 
         while (is_null($listLength) || count($members) < $listLength) {
-            $response = $this->client->getListMembers(array(
+            $response = $this->client->getListMembers([
                 'id' => $this->listRecipientsService->getListId($listName),
-                'opts' => array(
+                'opts' => [
                     'limit' => self::LIST_MEMBERS_MAX_LIMIT,
                     'start' => $currentPage
-                )
-            ));
+                ]
+            ]);
 
             if (is_null($listLength)) {
                 $listLength = $response['total'];
@@ -109,5 +112,4 @@ class Service
 
         return $members;
     }
-
 }
