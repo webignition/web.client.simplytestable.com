@@ -12,6 +12,32 @@ use Symfony\Component\HttpFoundation\Request;
 
 class SignInSubmitActionTest extends AbstractUserControllerTest
 {
+    public function testSignInSubmitActionPostRequest()
+    {
+        $this->setHttpFixtures([
+            Response::fromMessage('HTTP/1.1 200'),
+            Response::fromMessage('HTTP/1.1 200'),
+            Response::fromMessage('HTTP/1.1 200'),
+        ]);
+
+        $router = $this->container->get('router');
+        $requestUrl = $router->generate('sign_in_submit');
+
+        $this->client->request(
+            'POST',
+            $requestUrl,
+            [
+                'email' => 'user@example.com',
+                'password' => 'foo',
+            ]
+        );
+
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $this->assertEquals('http://localhost/', $response->getTargetUrl());
+    }
+
     /**
      * @dataProvider signInSubmitActionBadRequestDataProvider
      *

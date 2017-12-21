@@ -13,6 +13,56 @@ use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 
 class SignUpSubmitActionTest extends AbstractUserControllerTest
 {
+    public function testSignUpSubmitActionPostRequest()
+    {
+        $mailService = $this->container->get('simplytestable.services.mail.service');
+
+        $postmarkMessage = MockFactory::createPostmarkMessage([
+            'setFrom' => true,
+            'setSubject' => [
+                'with' => '[Simply Testable] Activate your account',
+            ],
+            'setTextMessage' => true,
+            'addTo' => [
+                'with' => 'user@example.com',
+            ],
+            'send' => [
+                'return' => json_encode([
+                    'ErrorCode' => 0,
+                    'Message' => 'OK',
+                ]),
+            ],
+        ]);
+
+        $mailService->setPostmarkMessage($postmarkMessage);
+
+        $this->setHttpFixtures([
+            Response::fromMessage('HTTP/1.1 200'),
+            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n\"confirmation-token-here\""),
+        ]);
+
+        $router = $this->container->get('router');
+        $requestUrl = $router->generate('sign_up_submit');
+
+        $this->client->request(
+            'POST',
+            $requestUrl,
+            [
+                'plan' => 'basic',
+                'email' => 'user@example.com',
+                'password' => 'password',
+            ]
+        );
+
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $this->assertEquals(
+            'http://localhost/signup/confirm/user@example.com/',
+            $response->getTargetUrl()
+        );
+    }
+
     /**
      * @dataProvider signUpSubmitActionBadRequestDataProvider
      *
