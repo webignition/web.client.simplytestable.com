@@ -9,31 +9,55 @@ use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class TeamController extends BaseController implements RequiresPrivateUser {
+class TeamController extends BaseController implements RequiresPrivateUser
+{
+    const FLASH_BAG_CREATE_ERROR_KEY = 'team_create_error';
+    const FLASH_BAG_CREATE_ERROR_MESSAGE_NAME_BLANK = 'blank-name';
 
     /**
-     *
      * @return RedirectResponse
      */
-    public function getUserSignInRedirectResponse() {
+    public function getUserSignInRedirectResponse()
+    {
         return new RedirectResponse($this->generateUrl('view_user_signin_index', [
             'redirect' => base64_encode(json_encode(['route' => 'view_user_account_index_index']))
-        ], true));
+        ], UrlGeneratorInterface::ABSOLUTE_URL));
     }
 
-    public function createAction() {
-        $name = trim($this->getRequest()->request->get('name'));
+    /**
+     * @return RedirectResponse
+     */
+    public function createAction()
+    {
+        $session = $this->container->get('session');
+        $request = $this->container->get('request');
+        $teamService = $this->container->get('simplytestable.services.teamservice');
 
-        if ($name == '') {
-            $this->get('session')->getFlashBag()->set('team_create_error', 'blank-name');
-            return $this->redirect($this->generateUrl('view_user_account_team_index_index', [], true));
+        $requestData = $request->request;
+
+        $redirectResponse = $this->redirect($this->generateUrl(
+            'view_user_account_team_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
+
+        $name = trim($requestData->get('name'));
+
+        if (empty($name)) {
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_CREATE_ERROR_KEY,
+                self::FLASH_BAG_CREATE_ERROR_MESSAGE_NAME_BLANK
+            );
+
+            return $redirectResponse;
         }
 
-        $this->getTeamService()->setUser($this->getUser());
-        $this->getTeamService()->create($name);
+        $teamService->setUser($this->getUser());
+        $teamService->create($name);
 
-        return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+        return $redirectResponse;
     }
 
 
@@ -232,7 +256,6 @@ class TeamController extends BaseController implements RequiresPrivateUser {
         $this->getTeamService()->leave();
         return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
     }
-
 
     /**
      * @return \SimplyTestable\WebClientBundle\Services\TeamService
