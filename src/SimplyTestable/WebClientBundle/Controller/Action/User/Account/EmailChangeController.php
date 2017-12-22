@@ -8,7 +8,15 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class EmailChangeController extends AccountCredentialsChangeController {
+class EmailChangeController extends AccountCredentialsChangeController
+{
+    const FLASH_BAG_CONFIRM_KEY = 'user_account_details_update_email_confirm_notice';
+    const FLASH_BAG_CONFIRM_ERROR_MESSAGE_TOKEN_INVALID = 'invalid-token';
+    const FLASH_BAG_CONFIRM_ERROR_MESSAGE_EMAIL_TAKEN = 'email-taken';
+    const FLASH_BAG_CONFIRM_ERROR_MESSAGE_UNKNOWN = 'unknown';
+    const FLASH_BAG_CONFIRM_MESSAGE_SUCCESS = 'success';
+
+    const FLASH_BAG_EMAIL_VALUE_KEY = 'user_account_details_update_email';
 
     /**
      *
@@ -101,65 +109,102 @@ class EmailChangeController extends AccountCredentialsChangeController {
     }
 
 
-    public function confirmAction() {
-        $redirectResponse =  $this->redirect($this->generateUrl('view_user_account_index_index', [], true));
+    public function confirmAction()
+    {
+        $request = $this->container->get('request');
+        $session = $this->container->get('session');
+        $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
+        $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
+        $resqueJobFactory = $this->container->get('simplytestable.services.resque.jobfactoryservice');
 
-        if ($this->getRequestToken() === '') {
-            $this->get('session')->getFlashBag()->set('user_account_details_update_email_confirm_notice', 'invalid-token');
+        $requestData = $request->request;
+
+        $redirectResponse =  $this->redirect($this->generateUrl(
+            'view_user_account_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
+
+        $token = strtolower(trim($requestData->get('token')));
+
+        if (empty($token)) {
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_CONFIRM_KEY,
+                self::FLASH_BAG_CONFIRM_ERROR_MESSAGE_TOKEN_INVALID
+            );
+
             return $redirectResponse;
         }
 
-        $emailChangeRequest = $this->getUserEmailChangeRequestService()->getEmailChangeRequest($this->getUser()->getUsername());
-        if ($this->getRequestToken() !== $emailChangeRequest['token']) {
-            $this->get('session')->getFlashBag()->set('user_account_details_update_email_confirm_notice', 'invalid-token');
+        $user = $this->getUser();
+        $username = $user->getUsername();
+
+        $emailChangeRequest = $emailChangeRequestService->getEmailChangeRequest($username);
+        if ($token !== $emailChangeRequest['token']) {
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_CONFIRM_KEY,
+                self::FLASH_BAG_CONFIRM_ERROR_MESSAGE_TOKEN_INVALID
+            );
+
             return $redirectResponse;
         }
 
-        $result = $this->getUserEmailChangeRequestService()->confirmEmailChangeRequest($this->getRequestToken());
+        $result = $emailChangeRequestService->confirmEmailChangeRequest($token);
 
         if ($result !== true) {
             if ($result == 409) {
-                $this->get('session')->getFlashBag()->set('user_account_details_update_email_confirm_notice', 'email-taken');
-                $this->get('session')->getFlashBag()->set('user_account_details_update_email', $emailChangeRequest['new_email']);
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_CONFIRM_KEY,
+                    self::FLASH_BAG_CONFIRM_ERROR_MESSAGE_EMAIL_TAKEN
+                );
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_EMAIL_VALUE_KEY,
+                    $emailChangeRequest['new_email']
+                );
             } else {
-                $this->get('session')->getFlashBag()->set('user_account_details_update_email_confirm_notice', 'unknown');
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_CONFIRM_KEY,
+                    self::FLASH_BAG_CONFIRM_ERROR_MESSAGE_UNKNOWN
+                );
             }
 
             return $redirectResponse;
         }
 
-        $oldEmail = $this->getUser()->getUsername();
+        $oldEmail = $username;
         $newEmail = $emailChangeRequest['new_email'];
 
-        $this->getResqueQueueService()->enqueue(
-            $this->getResqueJobFactoryService()->create(
+        $resqueQueueService->enqueue(
+            $resqueJobFactory->create(
                 'email-list-subscribe',
-                array(
+                [
                     'listId' => 'announcements',
                     'email' => $newEmail,
-                )
+                ]
             )
         );
 
-        $this->getResqueQueueService()->enqueue(
-            $this->getResqueJobFactoryService()->create(
+        $resqueQueueService->enqueue(
+            $resqueJobFactory->create(
                 'email-list-unsubscribe',
-                array(
+                [
                     'listId' => 'announcements',
                     'email' => $oldEmail,
-                )
+                ]
             )
         );
 
-        $user = $this->getUser();
         $user->setUsername($emailChangeRequest['new_email']);
-        $this->getUserService()->setUser($user, true);
+        $this->getUserService()->setUser($user);
 
         if (!is_null($this->getRequest()->cookies->get('simplytestable-user'))) {
             $redirectResponse->headers->setCookie($this->getUserAuthenticationCookie());
         }
 
-        $this->get('session')->getFlashBag()->set('user_account_details_update_email_confirm_notice', 'success');
+        $this->get('session')->getFlashBag()->set(
+            self::FLASH_BAG_CONFIRM_KEY,
+            self::FLASH_BAG_CONFIRM_MESSAGE_SUCCESS
+        );
 
 
         return $redirectResponse;
@@ -235,15 +280,6 @@ class EmailChangeController extends AccountCredentialsChangeController {
         return strtolower(trim($this->get('request')->request->get('email')));
     }
 
-
-    /**
-     * @return string
-     */
-    private function getRequestToken() {
-        return strtolower(trim($this->get('request')->request->get('token')));
-    }
-
-
     /**
      *
      * @param string $email
@@ -253,24 +289,4 @@ class EmailChangeController extends AccountCredentialsChangeController {
         $validator = new EmailValidator;
         return $validator->isValid($email);
     }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\Resque\QueueService
-     */
-    private function getResqueQueueService() {
-        return $this->container->get('simplytestable.services.resque.queueService');
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\Resque\JobFactoryService
-     */
-    private function getResqueJobFactoryService() {
-        return $this->container->get('simplytestable.services.resque.jobFactoryService');
-    }
-
-
 }
