@@ -6,6 +6,7 @@ use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class EmailChangeController extends AccountCredentialsChangeController {
 
@@ -164,13 +165,23 @@ class EmailChangeController extends AccountCredentialsChangeController {
         return $redirectResponse;
     }
 
+    /**
+     * @return RedirectResponse
+     */
+    public function cancelAction()
+    {
+        $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
+        $session = $this->container->get('session');
 
-    public function cancelAction() {
-        $this->getUserEmailChangeRequestService()->cancelEmailChangeRequest();
-        $this->get('session')->getFlashBag()->set('user_account_details_cancel_email_change_notice', 'cancelled');
-        return $this->redirect($this->generateUrl('view_user_account_index_index', array(), true));
+        $emailChangeRequestService->cancelEmailChangeRequest();
+        $session->getFlashBag()->set('user_account_details_cancel_email_change_notice', 'cancelled');
+
+        return $this->redirect($this->generateUrl(
+            'view_user_account_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
     }
-
 
     /**
      * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
