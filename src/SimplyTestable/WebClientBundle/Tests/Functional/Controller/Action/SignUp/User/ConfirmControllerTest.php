@@ -6,6 +6,7 @@ use Guzzle\Http\Message\Response;
 use Mockery\Mock;
 use SimplyTestable\WebClientBundle\Controller\Action\SignUp\User\ConfirmController;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
+use SimplyTestable\WebClientBundle\Tests\Factory\MockPostmarkMessageFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
@@ -35,10 +36,13 @@ class ConfirmControllerTest extends BaseSimplyTestableTestCase
     {
         $mailService = $this->container->get('simplytestable.services.mail.service');
 
-        $postmarkMessage = $this->createMockActivateAccountPostmarkMessage([
-            'ErrorCode' => 0,
-            'Message' => 'OK',
-        ]);
+        $postmarkMessage = MockPostmarkMessageFactory::createMockActivateAccountPostmarkMessage(
+            self::EMAIL,
+            [
+                'ErrorCode' => 0,
+                'Message' => 'OK',
+            ]
+        );
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
@@ -169,10 +173,13 @@ class ConfirmControllerTest extends BaseSimplyTestableTestCase
     {
         return [
             'postmark not allowed to send to user email' => [
-                'postmarkMessage' => $this->createMockActivateAccountPostmarkMessage([
-                    'ErrorCode' => 405,
-                    'Message' => 'foo',
-                ]),
+                'postmarkMessage' => MockPostmarkMessageFactory::createMockActivateAccountPostmarkMessage(
+                    self::EMAIL,
+                    [
+                        'ErrorCode' => 405,
+                        'Message' => 'foo',
+                    ]
+                ),
                 'expectedFlashBagValues' => [
                     ConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_KEY => [
                         ConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND,
@@ -180,10 +187,13 @@ class ConfirmControllerTest extends BaseSimplyTestableTestCase
                 ],
             ],
             'postmark inactive recipient' => [
-                'postmarkMessage' => $this->createMockActivateAccountPostmarkMessage([
-                    'ErrorCode' => 406,
-                    'Message' => 'foo',
-                ]),
+                'postmarkMessage' => MockPostmarkMessageFactory::createMockActivateAccountPostmarkMessage(
+                    self::EMAIL,
+                    [
+                        'ErrorCode' => 406,
+                        'Message' => 'foo',
+                    ]
+                ),
                 'expectedFlashBagValues' => [
                     ConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_KEY => [
                         ConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT,
@@ -191,10 +201,13 @@ class ConfirmControllerTest extends BaseSimplyTestableTestCase
                 ],
             ],
             'postmark unknown error' => [
-                'postmarkMessage' => $this->createMockActivateAccountPostmarkMessage([
-                    'ErrorCode' => 300,
-                    'Message' => 'foo',
-                ]),
+                'postmarkMessage' => MockPostmarkMessageFactory::createMockActivateAccountPostmarkMessage(
+                    self::EMAIL,
+                    [
+                        'ErrorCode' => 300,
+                        'Message' => 'foo',
+                    ]
+                ),
                 'expectedFlashBagValues' => [
                     ConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_KEY => [
                         ConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_POSTMARK_UNKNOWN,
@@ -215,10 +228,13 @@ class ConfirmControllerTest extends BaseSimplyTestableTestCase
             Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n\"confirmation-token-here\""),
         ]);
 
-        $mailService->setPostmarkMessage($this->createMockActivateAccountPostmarkMessage([
-            'ErrorCode' => 0,
-            'Message' => 'OK',
-        ]));
+        $mailService->setPostmarkMessage(MockPostmarkMessageFactory::createMockActivateAccountPostmarkMessage(
+            self::EMAIL,
+            [
+                'ErrorCode' => 0,
+                'Message' => 'OK',
+            ]
+        ));
 
         /* @var RedirectResponse $response */
         $response = $this->confirmController->resendAction(self::EMAIL);
@@ -236,25 +252,5 @@ class ConfirmControllerTest extends BaseSimplyTestableTestCase
 
         $this->assertNotNull($postmarkSender->getLastMessage());
         $this->assertNotNull($postmarkSender->getLastResponse());
-    }
-
-    /**
-     * @return Mock|PostmarkMessage
-     */
-    private function createMockActivateAccountPostmarkMessage($responseData)
-    {
-        return MockFactory::createPostmarkMessage([
-            'setFrom' => true,
-            'setSubject' => [
-                'with' => '[Simply Testable] Activate your account',
-            ],
-            'setTextMessage' => true,
-            'addTo' => [
-                'with' => 'user@example.com',
-            ],
-            'send' => [
-                'return' => json_encode($responseData),
-            ],
-        ]);
     }
 }

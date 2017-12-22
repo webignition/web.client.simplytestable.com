@@ -5,7 +5,6 @@ namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class EmailChangeController extends AccountCredentialsChangeController
@@ -18,6 +17,17 @@ class EmailChangeController extends AccountCredentialsChangeController
 
     const FLASH_BAG_EMAIL_VALUE_KEY = 'user_account_details_update_email';
 
+    const FLASH_BAG_REQUEST_KEY = 'user_account_details_update_email_request_notice';
+    const FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_EMPTY = 'blank-email';
+    const FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID = 'invalid-email';
+    const FLASH_BAG_REQUEST_MESSAGE_EMAIL_SAME = 'same-email';
+    const FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_TAKEN = 'email-taken';
+    const FLASH_BAG_REQUEST_ERROR_MESSAGE_UNKNOWN = 'unknown';
+    const FLASH_BAG_REQUEST_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND = 'postmark-not-allowed-to-send';
+    const FLASH_BAG_REQUEST_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT = 'postmark-inactive-recipient';
+    const FLASH_BAG_REQUEST_ERROR_MESSAGE_POSTMARK_UNKNOWN = 'postmark-failure';
+    const FLASH_BAG_REQUEST_MESSAGE_SUCCESS = 'email-done';
+
     /**
      * @return RedirectResponse
      */
@@ -28,57 +38,107 @@ class EmailChangeController extends AccountCredentialsChangeController
         ], UrlGeneratorInterface::ABSOLUTE_URL));
     }
 
-    public function requestAction() {
-        $redirectResponse = $this->redirect($this->generateUrl('view_user_account_index_index', [], true));
+    public function requestAction()
+    {
+        $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
+        $session = $this->container->get('session');
+        $request = $this->container->get('request');
+        $userService = $this->container->get('simplytestable.services.userservice');
 
-        if ($this->getRequestEmailAddress() === '') {
-            $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'blank-email');
+        $requestData = $request->request;
+
+        $redirectResponse = $this->redirect($this->generateUrl(
+            'view_user_account_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
+
+        $user = $this->getUser();
+        $username = $user->getUsername();
+
+        $newEmail = strtolower(trim($requestData->get('email')));
+
+        if (empty($newEmail)) {
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_REQUEST_KEY,
+                self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_EMPTY
+            );
+
             return $redirectResponse;
         }
 
-        if ($this->getRequestEmailAddress() == $this->getUser()->getUsername()) {
-            $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'same-email');
+        if ($newEmail === $username) {
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_REQUEST_KEY,
+                self::FLASH_BAG_REQUEST_MESSAGE_EMAIL_SAME
+            );
+
             return $redirectResponse;
         }
 
-        if (!$this->isEmailValid($this->getRequestEmailAddress())) {
-            $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'invalid-email');
-            $this->get('session')->getFlashBag()->set('user_account_details_update_email', $this->getRequestEmailAddress());
+        $emailValidator = new EmailValidator;
+        $emailValidator->isValid($newEmail);
+
+        if (!$emailValidator->isValid($newEmail)) {
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_REQUEST_KEY,
+                self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID
+            );
+
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_EMAIL_VALUE_KEY,
+                $newEmail
+            );
+
             return $redirectResponse;
         }
 
-        $this->getUserService()->setUser($this->getUser());
-        $response = $this->getUserEmailChangeRequestService()->createEmailChangeRequest($this->getRequestEmailAddress());
+        $userService->setUser($user);
+        $response = $emailChangeRequestService->createEmailChangeRequest($newEmail);
 
         if ($response === true) {
             try {
                 $this->sendEmailChangeConfirmationToken();
-                $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'email-done');
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_REQUEST_KEY,
+                    self::FLASH_BAG_REQUEST_MESSAGE_SUCCESS
+                );
             } catch (PostmarkResponseException $postmarkResponseException) {
                 $this->getUserEmailChangeRequestService()->cancelEmailChangeRequest();
 
                 if ($postmarkResponseException->isNotAllowedToSendException()) {
-                    $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'postmark-not-allowed-to-send');
+                    $flashMessage = self::FLASH_BAG_REQUEST_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND;
                 } elseif ($postmarkResponseException->isInactiveRecipientException()) {
-                    $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'postmark-inactive-recipient');
+                    $flashMessage = self::FLASH_BAG_REQUEST_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT;
                 } elseif ($postmarkResponseException->isInvalidEmailAddressException()) {
-                    $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'invalid-email');
+                    $flashMessage = self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID;
                 } else {
-                    $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'postmark-failure');
+                    $flashMessage = self::FLASH_BAG_REQUEST_ERROR_MESSAGE_POSTMARK_UNKNOWN;
                 }
 
-                $this->get('session')->getFlashBag()->set('user_account_details_update_email', $this->getRequestEmailAddress());
+                $session->getFlashBag()->set(self::FLASH_BAG_REQUEST_KEY, $flashMessage);
+
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_EMAIL_VALUE_KEY,
+                    $newEmail
+                );
             }
         } else {
-            switch ($response) {
-                case 409:
-                    $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'email-taken');
-                    $this->get('session')->getFlashBag()->set('user_account_details_update_email', $this->getRequestEmailAddress());
-                    break;
-
-                default:
-                    $this->get('session')->getFlashBag()->set('user_account_details_update_email_request_notice', 'unknown');
+            if ($response == 409) {
+                $flashMessage = self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_TAKEN;
+            } else {
+                $flashMessage = self::FLASH_BAG_REQUEST_ERROR_MESSAGE_UNKNOWN;
             }
+
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_REQUEST_KEY,
+                $flashMessage
+            );
+
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_EMAIL_VALUE_KEY,
+                $newEmail
+            );
         }
 
         return $redirectResponse;
@@ -108,7 +168,11 @@ class EmailChangeController extends AccountCredentialsChangeController
         ));
     }
 
-
+    /**
+     * @return RedirectResponse
+     * @throws \CredisException
+     * @throws \Exception
+     */
     public function confirmAction()
     {
         $request = $this->container->get('request');
@@ -229,28 +293,42 @@ class EmailChangeController extends AccountCredentialsChangeController
     }
 
     /**
-     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
+     * @throws PostmarkResponseException
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      */
-    private function sendEmailChangeConfirmationToken() {
-        $emailChangeRequest = $this->getUserEmailChangeRequestService()->getEmailChangeRequest($this->getUser()->getUsername());
+    private function sendEmailChangeConfirmationToken()
+    {
+        $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
+        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailServiceConfiguration = $mailService->getConfiguration();
 
-        $sender = $this->getMailService()->getConfiguration()->getSender('default');
-        $messageProperties = $this->getMailService()->getConfiguration()->getMessageProperties('user_email_change_request_confirmation');
+        $emailChangeRequest = $emailChangeRequestService->getEmailChangeRequest($this->getUser()->getUsername());
 
-        $confirmationUrl = $this->generateUrl('view_user_account_index_index', array(), true).'?token=' . $emailChangeRequest['token'];
+        $sender = $mailServiceConfiguration->getSender('default');
+        $messageProperties = $mailServiceConfiguration->getMessageProperties('user_email_change_request_confirmation');
+
+        $confirmationUrl = $this->generateUrl(
+            'view_user_account_index_index',
+            [
+                'token' => $emailChangeRequest['token'],
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        $viewName = 'SimplyTestableWebClientBundle:Email:user-email-change-request-confirmation.txt.twig';
 
         $message = $this->getMailService()->getNewMessage();
         $message->setFrom($sender['email'], $sender['name']);
         $message->addTo($emailChangeRequest['new_email']);
         $message->setSubject($messageProperties['subject']);
-        $message->setTextMessage($this->renderView('SimplyTestableWebClientBundle:Email:user-email-change-request-confirmation.txt.twig', array(
+        $message->setTextMessage($this->renderView($viewName, [
             'current_email' => $this->getUser()->getUsername(),
             'new_email' => $emailChangeRequest['new_email'],
             'confirmation_url' => $confirmationUrl,
             'confirmation_code' => $emailChangeRequest['token']
-        )));
+        ]));
 
-        $this->getMailService()->getSender()->send($message);
+        $mailService->getSender()->send($message);
     }
 
 
@@ -269,24 +347,5 @@ class EmailChangeController extends AccountCredentialsChangeController
      */
     private function getUserEmailChangeRequestService() {
         return $this->get('simplytestable.services.useremailchangerequestservice');
-    }
-
-
-    /**
-     *
-     * @return string
-     */
-    private function getRequestEmailAddress() {
-        return strtolower(trim($this->get('request')->request->get('email')));
-    }
-
-    /**
-     *
-     * @param string $email
-     * @return boolean
-     */
-    private function isEmailValid($email) {
-        $validator = new EmailValidator;
-        return $validator->isValid($email);
     }
 }
