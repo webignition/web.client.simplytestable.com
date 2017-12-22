@@ -104,6 +104,8 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
      *
      * @param Request $request
      * @param array $expectedFlashBagValues
+     *
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      */
     public function testRequestActionBadRequest(Request $request, array $expectedFlashBagValues)
     {
@@ -165,10 +167,12 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
     /**
      * @dataProvider requestActionCreateFailureDataProvider
      *
-     * @param array $httpFixtures
+     * @param Response[] $httpFixtures
      * @param array $expectedFlashBagValues
+     *
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      */
-    public function testRequestActionCreateFailure($httpFixtures, array $expectedFlashBagValues)
+    public function testRequestActionCreateFailure(array $httpFixtures, array $expectedFlashBagValues)
     {
         $session = $this->container->get('session');
         $userService = $this->container->get('simplytestable.services.userservice');
@@ -231,6 +235,8 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
      *
      * @param PostmarkMessage $postmarkMessage
      * @param array $expectedFlashBagValues
+     *
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      */
     public function testRequestActionSendConfirmationTokenFailure(
         PostmarkMessage $postmarkMessage,
@@ -249,6 +255,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
                 'token' => 'email-change-request-token',
                 'new_email' => self::NEW_EMAIL,
             ])),
+            Response::fromMessage('HTTP/1.1 200'),
         ]);
 
         $request = new Request([], [

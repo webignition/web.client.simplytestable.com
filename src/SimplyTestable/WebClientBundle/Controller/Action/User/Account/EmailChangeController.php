@@ -116,7 +116,7 @@ class EmailChangeController extends AccountCredentialsChangeController
                     self::FLASH_BAG_REQUEST_MESSAGE_SUCCESS
                 );
             } catch (PostmarkResponseException $postmarkResponseException) {
-                $this->getUserEmailChangeRequestService()->cancelEmailChangeRequest();
+                $emailChangeRequestService->cancelEmailChangeRequest();
 
                 if ($postmarkResponseException->isNotAllowedToSendException()) {
                     $flashMessage = self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND;
