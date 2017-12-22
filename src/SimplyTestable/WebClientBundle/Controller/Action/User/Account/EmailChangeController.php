@@ -19,13 +19,13 @@ class EmailChangeController extends AccountCredentialsChangeController
     const FLASH_BAG_EMAIL_VALUE_KEY = 'user_account_details_update_email';
 
     /**
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      */
-    public function getUserSignInRedirectResponse() {
+    public function getUserSignInRedirectResponse()
+    {
         return new RedirectResponse($this->generateUrl('view_user_signin_index', [
             'redirect' => base64_encode(json_encode(['route' => 'view_user_account_index_index']))
-        ], true));
+        ], UrlGeneratorInterface::ABSOLUTE_URL));
     }
 
     public function requestAction() {
