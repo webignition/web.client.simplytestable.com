@@ -23,10 +23,17 @@ class EmailChangeController extends AccountCredentialsChangeController
     const FLASH_BAG_REQUEST_MESSAGE_EMAIL_SAME = 'same-email';
     const FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_TAKEN = 'email-taken';
     const FLASH_BAG_REQUEST_ERROR_MESSAGE_UNKNOWN = 'unknown';
-    const FLASH_BAG_REQUEST_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND = 'postmark-not-allowed-to-send';
-    const FLASH_BAG_REQUEST_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT = 'postmark-inactive-recipient';
-    const FLASH_BAG_REQUEST_ERROR_MESSAGE_POSTMARK_UNKNOWN = 'postmark-failure';
+
     const FLASH_BAG_REQUEST_MESSAGE_SUCCESS = 'email-done';
+
+    const FLASH_BAG_RESEND_SUCCESS_KEY = 'user_account_details_resend_email_change_notice';
+    const FLASH_BAG_RESEND_ERROR_KEY = 'user_account_details_resend_email_change_error';
+    const FLASH_BAG_RESEND_MESSAGE_SUCCESS = 're-sent';
+    const FLASH_BAG_RESEND_ERROR_MESSAGE_EMAIL_INVALID = 'invalid-email';
+
+    const FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND = 'postmark-not-allowed-to-send';
+    const FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT = 'postmark-inactive-recipient';
+    const FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN = 'postmark-failure';
 
     /**
      * @return RedirectResponse
@@ -38,6 +45,11 @@ class EmailChangeController extends AccountCredentialsChangeController
         ], UrlGeneratorInterface::ABSOLUTE_URL));
     }
 
+    /**
+     * @return RedirectResponse
+     *
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     */
     public function requestAction()
     {
         $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
@@ -107,13 +119,13 @@ class EmailChangeController extends AccountCredentialsChangeController
                 $this->getUserEmailChangeRequestService()->cancelEmailChangeRequest();
 
                 if ($postmarkResponseException->isNotAllowedToSendException()) {
-                    $flashMessage = self::FLASH_BAG_REQUEST_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND;
+                    $flashMessage = self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND;
                 } elseif ($postmarkResponseException->isInactiveRecipientException()) {
-                    $flashMessage = self::FLASH_BAG_REQUEST_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT;
+                    $flashMessage = self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT;
                 } elseif ($postmarkResponseException->isInvalidEmailAddressException()) {
                     $flashMessage = self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID;
                 } else {
-                    $flashMessage = self::FLASH_BAG_REQUEST_ERROR_MESSAGE_POSTMARK_UNKNOWN;
+                    $flashMessage = self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN;
                 }
 
                 $session->getFlashBag()->set(self::FLASH_BAG_REQUEST_KEY, $flashMessage);
@@ -144,27 +156,49 @@ class EmailChangeController extends AccountCredentialsChangeController
         return $redirectResponse;
     }
 
+    /**
+     * @return RedirectResponse
+     *
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     */
+    public function resendAction()
+    {
+        $session = $this->container->get('session');
 
-    public function resendAction() {
         try {
             $this->sendEmailChangeConfirmationToken();
-            $this->get('session')->getFlashBag()->set('user_account_details_resend_email_change_notice', 're-sent');
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_RESEND_SUCCESS_KEY,
+                self::FLASH_BAG_RESEND_MESSAGE_SUCCESS
+            );
         } catch (PostmarkResponseException $postmarkResponseException) {
             if ($postmarkResponseException->isNotAllowedToSendException()) {
-                $this->get('session')->getFlashBag()->set('user_account_details_resend_email_change_error', 'postmark-not-allowed-to-send');
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_RESEND_ERROR_KEY,
+                    self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND
+                );
             } elseif ($postmarkResponseException->isInactiveRecipientException()) {
-                $this->get('session')->getFlashBag()->set('user_account_details_resend_email_change_error', 'postmark-inactive-recipient');
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_RESEND_ERROR_KEY,
+                    self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT
+                );
             } elseif ($postmarkResponseException->isInvalidEmailAddressException()) {
-                $this->get('session')->getFlashBag()->set('user_account_details_resend_email_change_error', 'invalid-email');
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_RESEND_ERROR_KEY,
+                    self::FLASH_BAG_RESEND_ERROR_MESSAGE_EMAIL_INVALID
+                );
             } else {
-                $this->get('session')->getFlashBag()->set('user_account_details_resend_email_change_error', 'postmark-failure');
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_RESEND_ERROR_KEY,
+                    self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN
+                );
             }
         }
 
         return $this->redirect($this->generateUrl(
             'view_user_account_index_index',
             [],
-            true
+            UrlGeneratorInterface::ABSOLUTE_URL
         ));
     }
 

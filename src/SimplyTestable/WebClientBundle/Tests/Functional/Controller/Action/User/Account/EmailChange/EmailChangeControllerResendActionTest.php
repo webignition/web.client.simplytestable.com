@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 
-class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControllerTest
+class EmailChangeControllerResendActionTest extends AbstractEmailChangeControllerTest
 {
     const NEW_EMAIL = 'new-email@example.com';
     const EXPECTED_REDIRECT_URL = 'http://localhost/account/';
@@ -32,10 +32,10 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         $this->user = new User('user@example.com');
     }
 
-    public function testRequestActionPostRequestPublicUser()
+    public function testResendActionPostRequestPublicUser()
     {
         $router = $this->container->get('router');
-        $requestUrl = $router->generate('action_user_account_emailchange_request');
+        $requestUrl = $router->generate('action_user_account_emailchange_resend');
 
         $this->setHttpFixtures([
             Response::fromMessage('HTTP/1.1 200'),
@@ -55,13 +55,13 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         );
     }
 
-    public function testRequestActionPostRequestPrivateUser()
+    public function testResendActionPostRequestPrivateUser()
     {
         $router = $this->container->get('router');
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
         $mailService = $this->container->get('simplytestable.services.mail.service');
 
-        $requestUrl = $router->generate('action_user_account_emailchange_request');
+        $requestUrl = $router->generate('action_user_account_emailchange_resend');
 
         $mailService->setPostmarkMessage(MockPostmarkMessageFactory::createMockConfirmEmailAddressPostmarkMessage(
             self::NEW_EMAIL,
@@ -74,9 +74,9 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         $this->setHttpFixtures([
             Response::fromMessage('HTTP/1.1 200'),
             Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode([
-                    'token' => 'email-change-request-token',
-                    'new_email' => self::NEW_EMAIL,
-                ])),
+                'token' => 'email-change-request-token',
+                'new_email' => self::NEW_EMAIL,
+            ])),
         ]);
 
         $user = new User('user@example.com', 'password');
@@ -100,139 +100,13 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
     }
 
     /**
-     * @dataProvider requestActionBadRequestDataProvider
-     *
-     * @param Request $request
-     * @param array $expectedFlashBagValues
-     */
-    public function testRequestActionBadRequest(Request $request, array $expectedFlashBagValues)
-    {
-        $session = $this->container->get('session');
-        $userService = $this->container->get('simplytestable.services.userservice');
-
-        $userService->setUser($this->user);
-
-        $this->container->set('request', $request);
-
-        /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->requestAction();
-
-        $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
-    }
-
-    /**
-     * @return array
-     */
-    public function requestActionBadRequestDataProvider()
-    {
-        return [
-            'empty email' => [
-                'request' => new Request(),
-                'expectedFlashBagValues' => [
-                    EmailChangeController::FLASH_BAG_REQUEST_KEY => [
-                        EmailChangeController::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_EMPTY,
-                    ],
-                ],
-            ],
-            'same email' => [
-                'request' => new Request([], [
-                    'email' => 'user@example.com',
-                ]),
-                'expectedFlashBagValues' => [
-                    EmailChangeController::FLASH_BAG_REQUEST_KEY => [
-                        EmailChangeController::FLASH_BAG_REQUEST_MESSAGE_EMAIL_SAME,
-                    ],
-                ],
-            ],
-            'invalid email' => [
-                'request' => new Request([], [
-                    'email' => 'foo',
-                ]),
-                'expectedFlashBagValues' => [
-                    EmailChangeController::FLASH_BAG_REQUEST_KEY => [
-                        EmailChangeController::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID,
-                    ],
-                    EmailChangeController::FLASH_BAG_EMAIL_VALUE_KEY => [
-                        'foo'
-                    ],
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider requestActionCreateFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $expectedFlashBagValues
-     */
-    public function testRequestActionCreateFailure($httpFixtures, array $expectedFlashBagValues)
-    {
-        $session = $this->container->get('session');
-        $userService = $this->container->get('simplytestable.services.userservice');
-
-        $userService->setUser($this->user);
-
-        $this->setHttpFixtures($httpFixtures);
-
-        $request = new Request([], [
-            'email' => self::NEW_EMAIL,
-        ]);
-
-        $this->container->set('request', $request);
-
-        /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->requestAction();
-
-        $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
-    }
-
-    /**
-     * @return array
-     */
-    public function requestActionCreateFailureDataProvider()
-    {
-        return [
-            'email taken' => [
-                'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 409'),
-                ],
-                'expectedFlashBagValues' => [
-                    EmailChangeController::FLASH_BAG_REQUEST_KEY => [
-                        EmailChangeController::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_TAKEN,
-                    ],
-                    EmailChangeController::FLASH_BAG_EMAIL_VALUE_KEY => [
-                        self::NEW_EMAIL,
-                    ],
-                ],
-            ],
-            'unknown' => [
-                'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 500'),
-                ],
-                'expectedFlashBagValues' => [
-                    EmailChangeController::FLASH_BAG_REQUEST_KEY => [
-                        EmailChangeController::FLASH_BAG_REQUEST_ERROR_MESSAGE_UNKNOWN,
-                    ],
-                    EmailChangeController::FLASH_BAG_EMAIL_VALUE_KEY => [
-                        self::NEW_EMAIL,
-                    ],
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider requestActionSendConfirmationTokenFailureDataProvider
+     * @dataProvider resendActionSendConfirmationTokenFailureDataProvider
      *
      * @param PostmarkMessage $postmarkMessage
      * @param array $expectedFlashBagValues
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      */
-    public function testRequestActionSendConfirmationTokenFailure(
+    public function testResendActionSendConfirmationTokenFailure(
         PostmarkMessage $postmarkMessage,
         array $expectedFlashBagValues
     ) {
@@ -244,7 +118,6 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         $mailService->setPostmarkMessage($postmarkMessage);
 
         $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
             Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode([
                 'token' => 'email-change-request-token',
                 'new_email' => self::NEW_EMAIL,
@@ -258,7 +131,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         $this->container->set('request', $request);
 
         /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->requestAction();
+        $response = $this->emailChangeController->resendAction();
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
@@ -268,7 +141,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
     /**
      * @return array
      */
-    public function requestActionSendConfirmationTokenFailureDataProvider()
+    public function resendActionSendConfirmationTokenFailureDataProvider()
     {
         return [
             'postmark not allowed to send to user email' => [
@@ -280,11 +153,8 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
                     ]
                 ),
                 'expectedFlashBagValues' => [
-                    EmailChangeController::FLASH_BAG_REQUEST_KEY => [
+                    EmailChangeController::FLASH_BAG_RESEND_ERROR_KEY => [
                         EmailChangeController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND,
-                    ],
-                    EmailChangeController::FLASH_BAG_EMAIL_VALUE_KEY => [
-                        self::NEW_EMAIL,
                     ],
                 ],
             ],
@@ -297,13 +167,10 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
                     ]
                 ),
                 'expectedFlashBagValues' => [
-                    EmailChangeController::FLASH_BAG_REQUEST_KEY => [
+                    EmailChangeController::FLASH_BAG_RESEND_ERROR_KEY => [
                         EmailChangeController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT,
                     ],
-                    EmailChangeController::FLASH_BAG_EMAIL_VALUE_KEY => [
-                        self::NEW_EMAIL,
-                    ],
-                ],
+                 ],
             ],
             'postmark invaild email address' => [
                 'postmarkMessage' => MockPostmarkMessageFactory::createMockConfirmEmailAddressPostmarkMessage(
@@ -314,13 +181,10 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
                     ]
                 ),
                 'expectedFlashBagValues' => [
-                    EmailChangeController::FLASH_BAG_REQUEST_KEY => [
+                    EmailChangeController::FLASH_BAG_RESEND_ERROR_KEY => [
                         EmailChangeController::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID,
                     ],
-                    EmailChangeController::FLASH_BAG_EMAIL_VALUE_KEY => [
-                        self::NEW_EMAIL,
-                    ],
-                ],
+                 ],
             ],
             'postmark unknown error' => [
                 'postmarkMessage' => MockPostmarkMessageFactory::createMockConfirmEmailAddressPostmarkMessage(
@@ -331,11 +195,8 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
                     ]
                 ),
                 'expectedFlashBagValues' => [
-                    EmailChangeController::FLASH_BAG_REQUEST_KEY => [
+                    EmailChangeController::FLASH_BAG_RESEND_ERROR_KEY => [
                         EmailChangeController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN,
-                    ],
-                    EmailChangeController::FLASH_BAG_EMAIL_VALUE_KEY => [
-                        self::NEW_EMAIL,
                     ],
                 ],
             ],
@@ -358,7 +219,6 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         ));
 
         $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
             Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode([
                 'token' => 'email-change-request-token',
                 'new_email' => self::NEW_EMAIL,
@@ -372,13 +232,13 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         $this->container->set('request', $request);
 
         /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->requestAction();
+        $response = $this->emailChangeController->resendAction();
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
         $this->assertEquals([
-            EmailChangeController::FLASH_BAG_REQUEST_KEY => [
-                EmailChangeController::FLASH_BAG_REQUEST_MESSAGE_SUCCESS,
+            EmailChangeController::FLASH_BAG_RESEND_SUCCESS_KEY => [
+                EmailChangeController::FLASH_BAG_RESEND_MESSAGE_SUCCESS
             ],
         ], $session->getFlashBag()->peekAll());
     }
