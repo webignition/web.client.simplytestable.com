@@ -351,7 +351,7 @@ class EmailChangeController extends AccountCredentialsChangeController
 
         $viewName = 'SimplyTestableWebClientBundle:Email:user-email-change-request-confirmation.txt.twig';
 
-        $message = $this->getMailService()->getNewMessage();
+        $message = $mailService->getNewMessage();
         $message->setFrom($sender['email'], $sender['name']);
         $message->addTo($emailChangeRequest['new_email']);
         $message->setSubject($messageProperties['subject']);
@@ -363,23 +363,5 @@ class EmailChangeController extends AccountCredentialsChangeController
         ]));
 
         $mailService->getSender()->send($message);
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\Mail\Service
-     */
-    private function getMailService() {
-        return $this->get('simplytestable.services.mail.service');
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService
-     */
-    private function getUserEmailChangeRequestService() {
-        return $this->get('simplytestable.services.useremailchangerequestservice');
     }
 }
