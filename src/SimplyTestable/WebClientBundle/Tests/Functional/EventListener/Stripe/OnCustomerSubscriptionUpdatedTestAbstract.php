@@ -8,7 +8,7 @@ use SimplyTestable\WebClientBundle\Tests\Helper\MockeryArgumentValidator;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 
-class OnCustomerSubscriptionUpdatedTest extends ListenerTest
+class OnCustomerSubscriptionUpdatedTestAbstract extends AbstractListenerTest
 {
     const EVENT_NAME = 'customer.subscription.updated';
 
