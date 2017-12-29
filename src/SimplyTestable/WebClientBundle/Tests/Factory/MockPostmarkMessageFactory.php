@@ -72,17 +72,18 @@ class MockPostmarkMessageFactory
      * @param string $to
      * @param string $subject
      * @param array $responseData
+     * @param mixed $textMessage
      *
      * @return Mock|PostmarkMessage
      */
-    public static function createMockPostmarkMessage($to, $subject, $responseData)
+    public static function createMockPostmarkMessage($to, $subject, $responseData, $textMessage = true)
     {
         return MockFactory::createPostmarkMessage([
             'setFrom' => true,
             'setSubject' => [
                 'with' => $subject,
             ],
-            'setTextMessage' => true,
+            'setTextMessage' => $textMessage,
             'addTo' => [
                 'with' => $to,
             ],

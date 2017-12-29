@@ -29,8 +29,14 @@ class MockFactory
         }
 
         if (isset($calls['setTextMessage'])) {
-            $message
-                ->shouldReceive('setTextMessage');
+            if ($calls['setTextMessage'] === true) {
+                $message
+                    ->shouldReceive('setTextMessage');
+            } else {
+                $message
+                    ->shouldReceive('setTextMessage')
+                    ->with($calls['setTextMessage']['with']);
+            }
         }
 
         if (isset($calls['addTo'])) {
