@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\EventListener\Stripe;
 
 use Psr\Log\LoggerInterface;
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
+use Symfony\Component\HttpFoundation\ParameterBag;
 
 class Listener
 {
@@ -94,38 +95,6 @@ class Listener
         return self::VIEW_BASE_PATH . $this->event->getData()->get('event') . ':' . $filenamebody . '.txt.twig';
     }
 
-    private function getSubject($valueParameters = null, $keyParameterNames = null)
-    {
-        $eventData = $this->event->getData();
-
-        $key = 'stripe.' . $this->event->getName();
-
-        if (is_array($keyParameterNames)) {
-            $keyNameParameterisedParts = array();
-            foreach ($keyParameterNames as $name) {
-                if ($eventData->has($name)) {
-                    $keyNameParameterisedParts[] = $name . '=' . $eventData->get($name);
-                }
-            }
-
-            $key .= '-' . implode('-', $keyNameParameterisedParts);
-        }
-
-        $messageProperties = $this->mailService->getConfiguration()->getMessageProperties($key);
-
-        if (!is_array($valueParameters)) {
-            return $messageProperties['subject'];
-        }
-
-        foreach ($valueParameters as $key => $value) {
-            $valueParameters['{{'.$key.'}}'] = $value;
-            unset($valueParameters[$key]);
-        }
-
-        return str_replace(array_keys($valueParameters), array_values($valueParameters), $messageProperties['subject']);
-    }
-
-
     /**
      *
      * @param int $amount
@@ -165,9 +134,12 @@ class Listener
         $this->event = $event;
         $eventData = $event->getData();
 
-        $subject = $this->getSubject([
-            'plan_name' => strtolower($eventData->get('plan_name'))
-        ]);
+        $subject = $this->createSubject(
+            $eventData,
+            [
+                'plan_name' => strtolower($eventData->get('plan_name'))
+            ]
+        );
 
         $viewParameters = [
             'plan_name' => strtolower($eventData->get('plan_name')),
@@ -203,10 +175,13 @@ class Listener
 
         $eventData = $event->getData();
 
-        $subject = $this->getSubject([
-            'plan_name' => strtolower($eventData->get('plan_name')),
-            'payment_details_needed_suffix' => ($eventData->get('has_card')) ? '' : ', payment details needed'
-        ]);
+        $subject = $this->createSubject(
+            $eventData,
+            [
+                'plan_name' => strtolower($eventData->get('plan_name')),
+                'payment_details_needed_suffix' => ($eventData->get('has_card')) ? '' : ', payment details needed'
+            ]
+        );
 
         $viewParameters = [
             'plan_name' => strtolower($eventData->get('plan_name')),
@@ -241,11 +216,15 @@ class Listener
         if ($eventData->get('is_plan_change')) {
             $eventData->set('plan_change', 1);
 
-            $subject = $this->getSubject([
-                'new_plan' => strtolower($eventData->get('new_plan'))
-            ], [
-                'plan_change'
-            ]);
+            $subject = $this->createSubject(
+                $eventData,
+                [
+                    'new_plan' => strtolower($eventData->get('new_plan'))
+                ],
+                [
+                    'plan_change'
+                ]
+            );
 
             $viewParameters = [
                 'new_plan' => strtolower($eventData->get('new_plan')),
@@ -271,10 +250,14 @@ class Listener
             );
             $eventData->set('transition', $transition);
 
-            $subject = $this->getSubject([], [
+            $subject = $this->createSubject(
+                $eventData,
+                [],
+                [
                 'transition',
                 'has_card'
-            ]);
+                ]
+            );
 
             $viewParameters = [
                 'plan_name' => strtolower($eventData->get('plan_name')),
@@ -303,9 +286,12 @@ class Listener
 
         $eventData = $event->getData();
 
-        $subject = $this->getSubject([
-            'invoice_id' => $this->getFormattedInvoiceId($eventData->get('invoice_id'))
-        ]);
+        $subject = $this->createSubject(
+            $eventData,
+            [
+                'invoice_id' => $this->getFormattedInvoiceId($eventData->get('invoice_id'))
+            ]
+        );
 
         $viewParameters = [
             'invoice_id' => $this->getFormattedInvoiceId($eventData->get('invoice_id')),
@@ -343,9 +329,14 @@ class Listener
             );
         }
 
-        $this->issueNotification($this->getSubject([
-            'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id'))
-        ]), $this->templating->render($this->getViewPath([
+        $subject = $this->createSubject(
+            $eventData,
+            [
+                'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id'))
+            ]
+        );
+
+        $this->issueNotification($subject, $this->templating->render($this->getViewPath([
             'has_discount'
         ]), $viewParameters));
     }
@@ -369,9 +360,13 @@ class Listener
             $subjectKeyParameters[] = 'is_during_trial';
         }
 
-        $subject = $this->getSubject([
-            'plan_name' => strtolower($eventData->get('plan_name'))
-        ], $subjectKeyParameters);
+        $subject = $this->createSubject(
+            $eventData,
+            [
+                'plan_name' => strtolower($eventData->get('plan_name'))
+            ],
+            $subjectKeyParameters
+        );
 
         $viewParameters = [
             'trial_days_remaining' => $eventData->get('trial_days_remaining'),
@@ -392,6 +387,35 @@ class Listener
             $subject,
             $this->templating->render($this->getViewPath($viewPathParameters), $viewParameters)
         );
+    }
+
+    private function createSubject(ParameterBag $eventData, $valueParameters = null, $keyParameterNames = null)
+    {
+        $key = 'stripe.' . $this->event->getName();
+
+        if (is_array($keyParameterNames)) {
+            $keyNameParameterisedParts = array();
+            foreach ($keyParameterNames as $name) {
+                if ($eventData->has($name)) {
+                    $keyNameParameterisedParts[] = $name . '=' . $eventData->get($name);
+                }
+            }
+
+            $key .= '-' . implode('-', $keyNameParameterisedParts);
+        }
+
+        $messageProperties = $this->mailService->getConfiguration()->getMessageProperties($key);
+
+        if (!is_array($valueParameters)) {
+            return $messageProperties['subject'];
+        }
+
+        foreach ($valueParameters as $key => $value) {
+            $valueParameters['{{'.$key.'}}'] = $value;
+            unset($valueParameters[$key]);
+        }
+
+        return str_replace(array_keys($valueParameters), array_values($valueParameters), $messageProperties['subject']);
     }
 
 
