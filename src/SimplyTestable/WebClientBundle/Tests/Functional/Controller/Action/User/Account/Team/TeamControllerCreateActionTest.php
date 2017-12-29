@@ -12,30 +12,20 @@ use Symfony\Component\HttpFoundation\Request;
 
 class TeamControllerCreateActionTest extends AbstractTeamControllerTest
 {
+    const ROUTE_NAME = 'action_user_account_team_create';
     const TEAM_NAME = 'Team Name';
     const EXPECTED_REDIRECT_URL = 'http://localhost/account/team/';
 
-    public function testCreateActionPostRequestPublicUser()
+    /**
+     * {@inheritdoc}
+     */
+    public function postRequestPublicUserDataProvider()
     {
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate('action_user_account_team_create');
-
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
-        ]);
-
-        $this->client->request(
-            'POST',
-            $requestUrl
-        );
-
-        /* @var RedirectResponse $response */
-        $response = $this->client->getResponse();
-
-        $this->assertEquals(
-            'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2luZGV4X2luZGV4In0%3D',
-            $response->getTargetUrl()
-        );
+        return [
+            'default' => [
+                'routeName' => self::ROUTE_NAME,
+            ],
+        ];
     }
 
     public function testCreateActionPostRequestPrivateUser()
@@ -43,7 +33,7 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
         $router = $this->container->get('router');
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
-        $requestUrl = $router->generate('action_user_account_team_create');
+        $requestUrl = $router->generate(self::ROUTE_NAME);
 
         $this->setHttpFixtures([
             Response::fromMessage('HTTP/1.1 200'),

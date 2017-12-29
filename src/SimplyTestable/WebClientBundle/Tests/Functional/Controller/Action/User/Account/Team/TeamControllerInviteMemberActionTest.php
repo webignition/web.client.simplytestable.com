@@ -14,6 +14,7 @@ use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 
 class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
 {
+    const ROUTE_NAME = 'action_user_account_team_invitemember';
     const USER_USERNAME = 'user@example.com';
     const INVITEE_EMAIL = 'invitee@example.com';
     const TEAM_NAME = 'Team Name';
@@ -37,27 +38,16 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         $userService->setUser($this->user);
     }
 
-    public function testInviteMemberActionPostRequestPublicUser()
+    /**
+     * {@inheritdoc}
+     */
+    public function postRequestPublicUserDataProvider()
     {
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate('action_user_account_team_invitemember');
-
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
-        ]);
-
-        $this->client->request(
-            'POST',
-            $requestUrl
-        );
-
-        /* @var RedirectResponse $response */
-        $response = $this->client->getResponse();
-
-        $this->assertEquals(
-            'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2luZGV4X2luZGV4In0%3D',
-            $response->getTargetUrl()
-        );
+        return [
+            'default' => [
+                'routeName' => self::ROUTE_NAME,
+            ],
+        ];
     }
 
     public function testInviteMemberActionPostRequestPrivateUser()
@@ -83,7 +73,7 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
             self::INVITEE_EMAIL
         ));
 
-        $requestUrl = $router->generate('action_user_account_team_invitemember');
+        $requestUrl = $router->generate(self::ROUTE_NAME);
 
         $this->client->getCookieJar()->set(
             new Cookie(UserService::USER_COOKIE_KEY, $userSerializerService->serializeToString($this->user))
