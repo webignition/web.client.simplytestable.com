@@ -4,7 +4,9 @@ namespace SimplyTestable\WebClientBundle\EventListener\Stripe;
 
 use Psr\Log\LoggerInterface;
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
-use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Bundle\TwigBundle\TwigEngine;
+use Symfony\Component\Routing\RouterInterface;
+use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
 class Listener
 {
@@ -12,38 +14,29 @@ class Listener
     const DEFAULT_CURRENCY_SYMBOL = '£';
 
     /**
-     *
      * @var LoggerInterface
      */
     private $logger;
 
     /**
-     *
-     * @var \Symfony\Bundle\TwigBundle\TwigEngine
+     * @var TwigEngine
      */
     private $templating;
 
-
     /**
-     *
-     * @var \Symfony\Bundle\FrameworkBundle\Routing\Router
+     * @var RouterInterface
      */
     private $router;
 
-
     /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Services\Mail\Service
+     * @var MailService
      */
     private $mailService;
 
-
     /**
-     *
      * @var StripeEvent
      */
     private $event;
-
 
     /**
      * @var array
@@ -53,18 +46,17 @@ class Listener
         'usd' => '$'
     ];
 
-
     /**
      * @param LoggerInterface $logger
-     * @param \Symfony\Bundle\TwigBundle\TwigEngine $templating
-     * @param \Symfony\Bundle\FrameworkBundle\Routing\Router $router
-     * @param \SimplyTestable\WebClientBundle\Services\Mail\Service $mailService
+     * @param TwigEngine $templating
+     * @param RouterInterface $router
+     * @param MailService $mailService
      */
     public function __construct(
         LoggerInterface $logger,
-            \Symfony\Bundle\TwigBundle\TwigEngine $templating,
-            \Symfony\Bundle\FrameworkBundle\Routing\Router $router,
-            \SimplyTestable\WebClientBundle\Services\Mail\Service $mailService
+        TwigEngine $templating,
+        RouterInterface $router,
+        MailService $mailService
     ) {
         $this->logger = $logger;
         $this->templating = $templating;
@@ -73,60 +65,39 @@ class Listener
     }
 
     /**
-     * @param array|null $parameterKeys
-     *
-     * @return string
-     */
-    private function getViewPath($parameterKeys = null)
-    {
-        if (is_array($parameterKeys)) {
-            $parameterisedParts = [];
-            foreach ($parameterKeys as $key) {
-                if ($this->event->getData()->has($key)) {
-                    $parameterisedParts[] = $key . '=' . $this->event->getData()->get($key);
-                }
-            }
-
-            $filenamebody = implode('-', $parameterisedParts);
-        } else {
-            $filenamebody = 'notification';
-        }
-
-        return self::VIEW_BASE_PATH . $this->event->getData()->get('event') . ':' . $filenamebody . '.txt.twig';
-    }
-
-    /**
-     *
      * @param int $amount
+     *
      * @return string
      */
-    private function getFormattedAmount($amount) {
+    private function getFormattedAmount($amount)
+    {
         return number_format($amount / 100, 2);
     }
 
-
     /**
-     *
      * @param int $timestamp
+     *
      * @return string
      */
-    private function getFormattedDateString($timestamp) {
+    private function getFormattedDateString($timestamp)
+    {
         return date('j F Y', $timestamp);
     }
 
-
     /**
-     *
      * @param string $invoiceId
+     *
      * @return string
      */
-    private function getFormattedInvoiceId($invoiceId) {
+    private function getFormattedInvoiceId($invoiceId)
+    {
         return '#' . str_replace('in_', '', $invoiceId);
     }
 
     /**
      * @param StripeEvent $event
      *
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      * @throws \Twig_Error
      */
     public function onCustomerSubscriptionCreated(StripeEvent $event)
@@ -135,7 +106,7 @@ class Listener
         $eventData = $event->getData();
 
         $subject = $this->createSubject(
-            $eventData,
+            $event,
             [
                 'plan_name' => strtolower($eventData->get('plan_name'))
             ]
@@ -160,13 +131,14 @@ class Listener
 
         $this->issueNotification(
             $subject,
-            $this->templating->render($this->getViewPath($viewPathParameters), $viewParameters)
+            $this->templating->render($this->getViewPath($event, $viewPathParameters), $viewParameters)
         );
     }
 
     /**
      * @param StripeEvent $event
      *
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      * @throws \Twig_Error
      */
     public function onCustomerSubscriptionTrialWillEnd(StripeEvent $event)
@@ -176,7 +148,7 @@ class Listener
         $eventData = $event->getData();
 
         $subject = $this->createSubject(
-            $eventData,
+            $event,
             [
                 'plan_name' => strtolower($eventData->get('plan_name')),
                 'payment_details_needed_suffix' => ($eventData->get('has_card')) ? '' : ', payment details needed'
@@ -190,7 +162,7 @@ class Listener
             'currency_symbol' => $this->getCurrencySymbol($eventData->get('plan_currency'))
         ];
 
-        $this->issueNotification($subject, $this->templating->render($this->getViewPath([
+        $this->issueNotification($subject, $this->templating->render($this->getViewPath($event, [
             'has_card'
         ]), $viewParameters));
     }
@@ -198,6 +170,7 @@ class Listener
     /**
      * @param StripeEvent $event
      *
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      * @throws \Twig_Error
      */
     public function onCustomerSubscriptionUpdated(StripeEvent $event)
@@ -217,7 +190,7 @@ class Listener
             $eventData->set('plan_change', 1);
 
             $subject = $this->createSubject(
-                $eventData,
+                $event,
                 [
                     'new_plan' => strtolower($eventData->get('new_plan'))
                 ],
@@ -234,7 +207,7 @@ class Listener
                 'currency_symbol' => $this->getCurrencySymbol($eventData->get('currency'))
             ];
 
-            $this->issueNotification($subject, $this->templating->render($this->getViewPath([
+            $this->issueNotification($subject, $this->templating->render($this->getViewPath($event, [
                 'plan_change',
                 'subscription_status'
             ]), $viewParameters));
@@ -251,7 +224,7 @@ class Listener
             $eventData->set('transition', $transition);
 
             $subject = $this->createSubject(
-                $eventData,
+                $event,
                 [],
                 [
                 'transition',
@@ -266,7 +239,7 @@ class Listener
                 'currency_symbol' => $this->getCurrencySymbol($eventData->get('currency'))
             ];
 
-            $this->issueNotification($subject, $this->templating->render($this->getViewPath([
+            $this->issueNotification($subject, $this->templating->render($this->getViewPath($event, [
                 'transition',
                 'has_card'
             ]), $viewParameters));
@@ -278,6 +251,7 @@ class Listener
     /**
      * @param StripeEvent $event
      *
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      * @throws \Twig_Error
      */
     public function onInvoicePaymentFailed(StripeEvent $event)
@@ -287,7 +261,7 @@ class Listener
         $eventData = $event->getData();
 
         $subject = $this->createSubject(
-            $eventData,
+            $event,
             [
                 'invoice_id' => $this->getFormattedInvoiceId($eventData->get('invoice_id'))
             ]
@@ -299,12 +273,13 @@ class Listener
             'invoice_lines' => $this->getInvoiceLinesContent($eventData->get('lines'), $eventData->get('currency')),
         ];
 
-        $this->issueNotification($subject, $this->templating->render($this->getViewPath(), $viewParameters));
+        $this->issueNotification($subject, $this->templating->render($this->getViewPath($event), $viewParameters));
     }
 
     /**
      * @param StripeEvent $event
      *
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      * @throws \Twig_Error
      */
     public function onInvoicePaymentSucceeded(StripeEvent $event)
@@ -330,13 +305,13 @@ class Listener
         }
 
         $subject = $this->createSubject(
-            $eventData,
+            $event,
             [
                 'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id'))
             ]
         );
 
-        $this->issueNotification($subject, $this->templating->render($this->getViewPath([
+        $this->issueNotification($subject, $this->templating->render($this->getViewPath($event, [
             'has_discount'
         ]), $viewParameters));
     }
@@ -344,6 +319,7 @@ class Listener
     /**
      * @param StripeEvent $event
      *
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      * @throws \Twig_Error
      */
     public function onCustomerSubscriptionDeleted(StripeEvent $event)
@@ -361,7 +337,7 @@ class Listener
         }
 
         $subject = $this->createSubject(
-            $eventData,
+            $event,
             [
                 'plan_name' => strtolower($eventData->get('plan_name'))
             ],
@@ -385,16 +361,27 @@ class Listener
 
         $this->issueNotification(
             $subject,
-            $this->templating->render($this->getViewPath($viewPathParameters), $viewParameters)
+            $this->templating->render($this->getViewPath($event, $viewPathParameters), $viewParameters)
         );
     }
 
-    private function createSubject(ParameterBag $eventData, $valueParameters = null, $keyParameterNames = null)
+    /**
+     * @param StripeEvent $event
+     * @param null $valueParameters
+     * @param null $keyParameterNames
+     *
+     * @return string
+     *
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     */
+    private function createSubject(StripeEvent $event, $valueParameters = null, $keyParameterNames = null)
     {
-        $key = 'stripe.' . $this->event->getName();
+        $eventData = $event->getData();
+
+        $key = 'stripe.' . $event->getName();
 
         if (is_array($keyParameterNames)) {
-            $keyNameParameterisedParts = array();
+            $keyNameParameterisedParts = [];
             foreach ($keyParameterNames as $name) {
                 if ($eventData->has($name)) {
                     $keyNameParameterisedParts[] = $name . '=' . $eventData->get($name);
@@ -418,28 +405,71 @@ class Listener
         return str_replace(array_keys($valueParameters), array_values($valueParameters), $messageProperties['subject']);
     }
 
+    /**
+     * @param StripeEvent $event
+     * @param array|null $parameterKeys
+     *
+     * @return string
+     */
+    private function getViewPath(StripeEvent $event, $parameterKeys = null)
+    {
+        $eventData = $event->getData();
 
-    private function issueNotification($subject, $messageBody) {
+        if (is_array($parameterKeys)) {
+            $parameterisedParts = [];
+            foreach ($parameterKeys as $key) {
+                if ($eventData->has($key)) {
+                    $parameterisedParts[] = $key . '=' . $eventData->get($key);
+                }
+            }
+
+            $filenamebody = implode('-', $parameterisedParts);
+        } else {
+            $filenamebody = 'notification';
+        }
+
+        return self::VIEW_BASE_PATH . $eventData->get('event') . ':' . $filenamebody . '.txt.twig';
+    }
+
+    /**
+     * @param string $subject
+     * @param string $messageBody
+     *
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
+     */
+    private function issueNotification($subject, $messageBody)
+    {
         $sender = $this->mailService->getConfiguration()->getSender('notifications');
 
         $message = $this->mailService->getNewMessage();
         $message->setFrom($sender['email'], $sender['name']);
         $message->addTo($this->event->getUser());
-        //$message->addTo('jon@simplytestable.com');
         $message->setSubject($subject);
         $message->setTextMessage($messageBody);
-
-//        var_dump($message);
-//        exit();
 
         $this->mailService->getSender()->send($message);
     }
 
-    private function getInvoiceLinesContent($invoiceLines, $currency) {
+    /**
+     * @param array $invoiceLines
+     * @param string $currency
+     *
+     * @return string
+     */
+    private function getInvoiceLinesContent($invoiceLines, $currency)
+    {
         $contentLines = array();
 
         foreach ($invoiceLines as $invoiceLine) {
-            $contentLine = ' * ' . $invoiceLine['plan_name'] . ' plan subscription, ' . $this->getFormattedDateString($invoiceLine['period_start']) . ' to ' . $this->getFormattedDateString($invoiceLine['period_end']) . ' (' . $this->getCurrencySymbol($currency) . '';
+            $contentLine = sprintf(
+                ' * %s plan subscription, %s to %s (%s',
+                $invoiceLine['plan_name'],
+                $this->getFormattedDateString($invoiceLine['period_start']),
+                $this->getFormattedDateString($invoiceLine['period_end']),
+                $this->getCurrencySymbol($currency)
+            );
+
             $contentLine .= $this->getFormattedAmount($invoiceLine['amount']);
 
             if (isset($invoiceLine['proration']) && $invoiceLine['proration']) {
@@ -454,27 +484,48 @@ class Listener
         return implode("\n", $contentLines);
     }
 
-
-    private function getInvoiceDiscountContent($discount, $currency) {
-        return ' * ' . $discount['percent_off'] . '% off with coupon ' . $discount['coupon'] . ' (-' . $this->getCurrencySymbol($currency) . '' . (number_format($discount['discount'] / 100, 2)) . ')';
+    /**
+     * @param array $discount
+     * @param string $currency
+     *
+     * @return string
+     */
+    private function getInvoiceDiscountContent($discount, $currency)
+    {
+        return sprintf(
+            ' * %s%% off with coupon %s (-%s%s)',
+            $discount['percent_off'],
+            $discount['coupon'],
+            $this->getCurrencySymbol($currency),
+            number_format($discount['discount'] / 100, 2)
+        );
     }
 
-
-    private function getInvoiceTotalLine($total, $currency) {
-        return "   =====================\n".' * Total: ' . $this->getCurrencySymbol($currency) . '' . number_format($total / 100, 2);
+    /**
+     * @param string $total
+     * @param string $currency
+     *
+     * @return string
+     */
+    private function getInvoiceTotalLine($total, $currency)
+    {
+        return "   =====================\n" . sprintf(
+            ' * Total: %s%s',
+            $this->getCurrencySymbol($currency),
+            number_format($total / 100, 2)
+        );
     }
-
 
     /**
      * @param string $currency
      * @return string
      */
-    private function getCurrencySymbol($currency) {
+    private function getCurrencySymbol($currency)
+    {
         if (!isset($this->currencySymbolMap[$currency])) {
             return self::DEFAULT_CURRENCY_SYMBOL;
         }
 
         return $this->currencySymbolMap[$currency];
     }
-
 }
