@@ -316,26 +316,36 @@ class Listener
         $this->issueNotification($subject, $this->templating->render($this->getViewPath(), $viewParameters));
     }
 
-
-    public function onInvoicePaymentSucceeded(StripeEvent $event) {
+    /**
+     * @param StripeEvent $event
+     *
+     * @throws \Twig_Error
+     */
+    public function onInvoicePaymentSucceeded(StripeEvent $event)
+    {
         $this->event = $event;
 
-        $viewParameters = array(
-            'plan_name' => strtolower($event->getData()->get('plan_name')),
-            'account_url' => $this->router->generate('view_user_account_index_index', array(), true),
-            'invoice_lines' => $this->getInvoiceLinesContent($event->getData()->get('lines'), $event->getData()->get('currency')),
-            'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id')),
-            'subtotal' => (int)$event->getData()->get('subtotal'),
-            'total_line' => $this->getInvoiceTotalLine((int)$event->getData()->get('total'), $event->getData()->get('currency')),
-        );
+        $eventData = $event->getData();
+
+        $viewParameters = [
+            'plan_name' => strtolower($eventData->get('plan_name')),
+            'account_url' => $this->router->generate('view_user_account_index_index', [], true),
+            'invoice_lines' => $this->getInvoiceLinesContent($eventData->get('lines'), $eventData->get('currency')),
+            'invoice_id' => $this->getFormattedInvoiceId($eventData->get('invoice_id')),
+            'subtotal' => (int)$eventData->get('subtotal'),
+            'total_line' => $this->getInvoiceTotalLine((int)$eventData->get('total'), $eventData->get('currency')),
+        ];
 
         if ($this->event->getData()->has('discount')) {
-            $viewParameters['discount_line'] = $this->getInvoiceDiscountContent($event->getData()->get('discount'), $event->getData()->get('currency'));
+            $viewParameters['discount_line'] = $this->getInvoiceDiscountContent(
+                $eventData->get('discount'),
+                $eventData->get('currency')
+            );
         }
 
-        $this->issueNotification($this->getSubject(array(
+        $this->issueNotification($this->getSubject([
             'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id'))
-        )), $this->templating->render($this->getViewPath([
+        ]), $this->templating->render($this->getViewPath([
             'has_discount'
         ]), $viewParameters));
     }
