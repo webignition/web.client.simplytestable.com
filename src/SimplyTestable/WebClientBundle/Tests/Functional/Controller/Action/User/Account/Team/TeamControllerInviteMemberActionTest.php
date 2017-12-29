@@ -5,7 +5,9 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User
 use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockPostmarkMessageFactory;
+use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
@@ -35,6 +37,75 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         $userService->setUser($this->user);
     }
 
+    public function testInviteMemberActionPostRequestPublicUser()
+    {
+        $router = $this->container->get('router');
+        $requestUrl = $router->generate('action_user_account_team_invitemember');
+
+        $this->setHttpFixtures([
+            Response::fromMessage('HTTP/1.1 200'),
+        ]);
+
+        $this->client->request(
+            'POST',
+            $requestUrl
+        );
+
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $this->assertEquals(
+            'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2luZGV4X2luZGV4In0%3D',
+            $response->getTargetUrl()
+        );
+    }
+
+    public function testInviteMemberActionPostRequestPrivateUser()
+    {
+        $router = $this->container->get('router');
+        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $mailService = $this->container->get('simplytestable.services.mail.service');
+
+        $inviteData = [
+            'team' => self::TEAM_NAME,
+            'user' => self::INVITEE_EMAIL,
+            'token' => 'invite-token',
+        ];
+
+        $this->setHttpFixtures([
+            Response::fromMessage('HTTP/1.1 200'),
+            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode($inviteData)),
+            Response::fromMessage('HTTP/1.1 200'),
+            Response::fromMessage('HTTP/1.1 200'),
+        ]);
+
+        $mailService->setPostmarkMessage(MockPostmarkMessageFactory::createMockTeamInviteSuccessPostmarkMessage(
+            self::INVITEE_EMAIL
+        ));
+
+        $requestUrl = $router->generate('action_user_account_team_invitemember');
+
+        $this->client->getCookieJar()->set(
+            new Cookie(UserService::USER_COOKIE_KEY, $userSerializerService->serializeToString($this->user))
+        );
+
+        $this->client->request(
+            'POST',
+            $requestUrl,
+            [
+                'email' => self::INVITEE_EMAIL,
+            ]
+        );
+
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $this->assertEquals(
+            self::EXPECTED_REDIRECT_URL,
+            $response->getTargetUrl()
+        );
+    }
+
     /**
      * @dataProvider inviteMemberActionBadRequestDataProvider
      *
@@ -42,6 +113,7 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
      * @param array $expectedFlashBagValues
      *
      * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
      */
     public function testInviteMemberActionBadRequest(Request $request, array $expectedFlashBagValues)
@@ -106,10 +178,11 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
     /**
      * @dataProvider inviteMemberActionGetInviteFailureDataProvider
      *
-     * @param Response[] $httpFixtures
+     * @param array $httpFixtures
      * @param array $expectedFlashBagValues
      *
      * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
      */
     public function testInviteMemberActionGetInviteFailure(array $httpFixtures, array $expectedFlashBagValues)
@@ -241,9 +314,8 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
     {
         return [
             'Postmark not allowed to send' => [
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
+                'postmarkMessage' => MockPostmarkMessageFactory::createMockTeamInvitePostmarkMessage(
                     self::INVITEE_EMAIL,
-                    '[Simply Testable] You have been invited to join the Team Name team',
                     [
                         'ErrorCode' => 405,
                         'Message' => 'foo',
@@ -259,9 +331,8 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
                 ],
             ],
             'Postmark inactive recipient' => [
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
+                'postmarkMessage' => MockPostmarkMessageFactory::createMockTeamInvitePostmarkMessage(
                     self::INVITEE_EMAIL,
-                    '[Simply Testable] You have been invited to join the Team Name team',
                     [
                         'ErrorCode' => 406,
                         'Message' => 'foo',
@@ -277,9 +348,8 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
                 ],
             ],
             'Postmark invalid email' => [
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
+                'postmarkMessage' => MockPostmarkMessageFactory::createMockTeamInvitePostmarkMessage(
                     self::INVITEE_EMAIL,
-                    '[Simply Testable] You have been invited to join the Team Name team',
                     [
                         'ErrorCode' => 300,
                         'Message' => 'foo',
@@ -295,9 +365,8 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
                 ],
             ],
             'Postmark unknown error' => [
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
+                'postmarkMessage' => MockPostmarkMessageFactory::createMockTeamInvitePostmarkMessage(
                     self::INVITEE_EMAIL,
-                    '[Simply Testable] You have been invited to join the Team Name team',
                     [
                         'ErrorCode' => 303,
                         'Message' => 'foo',
@@ -372,13 +441,8 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
                     Response::fromMessage('HTTP/1.1 200'),
                     Response::fromMessage('HTTP/1.1 200'),
                 ],
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    self::INVITEE_EMAIL,
-                    '[Simply Testable] You have been invited to join the Team Name team',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
-                    ]
+                'postmarkMessage' => MockPostmarkMessageFactory::createMockTeamInviteSuccessPostmarkMessage(
+                    self::INVITEE_EMAIL
                 ),
                 'expectedFlashBagValues' => [
                     TeamController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
@@ -393,13 +457,8 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
                     Response::fromMessage('HTTP/1.1 200'),
                     Response::fromMessage('HTTP/1.1 404'),
                 ],
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    self::INVITEE_EMAIL,
-                    '[Simply Testable] You have been invited to join the Team Name team',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
-                    ]
+                'postmarkMessage' => MockPostmarkMessageFactory::createMockTeamInviteSuccessPostmarkMessage(
+                    self::INVITEE_EMAIL
                 ),
                 'expectedFlashBagValues' => [
                     TeamController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
