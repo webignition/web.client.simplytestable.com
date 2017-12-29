@@ -8,9 +8,9 @@ use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class TeamControllerLeaveActionTest extends AbstractTeamControllerTest
+class TeamControllerRemoveInviteActionTest extends AbstractTeamControllerTest
 {
-    const ROUTE_NAME = 'action_user_account_team_leave';
+    const ROUTE_NAME = 'action_user_account_team_removeinvite';
     const EXPECTED_REDIRECT_URL = 'http://localhost/account/team/';
 
     /**
@@ -25,7 +25,7 @@ class TeamControllerLeaveActionTest extends AbstractTeamControllerTest
         ];
     }
 
-    public function testLeaveActionPostRequestPrivateUser()
+    public function testRemoveInviteActionPostRequestPrivateUser()
     {
         $router = $this->container->get('router');
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
@@ -45,7 +45,10 @@ class TeamControllerLeaveActionTest extends AbstractTeamControllerTest
 
         $this->client->request(
             'POST',
-            $requestUrl
+            $requestUrl,
+            [
+                'user' => 'invitee@example.com',
+            ]
         );
 
         /* @var RedirectResponse $response */
