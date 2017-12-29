@@ -26,6 +26,7 @@ class OnCustomerSubscriptionDeletedTest extends ListenerTest
      *
      * @param StripeEvent $event
      * @param PostmarkMessage $postmarkMessage
+     * @throws \Twig_Error
      */
     public function testOnCustomerSubscriptionDeleted(StripeEvent $event, PostmarkMessage $postmarkMessage)
     {
@@ -65,6 +66,7 @@ class OnCustomerSubscriptionDeletedTest extends ListenerTest
                     [
                         'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
                             'remaining 1 day of your trial',
+                            'http://localhost/account/',
                         ])),
                     ]
                 ),
@@ -88,6 +90,7 @@ class OnCustomerSubscriptionDeletedTest extends ListenerTest
                     [
                         'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
                             'remaining 12 days of your trial',
+                            'http://localhost/account/',
                         ])),
                     ]
                 ),
@@ -129,6 +132,11 @@ class OnCustomerSubscriptionDeletedTest extends ListenerTest
                     [
                         'ErrorCode' => 0,
                         'Message' => 'OK',
+                    ],
+                    [
+                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
+                            'http://localhost/account/',
+                        ])),
                     ]
                 ),
             ],

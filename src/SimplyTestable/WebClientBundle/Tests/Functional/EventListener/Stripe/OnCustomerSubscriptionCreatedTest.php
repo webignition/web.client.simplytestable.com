@@ -26,6 +26,7 @@ class OnCustomerSubscriptionCreatedTest extends ListenerTest
      *
      * @param StripeEvent $event
      * @param PostmarkMessage $postmarkMessage
+     * @throws \Twig_Error
      */
     public function testOnCustomerSubscriptionCreated(StripeEvent $event, PostmarkMessage $postmarkMessage)
     {
@@ -65,6 +66,7 @@ class OnCustomerSubscriptionCreatedTest extends ListenerTest
                         'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
                             'personal plan',
                             '£9.00',
+                            'http://localhost/account/',
                         ])),
                     ]
                 ),
@@ -89,6 +91,7 @@ class OnCustomerSubscriptionCreatedTest extends ListenerTest
                         'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
                             'personal plan',
                             '$1.00',
+                            'http://localhost/account/',
                         ])),
                     ]
                 ),
