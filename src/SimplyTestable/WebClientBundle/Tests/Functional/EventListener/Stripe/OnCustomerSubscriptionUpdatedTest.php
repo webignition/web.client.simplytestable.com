@@ -215,4 +215,18 @@ class OnCustomerSubscriptionUpdatedTest extends AbstractListenerTest
             ],
         ];
     }
+
+    public function testOnCustomerSubscriptionUpdatedNoPlanChangeNoTransitionChange()
+    {
+        $postmarkSender = $this->container->get('simplytestable.services.postmark.sender');
+
+        $event = new StripeEvent(new ParameterBag(
+            $this->eventData
+        ));
+
+        $this->listener->onCustomerSubscriptionUpdated($event);
+
+        $this->assertNull($postmarkSender->getLastMessage());
+        $this->assertNull($postmarkSender->getLastResponse());
+    }
 }
