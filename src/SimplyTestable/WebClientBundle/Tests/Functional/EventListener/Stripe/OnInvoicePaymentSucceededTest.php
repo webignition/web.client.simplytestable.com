@@ -119,6 +119,42 @@ class OnInvoicePaymentSucceededTest extends AbstractListenerTest
                     ]
                 ),
             ],
+            'has_discount:0; proration:1' => [
+                'event' => new StripeEvent(new ParameterBag(array_merge(
+                    $this->eventData,
+                    [
+                        'lines' => [
+                            [
+                                'proration' => 1,
+                                'plan_name' => 'Personal',
+                                'period_start' => 1408031226,
+                                'period_end' => 1410709626,
+                                'amount' => 900
+                            ]
+                        ],
+                        'invoice_id' => 'in_4abfD1nt0ael6N',
+                        'subtotal' => '900',
+                        'total' => '720',
+                        'amount_due' => '720',
+                        'has_discount' => 0,
+                    ]
+                ))),
+                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
+                    'user@example.com',
+                    '[Simply Testable] Invoice #4abfD1nt0ael6N paid, thanks!',
+                    [
+                        'ErrorCode' => 0,
+                        'Message' => 'OK',
+                    ],
+                    [
+                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
+                            'taken payment for your account subscription',
+                            'Invoice #4abfD1nt0ael6N summary',
+                            'Personal plan subscription, 14 August 2014 to 14 September 2014 (£9.00, prorated)',
+                        ])),
+                    ]
+                ),
+            ],
             'has_discount:1' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
                     $this->eventData,

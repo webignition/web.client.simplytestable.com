@@ -455,7 +455,7 @@ class Listener
      */
     private function getInvoiceLinesContent($invoiceLines, $currency)
     {
-        $contentLines = array();
+        $contentLines = [];
 
         foreach ($invoiceLines as $invoiceLine) {
             $contentLine = sprintf(
