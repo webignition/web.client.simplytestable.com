@@ -14,6 +14,7 @@ use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 
 class EmailChangeControllerResendActionTest extends AbstractEmailChangeControllerTest
 {
+    const ROUTE_NAME = 'action_user_account_emailchange_resend';
     const NEW_EMAIL = 'new-email@example.com';
     const EXPECTED_REDIRECT_URL = 'http://localhost/account/';
 
@@ -32,27 +33,16 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
         $this->user = new User('user@example.com');
     }
 
-    public function testResendActionPostRequestPublicUser()
+    /**
+     * {@inheritdoc}
+     */
+    public function postRequestPublicUserDataProvider()
     {
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate('action_user_account_emailchange_resend');
-
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
-        ]);
-
-        $this->client->request(
-            'POST',
-            $requestUrl
-        );
-
-        /* @var RedirectResponse $response */
-        $response = $this->client->getResponse();
-
-        $this->assertEquals(
-            'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2luZGV4X2luZGV4In0%3D',
-            $response->getTargetUrl()
-        );
+        return [
+            'default' => [
+                'routeName' => self::ROUTE_NAME,
+            ],
+        ];
     }
 
     public function testResendActionPostRequestPrivateUser()
@@ -61,7 +51,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
         $mailService = $this->container->get('simplytestable.services.mail.service');
 
-        $requestUrl = $router->generate('action_user_account_emailchange_resend');
+        $requestUrl = $router->generate(self::ROUTE_NAME);
 
         $mailService->setPostmarkMessage(MockPostmarkMessageFactory::createMockConfirmEmailAddressPostmarkMessage(
             self::NEW_EMAIL,

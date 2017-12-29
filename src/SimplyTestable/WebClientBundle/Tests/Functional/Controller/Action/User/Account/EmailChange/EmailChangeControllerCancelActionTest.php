@@ -10,29 +10,19 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class EmailChangeControllerCancelActionTest extends AbstractEmailChangeControllerTest
 {
+    const ROUTE_NAME = 'action_user_account_emailchange_cancel';
     const EXPECTED_REDIRECT_URL = 'http://localhost/account/';
 
-    public function testCancelActionPostRequestPublicUser()
+    /**
+     * {@inheritdoc}
+     */
+    public function postRequestPublicUserDataProvider()
     {
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate('action_user_account_emailchange_cancel');
-
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
-        ]);
-
-        $this->client->request(
-            'POST',
-            $requestUrl
-        );
-
-        /* @var RedirectResponse $response */
-        $response = $this->client->getResponse();
-
-        $this->assertEquals(
-            'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2luZGV4X2luZGV4In0%3D',
-            $response->getTargetUrl()
-        );
+        return [
+            'default' => [
+                'routeName' => self::ROUTE_NAME,
+            ],
+        ];
     }
 
     public function testCancelActionPostRequestPrivateUser()
@@ -40,7 +30,7 @@ class EmailChangeControllerCancelActionTest extends AbstractEmailChangeControlle
         $router = $this->container->get('router');
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
-        $requestUrl = $router->generate('action_user_account_emailchange_cancel');
+        $requestUrl = $router->generate(self::ROUTE_NAME);
 
         $this->setHttpFixtures([
             Response::fromMessage('HTTP/1.1 200'),

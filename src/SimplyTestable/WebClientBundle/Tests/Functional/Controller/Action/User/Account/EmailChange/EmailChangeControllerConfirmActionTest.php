@@ -12,41 +12,31 @@ use Symfony\Component\HttpFoundation\Request;
 
 class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControllerTest
 {
-    public function testConfirmActionPostRequestPublicUser()
+    const ROUTE_NAME = 'action_user_account_emailchange_confirm';
+    const EXPECTED_REDIRECT_URL = 'http://localhost/account/';
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postRequestPublicUserDataProvider()
     {
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate('action_user_account_emailchange_confirm');
-
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
-        ]);
-
-        $this->client->request(
-            'POST',
-            $requestUrl
-        );
-
-        /* @var RedirectResponse $response */
-        $response = $this->client->getResponse();
-
-        $this->assertEquals(
-            'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2luZGV4X2luZGV4In0%3D',
-            $response->getTargetUrl()
-        );
+        return [
+            'default' => [
+                'routeName' => self::ROUTE_NAME,
+            ],
+        ];
     }
 
     public function testConfirmActionPostRequestPrivateUser()
     {
         $router = $this->container->get('router');
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
-        $newEmail = 'new-email@example.com';
 
-        $requestUrl = $router->generate('action_user_account_emailchange_cancel');
+        $requestUrl = $router->generate(self::ROUTE_NAME);
 
         $this->setHttpFixtures([
             Response::fromMessage("HTTP/1.1 200 OK\nContent-type:application/json\n\n" . json_encode([
                 'token' => 'token-value',
-                'new_email' => $newEmail,
             ])),
             Response::fromMessage('HTTP/1.1 200'),
         ]);
