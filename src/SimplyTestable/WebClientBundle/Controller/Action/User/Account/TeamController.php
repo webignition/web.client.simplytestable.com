@@ -307,10 +307,19 @@ class TeamController extends BaseController implements RequiresPrivateUser
         return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
     }
 
+    /**
+     * @return RedirectResponse
+     */
+    public function leaveAction()
+    {
+        $teamService = $this->container->get('simplytestable.services.teamservice');
+        $teamService->leave();
 
-    public function leaveAction() {
-        $this->getTeamService()->leave();
-        return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+        return $this->redirect($this->generateUrl(
+            'view_user_account_team_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
     }
 
     /**
