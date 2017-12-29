@@ -192,27 +192,33 @@ class Listener
         );
     }
 
-
-    public function onCustomerSubscriptionTrialWillEnd(StripeEvent $event) {
+    /**
+     * @param StripeEvent $event
+     *
+     * @throws \Twig_Error
+     */
+    public function onCustomerSubscriptionTrialWillEnd(StripeEvent $event)
+    {
         $this->event = $event;
 
+        $eventData = $event->getData();
+
         $subject = $this->getSubject(array(
-            'plan_name' => strtolower($event->getData()->get('plan_name')),
-            'payment_details_needed_suffix' => ($event->getData()->get('has_card')) ? '' : ', payment details needed'
+            'plan_name' => strtolower($eventData->get('plan_name')),
+            'payment_details_needed_suffix' => ($eventData->get('has_card')) ? '' : ', payment details needed'
         ));
 
-        $viewParameters = array(
-            'plan_name' => strtolower($event->getData()->get('plan_name')),
-            'plan_amount' => $this->getFormattedAmount($event->getData()->get('plan_amount')),
-            'account_url' => $this->router->generate('view_user_account_index_index', array(), true),
-            'currency_symbol' => $this->getCurrencySymbol($event->getData()->get('plan_currency'))
-        );
+        $viewParameters = [
+            'plan_name' => strtolower($eventData->get('plan_name')),
+            'plan_amount' => $this->getFormattedAmount($eventData->get('plan_amount')),
+            'account_url' => $this->router->generate('view_user_account_index_index', [], true),
+            'currency_symbol' => $this->getCurrencySymbol($eventData->get('plan_currency'))
+        ];
 
-        $this->issueNotification($subject, $this->templating->render($this->getViewPath(array(
+        $this->issueNotification($subject, $this->templating->render($this->getViewPath([
             'has_card'
-        )), $viewParameters));
+        ]), $viewParameters));
     }
-
 
     public function onCustomerSubscriptionUpdated(StripeEvent $event) {
         /**
