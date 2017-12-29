@@ -37,6 +37,8 @@ class TeamController extends BaseController implements RequiresPrivateUser
     const FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN = 'postmark-failure';
     const FLASH_BAG_ERROR_MESSAGE_POSTMARK_INVALID_EMAIL = 'invalid-email';
 
+    const FLASH_BAG_TEAM_RESEND_INVITE_KEY = 'team_invite_resend';
+
     /**
      * @return RedirectResponse
      */
@@ -291,43 +293,61 @@ class TeamController extends BaseController implements RequiresPrivateUser
         ));
     }
 
+    /**
+     * @return RedirectResponse
+     *
+     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
+     */
+    public function resendInviteAction()
+    {
+        $session = $this->container->get('session');
+        $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $request = $this->container->get('request');
 
-    public function resendInviteAction() {
-        $invitee = trim($this->getRequest()->request->get('user'));
-        $flashData = [];
+        $requestData = $request->request;
+
+        $invitee = trim($requestData->get('user'));
 
         try {
-            $invite = $this->getTeamInviteService()->get($invitee);
+            $invite = $teamInviteService->get($invitee);
 
-            if ($this->getUserService()->isEnabled($invite->getUser())) {
+            if ($userService->isEnabled($invite->getUser())) {
                 $this->sendInviteEmail($invite);
             } else {
                 $this->sendInviteActivationEmail($invite);
             }
 
             $flashData = [
-                'status' => 'success',
-                'invitee' => $invite->getUser(),
-                'team' => $invite->getTeam()
+                self::FLASH_BAG_KEY_STATUS => self::FLASH_BAG_STATUS_SUCCESS,
+                self::FLASH_BAG_KEY_INVITEE => $invite->getUser(),
+                self::FLASH_BAG_KEY_TEAM => $invite->getTeam()
             ];
         } catch (TeamServiceException $teamServiceException) {
-            if ($teamServiceException->isInviteeIsATeamLeaderException()) {
-                $flashData = [
-                    'status' => 'error',
-                    'error' => 'invitee-is-a-team-leader',
-                    'invitee' => $invitee
-                ];
-            }
+            $flashData = [
+                self::FLASH_BAG_KEY_STATUS => self::FLASH_BAG_STATUS_ERROR,
+                self::FLASH_BAG_KEY_ERROR => $this->getFlashErrorCodeFromTeamServiceException($teamServiceException),
+                self::FLASH_BAG_KEY_INVITEE => $invitee
+            ];
         } catch (PostmarkResponseException $postmarkResponseException) {
             $flashData = [
-                'status' => 'error',
-                'error' => $this->getFlashErrorCodeFromPostmarkResponseException($postmarkResponseException),
-                'invitee' => $invitee,
+                self::FLASH_BAG_KEY_STATUS => self::FLASH_BAG_STATUS_ERROR,
+                self::FLASH_BAG_KEY_ERROR => $this->getFlashErrorCodeFromPostmarkResponseException(
+                    $postmarkResponseException
+                ),
+                self::FLASH_BAG_KEY_INVITEE => $invitee,
             ];
         }
 
-        $this->get('session')->getFlashBag()->set('team_invite_resend', $flashData);
-        return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+        $session->getFlashBag()->set(self::FLASH_BAG_TEAM_RESEND_INVITE_KEY, $flashData);
+
+        return $this->redirect($this->generateUrl(
+            'view_user_account_team_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
     }
 
     /**
