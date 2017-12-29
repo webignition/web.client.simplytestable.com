@@ -222,32 +222,42 @@ class TeamController extends BaseController implements RequiresPrivateUser
         return self::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_UNKNOWN;
     }
 
+    /**
+     * @return RedirectResponse
+     */
+    public function respondInviteAction()
+    {
+        $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
+        $request = $this->container->get('request');
 
+        $requestData = $request->request;
 
-    public function respondInviteAction() {
-        $response = trim($this->getRequest()->request->get('response'));
+        $redirectResponse = $this->redirect($this->generateUrl(
+            'view_user_account_team_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
 
-        if (!in_array($response, ['accept', 'decline'])) {
-            return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
-        }
+        $response = trim($requestData->get('response'));
 
-        $team = trim($this->getRequest()->request->get('team'));
+        if (in_array($response, ['accept', 'decline'])) {
+            $team = trim($requestData->get('team'));
+            $user = $this->getUser();
+            $username = $user->getUsername();
 
-        if ($response == 'decline') {
-            $this->getTeamInviteService()->declineInvite(new Invite([
-                'user' => $this->getUser()->getUsername(),
+            $invite = new Invite([
+                'user' => $username,
                 'team' => $team
-            ]));
+            ]);
+
+            if ($response === 'accept') {
+                $teamInviteService->acceptInvite($invite);
+            } else {
+                $teamInviteService->declineInvite($invite);
+            }
         }
 
-        if ($response == 'accept') {
-            $this->getTeamInviteService()->acceptInvite(new Invite([
-                'user' => $this->getUser()->getUsername(),
-                'team' => $team
-            ]));
-        }
-
-        return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+        return $redirectResponse;
     }
 
     /**
@@ -363,21 +373,6 @@ class TeamController extends BaseController implements RequiresPrivateUser
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
         ));
-    }
-
-    /**
-     * @return \SimplyTestable\WebClientBundle\Services\TeamService
-     */
-    private function getTeamService() {
-        return $this->get('simplytestable.services.teamservice');
-    }
-
-
-    /**
-     * @return \SimplyTestable\WebClientBundle\Services\TeamInviteService
-     */
-    private function getTeamInviteService() {
-        return $this->get('simplytestable.services.teaminviteservice');
     }
 
     /**
