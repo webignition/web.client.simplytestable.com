@@ -4,12 +4,74 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User
 
 use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
+use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\UserService;
+use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class TeamControllerCreateActionTest extends AbstractTeamControllerTest
 {
+    const TEAM_NAME = 'Team Name';
     const EXPECTED_REDIRECT_URL = 'http://localhost/account/team/';
+
+    public function testCreateActionPostRequestPublicUser()
+    {
+        $router = $this->container->get('router');
+        $requestUrl = $router->generate('action_user_account_team_create');
+
+        $this->setHttpFixtures([
+            Response::fromMessage('HTTP/1.1 200'),
+        ]);
+
+        $this->client->request(
+            'POST',
+            $requestUrl
+        );
+
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $this->assertEquals(
+            'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2luZGV4X2luZGV4In0%3D',
+            $response->getTargetUrl()
+        );
+    }
+
+    public function testCreateActionPostRequestPrivateUser()
+    {
+        $router = $this->container->get('router');
+        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+
+        $requestUrl = $router->generate('action_user_account_team_create');
+
+        $this->setHttpFixtures([
+            Response::fromMessage('HTTP/1.1 200'),
+            Response::fromMessage('HTTP/1.1 200'),
+        ]);
+
+        $user = new User('user@example.com', 'password');
+
+        $this->client->getCookieJar()->set(
+            new Cookie(UserService::USER_COOKIE_KEY, $userSerializerService->serializeToString($user))
+        );
+
+        $this->client->request(
+            'POST',
+            $requestUrl,
+            [
+                'name' => self::TEAM_NAME,
+            ]
+        );
+
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $this->assertEquals(
+            self::EXPECTED_REDIRECT_URL,
+            $response->getTargetUrl()
+        );
+    }
 
     public function testCreateActionEmptyName()
     {
@@ -41,7 +103,7 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
         ]);
 
         $this->container->set('request', new Request([], [
-            'name' => 'Team Name',
+            'name' => self::TEAM_NAME,
         ]));
 
         /* @var RedirectResponse $response */
