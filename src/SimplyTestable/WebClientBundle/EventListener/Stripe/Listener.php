@@ -16,7 +16,6 @@ class Listener
      */
     private $logger;
 
-
     /**
      *
      * @var \Symfony\Bundle\TwigBundle\TwigEngine
@@ -156,32 +155,41 @@ class Listener
         return '#' . str_replace('in_', '', $invoiceId);
     }
 
-
-    public function onCustomerSubscriptionCreated(StripeEvent $event) {
+    /**
+     * @param StripeEvent $event
+     *
+     * @throws \Twig_Error
+     */
+    public function onCustomerSubscriptionCreated(StripeEvent $event)
+    {
         $this->event = $event;
+        $eventData = $event->getData();
 
-        $subject = $this->getSubject(array(
-            'plan_name' => strtolower($event->getData()->get('plan_name'))
-        ));
+        $subject = $this->getSubject([
+            'plan_name' => strtolower($eventData->get('plan_name'))
+        ]);
 
-        $viewParameters = array(
-            'plan_name' => strtolower($event->getData()->get('plan_name')),
-            'trial_period_days' => $event->getData()->get('trial_period_days'),
-            'trial_end' => $this->getFormattedDateString($event->getData()->get('trial_end')),
-            'amount' => $this->getFormattedAmount($event->getData()->get('amount')),
-            'account_url' => $this->router->generate('view_user_account_index_index', array(), true),
-            'currency_symbol' => $this->getCurrencySymbol($event->getData()->get('currency'))
-        );
+        $viewParameters = [
+            'plan_name' => strtolower($eventData->get('plan_name')),
+            'trial_period_days' => $eventData->get('trial_period_days'),
+            'trial_end' => $this->getFormattedDateString($eventData->get('trial_end')),
+            'amount' => $this->getFormattedAmount($eventData->get('amount')),
+            'account_url' => $this->router->generate('view_user_account_index_index', [], true),
+            'currency_symbol' => $this->getCurrencySymbol($eventData->get('currency'))
+        ];
 
-        $viewPathParameters = array(
+        $viewPathParameters = [
             'status'
-        );
+        ];
 
         if ($event->getData()->get('status') == 'trialing') {
             $viewPathParameters[] = 'has_card';
         }
 
-        $this->issueNotification($subject, $this->templating->render($this->getViewPath($viewPathParameters), $viewParameters));
+        $this->issueNotification(
+            $subject,
+            $this->templating->render($this->getViewPath($viewPathParameters), $viewParameters)
+        );
     }
 
 
@@ -305,7 +313,11 @@ class Listener
         ]), $viewParameters));
     }
 
-
+    /**
+     * @param StripeEvent $event
+     *
+     * @throws \Twig_Error
+     */
     public function onCustomerSubscriptionDeleted(StripeEvent $event)
     {
         $this->event = $event;
@@ -339,9 +351,10 @@ class Listener
             $viewPathParameters[] = 'is_during_trial';
         }
 
-        $messageBody = $this->templating->render($this->getViewPath($viewPathParameters), $viewParameters);
-
-        $this->issueNotification($subject, $messageBody);
+        $this->issueNotification(
+            $subject,
+            $this->templating->render($this->getViewPath($viewPathParameters), $viewParameters)
+        );
     }
 
 
