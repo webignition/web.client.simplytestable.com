@@ -393,10 +393,6 @@ class Listener
 
         $messageProperties = $this->mailService->getConfiguration()->getMessageProperties($key);
 
-        if (!is_array($valueParameters)) {
-            return $messageProperties['subject'];
-        }
-
         foreach ($valueParameters as $key => $value) {
             $valueParameters['{{'.$key.'}}'] = $value;
             unset($valueParameters[$key]);
