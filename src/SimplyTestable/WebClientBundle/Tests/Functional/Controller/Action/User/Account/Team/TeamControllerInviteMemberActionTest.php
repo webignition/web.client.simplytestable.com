@@ -250,6 +250,23 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
                     ],
                 ],
             ],
+            'unknown error' => [
+                'httpFixtures' => [
+                    Response::fromMessage(sprintf(
+                        "HTTP/1.1 400 Bad Request\nX-TeamInviteGet-Error-Code:%s\nX-TeamInviteGet-Error-Message:%s",
+                        999,
+                        'Unknown error'
+                    )),
+                ],
+                'expectedFlashBagValues' => [
+                    TeamController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
+                        TeamController::FLASH_BAG_KEY_STATUS => TeamController::FLASH_BAG_STATUS_ERROR,
+                        TeamController::FLASH_BAG_KEY_ERROR =>
+                            TeamController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_UNKNOWN,
+                        TeamController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
+                    ],
+                ],
+            ],
         ];
     }
 
