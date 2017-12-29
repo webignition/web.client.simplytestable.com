@@ -271,13 +271,24 @@ class TeamController extends BaseController implements RequiresPrivateUser
         ));
     }
 
+    /**
+     * @return RedirectResponse
+     */
+    public function removeMemberAction()
+    {
+        $request = $this->container->get('request');
+        $teamService = $this->container->get('simplytestable.services.teamservice');
 
-    public function removeMemberAction() {
-        $member = trim($this->getRequest()->request->get('user'));
+        $requestData = $request->request;
+        $member = trim($requestData->get('user'));
 
-        $this->getTeamService()->removeFromTeam($member);
+        $teamService->removeFromTeam($member);
 
-        return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+        return $this->redirect($this->generateUrl(
+            'view_user_account_team_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
     }
 
 
