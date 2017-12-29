@@ -8,7 +8,7 @@ use SimplyTestable\WebClientBundle\Tests\Helper\MockeryArgumentValidator;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 
-class OnInvoicePaymentFailedTestAbstract extends AbstractListenerTest
+class OnInvoicePaymentFailedTest extends AbstractListenerTest
 {
     const EVENT_NAME = 'invoice.payment_failed';
 
