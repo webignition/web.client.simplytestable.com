@@ -182,7 +182,7 @@ class Listener
             'status'
         ];
 
-        if ($event->getData()->get('status') == 'trialing') {
+        if ($eventData->get('status') == 'trialing') {
             $viewPathParameters[] = 'has_card';
         }
 
@@ -203,10 +203,10 @@ class Listener
 
         $eventData = $event->getData();
 
-        $subject = $this->getSubject(array(
+        $subject = $this->getSubject([
             'plan_name' => strtolower($eventData->get('plan_name')),
             'payment_details_needed_suffix' => ($eventData->get('has_card')) ? '' : ', payment details needed'
-        ));
+        ]);
 
         $viewParameters = [
             'plan_name' => strtolower($eventData->get('plan_name')),
@@ -220,7 +220,13 @@ class Listener
         ]), $viewParameters));
     }
 
-    public function onCustomerSubscriptionUpdated(StripeEvent $event) {
+    /**
+     * @param StripeEvent $event
+     *
+     * @throws \Twig_Error
+     */
+    public function onCustomerSubscriptionUpdated(StripeEvent $event)
+    {
         /**
          * Now only occurs for trialing to active
          * either 'all active now' or 'downgraded to free'
@@ -230,50 +236,58 @@ class Listener
 
         $this->event = $event;
 
-        if ($event->getData()->get('is_plan_change')) {
-            $this->event->getData()->set('plan_change', 1);
+        $eventData = $event->getData();
 
-            $subject = $this->getSubject(array(
-                'new_plan' => strtolower($event->getData()->get('new_plan'))
-            ), array(
+        if ($eventData->get('is_plan_change')) {
+            $eventData->set('plan_change', 1);
+
+            $subject = $this->getSubject([
+                'new_plan' => strtolower($eventData->get('new_plan'))
+            ], [
                 'plan_change'
-            ));
+            ]);
 
-            $viewParameters = array(
-                'new_plan' => strtolower($event->getData()->get('new_plan')),
-                'old_plan' => strtolower($event->getData()->get('old_plan')),
-                'new_amount' => $this->getFormattedAmount($event->getData()->get('new_amount')),
-                'trial_end' => $this->getFormattedDateString($event->getData()->get('trial_end')),
-                'currency_symbol' => $this->getCurrencySymbol($event->getData()->get('currency'))
-            );
+            $viewParameters = [
+                'new_plan' => strtolower($eventData->get('new_plan')),
+                'old_plan' => strtolower($eventData->get('old_plan')),
+                'new_amount' => $this->getFormattedAmount($eventData->get('new_amount')),
+                'trial_end' => $this->getFormattedDateString($eventData->get('trial_end')),
+                'currency_symbol' => $this->getCurrencySymbol($eventData->get('currency'))
+            ];
 
-            $this->issueNotification($subject, $this->templating->render($this->getViewPath(array(
+            $this->issueNotification($subject, $this->templating->render($this->getViewPath([
                 'plan_change',
                 'subscription_status'
-            )), $viewParameters));
+            ]), $viewParameters));
+
             return;
         }
 
-        if ($event->getData()->get('is_status_change')) {
-            $transition = $event->getData()->get('previous_subscription_status') . '_to_' . $event->getData()->get('subscription_status');
-            $this->event->getData()->set('transition', $transition);
-
-            $subject = $this->getSubject(array(), array(
-                'transition',
-                'has_card'
-            ));
-
-            $viewParameters = array(
-                'plan_name' => strtolower($event->getData()->get('plan_name')),
-                'plan_amount' => $this->getFormattedAmount($event->getData()->get('plan_amount')),
-                'account_url' => $this->router->generate('view_user_account_index_index', array(), true),
-                'currency_symbol' => $this->getCurrencySymbol($event->getData()->get('currency'))
+        if ($eventData->get('is_status_change')) {
+            $transition = sprintf(
+                '%s_to_%s',
+                $eventData->get('previous_subscription_status'),
+                $eventData->get('subscription_status')
             );
+            $eventData->set('transition', $transition);
 
-            $this->issueNotification($subject, $this->templating->render($this->getViewPath(array(
+            $subject = $this->getSubject([], [
                 'transition',
                 'has_card'
-            )), $viewParameters));
+            ]);
+
+            $viewParameters = [
+                'plan_name' => strtolower($eventData->get('plan_name')),
+                'plan_amount' => $this->getFormattedAmount($eventData->get('plan_amount')),
+                'account_url' => $this->router->generate('view_user_account_index_index', [], true),
+                'currency_symbol' => $this->getCurrencySymbol($eventData->get('currency'))
+            ];
+
+            $this->issueNotification($subject, $this->templating->render($this->getViewPath([
+                'transition',
+                'has_card'
+            ]), $viewParameters));
+
             return;
         }
     }
