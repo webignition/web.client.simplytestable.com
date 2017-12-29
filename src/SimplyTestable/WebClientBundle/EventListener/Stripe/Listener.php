@@ -292,19 +292,26 @@ class Listener
         }
     }
 
-
-    public function onInvoicePaymentFailed(StripeEvent $event) {
+    /**
+     * @param StripeEvent $event
+     *
+     * @throws \Twig_Error
+     */
+    public function onInvoicePaymentFailed(StripeEvent $event)
+    {
         $this->event = $event;
 
-        $subject = $this->getSubject(array(
-            'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id'))
-        ));
+        $eventData = $event->getData();
 
-        $viewParameters = array(
-            'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id')),
-            'account_url' => $this->router->generate('view_user_account_index_index', array(), true),
-            'invoice_lines' => $this->getInvoiceLinesContent($event->getData()->get('lines'), $event->getData()->get('currency')),
-        );
+        $subject = $this->getSubject([
+            'invoice_id' => $this->getFormattedInvoiceId($eventData->get('invoice_id'))
+        ]);
+
+        $viewParameters = [
+            'invoice_id' => $this->getFormattedInvoiceId($eventData->get('invoice_id')),
+            'account_url' => $this->router->generate('view_user_account_index_index', [], true),
+            'invoice_lines' => $this->getInvoiceLinesContent($eventData->get('lines'), $eventData->get('currency')),
+        ];
 
         $this->issueNotification($subject, $this->templating->render($this->getViewPath(), $viewParameters));
     }
