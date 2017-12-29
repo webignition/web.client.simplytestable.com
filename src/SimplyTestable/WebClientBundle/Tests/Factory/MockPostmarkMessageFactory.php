@@ -70,6 +70,21 @@ class MockPostmarkMessageFactory
 
     /**
      * @param string $to
+     * @param array $responseData
+     *
+     * @return PostmarkMessage
+     */
+    public static function createMockResetPasswordPostmarkMessage($to, $responseData)
+    {
+        return MockPostmarkMessageFactory::createMockPostmarkMessage(
+            $to,
+            '[Simply Testable] Reset your password',
+            $responseData
+        );
+    }
+
+    /**
+     * @param string $to
      * @param string $subject
      * @param array $responseData
      * @param mixed $textMessage
