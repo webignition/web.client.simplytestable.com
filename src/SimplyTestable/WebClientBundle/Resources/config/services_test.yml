@@ -2,6 +2,3 @@ services:
 
   simplytestable.services.httpClientService:
     class:  SimplyTestable\WebClientBundle\Services\TestHttpClientService
-
-  simplytestable.services.postmark.sender:
-    class:   SimplyTestable\WebClientBundle\Services\Postmark\TestSender

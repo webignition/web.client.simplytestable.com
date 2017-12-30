@@ -6,121 +6,181 @@ use SimplyTestable\WebClientBundle\Controller\BaseController;
 use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class IndexController extends BaseController {
+class IndexController extends BaseController
+{
+    const FLASH_BAG_REQUEST_ERROR_KEY = 'user_reset_password_error';
+    const FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_BLANK = 'blank-email';
+    const FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID = 'invalid-email';
+    const FLASH_BAG_REQUEST_ERROR_MESSAGE_USER_INVALID = 'invalid-user';
+    const FLASH_BAG_REQUEST_ERROR_MESSAGE_INVALID_ADMIN_CREDENTIALS = 'core-app-invalid-credentials';
 
-    public function requestAction() {
-        $email = trim($this->get('request')->request->get('email'));
+    const FLASH_BAG_REQUEST_SUCCESS_KEY = 'user_reset_password_confirmation';
+    const FLASH_BAG_REQUEST_MESSAGE_SUCCESS = 'token-sent';
 
-        if ($email == '') {
-            $this->get('session')->getFlashBag()->set('user_reset_password_error', 'blank-email');
-            return $this->redirect($this->generateUrl('view_user_resetpassword_index_index', array(), true));
+    const FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND = 'postmark-not-allowed-to-send';
+    const FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT = 'postmark-inactive-recipient';
+    const FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN = 'postmark-failure';
+    const FLASH_BAG_ERROR_MESSAGE_POSTMARK_INVALID_EMAIL = 'invalid-email';
+
+    /**
+     * @return RedirectResponse
+     *
+     * @throws CoreApplicationAdminRequestException
+     */
+    public function requestAction()
+    {
+        $request = $this->container->get('request');
+        $session = $this->container->get('session');
+        $userService = $this->container->get('simplytestable.services.userservice');
+
+        $requestData = $request->request;
+
+        $email = trim($requestData->get('email'));
+
+        if (empty($email)) {
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_REQUEST_ERROR_KEY,
+                self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_BLANK
+            );
+
+            return $this->redirect($this->generateUrl(
+                'view_user_resetpassword_index_index',
+                [],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            ));
         }
 
-        if (!$this->isEmailValid($email)) {
-            $this->get('session')->getFlashBag()->set('user_reset_password_error', 'invalid-email');
-            return $this->redirect($this->generateUrl('view_user_resetpassword_index_index', array(
+        $redirectResponse = $this->redirect($this->generateUrl(
+            'view_user_resetpassword_index_index',
+            [
                 'email' => $email
-            ), true));
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
+
+        $emailValidator = new EmailValidator;
+        if (!$emailValidator->isValid($email)) {
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_REQUEST_ERROR_KEY,
+                self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID
+            );
+
+            return $redirectResponse;
         }
 
         try {
-            if ($this->getUserService()->exists($email) === false) {
-                $this->get('session')->getFlashBag()->set('user_reset_password_error', 'invalid-user');
-                return $this->redirect($this->generateUrl('view_user_resetpassword_index_index', array('email' => $email), true));
+            if (!$userService->exists($email)) {
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_REQUEST_ERROR_KEY,
+                    self::FLASH_BAG_REQUEST_ERROR_MESSAGE_USER_INVALID
+                );
+
+                return $redirectResponse;
             }
         } catch (CoreApplicationAdminRequestException $coreApplicationAdminRequestException) {
-            if ($coreApplicationAdminRequestException->isInvalidCredentialsException()) {
-                $this->get('session')->getFlashBag()->set('user_reset_password_error', 'core-app-invalid-credentials');
-                $this->sendInvalidAdminCredentialsNotification();
-            } else {
-                $this->get('session')->getFlashBag()->set('user_reset_password_error', 'core-app-unknown-error');
-            }
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_REQUEST_ERROR_KEY,
+                self::FLASH_BAG_REQUEST_ERROR_MESSAGE_INVALID_ADMIN_CREDENTIALS
+            );
 
-            return $this->redirect($this->generateUrl('view_user_resetpassword_index_index', array('email' => $email), true));
+            $this->sendInvalidAdminCredentialsNotification();
+
+            return $redirectResponse;
         }
 
-        $token = $this->getUserService()->getConfirmationToken($email);
+        $token = $userService->getConfirmationToken($email);
 
         try {
             $this->sendPasswordResetConfirmationToken($email, $token);
-            $this->get('session')->getFlashBag()->set('user_reset_password_confirmation', 'token-sent');
-            return $this->redirect($this->generateUrl('view_user_resetpassword_index_index', array('email' => $email), true));
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_REQUEST_SUCCESS_KEY,
+                self::FLASH_BAG_REQUEST_MESSAGE_SUCCESS
+            );
         } catch (PostmarkResponseException $postmarkResponseException) {
             if ($postmarkResponseException->isNotAllowedToSendException()) {
-                $this->get('session')->getFlashBag()->set('user_reset_password_error', 'postmark-not-allowed-to-send');
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_REQUEST_ERROR_KEY,
+                    self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND
+                );
             } elseif ($postmarkResponseException->isInactiveRecipientException()) {
-                $this->get('session')->getFlashBag()->set('user_reset_password_error', 'postmark-inactive-recipient');
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_REQUEST_ERROR_KEY,
+                    self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT
+                );
             } elseif ($postmarkResponseException->isInvalidEmailAddressException()) {
-                $this->get('session')->getFlashBag()->set('user_reset_password_error', 'invalid-email');
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_REQUEST_ERROR_KEY,
+                    self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INVALID_EMAIL
+                );
             } else {
-                $this->get('session')->getFlashBag()->set('user_reset_password_error', 'postmark-failure');
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_REQUEST_ERROR_KEY,
+                    self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN
+                );
             }
-
-            return $this->redirect($this->generateUrl('view_user_resetpassword_index_index', array(
-                'email' => $email
-            ), true));
         }
+
+        return $redirectResponse;
     }
 
-
     /**
-     *
      * @param string $email
-     * @param  $token
+     * @param string $token
+     *
      * @throws PostmarkResponseException
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      */
-    private function sendPasswordResetConfirmationToken($email, $token) {
-        $sender = $this->getMailService()->getConfiguration()->getSender('default');
-        $messageProperties = $this->getMailService()->getConfiguration()->getMessageProperties('user_reset_password');
+    private function sendPasswordResetConfirmationToken($email, $token)
+    {
+        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailServiceConfiguration = $mailService->getConfiguration();
 
-        $confirmationUrl = $this->generateUrl('view_user_resetpassword_choose_index', array(
-            'email' => $email,
-            'token' => $token
-        ), true);
+        $sender = $mailServiceConfiguration->getSender('default');
+        $messageProperties = $mailServiceConfiguration->getMessageProperties('user_reset_password');
 
-        $message = $this->getMailService()->getNewMessage();
+        $confirmationUrl = $this->generateUrl(
+            'view_user_resetpassword_choose_index',
+            [
+                'email' => $email,
+                'token' => $token
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        $viewName = 'SimplyTestableWebClientBundle:Email:reset-password-confirmation.txt.twig';
+
+        $message = $mailService->getNewMessage();
         $message->setFrom($sender['email'], $sender['name']);
         $message->addTo($email);
         $message->setSubject($messageProperties['subject']);
-        $message->setTextMessage($this->renderView('SimplyTestableWebClientBundle:Email:reset-password-confirmation.txt.twig', array(
+        $message->setTextMessage($this->renderView($viewName, [
             'confirmation_url' => $confirmationUrl,
             'email' => $email
-        )));
+        ]));
 
-        $this->getMailService()->getSender()->send($message);
+        $mailService->getSender()->send($message);
     }
 
+    /**
+     * @throws PostmarkResponseException
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     */
+    private function sendInvalidAdminCredentialsNotification()
+    {
+        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailServiceConfiguration = $mailService->getConfiguration();
 
-    private function sendInvalidAdminCredentialsNotification() {
-        $sender = $this->getMailService()->getConfiguration()->getSender('default');
+        $sender = $mailServiceConfiguration->getSender('default');
 
-        $message = $this->getMailService()->getNewMessage();
+        $message = $mailService->getNewMessage();
         $message->setFrom($sender['email'], $sender['name']);
         $message->addTo('jon@simplytestable.com');
         $message->setSubject('Invalid admin user credentials');
         $message->setTextMessage('Invalid admin user credentials exception raised when calling UserService::exists()');
 
-        $this->getMailService()->getSender()->send($message);
-    }
-
-
-    /**
-     *
-     * @param string $email
-     * @return boolean
-     */
-    private function isEmailValid($email) {
-        $validator = new EmailValidator;
-        return $validator->isValid($email);
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\Mail\Service
-     */
-    private function getMailService() {
-        return $this->get('simplytestable.services.mail.service');
+        $mailService->getSender()->send($message);
     }
 }

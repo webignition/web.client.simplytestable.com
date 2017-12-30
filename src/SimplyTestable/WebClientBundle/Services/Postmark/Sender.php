@@ -1,21 +1,32 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Services\Postmark;
 
+use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use SimplyTestable\WebClientBundle\Model\Postmark\Response as PostmarkResponse;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 
-class Sender {
-
+class Sender
+{
+    /**
+     * @var PostmarkMessage
+     */
     private $lastMessage;
-    private $lastResponse;
-
 
     /**
-     * @param \MZ\PostmarkBundle\Postmark\Message $message
-     * @return PostmarkResponse
-     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
+     * @var PostmarkResponse
      */
-    public function send(\MZ\PostmarkBundle\Postmark\Message $message) {
+    private $lastResponse;
+
+    /**
+     * @param PostmarkMessage $message
+     *
+     * @return PostmarkResponse
+     *
+     * @throws PostmarkResponseException
+     */
+    public function send(PostmarkMessage $message)
+    {
         $response = new PostmarkResponse($this->getJsonRespnse($message));
 
         $this->lastMessage = $message;
@@ -29,30 +40,28 @@ class Sender {
     }
 
     /**
-     *
-     * @return \MZ\PostmarkBundle\Postmark\Message
+     * @return PostmarkMessage
      */
-    public function getLastMessage() {
+    public function getLastMessage()
+    {
         return $this->lastMessage;
     }
 
-
     /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Model\Postmark\Response
+     * @return PostmarkResponse
      */
-    public function getLastResponse() {
+    public function getLastResponse()
+    {
         return $this->lastResponse;
     }
 
-
     /**
+     * @param PostmarkMessage $message
      *
-     * @param \MZ\PostmarkBundle\Postmark\Message $message
      * @return string
      */
-    protected function getJsonRespnse(\MZ\PostmarkBundle\Postmark\Message $message) {
+    protected function getJsonRespnse(PostmarkMessage $message)
+    {
         return $message->send();
     }
-
 }

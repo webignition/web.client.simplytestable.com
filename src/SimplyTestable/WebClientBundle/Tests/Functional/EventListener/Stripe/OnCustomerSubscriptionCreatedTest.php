@@ -8,9 +8,9 @@ use SimplyTestable\WebClientBundle\Tests\Helper\MockeryArgumentValidator;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 
-class OnCustomerSubscriptionDeletedTest extends AbstractListenerTest
+class OnCustomerSubscriptionCreatedTest extends AbstractListenerTest
 {
-    const EVENT_NAME = 'customer.subscription.deleted';
+    const EVENT_NAME = 'customer.subscription.created';
 
     /**
      * @var array
@@ -22,20 +22,20 @@ class OnCustomerSubscriptionDeletedTest extends AbstractListenerTest
     ];
 
     /**
-     * @dataProvider onCustomerSubscriptionDeletedDataProvider
+     * @dataProvider onCustomerSubscriptionCreatedDataProvider
      *
      * @param StripeEvent $event
      * @param PostmarkMessage $postmarkMessage
      * @throws \Twig_Error
      */
-    public function testOnCustomerSubscriptionDeleted(StripeEvent $event, PostmarkMessage $postmarkMessage)
+    public function testOnCustomerSubscriptionCreated(StripeEvent $event, PostmarkMessage $postmarkMessage)
     {
         $mailService = $this->container->get('simplytestable.services.mail.service');
         $postmarkSender = $this->container->get('simplytestable.services.postmark.sender');
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
-        $this->listener->onCustomerSubscriptionDeleted($event);
+        $this->listener->onCustomerSubscriptionCreated($event);
 
         $this->assertNotNull($postmarkSender->getLastMessage());
         $this->assertNotNull($postmarkSender->getLastResponse());
@@ -44,98 +44,108 @@ class OnCustomerSubscriptionDeletedTest extends AbstractListenerTest
     /**
      * @return array
      */
-    public function onCustomerSubscriptionDeletedDataProvider()
+    public function onCustomerSubscriptionCreatedDataProvider()
     {
         return [
-            'actioned by user during trial, singular trial_days_remaining' => [
+            'status:active, currency:default' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
                     $this->eventData,
                     [
-                        'actioned_by' => 'user',
-                        'trial_days_remaining' => 1,
-                        'is_during_trial' => 1,
+                        'status' => 'active',
+                        'amount' => '900',
                     ]
                 ))),
                 'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
                     'user@example.com',
-                    '[Simply Testable] Premium subscription to personal cancelled',
+                    '[Simply Testable] You\'ve signed up to the personal plan',
                     [
                         'ErrorCode' => 0,
                         'Message' => 'OK',
                     ],
                     [
                         'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'remaining 1 day of your trial',
+                            'personal plan',
+                            '£9.00',
                             'http://localhost/account/',
                         ])),
                     ]
                 ),
             ],
-            'actioned by user during trial, plural trial_days_remaining' => [
+            'status:active, currency:usd' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
                     $this->eventData,
                     [
-                        'actioned_by' => 'user',
-                        'trial_days_remaining' => 12,
-                        'is_during_trial' => 1,
+                        'status' => 'active',
+                        'amount' => '100',
+                        'currency' => 'usd',
                     ]
                 ))),
                 'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
                     'user@example.com',
-                    '[Simply Testable] Premium subscription to personal cancelled',
+                    '[Simply Testable] You\'ve signed up to the personal plan',
                     [
                         'ErrorCode' => 0,
                         'Message' => 'OK',
                     ],
                     [
                         'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'remaining 12 days of your trial',
+                            'personal plan',
+                            '$1.00',
                             'http://localhost/account/',
                         ])),
                     ]
                 ),
             ],
-            'actioned by user outside trial' => [
+            'status:trialing, has_card:0' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
                     $this->eventData,
                     [
-                        'actioned_by' => 'user',
-                        'trial_days_remaining' => 12,
-                        'is_during_trial' => 0,
+                        'status' => 'trialing',
+                        'amount' => '1800',
+                        'has_card' => 0,
+                        'trial_period_days' => 22,
+                        'trial_end' => (new \DateTime('2018-01-02'))->format('U'),
                     ]
                 ))),
                 'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
                     'user@example.com',
-                    '[Simply Testable] Premium subscription to personal cancelled',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
-                    ]
-                ),
-            ],
-            'actioned by system' => [
-                'event' => new StripeEvent(new ParameterBag(array_merge(
-                    $this->eventData,
-                    [
-                        'actioned_by' => 'system',
-                        'trial_days_remaining' => 12,
-                        'is_during_trial' => 1,
-                    ]
-                ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    sprintf(
-                        '%s%s',
-                        '[Simply Testable] Premium subscription to personal cancelled, ',
-                        'you\'ve been dropped down to our free plan'
-                    ),
+                    '[Simply Testable] You\'ve signed up to the personal plan',
                     [
                         'ErrorCode' => 0,
                         'Message' => 'OK',
                     ],
                     [
                         'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'http://localhost/account/',
+                            'personal plan',
+                            'for 22 days',
+                            'ending 2 January 2018',
+                            'add a credit or debit card to your account',
+                        ])),
+                    ]
+                ),
+            ],
+            'status:trialing, has_card:1' => [
+                'event' => new StripeEvent(new ParameterBag(array_merge(
+                    $this->eventData,
+                    [
+                        'status' => 'trialing',
+                        'amount' => '1800',
+                        'has_card' => 1,
+                        'trial_period_days' => 22,
+                        'trial_end' => (new \DateTime('2018-01-03'))->format('U'),
+                    ]
+                ))),
+                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
+                    'user@example.com',
+                    '[Simply Testable] You\'ve signed up to the personal plan',
+                    [
+                        'ErrorCode' => 0,
+                        'Message' => 'OK',
+                    ],
+                    [
+                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
+                            'personal plan',
+                            'ending 3 January 2018',
                         ])),
                     ]
                 ),

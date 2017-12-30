@@ -8,27 +8,33 @@ use SimplyTestable\WebClientBundle\Controller\View\CacheableViewController;
 use Symfony\Component\HttpFoundation\Cookie;
 
 class IndexController extends CacheableViewController implements IEFiltered {
-    
+
     const ONE_YEAR_IN_SECONDS = 31536000;
-    
+
     protected function modifyViewName($viewName) {
         return str_replace(':User', ':bs3/User', $viewName);
     }
-    
+
     public function indexAction() {
+        $request = $this->container->get('request');
+        $couponService = $this->container->get('simplytestable.services.couponservice');
+        $couponService->setRequest($request);
+
+        $hasCoupon = $couponService->has();
+
         $viewData = [
             'user_create_error' => $this->getFlash('user_create_error'),
             'user_create_confirmation' => $this->getFlash('user_create_confirmation'),
             'email' => strtolower(trim($this->getRequest()->query->get('email'))),
             'plan' => $this->getRequestedPlan(),
             'redirect' => trim($this->getRequest()->query->get('redirect')),
-            'has_coupon' => $this->getCouponService()->has()
+            'has_coupon' => $hasCoupon
         ];
 
         $this->getPlansService()->listPremiumOnly();
 
-        if ($this->getCouponService()->has()) {
-            $viewData['coupon'] = $this->getCouponService()->get();
+        if ($hasCoupon) {
+            $viewData['coupon'] = $couponService->get();
             $this->getPlansService()->setPriceModifier($viewData['coupon']->getPriceModifier());
         }
 
@@ -68,25 +74,19 @@ class IndexController extends CacheableViewController implements IEFiltered {
         return $plan;
     }
 
-    public function getCacheValidatorParameters() {        
+    public function getCacheValidatorParameters() {
+        $couponService = $this->container->get('simplytestable.services.couponservice');
+        $couponService->setRequest($this->getRequest());
+
         return [
             'user_create_error' => $this->getFlash('user_create_error', false),
             'user_create_confirmation' => $this->getFlash('user_create_confirmation', false),
             'email' => strtolower(trim($this->getRequest()->query->get('email'))),
             'plan' => $this->getRequestedPlan(),
             'redirect' => trim($this->getRequest()->query->get('redirect')),
-            'coupon' => ($this->getCouponService()->has()) ? $this->getCouponService()->get()->__toString() : ''
+            'coupon' => ($couponService->has()) ? $couponService->get()->__toString() : ''
         ];
     }
-
-
-    /**
-     * @return \SimplyTestable\WebClientBundle\Services\CouponService
-     */
-    private function getCouponService() {
-        return $this->container->get('simplytestable.services.couponService');
-    }
-
 
     /**
      *

@@ -9,312 +9,433 @@ use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class TeamController extends BaseController implements RequiresPrivateUser {
+class TeamController extends BaseController implements RequiresPrivateUser
+{
+    const FLASH_BAG_KEY_STATUS = 'status';
+    const FLASH_BAG_KEY_ERROR = 'error';
+    const FLASH_BAG_KEY_INVITEE = 'invitee';
+    const FLASH_BAG_KEY_TEAM = 'team';
+
+    const FLASH_BAG_STATUS_ERROR = 'error';
+    const FLASH_BAG_STATUS_SUCCESS = 'success';
+
+    const FLASH_BAG_CREATE_ERROR_KEY = 'team_create_error';
+    const FLASH_BAG_CREATE_ERROR_MESSAGE_NAME_BLANK = 'blank-name';
+
+    const FLASH_BAG_TEAM_INVITE_GET_KEY = 'team_invite_get';
+    const FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_INVALID = 'invalid-invitee';
+    const FLASH_BAG_TEAM_INVITE_GET_ERROR_SELF_INVITE = 'invite-self';
+    const FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_IS_A_TEAM_LEADER = 'invitee-is-a-team-leader';
+    const FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_ALREADY_ON_A_TEAM = 'invitee-is-already-on-a-team';
+    const FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_HAS_A_PREMIUM_PLAN = 'invitee-has-a-premium-plan';
+    const FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_UNKNOWN = 'invitee-unknown-error';
+
+    const FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND = 'postmark-not-allowed-to-send';
+    const FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT = 'postmark-inactive-recipient';
+    const FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN = 'postmark-failure';
+    const FLASH_BAG_ERROR_MESSAGE_POSTMARK_INVALID_EMAIL = 'invalid-email';
+
+    const FLASH_BAG_TEAM_RESEND_INVITE_KEY = 'team_invite_resend';
 
     /**
-     *
      * @return RedirectResponse
      */
-    public function getUserSignInRedirectResponse() {
+    public function getUserSignInRedirectResponse()
+    {
         return new RedirectResponse($this->generateUrl('view_user_signin_index', [
             'redirect' => base64_encode(json_encode(['route' => 'view_user_account_index_index']))
-        ], true));
+        ], UrlGeneratorInterface::ABSOLUTE_URL));
     }
 
-    public function createAction() {
-        $name = trim($this->getRequest()->request->get('name'));
+    /**
+     * @return RedirectResponse
+     */
+    public function createAction()
+    {
+        $session = $this->container->get('session');
+        $request = $this->container->get('request');
+        $teamService = $this->container->get('simplytestable.services.teamservice');
 
-        if ($name == '') {
-            $this->get('session')->getFlashBag()->set('team_create_error', 'blank-name');
-            return $this->redirect($this->generateUrl('view_user_account_team_index_index', [], true));
-        }
+        $requestData = $request->request;
 
-        $this->getTeamService()->setUser($this->getUser());
-        $this->getTeamService()->create($name);
+        $redirectResponse = $this->redirect($this->generateUrl(
+            'view_user_account_team_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
 
-        return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
-    }
+        $name = trim($requestData->get('name'));
 
+        if (empty($name)) {
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_CREATE_ERROR_KEY,
+                self::FLASH_BAG_CREATE_ERROR_MESSAGE_NAME_BLANK
+            );
 
-    public function inviteMemberAction() {
-        $redirectResponse = $this->redirect($this->generateUrl('view_user_account_team_index_index'));
-
-        $invitee = trim($this->getRequest()->request->get('email'));
-
-        if (!$this->isEmailValid($invitee)) {
-            $flashData = [
-                'status' => 'error',
-                'error' => 'invalid-invitee',
-                'invitee' => $invitee,
-            ];
-
-            $this->get('session')->getFlashBag()->set('team_invite_get', $flashData);
             return $redirectResponse;
         }
 
-        if ($invitee == $this->getUser()->getUsername()) {
+        $teamService->setUser($this->getUser());
+        $teamService->create($name);
+
+        return $redirectResponse;
+    }
+
+    /**
+     * @return RedirectResponse
+     *
+     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
+     */
+    public function inviteMemberAction()
+    {
+        $session = $this->container->get('session');
+        $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $request = $this->container->get('request');
+
+        $requestData = $request->request;
+
+        $redirectResponse = $this->redirect($this->generateUrl(
+            'view_user_account_team_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
+
+        $invitee = trim($requestData->get('email'));
+
+        $user = $this->getUser();
+        $username = $user->getUsername();
+
+        $emailValidator = new EmailValidator;
+        if (!$emailValidator->isValid($invitee)) {
             $flashData = [
-                'status' => 'error',
-                'error' => 'invite-self'
+                self::FLASH_BAG_KEY_STATUS => self::FLASH_BAG_STATUS_ERROR,
+                self::FLASH_BAG_KEY_ERROR => self::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_INVALID,
+                self::FLASH_BAG_KEY_INVITEE => $invitee,
             ];
 
-            $this->get('session')->getFlashBag()->set('team_invite_get', $flashData);
+            $session->getFlashBag()->set(self::FLASH_BAG_TEAM_INVITE_GET_KEY, $flashData);
+
             return $redirectResponse;
         }
+
+        if ($invitee === $username) {
+            $flashData = [
+                self::FLASH_BAG_KEY_STATUS => self::FLASH_BAG_STATUS_ERROR,
+                self::FLASH_BAG_KEY_ERROR => self::FLASH_BAG_TEAM_INVITE_GET_ERROR_SELF_INVITE,
+            ];
+
+            $session->getFlashBag()->set(self::FLASH_BAG_TEAM_INVITE_GET_KEY, $flashData);
+
+            return $redirectResponse;
+        }
+
+        $teamInviteService->setUser($user);
 
         try {
-            $invite = $this->getTeamInviteService()->get($invitee);
+            $invite = $teamInviteService->get($invitee);
 
-            if ($this->getUserService()->isEnabled($invite->getUser())) {
+            if ($userService->isEnabled($invite->getUser())) {
                 $this->sendInviteEmail($invite);
             } else {
                 $this->sendInviteActivationEmail($invite);
             }
 
             $flashData = [
-                'status' => 'success',
-                'invitee' => $invite->getUser(),
-                'team' => $invite->getTeam()
+                self::FLASH_BAG_KEY_STATUS => self::FLASH_BAG_STATUS_SUCCESS,
+                self::FLASH_BAG_KEY_INVITEE => $invite->getUser(),
+                self::FLASH_BAG_KEY_TEAM => $invite->getTeam()
             ];
         } catch (TeamServiceException $teamServiceException) {
             $flashData = [
-                'status' => 'error',
-                'error' => $this->getFlashErrorCodeFromTeamServiceException($teamServiceException),
-                'invitee' => $invitee
+                self::FLASH_BAG_KEY_STATUS => self::FLASH_BAG_STATUS_ERROR,
+                self::FLASH_BAG_KEY_ERROR => $this->getFlashErrorCodeFromTeamServiceException($teamServiceException),
+                self::FLASH_BAG_KEY_INVITEE => $invitee
             ];
         } catch (PostmarkResponseException $postmarkResponseException) {
             $flashData = [
-                'status' => 'error',
-                'error' => $this->getFlashErrorCodeFromPostmarkResponseException($postmarkResponseException),
-                'invitee' => $invitee,
+                self::FLASH_BAG_KEY_STATUS => self::FLASH_BAG_STATUS_ERROR,
+                self::FLASH_BAG_KEY_ERROR => $this->getFlashErrorCodeFromPostmarkResponseException(
+                    $postmarkResponseException
+                ),
+                self::FLASH_BAG_KEY_INVITEE => $invitee,
             ];
 
             $invite = new Invite([
                 'user' => $invitee
             ]);
 
-            $this->getTeamInviteService()->removeForUser($invite);
+            $teamInviteService->removeForUser($invite);
         }
 
-        $this->get('session')->getFlashBag()->set('team_invite_get', $flashData);
+        $session->getFlashBag()->set(self::FLASH_BAG_TEAM_INVITE_GET_KEY, $flashData);
 
         return $redirectResponse;
     }
 
-
     /**
      * @param PostmarkResponseException $postmarkResponseException
+     *
      * @return string
      */
-    private function getFlashErrorCodeFromPostmarkResponseException(PostmarkResponseException $postmarkResponseException) {
+    private function getFlashErrorCodeFromPostmarkResponseException(
+        PostmarkResponseException $postmarkResponseException
+    ) {
         if ($postmarkResponseException->isNotAllowedToSendException()) {
-            return 'postmark-not-allowed-to-send';
-        } elseif ($postmarkResponseException->isInactiveRecipientException()) {
-            return 'postmark-inactive-recipient';
-        } elseif ($postmarkResponseException->isInvalidEmailAddressException()) {
-            return 'invalid-email';
+            return self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND;
         }
 
-        return 'postmark-failure';
-    }
+        if ($postmarkResponseException->isInactiveRecipientException()) {
+            return self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT;
+        }
 
+        if ($postmarkResponseException->isInvalidEmailAddressException()) {
+            return self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INVALID_EMAIL;
+        }
+
+        return self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN;
+    }
 
     /**
      * @param TeamServiceException $teamServiceException
+     *
      * @return string
      */
-    private function getFlashErrorCodeFromTeamServiceException(TeamServiceException $teamServiceException) {
+    private function getFlashErrorCodeFromTeamServiceException(TeamServiceException $teamServiceException)
+    {
         if ($teamServiceException->isInviteeIsATeamLeaderException()) {
-            return 'invitee-is-a-team-leader';
+            return self::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_IS_A_TEAM_LEADER;
         }
 
         if ($teamServiceException->isUserIsAlreadyOnATeamException()) {
-            return 'invitee-is-already-on-a-team';
+            return self::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_ALREADY_ON_A_TEAM;
         }
 
         if ($teamServiceException->isInviteeHasAPremiumPlanException()) {
-            return 'invitee-has-a-premium-plan';
+            return self::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_HAS_A_PREMIUM_PLAN;
         }
 
-        return 'invitee-unknown-error';
+        return self::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_UNKNOWN;
     }
 
+    /**
+     * @return RedirectResponse
+     */
+    public function respondInviteAction()
+    {
+        $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
+        $request = $this->container->get('request');
 
+        $requestData = $request->request;
 
-    public function respondInviteAction() {
-        $response = trim($this->getRequest()->request->get('response'));
+        $redirectResponse = $this->redirect($this->generateUrl(
+            'view_user_account_team_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
 
-        if (!in_array($response, ['accept', 'decline'])) {
-            return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
-        }
+        $response = trim($requestData->get('response'));
 
-        $team = trim($this->getRequest()->request->get('team'));
+        if (in_array($response, ['accept', 'decline'])) {
+            $team = trim($requestData->get('team'));
+            $user = $this->getUser();
+            $username = $user->getUsername();
 
-        if ($response == 'decline') {
-            $this->getTeamInviteService()->declineInvite(new Invite([
-                'user' => $this->getUser()->getUsername(),
+            $invite = new Invite([
+                'user' => $username,
                 'team' => $team
-            ]));
+            ]);
+
+            if ($response === 'accept') {
+                $teamInviteService->acceptInvite($invite);
+            } else {
+                $teamInviteService->declineInvite($invite);
+            }
         }
 
-        if ($response == 'accept') {
-            $this->getTeamInviteService()->acceptInvite(new Invite([
-                'user' => $this->getUser()->getUsername(),
-                'team' => $team
-            ]));
-        }
-
-        return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+        return $redirectResponse;
     }
 
+    /**
+     * @return RedirectResponse
+     */
+    public function removeInviteAction()
+    {
+        $request = $this->container->get('request');
+        $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
 
-    public function removeInviteAction() {
-        $invitee = trim($this->getRequest()->request->get('user'));
+        $requestData = $request->request;
 
-        $this->getTeamInviteService()->removeForUser(new Invite([
+        $invitee = trim($requestData->get('user'));
+
+        $teamInviteService->removeForUser(new Invite([
             'user' => $invitee
         ]));
 
-        return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+        return $this->redirect($this->generateUrl(
+            'view_user_account_team_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
     }
 
+    /**
+     * @return RedirectResponse
+     */
+    public function removeMemberAction()
+    {
+        $request = $this->container->get('request');
+        $teamService = $this->container->get('simplytestable.services.teamservice');
 
-    public function removeMemberAction() {
-        $member = trim($this->getRequest()->request->get('user'));
+        $requestData = $request->request;
+        $member = trim($requestData->get('user'));
 
-        $this->getTeamService()->removeFromTeam($member);
+        $teamService->removeFromTeam($member);
 
-        return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+        return $this->redirect($this->generateUrl(
+            'view_user_account_team_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
     }
 
+    /**
+     * @return RedirectResponse
+     *
+     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
+     */
+    public function resendInviteAction()
+    {
+        $session = $this->container->get('session');
+        $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $request = $this->container->get('request');
 
-    public function resendInviteAction() {
-        $invitee = trim($this->getRequest()->request->get('user'));
-        $flashData = [];
+        $requestData = $request->request;
+
+        $invitee = trim($requestData->get('user'));
 
         try {
-            $invite = $this->getTeamInviteService()->get($invitee);
+            $invite = $teamInviteService->get($invitee);
 
-            if ($this->getUserService()->isEnabled($invite->getUser())) {
+            if ($userService->isEnabled($invite->getUser())) {
                 $this->sendInviteEmail($invite);
             } else {
                 $this->sendInviteActivationEmail($invite);
             }
 
             $flashData = [
-                'status' => 'success',
-                'invitee' => $invite->getUser(),
-                'team' => $invite->getTeam()
+                self::FLASH_BAG_KEY_STATUS => self::FLASH_BAG_STATUS_SUCCESS,
+                self::FLASH_BAG_KEY_INVITEE => $invite->getUser(),
+                self::FLASH_BAG_KEY_TEAM => $invite->getTeam()
             ];
         } catch (TeamServiceException $teamServiceException) {
-            if ($teamServiceException->isInviteeIsATeamLeaderException()) {
-                $flashData = [
-                    'status' => 'error',
-                    'error' => 'invitee-is-a-team-leader',
-                    'invitee' => $invitee
-                ];
-            }
+            $flashData = [
+                self::FLASH_BAG_KEY_STATUS => self::FLASH_BAG_STATUS_ERROR,
+                self::FLASH_BAG_KEY_ERROR => $this->getFlashErrorCodeFromTeamServiceException($teamServiceException),
+                self::FLASH_BAG_KEY_INVITEE => $invitee
+            ];
         } catch (PostmarkResponseException $postmarkResponseException) {
             $flashData = [
-                'status' => 'error',
-                'error' => $this->getFlashErrorCodeFromPostmarkResponseException($postmarkResponseException),
-                'invitee' => $invitee,
+                self::FLASH_BAG_KEY_STATUS => self::FLASH_BAG_STATUS_ERROR,
+                self::FLASH_BAG_KEY_ERROR => $this->getFlashErrorCodeFromPostmarkResponseException(
+                    $postmarkResponseException
+                ),
+                self::FLASH_BAG_KEY_INVITEE => $invitee,
             ];
         }
 
-        $this->get('session')->getFlashBag()->set('team_invite_resend', $flashData);
-        return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
+        $session->getFlashBag()->set(self::FLASH_BAG_TEAM_RESEND_INVITE_KEY, $flashData);
+
+        return $this->redirect($this->generateUrl(
+            'view_user_account_team_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
     }
-
-
-    public function leaveAction() {
-        $this->getTeamService()->leave();
-        return $this->redirect($this->generateUrl('view_user_account_team_index_index'));
-    }
-
 
     /**
-     * @return \SimplyTestable\WebClientBundle\Services\TeamService
+     * @return RedirectResponse
      */
-    private function getTeamService() {
-        return $this->get('simplytestable.services.teamservice');
+    public function leaveAction()
+    {
+        $teamService = $this->container->get('simplytestable.services.teamservice');
+        $teamService->leave();
+
+        return $this->redirect($this->generateUrl(
+            'view_user_account_team_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
     }
 
-
     /**
-     * @return \SimplyTestable\WebClientBundle\Services\TeamInviteService
-     */
-    private function getTeamInviteService() {
-        return $this->get('simplytestable.services.teaminviteservice');
-    }
-
-
-    /**
-     *
      * @param Invite $invite
-     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
+     *
+     * @throws PostmarkResponseException
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      */
-    private function sendInviteEmail(Invite $invite) {
-        $sender = $this->getMailService()->getConfiguration()->getSender('default');
-        $messageProperties = $this->getMailService()->getConfiguration()->getMessageProperties('user_team_invite_invitation');
+    private function sendInviteEmail(Invite $invite)
+    {
+        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailServiceConfiguration = $mailService->getConfiguration();
 
-        $message = $this->getMailService()->getNewMessage();
+        $sender = $mailServiceConfiguration->getSender('default');
+        $messageProperties = $mailServiceConfiguration->getMessageProperties('user_team_invite_invitation');
+
+        $viewName = 'SimplyTestableWebClientBundle:Email:user-team-invite-invitation.txt.twig';
+
+        $message = $mailService->getNewMessage();
         $message->setFrom($sender['email'], $sender['name']);
         $message->addTo($invite->getUser());
         $message->setSubject(str_replace('{{team_name}}', $invite->getTeam(), $messageProperties['subject']));
-        $message->setTextMessage($this->renderView('SimplyTestableWebClientBundle:Email:user-team-invite-invitation.txt.twig', array(
+        $message->setTextMessage($this->renderView($viewName, [
             'team_name' => $invite->getTeam(),
             'account_team_page_url' => $this->generateUrl('view_user_account_team_index_index', [], true)
-        )));
+        ]));
 
-        $this->getMailService()->getSender()->send($message);
+        $mailService->getSender()->send($message);
     }
-
 
     /**
      * @param Invite $invite
-     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
+     *
+     * @throws PostmarkResponseException
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      */
-    private function sendInviteActivationEmail(Invite $invite) {
-        $sender = $this->getMailService()->getConfiguration()->getSender('default');
-        $messageProperties = $this->getMailService()->getConfiguration()->getMessageProperties('user_team_invite_newuser_invitation');
+    private function sendInviteActivationEmail(Invite $invite)
+    {
+        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailServiceConfiguration = $mailService->getConfiguration();
 
-        $confirmationUrl = $this->generateUrl('view_user_signup_invite_index', array(
+        $sender = $mailServiceConfiguration->getSender('default');
+        $messageProperties = $mailServiceConfiguration->getMessageProperties('user_team_invite_newuser_invitation');
+
+        $confirmationUrl = $this->generateUrl(
+            'view_user_signup_invite_index',
+            [
                 'token' => $invite->getToken()
-            ), true);
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
 
-        $message = $this->getMailService()->getNewMessage();
+        $viewName = 'SimplyTestableWebClientBundle:Email:user-team-invite-newuser-invitation.txt.twig';
+
+        $message = $mailService->getNewMessage();
         $message->setFrom($sender['email'], $sender['name']);
         $message->addTo($invite->getUser());
         $message->setSubject(str_replace('{{team_name}}', $invite->getTeam(), $messageProperties['subject']));
-        $message->setTextMessage($this->renderView('SimplyTestableWebClientBundle:Email:user-team-invite-newuser-invitation.txt.twig', array(
+        $message->setTextMessage($this->renderView($viewName, [
             'team_name' => $invite->getTeam(),
             'confirmation_url' => $confirmationUrl
-        )));
+        ]));
 
-        $this->getMailService()->getSender()->send($message);
+        $mailService->getSender()->send($message);
     }
-
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\Mail\Service
-     */
-    private function getMailService() {
-        return $this->get('simplytestable.services.mail.service');
-    }
-
-
-    /**
-     *
-     * @param string $email
-     * @return boolean
-     */
-    private function isEmailValid($email) {
-        $validator = new EmailValidator;
-        return $validator->isValid($email);
-    }
-
 }
