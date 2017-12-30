@@ -8,7 +8,7 @@ abstract class ListenerTest extends BaseSimplyTestableTestCase {
     
     protected $event;
     
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
 
         if (count($this->getHttpFixtureItems()) > 0) {

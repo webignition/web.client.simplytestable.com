@@ -1,69 +1,74 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Services\Mail;
 
-class Service {
-    
+use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
+use SimplyTestable\WebClientBundle\Services\Postmark\Sender as PostmarkSender;
+
+class Service
+{
     /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Services\Mail\Configuration 
+     * @var Configuration
      */
     private $mailConfiguration;
-    
+
     /**
      *
-     * @var \MZ\PostmarkBundle\Postmark\Message
+     * @var PostmarkMessage
      */
     private $postmarkMessage;
-    
-    
+
     /**
      *
-     * @var \SimplyTestable\WebClientBundle\Services\Postmark\Sender 
+     * @var PostmarkSender
      */
     private $postmarkSender;
 
-    
     /**
-     * 
-     * @param \MZ\PostmarkBundle\Postmark\Message $postmarkMessage
+     * @param Configuration $mailConfiguration
+     * @param PostmarkMessage $postmarkMessage
+     * @param PostmarkSender $postmarkSender
      */
     public function __construct(
-        \SimplyTestable\WebClientBundle\Services\Mail\Configuration $mailConfiguration,
-        \MZ\PostmarkBundle\Postmark\Message $postmarkMessage,
-        \SimplyTestable\WebClientBundle\Services\Postmark\Sender $postmarkSender) {
-        
-        $this->mailConfiguration = $mailConfiguration;        
+        Configuration $mailConfiguration,
+        PostmarkMessage $postmarkMessage,
+        PostmarkSender $postmarkSender
+    ) {
+
+        $this->mailConfiguration = $mailConfiguration;
         $this->postmarkMessage = clone $postmarkMessage;
         $this->postmarkSender = $postmarkSender;
     }
 
-    
-    
     /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Services\Mail\Configuration
+     * @return Configuration
      */
-    public function getConfiguration() {
+    public function getConfiguration()
+    {
         return $this->mailConfiguration;
     }
-    
-    
-    
+
     /**
-     * 
-     * @return \MZ\PostmarkBundle\Postmark\Message
+     * @return PostmarkMessage
      */
-    public function getNewMessage() {
+    public function getNewMessage()
+    {
         return clone $this->postmarkMessage;
     }
-    
-    
+
     /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Services\Postmark\Sender
+     * @return PostmarkSender
      */
-    public function getSender() {
+    public function getSender()
+    {
         return $this->postmarkSender;
-    }    
-    
+    }
+
+    /**
+     * @param PostmarkMessage $message
+     */
+    public function setPostmarkMessage(PostmarkMessage $message)
+    {
+        $this->postmarkMessage = $message;
+    }
 }

@@ -1,78 +1,67 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Services\Postmark;
 
+use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use SimplyTestable\WebClientBundle\Model\Postmark\Response as PostmarkResponse;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 
-class Sender {
-    
+class Sender
+{
     /**
+     * @var PostmarkMessage
+     */
+    private $lastMessage;
+
+    /**
+     * @var PostmarkResponse
+     */
+    private $lastResponse;
+
+    /**
+     * @param PostmarkMessage $message
      *
-     * @var \Doctrine\Common\Collections\ArrayCollection
-     */
-    private $history = null;
-
-
-    /**
-     * @param \MZ\PostmarkBundle\Postmark\Message $message
      * @return PostmarkResponse
-     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
+     *
+     * @throws PostmarkResponseException
      */
-    public function send(\MZ\PostmarkBundle\Postmark\Message $message) {
+    public function send(PostmarkMessage $message)
+    {
         $response = new PostmarkResponse($this->getJsonRespnse($message));
-        $this->getHistory()->add(array(
-            'message' => $message,
-            'response' => $response
-        ));
-        
+
+        $this->lastMessage = $message;
+        $this->lastResponse = $response;
+
         if ($response->isError()) {
             throw new PostmarkResponseException($response->getMessage(), $response->getErrorCode());
         }
-        
+
         return $response;
     }
-    
-    
+
     /**
-     * 
-     * @return array
+     * @return PostmarkMessage
      */
-    public function getHistory() {
-        if (is_null($this->history)) {
-            $this->history = new \Doctrine\Common\Collections\ArrayCollection();
-        }
-        
-        return $this->history;
+    public function getLastMessage()
+    {
+        return $this->lastMessage;
     }
-    
-    
+
     /**
-     * 
-     * @return \MZ\PostmarkBundle\Postmark\Message 
+     * @return PostmarkResponse
      */
-    public function getLastMessage() {
-        $lastHistoryItem = $this->getHistory()->last();
-        return $lastHistoryItem['message'];
+    public function getLastResponse()
+    {
+        return $this->lastResponse;
     }
-    
-    
+
     /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Model\Postmark\Response
-     */
-    public function getLastResponse() {
-        $lastHistoryItem = $this->getHistory()->last();
-        return $lastHistoryItem['response'];        
-    }
-    
-    
-    /**
-     * 
-     * @param \MZ\PostmarkBundle\Postmark\Message $message
+     * @param PostmarkMessage $message
+     *
      * @return string
      */
-    protected function getJsonRespnse(\MZ\PostmarkBundle\Postmark\Message $message) {
+    protected function getJsonRespnse(PostmarkMessage $message)
+    {
         return $message->send();
-    }    
-    
+    }
 }

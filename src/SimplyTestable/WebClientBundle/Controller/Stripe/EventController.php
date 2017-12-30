@@ -6,71 +6,35 @@ use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Controller\BaseController;
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
 
-class EventController extends BaseController {    
-    
+class EventController extends BaseController
+{
     const LISTENER_EVENT_PREFIX = 'stripe.';
-    
+
     /**
-     *
-     * @var StripeEvent
+     * @return Response
      */
-    private $event = null;
-    
-    public function indexAction() {
-        if (!$this->getEvent()->hasUser()) {
-            return new Response('', 400);
-        }        
-        
-        if (!$this->dispatcherHasListenerForEvent()) {
+    public function indexAction()
+    {
+        $dispatcher = $this->container->get('event_dispatcher');
+
+        $event = new StripeEvent($this->get('request')->request);
+        $listenerEventName = self::LISTENER_EVENT_PREFIX . $event->getName();
+
+        if (!$event->hasUser()) {
             return new Response('', 400);
         }
-        
-        $this->getDispatcher()->dispatch(
-                $this->getListenerEventName(),
-                $this->getEvent()
-        );   
-        
+
+        $hasListenerForEvent = count($dispatcher->getListeners($listenerEventName)) > 0;
+
+        if (!$hasListenerForEvent) {
+            return new Response('', 400);
+        }
+
+        $dispatcher->dispatch(
+            $listenerEventName,
+            $event
+        );
+
         return new Response('', 200);
     }
-    
-    
-    /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Event\Stripe\Event
-     */
-    private function getEvent() {
-        if (is_null($this->event)) {
-            $this->event = new StripeEvent($this->get('request')->request);
-        }
-        
-        return $this->event;
-    }
-    
-    
-    /**
-     * 
-     * @return boolean
-     */
-    private function dispatcherHasListenerForEvent() {
-        return count($this->getDispatcher()->getListeners($this->getListenerEventName())) > 0;      
-    }
-    
-    
-    /**
-     * 
-     * @return \Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher
-     */
-    private function getDispatcher() {
-        return $this->get('event_dispatcher');
-    }
-    
-    
-    /**
-     * 
-     * @return string
-     */
-    private function getListenerEventName() {
-        return self::LISTENER_EVENT_PREFIX . $this->getEvent()->getName();
-    }
-    
 }

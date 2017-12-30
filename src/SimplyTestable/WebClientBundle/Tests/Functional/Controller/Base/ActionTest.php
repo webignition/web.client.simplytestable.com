@@ -20,7 +20,7 @@ abstract class ActionTest extends BaseTest {
      */
     protected $controllerException;
     
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
 
         if (count($this->getHttpFixtureItems()) > 0) {

@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Tests\Functional\Services\TestOptions\Adapter
 
 class CssValidationOptionsTest extends ServiceTest {
 
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         $this->getRequestData()->set('css-validation', '1');
     }

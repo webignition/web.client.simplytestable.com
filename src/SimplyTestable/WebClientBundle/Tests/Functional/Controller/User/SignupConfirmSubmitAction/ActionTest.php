@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Tests\Functional\Controller\User\ActionTest a
 
 class ActionTest extends BaseActionTest {    
     
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath($this->getName())));
     }     

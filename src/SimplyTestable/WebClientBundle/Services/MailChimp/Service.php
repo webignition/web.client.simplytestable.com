@@ -2,145 +2,114 @@
 namespace SimplyTestable\WebClientBundle\Services\MailChimp;
 
 use ZfrMailChimp\Client\MailChimpClient;
-use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
+use ZfrMailChimp\Exception\Ls\AlreadySubscribedException;
 
-class Service {
-    
+class Service
+{
     const LIST_MEMBERS_MAX_LIMIT = 100;
-    
+
     /**
-     *
-     * @var string
-     */
-    private $apiKey;
-    
-    
-    /**
-     *
-     * @var MailChimpClient 
+     * @var MailChimpClient
      */
     private $client;
-    
-    
+
     /**
      *
      * @var ListRecipientsService
      */
     private $listRecipientsService;
-    
-    
+
     /**
-     * 
-     * @param string $apiKey
+     * @param MailChimpClient $mailChimpClient
+     * @param ListRecipientsService $listRecipientsService
      */
-    public function __construct($apiKey, ListRecipientsService $listRecipientsService) {
-        $this->apiKey = $apiKey;
+    public function __construct(MailChimpClient $mailChimpClient, ListRecipientsService $listRecipientsService)
+    {
+        $this->client = $mailChimpClient;
         $this->listRecipientsService = $listRecipientsService;
-    }    
-    
-    
-    /**
-     * 
-     * @return MailChimpClient
-     */
-    public function getClient() {
-        if (is_null($this->client)) {
-            $this->client = new MailChimpClient($this->apiKey);
-        }
-        
-        return $this->client;
     }
-    
-    
+
     /**
-     * 
+     *
      * @param string $listName
      * @param string $email
-     * @return boolean
+     *
+     * @return bool
      */
-    public function listContains($listName, $email) {
-        return $this->listRecipientsService->get($listName)->contains($email);
-    }
-    
-    
-    /**
-     * 
-     * @param string $listName
-     * @param string $email
-     * @return boolean
-     */
-    public function subscribe($listName, $email) {        
-        if ($this->listContains($listName, $email)) {
+    public function subscribe($listName, $email)
+    {
+        $listRecipients = $this->listRecipientsService->get($listName);
+        if ($listRecipients->contains($email)) {
             return true;
         }
 
         try {
-            $this->getClient()->subscribe(array(
+            $this->client->subscribe([
                 'id' => $this->listRecipientsService->getListId($listName),
-                'email' => array(
+                'email' => [
                     'email' => $email
-                ),
+                ],
                 'double_optin' => false
-            ));
-        } catch (\ZfrMailChimp\Exception\Ls\AlreadySubscribedException $alreadySubscribedException) {
+            ]);
+        } catch (AlreadySubscribedException $alreadySubscribedException) {
         }
-        
-        return true;      
-    }
-    
-    
-    /**
-     * 
-     * @param string $listName
-     * @param string $email
-     * @return boolean
-     */
-    public function unsubscribe($listName, $email) {
-        if (!$this->listContains($listName, $email)) {
-            return true;
-        }
-   
-        $this->getClient()->unsubscribe(array(
-            'id' => $this->listRecipientsService->getListId($listName),
-            'email' => array(
-                'email' => $email
-            ),
-            'delete_member' => false
-        ));
-        
+
         return true;
     }
-    
-    
+
     /**
-     * 
      * @param string $listName
-     * @return array
+     * @param string $email
+     *
+     * @return bool
      */
-    public function retrieveMembers($listName) {
+    public function unsubscribe($listName, $email)
+    {
+        $listRecipients = $this->listRecipientsService->get($listName);
+        if (!$listRecipients->contains($email)) {
+            return true;
+        }
+
+        $this->client->unsubscribe([
+            'id' => $this->listRecipientsService->getListId($listName),
+            'email' => [
+                'email' => $email
+            ],
+            'delete_member' => false
+        ]);
+
+        return true;
+    }
+
+    /**
+     * @param string $listName
+     *
+     * @return string[]
+     */
+    public function retrieveMembers($listName)
+    {
         $listLength = null;
         $currentPage = 0;
-        $members = array();
-        
+        $members = [];
+
         while (is_null($listLength) || count($members) < $listLength) {
-            $response = $this->getClient()->getListMembers(array(
+            $response = $this->client->getListMembers([
                 'id' => $this->listRecipientsService->getListId($listName),
-                'opts' => array(
+                'opts' => [
                     'limit' => self::LIST_MEMBERS_MAX_LIMIT,
                     'start' => $currentPage
-                )
-            ));
-            
+                ]
+            ]);
+
             if (is_null($listLength)) {
                 $listLength = $response['total'];
             }
-            
+
             $currentPage++;
-            
+
             $members = array_merge($members, $response['data']);
         }
-        
+
         return $members;
-    }  
-    
+    }
 }

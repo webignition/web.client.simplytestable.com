@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Tests\Functional\Services\TestOptions\Adapter
 
 class JsStaticAnalysisOptionsTest extends ServiceTest {
 
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         $this->getRequestData()->set('js-static-analysis', '1');
         $this->getTaskTypeService()->setUserIsAuthenticated(true);

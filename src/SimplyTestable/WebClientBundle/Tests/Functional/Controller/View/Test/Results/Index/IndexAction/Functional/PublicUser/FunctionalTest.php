@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Test\Results
 
 abstract class FunctionalTest extends BaseFunctionalTest {
 
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         $this->setUser($this->getUserService()->getPublicUser());
     }

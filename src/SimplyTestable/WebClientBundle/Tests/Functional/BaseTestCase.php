@@ -35,7 +35,7 @@ abstract class BaseTestCase extends WebTestCase
      */
     private $application;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->client = static::createClient();
         $this->container = $this->client->getKernel()->getContainer();
@@ -356,7 +356,6 @@ abstract class BaseTestCase extends WebTestCase
         parent::tearDown();
 
         if (!is_null($this->container)) {
-            $this->container->get('doctrine')->getConnection()->rollback();
             $this->container->get('doctrine')->getConnection()->close();
         }
 

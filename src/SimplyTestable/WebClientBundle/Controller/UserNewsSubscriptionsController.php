@@ -2,67 +2,52 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Response;
+
 class UserNewsSubscriptionsController extends AbstractUserAccountController
-{   
-    const ONE_YEAR_IN_SECONDS = 31536000;    
-    
-    public function updateAction() {        
-        if (($notLoggedInResponse = $this->getNotLoggedInResponse()) instanceof \Symfony\Component\HttpFoundation\Response) {
+{
+    const ONE_YEAR_IN_SECONDS = 31536000;
+
+    public function updateAction()
+    {
+        if (($notLoggedInResponse = $this->getNotLoggedInResponse()) instanceof Response) {
             return $notLoggedInResponse;
         }
-        
+
+        $mailChimpListRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
+        $mailChimpService = $this->container->get('simplytestable.services.mailchimpservice');
+
+        /* @var EntityManagerInterface $entityManager */
+        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+
+        $user = $this->getUser();
+        $username = $user->getUsername();
+
         foreach (['announcements', 'updates'] as $listName) {
             $subscribeChoice = filter_var($this->get('request')->request->get($listName), FILTER_VALIDATE_BOOLEAN);
-            
-            if ($this->subscribeChoiceMatchesCurrentSubscription($listName, $this->getUser()->getUsername(), $subscribeChoice)) {
+
+            $listRecipients = $mailChimpListRecipientsService->get($listName);
+            $isSubscribed = $listRecipients->contains($username);
+
+            if ($subscribeChoice === $isSubscribed) {
                 continue;
             }
-            
-            $listRecipients = $this->getMailchimpListRecipientsService()->get($listName);
-            
+
+            $listRecipients = $mailChimpListRecipientsService->get($listName);
+
             if ($subscribeChoice === true) {
-                $this->getMailchimpService()->subscribe($listName, $this->getUser()->getUsername()); 
-                $listRecipients->addRecipient($this->getUser()->getUsername());
+                $mailChimpService->subscribe($listName, $username);
+                $listRecipients->addRecipient($username);
             } else {
-                $this->getMailchimpService()->unsubscribe($listName, $this->getUser()->getUsername());
-                $listRecipients->removeRecipient($this->getUser()->getUsername());
+                $mailChimpService->unsubscribe($listName, $username);
+                $listRecipients->removeRecipient($username);
             }
-            
-            $this->getMailchimpListRecipientsService()->persistAndFlush($listRecipients);
-        }               
-        
+
+            $entityManager->persist($listRecipients);
+            $entityManager->flush();
+        }
+
         return $this->redirect($this->generateUrl('view_user_account_index_index', array(), true));
     }
-    
-    
-    /**
-     * 
-     * @param string $listName
-     * @param string $email
-     * @param boolean $subscribeChoice
-     * @return boolean
-     */
-    private function subscribeChoiceMatchesCurrentSubscription($listName, $email, $subscribeChoice) {
-        return $subscribeChoice === $this->getMailchimpService()->listContains($listName, $email);
-    }
-    
-    
-    
-  
-    /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Services\MailChimp\Service
-     */
-    private function getMailchimpService() {
-        return $this->container->get('simplytestable.services.mailchimpservice');
-    }
-    
-    
-    /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService
-     */
-    private function getMailchimpListRecipientsService() {
-        return $this->container->get('simplytestable.services.mailchimp.listRecipients');
-    }        
 }

@@ -2,186 +2,120 @@
 namespace SimplyTestable\WebClientBundle\Services\MailChimp;
 
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\HttpKernel\Log\LoggerInterface as Logger;
+use Psr\Log\LoggerInterface;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 
-class ListRecipientsService {
-    
-    const ENTITY_NAME = 'SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients';       
-    
-    
-    /**
-     *
-     * @var Logger
-     */
-    private $logger;     
-    
-    /**
-     *
-     * @var EntityManager 
-     */
-    private $entityManager;    
-    
+class ListRecipientsService
+{
+    const EXCEPTION_LIST_NOT_KNOWN_MESSAGE = 'List "%s" is not known';
+    const EXCEPTION_LIST_NOT_KNOWN_CODE = 1;
+    const EXCEPTION_LIST_ID_NOT_KNOWN_MESSAGE = 'List id "%s" is not known';
+    const EXCEPTION_LIST_ID_NOT_KNOWN_CODE = 2;
 
     /**
-     *
-     * @var \Doctrine\ORM\EntityRepository
+     * @var LoggerInterface
      */
-    private $entityRepository;
-    
-    
+    private $logger;
+
     /**
-     *
+     * @var EntityManager
+     */
+    private $entityManager;
+
+    /**
      * @var array
      */
-    private $listNameToListIdMap = array();
-    
-    
+    private $listNameToListIdMap = [];
+
+    /**
+     * @param EntityManager $entityManager
+     * @param LoggerInterface $logger
+     * @param array $listIdentifiers
+     */
     public function __construct(
         EntityManager $entityManager,
-        Logger $logger          
+        LoggerInterface $logger,
+        array $listIdentifiers
     ) {
-        $this->entityManager = $entityManager; 
+        $this->entityManager = $entityManager;
         $this->logger = $logger;
-    }    
-    
-    
+        $this->listNameToListIdMap = $listIdentifiers;
+    }
+
     /**
+     * @param string $name
      *
-     * @return \Doctrine\ORM\EntityRepository
+     * @return bool
      */
-    public function getEntityRepository() {
-        if (is_null($this->entityRepository)) {
-            $this->entityRepository = $this->entityManager->getRepository(self::ENTITY_NAME);
-        }
-        
-        return $this->entityRepository;
-    }
-    
-    
-    /**
-     * 
-     * @param string $listId
-     * @return \SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService
-     */
-    public function removeList($listId) {
-        $entity = $this->getEntityRepository()->findOneBy(array(
-            'listId' => $listId            
-        ));
-        
-        if ($entity) {
-            $this->entityManager->remove($entity);
-            $this->entityManager->flush($entity);
-        }
-        
-        return $this;
-    }
-    
-    
-    /**
-     * 
-     * @param \SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients $listRecipients
-     * @return \SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService
-     */
-    public function persistAndFlush(ListRecipients $listRecipients) {
-        $this->entityManager->persist($listRecipients);
-        $this->entityManager->flush($listRecipients);
-        
-        return $this;
-    }
-    
-    
-    /**
-     * 
-     * @param string $name
-     * @param string $listId
-     * @return \SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService
-     */
-    public function addListIdentifier($name, $listId) {
-        $this->listNameToListIdMap[$name] = $listId;
-        return $this;
-    }
-    
-    
-    /**
-     * 
-     * @param string $name
-     * @return boolean
-     */
-    public function hasListIdentifier($name) {
+    public function hasListIdentifier($name)
+    {
         return array_key_exists($name, $this->listNameToListIdMap);
     }
-    
-    
+
     /**
-     * 
-     * @return array
-     */
-    public function getListNames() {
-        return array_keys($this->listNameToListIdMap);
-    }
-    
-    
-    /**
-     * 
      * @param string $name
+     *
      * @return string
+     *
      * @throws \DomainException
      */
-    public function getListId($name) {
+    public function getListId($name)
+    {
         if (!$this->hasListIdentifier($name)) {
-            throw new \DomainException('List "' . $name . '" is not known', 1);
+            throw new \DomainException(
+                sprintf(self::EXCEPTION_LIST_NOT_KNOWN_MESSAGE, $name),
+                self::EXCEPTION_LIST_NOT_KNOWN_CODE
+            );
         }
-        
+
         return $this->listNameToListIdMap[$name];
     }
-    
-    
+
     /**
-     * 
      * @param string $listId
+     *
      * @return string
+     *
      * @throws \DomainException
      */
-    public function getListName($listId) {
+    public function getListName($listId)
+    {
         if (!in_array($listId, $this->listNameToListIdMap)) {
-            throw new \DomainException('List id "' . $listId . '" is not known', 2);
+            throw new \DomainException(
+                sprintf(self::EXCEPTION_LIST_ID_NOT_KNOWN_MESSAGE, $listId),
+                self::EXCEPTION_LIST_ID_NOT_KNOWN_CODE
+            );
         }
-        
+
         return array_search($listId, $this->listNameToListIdMap);
     }
-    
-    
-    public function get($name) {
-        if (!$this->hasListIdentifier($name)) {
-            throw new \DomainException('List "' . $name . '" is not known', 1);
-        }
-        
-        if (!$this->has($this->listNameToListIdMap[$name])) {
-            $listRecipients = new ListRecipients();
-            $listRecipients->setListId($this->listNameToListIdMap[$name]);
-            
-            return $listRecipients;
-        }
-        
-        return $this->getEntityByListId($this->listNameToListIdMap[$name]);
-    }
-    
-    
+
     /**
-     * 
-     * @param string $listId
-     * @return \SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients|null
+     * @param string $name
+     *
+     * @return null|ListRecipients
      */
-    private function getEntityByListId($listId) {
-        return $this->getEntityRepository()->findOneBy(array(
+    public function get($name)
+    {
+        if (!$this->hasListIdentifier($name)) {
+            throw new \DomainException(
+                sprintf(self::EXCEPTION_LIST_NOT_KNOWN_MESSAGE, $name),
+                self::EXCEPTION_LIST_NOT_KNOWN_CODE
+            );
+        }
+
+        $listId = $this->listNameToListIdMap[$name];
+
+        $entityRepository = $this->entityManager->getRepository(ListRecipients::class);
+        $listRecipients = $entityRepository->findOneBy(array(
             'listId' => $listId
         ));
+
+        if (empty($listRecipients)) {
+            $listRecipients = new ListRecipients();
+            $listRecipients->setListId($listId);
+        }
+
+        return $listRecipients;
     }
-    
-    
-    private function has($listId) {
-        return !is_null($this->getEntityByListId($listId));
-    }
-    
 }
