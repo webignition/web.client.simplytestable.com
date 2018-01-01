@@ -2,7 +2,6 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Unit\Services\TaskOutput\ResultParser;
 
-use Guzzle\Service\Resource\Model;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser;
@@ -201,6 +200,4 @@ LIMIT 0, 8
             ],
         ];
     }
-
-    // [{"message":"Unknown error","class":"css-validation-exception-unknown","type":"error","context":"","ref":"http:\/\/herve-societe.be\/","line_number":0}]
 }
