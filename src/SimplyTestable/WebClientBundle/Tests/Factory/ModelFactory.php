@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Tests\Factory;
 
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
+use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\HtmlTextFileMessage;
 
 class ModelFactory
@@ -13,6 +14,12 @@ class ModelFactory
     const HTML_TEXT_FILE_MESSAGE_MESSAGE = 'message';
     const HTML_TEXT_FILE_MESSAGE_TYPE = 'type';
     const HTML_TEXT_FILE_MESSAGE_CLASS = 'class';
+    const CSS_TEXT_FILE_MESSAGE_CONTEXT = 'context';
+    const CSS_TEXT_FILE_MESSAGE_LINE_NUMBER = 'line_number';
+    const CSS_TEXT_FILE_MESSAGE_MESSAGE = 'message';
+    const CSS_TEXT_FILE_MESSAGE_REF = 'ref';
+    const CSS_TEXT_FILE_MESSAGE_TYPE = 'type';
+    const CSS_TEXT_FILE_MESSAGE_CLASS = 'class';
 
     /**
      * @param array $taskOutputValues
@@ -70,5 +77,53 @@ class ModelFactory
         }
 
         return $htmlTextFileMessage;
+    }
+
+    /**
+     * @param array $cssTextFileMessageValues
+     *
+     * @return CssTextFileMessage
+     */
+    public static function createCssTextFileMessage($cssTextFileMessageValues = [])
+    {
+        $cssTextFileMessage = new CssTextFileMessage();
+
+        if (isset($cssTextFileMessageValues[self::CSS_TEXT_FILE_MESSAGE_CONTEXT])) {
+            $cssTextFileMessage->setContext(
+                $cssTextFileMessageValues[self::CSS_TEXT_FILE_MESSAGE_CONTEXT]
+            );
+        }
+
+        if (isset($cssTextFileMessageValues[self::CSS_TEXT_FILE_MESSAGE_LINE_NUMBER])) {
+            $cssTextFileMessage->setLineNumber(
+                $cssTextFileMessageValues[self::CSS_TEXT_FILE_MESSAGE_LINE_NUMBER]
+            );
+        }
+
+        if (isset($cssTextFileMessageValues[self::CSS_TEXT_FILE_MESSAGE_MESSAGE])) {
+            $cssTextFileMessage->setMessage(
+                $cssTextFileMessageValues[self::CSS_TEXT_FILE_MESSAGE_MESSAGE]
+            );
+        }
+
+        if (isset($cssTextFileMessageValues[self::CSS_TEXT_FILE_MESSAGE_REF])) {
+            $cssTextFileMessage->setRef(
+                $cssTextFileMessageValues[self::CSS_TEXT_FILE_MESSAGE_REF]
+            );
+        }
+
+        if (isset($cssTextFileMessageValues[self::CSS_TEXT_FILE_MESSAGE_TYPE])) {
+            $cssTextFileMessage->setType(
+                $cssTextFileMessageValues[self::CSS_TEXT_FILE_MESSAGE_TYPE]
+            );
+        }
+
+        if (isset($cssTextFileMessageValues[self::CSS_TEXT_FILE_MESSAGE_CLASS])) {
+            $cssTextFileMessage->setClass(
+                $cssTextFileMessageValues[self::CSS_TEXT_FILE_MESSAGE_CLASS]
+            );
+        }
+
+        return $cssTextFileMessage;
     }
 }
