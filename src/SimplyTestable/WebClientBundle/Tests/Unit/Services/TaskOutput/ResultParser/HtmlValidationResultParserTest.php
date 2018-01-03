@@ -73,7 +73,7 @@ class HtmlValidationResultParserTest extends \PHPUnit_Framework_TestCase
                                 'lastLine' => 12,
                                 'lastColumn' => 13,
                                 'message' => 'An img element must have an alt attribute',
-                                'messageid' => 'html5',
+                                'messageId' => 'html5',
                                 'explanation' => 'foo',
                                 'type' => 'error',
                             ],
@@ -116,6 +116,27 @@ class HtmlValidationResultParserTest extends \PHPUnit_Framework_TestCase
                         ModelFactory::HTML_TEXT_FILE_MESSAGE_CLASS => 'html5',
                     ]),
                 ],
+            ],
+            'character encoding error' => [
+                'output' => ModelFactory::createTaskOutput([
+                    ModelFactory::TASK_OUTPUT_CONTENT => json_encode([
+                        'messages' => [
+                            [
+                                'message' => 'foo',
+                                'messageId' => 'character-encoding',
+                                'type' => 'error',
+                            ],
+                        ],
+                    ]),
+                ]),
+                'expectedResultGetErrors' => [
+                    ModelFactory::createHtmlTextFileMessage([
+                        ModelFactory::HTML_TEXT_FILE_MESSAGE_MESSAGE => 'foo',
+                        ModelFactory::HTML_TEXT_FILE_MESSAGE_TYPE => 'error',
+                        ModelFactory::HTML_TEXT_FILE_MESSAGE_CLASS => 'character-encoding',
+                    ]),
+                ],
+                'expectedResultGetWarnings' => [],
             ],
         ];
     }

@@ -55,8 +55,8 @@ class HtmlValidationResultParser extends ResultParser
             $message->setMessage($rawMessageObject['message']);
         }
 
-        if (isset($rawMessageObject['messageid'])) {
-            $message->setClass($rawMessageObject['messageid']);
+        if (isset($rawMessageObject['messageId'])) {
+            $message->setClass($rawMessageObject['messageId']);
         }
 
         $message->setType($rawMessageObject['type']);
