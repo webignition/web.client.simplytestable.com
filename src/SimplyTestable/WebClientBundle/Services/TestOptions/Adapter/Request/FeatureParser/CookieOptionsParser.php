@@ -1,14 +1,14 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser;
 
-class CookieOptionsParser extends OptionsParser {
-
-    private $requiredNonBlankFields = [
-        'name',
-        'value'
-    ];
-
-    public function getOptions() {
+class CookieOptionsParser extends OptionsParser
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function getOptions()
+    {
         $options = parent::getOptions();
 
         if (isset($options['cookies'])) {
@@ -26,19 +26,26 @@ class CookieOptionsParser extends OptionsParser {
         return $options;
     }
 
-
     /**
      * @param $cookie
+     *
      * @return bool
      */
-    private function containsRequiredNonBlankFields($cookie) {
-        foreach ($this->requiredNonBlankFields as $fieldName) {
-            if (!isset($cookie[$fieldName])) {
+    private function containsRequiredNonBlankFields($cookie)
+    {
+        $requiredNonBlankFields = [
+            'name',
+            'value'
+        ];
+
+        foreach ($requiredNonBlankFields as $fieldName) {
+            $value = trim($cookie[$fieldName]);
+
+            if (empty($value)) {
                 return false;
             }
-
-            return trim($cookie[$fieldName]) !== '';
         }
-    }
 
+        return true;
+    }
 }
