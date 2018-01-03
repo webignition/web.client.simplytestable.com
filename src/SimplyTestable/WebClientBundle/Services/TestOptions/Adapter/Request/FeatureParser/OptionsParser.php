@@ -3,50 +3,51 @@ namespace SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Fe
 
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class OptionsParser {
-    
+class OptionsParser
+{
     /**
-     *
      * @var ParameterBag
      */
-    private $requestData = array();
-
+    private $requestData = [];
 
     /**
      * @var string
      */
     private $formKey = null;
 
-
     /**
-     *
      * @var array
      */
-    private $namesAndDefaultValues= array();
+    private $namesAndDefaultValues= [];
 
     /**
-     *
      * @param ParameterBag $requestData
      */
-    public function setRequestData(ParameterBag $requestData) {
+    public function setRequestData(ParameterBag $requestData)
+    {
         $this->requestData = $requestData;
     }
-
 
     /**
      * @param string $formKey
      */
-    public function setFormKey($formKey) {
+    public function setFormKey($formKey)
+    {
         $this->formKey = $formKey;
     }
 
-
-    public function getOptions() {
-        $options = array();
+    /**
+     * @return array
+     */
+    public function getOptions()
+    {
+        $options = [];
 
         foreach ($this->requestData as $key => $value) {
+            $requestKeyMatchesFeatureKey = substr($key, 0, strlen($this->formKey)) === $this->formKey;
+            $isValidKey = array_key_exists($key, $this->namesAndDefaultValues);
 
-            if ($this->requestKeyMatchesFeatureKey($key) && array_key_exists($key, $this->namesAndDefaultValues)) {
+            if ($requestKeyMatchesFeatureKey && $isValidKey) {
                 switch (gettype($this->namesAndDefaultValues[$key])) {
                     case 'integer':
                         $options[$key] = (int)$value;
@@ -67,18 +68,22 @@ class OptionsParser {
         return $options;
     }
 
-
     /**
-     *
      * @param array $namesAndDefaultValues
      */
-    public function setNamesAndDefaultValues($namesAndDefaultValues) {
+    public function setNamesAndDefaultValues($namesAndDefaultValues)
+    {
         $this->namesAndDefaultValues = $namesAndDefaultValues;
     }
 
-
-    private function cleanRawValues($rawValues) {
-        $cleanedValues = array();
+    /**
+     * @param array $rawValues
+     *
+     * @return array
+     */
+    private function cleanRawValues($rawValues)
+    {
+        $cleanedValues = [];
 
         foreach ($rawValues as $key => $rawValue) {
             if (is_string($rawValue)) {
@@ -93,14 +98,4 @@ class OptionsParser {
 
         return $cleanedValues;
     }
-
-    /**
-     *
-     * @param string $requestKey
-     * @return boolean
-     */
-    private function requestKeyMatchesFeatureKey($requestKey) {
-        return substr($requestKey, 0, strlen($this->formKey)) == $this->formKey;
-    }
-        
 }

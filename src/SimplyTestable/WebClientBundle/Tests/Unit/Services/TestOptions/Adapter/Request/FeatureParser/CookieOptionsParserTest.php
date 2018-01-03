@@ -28,7 +28,7 @@ class CookieOptionsParserTest extends \PHPUnit_Framework_TestCase
      * @param ParameterBag $requestData
      * @param array $expectedOptions
      */
-    public function testFoo(ParameterBag $requestData, array $expectedOptions)
+    public function testGetOptions(ParameterBag $requestData, array $expectedOptions)
     {
         $this->cookieOptionsParser->setFormKey('cookies');
         $this->cookieOptionsParser->setRequestData($requestData);
