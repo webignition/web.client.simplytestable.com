@@ -3,32 +3,31 @@
 namespace SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser;
 
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
-use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
-use SimplyTestable\WebClientBundle\Model\TaskOutput\Message;
-use SimplyTestable\WebClientBundle\Model\TaskOutput\Error;
 
-class Factory {
-    
+class Factory
+{
     /**
-     *
-     * @var array 
+     * @var array
      */
     private $parsers;
-        
-    
-    public function __construct($parserConfiguration) {
+
+    /**
+     * @param $parserConfiguration
+     */
+    public function __construct($parserConfiguration)
+    {
         foreach ($parserConfiguration as $taskType => $parserDetail) {
             $this->parsers[$taskType] = new $parserDetail['class'];
         }
     }
-    
-    
+
     /**
+     * @param Output $output
      *
-     * @return ResultParser 
+     * @return ResultParser
      */
-    public function getParser(Output $output) {
+    public function getParser(Output $output)
+    {
         return $this->parsers[$output->getType()];
     }
-    
 }

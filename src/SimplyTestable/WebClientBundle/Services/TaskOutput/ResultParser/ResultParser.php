@@ -5,55 +5,64 @@ namespace SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 
-abstract class ResultParser {
-    
-    private $parsedResultCache = array();    
-    
-    
+abstract class ResultParser
+{
     /**
-     *
-     * @var Output 
+     * @var array
+     */
+    private $parsedResultCache = [];
+
+    /**
+     * @var Output
      */
     private $output;
-    
-    
+
     /**
      * @return Result
      */
-    public function getResult() {
+    abstract protected function buildResult();
+
+    /**
+     * @return Result
+     */
+    public function getResult()
+    {
         $cacheKey = md5($this->getOutput()->getContent());
-        
+
         if (!isset($this->parsedResultCache[$cacheKey])) {
             $this->parsedResultCache[$cacheKey] = $this->buildResult();
         }
-        
+
         return $this->parsedResultCache[$cacheKey];
-    }     
-    
-    
-    /**
-     *
-     * @param Output $output
-     * @return \SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory 
-     */
-    public function setOutput(Output $output) {
-        $this->output = $output;
-        return $this;
     }
-    
-    
+
     /**
-     *
+     * @param Output $output
+     */
+    public function setOutput(Output $output)
+    {
+        $this->output = $output;
+    }
+
+    /**
      * @return Output
      */
-    public function getOutput() {
+    protected function getOutput()
+    {
         return $this->output;
     }
-    
-    
+
     /**
-     * @return Result
+     * @param array $rawOutputObject
+     *
+     * @return bool
      */
-    abstract protected function buildResult();  
-    
+    protected function isFailedOutput($rawOutputObject)
+    {
+        if (!isset($rawOutputObject['messages'])) {
+            return false;
+        }
+
+        return $rawOutputObject['messages'][0]['type'] === 'error';
+    }
 }

@@ -4,53 +4,63 @@ namespace SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser;
 
 use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\HtmlTextFileMessage;
-use SimplyTestable\WebClientBundle\Entity\Task\Output;
+use SimplyTestable\WebClientBundle\Model\TaskOutput\TextFileMessage;
 
-class HtmlValidationResultParser extends ResultParser {        
-    
+class HtmlValidationResultParser extends ResultParser
+{
     /**
-     * @return Result
+     * {@inheritdoc}
      */
-    protected function buildResult() {        
+    protected function buildResult()
+    {
         $result = new Result();
-        
-        $rawOutputObject = json_decode($this->getOutput()->getContent());
-        
-        if (!isset($rawOutputObject->messages)) {
+
+        $rawOutputObject = json_decode($this->getOutput()->getContent(), true);
+
+        if (!isset($rawOutputObject['messages'])) {
             return $result;
-        }      
-        
-        foreach ($rawOutputObject->messages as $rawMessageObject) {
+        }
+
+        $messages = $rawOutputObject['messages'];
+
+        if (empty($messages)) {
+            return $result;
+        }
+
+        foreach ($messages as $rawMessageObject) {
             $result->addMessage($this->getMessageFromOutput($rawMessageObject));
         }
-        
+
         return $result;
     }
-    
-    
+
     /**
+     * @param array $rawMessageObject
      *
-     * @param \stdClass $rawMessageObject
-     * @return \SimplyTestable\WebClientBundle\Model\TaskOutput\TextFileMessage 
+     * @return TextFileMessage
      */
-    private function getMessageFromOutput(\stdClass $rawMessageObject) {
-        $propertyToMethodMap = array(
-            'lastColumn' => 'setColumnNumber',
-            'lastLine' => 'setLineNumber',
-            'message' => 'setMessage',
-            'messageId' => 'setClass'
-        );
-        
+    private function getMessageFromOutput(array $rawMessageObject)
+    {
         $message = new HtmlTextFileMessage();
-        $message->setType($rawMessageObject->type);
-        
-        foreach ($propertyToMethodMap as $property => $methodName) {
-            if (isset($rawMessageObject->$property)) {
-                $message->$methodName($rawMessageObject->$property);
-            }
+
+        if (isset($rawMessageObject['lastColumn'])) {
+            $message->setColumnNumber($rawMessageObject['lastColumn']);
         }
-        
+
+        if (isset($rawMessageObject['lastLine'])) {
+            $message->setLineNumber($rawMessageObject['lastLine']);
+        }
+
+        if (isset($rawMessageObject['message'])) {
+            $message->setMessage($rawMessageObject['message']);
+        }
+
+        if (isset($rawMessageObject['messageId'])) {
+            $message->setClass($rawMessageObject['messageId']);
+        }
+
+        $message->setType($rawMessageObject['type']);
+
         return $message;
     }
-    
 }
