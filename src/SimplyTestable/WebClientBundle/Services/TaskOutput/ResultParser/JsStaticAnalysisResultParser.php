@@ -77,20 +77,6 @@ class JsStaticAnalysisResultParser extends ResultParser
     }
 
     /**
-     * @param array $rawOutputObject
-     *
-     * @return bool
-     */
-    private function isFailedOutput($rawOutputObject)
-    {
-        if (!isset($rawOutputObject['messages'])) {
-            return false;
-        }
-
-        return $rawOutputObject['messages'][0]['type'] === 'error';
-    }
-
-    /**
      * @param array $rawOutput
      *
      * @return bool

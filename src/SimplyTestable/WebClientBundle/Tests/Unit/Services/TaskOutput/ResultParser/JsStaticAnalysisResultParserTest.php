@@ -4,7 +4,6 @@ namespace SimplyTestable\WebClientBundle\Tests\Unit\Services\TaskOutput\ResultPa
 
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
-use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser;
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser;
 use SimplyTestable\WebClientBundle\Tests\Factory\ModelFactory;
 

@@ -51,4 +51,18 @@ abstract class ResultParser
     {
         return $this->output;
     }
+
+    /**
+     * @param array $rawOutputObject
+     *
+     * @return bool
+     */
+    protected function isFailedOutput($rawOutputObject)
+    {
+        if (!isset($rawOutputObject['messages'])) {
+            return false;
+        }
+
+        return $rawOutputObject['messages'][0]['type'] === 'error';
+    }
 }

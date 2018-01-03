@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\HtmlTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage;
+use SimplyTestable\WebClientBundle\Model\TaskOutput\LinkIntegrityMessage;
 
 class ModelFactory
 {
@@ -31,6 +32,13 @@ class ModelFactory
     const JS_TEXT_FILE_MESSAGE_MESSAGE = 'message';
     const JS_TEXT_FILE_MESSAGE_TYPE = 'type';
     const JS_TEXT_FILE_MESSAGE_CLASS = 'class';
+
+    const LINK_INTEGRITY_MESSAGE_CONTEXT = 'context';
+    const LINK_INTEGRITY_MESSAGE_URL = 'url';
+    const LINK_INTEGRITY_MESSAGE_STATE = 'state';
+    const LINK_INTEGRITY_MESSAGE_MESSAGE = 'message';
+    const LINK_INTEGRITY_MESSAGE_TYPE = 'type';
+    const LINK_INTEGRITY_MESSAGE_CLASS = 'class';
 
     /**
      * @param array $taskOutputValues
@@ -190,5 +198,53 @@ class ModelFactory
         }
 
         return $jsTextFileMessage;
+    }
+
+    /**
+     * @param array $linkIntegrityMessageValues
+     *
+     * @return LinkIntegrityMessage
+     */
+    public static function createLinkIntegrityMessage($linkIntegrityMessageValues = [])
+    {
+        $linkIntegrityMessage = new LinkIntegrityMessage();
+
+        if (isset($linkIntegrityMessageValues[self::LINK_INTEGRITY_MESSAGE_CONTEXT])) {
+            $linkIntegrityMessage->setContext(
+                $linkIntegrityMessageValues[self::LINK_INTEGRITY_MESSAGE_CONTEXT]
+            );
+        }
+
+        if (isset($linkIntegrityMessageValues[self::LINK_INTEGRITY_MESSAGE_URL])) {
+            $linkIntegrityMessage->setUrl(
+                $linkIntegrityMessageValues[self::LINK_INTEGRITY_MESSAGE_URL]
+            );
+        }
+
+        if (isset($linkIntegrityMessageValues[self::LINK_INTEGRITY_MESSAGE_STATE])) {
+            $linkIntegrityMessage->setState(
+                $linkIntegrityMessageValues[self::LINK_INTEGRITY_MESSAGE_STATE]
+            );
+        }
+
+        if (isset($linkIntegrityMessageValues[self::LINK_INTEGRITY_MESSAGE_MESSAGE])) {
+            $linkIntegrityMessage->setMessage(
+                $linkIntegrityMessageValues[self::LINK_INTEGRITY_MESSAGE_MESSAGE]
+            );
+        }
+
+        if (isset($linkIntegrityMessageValues[self::LINK_INTEGRITY_MESSAGE_TYPE])) {
+            $linkIntegrityMessage->setType(
+                $linkIntegrityMessageValues[self::LINK_INTEGRITY_MESSAGE_TYPE]
+            );
+        }
+
+        if (isset($linkIntegrityMessageValues[self::LINK_INTEGRITY_MESSAGE_CLASS])) {
+            $linkIntegrityMessage->setClass(
+                $linkIntegrityMessageValues[self::LINK_INTEGRITY_MESSAGE_CLASS]
+            );
+        }
+
+        return $linkIntegrityMessage;
     }
 }
