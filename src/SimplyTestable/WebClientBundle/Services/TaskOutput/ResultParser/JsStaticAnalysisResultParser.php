@@ -4,7 +4,6 @@ namespace SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser;
 
 use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage;
-use SimplyTestable\WebClientBundle\Entity\Task\Output;
 
 class JsStaticAnalysisResultParser extends ResultParser
 {
@@ -15,28 +14,28 @@ class JsStaticAnalysisResultParser extends ResultParser
     {
         $result = new Result();
 
-        $rawOutputObject = json_decode($this->getOutput()->getContent());
+        $rawOutput = json_decode($this->getOutput()->getContent(), true);
 
-        if (empty($rawOutputObject)) {
+        if (empty($rawOutput)) {
             return $result;
         }
 
-        if ($this->isFailedOutput($rawOutputObject)) {
-            $result->addMessage($this->getMessageFromFailedOutput($rawOutputObject->messages[0]));
+        if ($this->isFailedOutput($rawOutput)) {
+            $result->addMessage($this->getMessageFromFailedOutput($rawOutput['messages'][0]));
 
             return $result;
         }
 
-        if (!$this->hasErrors($rawOutputObject)) {
+        if (!$this->hasErrors($rawOutput)) {
             return $result;
         }
 
-        foreach ($rawOutputObject as $jsSourceReference => $analysisOutput) {
+        foreach ($rawOutput as $jsSourceReference => $analysisOutput) {
             $context = ($this->isInlineJsOutputKey($jsSourceReference)) ? 'inline' : $jsSourceReference;
 
-            if ($this->hasResultEntries($analysisOutput)) {
-                foreach ($analysisOutput->entries as $entryObject) {
-                    $result->addMessage($this->getMessageFromEntryObject($entryObject, $context));
+            if (isset($analysisOutput['entries'])) {
+                foreach ($analysisOutput['entries'] as $entry) {
+                    $result->addMessage($this->getMessageFromEntryObject($entry, $context));
                 }
             } else {
                 if ($this->isFailureResult($analysisOutput)) {
@@ -49,66 +48,61 @@ class JsStaticAnalysisResultParser extends ResultParser
     }
 
     /**
-     * @param $outputMessage
+     * @param array $messageData
      *
      * @return JsTextFileMessage
      */
-    private function getMessageFromFailedOutput($outputMessage)
+    private function getMessageFromFailedOutput($messageData)
     {
         $message = new JsTextFileMessage();
         $message->setType('error');
-        $message->setMessage($outputMessage->message);
-        $message->setClass($outputMessage->messageId);
+        $message->setMessage($messageData['message']);
+        $message->setClass($messageData['messageId']);
 
         return $message;
     }
 
     /**
-     * @param \stdClass $analysisOutput
+     * @param array $analysisOutput
      *
      * @return bool
      */
-    private function isFailureResult(\stdClass $analysisOutput)
+    private function isFailureResult($analysisOutput)
     {
-        if (!isset($analysisOutput->statusLine)) {
+        if (!isset($analysisOutput['statusLine'])) {
             return false;
         }
 
-        return $analysisOutput->statusLine == 'failed';
+        return $analysisOutput['statusLine'] == 'failed';
     }
 
     /**
+     * @param array $rawOutputObject
      *
-     * @param \stdClass $analysisOutput
-     * @return boolean
+     * @return bool
      */
-    private function hasResultEntries(\stdClass $analysisOutput) {
-        return isset($analysisOutput->entries);
+    private function isFailedOutput($rawOutputObject)
+    {
+        if (!isset($rawOutputObject['messages'])) {
+            return false;
+        }
+
+        return $rawOutputObject['messages'][0]['type'] === 'error';
     }
 
-
     /**
+     * @param array $rawOutput
      *
-     * @param \stdClass $rawOutputObject
-     * @return boolean
+     * @return bool
      */
-    private function isFailedOutput(\stdClass $rawOutputObject) {
-        return isset($rawOutputObject->messages) && is_array($rawOutputObject->messages) && $rawOutputObject->messages[0]->type === 'error';
-    }
-
-
-    /**
-     *
-     * @param \stdClass $rawOutputObject
-     * @return boolean
-     */
-    private function hasErrors(\stdClass $rawOutputObject) {
-        foreach ($rawOutputObject as $jsSourceReference => $entriesObject) {
-            if (isset($entriesObject->statusLine) && $entriesObject->statusLine == 'failed') {
+    private function hasErrors($rawOutput)
+    {
+        foreach ($rawOutput as $jsSourceReference => $entries) {
+            if (isset($entries['statusLine']) && $entries['statusLine'] == 'failed') {
                 return true;
             }
 
-            if (count($entriesObject->entries)) {
+            if (count($entries['entries'])) {
                 return true;
             }
         }
@@ -116,42 +110,43 @@ class JsStaticAnalysisResultParser extends ResultParser
         return false;
     }
 
-
     /**
-     *
      * @param string $key
-     * @return boolean
+     *
+     * @return bool
      */
-    private function isInlineJsOutputKey($key) {
+    private function isInlineJsOutputKey($key)
+    {
         return preg_match('/[a-f0-9]{32}/i', $key) > 0;
     }
 
     /**
-     * @param \stdClass $entryObject
+     * @param array $entry
      * @param string $context
      *
      * @return JsTextFileMessage
      */
-    private function getMessageFromEntryObject(\stdClass $entryObject, $context)
+    private function getMessageFromEntryObject($entry, $context)
     {
         $message = new JsTextFileMessage();
         $message->setType('error');
         $message->setContext($context);
 
-        $message->setColumnNumber($entryObject->fragmentLine->columnNumber);
-        $message->setLineNumber($entryObject->fragmentLine->lineNumber);
-        $message->setMessage($entryObject->headerLine->errorMessage);
-        $message->setFragment($entryObject->fragmentLine->fragment);
+        $message->setColumnNumber($entry['fragmentLine']['columnNumber']);
+        $message->setLineNumber($entry['fragmentLine']['lineNumber']);
+        $message->setMessage($entry['headerLine']['errorMessage']);
+        $message->setFragment($entry['fragmentLine']['fragment']);
 
         return $message;
     }
 
     /**
-     * @param \stdClass $analysisOutput
+     * @param array $analysisOutput
+     * @param string $context
      *
      * @return JsTextFileMessage
      */
-    private function getFailureMEssageFromAnalysisOutput(\stdClass $analysisOutput, $context)
+    private function getFailureMessageFromAnalysisOutput($analysisOutput, $context)
     {
         $message = new JsTextFileMessage();
         $message->setType('error');
@@ -160,25 +155,25 @@ class JsStaticAnalysisResultParser extends ResultParser
         $message->setColumnNumber(0);
         $message->setLineNumber(0);
 
-        $message->setMessage($this->getMessageFromErrorReport($analysisOutput->errorReport));
-        $message->setFragment($analysisOutput->errorReport->reason);
+        $message->setMessage($this->getMessageFromErrorReport($analysisOutput['errorReport']));
+        $message->setFragment($analysisOutput['errorReport']['reason']);
 
         return $message;
     }
 
     /**
-     * @param \stdClass $errorReport
+     * @param array $errorReport
      *
      * @return mixed
      */
-    private function getMessageFromErrorReport(\stdClass $errorReport)
+    private function getMessageFromErrorReport($errorReport)
     {
-        if (isset($errorReport->statusCode)) {
-            return $errorReport->statusCode;
+        if (isset($errorReport['statusCode'])) {
+            return $errorReport['statusCode'];
         }
 
-        if (isset($errorReport->contentType)) {
-            return $errorReport->contentType;
+        if (isset($errorReport['contentType'])) {
+            return $errorReport['contentType'];
         }
 
         throw new \RuntimeException('Unexpected failure condition');
