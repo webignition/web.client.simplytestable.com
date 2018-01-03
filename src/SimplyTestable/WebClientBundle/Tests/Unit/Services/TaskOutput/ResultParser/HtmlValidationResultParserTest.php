@@ -99,7 +99,7 @@ class HtmlValidationResultParserTest extends \PHPUnit_Framework_TestCase
                                 'lastLine' => 12,
                                 'lastColumn' => 13,
                                 'message' => 'An img element must have an alt attribute',
-                                'messageid' => 'html5',
+                                'messageId' => 'html5',
                                 'explanation' => 'foo',
                                 'type' => 'warning',
                             ],
