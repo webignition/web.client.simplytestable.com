@@ -8,7 +8,7 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 class CssValidationResultParser extends ResultParser
 {
     /**
-     * @return Result
+     * {@inheritdoc}
      */
     protected function buildResult()
     {

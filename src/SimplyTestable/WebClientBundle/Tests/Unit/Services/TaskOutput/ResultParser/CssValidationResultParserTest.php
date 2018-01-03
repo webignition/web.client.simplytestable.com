@@ -46,14 +46,6 @@ class CssValidationResultParserTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-SELECT DISTINCT(TaskOutput.id), TaskOutput.output, TaskOutput.errorCount FROM `TaskOutput`
-LEFT JOIN Task ON Task.output_id = TaskOutput.id
-WHERE Task.tasktype_id = 2
-AND TaskOutput.output LIKE '{"messages"%'
-LIMIT 0, 8
-     */
-
-    /**
      * @return array
      */
     public function getResultDataProvider()

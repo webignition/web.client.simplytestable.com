@@ -9,7 +9,7 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\TextFileMessage;
 class HtmlValidationResultParser extends ResultParser
 {
     /**
-     * @return Result
+     * {@inheritdoc}
      */
     protected function buildResult()
     {
