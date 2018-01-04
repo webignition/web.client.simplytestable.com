@@ -66,12 +66,12 @@ class TestOptions
     }
 
     /**
-     * @param string $featureKey
-     * @param array $featureOptions
+     * @param string $name
+     * @param array $options
      */
-    public function addFeatureOptions($featureKey, $featureOptions)
+    public function setFeatureOptions($name, $options)
     {
-        $this->features[$featureKey] = $featureOptions;
+        $this->features[$name] = $options;
     }
 
     /**
@@ -215,15 +215,6 @@ class TestOptions
         if ($this->hasFeatureOptions($feature)) {
             unset($this->features[$feature]);
         }
-    }
-
-    /**
-     * @param string $name
-     * @param array $options
-     */
-    public function setFeatureOptions($name, $options)
-    {
-        $this->features[$name] = $options;
     }
 
     /**
