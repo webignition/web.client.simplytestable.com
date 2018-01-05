@@ -260,7 +260,7 @@ class RemoteTestService extends CoreApplicationService
      */
     public function cancel()
     {
-        return $this->cancelByTestProperties($this->getTest()->getTestId(), $this->getTest()->getWebsite());
+        return $this->cancelByTestProperties($this->test->getTestId(), $this->test->getWebsite());
     }
 
     /**
