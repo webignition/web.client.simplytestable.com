@@ -187,6 +187,8 @@ class RemoteTestService extends CoreApplicationService
 
     /**
      * @return bool
+     *
+     * @throws WebResourceException
      */
     public function isPublic()
     {
