@@ -3,13 +3,16 @@ namespace SimplyTestable\WebClientBundle\Services;
 
 use SimplyTestable\WebClientBundle\Model\User\Plan;
 
-class PlansService  {
-
+class PlansService
+{
     /**
      * @var float
      */
     private $priceModifier = 1;
 
+    /**
+     * @var array
+     */
     private $plansData = [];
 
     /**
@@ -17,31 +20,42 @@ class PlansService  {
      */
     private $plans = null;
 
-
     /**
      * @var bool
      */
     private $premiumOnly = false;
 
-
-    public function setPlansData($plans) {
+    /**
+     * @param $plans
+     */
+    public function setPlansData($plans)
+    {
         $this->plansData = $plans;
     }
-
 
     /**
      * @return PlansService
      */
-    public function listPremiumOnly() {
+    public function listPremiumOnly()
+    {
         $this->premiumOnly = true;
+
         return $this;
     }
 
+    /**
+     * @param float $priceModifier
+     */
+    public function setPriceModifier($priceModifier)
+    {
+        $this->priceModifier = $priceModifier;
+    }
 
     /**
      * @return Plan[]
      */
-    public function getList() {
+    public function getList()
+    {
         if (is_null($this->plans)) {
             $this->buildPlansList();
         }
@@ -57,8 +71,8 @@ class PlansService  {
         return $plans;
     }
 
-
-    private function buildPlansList() {
+    private function buildPlansList()
+    {
         $this->plans = [];
 
         foreach ($this->plansData as $planData) {
@@ -72,38 +86,23 @@ class PlansService  {
                 ]
             ]);
 
-            $plan->setPriceModifier($this->getPriceModifier());
+            $plan->setPriceModifier($this->priceModifier);
 
             $this->plans[$planData['name']] = $plan;
         }
     }
 
-
     /**
      * @param Plan $plan
+     *
      * @return bool
      */
-    private function includePlanInList(Plan $plan) {
+    private function includePlanInList(Plan $plan)
+    {
         if (!$this->premiumOnly) {
             return true;
         }
 
         return $plan->getAccountPlan()->getIsPremium();
-    }
-
-
-    /**
-     * @param float $priceModifier
-     */
-    public function setPriceModifier($priceModifier) {
-        $this->priceModifier = $priceModifier;
-    }
-
-
-    /**
-     * @return float
-     */
-    public function getPriceModifier() {
-        return $this->priceModifier;
     }
 }
