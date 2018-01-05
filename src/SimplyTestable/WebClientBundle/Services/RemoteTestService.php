@@ -172,7 +172,10 @@ class RemoteTestService extends CoreApplicationService
         }
 
         try {
-            return $this->get()->getOwners()->contains($this->getUser()->getUsername());
+            $remoteTest = $this->get();
+            $owners = $remoteTest->getOwners();
+
+            return $owners->contains($this->getUser()->getUsername());
         } catch (WebResourceException $webResourceException) {
             if ($webResourceException->getCode() == 403) {
                 return false;

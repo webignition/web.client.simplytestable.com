@@ -17,6 +17,9 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
      */
     private $test;
 
+    /**
+     * {@inheritdoc}
+     */
     protected function setUp()
     {
         parent::setUp();
