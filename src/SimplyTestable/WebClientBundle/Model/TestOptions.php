@@ -46,12 +46,17 @@ class TestOptions
     }
 
     /**
-     * @param string $testType
+     * @param string $testTypeKey
+     * @param mixed $testTypeDetails
      */
-    public function addTestType($testTypeKey, $testType)
+    public function addTestType($testTypeKey, $testTypeDetails)
     {
         if (!array_key_exists($testTypeKey, $this->testTypes)) {
-            $this->testTypes[$testTypeKey] = $testType;
+            if (is_array($testTypeDetails)) {
+                $this->testTypes[$testTypeKey] = $testTypeDetails['name'];
+            } else {
+                $this->testTypes[$testTypeKey] = $testTypeDetails;
+            }
         }
     }
 
@@ -66,24 +71,6 @@ class TestOptions
     }
 
     /**
-     * @param string $name
-     * @param array $options
-     */
-    public function setFeatureOptions($name, $options)
-    {
-        $this->features[$name] = $options;
-    }
-
-    /**
-     * @param string $testType
-     * @param array $testTypeOptions
-     */
-    public function addTestTypeOptions($testType, $testTypeOptions)
-    {
-        $this->testTypeOptions[$testType] = $testTypeOptions;
-    }
-
-    /**
      * @return bool
      */
     public function hasTestTypes()
@@ -91,29 +78,6 @@ class TestOptions
         return count($this->testTypes) > 0;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasFeatures()
-    {
-        return count($this->features) > 0;
-    }
-
-    /**
-     * @param string $testType
-     *
-     * @return bool
-     */
-    public function hasTestType($testType)
-    {
-        foreach ($this->testTypes as $testTypeKey => $testTypeDetails) {
-            if ($testTypeDetails['name'] == $testType) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 
     /**
      * @return array
@@ -130,6 +94,65 @@ class TestOptions
     }
 
     /**
+     * @param string $name
+     * @param array $options
+     */
+    public function setFeatureOptions($name, $options)
+    {
+        $this->features[$name] = $options;
+    }
+
+    /**
+     * @param string $feature
+     *
+     * @return array
+     */
+    public function getFeatureOptions($feature)
+    {
+        if ($this->hasFeatureOptions($feature)) {
+            return $this->features[$feature];
+        }
+
+        return [];
+    }
+
+    /**
+     * @param string $feature
+     */
+    public function removeFeatureOptions($feature)
+    {
+        if ($this->hasFeatureOptions($feature)) {
+            unset($this->features[$feature]);
+        }
+    }
+
+    /**
+     * @param string $feature
+     *
+     * @return bool
+     */
+    public function hasFeatureOptions($feature)
+    {
+        if (!isset($this->features[$feature])) {
+            return false;
+        }
+
+        if (!is_array($this->features[$feature])) {
+            return false;
+        }
+
+        return count($this->features[$feature]) > 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasFeatures()
+    {
+        return count($this->features) > 0;
+    }
+
+    /**
      * @return array
      */
     public function getFeatures()
@@ -141,6 +164,15 @@ class TestOptions
         }
 
         return $features;
+    }
+
+    /**
+     * @param string $testType
+     * @param array $testTypeOptions
+     */
+    public function addTestTypeOptions($testType, $testTypeOptions)
+    {
+        $this->testTypeOptions[$testType] = $testTypeOptions;
     }
 
     /**
@@ -173,48 +205,6 @@ class TestOptions
         }
 
         return [];
-    }
-
-    /**
-     * @param string $feature
-     *
-     * @return bool
-     */
-    public function hasFeatureOptions($feature)
-    {
-        if (!isset($this->features[$feature])) {
-            return false;
-        }
-
-        if (!is_array($this->features[$feature])) {
-            return false;
-        }
-
-        return count($this->features[$feature]) > 0;
-    }
-
-    /**
-     * @param string $feature
-     *
-     * @return array
-     */
-    public function getFeatureOptions($feature)
-    {
-        if ($this->hasFeatureOptions($feature)) {
-            return $this->features[$feature];
-        }
-
-        return [];
-    }
-
-    /**
-     * @param string $feature
-     */
-    public function removeFeatureOptions($feature)
-    {
-        if ($this->hasFeatureOptions($feature)) {
-            unset($this->features[$feature]);
-        }
     }
 
     /**
@@ -254,30 +244,14 @@ class TestOptions
     }
 
     /**
-     * @param string $testTypeKey
-     *
-     * @return string
-     */
-    public function getNameFromKey($testTypeKey)
-    {
-        foreach ($this->testTypeMap as $key => $value) {
-            if ($testTypeKey == $key) {
-                return $value;
-            }
-        }
-
-        return '';
-    }
-
-    /**
      * @return array
      */
     public function getAbsoluteTestTypes()
     {
         $absoluteTestTypes = [];
 
-        foreach ($this->availableTaskTypes as $testTypeKey => $testTypeName) {
-            if ($this->hasTestType($testTypeName)) {
+        foreach ($this->availableTaskTypes as $testTypeKey => $testType) {
+            if (isset($this->testTypes[$testTypeKey])) {
                 $absoluteTestTypes[$testTypeKey] = 1;
             } else {
                 $absoluteTestTypes[$testTypeKey] = 0;
@@ -290,7 +264,8 @@ class TestOptions
     /**
      * @return array
      */
-    public function getAbsoluteFeatures() {
+    public function getAbsoluteFeatures()
+    {
         $absoluteFeatures = [];
 
         foreach ($this->availableFeatures as $featureKey => $featureOptions) {
@@ -321,8 +296,12 @@ class TestOptions
             }
 
             foreach ($this->availableTaskTypes as $taskTypeKey => $taskTypeDetails) {
-                $optionsAsArray['test-type-options'][$taskTypeDetails['name']] =
-                    $this->getAbsoluteTestTypeOptions($taskTypeKey, false);
+                $taskTypeName = $taskTypeDetails['name'];
+
+                $optionsAsArray['test-type-options'][$taskTypeName] = $this->getAbsoluteTestTypeOptions(
+                    $taskTypeKey,
+                    false
+                );
             }
         }
 
