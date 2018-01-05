@@ -140,15 +140,26 @@ class Adapter
         }
     }
 
+    /**
+     * @param string $taskTypeOption
+     *
+     * @return null|string
+     */
     private function getTaskTypeKeyFromTaskTypeOption($taskTypeOption)
     {
+        $matchingTaskTypeKey = null;
+
         foreach ($this->availableTaskTypes as $taskTypeKey => $taskTypeName) {
+            if (!empty($matchingTaskTypeKey)) {
+                continue;
+            }
+
             if (substr($taskTypeOption, 0, strlen($taskTypeKey)) == $taskTypeKey) {
-                return $taskTypeKey;
+                $matchingTaskTypeKey = $taskTypeKey;
             }
         }
 
-        return null;
+        return $matchingTaskTypeKey;
     }
 
     private function populateTestOptionsFromRequestData()
@@ -162,7 +173,7 @@ class Adapter
             $featureOptionsParser = $this->getFeatureOptionsParser($featureKey);
             $featureOptionsParser->setRequestData($this->requestData);
             $featureOptionsParser->setNamesAndDefaultValues($this->namesAndDefaultValues);
-            $featureOptionsParser->setFormKey($this->getFormKeyFromFeatureKey($featureKey));
+            $featureOptionsParser->setFormKey($this->availableFeatures[$featureKey]['form_key']);
 
             $this->testOptions->setFeatureOptions($featureKey, $featureOptionsParser->getOptions());
         }
@@ -190,20 +201,6 @@ class Adapter
         }
 
         return $this->featureOptionsParsers['default'];
-    }
-
-    /**
-     * @param $featureKey
-     *
-     * @return mixed
-     */
-    private function getFormKeyFromFeatureKey($featureKey)
-    {
-        if (!isset($this->availableFeatures[$featureKey])) {
-            return null;
-        }
-
-        return $this->availableFeatures[$featureKey]['form_key'];
     }
 
     /**
@@ -248,8 +245,9 @@ class Adapter
         $testTypeOptions = [];
 
         foreach ($this->requestData as $key => $value) {
-            if ($this->requestKeyMatchesTestTypeKey($key, $testTypeKey) && array_key_exists($key, $this->namesAndDefaultValues)) {
+            $requestKeyMatchesTestTypeKey = $this->requestKeyMatchesTestTypeKey($key, $testTypeKey);
 
+            if ($requestKeyMatchesTestTypeKey && array_key_exists($key, $this->namesAndDefaultValues)) {
                 switch (gettype($this->namesAndDefaultValues[$key])) {
                     case 'integer':
                         $testTypeOptions[$key] = (int)$value;
