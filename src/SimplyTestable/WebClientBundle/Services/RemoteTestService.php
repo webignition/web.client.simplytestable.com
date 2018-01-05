@@ -331,8 +331,8 @@ class RemoteTestService extends CoreApplicationService
     public function getRecent($limit = 3)
     {
         $requestUrl = $this->getUrl('tests_list', [
-                'limit' => $limit,
-                'offset' => 0
+            'limit' => $limit,
+            'offset' => 0
         ]);
 
         $requestUrl .= '?' . http_build_query([
@@ -444,6 +444,8 @@ class RemoteTestService extends CoreApplicationService
     }
 
     /**
+     * @param Request $request
+     *
      * @return TestList
      */
     private function getList(Request $request)
