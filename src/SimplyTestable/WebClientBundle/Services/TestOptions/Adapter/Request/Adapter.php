@@ -5,66 +5,54 @@ use SimplyTestable\WebClientBundle\Model\TestOptions;
 use SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser\OptionsParser;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class Adapter {
-
+class Adapter
+{
     /**
      * @var OptionsParser[]
      */
     private $featureOptionsParsers;
 
     /**
-     *
      * @var ParameterBag
      */
-    private $requestData = array();
-
+    private $requestData = [];
 
     /**
-     *
      * @var array
      */
-    private $availableTaskTypes = array();
-
+    private $availableTaskTypes = [];
 
     /**
-     *
      * @var array
      */
-    private $availableFeatures = array();
-
+    private $availableFeatures = [];
 
     /**
-     *
      * @var array
      */
-    private $namesAndDefaultValues= array();
-
+    private $namesAndDefaultValues= [];
 
     /**
-     *
      * @var array
      */
-    private $invertOptionKeys = array();
+    private $invertOptionKeys = [];
 
     /**
-     *
      * @var boolean
      */
     private $invertInvertableOptions = false;
 
-
     /**
-     *
      * @var TestOptions
      */
     private $testOptions = null;
-
 
     /**
      * @param OptionsParser $parser
      * @param null|string $featureKey
      */
-    public function addFeatureOptionsParser(OptionsParser $parser, $featureKey = null) {
+    public function addFeatureOptionsParser(OptionsParser $parser, $featureKey = null)
+    {
         if (is_null($featureKey)) {
             $featureKey = 'default';
         }
@@ -72,67 +60,59 @@ class Adapter {
         $this->featureOptionsParsers[$featureKey] = $parser;
     }
 
-
-
     /**
-     *
      * @param ParameterBag $requestData
      */
-    public function setRequestData(ParameterBag $requestData) {
+    public function setRequestData(ParameterBag $requestData)
+    {
         $this->requestData = $requestData;
     }
 
-
     /**
-     *
      * @param array $namesAndDefaultValues
      */
-    public function setNamesAndDefaultValues($namesAndDefaultValues) {
+    public function setNamesAndDefaultValues($namesAndDefaultValues)
+    {
         $this->namesAndDefaultValues = $namesAndDefaultValues;
     }
 
-
     /**
-     *
      * @param array $availableTaskTypes
      */
-    public function setAvailableTaskTypes($availableTaskTypes) {
+    public function setAvailableTaskTypes($availableTaskTypes)
+    {
         $this->availableTaskTypes = $availableTaskTypes;
     }
 
-
     /**
-     *
      * @param array $featuresDefinition
      */
-    public function setAvailableFeatures($featuresDefinition) {
+    public function setAvailableFeatures($featuresDefinition)
+    {
         $this->availableFeatures = $featuresDefinition;
     }
 
-
     /**
-     *
      * @param array $invertOptionKeys
      */
-    public function setInvertOptionKeys($invertOptionKeys) {
+    public function setInvertOptionKeys($invertOptionKeys)
+    {
         $this->invertOptionKeys = $invertOptionKeys;
     }
 
-
     /**
-     *
      * @param boolean $invertInvertableOptions
      */
-    public function setInvertInvertableOptions($invertInvertableOptions) {
+    public function setInvertInvertableOptions($invertInvertableOptions)
+    {
         $this->invertInvertableOptions = $invertInvertableOptions;
     }
 
-
     /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Model\TestOptions
+     * @return TestOptions
      */
-    public function getTestOptions() {
+    public function getTestOptions()
+    {
         if (is_null($this->testOptions)) {
             $this->populateTestOptionsFromRequestData();
         }
@@ -144,7 +124,8 @@ class Adapter {
         return $this->testOptions;
     }
 
-    private function invertInvertableOptions() {
+    private function invertInvertableOptions()
+    {
         foreach ($this->invertOptionKeys as $invertOptionKey) {
             $taskTypeKey = $this->getTaskTypeKeyFromTaskTypeOption($invertOptionKey);
             $testTypeOptions = $this->testOptions->getTestTypeOptions($taskTypeKey);
@@ -159,20 +140,30 @@ class Adapter {
         }
     }
 
-    private function getTaskTypeKeyFromTaskTypeOption($taskTypeOption) {
+    /**
+     * @param string $taskTypeOption
+     *
+     * @return null|string
+     */
+    private function getTaskTypeKeyFromTaskTypeOption($taskTypeOption)
+    {
+        $matchingTaskTypeKey = null;
+
         foreach ($this->availableTaskTypes as $taskTypeKey => $taskTypeName) {
+            if (!empty($matchingTaskTypeKey)) {
+                continue;
+            }
+
             if (substr($taskTypeOption, 0, strlen($taskTypeKey)) == $taskTypeKey) {
-                return $taskTypeKey;
+                $matchingTaskTypeKey = $taskTypeKey;
             }
         }
 
-        return null;
+        return $matchingTaskTypeKey;
     }
 
-
-
-
-    private function populateTestOptionsFromRequestData() {
+    private function populateTestOptionsFromRequestData()
+    {
         $this->testOptions = new TestOptions();
         $this->testOptions->setAvailableTaskTypes($this->availableTaskTypes);
         $this->testOptions->setAvailableFeatures($this->availableFeatures);
@@ -182,7 +173,7 @@ class Adapter {
             $featureOptionsParser = $this->getFeatureOptionsParser($featureKey);
             $featureOptionsParser->setRequestData($this->requestData);
             $featureOptionsParser->setNamesAndDefaultValues($this->namesAndDefaultValues);
-            $featureOptionsParser->setFormKey($this->getFormKeyFromFeatureKey($featureKey));
+            $featureOptionsParser->setFormKey($this->availableFeatures[$featureKey]['form_key']);
 
             $this->testOptions->setFeatureOptions($featureKey, $featureOptionsParser->getOptions());
         }
@@ -198,12 +189,13 @@ class Adapter {
         }
     }
 
-
     /**
-     * @param $featureKey
+     * @param string $featureKey
+     *
      * @return OptionsParser
      */
-    private function getFeatureOptionsParser($featureKey) {
+    private function getFeatureOptionsParser($featureKey)
+    {
         if (isset($this->featureOptionsParsers[$featureKey])) {
             return $this->featureOptionsParsers[$featureKey];
         }
@@ -211,21 +203,12 @@ class Adapter {
         return $this->featureOptionsParsers['default'];
     }
 
-    private function getFormKeyFromFeatureKey($featureKey) {
-        if (!isset($this->availableFeatures[$featureKey])) {
-            return null;
-        }
-
-        return $this->availableFeatures[$featureKey]['form_key'];
-    }
-
-
     /**
-     *
      * @return array
      */
-    private function parseTestTypes() {
-        $testTypes = array();
+    private function parseTestTypes()
+    {
+        $testTypes = [];
 
         foreach ($this->availableTaskTypes as $testTypeKey => $testTypeName) {
             if (filter_var($this->requestData->get($testTypeKey), FILTER_VALIDATE_BOOLEAN)) {
@@ -236,13 +219,12 @@ class Adapter {
         return $testTypes;
     }
 
-
     /**
-     *
      * @return array
      */
-    private function parseFeatures() {
-        $features = array();
+    private function parseFeatures()
+    {
+        $features = [];
 
         foreach ($this->availableFeatures as $featureKey => $featureOptions) {
             if (isset($featureOptions['enabled']) && $featureOptions['enabled'] === true) {
@@ -253,18 +235,19 @@ class Adapter {
         return $features;
     }
 
-
     /**
-     *
      * @param string $testTypeKey
+     *
      * @return array
      */
-    private function parseTestTypeOptions($testTypeKey) {
-        $testTypeOptions = array();
+    private function parseTestTypeOptions($testTypeKey)
+    {
+        $testTypeOptions = [];
 
         foreach ($this->requestData as $key => $value) {
-            if ($this->requestKeyMatchesTestTypeKey($key, $testTypeKey) && array_key_exists($key, $this->namesAndDefaultValues)) {
+            $requestKeyMatchesTestTypeKey = $this->requestKeyMatchesTestTypeKey($key, $testTypeKey);
 
+            if ($requestKeyMatchesTestTypeKey && array_key_exists($key, $this->namesAndDefaultValues)) {
                 switch (gettype($this->namesAndDefaultValues[$key])) {
                     case 'integer':
                         $testTypeOptions[$key] = (int)$value;
@@ -272,7 +255,7 @@ class Adapter {
 
                     case 'array':
                         $rawValues = (is_string($value)) ? explode("\n", $value) : $value;
-                        $cleanedValues = array();
+                        $cleanedValues = [];
                         foreach ($rawValues as $rawValue) {
                             $rawValue = trim($rawValue);
                             if ($rawValue != '') {
@@ -293,19 +276,18 @@ class Adapter {
         return $testTypeOptions;
     }
 
-
     /**
-     *
      * @param string $requestKey
      * @param string $testTypeKey
-     * @return boolean
+     *
+     * @return bool
      */
-    private function requestKeyMatchesTestTypeKey($requestKey, $testTypeKey) {
+    private function requestKeyMatchesTestTypeKey($requestKey, $testTypeKey)
+    {
         if ($requestKey == $testTypeKey) {
             return false;
         }
 
         return substr($requestKey, 0, strlen($testTypeKey)) == $testTypeKey;
     }
-
 }
