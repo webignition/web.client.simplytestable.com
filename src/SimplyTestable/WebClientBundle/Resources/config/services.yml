@@ -141,8 +141,6 @@ services:
 
   simplytestable.services.documentationurlcheckerservice:
     class:  SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService
-    arguments:
-        webResourceService: "@simplytestable.services.webresourceservice"
 
   simplytestable.services.mailchimp.client:
     class: ZfrMailChimp\Client\MailChimpClient
