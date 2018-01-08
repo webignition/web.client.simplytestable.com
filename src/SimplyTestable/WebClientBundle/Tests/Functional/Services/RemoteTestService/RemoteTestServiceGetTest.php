@@ -108,11 +108,6 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
 
     public function testGetSuccess()
     {
-        $httpHistoryPlugin = new HistoryPlugin();
-
-        $httpClientService = $this->getHttpClientService();
-        $httpClientService->get()->addSubscriber($httpHistoryPlugin);
-
         $this->setHttpFixtures([
             Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode([
                 'id' => 1,
@@ -131,7 +126,7 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
 
         $this->assertInstanceOf(RemoteTest::class, $remoteTest);
 
-        $lastRequest = $httpHistoryPlugin->getLastRequest();
+        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
 
         $this->assertEquals(
             'http://null/job/http%3A%2F%2Fexample.com%2F/1/',

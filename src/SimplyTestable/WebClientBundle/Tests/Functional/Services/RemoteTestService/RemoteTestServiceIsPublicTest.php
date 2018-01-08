@@ -32,17 +32,17 @@ class RemoteTestServiceIsPublicTest extends AbstractRemoteTestServiceTest
      * @dataProvider isPublicDataProvider
      *
      * @param array $httpFixtures
-     * @param bool $expectedAuthenticateResult
+     * @param bool $expectedIsPublic
      *
      * @throws WebResourceException
      */
-    public function testIsPublic($httpFixtures, $expectedAuthenticateResult)
+    public function testIsPublic($httpFixtures, $expectedIsPublic)
     {
         $this->setHttpFixtures($httpFixtures);
 
         $this->remoteTestService->setUser($this->user);
 
-        $this->assertEquals($expectedAuthenticateResult, $this->remoteTestService->isPublic());
+        $this->assertEquals($expectedIsPublic, $this->remoteTestService->isPublic());
     }
 
     /**
@@ -57,7 +57,7 @@ class RemoteTestServiceIsPublicTest extends AbstractRemoteTestServiceTest
                         'is_public' => false,
                     ]))
                 ],
-                'expectedAuthenticateResult' => false,
+                'expectedIsPublic' => false,
             ],
             'is public' => [
                 'httpFixtures' => [
@@ -65,7 +65,7 @@ class RemoteTestServiceIsPublicTest extends AbstractRemoteTestServiceTest
                         'is_public' => true,
                     ]))
                 ],
-                'expectedAuthenticateResult' => true,
+                'expectedIsPublic' => true,
             ],
         ];
     }

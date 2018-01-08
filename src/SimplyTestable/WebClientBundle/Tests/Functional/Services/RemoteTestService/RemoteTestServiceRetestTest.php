@@ -6,7 +6,7 @@ use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use webignition\NormalisedUrl\NormalisedUrl;
 
-class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
+class RemoteTestServiceRetestTest extends AbstractRemoteTestServiceTest
 {
     /**
      * @var Test
@@ -33,26 +33,14 @@ class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
         $this->remoteTestService->setUser($this->user);
     }
 
-    public function testLock()
+    public function testRetest()
     {
-        $this->remoteTestService->lock();
+        $this->remoteTestService->retest($this->test->getTestId(), $this->test->getWebsite());
 
         $lastRequest = $this->httpHistoryPlugin->getLastRequest();
 
         $this->assertEquals(
-            'http://null/job/http%3A%2F%2Fexample.com%2F/1/set-private/',
-            $lastRequest->getUrl()
-        );
-    }
-
-    public function testUnlock()
-    {
-        $this->remoteTestService->unlock();
-
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
-
-        $this->assertEquals(
-            'http://null/job/http%3A%2F%2Fexample.com%2F/1/set-public/',
+            'http://null/job/http%3A%2F%2Fexample.com%2F/1/re-test/',
             $lastRequest->getUrl()
         );
     }

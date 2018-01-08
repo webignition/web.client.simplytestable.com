@@ -3,29 +3,10 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestService;
 
 use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\History\HistoryPlugin;
 use SimplyTestable\WebClientBundle\Model\TestList;
 
 class RemoteTestServiceGetListTest extends AbstractRemoteTestServiceTest
 {
-    /**
-     * @var HistoryPlugin
-     */
-    private $httpHistoryPlugin;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->httpHistoryPlugin = new HistoryPlugin();
-
-        $httpClientService = $this->getHttpClientService();
-        $httpClientService->get()->addSubscriber($this->httpHistoryPlugin);
-    }
-
     public function testGetCurrentWebResourceException()
     {
         $this->setHttpFixtures([

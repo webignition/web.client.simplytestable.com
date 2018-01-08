@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestService;
 
+use Guzzle\Plugin\History\HistoryPlugin;
 use ReflectionClass;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Model\User;
@@ -21,6 +22,11 @@ abstract class AbstractRemoteTestServiceTest extends BaseSimplyTestableTestCase
     protected $user;
 
     /**
+     * @var HistoryPlugin
+     */
+    protected $httpHistoryPlugin;
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp()
@@ -32,6 +38,11 @@ abstract class AbstractRemoteTestServiceTest extends BaseSimplyTestableTestCase
         );
 
         $this->user = new User('user@example.com');
+
+        $this->httpHistoryPlugin = new HistoryPlugin();
+
+        $httpClientService = $this->getHttpClientService();
+        $httpClientService->get()->addSubscriber($this->httpHistoryPlugin);
     }
 
     /**
