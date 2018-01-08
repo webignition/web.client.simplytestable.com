@@ -383,19 +383,31 @@ class RemoteTestService extends CoreApplicationService
     {
         $requestUrl = $this->getUrl('tests_list_websites');
 
-        $query = array(
-            'exclude-states' => array(
+        $query = [
+            'exclude-states' => [
                 'cancelled',
                 'rejected'
-            ),
+            ],
             'exclude-current' => 1
-        );
+        ];
 
         $requestUrl .= '?' . http_build_query($query);
 
         $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
 
-        return $this->getWebsitesList($request);
+        $this->addAuthorisationToRequest($request);
+
+        try {
+            /* @var $responseDocument JsonDocument */
+            $responseDocument = $this->webResourceService->get($request);
+            $list = json_decode($responseDocument->getContent());
+        } catch (CurlException $curlException) {
+            return [];
+        } catch (WebResourceException $webResourceServiceException) {
+            return [];
+        }
+
+        return $list;
     }
 
     /**
@@ -472,28 +484,6 @@ class RemoteTestService extends CoreApplicationService
         }
 
         return $count;
-    }
-
-    /**
-     * @param Request $request
-     *
-     * @return array
-     */
-    private function getWebsitesList(Request $request)
-    {
-        $this->addAuthorisationToRequest($request);
-
-        try {
-            /* @var $responseDocument JsonDocument */
-            $responseDocument = $this->webResourceService->get($request);
-            $list = json_decode($responseDocument->getContent());
-        } catch (CurlException $curlException) {
-            return [];
-        } catch (WebResourceException $webResourceServiceException) {
-            return [];
-        }
-
-        return $list;
     }
 
     /**
