@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestService;
 
 use Guzzle\Http\Message\Response;
+use Guzzle\Plugin\History\HistoryPlugin;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use webignition\NormalisedUrl\NormalisedUrl;
@@ -16,6 +17,11 @@ class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
     private $test;
 
     /**
+     * @var HistoryPlugin
+     */
+    private $httpHistoryPlugin;
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp()
@@ -27,6 +33,11 @@ class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
         $this->test->setWebsite(new NormalisedUrl('http://example.com/'));
 
         $this->setRemoteTestServiceTest($this->test);
+
+        $this->httpHistoryPlugin = new HistoryPlugin();
+
+        $httpClientService = $this->getHttpClientService();
+        $httpClientService->get()->addSubscriber($this->httpHistoryPlugin);
     }
 
     public function testCancel()
@@ -40,6 +51,13 @@ class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
         $response = $this->remoteTestService->cancel();
 
         $this->assertInstanceOf(WebResource::class, $response);
+
+        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
+
+        $this->assertEquals(
+            'http://null/job/http%3A%2F%2Fexample.com%2F/1/cancel/',
+            $lastRequest->getUrl()
+        );
     }
 
     public function testCancelByTestProperties()
@@ -53,5 +71,12 @@ class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
         $response = $this->remoteTestService->cancelByTestProperties(2, 'http://foo.example.com');
 
         $this->assertInstanceOf(WebResource::class, $response);
+
+        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
+
+        $this->assertEquals(
+            'http://null/job/http%3A%2F%2Ffoo.example.com/2/cancel/',
+            $lastRequest->getUrl()
+        );
     }
 }

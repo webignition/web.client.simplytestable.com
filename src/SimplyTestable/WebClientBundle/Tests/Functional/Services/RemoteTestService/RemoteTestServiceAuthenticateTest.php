@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestService;
 
 use Guzzle\Http\Message\Response;
+use Guzzle\Plugin\History\HistoryPlugin;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use webignition\NormalisedUrl\NormalisedUrl;
@@ -13,6 +14,11 @@ class RemoteTestServiceAuthenticateTest extends AbstractRemoteTestServiceTest
      * @var Test
      */
     private $test;
+
+    /**
+     * @var HistoryPlugin
+     */
+    private $httpHistoryPlugin;
 
     /**
      * {@inheritdoc}
@@ -26,6 +32,11 @@ class RemoteTestServiceAuthenticateTest extends AbstractRemoteTestServiceTest
         $this->test->setWebsite(new NormalisedUrl('http://example.com/'));
 
         $this->setRemoteTestServiceTest($this->test);
+
+        $this->httpHistoryPlugin = new HistoryPlugin();
+
+        $httpClientService = $this->getHttpClientService();
+        $httpClientService->get()->addSubscriber($this->httpHistoryPlugin);
     }
 
     public function testAuthenticateDirectOwner()
@@ -51,6 +62,13 @@ class RemoteTestServiceAuthenticateTest extends AbstractRemoteTestServiceTest
         $this->remoteTestService->setUser($this->user);
 
         $this->assertEquals($expectedAuthenticateResult, $this->remoteTestService->authenticate());
+
+        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
+
+        $this->assertEquals(
+            'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+            $lastRequest->getUrl()
+        );
     }
 
     /**

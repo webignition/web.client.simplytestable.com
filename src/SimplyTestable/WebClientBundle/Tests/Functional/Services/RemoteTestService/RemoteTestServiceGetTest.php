@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestSer
 
 use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Message\Response;
+use Guzzle\Plugin\History\HistoryPlugin;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
@@ -107,11 +108,17 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
 
     public function testGetSuccess()
     {
+        $httpHistoryPlugin = new HistoryPlugin();
+
+        $httpClientService = $this->getHttpClientService();
+        $httpClientService->get()->addSubscriber($httpHistoryPlugin);
+
         $this->setHttpFixtures([
             Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode([
                 'id' => 1,
             ])),
         ]);
+
         $this->remoteTestService->setUser($this->user);
 
         $test = new Test();
@@ -123,5 +130,12 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
         $remoteTest = $this->remoteTestService->get();
 
         $this->assertInstanceOf(RemoteTest::class, $remoteTest);
+
+        $lastRequest = $httpHistoryPlugin->getLastRequest();
+
+        $this->assertEquals(
+            'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+            $lastRequest->getUrl()
+        );
     }
 }
