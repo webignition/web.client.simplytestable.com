@@ -15,7 +15,7 @@ class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
      *
      * @param array $httpFixtures
      * @param string|null $expectedRequestUrl
-     * @param RemoteTest\null $expectedLatestTest
+     * @param RemoteTest $expectedLatestTest
      */
     public function testRetrieveLatest(
         array $httpFixtures,
