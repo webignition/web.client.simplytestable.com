@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestSer
 use Guzzle\Plugin\History\HistoryPlugin;
 use ReflectionClass;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
@@ -55,5 +56,18 @@ abstract class AbstractRemoteTestServiceTest extends BaseSimplyTestableTestCase
         $reflectionProperty = $reflectionClass->getProperty('test');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($this->remoteTestService, $test);
+    }
+
+    /**
+     * @return RemoteTest $test
+     */
+    protected function getRemoteTestServiceRemoteTest()
+    {
+        $reflectionClass = new ReflectionClass(RemoteTestService::class);
+
+        $reflectionProperty = $reflectionClass->getProperty('remoteTest');
+        $reflectionProperty->setAccessible(true);
+
+        return $reflectionProperty->getValue($this->remoteTestService);
     }
 }
