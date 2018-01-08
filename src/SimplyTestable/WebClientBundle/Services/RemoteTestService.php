@@ -59,13 +59,10 @@ class RemoteTestService extends CoreApplicationService
      */
     public function start($canonicalUrl, TestOptions $testOptions, $testType = 'full site')
     {
-        if ($this->hasCustomCookies($testOptions)) {
-            $this->setCustomCookieDomain(
-                $testOptions,
-                $this->getCookieDomain($canonicalUrl),
-                '/'
-            );
-        }
+        $this->setCustomCookieDomain(
+            $testOptions,
+            $this->getCookieDomain($canonicalUrl)
+        );
 
         $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_start', [
             'canonical-url' => rawurlencode($canonicalUrl)
@@ -104,46 +101,29 @@ class RemoteTestService extends CoreApplicationService
      */
     private function setCustomCookieDomain(TestOptions $testOptions, $domain)
     {
+        if (!$testOptions->hasFeatureOptions('cookies')) {
+            return;
+        }
+
         $cookieOptions = $testOptions->getFeatureOptions('cookies');
         $cookies = $cookieOptions['cookies'];
 
         foreach ($cookies as $index => $cookie) {
-            if (!isset($cookie['path'])) {
-                $cookie['path'] = '/';
-            }
+            if (isset($cookie['name']) && !empty($cookie['name'])) {
+                if (!isset($cookie['path'])) {
+                    $cookie['path'] = '/';
+                }
 
-            if (!isset($cookie['domain'])) {
-                $cookie['domain'] = '.' . $domain;
-            }
+                if (!isset($cookie['domain'])) {
+                    $cookie['domain'] = '.' . $domain;
+                }
 
-            $cookies[$index] = $cookie;
+                $cookies[$index] = $cookie;
+            }
         }
 
         $cookieOptions['cookies'] = $cookies;
         $testOptions->setFeatureOptions('cookies', $cookieOptions);
-    }
-
-    /**
-     * @param TestOptions $testOptions
-     *
-     * @return bool
-     */
-    private function hasCustomCookies(TestOptions $testOptions)
-    {
-        if (!$testOptions->hasFeatureOptions('cookies')) {
-            return false;
-        }
-
-        $cookieOptions = $testOptions->getFeatureOptions('cookies');
-        $cookies = $cookieOptions['cookies'];
-
-        foreach ($cookies as $cookie) {
-            if (isset($cookie['name']) && !is_null($cookie['name'])) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**

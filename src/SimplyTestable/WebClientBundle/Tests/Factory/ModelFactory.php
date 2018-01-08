@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\HtmlTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\LinkIntegrityMessage;
+use SimplyTestable\WebClientBundle\Model\TestOptions;
 
 class ModelFactory
 {
@@ -40,6 +41,8 @@ class ModelFactory
     const LINK_INTEGRITY_MESSAGE_MESSAGE = 'message';
     const LINK_INTEGRITY_MESSAGE_TYPE = 'type';
     const LINK_INTEGRITY_MESSAGE_CLASS = 'class';
+
+    const TEST_OPTIONS_FEATURE_OPTIONS = 'feature_options';
 
     /**
      * @param array $taskOutputValues
@@ -251,5 +254,25 @@ class ModelFactory
         }
 
         return $linkIntegrityMessage;
+    }
+
+    /**
+     * @param array $testOptionsValues
+     *
+     * @return TestOptions
+     */
+    public static function createTestOptions($testOptionsValues = [])
+    {
+        $testOptions = new TestOptions();
+
+        if (isset($testOptionsValues[self::TEST_OPTIONS_FEATURE_OPTIONS])) {
+            $featureOptionsCollection = $testOptionsValues[self::TEST_OPTIONS_FEATURE_OPTIONS];
+
+            foreach ($featureOptionsCollection as $featureName => $featureOptions) {
+                $testOptions->setFeatureOptions($featureName, $featureOptions);
+            }
+        }
+
+        return $testOptions;
     }
 }
