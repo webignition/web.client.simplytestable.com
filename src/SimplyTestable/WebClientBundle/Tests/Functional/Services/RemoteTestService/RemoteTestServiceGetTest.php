@@ -4,7 +4,6 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestSer
 
 use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\History\HistoryPlugin;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;

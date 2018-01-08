@@ -528,21 +528,16 @@ class RemoteTestService extends CoreApplicationService
 
         $this->addAuthorisationToRequest($request);
 
-        /* @var $testJsonDocument JsonDocument */
         try {
             $remoteJsonDocument = $this->webResourceService->get($request);
 
             if ($remoteJsonDocument instanceof JsonDocument) {
                 return new RemoteTest($remoteJsonDocument->getContentObject());
             }
-
-            return false;
         } catch (CurlException $curlException) {
-            return null;
+            // Intentionally swallow
         } catch (WebResourceException $webResourceException) {
-            if ($webResourceException->getCode() == 403) {
-                return false;
-            }
+            // Intentionally swallow
         }
 
         return null;
