@@ -1,91 +1,98 @@
 <?php
 namespace SimplyTestable\WebClientBundle\Services;
 
+use Guzzle\Http\Message\Request;
 use SimplyTestable\WebClientBundle\Model\User;
 
-
-abstract class CoreApplicationService {    
-    
+abstract class CoreApplicationService
+{
     /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Model\User;
+     * @var User;
      */
     private static $user;
-    
-    
+
     /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Services\WebResourceService 
+     * @var WebResourceService
      */
     protected $webResourceService;
-    
-    
+
     /**
-     *
      * @var array
      */
     private $parameters;
-    
-    
+
+    /**
+     * @param array $parameters
+     * @param WebResourceService $webResourceService
+     */
     public function __construct(
         $parameters,
-        \SimplyTestable\WebClientBundle\Services\WebResourceService $webResourceService
+        WebResourceService $webResourceService
     ) {
         $this->parameters = $parameters;
         $this->webResourceService = $webResourceService;
-    } 
-    
-    
+    }
+
     /**
-     * 
-     * @param \SimplyTestable\WebClientBundle\Model\User $user
+     * @param User $user
      */
-    public function setUser(User $user) {
+    public function setUser(User $user)
+    {
         self::$user = $user;
     }
-    
-    
+
     /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Model\User
+     * @return User
      */
-    public function getUser() {
+    public function getUser()
+    {
         return self::$user;
     }
-    
-    
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function hasUser() {
+    public function hasUser()
+    {
         return !is_null($this->getUser());
     }
-    
-    
-    protected function getUrl($name = null, $parameters = null) {
+
+    /**
+     * @param string $name
+     * @param array $parameters
+     *
+     * @return string
+     */
+    protected function getUrl($name = null, $parameters = null)
+    {
         $url = $this->parameters['urls']['base'];
-        
+
         if (!is_null($name)) {
             $url .= $this->parameters['urls'][$name];
         }
-        
+
         if (is_array($parameters)) {
             foreach ($parameters as $parameterName => $parameterValue) {
                 $url = str_replace('{'.$parameterName.'}', $parameterValue, $url);
             }
         }
-        
+
         return $url;
     }
-    
-    
-    protected function addAuthorisationToRequest(\Guzzle\Http\Message\Request $request) {
+
+    /**
+     * @param Request $request
+     *
+     * @return Request
+     */
+    protected function addAuthorisationToRequest(Request $request)
+    {
+        $user = $this->getUser();
+
         $request->addHeaders(array(
-            'Authorization' => 'Basic ' . base64_encode($this->getUser()->getUsername().':'.$this->getUser()->getPassword())
+            'Authorization' => 'Basic ' . base64_encode($user->getUsername().':'.$user->getPassword())
         ));
-        
-        return $request;                
+
+        return $request;
     }
-    
 }

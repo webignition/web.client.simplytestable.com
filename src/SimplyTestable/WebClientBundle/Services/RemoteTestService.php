@@ -1,327 +1,319 @@
 <?php
 namespace SimplyTestable\WebClientBundle\Services;
 
+use Guzzle\Http\Exception\CurlException;
+use Guzzle\Http\Message\Request;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\TestList;
 use SimplyTestable\WebClientBundle\Model\TestOptions;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use webignition\WebResource\JsonDocument\JsonDocument;
+use Pdp\PublicSuffixListManager as PdpPublicSuffixListManager;
+use Pdp\Parser as PdpParser;
+use webignition\WebResource\WebResource;
 
-class RemoteTestService extends CoreApplicationService {
-    
+class RemoteTestService extends CoreApplicationService
+{
     /**
-     *
      * @var RemoteTest
      */
     private $remoteTest = null;
-    
-    
+
     /**
-     *
      * @var Test
      */
     private $test;
-    
-    
+
     /**
-     * 
-     * @param \SimplyTestable\WebClientBundle\Entity\Test\Test $test
+     * @param Test $test
+     *
+     * @throws WebResourceException
      */
-    public function setTest(Test $test) {        
+    public function setTest(Test $test)
+    {
         $this->test = $test;
-        
-        if ($this->get()->getId() != $test->getTestId()) {
+        $remoteTest = $this->get();
+
+        if ($remoteTest->getId() != $test->getTestId()) {
             $this->remoteTest = null;
         }
     }
-    
-    
+
     /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Entity\Test\Test
+     * @return Test
      */
-    public function getTest() {
+    public function getTest()
+    {
         return $this->test;
     }
-    
-    
-    public function start($canonicalUrl, TestOptions $testOptions, $testType = 'full site') {        
-        if ($this->hasCustomCookies($testOptions)) {
-            $this->setCustomCookieDomainAndPath(
-                $testOptions,
-                $this->getCookieDomain($canonicalUrl),
-                '/'
-            );            
-        }
 
+    /**
+     * @param string $canonicalUrl
+     * @param TestOptions $testOptions
+     * @param string $testType
+     *
+     * @return JsonDocument
+     *
+     * @throws WebResourceException
+     */
+    public function start($canonicalUrl, TestOptions $testOptions, $testType = 'full site')
+    {
+        $this->setCustomCookieDomain(
+            $testOptions,
+            $this->getCookieDomain($canonicalUrl)
+        );
 
-
-        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_start', array(
+        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_start', [
             'canonical-url' => rawurlencode($canonicalUrl)
-        )).'?'.http_build_query(array_merge(array(
+            ]).'?'.http_build_query(array_merge([
             'type' => $testType
-        ), $testOptions->__toArray())));
+            ], $testOptions->__toArray())));
 
         $this->addAuthorisationToRequest($httpRequest);
 
-        
-        /* @var $response \webignition\WebResource\JsonDocument\JsonDocument */
+        /* @var $response JsonDocument */
         try {
-            return $this->webResourceService->get($httpRequest);
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            $response = $this->webResourceService->get($httpRequest);
+        } catch (CurlException $curlException) {
             throw $curlException;
         }
-    } 
-    
-    
+
+        return $response;
+    }
+
     /**
-     * 
      * @param string $canonicalUrl
+     *
      * @return string
      */
-    private function getCookieDomain($canonicalUrl) {        
-        $pslManager = new \Pdp\PublicSuffixListManager();
-        $parser = new \Pdp\Parser($pslManager->getList());
+    private function getCookieDomain($canonicalUrl)
+    {
+        $pslManager = new PdpPublicSuffixListManager();
+        $parser = new PdpParser($pslManager->getList());
+
         return $parser->parseUrl($canonicalUrl)->host->registerableDomain;
     }
-    
-    
-    private function setCustomCookieDomainAndPath(TestOptions $testOptions, $domain, $path) {                
-        $cookieOptions = $testOptions->getFeatureOptions('cookies');        
-        $cookies = $cookieOptions['cookies'];
-        
-        foreach ($cookies as $index => $cookie) {
-            if (!isset($cookie['path'])) {
-                $cookie['path'] = '/';
-            }
-            
-            if (!isset($cookie['domain'])) {
-                $cookie['domain'] = '.' . $domain;
-            }
-            
-            $cookies[$index] = $cookie;
-        }
-        
-        $cookieOptions['cookies'] = $cookies;        
-        $testOptions->setFeatureOptions('cookies', $cookieOptions);
-    }
-    
-    
+
     /**
-     * 
-     * @param \SimplyTestable\WebClientBundle\Model\TestOptions $testOptions
-     * @return boolean
+     * @param TestOptions $testOptions
+     * @param string $domain
      */
-    private function hasCustomCookies(TestOptions $testOptions) {
+    private function setCustomCookieDomain(TestOptions $testOptions, $domain)
+    {
         if (!$testOptions->hasFeatureOptions('cookies')) {
             return;
-        }   
-        
+        }
+
         $cookieOptions = $testOptions->getFeatureOptions('cookies');
         $cookies = $cookieOptions['cookies'];
-        
-        foreach ($cookies as $cookie) {
-            if (isset($cookie['name']) && !is_null($cookie['name'])) {
-                return true;
+
+        foreach ($cookies as $index => $cookie) {
+            if (isset($cookie['name']) && !empty($cookie['name'])) {
+                if (!isset($cookie['path'])) {
+                    $cookie['path'] = '/';
+                }
+
+                if (!isset($cookie['domain'])) {
+                    $cookie['domain'] = '.' . $domain;
+                }
+
+                $cookies[$index] = $cookie;
             }
         }
-        
-        return false;       
+
+        $cookieOptions['cookies'] = $cookies;
+        $testOptions->setFeatureOptions('cookies', $cookieOptions);
     }
-    
-    
-    
+
     /**
-     * 
-     * @return boolean
+     * @return bool
+     *
+     * @throws WebResourceException
+     * @throws CurlException
      */
-    public function authenticate() {
+    public function authenticate()
+    {
         if ($this->owns()) {
             return true;
         }
-        
+
         return $this->isPublic();
-    }     
-    
-    
+    }
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      * @throws WebResourceException
      */
-    public function owns() {
+    public function owns()
+    {
         if ($this->getUser()->getUsername() == $this->getTest()->getUser()) {
             return true;
         }
-        
+
         try {
-            return $this->get()->getOwners()->contains($this->getUser()->getUsername());
-        } catch (WebResourceException $webResourceException) {            
+            $remoteTest = $this->get();
+            $owners = $remoteTest->getOwners();
+
+            return $owners->contains($this->getUser()->getUsername());
+        } catch (WebResourceException $webResourceException) {
             if ($webResourceException->getCode() == 403) {
                 return false;
             }
-            
+
             throw $webResourceException;
         }
-    } 
-    
-    
+    }
+
     /**
-     * 
-     * @return boolean
-     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
-     * @throws \SimplyTestable\WebClientBundle\Services\CurlException
+     * @return bool
+     *
+     * @throws WebResourceException
      */
-    public function isPublic() {        
+    public function isPublic()
+    {
         return $this->get()->getIsPublic();
     }
-    
-    
-    
+
     /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest|boolean
+     * @return RemoteTest|bool
      */
-    public function get() {        
-        if (is_null($this->remoteTest)) {            
-            $remoteJsonDocument = $this->retrieve();
-            
-            if ($remoteJsonDocument instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
+
+    /**
+     * @return bool|RemoteTest
+     *
+     * @throws WebResourceException
+     * @throws CurlException
+     */
+    public function get()
+    {
+        if (is_null($this->remoteTest)) {
+            $httpClientService = $this->webResourceService->getHttpClientService();
+
+            $httpRequest = $httpClientService->getRequest($this->getUrl('test_status', [
+                'canonical-url' => urlencode($this->test->getWebsite()),
+                'test_id' => $this->test->getTestId()
+            ]));
+
+            $this->addAuthorisationToRequest($httpRequest);
+
+            /* @var JsonDocument $response */
+            $remoteJsonDocument = $this->webResourceService->get($httpRequest);
+
+            if ($remoteJsonDocument instanceof JsonDocument) {
                 $this->remoteTest = new RemoteTest($remoteJsonDocument->getContentObject());
             } else {
                 $this->remoteTest = false;
             }
         }
-        
+
         return $this->remoteTest;
     }
-    
-    
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function has() {
+    public function has()
+    {
         if (is_null($this->remoteTest)) {
             return false;
         }
-        
+
         if (is_null($this->test)) {
             return false;
         }
-        
-        return $this->get()->getId() == $this->getTest()->getTestId();
+
+        return $this->remoteTest->getId() == $this->test->getTestId();
     }
-    
-    
+
     /**
-     * 
-     * @param \SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest $remoteTest
+     * @param RemoteTest $remoteTest
      */
-    public function set(RemoteTest $remoteTest) {
+    public function set(RemoteTest $remoteTest)
+    {
         $this->remoteTest = $remoteTest;
     }
-    
-    
+
     /**
-     * 
-     * @return \webignition\WebResource\JsonDocument\JsonDocument
+     * @return WebResource
      * @throws WebResourceException
-     * @throws \Guzzle\Http\Exception\CurlException
      */
-    private function retrieve() {
-        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_status', array(
-            'canonical-url' => urlencode($this->getTest()->getWebsite()),
-            'test_id' => $this->getTest()->getTestId()
-        )));
-        
-        $this->addAuthorisationToRequest($httpRequest);
-        
-        return $this->webResourceService->get($httpRequest);   
-    } 
-    
-    
+    public function cancel()
+    {
+        return $this->cancelByTestProperties($this->test->getTestId(), $this->test->getWebsite());
+    }
+
     /**
+     * @param int $testId
+     * @param string $website
      *
-     * @param Test $test
-     * @param int $testId
-     * @return boolean 
+     * @return WebResource
+     * @throws WebResourceException
      */
-    public function cancel() {        
-        return $this->cancelByTestProperties($this->getTest()->getTestId(), $this->getTest()->getWebsite());      
-    }
-    
-
-    /**
-     * 
-     * @param int $testId
-     * @param string $website
-     * @return boolean
-     */
-    public function cancelByTestProperties($testId, $website) {
-        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_cancel', array(
+    public function cancelByTestProperties($testId, $website)
+    {
+        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_cancel', [
             'canonical-url' => urlencode($website),
             'test_id' => $testId
-        )));
-        
+        ]));
+
         $this->addAuthorisationToRequest($httpRequest);
-        
-        return $this->webResourceService->get($httpRequest);          
-    }     
-    
-    
-    /**
-     * 
-     * @param int $testId
-     * @param string $website
-     * @return boolean
-     */
-    public function retest($testId, $website) {
-        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_retest', array(
-            'canonical-url' => urlencode($website),
-            'test_id' => $testId
-        )));
-        
-        $this->addAuthorisationToRequest($httpRequest);
-        
-        return $this->webResourceService->get($httpRequest);          
-    }    
-    
-    
-    
-    public function lock() {
-        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_set_private', array(
-            'canonical-url' => urlencode($this->getTest()->getWebsite()),
-            'test_id' => $this->getTest()->getTestId()
-        )));
-        
-        $this->addAuthorisationToRequest($request);
-        $this->webResourceService->get($request);       
-        return true;
-    }
-    
-    
-    public function unlock() {
-        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_set_public', array(
-            'canonical-url' => urlencode($this->getTest()->getWebsite()),
-            'test_id' => $this->getTest()->getTestId()
-        )));
-        
-        $this->addAuthorisationToRequest($request);
-        $this->webResourceService->get($request);       
-        return true;        
+
+        return $this->webResourceService->get($httpRequest);
     }
 
+    /**
+     * @param int $testId
+     * @param string $website
+     *
+     * @return WebResource
+     * @throws WebResourceException
+     */
+    public function retest($testId, $website)
+    {
+        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_retest', [
+            'canonical-url' => urlencode($website),
+            'test_id' => $testId
+        ]));
+
+        $this->addAuthorisationToRequest($httpRequest);
+
+        return $this->webResourceService->get($httpRequest);
+    }
+
+    public function lock()
+    {
+        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_set_private', [
+            'canonical-url' => urlencode($this->getTest()->getWebsite()),
+            'test_id' => $this->getTest()->getTestId()
+        ]));
+
+        $this->addAuthorisationToRequest($request);
+        $this->webResourceService->get($request);
+    }
+
+    public function unlock()
+    {
+        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_set_public', [
+            'canonical-url' => urlencode($this->getTest()->getWebsite()),
+            'test_id' => $this->getTest()->getTestId()
+        ]));
+
+        $this->addAuthorisationToRequest($request);
+        $this->webResourceService->get($request);
+    }
 
     /**
      * @param int $limit
+     *
      * @return TestList
      */
-    public function getRecent($limit = 3) {
-        $requestUrl = $this->getUrl('tests_list', array(
-                'limit' => $limit,
-                'offset' => 0
-        ));
+    public function getRecent($limit = 3)
+    {
+        $requestUrl = $this->getUrl('tests_list', [
+            'limit' => $limit,
+            'offset' => 0
+        ]);
 
         $requestUrl .= '?' . http_build_query([
                 'exclude-states' => [
@@ -338,189 +330,176 @@ class RemoteTestService extends CoreApplicationService {
 
         return $this->getList($request);
     }
-    
-    
+
     /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Model\TestList
+     * @return TestList
      */
-    public function getCurrent() {
-        $requestUrl = $this->getUrl('tests_list', array(
+    public function getCurrent()
+    {
+        $requestUrl = $this->getUrl('tests_list', [
             'limit' => 100,
             'offset' => 0
-        )) . '?exclude-finished=1';
-        
+            ]) . '?exclude-finished=1';
+
         $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
-        
-        return $this->getList($request);        
-    }  
-    
-    
+
+        return $this->getList($request);
+    }
+
     /**
-     * 
      * @param int $limit
-     * @param int $offset 
+     * @param int $offset
      * @param string $filter
-     * @return \SimplyTestable\WebClientBundle\Model\TestList
+     *
+     * @return TestList
      */
-    public function getFinished($limit, $offset, $filter = null) {
-        $requestUrl = $this->getUrl('tests_list', array(
+    public function getFinished($limit, $offset, $filter = null)
+    {
+        $requestUrl = $this->getUrl('tests_list', [
             'limit' => $limit,
             'offset' => $offset
-        ));
-        
-        $query = array(
-            'exclude-states' => array('rejected'),
+        ]);
+
+        $query = [
+            'exclude-states' => ['rejected'],
             'exclude-current' => 1
-        );
-        
+        ];
+
         if (!is_null($filter)) {
             $query['url-filter'] = $filter;
         }
-        
+
         $requestUrl .= '?' . http_build_query($query);
-        
+
         $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
-        
-        return $this->getList($request);        
-    } 
-    
-    
-    public function getFinishedWebsites() {
+
+        return $this->getList($request);
+    }
+
+    /**
+     * @return array
+     */
+    public function getFinishedWebsites()
+    {
         $requestUrl = $this->getUrl('tests_list_websites');
-        
-        $query = array(
-            'exclude-states' => array(
+
+        $query = [
+            'exclude-states' => [
                 'cancelled',
                 'rejected'
-            ),
+            ],
             'exclude-current' => 1
-        );
-        
+        ];
+
         $requestUrl .= '?' . http_build_query($query);
-        
+
         $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
-        
-        return $this->getWebsitesList($request);          
+
+        $this->addAuthorisationToRequest($request);
+
+        try {
+            /* @var $responseDocument JsonDocument */
+            $responseDocument = $this->webResourceService->get($request);
+            $list = json_decode($responseDocument->getContent());
+        } catch (CurlException $curlException) {
+            return [];
+        } catch (WebResourceException $webResourceServiceException) {
+            return [];
+        }
+
+        return $list;
     }
-    
-    
-    public function getFinishedCount($filter = null) {
+
+    /**
+     * @param null $filter
+     *
+     * @return int
+     */
+    public function getFinishedCount($filter = null)
+    {
         $requestUrl = $this->getUrl('tests_list_count');
-        
-        $query = array(
-            'exclude-states' => array('rejected'),
+
+        $query = [
+            'exclude-states' => ['rejected'],
             'exclude-current' => 1
-        );
-        
+        ];
+
         if (!is_null($filter)) {
             $query['url-filter'] = $filter;
         }
-        
+
         $requestUrl .= '?' . http_build_query($query);
-        
+
         $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
-        
-        return $this->getListCount($request);         
-    }
-    
-    
-    /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Model\TestList
-     */
-    private function getList(\Guzzle\Http\Message\Request $request) {        
+
         $this->addAuthorisationToRequest($request);
-        
-        $list = new TestList();
-        
+
         try {
-            /* @var $responseDocument \webignition\WebResource\JsonDocument\JsonDocument */
+            /* @var $responseDocument JsonDocument */
             $responseDocument = $this->webResourceService->get($request);
-            
+            $count = json_decode($responseDocument->getContent());
+        } catch (CurlException $curlException) {
+            return null;
+        } catch (WebResourceException $webResourceServiceException) {
+            return null;
+        }
+
+        return $count;
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return TestList
+     */
+    private function getList(Request $request)
+    {
+        $this->addAuthorisationToRequest($request);
+
+        $list = new TestList();
+
+        try {
+            /* @var $responseDocument JsonDocument */
+            $responseDocument = $this->webResourceService->get($request);
+
             $list->setMaxResults($responseDocument->getContentObject()->max_results);
             $list->setLimit($responseDocument->getContentObject()->limit);
             $list->setOffset($responseDocument->getContentObject()->offset);
-            
+
             foreach ($responseDocument->getContentObject()->jobs as $remoteTestData) {
                 $list->addRemoteTest(new RemoteTest($remoteTestData));
             }
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {            
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-        }        
-        
-        return $list;          
-    }  
-    
-    
-    /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Model\TestList
-     */
-    private function getListCount(\Guzzle\Http\Message\Request $request) {        
-        $this->addAuthorisationToRequest($request);
-        
-        try {
-            /* @var $responseDocument \webignition\WebResource\JsonDocument\JsonDocument */
-            $responseDocument = $this->webResourceService->get($request);            
-            $count = json_decode($responseDocument->getContent());
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {            
-            return null;
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-            return null;
+        } catch (CurlException $curlException) {
+        } catch (WebResourceException $webResourceServiceException) {
         }
-        
-        return $count;         
+
+        return $list;
     }
 
-
     /**
-     * @param \Guzzle\Http\Message\Request $request
-     * @return array
+     * @param $canonicalUrl
+     * @return bool|null|RemoteTest
      */
-    private function getWebsitesList(\Guzzle\Http\Message\Request $request) {        
-        $this->addAuthorisationToRequest($request);
-        
-        try {
-            /* @var $responseDocument \webignition\WebResource\JsonDocument\JsonDocument */
-            $responseDocument = $this->webResourceService->get($request);            
-            $list = json_decode($responseDocument->getContent());
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {            
-            return array();
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceServiceException $webResourceServiceException) {
-            return array();
-        }        
-        
-        return $list;          
-    }     
-    
-    
-    
-    public function retrieveLatest($canonicalUrl) {                
-        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_latest', array(
+    public function retrieveLatest($canonicalUrl)
+    {
+        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_latest', [
             'canonical-url' => urlencode($canonicalUrl)
-        )));
-        
-        $this->addAuthorisationToRequest($request);        
-        
-        /* @var $testJsonDocument \webignition\WebResource\JsonDocument\JsonDocument */
+        ]));
+
+        $this->addAuthorisationToRequest($request);
+
         try {
-            $remoteJsonDocument = $this->webResourceService->get($request);           
-            
-            if ($remoteJsonDocument instanceof \webignition\WebResource\JsonDocument\JsonDocument) {
+            $remoteJsonDocument = $this->webResourceService->get($request);
+
+            if ($remoteJsonDocument instanceof JsonDocument) {
                 return new RemoteTest($remoteJsonDocument->getContentObject());
             }
-            
-            return false;
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-            return null;
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {
-            if ($webResourceException->getCode() == 403) {
-                return false;
-            }
+        } catch (CurlException $curlException) {
+            // Intentionally swallow
+        } catch (WebResourceException $webResourceException) {
+            // Intentionally swallow
         }
-        
-        return null;          
-    }    
-    
+
+        return null;
+    }
 }
