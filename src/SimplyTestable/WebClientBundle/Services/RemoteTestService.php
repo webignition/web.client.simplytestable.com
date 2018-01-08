@@ -243,7 +243,7 @@ class RemoteTestService extends CoreApplicationService
             return false;
         }
 
-        return $this->get()->getId() == $this->getTest()->getTestId();
+        return $this->remoteTest->getId() == $this->test->getTestId();
     }
 
     /**
