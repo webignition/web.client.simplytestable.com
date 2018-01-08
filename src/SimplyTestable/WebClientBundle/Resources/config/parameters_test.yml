@@ -52,12 +52,14 @@ parameters:
       user_email_change_request_create: /user/{email}/email-change-request/{new_email}/create/
       user_email_change_request_cancel: /user/{email}/email-change-request/cancel/
       user_email_change_request_confirm: /user/{email}/email-change-request/{token}/
-      user_plan_subscribe: /user/{email}/{plan}/subscribe/   
-      user_card_associate: /user/{email}/card/{stripe_card_token}/associate/        
-      user_list_stripe_events: /user/{email}/stripe-events/{type}/      
+      user_plan_subscribe: /user/{email}/{plan}/subscribe/
+      user_card_associate: /user/{email}/card/{stripe_card_token}/associate/
+      user_list_stripe_events: /user/{email}/stripe-events/{type}/
       test_is_public: /job/{canonical-url}/{test_id}/is_public/
-      test_retest: /job/{canonical-url}/{test_id}/re-test/      
-      tests_list_websites: /jobs/list/websites/      
+      test_set_public: /job/{canonical-url}/{test_id}/set-public/
+      test_set_private: /job/{canonical-url}/{test_id}/set-private/
+      test_retest: /job/{canonical-url}/{test_id}/re-test/
+      tests_list_websites: /jobs/list/websites/
       tests_list_count: /jobs/list/count/
       team_get: /team/
       team_create: /team/create/
@@ -71,17 +73,22 @@ parameters:
       teaminvite_remove: /team/invite/{invitee_email}/remove/
       teaminvite_getbytoken: /team/invite/bytoken/{token}/
       teaminvite_activateandaccept: /team/invite/activate/accept/
+      jobconfiguration_list: /jobconfiguration/list/
+      jobconfiguration_create: /jobconfiguration/create/
+      jobconfiguration_get: /jobconfiguration/{label}/
+      jobconfiguration_update: /jobconfiguration/{label}/update/
+      jobconfiguration_delete: /jobconfiguration/{label}/delete/
   public_site:
     urls:
       home: http://test.simplytestable.com/
       plans_and_pricing: plans/
       features: features/
       account_benefits: account-benefits/
-      plans_demo: plans/demo/      
+      plans_demo: plans/demo/
   external_links:
       terms: http://help.simplytestable.com/legal/terms-of-service/
       privacy: http://help.simplytestable.com/legal/privacy/
-      contact_email: "&#115;&#117;&#112;&#112;&#111;&#114;&#116;&#64;&#115;&#105;&#109;&#112;&#108;&#121;&#116;&#101;&#115;&#116;&#97;&#98;&#108;&#101;&#46;&#99;&#111;&#109;"      
+      contact_email: "&#115;&#117;&#112;&#112;&#111;&#114;&#116;&#64;&#115;&#105;&#109;&#112;&#108;&#121;&#116;&#101;&#115;&#116;&#97;&#98;&#108;&#101;&#46;&#99;&#111;&#109;"
   content_type_web_resource_map:
     default: webignition\WebResource\WebResource
     application/json: webignition\WebResource\JsonDocument\JsonDocument
@@ -89,11 +96,11 @@ parameters:
     "HTML validation":
         class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser
     "CSS validation":
-        class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser        
+        class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser
     "JS static analysis":
-        class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser          
+        class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser
     "Link integrity":
-        class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser              
+        class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser
   mail:
     senders:
       default:
@@ -114,21 +121,21 @@ parameters:
       stripe.invoice.created:
         subject: "[Simply Testable] Invoice {{invoice_id}} created, payment details needed"
       stripe.invoice.payment_succeeded:
-        subject: "[Simply Testable] Invoice {{invoice_id}} paid, thanks!"        
+        subject: "[Simply Testable] Invoice {{invoice_id}} paid, thanks!"
       stripe.customer.subscription.trial_will_end:
         subject: "[Simply Testable] Your {{plan_name}} account trial ends in 3 days{{payment_details_needed_suffix}}"
       stripe.invoice.payment_failed:
-        subject: "[Simply Testable] Invoice {{invoice_id}} payment failed"  
+        subject: "[Simply Testable] Invoice {{invoice_id}} payment failed"
       stripe.customer.subscription.updated-plan_change=1:
-        subject: "[Simply Testable] You've changed to the {{new_plan}} plan"                
+        subject: "[Simply Testable] You've changed to the {{new_plan}} plan"
       stripe.customer.subscription.updated-transition=trialing_to_active-has_card=0:
-        subject: "[Simply Testable] Premium trial has ended, you've been dropped down to our free plan"          
+        subject: "[Simply Testable] Premium trial has ended, you've been dropped down to our free plan"
       stripe.customer.subscription.updated-transition=trialing_to_active-has_card=1:
-        subject: "[Simply Testable] Premium trial has ended, payment for the next month will be taken soon"             
+        subject: "[Simply Testable] Premium trial has ended, payment for the next month will be taken soon"
       stripe.customer.subscription.deleted-actioned_by=user-is_during_trial=1:
-        subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled"                   
+        subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled"
       stripe.customer.subscription.deleted-actioned_by=user-is_during_trial=0:
-        subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled"                 
+        subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled"
       stripe.customer.subscription.deleted-actioned_by=system:
         subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled, you've been dropped down to our free plan"
       user_team_invite_invitation:
@@ -147,7 +154,7 @@ parameters:
    - cdnjs.cloudflare.com
    - netdna.bootstrapcdn.com
    - static.nrelate.com
-   - connect.facebook.net   
+   - connect.facebook.net
   stripe:
    payment_retry_limit: 3,
    payment_retry_periods:
@@ -190,13 +197,13 @@ parameters:
           form_key: http-auth
         cookies:
           enabled: true
-          form_key: cookies          
+          form_key: cookies
     ignore_on_error:
         - http-auth-password
     names_and_default_values:
         http-auth-username: ""
-        http-auth-password: ""   
-        cookies: [{name: "", value: "", secure: false, path: "/", domain: ""}]        
+        http-auth-password: ""
+        cookies: [{name: "", value: "", secure: false, path: "/", domain: ""}]
         html-validation: 1
         css-validation: 1
         css-validation-ignore-warnings: 1
@@ -205,12 +212,12 @@ parameters:
         css-validation-domains-to-ignore:
           - ""
         js-static-analysis: 1
-        js-static-analysis-ignore-common-cdns: 1     
+        js-static-analysis-ignore-common-cdns: 1
         js-static-analysis-jslint-option-passfail: 0
         js-static-analysis-jslint-option-bitwise: 1
         js-static-analysis-jslint-option-continue: 1
         js-static-analysis-jslint-option-debug: 1
-        js-static-analysis-jslint-option-evil: 1       
+        js-static-analysis-jslint-option-evil: 1
         js-static-analysis-jslint-option-eqeq: 0
         js-static-analysis-jslint-option-forin: 1
         js-static-analysis-jslint-option-newcap: 0
@@ -220,7 +227,7 @@ parameters:
         js-static-analysis-jslint-option-unparam: 1
         js-static-analysis-jslint-option-sloppy: 0
         js-static-analysis-jslint-option-stupid: 0
-        js-static-analysis-jslint-option-sub: 1                                            
+        js-static-analysis-jslint-option-sub: 1
         js-static-analysis-jslint-option-vars: 0
         js-static-analysis-jslint-option-white: 0
         js-static-analysis-jslint-option-anon: 0
@@ -242,7 +249,7 @@ parameters:
         - js-static-analysis-jslint-option-continue
         - js-static-analysis-jslint-option-debug
         - js-static-analysis-jslint-option-evil
-        - js-static-analysis-jslint-option-eqeq     
+        - js-static-analysis-jslint-option-eqeq
         - js-static-analysis-jslint-option-forin
         - js-static-analysis-jslint-option-newcap
         - js-static-analysis-jslint-option-nomen
@@ -254,7 +261,7 @@ parameters:
         - js-static-analysis-jslint-option-sub
         - js-static-analysis-jslint-option-vars
         - js-static-analysis-jslint-option-white
-        - js-static-analysis-jslint-option-anon    
+        - js-static-analysis-jslint-option-anon
   link-integrity-excluded-domains:
    - instagram.com
   coupons:
