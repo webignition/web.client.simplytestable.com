@@ -432,7 +432,19 @@ class RemoteTestService extends CoreApplicationService
 
         $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
 
-        return $this->getListCount($request);
+        $this->addAuthorisationToRequest($request);
+
+        try {
+            /* @var $responseDocument JsonDocument */
+            $responseDocument = $this->webResourceService->get($request);
+            $count = json_decode($responseDocument->getContent());
+        } catch (CurlException $curlException) {
+            return null;
+        } catch (WebResourceException $webResourceServiceException) {
+            return null;
+        }
+
+        return $count;
     }
 
     /**
@@ -462,28 +474,6 @@ class RemoteTestService extends CoreApplicationService
         }
 
         return $list;
-    }
-
-    /**
-     * @param Request $request
-     *
-     * @return int
-     */
-    private function getListCount(Request $request)
-    {
-        $this->addAuthorisationToRequest($request);
-
-        try {
-            /* @var $responseDocument JsonDocument */
-            $responseDocument = $this->webResourceService->get($request);
-            $count = json_decode($responseDocument->getContent());
-        } catch (CurlException $curlException) {
-            return null;
-        } catch (WebResourceException $webResourceServiceException) {
-            return null;
-        }
-
-        return $count;
     }
 
     /**
