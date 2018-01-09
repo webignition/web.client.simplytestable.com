@@ -239,7 +239,15 @@ class TaskRepository extends EntityRepository
         return $this->getTaskIdsFromQueryResult($queryBuilder->getQuery()->getResult());
     }
 
-
+    /**
+     * @param Test $test
+     * @param string|null $issueCount
+     * @param string|null $issueType
+     * @param string|null $taskType
+     * @param array $excludeStates
+     *
+     * @return int
+     */
     public function getRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStates(
         Test $test,
         $issueCount = null,
@@ -273,6 +281,7 @@ class TaskRepository extends EntityRepository
         $queryBuilder->where($where);
 
         $result = $queryBuilder->getQuery()->getResult();
+
         return (int)$result[0][1];
     }
 }
