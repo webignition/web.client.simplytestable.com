@@ -1,45 +1,45 @@
 <?php
 namespace SimplyTestable\WebClientBundle\Services;
 
+use webignition\InternetMediaType\InternetMediaType;
 use webignition\InternetMediaType\Parser\Parser as InternetMediaTypeParser;
 use Negotiation\FormatNegotiator;
 use Symfony\Component\HttpFoundation\Request;
 
-class ResponseFormatService {
-
+class ResponseFormatService
+{
     const DEFAULT_RESPONSE_FORMAT = 'text/html';
 
+    /**
+     * @var array
+     */
     private $requestFormatAttributeToContentTypeMap = [
         'json' => 'application/json'
     ];
-
 
     /**
      * @var Request
      */
     private $request;
 
-
     /**
      * @var string[]
      */
-    private $allowedContentTypes = array();
-
+    private $allowedContentTypes = [];
 
     /**
      * @param Request $request
      */
-    public function setRequest(Request $request = null) {
-        if ($request instanceof Request) {
-            $this->request = $request;
-        }
+    public function setRequest(Request $request = null)
+    {
+        $this->request = $request;
     }
 
-
     /**
-     * @return \webignition\InternetMediaType\InternetMediaType
+     * @return InternetMediaType
      */
-    public function getRequestedResponseFormat() {
+    public function getRequestedResponseFormat()
+    {
         $parser = new InternetMediaTypeParser();
         $parser->getConfiguration()->enableAttemptToRecoverFromInvalidInternalCharacter();
         $parser->getConfiguration()->enableIgnoreInvalidAttributes();
@@ -47,11 +47,11 @@ class ResponseFormatService {
         return $parser->parse($this->getRequestedResponseContentTypeString());
     }
 
-
     /**
      * @return string
      */
-    private function getRequestedResponseContentTypeString() {
+    private function getRequestedResponseContentTypeString()
+    {
         if ($this->hasValidRequestFormatAttribute()) {
             return $this->requestFormatAttributeToContentTypeMap[$this->request->attributes->get('_format')];
         }
@@ -61,33 +61,38 @@ class ResponseFormatService {
         }
 
         $negotiator = new FormatNegotiator();
-        $priorities   = array('text/html', 'application/json', '*/*');
+        $priorities   = ['text/html', 'application/json', '*/*'];
         $format = $negotiator->getBest($this->request->headers->get('accept'), $priorities);
 
         return $format->getValue();
     }
 
-
     /**
      * @return bool
      */
-    private function hasValidRequestFormatAttribute() {
-        return $this->request->attributes->has('_format') && array_key_exists($this->request->attributes->get('_format'), $this->requestFormatAttributeToContentTypeMap);
-    }
+    private function hasValidRequestFormatAttribute()
+    {
+        $hasFormatAttribute = $this->request->attributes->has('_format');
 
+        return $hasFormatAttribute && array_key_exists(
+            $this->request->attributes->get('_format'),
+            $this->requestFormatAttributeToContentTypeMap
+        );
+    }
 
     /**
      * @param array $allowedContentTypes
      */
-    public function setAllowedContentTypes(array $allowedContentTypes = array()) {
+    public function setAllowedContentTypes(array $allowedContentTypes = [])
+    {
         $this->allowedContentTypes = $allowedContentTypes;
     }
-
 
     /**
      * @return bool
      */
-    public function hasAllowedResponseFormat() {
+    public function hasAllowedResponseFormat()
+    {
         if ($this->responseFormatMatchesRequestFormatAttribute()) {
             return true;
         }
@@ -95,28 +100,25 @@ class ResponseFormatService {
         return in_array($this->getRequestedResponseFormat(), $this->allowedContentTypes);
     }
 
-
     /**
      * @return bool
      */
-    private function responseFormatMatchesRequestFormatAttribute() {
-        if (!$this->request->attributes->has('_format')) {
+    private function responseFormatMatchesRequestFormatAttribute()
+    {
+        if (!$this->hasValidRequestFormatAttribute()) {
             return false;
         }
 
-        if (!array_key_exists($this->request->attributes->get('_format'), $this->requestFormatAttributeToContentTypeMap)) {
-            return false;
-        }
+        $requestFormat = $this->request->attributes->get('_format');
 
-        return $this->requestFormatAttributeToContentTypeMap[$this->request->attributes->get('_format')] == $this->getRequestedResponseFormat();
+        return $this->requestFormatAttributeToContentTypeMap[$requestFormat] == $this->getRequestedResponseFormat();
     }
 
-
     /**
      * @return bool
      */
-    public function isDefaultResponseFormat() {
+    public function isDefaultResponseFormat()
+    {
         return $this->getRequestedResponseFormat() == self::DEFAULT_RESPONSE_FORMAT;
     }
-
 }
