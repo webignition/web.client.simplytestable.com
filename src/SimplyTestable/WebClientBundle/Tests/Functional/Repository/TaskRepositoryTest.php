@@ -661,6 +661,183 @@ class TaskRepositoryTest extends BaseSimplyTestableTestCase
     }
 
     /**
+     * @dataProvider getRemoteIdByTestAndIssueCountAndTaskTypeExcludingStatesDataProvider
+     *
+     * @param int $testIndex
+     * @param string $issueCount
+     * @param string $issueType
+     * @param string[] $states
+     * @param array $expectedRemoteTaskIds
+     */
+    public function testGetRemoteIdByTestAndIssueCountAndTaskTypeExcludingStates(
+        $testIndex,
+        $issueCount,
+        $issueType,
+        $taskType,
+        $states,
+        array $expectedRemoteTaskIds
+    ) {
+        $outputValuesCollection = [
+            [
+                OutputFactory::KEY_ERROR_COUNT => 0,
+                OutputFactory::KEY_WARNING_COUNT => 0,
+            ],
+            [
+                OutputFactory::KEY_ERROR_COUNT => 1,
+                OutputFactory::KEY_WARNING_COUNT => 0,
+            ],
+            [
+                OutputFactory::KEY_ERROR_COUNT => 0,
+                OutputFactory::KEY_WARNING_COUNT => 1,
+            ],
+            [
+                OutputFactory::KEY_ERROR_COUNT => 1,
+                OutputFactory::KEY_WARNING_COUNT => 1,
+            ],
+        ];
+
+        $testValuesCollection = [
+            [
+                TestFactory::KEY_TEST_ID => 1,
+                TestFactory::KEY_TASKS => [
+                    [
+                        TaskFactory::KEY_TASK_ID => 1,
+                        TaskFactory::KEY_STATE => Task::STATE_COMPLETED,
+                        TaskFactory::KEY_OUTPUT => 0,
+                    ],
+                    [
+                        TaskFactory::KEY_TASK_ID => 2,
+                        TaskFactory::KEY_STATE => Task::STATE_CANCELLED,
+                        TaskFactory::KEY_OUTPUT => 1,
+                    ],
+                    [
+                        TaskFactory::KEY_TASK_ID => 3,
+                        TaskFactory::KEY_STATE => Task::STATE_AWAITING_CANCELLATION,
+                        TaskFactory::KEY_OUTPUT => 1,
+                    ],
+                ],
+            ],
+            [
+                TestFactory::KEY_TEST_ID => 2,
+                TestFactory::KEY_TASKS => [
+                    [
+                        TaskFactory::KEY_TASK_ID => 3,
+                        TaskFactory::KEY_STATE => Task::STATE_IN_PROGRESS,
+                        TaskFactory::KEY_TYPE => Task::TYPE_HTML_VALIDATION,
+                        TaskFactory::KEY_OUTPUT => 2,
+                    ],
+                    [
+                        TaskFactory::KEY_TASK_ID => 4,
+                        TaskFactory::KEY_STATE => Task::STATE_IN_PROGRESS,
+                        TaskFactory::KEY_TYPE => Task::TYPE_CSS_VALIDATION,
+                        TaskFactory::KEY_OUTPUT => 3,
+                    ],
+                ],
+            ],
+        ];
+
+        $outputFactory = new OutputFactory($this->container);
+
+        $outputs = [];
+
+        foreach ($outputValuesCollection as $outputValues) {
+            $output = $outputFactory->create($outputValues);
+            $outputs[] = $output;
+        }
+
+        $testValuesCollection = $this->populateTestValuesCollectionWithTaskOutputs($testValuesCollection, $outputs);
+
+        $testFactory = new TestFactory($this->container);
+
+        /* @var Test[] $tests */
+        $tests = [];
+
+        foreach ($testValuesCollection as $testValues) {
+            $tests[] = $testFactory->create($testValues);
+        }
+
+        $test = $tests[$testIndex];
+
+        $remoteTaskIds = $this->taskRepository->getRemoteIdByTestAndIssueCountAndTaskTypeExcludingStates(
+            $test,
+            $issueCount,
+            $issueType,
+            $taskType,
+            $states
+        );
+
+        $this->assertEquals($expectedRemoteTaskIds, $remoteTaskIds);
+    }
+
+    /**
+     * @return array
+     */
+    public function getRemoteIdByTestAndIssueCountAndTaskTypeExcludingStatesDataProvider()
+    {
+        return [
+            'test 0 without errors' => [
+                'testIndex' => 0,
+                'issueCount' => '= 0',
+                'issueType' => 'error',
+                'taskType' => null,
+                'states' => [
+                    Task::STATE_QUEUED,
+                ],
+                'expectedRemoteTaskIds' => [
+                    1,
+                ],
+            ],
+            'test 0 with errors' => [
+                'testIndex' => 0,
+                'issueCount' => '> 0',
+                'issueType' => 'error',
+                'taskType' => null,
+                'states' => [
+                    Task::STATE_QUEUED,
+                ],
+                'expectedRemoteTaskIds' => [
+                    2, 3,
+                ],
+            ],
+            'test 0 with errors, excluding states: cancelled, awaiting-cancellation' => [
+                'testIndex' => 0,
+                'issueCount' => '> 0',
+                'issueType' => 'error',
+                'taskType' => null,
+                'states' => [
+                    Task::STATE_CANCELLED,
+                    Task::STATE_AWAITING_CANCELLATION,
+                ],
+                'expectedRemoteTaskIds' => [],
+            ],
+            'test 1 with warnings' => [
+                'testIndex' => 1,
+                'issueCount' => '> 0',
+                'issueType' => 'warning',
+                'taskType' => null,
+                'states' => [
+                    Task::STATE_QUEUED,
+                ],
+                'expectedRemoteTaskIds' => [
+                    3, 4,
+                ],
+            ],
+            'test 1 with warnings, taskType: CSS validation' => [
+                'testIndex' => 1,
+                'issueCount' => '> 0',
+                'issueType' => 'warning',
+                'taskType' => Task::TYPE_CSS_VALIDATION,
+                'states' => [
+                    Task::STATE_QUEUED,
+                ],
+                'expectedRemoteTaskIds' => [
+                    4,
+                ],
+            ],
+        ];
+    }
+
+    /**
      * @param array $testValuesCollection
      * @param array $outputs
      *

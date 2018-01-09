@@ -9,8 +9,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class OutputFactory
 {
     const KEY_TYPE = 'type';
+    const KEY_ERROR_COUNT = 'error-count';
+    const KEY_WARNING_COUNT = 'warning-count';
 
     const DEFAULT_TYPE = Output::TYPE_HTML_VALIDATION;
+    const DEFAULT_ERROR_COUNT = 0;
+    const DEFAULT_WARNING_COUNT = 0;
 
     /**
      * @var ContainerInterface
@@ -22,6 +26,8 @@ class OutputFactory
      */
     private $defaultOutputValues = [
         self::KEY_TYPE => self::DEFAULT_TYPE,
+        self::KEY_ERROR_COUNT => self::DEFAULT_ERROR_COUNT,
+        self::KEY_WARNING_COUNT => self::DEFAULT_WARNING_COUNT,
     ];
 
     /**
@@ -51,6 +57,8 @@ class OutputFactory
         $output = new Output();
 
         $output->setType($outputValues[self::KEY_TYPE]);
+        $output->setErrorCount($outputValues[self::KEY_ERROR_COUNT]);
+        $output->setWarningCount($outputValues[self::KEY_WARNING_COUNT]);
 
         $entityManager->persist($output);
         $entityManager->flush();
