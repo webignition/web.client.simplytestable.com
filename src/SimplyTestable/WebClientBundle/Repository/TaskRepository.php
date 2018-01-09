@@ -145,17 +145,22 @@ class TaskRepository extends EntityRepository
         return $remoteTaskIds;
     }
 
-    public function getRemoteIdByTestAndTaskTypeIncludingStates(Test $test, $taskType = null, $states = array()) {
+    /**
+     * @param Test $test
+     * @param string|null $taskType
+     * @param string[] $states
+     *
+     * @return int[]
+     */
+    public function getRemoteIdByTestAndTaskTypeIncludingStates(Test $test, $taskType = null, $states = [])
+    {
         $queryBuilder = $this->createQueryBuilder('Task');
         $queryBuilder->select('Task.taskId');
 
-        $stateConditions = array();
-        foreach ($states as $stateIndex => $state) {
-            $stateConditions[] = '(Task.state = :State'.$stateIndex.') ';
-            $queryBuilder->setParameter('State'.$stateIndex, $state);
-        }
+        $where = '(Task.test = :Test AND (Task.state IN (:States)))';
 
-        $where = '(Task.test = :Test AND ('.implode('OR', $stateConditions).'))';
+        $queryBuilder->setParameter('Test', $test);
+        $queryBuilder->setParameter('States', $states);
 
         if (!is_null($taskType)) {
             $where .= ' AND Task.type = :TaskType';
@@ -163,11 +168,9 @@ class TaskRepository extends EntityRepository
         }
 
         $queryBuilder->where($where);
-        $queryBuilder->setParameter('Test', $test);
 
         return $this->getTaskIdsFromQueryResult($queryBuilder->getQuery()->getResult());
     }
-
 
     public function getRemoteIdByTestAndIssueCountAndTaskTypeExcludingStates(Test $test, $issueCount = null, $issueType = null, $taskType, $excludeStates = array()) {
         $queryBuilder = $this->createQueryBuilder('Task');

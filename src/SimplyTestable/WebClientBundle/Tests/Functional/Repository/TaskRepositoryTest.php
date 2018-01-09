@@ -536,6 +536,131 @@ class TaskRepositoryTest extends BaseSimplyTestableTestCase
     }
 
     /**
+     * @dataProvider getRemoteIdByTestAndTaskTypeIncludingStatesDataProvider
+     *
+     * @param int $testIndex
+     * @param string $taskType
+     * @param string[] $states
+     * @param array $expectedRemoteTaskIds
+     */
+    public function testGetRemoteIdByTestAndTaskTypeIncludingStates(
+        $testIndex,
+        $taskType,
+        $states,
+        array $expectedRemoteTaskIds
+    ) {
+        $testValuesCollection = [
+            [
+                TestFactory::KEY_TEST_ID => 1,
+                TestFactory::KEY_TASKS => [
+                    [
+                        TaskFactory::KEY_TASK_ID => 1,
+                        TaskFactory::KEY_STATE => Task::STATE_COMPLETED,
+                    ],
+                    [
+                        TaskFactory::KEY_TASK_ID => 2,
+                        TaskFactory::KEY_STATE => Task::STATE_CANCELLED,
+                    ],
+                ],
+            ],
+            [
+                TestFactory::KEY_TEST_ID => 2,
+                TestFactory::KEY_TASKS => [
+                    [
+                        TaskFactory::KEY_TASK_ID => 3,
+                        TaskFactory::KEY_STATE => Task::STATE_IN_PROGRESS,
+                        TaskFactory::KEY_TYPE => Task::TYPE_HTML_VALIDATION,
+                    ],
+                    [
+                        TaskFactory::KEY_TASK_ID => 4,
+                        TaskFactory::KEY_STATE => Task::STATE_IN_PROGRESS,
+                        TaskFactory::KEY_TYPE => Task::TYPE_CSS_VALIDATION,
+                    ],
+                ],
+            ],
+        ];
+
+        $testFactory = new TestFactory($this->container);
+
+        /* @var Test[] $tests */
+        $tests = [];
+
+        foreach ($testValuesCollection as $testValues) {
+            $tests[] = $testFactory->create($testValues);
+        }
+
+        $test = $tests[$testIndex];
+
+        $remoteTaskIds = $this->taskRepository->getRemoteIdByTestAndTaskTypeIncludingStates(
+            $test,
+            $taskType,
+            $states
+        );
+
+        $this->assertEquals($expectedRemoteTaskIds, $remoteTaskIds);
+    }
+
+    /**
+     * @return array
+     */
+    public function getRemoteIdByTestAndTaskTypeIncludingStatesDataProvider()
+    {
+        return [
+            'testId 1; states: completed' => [
+                'testIndex' => 0,
+                'taskType' => null,
+                'states' => [
+                    Task::STATE_COMPLETED,
+                ],
+                'expectedRemoteTaskIds' => [
+                    1,
+                ],
+            ],
+            'testId 1; states: cancelled' => [
+                'testIndex' => 0,
+                'taskType' => null,
+                'states' => [
+                    Task::STATE_CANCELLED,
+                ],
+                'expectedRemoteTaskIds' => [
+                    2,
+                ],
+            ],
+            'testId 1; states: completed, queued' => [
+                'testIndex' => 0,
+                'taskType' => null,
+                'states' => [
+                    Task::STATE_COMPLETED,
+                    Task::STATE_CANCELLED,
+                ],
+                'expectedRemoteTaskIds' => [
+                    1, 2,
+                ],
+            ],
+            'testId 2; states: in-progress' => [
+                'testIndex' => 1,
+                'taskType' => null,
+                'states' => [
+                    Task::STATE_IN_PROGRESS,
+                ],
+                'expectedRemoteTaskIds' => [
+                    3, 4,
+                ],
+            ],
+            'testId 2; taskType: HTML Validation' => [
+                'testIndex' => 1,
+                'taskType' => Task::TYPE_HTML_VALIDATION,
+                'states' => [
+                    Task::STATE_IN_PROGRESS,
+                ],
+                'expectedRemoteTaskIds' => [
+                    3,
+                ],
+            ],
+        ];
+    }
+
+    /**
      * @param array $testValuesCollection
      * @param array $outputs
      *
