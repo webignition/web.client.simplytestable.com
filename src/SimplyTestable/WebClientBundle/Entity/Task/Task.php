@@ -4,185 +4,165 @@ namespace SimplyTestable\WebClientBundle\Entity\Task;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\SerializerBundle\Annotation as SerializerAnnotation;
-
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\TimePeriod;
 use SimplyTestable\WebClientBundle\Entity\Task\Output as TaskOutput;
 use webignition\NormalisedUrl\NormalisedUrl;
 
-
 /**
- * 
  * @ORM\Entity
  * @SerializerAnnotation\ExclusionPolicy("all")
  * @ORM\Entity(repositoryClass="SimplyTestable\WebClientBundle\Repository\TaskRepository")
  */
-class Task {
-    
+class Task
+{
+    const STATE_CANCELLED = 'task-cancelled';
+    const STATE_QUEUED = 'task-queued';
+    const STATE_IN_PROGRESS = 'task-in-progress';
+    const STATE_COMPLETED = 'task-completed';
+    const STATE_AWAITING_CANCELLATION = 'task-awaiting-cancellation';
+    const STATE_QUEUED_FOR_ASSIGNMENT = 'task-queued-for-assignment';
+    const STATE_FAILED_NO_RETRY_AVAILABLE = 'task-failed-no-retry-available';
+    const STATE_FAILED_RETRY_AVAILABLE = 'task-failed-retry-available';
+    const STATE_FAILED_RETRY_LIMIT_REACHED = 'task-failed-retry-limit-reached';
+    const STATE_SKIPPED = 'task-skipped';
+
     /**
-     * 
-     * @var integer
-     * 
+     * @var int
+     *
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      * @SerializerAnnotation\Expose
      */
     private $id;
-    
-    
+
     /**
-     * 
-     * @var int 
-     * 
+     * @var int
+     *
      * @ORM\Column(type="integer", nullable=false)
      * @SerializerAnnotation\Expose
-     */    
+     */
     private $taskId;
-    
-    
+
     /**
-     * 
-     * @var string 
-     * 
+     * @var string
+     *
      * @ORM\Column(type="text", nullable=false)
      * @SerializerAnnotation\Expose
      */
     private $url;
-    
-    
+
     /**
-     *
      * @var string
-     * 
+     *
      * @ORM\Column(type="string", nullable=false)
      * @SerializerAnnotation\Expose
      */
     private $state;
-    
-    
+
     /**
-     *
      * @var string
-     * 
+     *
      * @ORM\Column(type="string", nullable=true)
      * @SerializerAnnotation\Expose
      */
     private $worker;
-    
-    
+
     /**
-     *
      * @var string
-     * 
+     *
      * @ORM\Column(type="string", nullable=false)
      * @SerializerAnnotation\Expose
      */
     private $type;
-    
-    
+
     /**
-     *
      * @var TimePeriod
-     * 
+     *
      * @ORM\OneToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\TimePeriod", cascade={"persist"})
      * @SerializerAnnotation\Expose
      */
     private $timePeriod;
-    
-    
+
     /**
-     *
      * @var TaskOutput
-     * 
+     *
      * @ORM\ManyToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\Task\Output")
      * @SerializerAnnotation\Expose
      */
     private $output;
-    
-    
-    /**
-     *
-     * @var Test
-     * 
-     * @ORM\ManyToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\Test\Test", inversedBy="tasks")
-     * @ORM\JoinColumn(name="test_id", referencedColumnName="id", nullable=false)     
-     */
-    protected $test;
-    
-    
-    public function __construct() {
-        $this->timePeriod = new TimePeriod();
-    }
-    
 
     /**
-     * Get id
+     * @var Test
      *
-     * @return integer 
+     * @ORM\ManyToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\Test\Test", inversedBy="tasks")
+     * @ORM\JoinColumn(name="test_id", referencedColumnName="id", nullable=false)
+     */
+    protected $test;
+
+
+    public function __construct()
+    {
+        $this->timePeriod = new TimePeriod();
+    }
+
+    /**
+     * @return int
      */
     public function getId()
     {
         return $this->id;
     }
 
-
     /**
-     * Set url
-     *
      * @param string $url
+     *
      * @return Task
      */
     public function setUrl($url)
     {
         $this->url = $url;
-    
+
         return $this;
     }
 
     /**
-     * Get url
-     *
-     * @return string 
+     * @return string
      */
     public function getUrl()
     {
         return $this->url;
     }
-    
-    
+
     /**
-     * 
      * @return string
      */
-    public function getNormalisedUrl() {
+    public function getNormalisedUrl()
+    {
         $url = (string)$this->getUrl();
         if ($url == '') {
             return $url;
         }
-        
+
         $normalisedUrl = new NormalisedUrl($url);
         return (string)$normalisedUrl;
     }
-    
 
     /**
-     * Set state
-     *
      * @param string $state
+     *
      * @return Task
      */
     public function setState($state)
     {
         $this->state = $state;
-    
+
         return $this;
     }
 
     /**
-     * Get state
-     *
-     * @return string 
+     * @return string
      */
     public function getState()
     {
@@ -190,22 +170,19 @@ class Task {
     }
 
     /**
-     * Set worker
-     *
      * @param string $worker
+     *
      * @return Task
      */
     public function setWorker($worker)
     {
         $this->worker = $worker;
-    
+
         return $this;
     }
 
     /**
-     * Get worker
-     *
-     * @return string 
+     * @return string
      */
     public function getWorker()
     {
@@ -213,22 +190,19 @@ class Task {
     }
 
     /**
-     * Set type
-     *
      * @param string $type
+     *
      * @return Task
      */
     public function setType($type)
     {
         $this->type = $type;
-    
+
         return $this;
     }
 
     /**
-     * Get type
-     *
-     * @return string 
+     * @return string
      */
     public function getType()
     {
@@ -236,21 +210,18 @@ class Task {
     }
 
     /**
-     * Set timePeriod
-     *
      * @param TimePeriod $timePeriod
+     *
      * @return Task
      */
     public function setTimePeriod(TimePeriod $timePeriod = null)
     {
         $this->timePeriod = $timePeriod;
-    
+
         return $this;
     }
 
     /**
-     * Get timePeriod
-     *
      * @return TimePeriod
      */
     public function getTimePeriod()
@@ -259,21 +230,18 @@ class Task {
     }
 
     /**
-     * Set output
-     *
      * @param TaskOutput $output
+     *
      * @return Task
      */
     public function setOutput(TaskOutput $output = null)
     {
         $this->output = $output;
-    
+
         return $this;
     }
 
     /**
-     * Get output
-     *
      * @return TaskOutput
      */
     public function getOutput()
@@ -282,21 +250,18 @@ class Task {
     }
 
     /**
-     * Set test
-     *
      * @param Test $test
+     *
      * @return Task
      */
     public function setTest(Test $test)
     {
         $this->test = $test;
-    
+
         return $this;
     }
 
     /**
-     * Get test
-     *
      * @return Test
      */
     public function getTest()
@@ -305,44 +270,38 @@ class Task {
     }
 
     /**
-     * Set taskId
-     *
      * @param integer $taskId
+     *
      * @return Task
      */
     public function setTaskId($taskId)
     {
         $this->taskId = $taskId;
-    
+
         return $this;
     }
 
     /**
-     * Get taskId
-     *
-     * @return integer 
+     * @return int
      */
     public function getTaskId()
     {
         return $this->taskId;
     }
-    
-    
+
     /**
-     *
-     * @return boolean
+     * @return bool
      */
     public function hasOutput()
     {
         return !is_null($this->getOutput());
     }
-    
-    
+
     /**
-     * 
      * @return string
      */
-    public function getFormattedUrl() {
+    public function getFormattedUrl()
+    {
         return rawurldecode($this->getUrl());
-    }       
+    }
 }
