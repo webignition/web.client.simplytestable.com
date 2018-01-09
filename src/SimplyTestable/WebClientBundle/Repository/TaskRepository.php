@@ -65,26 +65,6 @@ class TaskRepository extends EntityRepository
         return $tasks;
     }
 
-    public function getCountByTestAndState(Test $test, $states) {
-        $queryBuilder = $this->createQueryBuilder('Task');
-        $queryBuilder->select('count(Task.id)');
-
-        $stateConditions = array();
-
-        foreach ($states as $stateIndex => $state) {
-            $stateConditions[] = '(Task.state = :State'.$stateIndex.') ';
-            $queryBuilder->setParameter('State'.$stateIndex, $state);
-        }
-
-        $queryBuilder->where('(Task.test = :Test AND ('.implode('OR', $stateConditions).'))');
-        $queryBuilder->setParameter('Test', $test);
-
-        $result = $queryBuilder->getQuery()->getResult();
-
-        return (int)$result[0][1];
-    }
-
-
     public function getErrorFreeCountByTest(Test $test) {
         $queryBuilder = $this->createQueryBuilder('Task');
         $queryBuilder->join('Task.output', 'TaskOutput');
