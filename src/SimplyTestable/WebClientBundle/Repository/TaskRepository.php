@@ -2,319 +2,319 @@
 namespace SimplyTestable\WebClientBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
+use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 
 class TaskRepository extends EntityRepository
-{  
-    public function getExistsByTestAndRemoteId(Test $test, $taskId) {
-        return !is_null($this->findOneBy(array(
-            'taskId' => $taskId,
-            'test' => $test
-        )));      
-    }
-    
-    
-    public function getCollectionExistsByTestAndRemoteId(Test $test, $taskIds = array()) {        
-        $queryBuilder = $this->createQueryBuilder('Task');
+{
+    /**
+     * @param Test $test
+     * @param int[] $taskIds
+     *
+     * @return bool[]
+     */
+    public function getCollectionExistsByTestAndRemoteId(Test $test, $taskIds = [])
+    {
+        $queryBuilder = $this->createTaskQueryBuilder();
         $queryBuilder->select('Task.taskId');
-        $queryBuilder->where('Task.test = :Test');       
-        $queryBuilder->setParameter('Test', $test);       
+
+        $this->setQueryBuilderTaskTestPredicate($queryBuilder, $test);
+
         $queryResult = $queryBuilder->getQuery()->getResult();
-        
-        $resultTaskIds = array();
+
+        $resultTaskIds = [];
         foreach ($queryResult as $resultItem) {
             $resultTaskIds[$resultItem['taskId']] = true;
         }
-        
-        $result = array();
-        
+
+        $result = [];
+
         foreach ($taskIds as $taskId) {
             $result[$taskId] = isset($resultTaskIds[$taskId]);
         }
-        
+
         return $result;
     }
-    
-    
-    public function getCollectionByTestAndRemoteId(Test $test, $taskIds = array()) {
-        $queryBuilder = $this->createQueryBuilder('Task');
+
+    /**
+     * @param Test $test
+     * @param int[] $taskIds
+     *
+     * @return Task[]
+     */
+    public function getCollectionByTestAndRemoteId(Test $test, $taskIds = [])
+    {
+        $queryBuilder = $this->createTaskQueryBuilder();
         $queryBuilder->select('Task');
-        $queryBuilder->where('Task.test = :Test');
-        
+        $this->setQueryBuilderTaskTestPredicate($queryBuilder, $test);
+
         if (count($taskIds)) {
             $queryBuilder->andWhere('Task.taskId IN ('.implode(',', $taskIds).')');
-        }        
-        
-        $queryBuilder->setParameter('Test', $test);
-        
+        }
+
+        /* @var Task[] $queryResult */
         $queryResult = $queryBuilder->getQuery()->getResult();
-        
-        $tasks = array();
-        
+
+        $tasks = [];
+
         foreach ($queryResult as $task) {
             $tasks[$task->getTaskId()] = $task;
         }
-        
+
         return $tasks;
     }
-    
-    public function getCountByTestAndState(Test $test, $states) {
-        $queryBuilder = $this->createQueryBuilder('Task');
-        $queryBuilder->select('count(Task.id)');
 
-        $stateConditions = array();
+    /**
+     * @param array $resultSet
+     *
+     * @return int[]
+     */
+    private function getTaskIdsFromQueryResult($resultSet)
+    {
+        $taskIds = [];
 
-        foreach ($states as $stateIndex => $state) {
-            $stateConditions[] = '(Task.state = :State'.$stateIndex.') ';
-            $queryBuilder->setParameter('State'.$stateIndex, $state);
-        }        
-        
-        $queryBuilder->where('(Task.test = :Test AND ('.implode('OR', $stateConditions).'))');
-        $queryBuilder->setParameter('Test', $test);
-        
-        $result = $queryBuilder->getQuery()->getResult();
-        
-        return (int)$result[0][1];        
-    }
-    
-    
-    public function getErrorFreeCountByTest(Test $test) {
-        $queryBuilder = $this->createQueryBuilder('Task');
-        $queryBuilder->join('Task.output', 'TaskOutput');
-        $queryBuilder->select('count(Task.id)');
-        $queryBuilder->where('Task.test = :Test');
-        $queryBuilder->andWhere('TaskOutput.errorCount = :ErrorCount');
-
-        $queryBuilder->setParameter('Test', $test);        
-        $queryBuilder->setParameter('ErrorCount', 0);  
-        
-        $result = $queryBuilder->getQuery()->getResult();
-        
-        return (int)$result[0][1];        
-    }
-    
-    
-    private function getTaskIdsFromQueryResult($resultSet) {
-        $taskIds = array();
-        
         foreach ($resultSet as $result) {
             $taskIds[] = $result['taskId'];
         }
-        
+
         return $taskIds;
     }
-    
-    
-    public function getErroredCountByTest(Test $test) {
-        $queryBuilder = $this->createQueryBuilder('Task');
-        $queryBuilder->join('Task.output', 'TaskOutput');
-        $queryBuilder->select('count(Task.id)');
-        $queryBuilder->where('Task.test = :Test');
-        $queryBuilder->andWhere('TaskOutput.errorCount > :ErrorCount');
 
-        $queryBuilder->setParameter('Test', $test);        
-        $queryBuilder->setParameter('ErrorCount', 0);  
-        
-        $result = $queryBuilder->getQuery()->getResult();
-        
-        return (int)$result[0][1];        
-    }   
-    
-    
-    public function findUsedTaskOutputIds() {
-        $queryBuilder = $this->createQueryBuilder('Task');
+    /**
+     * @return int[]
+     */
+    public function findUsedTaskOutputIds()
+    {
+        $queryBuilder = $this->createTaskQueryBuilder();
         $queryBuilder->join('Task.output', 'TaskOutput');
-        $queryBuilder->select('DISTINCT TaskOutput.id as TaskOutputId');        
-       
-        $result = $queryBuilder->getQuery()->getResult(); 
-        
+        $queryBuilder->select('DISTINCT TaskOutput.id as TaskOutputId');
+
+        $result = $queryBuilder->getQuery()->getResult();
+
         if (count($result) === 0) {
-            return array();
+            return [];
         }
-        
-        $ids = array();
-        
+
+        $ids = [];
+
         foreach ($result as $taskOutputIdResult) {
             $ids[] = $taskOutputIdResult['TaskOutputId'];
         }
-        
-        return $ids;      
-    }   
-    
-    
+
+        return $ids;
+    }
+
     /**
-     * 
-     * @param int $task_id
-     * @return boolean
+     * @param int $taskId
+     *
+     * @return bool
      */
-    public function hasByTaskId($task_id) {        
-        $queryBuilder = $this->createQueryBuilder('Task');
+    public function hasByTaskId($taskId)
+    {
+        $queryBuilder = $this->createTaskQueryBuilder();
         $queryBuilder->select('count(Task.id)');
         $queryBuilder->where('Task.taskId = :TaskId');
-        $queryBuilder->setParameter('TaskId', $task_id); 
-        
-        $result = $queryBuilder->getQuery()->getResult();        
-        
-        return $result[0][1] > 0;     
-    } 
-    
-    
+        $queryBuilder->setParameter('TaskId', $taskId);
+
+        $result = $queryBuilder->getQuery()->getResult();
+
+        return $result[0][1] > 0;
+    }
+
     /**
-     * 
-     * @param \SimplyTestable\WebClientBundle\Entity\Test\Test $test
-     * @return array
+     * @param Test $test
+     *
+     * @return int[]
      */
-    public function findRetrievedRemoteTaskIds(Test $test) {        
-        $queryBuilder = $this->createQueryBuilder('Task');
+    public function findRetrievedRemoteTaskIds(Test $test)
+    {
+        $queryBuilder = $this->createTaskQueryBuilder();
         $queryBuilder->select('Task.taskId');
-        $queryBuilder->where('Task.test = :Test');
-        $queryBuilder->setParameter('Test', $test); 
-        
-        $result = $queryBuilder->getQuery()->getResult();        
-        
-        if (count($result) === 0) {
-            return array();
+        $this->setQueryBuilderTaskTestPredicate($queryBuilder, $test);
+
+        $queryResult = $queryBuilder->getQuery()->getResult();
+
+        $remoteTaskIds = [];
+
+        foreach ($queryResult as $taskIdResult) {
+            $remoteTaskIds[] = $taskIdResult['taskId'];
         }
-        
-        return $this->getSingleFieldCollectionFromResult($result, 'taskId');
+
+        return $remoteTaskIds;
     }
-    
-    
+
     /**
-     * 
-     * @param array $result
-     * @param string $fieldName
-     * @return array
+     * @param Test $test
+     * @param string|null $taskType
+     * @param string[] $states
+     *
+     * @return int[]
      */
-    private function getSingleFieldCollectionFromResult($result, $fieldName) {
-        $values = array();
-        
-        foreach ($result as $resultItem) {
-            $values[] = $resultItem[$fieldName];
-        }
-        
-        return $values;         
-    }
-    
-    
-    public function getRemoteIdByTestAndTaskTypeIncludingStates(Test $test, $taskType = null, $states = array()) {
-        $queryBuilder = $this->createQueryBuilder('Task');
+    public function getRemoteIdByTestAndTaskTypeIncludingStates(Test $test, $taskType = null, $states = [])
+    {
+        $queryBuilder = $this->createTestAndTaskTypeIncludingStatesQueryBuilder($test, $taskType, $states);
         $queryBuilder->select('Task.taskId');
 
-        $stateConditions = array();
-        foreach ($states as $stateIndex => $state) {
-            $stateConditions[] = '(Task.state = :State'.$stateIndex.') ';
-            $queryBuilder->setParameter('State'.$stateIndex, $state);
-        } 
-        
-        $where = '(Task.test = :Test AND ('.implode('OR', $stateConditions).'))';
-        
-        if (!is_null($taskType)) {
-            $where .= ' AND Task.type = :TaskType';
-            $queryBuilder->setParameter('TaskType', $taskType);
-        }
-        
-        $queryBuilder->where($where);
-        $queryBuilder->setParameter('Test', $test);        
-        
-        return $this->getTaskIdsFromQueryResult($queryBuilder->getQuery()->getResult());            
+        return $this->getTaskIdsFromQueryResult($queryBuilder->getQuery()->getResult());
     }
-    
-    
-    public function getRemoteIdByTestAndIssueCountAndTaskTypeExcludingStates(Test $test, $issueCount = null, $issueType = null, $taskType, $excludeStates = array()) {
-        $queryBuilder = $this->createQueryBuilder('Task');
-        $queryBuilder->join('Task.output', 'TaskOutput');
-        $queryBuilder->select('Task.taskId');
-        
-        $where = 'Task.test = :Test ';
-        $queryBuilder->setParameter('Test', $test);  
-        
-        if (!is_null($issueCount)) {
-            $issueComparatorAndCount = explode(' ', $issueCount);
-            $where .= ' AND TaskOutput.'.$issueType.'Count '.$issueComparatorAndCount[0].' :IssueCount';   
-            $queryBuilder->setParameter('IssueCount', $issueComparatorAndCount[1]);
-        }        
-        
-        if (is_array(($excludeStates))) {
-            $stateConditions = array();
 
-            foreach ($excludeStates as $stateIndex => $state) {
-                $stateConditions[] = '(Task.state != :State'.$stateIndex.') ';
-                $queryBuilder->setParameter('State'.$stateIndex, $state);
-            } 
-            
-            $where .= ' AND ('.implode('AND', $stateConditions).')';
-        }
-        
-        if (!is_null($taskType)) {
-            $where .= ' AND Task.type = :TaskType';
-            $queryBuilder->setParameter('TaskType', $taskType);
-        }
-        
-        $queryBuilder->where($where); 
-        
-        return $this->getTaskIdsFromQueryResult($queryBuilder->getQuery()->getResult());        
-    }    
-    
-    
-    public function getRemoteIdCountByTestAndTaskTypeIncludingStates(Test $test, $taskType = null, $states = array()) {
-        $queryBuilder = $this->createQueryBuilder('Task');
+    /**
+     * @param Test $test
+     * @param string|null $taskType
+     * @param string[] $states
+     *
+     * @return int
+     */
+    public function getRemoteIdCountByTestAndTaskTypeIncludingStates(Test $test, $taskType = null, $states = [])
+    {
+        $queryBuilder = $this->createTestAndTaskTypeIncludingStatesQueryBuilder($test, $taskType, $states);
         $queryBuilder->select('COUNT(Task.taskId)');
 
-        $stateConditions = array();
-        foreach ($states as $stateIndex => $state) {
-            $stateConditions[] = '(Task.state = :State'.$stateIndex.') ';
-            $queryBuilder->setParameter('State'.$stateIndex, $state);
-        } 
-        
-        $where = '(Task.test = :Test AND ('.implode('OR', $stateConditions).'))';
-        
+        $result = $queryBuilder->getQuery()->getResult();
+
+        return (int)$result[0][1];
+    }
+
+    /**
+     * @param Test $test
+     * @param string|null $taskType
+     * @param string[] $states
+     *
+     * @return QueryBuilder
+     */
+    private function createTestAndTaskTypeIncludingStatesQueryBuilder(Test $test, $taskType = null, $states = [])
+    {
+        $queryBuilder = $this->createTaskQueryBuilder();
+        $this->setQueryBuilderTaskTestPredicate($queryBuilder, $test);
+
+        $queryBuilder->andWhere('Task.state IN (:States)');
+        $queryBuilder->setParameter('States', $states);
+
         if (!is_null($taskType)) {
-            $where .= ' AND Task.type = :TaskType';
+            $queryBuilder->andWhere('Task.type = :TaskType');
             $queryBuilder->setParameter('TaskType', $taskType);
         }
-        
-        $queryBuilder->where($where);
-        $queryBuilder->setParameter('Test', $test);        
-        
-        $result = $queryBuilder->getQuery()->getResult();        
-        return (int)$result[0][1];           
+
+
+
+        return $queryBuilder;
     }
-    
-    
-    public function getRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStates(Test $test, $issueCount = null, $issueType = null, $taskType, $excludeStates = array()) {
-        $queryBuilder = $this->createQueryBuilder('Task');
+
+    /**
+     * @param Test $test
+     * @param string|null $issueCount
+     * @param string|null $issueType
+     * @param string|null $taskType
+     * @param array $excludeStates
+     *
+     * @return int[]
+     */
+    public function getRemoteIdByTestAndIssueCountAndTaskTypeExcludingStates(
+        Test $test,
+        $issueCount = null,
+        $issueType = null,
+        $taskType,
+        array $excludeStates
+    ) {
+        $queryBuilder = $this->createTestAndIssueCountAndTaskTypeExcludingStatesQueryBuilder(
+            $test,
+            $excludeStates,
+            $taskType,
+            $issueCount,
+            $issueType
+        );
+
+        $queryBuilder->select('Task.taskId');
+
+        return $this->getTaskIdsFromQueryResult($queryBuilder->getQuery()->getResult());
+    }
+
+    /**
+     * @param Test $test
+     * @param string|null $issueCount
+     * @param string|null $issueType
+     * @param string|null $taskType
+     * @param string[] $excludeStates
+     *
+     * @return int
+     */
+    public function getRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStates(
+        Test $test,
+        $issueCount = null,
+        $issueType = null,
+        $taskType,
+        array $excludeStates
+    ) {
+        $queryBuilder = $this->createTestAndIssueCountAndTaskTypeExcludingStatesQueryBuilder(
+            $test,
+            $excludeStates,
+            $taskType,
+            $issueCount,
+            $issueType
+        );
+
         $queryBuilder->select('COUNT(Task.taskId)');
-        
-        $where = 'Task.test = :Test ';
-        $queryBuilder->setParameter('Test', $test);  
-        
+        $result = $queryBuilder->getQuery()->getResult();
+
+        return (int)$result[0][1];
+    }
+
+    /**
+     * @param Test $test
+     * @param string[] $excludeStates
+     * @param string|null $taskType
+     * @param string|null $issueCount
+     * @param string|null $issueType
+     *
+     * @return QueryBuilder
+     */
+    private function createTestAndIssueCountAndTaskTypeExcludingStatesQueryBuilder(
+        Test $test,
+        array $excludeStates,
+        $taskType = null,
+        $issueCount = null,
+        $issueType = null
+    ) {
+        $queryBuilder = $this->createTaskQueryBuilder();
+        $this->setQueryBuilderTaskTestPredicate($queryBuilder, $test);
+
         if (!is_null($issueCount)) {
             $queryBuilder->join('Task.output', 'TaskOutput');
             $issueComparatorAndCount = explode(' ', $issueCount);
-            $where .= ' AND TaskOutput.'.$issueType.'Count '.$issueComparatorAndCount[0].' :IssueCount';
+
+            $queryBuilder->andWhere(' TaskOutput.'.$issueType.'Count '.$issueComparatorAndCount[0].' :IssueCount');
             $queryBuilder->setParameter('IssueCount', $issueComparatorAndCount[1]);
         }
 
-        if (is_array(($excludeStates))) {
-            $stateConditions = array();
-
-            foreach ($excludeStates as $stateIndex => $state) {
-                $stateConditions[] = '(Task.state != :State'.$stateIndex.') ';
-                $queryBuilder->setParameter('State'.$stateIndex, $state);
-            }
-
-            $where .= ' AND ('.implode('AND', $stateConditions).')';
+        if (!empty($excludeStates)) {
+            $queryBuilder->andWhere('Task.state NOT IN (:States)');
+            $queryBuilder->setParameter('States', $excludeStates);
         }
 
         if (!is_null($taskType)) {
-            $where .= ' AND Task.type = :TaskType';
+            $queryBuilder->andWhere('Task.type = :TaskType');
             $queryBuilder->setParameter('TaskType', $taskType);
         }
-        
-        $queryBuilder->where($where); 
-        
-        $result = $queryBuilder->getQuery()->getResult();        
-        return (int)$result[0][1];   
+
+        return $queryBuilder;
     }
-} 
+
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param Test $test
+     */
+    private function setQueryBuilderTaskTestPredicate(QueryBuilder $queryBuilder, Test $test)
+    {
+        $queryBuilder->where('Task.test = :Test');
+        $queryBuilder->setParameter('Test', $test);
+    }
+
+    /**
+     * @return QueryBuilder
+     */
+    private function createTaskQueryBuilder()
+    {
+        return $this->createQueryBuilder('Task');
+    }
+}

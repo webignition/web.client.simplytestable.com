@@ -7,7 +7,6 @@ use JMS\SerializerBundle\Annotation as SerializerAnnotation;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 
 /**
- * 
  * @ORM\Entity
  * @ORM\Table(name="TaskOutput",
  *     indexes={
@@ -15,76 +14,72 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
  *     }
  * )
  * @ORM\Entity(repositoryClass="SimplyTestable\WebClientBundle\Repository\TaskOutputRepository")
- * 
- * @SerializerAnnotation\ExclusionPolicy("all") 
+ *
+ * @SerializerAnnotation\ExclusionPolicy("all")
  */
-class Output {
-    
+class Output
+{
+    const TYPE_HTML_VALIDATION = 'HTML validation';
+    const TYPE_CSS_VALIDATION = 'CSS validation';
+    const TYPE_JS_STATIC_ANALYSIS = 'JS static analysis';
+    const TYPE_LINK_INTEGRITY = 'Link integrity';
+
     /**
-     * 
-     * @var integer
-     * 
+     * @var int
+     *
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
-    
+
     /**
-     *
      * @var string
+     *
      * @ORM\Column(type="text", nullable=true)
      * @SerializerAnnotation\Expose
      * @SerializerAnnotation\Accessor(getter="getPublicSerialisedContent")
      */
     private $content;
-    
+
     /**
-     *
      * @var string
+     *
      * @ORM\Column(type="string", nullable=false)
      * @SerializerAnnotation\Expose
      */
     private $type;
-    
-    
+
     /**
-     *
-     * @var Result 
+     * @var Result
      */
     private $result;
-    
-    
+
     /**
+     * @var int
      *
-     * @var integer
      * @ORM\Column(type="integer", nullable=false)
      * @SerializerAnnotation\Expose
-     */    
+     */
     private $errorCount = 0;
-    
-    
+
     /**
+     * @var int
      *
-     * @var integer
      * @ORM\Column(type="integer", nullable=false)
      * @SerializerAnnotation\Expose
      */
     private $warningCount = 0;
-    
-    /**
-     *
-     * @var string
-     * @ORM\Column(type="string", nullable=true, length=32)
-     */
-    protected $hash;       
-    
 
     /**
-     * Get id
+     * @var string
      *
-     * @return integer 
+     * @ORM\Column(type="string", nullable=true, length=32)
+     */
+    protected $hash;
+
+    /**
+     * @return int
      */
     public function getId()
     {
@@ -92,207 +87,181 @@ class Output {
     }
 
     /**
-     * Set content
-     *
      * @param string $content
-     * @return TaskOutput
+     *
+     * @return Output
      */
     public function setContent($content)
     {
         $this->content = $content;
-    
+
         return $this;
     }
 
     /**
-     * Get content
-     *
-     * @return string 
+     * @return string
      */
     public function getContent()
     {
         return $this->content;
     }
-      
 
     /**
-     * Set type
-     *
      * @param string $type
+     *
      * @return Output
      */
     public function setType($type)
     {
         $this->type = $type;
-    
+
         return $this;
     }
 
     /**
-     * Get type
-     *
-     * @return string 
+     * @return string
      */
     public function getType()
     {
         return $this->type;
     }
-    
-    
+
     /**
-     *
      * @return string
      */
-    public function getPublicSerialisedContent() {
+    public function getPublicSerialisedContent()
+    {
         return $this->getResult();
     }
-    
-    
+
     /**
-     *
      * @param Result $result
-     * @return \SimplyTestable\WebClientBundle\Entity\Task\Output 
+     *
+     * @return Output
      */
     public function setResult(Result $result)
     {
         $this->result = $result;
+
         return $this;
     }
-    
-    
+
     /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Model\TaskOutput\Result
+     * @return Result
      */
     public function getResult()
     {
         return $this->result;
     }
 
-
     /**
      * @return bool
      */
-    public function hasResult() {
+    public function hasResult()
+    {
         return !is_null($this->getResult());
     }
-    
+
     /**
-     * Set error count
-     *
      * @param int $errorCount
+     *
      * @return Output
      */
     public function setErrorCount($errorCount)
     {
         $this->errorCount = $errorCount;
-    
+
         return $this;
     }
 
     /**
-     * Get error count
-     *
-     * @return int 
+     * @return int
      */
     public function getErrorCount()
     {
         return $this->errorCount;
     }
-    
-    
-    /**
-     *
-     * @return boolean
-     */
-    public function hasErrors() {
-        return $this->getErrorCount() > 0;
-    }
-
 
     /**
      * @return bool
      */
-    public function hasIssues() {
+    public function hasErrors()
+    {
+        return $this->getErrorCount() > 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasIssues()
+    {
         return $this->hasErrors() || $this->hasWarnings();
     }
-    
-    
+
     /**
-     * Set warningCount
-     *
      * @param integer $warningCount
+     *
      * @return Output
      */
     public function setWarningCount($warningCount)
     {
         $this->warningCount = $warningCount;
-    
+
         return $this;
     }
 
     /**
-     * Get warningCount
-     *
-     * @return integer 
+     * @return int
      */
     public function getWarningCount()
     {
         return $this->warningCount;
-    }    
-    
-    
+    }
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function hasWarnings() {
+    public function hasWarnings()
+    {
         return $this->getWarningCount() > 0;
     }
-    
-    
+
     /**
-     * Set hash
-     *
      * @param string $hash
-     * @return Task
+     *
+     * @return Output
      */
     public function setHash($hash)
     {
         $this->hash = $hash;
-    
+
         return $this;
     }
 
     /**
-     * Get hash
-     *
      * @return string
      */
     public function getHash()
     {
         return $this->hash;
-    } 
-    
-    
+    }
+
     /**
-     * 
-     * @return Task
+     * @return Output
      */
-    public function generateHash() {        
+    public function generateHash()
+    {
         return $this->setHash(md5('content:'.$this->getContent().'
         type:'.$this->getType().'
         error-count:'.$this->getErrorCount().'
         warning-count:'.$this->getWarningCount()));
-    } 
-    
-    
+    }
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function hasId() {
+    public function hasId()
+    {
         return !is_null($this->getId());
     }
-    
 }
