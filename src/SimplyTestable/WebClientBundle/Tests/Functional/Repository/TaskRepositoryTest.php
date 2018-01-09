@@ -407,6 +407,57 @@ class TaskRepositoryTest extends BaseSimplyTestableTestCase
     }
 
     /**
+     * @dataProvider hasByTaskIdDataProvider
+     *
+     * @param int $remoteTaskId
+     * @param bool $expectedHas
+     */
+    public function testHasByTaskId($remoteTaskId, $expectedHas)
+    {
+        $testValuesCollection = [
+            [
+                TestFactory::KEY_TEST_ID => 1,
+                TestFactory::KEY_TASKS => [
+                    [
+                        TaskFactory::KEY_TASK_ID => 1,
+                    ],
+                    [
+                        TaskFactory::KEY_TASK_ID => 2,
+                    ],
+                ],
+            ],
+        ];
+
+        $testFactory = new TestFactory($this->container);
+        foreach ($testValuesCollection as $testValues) {
+            $testFactory->create($testValues);
+        }
+
+        $this->assertEquals($expectedHas, $this->taskRepository->hasByTaskId($remoteTaskId));
+    }
+
+    /**
+     * @return array
+     */
+    public function hasByTaskIdDataProvider()
+    {
+        return [
+            'has remote task 1' => [
+                'remoteTaskId' => 1,
+                'expectedHas' => true,
+            ],
+            'has remote task 2' => [
+                'remoteTaskId' => 2,
+                'expectedHas' => true,
+            ],
+            'does not have remote task 3' => [
+                'remoteTaskId' => 3,
+                'expectedHas' => false,
+            ],
+        ];
+    }
+
+    /**
      * @param array $testValuesCollection
      * @param array $outputs
      *
