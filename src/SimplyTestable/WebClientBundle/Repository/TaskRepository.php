@@ -2,6 +2,7 @@
 namespace SimplyTestable\WebClientBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 
 class TaskRepository extends EntityRepository
@@ -34,8 +35,14 @@ class TaskRepository extends EntityRepository
         return $result;
     }
 
-
-    public function getCollectionByTestAndRemoteId(Test $test, $taskIds = array()) {
+    /**
+     * @param Test $test
+     * @param int[] $taskIds
+     *
+     * @return Task[]
+     */
+    public function getCollectionByTestAndRemoteId(Test $test, $taskIds = [])
+    {
         $queryBuilder = $this->createQueryBuilder('Task');
         $queryBuilder->select('Task');
         $queryBuilder->where('Task.test = :Test');
@@ -46,9 +53,10 @@ class TaskRepository extends EntityRepository
 
         $queryBuilder->setParameter('Test', $test);
 
+        /* @var Task[] $queryResult */
         $queryResult = $queryBuilder->getQuery()->getResult();
 
-        $tasks = array();
+        $tasks = [];
 
         foreach ($queryResult as $task) {
             $tasks[$task->getTaskId()] = $task;
