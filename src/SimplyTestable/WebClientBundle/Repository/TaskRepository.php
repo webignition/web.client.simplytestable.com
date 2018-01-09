@@ -65,8 +65,14 @@ class TaskRepository extends EntityRepository
         return $tasks;
     }
 
-    private function getTaskIdsFromQueryResult($resultSet) {
-        $taskIds = array();
+    /**
+     * @param array $resultSet
+     *
+     * @return int[]
+     */
+    private function getTaskIdsFromQueryResult($resultSet)
+    {
+        $taskIds = [];
 
         foreach ($resultSet as $result) {
             $taskIds[] = $result['taskId'];
@@ -74,23 +80,6 @@ class TaskRepository extends EntityRepository
 
         return $taskIds;
     }
-
-
-    public function getErroredCountByTest(Test $test) {
-        $queryBuilder = $this->createQueryBuilder('Task');
-        $queryBuilder->join('Task.output', 'TaskOutput');
-        $queryBuilder->select('count(Task.id)');
-        $queryBuilder->where('Task.test = :Test');
-        $queryBuilder->andWhere('TaskOutput.errorCount > :ErrorCount');
-
-        $queryBuilder->setParameter('Test', $test);
-        $queryBuilder->setParameter('ErrorCount', 0);
-
-        $result = $queryBuilder->getQuery()->getResult();
-
-        return (int)$result[0][1];
-    }
-
 
     public function findUsedTaskOutputIds() {
         $queryBuilder = $this->createQueryBuilder('Task');
