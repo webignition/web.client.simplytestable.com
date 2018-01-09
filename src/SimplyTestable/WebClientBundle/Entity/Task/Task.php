@@ -16,16 +16,16 @@ use webignition\NormalisedUrl\NormalisedUrl;
  */
 class Task
 {
-    const STATE_CANCELLED = 'task-cancelled';
-    const STATE_QUEUED = 'task-queued';
-    const STATE_IN_PROGRESS = 'task-in-progress';
-    const STATE_COMPLETED = 'task-completed';
-    const STATE_AWAITING_CANCELLATION = 'task-awaiting-cancellation';
-    const STATE_QUEUED_FOR_ASSIGNMENT = 'task-queued-for-assignment';
-    const STATE_FAILED_NO_RETRY_AVAILABLE = 'task-failed-no-retry-available';
-    const STATE_FAILED_RETRY_AVAILABLE = 'task-failed-retry-available';
-    const STATE_FAILED_RETRY_LIMIT_REACHED = 'task-failed-retry-limit-reached';
-    const STATE_SKIPPED = 'task-skipped';
+    const STATE_CANCELLED = 'cancelled';
+    const STATE_QUEUED = 'queued';
+    const STATE_IN_PROGRESS = 'in-progress';
+    const STATE_COMPLETED = 'completed';
+    const STATE_AWAITING_CANCELLATION = 'awaiting-cancellation';
+    const STATE_QUEUED_FOR_ASSIGNMENT = 'queued-for-assignment';
+    const STATE_FAILED_NO_RETRY_AVAILABLE = 'failed-no-retry-available';
+    const STATE_FAILED_RETRY_AVAILABLE = 'failed-retry-available';
+    const STATE_FAILED_RETRY_LIMIT_REACHED = 'failed-retry-limit-reached';
+    const STATE_SKIPPED = 'skipped';
 
     /**
      * @var int
