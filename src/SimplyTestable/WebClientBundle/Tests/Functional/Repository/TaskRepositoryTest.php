@@ -458,6 +458,84 @@ class TaskRepositoryTest extends BaseSimplyTestableTestCase
     }
 
     /**
+     * @dataProvider findRetrievedRemoteTaskIdsDataProvider
+     *
+     * @param int $testIndex
+     * @param array $expectedRemoteTaskIds
+     */
+    public function testFindRetrievedRemoteTaskIds($testIndex, array $expectedRemoteTaskIds)
+    {
+        $testValuesCollection = [
+            [
+                TestFactory::KEY_TEST_ID => 1,
+                TestFactory::KEY_TASKS => [
+                    [
+                        TaskFactory::KEY_TASK_ID => 1,
+                    ],
+                    [
+                        TaskFactory::KEY_TASK_ID => 2,
+                    ],
+                ],
+            ],
+            [
+                TestFactory::KEY_TEST_ID => 2,
+                TestFactory::KEY_TASKS => [
+                    [
+                        TaskFactory::KEY_TASK_ID => 3,
+                    ],
+                    [
+                        TaskFactory::KEY_TASK_ID => 4,
+                    ],
+                ],
+            ],
+            [
+                TestFactory::KEY_TEST_ID => 3,
+                TestFactory::KEY_TASKS => [],
+            ],
+        ];
+
+        $testFactory = new TestFactory($this->container);
+
+        /* @var Test[] $tests */
+        $tests = [];
+
+        foreach ($testValuesCollection as $testValues) {
+            $tests[] = $testFactory->create($testValues);
+        }
+
+        $test = $tests[$testIndex];
+
+        $remoteTaskIds = $this->taskRepository->findRetrievedRemoteTaskIds($test);
+
+        $this->assertEquals($expectedRemoteTaskIds, $remoteTaskIds);
+    }
+
+    /**
+     * @return array
+     */
+    public function findRetrievedRemoteTaskIdsDataProvider()
+    {
+        return [
+            'test 0' => [
+                'testIndex' => 0,
+                'expectedRemoteTaskIds' => [
+                    1, 2,
+                ],
+            ],
+            'test 1' => [
+                'testIndex' => 1,
+                'expectedRemoteTaskIds' => [
+                    3, 4,
+                ],
+            ],
+            'test 2' => [
+                'testIndex' => 2,
+                'expectedRemoteTaskIds' => [],
+            ],
+        ];
+    }
+
+    /**
      * @param array $testValuesCollection
      * @param array $outputs
      *

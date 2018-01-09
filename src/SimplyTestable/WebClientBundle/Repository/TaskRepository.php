@@ -123,42 +123,27 @@ class TaskRepository extends EntityRepository
     }
 
     /**
+     * @param Test $test
      *
-     * @param \SimplyTestable\WebClientBundle\Entity\Test\Test $test
-     * @return array
+     * @return int[]
      */
-    public function findRetrievedRemoteTaskIds(Test $test) {
+    public function findRetrievedRemoteTaskIds(Test $test)
+    {
         $queryBuilder = $this->createQueryBuilder('Task');
         $queryBuilder->select('Task.taskId');
         $queryBuilder->where('Task.test = :Test');
         $queryBuilder->setParameter('Test', $test);
 
-        $result = $queryBuilder->getQuery()->getResult();
+        $queryResult = $queryBuilder->getQuery()->getResult();
 
-        if (count($result) === 0) {
-            return array();
+        $remoteTaskIds = [];
+
+        foreach ($queryResult as $taskIdResult) {
+            $remoteTaskIds[] = $taskIdResult['taskId'];
         }
 
-        return $this->getSingleFieldCollectionFromResult($result, 'taskId');
+        return $remoteTaskIds;
     }
-
-
-    /**
-     *
-     * @param array $result
-     * @param string $fieldName
-     * @return array
-     */
-    private function getSingleFieldCollectionFromResult($result, $fieldName) {
-        $values = array();
-
-        foreach ($result as $resultItem) {
-            $values[] = $resultItem[$fieldName];
-        }
-
-        return $values;
-    }
-
 
     public function getRemoteIdByTestAndTaskTypeIncludingStates(Test $test, $taskType = null, $states = array()) {
         $queryBuilder = $this->createQueryBuilder('Task');
