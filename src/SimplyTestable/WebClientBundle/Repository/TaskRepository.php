@@ -81,7 +81,11 @@ class TaskRepository extends EntityRepository
         return $taskIds;
     }
 
-    public function findUsedTaskOutputIds() {
+    /**
+     * @return int[]
+     */
+    public function findUsedTaskOutputIds()
+    {
         $queryBuilder = $this->createQueryBuilder('Task');
         $queryBuilder->join('Task.output', 'TaskOutput');
         $queryBuilder->select('DISTINCT TaskOutput.id as TaskOutputId');
@@ -89,10 +93,10 @@ class TaskRepository extends EntityRepository
         $result = $queryBuilder->getQuery()->getResult();
 
         if (count($result) === 0) {
-            return array();
+            return [];
         }
 
-        $ids = array();
+        $ids = [];
 
         foreach ($result as $taskOutputIdResult) {
             $ids[] = $taskOutputIdResult['TaskOutputId'];
@@ -100,7 +104,6 @@ class TaskRepository extends EntityRepository
 
         return $ids;
     }
-
 
     /**
      *

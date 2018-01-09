@@ -14,6 +14,7 @@ class TaskFactory
     const KEY_STATE = 'state';
     const KEY_TYPE = 'type';
     const KEY_TEST = 'test';
+    const KEY_OUTPUT  = 'output';
 
     const DEFAULT_URL = 'http://example.com/';
     const DEFAULT_STATE = Task::STATE_COMPLETED;
@@ -64,6 +65,10 @@ class TaskFactory
         $task->setState($taskValues[self::KEY_STATE]);
         $task->setType($taskValues[self::KEY_TYPE]);
         $task->setTest($taskValues[self::KEY_TEST]);
+
+        if (isset($taskValues[self::KEY_OUTPUT])) {
+            $task->setOutput($taskValues[self::KEY_OUTPUT]);
+        }
 
         $entityManager->persist($task);
         $entityManager->flush();

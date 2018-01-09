@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Repository\TaskRepository;
+use SimplyTestable\WebClientBundle\Tests\Factory\OutputFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TaskFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
@@ -286,5 +287,151 @@ class TaskRepositoryTest extends BaseSimplyTestableTestCase
                 ],
             ],
         ];
+    }
+
+    /**
+     * @dataProvider findUsedTaskOutputIdsDataProvider
+     *
+     * @param array $outputValuesCollection
+     * @param array $testValuesCollection
+     * @param array $expectedOutputIndices
+     */
+    public function testFindUsedTaskOutputIds(
+        array $outputValuesCollection,
+        array $testValuesCollection,
+        array $expectedOutputIndices
+    ) {
+        $outputFactory = new OutputFactory($this->container);
+        $testFactory = new TestFactory($this->container);
+
+        $outputs = [];
+        $outputIds = [];
+        $tests = [];
+
+        foreach ($outputValuesCollection as $outputValues) {
+            $output = $outputFactory->create($outputValues);
+            $outputs[] = $output;
+            $outputIds[] = $output->getId();
+        }
+
+        $testValuesCollection = $this->populateTestValuesCollectionWithTaskOutputs($testValuesCollection, $outputs);
+
+        foreach ($testValuesCollection as $testValues) {
+            $tests[] = $testFactory->create($testValues);
+        }
+
+        $expectedOutputIds = [];
+
+        foreach ($expectedOutputIndices as $expectedOutputIndex) {
+            $expectedOutputIds[] = $outputIds[$expectedOutputIndex];
+        }
+
+        $usedOutputIds = $this->taskRepository->findUsedTaskOutputIds();
+
+        $this->assertEquals($expectedOutputIds, $usedOutputIds);
+    }
+
+    /**
+     * @return array
+     */
+    public function findUsedTaskOutputIdsDataProvider()
+    {
+        return [
+            'no output, no tasks' => [
+                'outputValuesCollection' => [],
+                'testValuesCollection' => [],
+                'expectedOutputIndices' => [],
+            ],
+            'output, no tasks' => [
+                'outputValuesCollection' => [
+                    [],
+                ],
+                'testValuesCollection' => [],
+                'expectedOutputIndices' => [],
+            ],
+            'no used output' => [
+                'outputValuesCollection' => [
+                    [],
+                ],
+                'testValuesCollection' => [
+                    [
+                        TestFactory::KEY_TEST_ID => 1,
+                        TestFactory::KEY_TASKS => [
+                            [
+                                TaskFactory::KEY_TASK_ID => 1,
+                            ]
+                        ],
+                    ],
+                ],
+                'expectedOutputIndices' => [],
+            ],
+            'some used output' => [
+                'outputValuesCollection' => [
+                    [],
+                    [],
+                    [],
+                    [],
+                ],
+                'testValuesCollection' => [
+                    [
+                        TestFactory::KEY_TEST_ID => 1,
+                        TestFactory::KEY_TASKS => [
+                            [
+                                TaskFactory::KEY_TASK_ID => 1,
+                                TaskFactory::KEY_OUTPUT => 0,
+                            ],
+                            [
+                                TaskFactory::KEY_TASK_ID => 2,
+                            ],
+                            [
+                                TaskFactory::KEY_TASK_ID => 3,
+                                TaskFactory::KEY_OUTPUT => 1,
+                            ],
+                        ],
+                    ],
+                    [
+                        TestFactory::KEY_TEST_ID => 2,
+                        TestFactory::KEY_TASKS => [
+                            [
+                                TaskFactory::KEY_TASK_ID => 4,
+                                TaskFactory::KEY_OUTPUT => 3,
+                            ],
+                        ],
+                    ],
+                ],
+                'expectedOutputIndices' => [
+                    0, 1, 3
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @param array $testValuesCollection
+     * @param array $outputs
+     *
+     * @return array
+     */
+    private function populateTestValuesCollectionWithTaskOutputs(array $testValuesCollection, array $outputs)
+    {
+        foreach ($testValuesCollection as $testValuesIndex => $testValues) {
+            if (isset($testValues[TestFactory::KEY_TASKS])) {
+                $taskValuesCollection = $testValues[TestFactory::KEY_TASKS];
+
+                foreach ($taskValuesCollection as $taskValuesIndex => $taskValues) {
+                    if (isset($taskValues[TaskFactory::KEY_OUTPUT])) {
+                        $taskValues[TaskFactory::KEY_OUTPUT] = $outputs[$taskValues[TaskFactory::KEY_OUTPUT]];
+                    }
+
+                    $taskValuesCollection[$taskValuesIndex] = $taskValues;
+                }
+
+                $testValues[TestFactory::KEY_TASKS] = $taskValuesCollection;
+            }
+
+            $testValuesCollection[$testValuesIndex] = $testValues;
+        }
+
+        return $testValuesCollection;
     }
 }
