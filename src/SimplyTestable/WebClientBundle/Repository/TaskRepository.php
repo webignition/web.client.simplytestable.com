@@ -6,19 +6,26 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 
 class TaskRepository extends EntityRepository
 {
-    public function getCollectionExistsByTestAndRemoteId(Test $test, $taskIds = array()) {
+    /**
+     * @param Test $test
+     * @param int[] $taskIds
+     *
+     * @return bool[]
+     */
+    public function getCollectionExistsByTestAndRemoteId(Test $test, $taskIds = [])
+    {
         $queryBuilder = $this->createQueryBuilder('Task');
         $queryBuilder->select('Task.taskId');
         $queryBuilder->where('Task.test = :Test');
         $queryBuilder->setParameter('Test', $test);
         $queryResult = $queryBuilder->getQuery()->getResult();
 
-        $resultTaskIds = array();
+        $resultTaskIds = [];
         foreach ($queryResult as $resultItem) {
             $resultTaskIds[$resultItem['taskId']] = true;
         }
 
-        $result = array();
+        $result = [];
 
         foreach ($taskIds as $taskId) {
             $result[$taskId] = isset($resultTaskIds[$taskId]);
