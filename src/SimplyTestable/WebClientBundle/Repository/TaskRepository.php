@@ -65,22 +65,6 @@ class TaskRepository extends EntityRepository
         return $tasks;
     }
 
-    public function getErrorFreeCountByTest(Test $test) {
-        $queryBuilder = $this->createQueryBuilder('Task');
-        $queryBuilder->join('Task.output', 'TaskOutput');
-        $queryBuilder->select('count(Task.id)');
-        $queryBuilder->where('Task.test = :Test');
-        $queryBuilder->andWhere('TaskOutput.errorCount = :ErrorCount');
-
-        $queryBuilder->setParameter('Test', $test);
-        $queryBuilder->setParameter('ErrorCount', 0);
-
-        $result = $queryBuilder->getQuery()->getResult();
-
-        return (int)$result[0][1];
-    }
-
-
     private function getTaskIdsFromQueryResult($resultSet) {
         $taskIds = array();
 
