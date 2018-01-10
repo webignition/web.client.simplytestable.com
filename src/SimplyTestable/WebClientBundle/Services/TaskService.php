@@ -5,7 +5,6 @@ namespace SimplyTestable\WebClientBundle\Services;
 use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
-use SimplyTestable\WebClientBundle\Entity\TimePeriod;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Repository\TaskOutputRepository;
@@ -202,7 +201,6 @@ class TaskService extends CoreApplicationService
         return $tasks;
     }
 
-
     /**
      * @param Output[] $outputs
      *
@@ -241,12 +239,13 @@ class TaskService extends CoreApplicationService
     }
 
     /**
-     *
      * @param Task $task
      * @param array $previousTaskStates
-     * @return boolean
+     *
+     * @return bool
      */
-    private function hasTaskStateChanged(Task $task, $previousTaskStates) {
+    private function hasTaskStateChanged(Task $task, $previousTaskStates)
+    {
         if (!isset($previousTaskStates[$task->getTaskId()])) {
             return true;
         }
@@ -407,19 +406,25 @@ class TaskService extends CoreApplicationService
     }
 
     /**
-     *
      * @param Test $test
-     * @return array
+     *
+     * @return int[]
+     *
+     * @throws WebResourceException
      */
-    private function retrieveRemoteTaskIds(Test $test) {
-        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_task_ids', [
+    private function retrieveRemoteTaskIds(Test $test)
+    {
+        $httpRequest = $this->httpClientService->getRequest($this->getUrl('test_task_ids', [
                 'canonical-url' => urlencode($test->getWebsite()),
                 'test_id' => $test->getTestId()
         ]));
 
         $this->addAuthorisationToRequest($httpRequest);
 
-        return $this->webResourceService->get($httpRequest)->getContentObject();
+        /* @var JsonDocument $jsonDocument */
+        $jsonDocument = $this->webResourceService->get($httpRequest);
+
+        return $jsonDocument->getContentObject();
     }
 
     /**
