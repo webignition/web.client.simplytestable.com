@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Tests\Factory;
 
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
+use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\HtmlTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage;
@@ -43,6 +44,8 @@ class ModelFactory
     const LINK_INTEGRITY_MESSAGE_CLASS = 'class';
 
     const TEST_OPTIONS_FEATURE_OPTIONS = 'feature_options';
+
+    const TASK_OUTPUT = 'output';
 
     /**
      * @param array $taskOutputValues
@@ -274,5 +277,21 @@ class ModelFactory
         }
 
         return $testOptions;
+    }
+
+    /**
+     * @param array $taskValues
+     *
+     * @return Task
+     */
+    public static function createTask($taskValues = [])
+    {
+        $task = new Task();
+
+        if (isset($taskValues[self::TASK_OUTPUT])) {
+            $task->setOutput($taskValues[self::TASK_OUTPUT]);
+        }
+
+        return $task;
     }
 }
