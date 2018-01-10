@@ -26,6 +26,7 @@ class Task
     const STATE_FAILED_RETRY_AVAILABLE = 'failed-retry-available';
     const STATE_FAILED_RETRY_LIMIT_REACHED = 'failed-retry-limit-reached';
     const STATE_SKIPPED = 'skipped';
+    const STATE_FAILED = 'failed';
 
     const TYPE_HTML_VALIDATION = 'HTML validation';
     const TYPE_CSS_VALIDATION = 'CSS validation';

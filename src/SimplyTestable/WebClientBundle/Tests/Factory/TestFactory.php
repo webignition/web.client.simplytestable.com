@@ -15,6 +15,7 @@ class TestFactory
     const KEY_WEBSITE = 'website';
     const KEY_STATE = 'state';
     const KEY_TASKS = 'tasks';
+    const KEY_TASK_IDS = 'task-ids';
 
     const DEFAULT_USER = 'user@example.com';
     const DEFAULT_WEBSITE_URL = 'http://example.com/';
@@ -78,6 +79,10 @@ class TestFactory
 
         if (isset($testValues[self::KEY_TASKS])) {
             $this->taskFactory->createCollection($test, $testValues[self::KEY_TASKS]);
+        }
+
+        if (isset($testValues[self::KEY_TASK_IDS])) {
+            $test->setTaskIdColletion($testValues[self::KEY_TASK_IDS]);
         }
 
         return $test;
