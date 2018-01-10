@@ -5,27 +5,6 @@ parameters:
     "email-list-unsubscribe": "SimplyTestable\WebClientBundle\Resque\Job\EmailListUnsubscribeJob"
   early_access_users:
     - "jon@webignition.net"
-  task_types:
-      html-validation:
-        name: "HTML validation"
-        description: "Examine the validity of your HTML markup"
-        access-level: public
-      css-validation:
-        name: "CSS validation"
-        description: "Check CSS rules defined in linked stylesheets and inline"
-        access-level: public
-      js-static-analysis:
-        name: "JS static analysis"
-        description: "Analyse the quality of your JavaScript with <a href=\"http://www.jslint.com/lint.html\">JSLint</a>"
-        access-level: authenticated
-      link-integrity:
-        name: "Link integrity"
-        description: "Check all links in a web page, report those that do not work"
-        access-level: authenticated
-      test-foo-bar:
-        name: "Foo Bar"
-        description: "Verify that foo and bar"
-        access-level: early-access
   core_application:
     urls:
       base: http://null
