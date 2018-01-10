@@ -55,7 +55,7 @@ class TaskCollectionFilterService extends TaskService
     public function getRemoteIdCount()
     {
         if (in_array($this->outcomeFilter, [self::OUTCOME_FILTER_SKIPPED, self::OUTCOME_FILTER_CANCELLED])) {
-            return $this->getEntityRepository()->getRemoteIdCountByTestAndTaskTypeIncludingStates(
+            return $this->taskRepository->getRemoteIdCountByTestAndTaskTypeIncludingStates(
                 $this->test,
                 $this->typeFilter,
                 [$this->outcomeFilter]
@@ -72,7 +72,7 @@ class TaskCollectionFilterService extends TaskService
             ];
         }
 
-        return $this->getEntityRepository()->getRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStates(
+        return $this->taskRepository->getRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStates(
             $this->test,
             $this->createIssueCountFromOutcomeFilter(),
             $this->createIssueTypeFromOutcomeFilter(),
@@ -88,14 +88,14 @@ class TaskCollectionFilterService extends TaskService
     public function getRemoteIds()
     {
         if (in_array($this->outcomeFilter, [self::OUTCOME_FILTER_SKIPPED, self::OUTCOME_FILTER_CANCELLED])) {
-            return $this->getEntityRepository()->getRemoteIdByTestAndTaskTypeIncludingStates(
+            return $this->taskRepository->getRemoteIdByTestAndTaskTypeIncludingStates(
                 $this->test,
                 $this->typeFilter,
                 array($this->outcomeFilter)
             );
         }
 
-        return $this->getEntityRepository()->getRemoteIdByTestAndIssueCountAndTaskTypeExcludingStates(
+        return $this->taskRepository->getRemoteIdByTestAndIssueCountAndTaskTypeExcludingStates(
             $this->test,
             $this->createIssueCountFromOutcomeFilter(),
             $this->createIssueTypeFromOutcomeFilter(),
