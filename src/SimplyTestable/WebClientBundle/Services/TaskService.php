@@ -228,11 +228,14 @@ class TaskService extends CoreApplicationService
      */
     private function normaliseEndingState(Task $task)
     {
+        $isCancelled = in_array($task->getState(), $this->cancelledStates);
+        $isFailed = in_array($task->getState(), $this->failedStates);
+
         if ($this->isIncomplete($task)) {
             $task->setState(Task::STATE_CANCELLED);
-        } elseif ($this->isCancelled($task)) {
+        } elseif ($isCancelled) {
             $task->setState(Task::STATE_CANCELLED);
-        } elseif ($this->isFailed($task)) {
+        } elseif ($isFailed) {
             $task->setState(Task::STATE_FAILED);
         }
     }
@@ -485,24 +488,6 @@ class TaskService extends CoreApplicationService
 
             $task->getOutput()->setResult($parser->getResult());
         }
-    }
-
-    /**
-     * @param Task $task
-     * @return boolean
-     */
-    private function isCancelled(Task $task) {
-        return in_array($task->getState(), $this->cancelledStates);
-    }
-
-
-    /**
-     *
-     * @param Task $task
-     * @return boolean
-     */
-    private function isFailed(Task $task) {
-        return in_array($task->getState(), $this->failedStates);
     }
 
     /**
