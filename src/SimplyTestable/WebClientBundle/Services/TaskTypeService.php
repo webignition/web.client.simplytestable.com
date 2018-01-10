@@ -9,7 +9,14 @@ class TaskTypeService
     const ACCESS_LEVEL_AUTHENTICATED = 'authenticated';
     const ACCESS_LEVEL_EARLY_ACCESS = 'early-access';
 
+    /**
+     * @var array
+     */
     private $taskTypes;
+
+    /**
+     * @var string[]
+     */
     private $earlyAccessUsers;
 
     /**
@@ -82,56 +89,21 @@ class TaskTypeService
      */
     private function isAllowedTaskType($taskTypeDetails)
     {
-        if ($this->isPublicAccessTaskType($taskTypeDetails)) {
+        $isPublicAccessTaskType = $taskTypeDetails['access-level'] === self::ACCESS_LEVEL_PUBLIC;
+        $isAuthenticatedAccessTaskType = $taskTypeDetails['access-level'] === self::ACCESS_LEVEL_AUTHENTICATED;
+        $isEarlyAccessTaskType = $taskTypeDetails['access-level'] === self::ACCESS_LEVEL_EARLY_ACCESS;
+        $isEarlyAccessUser = in_array($this->user->getUsername(), $this->earlyAccessUsers);
+
+        if ($isPublicAccessTaskType) {
             return true;
         }
 
-        if ($this->isAuthenticatedAccessTaskType($taskTypeDetails) && $this->isUserAuthenticated) {
+        if ($isAuthenticatedAccessTaskType && $this->isUserAuthenticated) {
             return true;
         }
 
-        if ($this->isEarlyAccessTaskType($taskTypeDetails) && $this->isEarlyAccessUser()) {
+        if ($isEarlyAccessTaskType && $isEarlyAccessUser) {
             return true;
         }
-    }
-
-    /**
-     * @param $taskTypeDetails
-     *
-     * @return bool
-     */
-    private function isPublicAccessTaskType($taskTypeDetails)
-    {
-        return $taskTypeDetails['access-level'] === self::ACCESS_LEVEL_PUBLIC;
-    }
-
-    /**
-     * @param $taskTypeDetails
-     *
-     * @return bool
-     */
-    private function isAuthenticatedAccessTaskType($taskTypeDetails)
-    {
-        return $taskTypeDetails['access-level'] === self::ACCESS_LEVEL_AUTHENTICATED;
-    }
-
-
-    /**
-     * @param $taskTypeDetails
-     *
-     * @return bool
-     */
-    private function isEarlyAccessTaskType($taskTypeDetails)
-    {
-        return $taskTypeDetails['access-level'] === self::ACCESS_LEVEL_EARLY_ACCESS;
-    }
-
-
-    /**
-     * @return boolean
-     */
-    private function isEarlyAccessUser()
-    {
-        return in_array($this->user->getUsername(), $this->earlyAccessUsers);
     }
 }
