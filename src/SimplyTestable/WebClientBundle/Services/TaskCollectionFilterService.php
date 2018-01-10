@@ -2,13 +2,25 @@
 
 namespace SimplyTestable\WebClientBundle\Services;
 
+use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Repository\TaskRepository;
 
-class TaskCollectionFilterService extends TaskService
+class TaskCollectionFilterService
 {
     const OUTCOME_FILTER_SKIPPED = 'skipped';
     const OUTCOME_FILTER_CANCELLED = 'cancelled';
+
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    /**
+     * @var TaskRepository
+     */
+    protected $taskRepository;
 
     /**
      * @var Test
@@ -24,6 +36,16 @@ class TaskCollectionFilterService extends TaskService
      * @var string
      */
     private $typeFilter = null;
+
+    /**
+     * @param EntityManagerInterface $entityManager
+     */
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+
+        $this->taskRepository = $this->entityManager->getRepository(Task::class);
+    }
 
     /**
      * @param Test $test
@@ -80,7 +102,6 @@ class TaskCollectionFilterService extends TaskService
             $excludeStates
         );
     }
-
 
     /**
      * @return int[]

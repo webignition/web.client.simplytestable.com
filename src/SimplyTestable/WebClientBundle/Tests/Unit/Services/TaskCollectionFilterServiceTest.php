@@ -2,14 +2,12 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Unit\Services;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Repository\TaskRepository;
 use SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService;
-use SimplyTestable\WebClientBundle\Services\WebResourceService;
-use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory  as TaskOutputResultParserFactory;
 
 class TaskCollectionFilterServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,29 +24,18 @@ class TaskCollectionFilterServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getRemoteIdCountDataProvider
      *
-     * @param EntityManager $entityManager
+     * @param EntityManagerInterface $entityManager
      * @param Test $test
      * @param $typeFilter
      * @param $outcomeFilter
      */
     public function testGetRemoteIdCount(
-        EntityManager $entityManager,
+        EntityManagerInterface $entityManager,
         Test $test,
         $typeFilter,
         $outcomeFilter
     ) {
-        /* @var WebResourceService $webResourceService */
-        $webResourceService = \Mockery::mock(WebResourceService::class);
-
-        /* @var TaskOutputResultParserFactory $taskOutputResultParserFactory */
-        $taskOutputResultParserFactory = \Mockery::mock(TaskOutputResultParserFactory::class);
-
-        $taskCollectionFilterService = new TaskCollectionFilterService(
-            $entityManager,
-            [],
-            $webResourceService,
-            $taskOutputResultParserFactory
-        );
+        $taskCollectionFilterService = new TaskCollectionFilterService($entityManager);
 
         $taskCollectionFilterService->setTest($test);
         $taskCollectionFilterService->setTypeFilter($typeFilter);
@@ -149,29 +136,18 @@ class TaskCollectionFilterServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getRemoteIdsDataProvider
      *
-     * @param EntityManager $entityManager
+     * @param EntityManagerInterface $entityManager
      * @param Test $test
      * @param $typeFilter
      * @param $outcomeFilter
      */
     public function testGetRemoteIds(
-        EntityManager $entityManager,
+        EntityManagerInterface $entityManager,
         Test $test,
         $typeFilter,
         $outcomeFilter
     ) {
-        /* @var WebResourceService $webResourceService */
-        $webResourceService = \Mockery::mock(WebResourceService::class);
-
-        /* @var TaskOutputResultParserFactory $taskOutputResultParserFactory */
-        $taskOutputResultParserFactory = \Mockery::mock(TaskOutputResultParserFactory::class);
-
-        $taskCollectionFilterService = new TaskCollectionFilterService(
-            $entityManager,
-            [],
-            $webResourceService,
-            $taskOutputResultParserFactory
-        );
+        $taskCollectionFilterService = new TaskCollectionFilterService($entityManager);
 
         $taskCollectionFilterService->setTest($test);
         $taskCollectionFilterService->setTypeFilter($typeFilter);
@@ -268,21 +244,13 @@ class TaskCollectionFilterServiceTest extends \PHPUnit_Framework_TestCase
 
     public function testGetCount()
     {
-        /* @var EntityManager $entityManager */
-        $entityManager = \Mockery::mock(EntityManager::class);
+        /* @var EntityManagerInterface $entityManager */
+        $entityManager = \Mockery::mock(EntityManagerInterface::class);
+        $entityManager
+            ->shouldReceive('getRepository')
+            ->with(Task::class);
 
-        /* @var WebResourceService $webResourceService */
-        $webResourceService = \Mockery::mock(WebResourceService::class);
-
-        /* @var TaskOutputResultParserFactory $taskOutputResultParserFactory */
-        $taskOutputResultParserFactory = \Mockery::mock(TaskOutputResultParserFactory::class);
-
-        $taskCollectionFilterService = new TaskCollectionFilterService(
-            $entityManager,
-            [],
-            $webResourceService,
-            $taskOutputResultParserFactory
-        );
+        $taskCollectionFilterService = new TaskCollectionFilterService($entityManager);
 
         $this->assertEquals(0, $taskCollectionFilterService->getCount());
     }
@@ -390,11 +358,11 @@ class TaskCollectionFilterServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @param TaskRepository $taskRepository
      *
-     * @return MockInterface|EntityManager
+     * @return MockInterface|EntityManagerInterface
      */
     private function createEntityManager(TaskRepository $taskRepository)
     {
-        $entityManager = \Mockery::mock(EntityManager::class);
+        $entityManager = \Mockery::mock(EntityManagerInterface::class);
         $entityManager
             ->shouldReceive('getRepository')
             ->with(Task::class)
