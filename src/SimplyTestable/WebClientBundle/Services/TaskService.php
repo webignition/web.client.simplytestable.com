@@ -271,11 +271,11 @@ class TaskService extends CoreApplicationService
     }
 
     /**
-     *
      * @param Task $task
      * @param \stdClass $remoteTaskObject
      */
-    private function populateFromRemoteTaskObject(Task $task, \stdClass $remoteTaskObject) {
+    private function populateFromRemoteTaskObject(Task $task, \stdClass $remoteTaskObject)
+    {
         $propertyToMethodMap = [
             'id' => 'setTaskId',
             'url' => 'setUrl',
@@ -289,7 +289,15 @@ class TaskService extends CoreApplicationService
         }
 
         if (isset($remoteTaskObject->time_period)) {
-            $this->updateTimePeriodFromJsonObject($task->getTimePeriod(), $remoteTaskObject->time_period);
+            $timePeriodObject = $remoteTaskObject->time_period;
+
+            if (isset($timePeriodObject->start_date_time)) {
+                $task->getTimePeriod()->setStartDateTime(new \DateTime($timePeriodObject->start_date_time));
+            }
+
+            if (isset($timePeriodObject->end_date_time)) {
+                $task->getTimePeriod()->setEndDateTime(new \DateTime($timePeriodObject->end_date_time));
+            }
         }
 
         if (isset($remoteTaskObject->output)) {
@@ -325,32 +333,6 @@ class TaskService extends CoreApplicationService
 
         return $output;
     }
-
-    /**
-     *
-     * @param TimePeriod $timePeriod
-     * @param type $jsonObject
-     * @return \SimplyTestable\WebClientBundle\Entity\TimePeriod
-     */
-    private function updateTimePeriodFromJsonObject(TimePeriod $timePeriod, $jsonObject) {
-        if (isset($jsonObject->time_period)) {
-            if (isset($jsonObject->time_period->start_date_time)) {
-                $timePeriod->setStartDateTime(new \DateTime($jsonObject->time_period->start_date_time));
-            }
-
-            if (isset($jsonObject->time_period->end_date_time)) {
-                $timePeriod->setEndDateTime(new \DateTime($jsonObject->time_period->end_date_time));
-            }
-        }
-    }
-
-
-    /**
-     *
-     * @param Test $test
-     * @param array $remoteTaskIds
-     * @return array
-     */
 
     /**
      * @param Test $test
