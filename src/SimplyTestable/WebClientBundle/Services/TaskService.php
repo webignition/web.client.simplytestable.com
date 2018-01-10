@@ -512,12 +512,4 @@ class TaskService extends CoreApplicationService
     public function isIncomplete(Task $task) {
         return in_array($task->getState(), $this->incompleteStates);
     }
-
-    /**
-     *
-     * @return \Doctrine\ORM\EntityManager
-     */
-    public function getEntityManager() {
-        return $this->entityManager;
-    }
 }
