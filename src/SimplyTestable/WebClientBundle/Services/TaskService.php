@@ -102,9 +102,10 @@ class TaskService extends CoreApplicationService
 
     /**
      * @param Test $test
-     * @param int[] $remoteTaskIds
-     *
+     * @param array|null $remoteTaskIds
      * @return Task[]
+     *
+     * @throws WebResourceException
      */
     public function getCollection(Test $test, $remoteTaskIds = null)
     {
