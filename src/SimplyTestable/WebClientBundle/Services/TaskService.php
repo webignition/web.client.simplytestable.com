@@ -7,9 +7,11 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\TimePeriod;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Repository\TaskOutputRepository;
 use SimplyTestable\WebClientBundle\Repository\TaskRepository;
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory as TaskOutputResultParserFactory;
+use webignition\WebResource\JsonDocument\JsonDocument;
 
 class TaskService extends CoreApplicationService
 {
@@ -72,6 +74,11 @@ class TaskService extends CoreApplicationService
     private $taskOutputResultParserService;
 
     /**
+     * @var HttpClientService
+     */
+    private $httpClientService;
+
+    /**
      * @param EntityManagerInterface $entityManager
      * @param $parameters
      * @param WebResourceService $webResourceService
@@ -86,21 +93,27 @@ class TaskService extends CoreApplicationService
         parent::__construct($parameters, $webResourceService);
         $this->entityManager = $entityManager;
         $this->taskOutputResultParserService = $taskOutputResultParserFactory;
+
         $this->taskRepository = $this->entityManager->getRepository(Task::class);
+        $this->taskOutputRepository = $this->entityManager->getRepository(Output::class);
+
+        $this->httpClientService = $this->webResourceService->getHttpClientService();
     }
 
     /**
-     *
      * @param Test $test
-     * @param array $remoteTaskIds
+     * @param int[] $remoteTaskIds
+     *
      * @return Task[]
      */
-    public function getCollection(Test $test, $remoteTaskIds = null) {
+    public function getCollection(Test $test, $remoteTaskIds = null)
+    {
         if (!is_array($remoteTaskIds)) {
             $remoteTaskIds = $this->getRemoteTaskIds($test);
         }
 
         $existenceResult = $this->taskRepository->getCollectionExistsByTestAndRemoteId($test, $remoteTaskIds);
+
         $tasksToRetrieve = [];
         $localTasksToUpdate = [];
 
@@ -134,7 +147,7 @@ class TaskService extends CoreApplicationService
 
             foreach ($remoteTasksObject as $remoteTaskObject) {
                 if (isset($remoteTaskObject->output)) {
-                    $outputs[] = $this->populateOutputfromRemoteOutputObject($remoteTaskObject);
+                    $outputs[] = $this->populateOutputFromRemoteOutputObject($remoteTaskObject);
                 }
             }
 
@@ -164,7 +177,6 @@ class TaskService extends CoreApplicationService
             }
         }
 
-
         if (count($tasksToPersist)) {
             foreach ($tasksToPersist as $task) {
                 if (!$test->getTasks()->contains($task)) {
@@ -178,7 +190,7 @@ class TaskService extends CoreApplicationService
             $this->entityManager->flush();
         }
 
-        if ($test->getState() == 'completed' || $test->getState() == 'cancelled') {
+        if ($test->getState() == Test::STATE_COMPLETED || $test->getState() == Test::STATE_CANCELLED) {
             foreach ($tasks as $task) {
                 $this->normaliseEndingState($task);
             }
@@ -188,11 +200,16 @@ class TaskService extends CoreApplicationService
     }
 
 
-    private function minimiseOutputCollection($outputs) {
+    /**
+     * @param Output[] $outputs
+     *
+     * @return Output[]
+     */
+    private function minimiseOutputCollection($outputs)
+    {
         $processedHashes = [];
 
         foreach ($outputs as $outputIndex => $output) {
-            /* @var $output Output */
             if (in_array($output->getHash(), $processedHashes) || $output->hasId()) {
                 unset($outputs[$outputIndex]);
             } else {
@@ -203,25 +220,19 @@ class TaskService extends CoreApplicationService
         return $outputs;
     }
 
-
-    private function normaliseEndingState(Task $task) {
+    /**
+     * @param Task $task
+     */
+    private function normaliseEndingState(Task $task)
+    {
         if ($this->isIncomplete($task)) {
-            return $task->setState('cancelled');
-        }
-
-        if ($this->isCancelled($task)) {
-            return $task->setState('cancelled');
-        }
-
-        if ($this->isFailed($task)) {
-            return $task->setState('failed');
-        }
-
-        if ($this->isIncomplete($task)) {
-            return $task->setState('cancelled');
+            $task->setState(Task::STATE_CANCELLED);
+        } elseif ($this->isCancelled($task)) {
+            $task->setState(Task::STATE_CANCELLED);
+        } elseif ($this->isFailed($task)) {
+            $task->setState(Task::STATE_FAILED);
         }
     }
-
 
     /**
      *
@@ -237,13 +248,13 @@ class TaskService extends CoreApplicationService
         return $previousTaskStates[$task->getTaskId()] != $task->getState();
     }
 
-
     /**
+     * @param Task[] $tasks
      *
-     * @param array $tasks
-     * @return array
+     * @return string[]
      */
-    private function getTaskStates($tasks) {
+    private function getTaskStates($tasks)
+    {
         $taskStates = [];
 
         foreach ($tasks as $task) {
@@ -252,7 +263,6 @@ class TaskService extends CoreApplicationService
 
         return $taskStates;
     }
-
 
     /**
      *
@@ -278,13 +288,18 @@ class TaskService extends CoreApplicationService
 
         if (isset($remoteTaskObject->output)) {
             if (!$task->hasOutput()) {
-                $task->setOutput($this->populateOutputfromRemoteOutputObject($remoteTaskObject));
+                $task->setOutput($this->populateOutputFromRemoteOutputObject($remoteTaskObject));
             }
         }
     }
 
-
-    private function populateOutputfromRemoteOutputObject($remoteTaskObject) {
+    /**
+     * @param \stdClass $remoteTaskObject
+     *
+     * @return Output
+     */
+    private function populateOutputFromRemoteOutputObject($remoteTaskObject)
+    {
         $remoteOutputObject = $remoteTaskObject->output;
 
         $output = new Output();
@@ -294,28 +309,16 @@ class TaskService extends CoreApplicationService
         $output->setWarningCount($remoteOutputObject->warning_count);
         $output->generateHash();
 
-        $existingOutput = $this->getTaskOutputEntityRepository()->findOutputByhash($output->getHash());
+        $existingOutput = $this->taskOutputRepository->findOneBy([
+            'hash' => $output->getHash(),
+        ]);
 
-        if (!is_null($existingOutput)) {
+        if (!empty($existingOutput)) {
             $output = $existingOutput;
         }
 
         return $output;
     }
-
-
-    /**
-     *
-     * @return TaskOutputRepository
-     */
-    private function getTaskOutputEntityRepository() {
-        if (is_null($this->taskOutputRepository)) {
-            $this->taskOutputRepository = $this->entityManager->getRepository('SimplyTestable\WebClientBundle\Entity\Task\Output');
-        }
-
-        return $this->taskOutputRepository;
-    }
-
 
     /**
      *
@@ -342,8 +345,18 @@ class TaskService extends CoreApplicationService
      * @param array $remoteTaskIds
      * @return array
      */
-    private function retrieveRemoteCollection(Test $test, $remoteTaskIds) {
-        $httpRequest = $this->webResourceService->getHttpClientService()->postRequest($this->getUrl('test_tasks', [
+
+    /**
+     * @param Test $test
+     * @param int[] $remoteTaskIds
+     *
+     * @return \stdClass
+     *
+     * @throws WebResourceException
+     */
+    private function retrieveRemoteCollection(Test $test, $remoteTaskIds)
+    {
+        $httpRequest = $this->httpClientService->postRequest($this->getUrl('test_tasks', [
                 'canonical-url' => urlencode($test->getWebsite()),
                 'test_id' => $test->getTestId()
         ]), null, [
@@ -352,9 +365,11 @@ class TaskService extends CoreApplicationService
 
         $this->addAuthorisationToRequest($httpRequest);
 
-        return $this->webResourceService->get($httpRequest)->getContentObject();
-    }
+        /* @var JsonDocument $jsonDocument */
+        $jsonDocument = $this->webResourceService->get($httpRequest);
 
+        return $jsonDocument->getContentObject();
+    }
 
     /**
      *
