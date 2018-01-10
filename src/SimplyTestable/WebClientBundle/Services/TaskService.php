@@ -135,7 +135,9 @@ class TaskService extends CoreApplicationService
             $previousTaskStates = $this->getTaskStates($tasks);
 
             foreach ($tasks as $task) {
-                if (!$this->isFinished($task)) {
+                $isFinished = in_array($task->getState(), $this->finishedStates);
+
+                if (!$isFinished) {
                     $tasksToRetrieve[] = $task->getTaskId();
                 }
             }
@@ -486,17 +488,6 @@ class TaskService extends CoreApplicationService
     }
 
     /**
-     *
-     * @param Task $task
-     * @return boolean
-     */
-    public function isFinished(Task $task) {
-        return in_array($task->getState(), $this->finishedStates);
-    }
-
-
-    /**
-     *
      * @param Task $task
      * @return boolean
      */
