@@ -380,14 +380,14 @@ class TaskService extends CoreApplicationService
         return $test->getTaskIds();
     }
 
-
     /**
-     *
      * @param Test $test
      * @param int $limit
-     * @return array
+     *
+     * @return int[]
      */
-    public function getUnretrievedRemoteTaskIds(Test $test, $limit) {
+    public function getUnretrievedRemoteTaskIds(Test $test, $limit)
+    {
         $remoteTaskIds = $this->getRemoteTaskIds($test);
         $retrievedRemoteTaskIds = $this->taskRepository->findRetrievedRemoteTaskIds($test);
 
@@ -405,7 +405,6 @@ class TaskService extends CoreApplicationService
 
         return $unretrievedRemoteTaskIds;
     }
-
 
     /**
      *

@@ -9,13 +9,13 @@ use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
 class TaskServiceGetRemoteTaskIdsTest extends AbstractTaskServiceTest
 {
     /**
-     * @dataProvider getCollectionDataProvider
+     * @dataProvider getRemoteTaskIdsDataProvider
      *
      * @param array $httpFixtures
      * @param array $testValues
      * @param array $expectedRemoteTaskIds
      */
-    public function testGetCollection(
+    public function testGetRemoteTaskIds(
         array $httpFixtures,
         array $testValues,
         array $expectedRemoteTaskIds
@@ -36,7 +36,7 @@ class TaskServiceGetRemoteTaskIdsTest extends AbstractTaskServiceTest
     /**
      * @return array
      */
-    public function getCollectionDataProvider()
+    public function getRemoteTaskIdsDataProvider()
     {
         return [
             'state: new' => [
