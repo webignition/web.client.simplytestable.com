@@ -491,11 +491,12 @@ class TaskService extends CoreApplicationService
     }
 
     /**
-     *
      * @param Task $task
-     * @return boolean
+     *
+     * @return bool
      */
-    public function isIncomplete(Task $task) {
+    public function isIncomplete(Task $task)
+    {
         return in_array($task->getState(), $this->incompleteStates);
     }
 }
