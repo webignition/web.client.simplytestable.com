@@ -3,8 +3,8 @@ namespace SimplyTestable\WebClientBundle\Services;
 
 use SimplyTestable\WebClientBundle\Model\User;
 
-class TaskTypeService {
-
+class TaskTypeService
+{
     const ACCESS_LEVEL_PUBLIC = 'public';
     const ACCESS_LEVEL_AUTHENTICATED = 'authenticated';
     const ACCESS_LEVEL_EARLY_ACCESS = 'early-access';
@@ -13,60 +13,57 @@ class TaskTypeService {
     private $earlyAccessUsers;
 
     /**
-     *
      * @var User
      */
     private $user;
-
 
     /**
      * @var bool
      */
     private $isUserAuthenticated = false;
 
-
     /**
      * @param array $taskTypes
      */
-    public function setTaskTypes($taskTypes) {
+    public function setTaskTypes($taskTypes)
+    {
         $this->taskTypes = $taskTypes;
     }
-
 
     /**
      * @param string[] $earlyAccessUsers
      */
-    public function setEarlyAccessUsers($earlyAccessUsers) {
+    public function setEarlyAccessUsers($earlyAccessUsers)
+    {
         $this->earlyAccessUsers = $earlyAccessUsers;
     }
 
-
     /**
-     *
-     * @param \SimplyTestable\WebClientBundle\Model\User $user
+     * @param User $user
      */
-    public function setUser(User $user) {
+    public function setUser(User $user)
+    {
         $this->user = $user;
     }
 
-
-    public function setUserIsAuthenticated() {
+    public function setUserIsAuthenticated()
+    {
         $this->isUserAuthenticated = true;
     }
 
-
     /**
      * @return array
      */
-    public function get() {
+    public function get()
+    {
         return $this->taskTypes;
     }
 
-
     /**
      * @return array
      */
-    public function getAvailable() {
+    public function getAvailable()
+    {
         $taskTypes = [];
 
         foreach ($this->taskTypes as $taskTypeKey => $taskTypeDetails) {
@@ -78,12 +75,13 @@ class TaskTypeService {
         return $taskTypes;
     }
 
-
     /**
      * @param $taskTypeDetails
+     *
      * @return bool
      */
-    private function isAllowedTaskType($taskTypeDetails) {
+    private function isAllowedTaskType($taskTypeDetails)
+    {
         if ($this->isPublicAccessTaskType($taskTypeDetails)) {
             return true;
         }
@@ -97,39 +95,43 @@ class TaskTypeService {
         }
     }
 
-
     /**
      * @param $taskTypeDetails
+     *
      * @return bool
      */
-    private function isPublicAccessTaskType($taskTypeDetails) {
+    private function isPublicAccessTaskType($taskTypeDetails)
+    {
         return $taskTypeDetails['access-level'] === self::ACCESS_LEVEL_PUBLIC;
     }
 
     /**
      * @param $taskTypeDetails
+     *
      * @return bool
      */
-    private function isAuthenticatedAccessTaskType($taskTypeDetails) {
+    private function isAuthenticatedAccessTaskType($taskTypeDetails)
+    {
         return $taskTypeDetails['access-level'] === self::ACCESS_LEVEL_AUTHENTICATED;
     }
 
 
     /**
      * @param $taskTypeDetails
+     *
      * @return bool
      */
-    private function isEarlyAccessTaskType($taskTypeDetails) {
+    private function isEarlyAccessTaskType($taskTypeDetails)
+    {
         return $taskTypeDetails['access-level'] === self::ACCESS_LEVEL_EARLY_ACCESS;
     }
 
 
     /**
-     *
      * @return boolean
      */
-    private function isEarlyAccessUser() {
+    private function isEarlyAccessUser()
+    {
         return in_array($this->user->getUsername(), $this->earlyAccessUsers);
     }
-
 }
