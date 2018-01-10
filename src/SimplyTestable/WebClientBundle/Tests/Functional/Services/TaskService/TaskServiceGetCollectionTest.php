@@ -5,25 +5,26 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\TaskService;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TaskFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
 
-class TaskServiceTestGetCollectionTest extends AbstractTaskServiceTest
+class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
 {
     /**
      * @dataProvider getCollectionDataProvider
      *
      * @param array $httpFixtures
-     * @param array $testValuesCollection
-     * @param int $testIndex
+     * @param array $testValues
      * @param int[] $remoteTaskIds
      * @param array $expectedTaskDataCollection
+     *
+     * @throws WebResourceException
      */
     public function testGetCollection(
         array $httpFixtures,
-        array $testValuesCollection,
-        $testIndex,
+        array $testValues,
         $remoteTaskIds,
         array $expectedTaskDataCollection
     ) {
@@ -33,14 +34,7 @@ class TaskServiceTestGetCollectionTest extends AbstractTaskServiceTest
 
         $testFactory = new TestFactory($this->container);
 
-        /* @var Test[] $tests */
-        $tests = [];
-
-        foreach ($testValuesCollection as $testValues) {
-            $tests[] = $testFactory->create($testValues);
-        }
-
-        $test = $tests[$testIndex];
+        $test = $testFactory->create($testValues);
 
         /* @var Task[] $taskCollection */
         $taskCollection = $this->taskService->getCollection($test, $remoteTaskIds);
@@ -98,12 +92,9 @@ class TaskServiceTestGetCollectionTest extends AbstractTaskServiceTest
                         ],
                     ]),
                 ],
-                'testValuesCollection' => [
-                    [
-                        TestFactory::KEY_TEST_ID => 1,
-                    ],
+                'testValues' => [
+                    TestFactory::KEY_TEST_ID => 1,
                 ],
-                'testIndex' => 0,
                 'remoteTaskIds' => null,
                 'expectedTaskDataCollection' => [
                     2 => [
@@ -135,12 +126,9 @@ class TaskServiceTestGetCollectionTest extends AbstractTaskServiceTest
                         ],
                     ]),
                 ],
-                'testValuesCollection' => [
-                    [
-                        TestFactory::KEY_TEST_ID => 1,
-                    ],
+                'testValues' => [
+                    TestFactory::KEY_TEST_ID => 1,
                 ],
-                'testIndex' => 0,
                 'remoteTaskIds' => [2, 3],
                 'expectedTaskDataCollection' => [
                     2 => [
@@ -155,26 +143,23 @@ class TaskServiceTestGetCollectionTest extends AbstractTaskServiceTest
             ],
             'all remote task ids, all exist locally, all finished' => [
                 'httpFixtures' => [],
-                'testValuesCollection' => [
-                    [
-                        TestFactory::KEY_TEST_ID => 1,
-                        TestFactory::KEY_TASKS => [
-                            [
-                                TaskFactory::KEY_TASK_ID => 2,
-                                TaskFactory::KEY_URL => 'http://example.com/foo/',
-                                TaskFactory::KEY_STATE => Task::STATE_COMPLETED,
-                                TaskFactory::KEY_TYPE => Task::TYPE_HTML_VALIDATION,
-                            ],
-                            [
-                                TaskFactory::KEY_TASK_ID => 3,
-                                TaskFactory::KEY_URL => 'http://example.com/foo/',
-                                TaskFactory::KEY_STATE => Task::STATE_COMPLETED,
-                                TaskFactory::KEY_TYPE => Task::TYPE_CSS_VALIDATION,
-                            ],
+                'testValues' => [
+                    TestFactory::KEY_TEST_ID => 1,
+                    TestFactory::KEY_TASKS => [
+                        [
+                            TaskFactory::KEY_TASK_ID => 2,
+                            TaskFactory::KEY_URL => 'http://example.com/foo/',
+                            TaskFactory::KEY_STATE => Task::STATE_COMPLETED,
+                            TaskFactory::KEY_TYPE => Task::TYPE_HTML_VALIDATION,
+                        ],
+                        [
+                            TaskFactory::KEY_TASK_ID => 3,
+                            TaskFactory::KEY_URL => 'http://example.com/foo/',
+                            TaskFactory::KEY_STATE => Task::STATE_COMPLETED,
+                            TaskFactory::KEY_TYPE => Task::TYPE_CSS_VALIDATION,
                         ],
                     ],
                 ],
-                'testIndex' => 0,
                 'remoteTaskIds' => [2, 3],
                 'expectedTaskDataCollection' => [
                     2 => [
@@ -213,33 +198,30 @@ class TaskServiceTestGetCollectionTest extends AbstractTaskServiceTest
                         ],
                     ]),
                 ],
-                'testValuesCollection' => [
-                    [
-                        TestFactory::KEY_TEST_ID => 1,
-                        TestFactory::KEY_STATE => Test::STATE_COMPLETED,
-                        TestFactory::KEY_TASKS => [
-                            [
-                                TaskFactory::KEY_TASK_ID => 2,
-                                TaskFactory::KEY_URL => 'http://example.com/foo/',
-                                TaskFactory::KEY_STATE => Task::STATE_IN_PROGRESS,
-                                TaskFactory::KEY_TYPE => Task::TYPE_HTML_VALIDATION,
-                            ],
-                            [
-                                TaskFactory::KEY_TASK_ID => 3,
-                                TaskFactory::KEY_URL => 'http://example.com/foo/',
-                                TaskFactory::KEY_STATE => Task::STATE_IN_PROGRESS,
-                                TaskFactory::KEY_TYPE => Task::TYPE_CSS_VALIDATION,
-                            ],
-                            [
-                                TaskFactory::KEY_TASK_ID => 4,
-                                TaskFactory::KEY_URL => 'http://example.com/foo/',
-                                TaskFactory::KEY_STATE => Task::STATE_IN_PROGRESS,
-                                TaskFactory::KEY_TYPE => Task::TYPE_LINK_INTEGRITY,
-                            ],
+                'testValues' => [
+                    TestFactory::KEY_TEST_ID => 1,
+                    TestFactory::KEY_STATE => Test::STATE_COMPLETED,
+                    TestFactory::KEY_TASKS => [
+                        [
+                            TaskFactory::KEY_TASK_ID => 2,
+                            TaskFactory::KEY_URL => 'http://example.com/foo/',
+                            TaskFactory::KEY_STATE => Task::STATE_IN_PROGRESS,
+                            TaskFactory::KEY_TYPE => Task::TYPE_HTML_VALIDATION,
+                        ],
+                        [
+                            TaskFactory::KEY_TASK_ID => 3,
+                            TaskFactory::KEY_URL => 'http://example.com/foo/',
+                            TaskFactory::KEY_STATE => Task::STATE_IN_PROGRESS,
+                            TaskFactory::KEY_TYPE => Task::TYPE_CSS_VALIDATION,
+                        ],
+                        [
+                            TaskFactory::KEY_TASK_ID => 4,
+                            TaskFactory::KEY_URL => 'http://example.com/foo/',
+                            TaskFactory::KEY_STATE => Task::STATE_IN_PROGRESS,
+                            TaskFactory::KEY_TYPE => Task::TYPE_LINK_INTEGRITY,
                         ],
                     ],
                 ],
-                'testIndex' => 0,
                 'remoteTaskIds' => [2, 3, 4],
                 'expectedTaskDataCollection' => [
                     2 => [
@@ -274,20 +256,17 @@ class TaskServiceTestGetCollectionTest extends AbstractTaskServiceTest
                         ],
                     ]),
                 ],
-                'testValuesCollection' => [
-                    [
-                        TestFactory::KEY_TEST_ID => 1,
-                        TestFactory::KEY_TASKS => [
-                            [
-                                TaskFactory::KEY_TASK_ID => 2,
-                                TaskFactory::KEY_URL => 'http://example.com/foo/',
-                                TaskFactory::KEY_STATE => Task::STATE_IN_PROGRESS,
-                                TaskFactory::KEY_TYPE => Task::TYPE_HTML_VALIDATION,
-                            ],
+                'testValues' => [
+                    TestFactory::KEY_TEST_ID => 1,
+                    TestFactory::KEY_TASKS => [
+                        [
+                            TaskFactory::KEY_TASK_ID => 2,
+                            TaskFactory::KEY_URL => 'http://example.com/foo/',
+                            TaskFactory::KEY_STATE => Task::STATE_IN_PROGRESS,
+                            TaskFactory::KEY_TYPE => Task::TYPE_HTML_VALIDATION,
                         ],
                     ],
                 ],
-                'testIndex' => 0,
                 'remoteTaskIds' => [2],
                 'expectedTaskDataCollection' => [
                     2 => [
@@ -332,26 +311,23 @@ class TaskServiceTestGetCollectionTest extends AbstractTaskServiceTest
                         ],
                     ]),
                 ],
-                'testValuesCollection' => [
-                    [
-                        TestFactory::KEY_TEST_ID => 1,
-                        TestFactory::KEY_TASKS => [
-                            [
-                                TaskFactory::KEY_TASK_ID => 2,
-                                TaskFactory::KEY_URL => 'http://example.com/foo/',
-                                TaskFactory::KEY_STATE => Task::STATE_IN_PROGRESS,
-                                TaskFactory::KEY_TYPE => Task::TYPE_HTML_VALIDATION,
-                            ],
-                            [
-                                TaskFactory::KEY_TASK_ID => 3,
-                                TaskFactory::KEY_URL => 'http://example.com/bar/',
-                                TaskFactory::KEY_STATE => Task::STATE_IN_PROGRESS,
-                                TaskFactory::KEY_TYPE => Task::TYPE_HTML_VALIDATION,
-                            ],
+                'testValues' => [
+                    TestFactory::KEY_TEST_ID => 1,
+                    TestFactory::KEY_TASKS => [
+                        [
+                            TaskFactory::KEY_TASK_ID => 2,
+                            TaskFactory::KEY_URL => 'http://example.com/foo/',
+                            TaskFactory::KEY_STATE => Task::STATE_IN_PROGRESS,
+                            TaskFactory::KEY_TYPE => Task::TYPE_HTML_VALIDATION,
+                        ],
+                        [
+                            TaskFactory::KEY_TASK_ID => 3,
+                            TaskFactory::KEY_URL => 'http://example.com/bar/',
+                            TaskFactory::KEY_STATE => Task::STATE_IN_PROGRESS,
+                            TaskFactory::KEY_TYPE => Task::TYPE_HTML_VALIDATION,
                         ],
                     ],
                 ],
-                'testIndex' => 0,
                 'remoteTaskIds' => [2],
                 'expectedTaskDataCollection' => [
                     2 => [
