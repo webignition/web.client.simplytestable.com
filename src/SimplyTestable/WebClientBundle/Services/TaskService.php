@@ -360,12 +360,13 @@ class TaskService extends CoreApplicationService
     }
 
     /**
-     *
      * @param Test $test
-     * @return array
+     *
+     * @return int[]
      */
-    public function getRemoteTaskIds(Test $test) {
-        if (($test->getState() == 'new' || $test->getState() == 'preparing')) {
+    public function getRemoteTaskIds(Test $test)
+    {
+        if (($test->getState() == Test::STATE_STARTING || $test->getState() == Test::STATE_PREPARING)) {
             return [];
         }
 

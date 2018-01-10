@@ -435,7 +435,7 @@ class Test
     }
 
     /**
-     * @return DoctrineCollection|Task[]
+     * @return int[]
      */
     public function getTaskIds()
     {
