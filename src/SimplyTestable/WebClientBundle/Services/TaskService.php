@@ -435,15 +435,22 @@ class TaskService extends CoreApplicationService
         return $this->webResourceService->get($httpRequest)->getContentObject();
     }
 
-
     /**
-     *
      * @param Test $test
      * @param int $task_id
-     * @return Task
+     *
+     * @return Task|null
+     *
+     * @throws WebResourceException
      */
-    public function get(Test $test, $task_id) {
-        if (!$this->hasEntity($task_id)) {
+    public function get(Test $test, $task_id)
+    {
+        $task = $this->taskRepository->findOneBy([
+            'taskId' => $task_id,
+            'test' => $test
+        ]);
+
+        if (empty($task)) {
             $this->getCollection($test, [$task_id]);
         }
 
@@ -452,44 +459,31 @@ class TaskService extends CoreApplicationService
             'test' => $test
         ]);
 
-        if (is_null($task)) {
+        if (empty($task)) {
             return null;
         }
 
-        if ($test->getState() == 'completed' || $test->getState() == 'cancelled') {
+        if ($test->getState() == Test::STATE_COMPLETED || $test->getState() == Test::STATE_CANCELLED) {
             $this->normaliseEndingState($task);
         }
 
-        return $this->setParsedOutput($task);
+        $this->setParsedOutput($task);
+
+        return $task;
     }
 
-
     /**
-     *
      * @param Task $task
-     * @return Task
      */
-    public function setParsedOutput(Task $task) {
+    public function setParsedOutput(Task $task)
+    {
         if ($task->hasOutput()) {
             $parser = $this->taskOutputResultParserService->getParser($task->getOutput());
             $parser->setOutput($task->getOutput());
 
             $task->getOutput()->setResult($parser->getResult());
         }
-
-        return $task;
     }
-
-
-    /**
-     *
-     * @param int $testId
-     * @return boolean
-     */
-    private function hasEntity($testId) {
-        return $this->taskRepository->hasByTaskId($testId);
-    }
-
 
     /**
      *

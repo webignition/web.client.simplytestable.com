@@ -106,23 +106,6 @@ class TaskRepository extends EntityRepository
     }
 
     /**
-     * @param int $taskId
-     *
-     * @return bool
-     */
-    public function hasByTaskId($taskId)
-    {
-        $queryBuilder = $this->createTaskQueryBuilder();
-        $queryBuilder->select('count(Task.id)');
-        $queryBuilder->where('Task.taskId = :TaskId');
-        $queryBuilder->setParameter('TaskId', $taskId);
-
-        $result = $queryBuilder->getQuery()->getResult();
-
-        return $result[0][1] > 0;
-    }
-
-    /**
      * @param Test $test
      *
      * @return int[]
