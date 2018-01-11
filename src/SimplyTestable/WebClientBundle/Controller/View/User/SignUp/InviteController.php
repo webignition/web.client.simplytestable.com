@@ -4,48 +4,80 @@ namespace SimplyTestable\WebClientBundle\Controller\View\User\SignUp;
 
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Controller\View\CacheableViewController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use SimplyTestable\WebClientBundle\Controller\Action\SignUp\Team\InviteController as ActionInviteController;
 
-class InviteController extends CacheableViewController implements IEFiltered {
-    
-    protected function modifyViewName($viewName) {
-        return str_replace(':User', ':bs3/User', $viewName);
-    }
-    
-    public function indexAction() {
-        $token = trim($this->getRequest()->attributes->get('token'));
+class InviteController extends CacheableViewController implements IEFiltered
+{
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function indexAction(Request $request)
+    {
+        $teamInviteService = $this->container->get('simplytestable.services.teaminviteservice');
+        $session = $this->container->get('session');
+        $cacheableResponseService = $this->get('simplytestable.services.cacheableResponseService');
+
+        $token = trim($request->attributes->get('token'));
+        $staySignedIn = $request->query->get('stay-signed-in');
+
+        $invite = $teamInviteService->getForToken($token);
+
+        $flashBag = $session->getFlashBag();
 
         $viewData = [
-            'invite_accept_error' => $this->getFlash('invite_accept_error', true),
-            'invite_accept_failure' => $this->getFlash('invite_accept_failure', true),
+            ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY =>
+                $flashBag->get(ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY),
+            ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY =>
+                $flashBag->get(ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY),
             'token' => $token,
-            'invite' => $this->getTeamInviteService()->getForToken($token),
-            'has_invite' => $this->getTeamInviteService()->hasForToken($token),
-            'stay_signed_in' => $this->getRequest()->query->get('stay-signed-in')
+            'invite' => $invite,
+            'has_invite' => !empty($invite),
+            'stay_signed_in' => $staySignedIn,
         ];
 
-        return $this->renderCacheableResponse($viewData);
-    }
-
-    
-    public function getCacheValidatorParameters() {
-        $token = trim($this->getRequest()->attributes->get('token'));
-
-        return array(
-            'invite_accept_error' => $this->getFlash('invite_accept_error', false),
-            'invite_accept_failure' => $this->getFlash('invite_accept_failure', false),
-            'token' => $token,
-            'invite' => json_encode($this->getTeamInviteService()->getForToken($token)),
-            'has_invite' => json_encode($this->getTeamInviteService()->hasForToken($token)),
-            'stay_signed_in' => $this->getRequest()->query->get('stay-signed-in')
+        return $cacheableResponseService->getCachableResponse(
+            $request,
+            parent::render(
+                'SimplyTestableWebClientBundle:bs3/User/SignUp/Invite:index.html.twig',
+                array_merge($this->getDefaultViewParameters(), $viewData)
+            )
         );
     }
 
-
     /**
-     * @return \SimplyTestable\WebClientBundle\Services\TeamInviteService
+     * {@inheritdoc}
      */
-    private function getTeamInviteService() {
-        return $this->container->get('simplytestable.services.teaminviteservice');
-    }
+    public function getCacheValidatorParameters()
+    {
+        $container = $this->container;
+        $teamInviteService = $container->get('simplytestable.services.teaminviteservice');
+        $session = $container->get('session');
 
+        $token = trim($this->getRequest()->attributes->get('token'));
+        $invite = $teamInviteService->getForToken($token);
+        $flashBag = $session->getFlashBag();
+
+        $inviteAcceptErrorMessages = $flashBag->peek(
+            ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY,
+            ['']
+        );
+
+        $inviteAcceptFailureMessages = $flashBag->peek(
+            ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY,
+            ['']
+        );
+
+        return [
+            'invite_accept_error' => $inviteAcceptErrorMessages[0],
+            'invite_accept_failure' => $inviteAcceptFailureMessages[0],
+            'token' => $token,
+            'invite' => json_encode($invite),
+            'has_invite' => json_encode(!empty($invite)),
+            'stay_signed_in' => $this->getRequest()->query->get('stay-signed-in')
+        ];
+    }
 }
