@@ -218,27 +218,6 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
         $this->assertEquals(self::TEAM_NAME, $lastRequest->getPostField('team'));
     }
 
-    /**
-     * @return array
-     */
-    public function booleanResponseDataProvider()
-    {
-        return [
-            'failure' => [
-                'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 400'),
-                ],
-                'expectedReturnValue' => false,
-            ],
-            'success' => [
-                'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 200'),
-                ],
-                'expectedReturnValue' => true,
-            ],
-        ];
-    }
-
     public function testGetForTeamSuccess()
     {
         $this->setHttpFixtures([
@@ -268,5 +247,49 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
         $this->assertEquals('http://null/team/invites/', $lastRequest->getUrl());
     }
 
+    /**
+     * @dataProvider booleanResponseDataProvider
+     *
+     * @param array $httpFixtures
+     * @param bool $expectedReturnValue
+     */
+    public function testRemoveForUser(array $httpFixtures, $expectedReturnValue)
+    {
+        $this->setHttpFixtures($httpFixtures);
 
+        $invite = new Invite([
+            'team' => self::TEAM_NAME,
+            'user' => self::USERNAME,
+        ]);
+
+        $returnValue = $this->teamInviteService->removeForUser($invite);
+
+        $this->assertEquals($expectedReturnValue, $returnValue);
+
+        /* @var EntityEnclosingRequest $lastRequest */
+        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
+
+        $this->assertEquals('http://null/team/invite/user@example.com/remove/', $lastRequest->getUrl());
+    }
+
+    /**
+     * @return array
+     */
+    public function booleanResponseDataProvider()
+    {
+        return [
+            'failure' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 400'),
+                ],
+                'expectedReturnValue' => false,
+            ],
+            'success' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 200'),
+                ],
+                'expectedReturnValue' => true,
+            ],
+        ];
+    }
 }
