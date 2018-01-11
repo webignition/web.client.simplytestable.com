@@ -1,27 +1,37 @@
 <?php
 namespace SimplyTestable\WebClientBundle\Services;
 
+use Guzzle\Http\Exception\BadResponseException;
+use Guzzle\Http\Message\Request;
+use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServiceException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
-use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use webignition\WebResource\JsonDocument\JsonDocument;
 
-class TeamInviteService extends CoreApplicationService {
-
+class TeamInviteService extends CoreApplicationService
+{
     /**
-     *
      * @var UserService
      */
     private $userService;
-
 
     /**
      * @var Invite[]
      */
     private $inviteCache = [];
 
+    /**
+     * @var HttpClientService
+     */
+    private $httpClientService;
 
+    /**
+     * @param array $parameters
+     * @param WebResourceService $webResourceService
+     * @param UserService $userService
+     */
     public function __construct(
         $parameters,
         WebResourceService $webResourceService,
@@ -29,17 +39,19 @@ class TeamInviteService extends CoreApplicationService {
     ) {
         parent::__construct($parameters, $webResourceService);
         $this->userService = $userService;
+        $this->httpClientService = $webResourceService->getHttpClientService();
     }
-
 
     /**
      * @param $inviteeEmail
      * @return Invite
-     * @throws \SimplyTestable\WebClientBundle\Exception\Team\Service\Exception
-     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
+     *
+     * @throws TeamServiceException
+     * @throws WebResourceException
      */
-    public function get($inviteeEmail) {
-        $request = $this->webResourceService->getHttpClientService()->getRequest(
+    public function get($inviteeEmail)
+    {
+        $request = $this->httpClientService->getRequest(
             $this->getUrl('teaminvite_get', [
                 'invitee_email' => $inviteeEmail
             ])
@@ -48,7 +60,10 @@ class TeamInviteService extends CoreApplicationService {
         $this->addAuthorisationToRequest($request);
 
         try {
-            return new Invite($this->webResourceService->get($request)->getContentObject());
+            /* @var JsonDocument $jsonDocument */
+            $jsonDocument = $this->webResourceService->get($request);
+
+            return new Invite($jsonDocument->getContentObject());
         } catch (WebResourceException $webResourceException) {
             $response = $webResourceException->getResponse();
 
@@ -63,18 +78,22 @@ class TeamInviteService extends CoreApplicationService {
         }
     }
 
-
     /**
      * @return Invite[]
+     *
+     * @throws WebResourceException
      */
-    public function getForUser() {
-        $request = $this->webResourceService->getHttpClientService()->getRequest(
+    public function getForUser()
+    {
+        $request = $this->httpClientService->getRequest(
             $this->getUrl('teaminvite_userlist')
         );
 
         $this->addAuthorisationToRequest($request);
 
-        $inviteData = $this->webResourceService->get($request)->getContentObject();
+        /* @var JsonDocument $jsonDocument */
+        $jsonDocument = $this->webResourceService->get($request);
+        $inviteData = $jsonDocument->getContentObject();
         $invites = [];
 
         foreach ($inviteData as $rawInvite) {
@@ -84,9 +103,14 @@ class TeamInviteService extends CoreApplicationService {
         return $invites;
     }
 
-
-    public function declineInvite(Invite $invite) {
-        $request = $this->webResourceService->getHttpClientService()->postRequest(
+    /**
+     * @param Invite $invite
+     *
+     * @return bool
+     */
+    public function declineInvite(Invite $invite)
+    {
+        $request = $this->httpClientService->postRequest(
             $this->getUrl('teaminvite_decline'),
             null,
             [
@@ -98,15 +122,21 @@ class TeamInviteService extends CoreApplicationService {
 
         try {
             $this->webResourceService->get($request);
-            return true;
         } catch (WebResourceException $webResourceException) {
             return false;
         }
+
+        return true;
     }
 
-
-    public function acceptInvite(Invite $invite) {
-        $request = $this->webResourceService->getHttpClientService()->postRequest(
+    /**
+     * @param Invite $invite
+     *
+     * @return bool
+     */
+    public function acceptInvite(Invite $invite)
+    {
+        $request = $this->httpClientService->postRequest(
             $this->getUrl('teaminvite_accept'),
             null,
             [
@@ -118,24 +148,29 @@ class TeamInviteService extends CoreApplicationService {
 
         try {
             $this->webResourceService->get($request);
-            return true;
         } catch (WebResourceException $webResourceException) {
             return false;
         }
-    }
 
+        return true;
+    }
 
     /**
      * @return Invite[]
+     *
+     * @throws WebResourceException
      */
-    public function getForTeam() {
-        $request = $this->webResourceService->getHttpClientService()->getRequest(
+    public function getForTeam()
+    {
+        $request = $this->httpClientService->getRequest(
             $this->getUrl('team_invites')
         );
 
         $this->addAuthorisationToRequest($request);
 
-        $inviteData = $this->webResourceService->get($request)->getContentObject();
+        /* @var JsonDocument $jsonDocument */
+        $jsonDocument = $this->webResourceService->get($request);
+        $inviteData = $jsonDocument->getContentObject();
         $invites = [];
 
         foreach ($inviteData as $rawInvite) {
@@ -145,9 +180,14 @@ class TeamInviteService extends CoreApplicationService {
         return $invites;
     }
 
-
-    public function removeForUser(Invite $invite) {
-        $request = $this->webResourceService->getHttpClientService()->postRequest(
+    /**
+     * @param Invite $invite
+     *
+     * @return bool
+     */
+    public function removeForUser(Invite $invite)
+    {
+        $request = $this->httpClientService->postRequest(
             $this->getUrl('teaminvite_remove', [
                 'invitee_email' => $invite->getUser()
             ])
@@ -157,22 +197,30 @@ class TeamInviteService extends CoreApplicationService {
 
         try {
             $this->webResourceService->get($request);
-            return true;
         } catch (WebResourceException $webResourceException) {
             return false;
         }
-    }
 
+        return true;
+    }
 
     /**
      * @param string $token
+     *
      * @return Invite
+     *
+     * @throws CoreApplicationAdminRequestException
      */
-    public function getForToken($token) {
+    public function getForToken($token)
+    {
         if (!isset($this->inviteCache[$token])) {
-            $decodedResponse = json_decode($this->getAdminResponse($this->webResourceService->getHttpClientService()->getRequest($this->getUrl('teaminvite_getbytoken', [
+            $requestUrl = $this->getUrl('teaminvite_getbytoken', [
                 'token' => $token
-            ])))->getBody());
+            ]);
+
+            $decodedResponse = json_decode(
+                $this->getAdminResponse($this->httpClientService->getRequest($requestUrl))->getBody()
+            );
 
             if ($decodedResponse instanceof \stdClass) {
                 $this->inviteCache[$token] = new Invite($decodedResponse);
@@ -184,23 +232,15 @@ class TeamInviteService extends CoreApplicationService {
         return $this->inviteCache[$token];
     }
 
-
     /**
-     * @param $token
-     * @return bool
-     */
-    public function hasForToken($token) {
-        return !is_null($this->getForToken($token));
-    }
-
-
-    /**
+     * @param Request $request
      *
-     * @param \Guzzle\Http\Message\Request $request
-     * @return boolean
+     * @return bool|Response
+     *
      * @throws CoreApplicationAdminRequestException
      */
-    private function getAdminResponse(\Guzzle\Http\Message\Request $request) {
+    private function getAdminResponse(Request $request)
+    {
         $currentUser = $this->getUser();
 
         $this->setUser($this->userService->getAdminUser());
@@ -208,7 +248,7 @@ class TeamInviteService extends CoreApplicationService {
 
         try {
             $response = $request->send();
-        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+        } catch (BadResponseException $badResponseException) {
             $response = $badResponseException->getResponse();
         }
 
@@ -220,11 +260,6 @@ class TeamInviteService extends CoreApplicationService {
             throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
         }
 
-        if (is_null($response)) {
-            return null;
-        }
-
         return $response;
     }
-
 }
