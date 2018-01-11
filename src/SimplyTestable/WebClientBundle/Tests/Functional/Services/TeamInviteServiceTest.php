@@ -238,4 +238,35 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
             ],
         ];
     }
+
+    public function testGetForTeamSuccess()
+    {
+        $this->setHttpFixtures([
+            HttpResponseFactory::createJsonResponse([
+                [
+                    'team' => self::TEAM_NAME,
+                    'user' => self::USERNAME,
+                    'token' => self::TOKEN,
+                ],
+            ]),
+        ]);
+
+        $invites = $this->teamInviteService->getForTeam();
+
+        $this->assertInternalType('array', $invites);
+        $invite = $invites[0];
+
+        $this->assertInstanceOf(Invite::class, $invite);
+
+        $this->assertEquals(self::TEAM_NAME, $invite->getTeam());
+        $this->assertEquals(self::TOKEN, $invite->getToken());
+        $this->assertEquals(self::USERNAME, $invite->getUser());
+
+
+        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
+
+        $this->assertEquals('http://null/team/invites/', $lastRequest->getUrl());
+    }
+
+
 }
