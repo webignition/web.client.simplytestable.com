@@ -169,7 +169,7 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
     }
 
     /**
-     * @dataProvider declineInviteDataProvider
+     * @dataProvider booleanResponseDataProvider
      *
      * @param array $httpFixtures
      * @param bool $expectedReturnValue
@@ -194,9 +194,34 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
     }
 
     /**
+     * @dataProvider booleanResponseDataProvider
+     *
+     * @param array $httpFixtures
+     * @param bool $expectedReturnValue
+     */
+    public function testAcceptInvite(array $httpFixtures, $expectedReturnValue)
+    {
+        $this->setHttpFixtures($httpFixtures);
+
+        $invite = new Invite([
+            'team' => self::TEAM_NAME,
+        ]);
+
+        $returnValue = $this->teamInviteService->acceptInvite($invite);
+
+        $this->assertEquals($expectedReturnValue, $returnValue);
+
+        /* @var EntityEnclosingRequest $lastRequest */
+        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
+
+        $this->assertEquals('http://null/team/invite/accept/', $lastRequest->getUrl());
+        $this->assertEquals(self::TEAM_NAME, $lastRequest->getPostField('team'));
+    }
+
+    /**
      * @return array
      */
-    public function declineInviteDataProvider()
+    public function booleanResponseDataProvider()
     {
         return [
             'failure' => [
