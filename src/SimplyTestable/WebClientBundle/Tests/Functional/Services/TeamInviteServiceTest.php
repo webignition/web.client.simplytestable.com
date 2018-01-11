@@ -4,14 +4,52 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\TeamInvite;
 
 use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Message\Response;
+use Guzzle\Plugin\History\HistoryPlugin;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
-use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServiceException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
+use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\TeamInviteService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
+use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServiceException;
 
-class TeamInviteServiceGetTest extends AbstractTeamInviteServiceTest
+class TeamInviteServiceTest extends BaseSimplyTestableTestCase
 {
+    /**
+     * @var TeamInviteService
+     */
+    private $teamInviteService;
+
+    /**
+     * @var User
+     */
+    private $user;
+
+    /**
+     * @var HistoryPlugin
+     */
+    private $httpHistoryPlugin;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->teamInviteService = $this->container->get(
+            'simplytestable.services.teaminviteservice'
+        );
+
+        $this->user = new User('user@example.com');
+
+        $this->httpHistoryPlugin = new HistoryPlugin();
+
+        $httpClientService = $this->getHttpClientService();
+        $httpClientService->get()->addSubscriber($this->httpHistoryPlugin);
+    }
+
     /**
      * @dataProvider getRemoteFailureDataProvider
      *
@@ -100,5 +138,41 @@ class TeamInviteServiceGetTest extends AbstractTeamInviteServiceTest
         $this->assertEquals($teamName, $invite->getTeam());
         $this->assertEquals($token, $invite->getToken());
         $this->assertEquals($this->user->getUsername(), $invite->getUser());
+
+        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
+
+        $this->assertEquals('http://null/team/invite/user@example.com/', $lastRequest->getUrl());
+    }
+
+    public function testGetForUserSuccess()
+    {
+        $teamName = 'Team Name';
+        $token = 'TokenValueHere';
+
+        $this->setHttpFixtures([
+            HttpResponseFactory::createJsonResponse([
+                [
+                    'team' => $teamName,
+                    'user' => $this->user->getUsername(),
+                    'token' => $token,
+                ],
+            ]),
+        ]);
+        $this->teamInviteService->setUser($this->user);
+
+        $invites = $this->teamInviteService->getForUser();
+
+        $this->assertInternalType('array', $invites);
+        $invite = $invites[0];
+
+        $this->assertInstanceOf(Invite::class, $invite);
+
+        $this->assertEquals($teamName, $invite->getTeam());
+        $this->assertEquals($token, $invite->getToken());
+        $this->assertEquals($this->user->getUsername(), $invite->getUser());
+
+        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
+
+        $this->assertEquals('http://null/team/user/invites/', $lastRequest->getUrl());
     }
 }
