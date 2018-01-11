@@ -83,14 +83,8 @@ class TestService
         $this->logger = $logger;
         $this->taskService = $taskService;
         $this->remoteTestService = $remoteTestService;
-    }
 
-    /**
-     * @return Test
-     */
-    private function getTest()
-    {
-        return $this->test;
+        $this->entityRepository = $this->entityManager->getRepository(Test::class);
     }
 
     /**
@@ -102,150 +96,130 @@ class TestService
     }
 
     /**
-     *
      * @param string $canonicalUrl
      * @param int $testId
-     * @return boolean
+     *
+     * @return bool
+     *
+     * @throws WebResourceException
      */
-    public function has($canonicalUrl, $testId) {
-        if ($this->hasEntity($testId)) {
+    public function has($canonicalUrl, $testId)
+    {
+        $test = $this->entityRepository->findOneBy([
+            'testId' => $testId
+        ]);
+
+        if (!empty($test)) {
             return true;
         }
 
-        //try {
-            return $this->get($canonicalUrl, $testId) instanceof Test;
-        //} catch (WebResourceException $webResourceException) {
-//            if ($webResourceException->getCode() == 403) {
-//                return false;
-//            }
-//
-//            throw $webResourceException;
-        //}
-
-
+        return $this->get($canonicalUrl, $testId) instanceof Test;
     }
 
-
     /**
+     * @param $canonicalUrl
+     * @param $testId
      *
-     * @param string $canonicalUrl
-     * @param int $testId
-     * @return Test
+     * @return bool|Test
+     *
+     * @throws WebResourceException
      */
-    public function get($canonicalUrl, $testId) {
-        if ($this->hasEntity($testId)) {
-            /* @var $test Test */
-            $this->test = $this->fetchEntity($testId);
-            $this->getRemoteTestService()->setTest($this->getTest());
+    public function get($canonicalUrl, $testId)
+    {
+        $test = $this->entityRepository->findOneBy([
+            'testId' => $testId
+        ]);
 
-            if (!in_array($this->getTest()->getState() , array('completed', 'rejected'))) {
+        if (!empty($test)) {
+            $this->test = $test;
+
+            $this->remoteTestService->setTest($this->test);
+
+            if (!in_array($this->test->getState(), [self::STATE_COMPLETED, self::STATE_REJECTED])) {
                 $this->update();
             }
         } else {
             $this->test = new Test();
-            $this->getTest()->setTestId($testId);
-            $this->getTest()->setWebsite(new NormalisedUrl($canonicalUrl));
-            $this->getRemoteTestService()->setTest($this->getTest());
+            $this->test->setTestId($testId);
+            $this->test->setWebsite(new NormalisedUrl($canonicalUrl));
+            $this->remoteTestService->setTest($this->test);
 
             if (!$this->create()) {
                 return false;
             }
         }
 
-        if ($this->getRemoteTestService()->has()) {
-            $this->getTest()->setUrlCount($this->getRemoteTestService()->get()->getUrlCount());
+        if ($this->remoteTestService->has()) {
+            $this->test->setUrlCount($this->remoteTestService->get()->getUrlCount());
         }
 
-        $this->entityManager->persist($this->getTest());
+        $this->entityManager->persist($this->test);
         $this->entityManager->flush();
 
-        return $this->getTest();
+        return $this->test;
     }
 
-
     /**
+     * @return bool
      *
-     * @param int $testId
-     * @return boolean
+     * @throws WebResourceException
      */
-    private function hasEntity($testId) {
-        return $this->getEntityRepository()->hasByTestId($testId);
-    }
-
-
-    /**
-     *
-     * @param int $testId
-     * @return type
-     */
-    private function fetchEntity($testId) {
-        return $this->getEntityRepository()->findOneBy(array(
-            'testId' => $testId
-        ));
-    }
-
-
-    /**
-     *
-     * @return boolean
-     */
-    private function create() {
-        $remoteTest = $this->getRemoteTestService()->get();
+    private function create()
+    {
+        $remoteTest = $this->remoteTestService->get();
         if (!$remoteTest) {
             return false;
         }
 
-        $this->getTest()->setState($remoteTest->getState());
-        $this->getTest()->setUser($remoteTest->getUser());
-        $this->getTest()->setWebsite(new NormalisedUrl($remoteTest->getWebsite()));
-        $this->getTest()->setTestId($remoteTest->getId());
-        $this->getTest()->setUrlCount($remoteTest->getUrlCount());
-        $this->getTest()->setType($remoteTest->getType());
+        $this->test->setState($remoteTest->getState());
+        $this->test->setUser($remoteTest->getUser());
+        $this->test->setWebsite(new NormalisedUrl($remoteTest->getWebsite()));
+        $this->test->setTestId($remoteTest->getId());
+        $this->test->setUrlCount($remoteTest->getUrlCount());
+        $this->test->setType($remoteTest->getType());
 
-        $this->getTest()->setTaskTypes($remoteTest->getTaskTypes());
+        $this->test->setTaskTypes($remoteTest->getTaskTypes());
 
         $remoteTimePeriod = $remoteTest->getTimePeriod();
         if (!is_null($remoteTimePeriod)) {
-            $this->getTest()->getTimePeriod()->setStartDateTime($remoteTimePeriod->getStartDateTime());
-            $this->getTest()->getTimePeriod()->setEndDateTime($remoteTimePeriod->getEndDateTime());
+            $this->test->getTimePeriod()->setStartDateTime($remoteTimePeriod->getStartDateTime());
+            $this->test->getTimePeriod()->setEndDateTime($remoteTimePeriod->getEndDateTime());
         }
 
         return true;
     }
 
-
     /**
+     * @return bool
      *
-     * @return boolean
+     * @throws WebResourceException
      */
-    private function update() {
-        $remoteTest = $this->getRemoteTestService()->get();
+    private function update()
+    {
+        $remoteTest = $this->remoteTestService->get();
         if (!$remoteTest instanceof RemoteTest) {
             return false;
         }
 
-        $this->getTest()->setWebsite(new NormalisedUrl($remoteTest->getWebsite()));
-        $this->getTest()->setState($remoteTest->getState());
-        $this->getTest()->setUrlCount($remoteTest->getUrlCount());
+        $this->test->setWebsite(new NormalisedUrl($remoteTest->getWebsite()));
+        $this->test->setState($remoteTest->getState());
+        $this->test->setUrlCount($remoteTest->getUrlCount());
 
         $remoteTimePeriod = $remoteTest->getTimePeriod();
         if (!is_null($remoteTimePeriod)) {
-            $this->getTest()->getTimePeriod()->setStartDateTime($remoteTimePeriod->getStartDateTime());
-            $this->getTest()->getTimePeriod()->setEndDateTime($remoteTimePeriod->getEndDateTime());
+            $this->test->getTimePeriod()->setStartDateTime($remoteTimePeriod->getStartDateTime());
+            $this->test->getTimePeriod()->setEndDateTime($remoteTimePeriod->getEndDateTime());
         }
+
+        return true;
     }
 
-
     /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Repository\TestRepository
+     * @return TestRepository
      */
-    public function getEntityRepository() {
-        if (is_null($this->entityRepository)) {
-            $this->entityRepository = $this->entityManager->getRepository(Test::class);
-        }
-
-        return $this->entityRepository;
+    public function getEntityRepository()
+    {
+        return $this->entityManager->getRepository(Test::class);
     }
 
 
