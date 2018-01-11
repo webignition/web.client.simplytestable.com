@@ -9,73 +9,131 @@ use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Model\User;
 use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class InviteController extends BaseController {
-
+class InviteController extends BaseController
+{
     const ONE_YEAR_IN_SECONDS = 31536000;
 
-    public function acceptAction($token) {
-        if (!$this->getTeamInviteService()->hasForToken($token)) {
-            return $this->redirect($this->generateUrl('view_user_signup_index_index', [], true));
+    const FLASH_BAG_INVITE_ACCEPT_ERROR_KEY = 'invite_accept_error';
+    const FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_PASSWORD_BLANK = 'blank-password';
+    const FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_FAILURE = 'failure';
+
+    const FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY = 'invite_accept_failure';
+
+    /**
+     * @param string $token
+     * @return bool|int|null|RedirectResponse
+     *
+     * @throws \CredisException
+     * @throws \Exception
+     */
+    public function acceptAction($token)
+    {
+        $request = $this->container->get('request');
+        $teamInviteService = $this->container->get('simplytestable.services.teaminviteservice');
+        $session = $this->container->get('session');
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
+        $resqueJobFactory = $this->container->get('simplytestable.services.resque.jobfactoryservice');
+        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+
+        $requestData = $request->request;
+
+        if (empty($token)) {
+            return $this->redirect($this->generateUrl(
+                'view_user_signup_index_index',
+                [],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            ));
         }
 
-        $password = trim($this->getRequest()->request->get('password'));
-        if ($password == '') {
-            $this->get('session')->getFlashBag()->set('invite_accept_error', 'blank-password');
-            return $this->redirect($this->generateUrl('view_user_signup_invite_index', [
-                'token' => $token
-            ], true));
+        $invite = $teamInviteService->getForToken($token);
+
+        if (empty($invite)) {
+            return $this->redirect($this->generateUrl(
+                'view_user_signup_index_index',
+                [],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            ));
         }
 
-        $invite = $this->getTeamInviteService()->getForToken($token);
+        $password = trim($requestData->get('password'));
+        if (empty($password)) {
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY,
+                self::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_PASSWORD_BLANK
+            );
 
-        $response = $this->getUserService()->activateAndAccept($invite, $password);
-
-        if ($response !== true) {
-            $this->get('session')->getFlashBag()->set('invite_accept_error', 'failure');
-            $this->get('session')->getFlashBag()->set('invite_accept_failure', $response);
-            return $this->redirect($this->generateUrl('view_user_signup_invite_index', [
-                'token' => $token
-            ], true));
+            return $this->redirect($this->generateUrl(
+                'view_user_signup_invite_index',
+                [
+                    'token' => $token
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            ));
         }
 
-        $this->getResqueQueueService()->enqueue(
-            $this->getResqueJobFactoryService()->create(
+        $acceptAndActivateReturnValue = $userService->activateAndAccept($invite, $password);
+
+        if ($acceptAndActivateReturnValue !== true) {
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY,
+                self::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_FAILURE
+            );
+
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY,
+                $acceptAndActivateReturnValue
+            );
+
+            return $this->redirect($this->generateUrl(
+                'view_user_signup_invite_index',
+                [
+                    'token' => $token
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            ));
+        }
+
+        $resqueQueueService->enqueue(
+            $resqueJobFactory->create(
                 'email-list-subscribe',
-                array(
+                [
                     'listId' => 'announcements',
                     'email' => $invite->getUser(),
-                )
+                ]
             )
         );
 
-
-        $this->getResqueQueueService()->enqueue(
-            $this->getResqueJobFactoryService()->create(
+        $resqueQueueService->enqueue(
+            $resqueJobFactory->create(
                 'email-list-subscribe',
-                array(
+                [
                     'listId' => 'introduction',
                     'email' => $invite->getUser(),
-                )
+                ]
             )
         );
 
-        $user = new User();
-        $user->setUsername($invite->getUser());
-        $user->setPassword($password);
+        $user = new User($invite->getUser(), $password);
+        $userService->setUser($user);
 
-        $this->getUserService()->setUser($user);
+        $staySignedIn = !empty(trim($requestData->get('stay-signed-in')));
 
-        $staySignedIn = trim($this->get('request')->request->get('stay-signed-in')) == '' ? 0 : 1;
+        $response = $this->redirect($this->generateUrl(
+            'view_dashboard_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
 
-        $response = $this->redirect($this->generateUrl('view_dashboard_index_index', [], true));
-
-        if ($staySignedIn == "1") {
-            $stringifiedUser = $this->getUserSerializerService()->serializeToString($user);
+        if ($staySignedIn) {
+            $serializedUser = $userSerializerService->serializeToString($user);
 
             $cookie = new Cookie(
                 'simplytestable-user',
-                $stringifiedUser,
+                $serializedUser,
                 time() + self::ONE_YEAR_IN_SECONDS,
                 '/',
                 '.simplytestable.com',
@@ -88,31 +146,4 @@ class InviteController extends BaseController {
 
         return $response;
     }
-
-
-    /**
-     * @return \SimplyTestable\WebClientBundle\Services\TeamInviteService
-     */
-    private function getTeamInviteService() {
-        return $this->get('simplytestable.services.teaminviteservice');
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\Resque\QueueService
-     */
-    private function getResqueQueueService() {
-        return $this->container->get('simplytestable.services.resque.queueService');
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\Resque\JobFactoryService
-     */
-    private function getResqueJobFactoryService() {
-        return $this->container->get('simplytestable.services.resque.jobFactoryService');
-    }
-
 }
