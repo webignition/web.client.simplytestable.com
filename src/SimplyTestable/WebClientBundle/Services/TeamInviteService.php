@@ -233,18 +233,6 @@ class TeamInviteService extends CoreApplicationService
     }
 
     /**
-     * @param $token
-     *
-     * @return bool
-     *
-     * @throws CoreApplicationAdminRequestException
-     */
-    public function hasForToken($token)
-    {
-        return !is_null($this->getForToken($token));
-    }
-
-    /**
      * @param Request $request
      *
      * @return bool|Response
