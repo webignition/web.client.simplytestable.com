@@ -260,10 +260,6 @@ class TeamInviteService extends CoreApplicationService
             throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
         }
 
-        if (is_null($response)) {
-            return null;
-        }
-
         return $response;
     }
 }

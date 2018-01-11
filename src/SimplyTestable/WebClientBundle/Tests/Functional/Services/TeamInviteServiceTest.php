@@ -281,7 +281,7 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
      *
      * @throws CoreApplicationAdminRequestException
      */
-    public function testGetForToken(array $httpFixtures, $expectedReturnValue)
+    public function testGetForTokenSuccess(array $httpFixtures, $expectedReturnValue)
     {
         $this->setHttpFixtures($httpFixtures);
 
@@ -317,6 +317,17 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
                 'expectedReturnValue' => null,
             ],
         ];
+    }
+
+    public function testGetForTokenInvalidAdminCredentials()
+    {
+        $this->setHttpFixtures([
+            Response::fromMessage('HTTP/1.1 401'),
+        ]);
+
+        $this->setExpectedException(CoreApplicationAdminRequestException::class, 'Invalid admin user credentials', 401);
+
+        $this->teamInviteService->getForToken(self::TOKEN);
     }
 
     /**
