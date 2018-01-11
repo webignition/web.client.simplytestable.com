@@ -2,19 +2,20 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Factory;
 
-use Mockery\Mock;
+use Mockery\MockInterface;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
+use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 
 class MockFactory
 {
     /**
      * @param array $calls
      *
-     * @return Mock|PostmarkMessage
+     * @return MockInterface|PostmarkMessage
      */
     public static function createPostmarkMessage(array $calls = [])
     {
-        /* @var PostmarkMessage|Mock $message */
+        /* @var PostmarkMessage|MockInterface $message */
         $message = \Mockery::mock(PostmarkMessage::class);
 
         if (isset($calls['setFrom'])) {
@@ -52,5 +53,24 @@ class MockFactory
         }
 
         return $message;
+    }
+
+    /**
+     * @param array $calls
+     *
+     * @return MockInterface|EngineInterface
+     */
+    public static function createTemplatingEngine($calls = [])
+    {
+        $templatingEngine = \Mockery::mock(EngineInterface::class);
+
+        if (isset($calls['renderResponse'])) {
+            $templatingEngine
+                ->shouldReceive('renderResponse')
+                ->withArgs($calls['renderResponse']['withArgs'])
+                ->andReturn($calls['renderResponse']['return']);
+        }
+
+        return $templatingEngine;
     }
 }

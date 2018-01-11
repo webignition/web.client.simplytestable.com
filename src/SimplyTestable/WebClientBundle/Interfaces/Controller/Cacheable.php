@@ -2,10 +2,22 @@
 
 namespace SimplyTestable\WebClientBundle\Interfaces\Controller;
 
-interface Cacheable {    
-    
+use Symfony\Component\HttpFoundation\Request;
+
+interface Cacheable
+{
+    /**
+     * @return array
+     */
     public function getCacheValidatorParameters();
-    public function setRequest(\Symfony\Component\HttpFoundation\Request $request);
+
+    /**
+     * @param Request $request
+     */
+    public function setRequest(Request $request);
+
+    /**
+     * @return Request
+     */
     public function getRequest();
-    
 }
