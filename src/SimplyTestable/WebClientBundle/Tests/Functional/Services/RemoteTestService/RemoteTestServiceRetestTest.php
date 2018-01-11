@@ -36,12 +36,9 @@ class RemoteTestServiceRetestTest extends AbstractRemoteTestServiceTest
     public function testRetest()
     {
         $this->remoteTestService->retest($this->test->getTestId(), $this->test->getWebsite());
-
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
-
         $this->assertEquals(
             'http://null/job/http%3A%2F%2Fexample.com%2F/1/re-test/',
-            $lastRequest->getUrl()
+            $this->getLastRequest()->getUrl()
         );
     }
 }

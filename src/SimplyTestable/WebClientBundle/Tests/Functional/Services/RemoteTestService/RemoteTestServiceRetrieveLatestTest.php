@@ -29,12 +29,10 @@ class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
 
         $this->assertEquals($expectedLatestTest, $remoteTest);
 
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
-
         if (!is_null($expectedRequestUrl)) {
             $this->assertEquals(
                 $expectedRequestUrl,
-                $lastRequest->getUrl()
+                $this->getLastRequest()->getUrl()
             );
         }
     }

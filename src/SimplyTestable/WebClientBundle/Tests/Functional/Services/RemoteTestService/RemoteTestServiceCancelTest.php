@@ -39,13 +39,7 @@ class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
         $response = $this->remoteTestService->cancel();
 
         $this->assertInstanceOf(WebResource::class, $response);
-
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
-
-        $this->assertEquals(
-            'http://null/job/http%3A%2F%2Fexample.com%2F/1/cancel/',
-            $lastRequest->getUrl()
-        );
+        $this->assertEquals('http://null/job/http%3A%2F%2Fexample.com%2F/1/cancel/', $this->getLastRequest()->getUrl());
     }
 
     public function testCancelByTestProperties()
@@ -59,12 +53,6 @@ class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
         $response = $this->remoteTestService->cancelByTestProperties(2, 'http://foo.example.com');
 
         $this->assertInstanceOf(WebResource::class, $response);
-
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
-
-        $this->assertEquals(
-            'http://null/job/http%3A%2F%2Ffoo.example.com/2/cancel/',
-            $lastRequest->getUrl()
-        );
+        $this->assertEquals('http://null/job/http%3A%2F%2Ffoo.example.com/2/cancel/', $this->getLastRequest()->getUrl());
     }
 }

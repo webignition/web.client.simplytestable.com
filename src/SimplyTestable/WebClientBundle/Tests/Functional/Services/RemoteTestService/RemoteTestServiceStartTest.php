@@ -58,10 +58,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
         );
 
         $this->assertInstanceOf(JsonDocument::class, $response);
-
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
-
-        $this->assertEquals($expectedRequestUrl, $lastRequest->getUrl());
+        $this->assertEquals($expectedRequestUrl, $this->getLastRequest()->getUrl());
     }
 
     /**

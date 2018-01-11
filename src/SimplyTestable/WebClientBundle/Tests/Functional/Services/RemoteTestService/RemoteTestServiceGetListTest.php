@@ -19,13 +19,7 @@ class RemoteTestServiceGetListTest extends AbstractRemoteTestServiceTest
         $this->assertInstanceOf(TestList::class, $currentList);
 
         $this->assertEquals(0, $currentList->getLength());
-
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
-
-        $this->assertEquals(
-            'http://null/jobs/list/100/0/?exclude-finished=1',
-            $lastRequest->getUrl()
-        );
+        $this->assertEquals('http://null/jobs/list/100/0/?exclude-finished=1', $this->getLastRequest()->getUrl());
     }
 
     /**
@@ -55,13 +49,7 @@ class RemoteTestServiceGetListTest extends AbstractRemoteTestServiceTest
         $this->assertEquals($expectedLimit, $currentList->getLimit());
         $this->assertEquals($expectedOffset, $currentList->getOffset());
         $this->assertEquals($expectedTestCount, $currentList->getLength());
-
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
-
-        $this->assertEquals(
-            'http://null/jobs/list/100/0/?exclude-finished=1',
-            $lastRequest->getUrl()
-        );
+        $this->assertEquals('http://null/jobs/list/100/0/?exclude-finished=1', $this->getLastRequest()->getUrl());
     }
 
     /**
@@ -148,9 +136,7 @@ class RemoteTestServiceGetListTest extends AbstractRemoteTestServiceTest
         $this->assertEquals($expectedLimit, $finishedList->getLimit());
         $this->assertEquals($expectedOffset, $finishedList->getOffset());
         $this->assertEquals($expectedTestCount, $finishedList->getLength());
-
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
-        $this->assertEquals($expectedRequestUrl, $lastRequest->getUrl());
+        $this->assertEquals($expectedRequestUrl, $this->getLastRequest()->getUrl());
     }
 
     /**
@@ -260,9 +246,7 @@ class RemoteTestServiceGetListTest extends AbstractRemoteTestServiceTest
         $this->assertEquals($expectedLimit, $finishedList->getLimit());
         $this->assertEquals($expectedOffset, $finishedList->getOffset());
         $this->assertEquals($expectedTestCount, $finishedList->getLength());
-
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
-        $this->assertEquals($expectedRequestUrl, $lastRequest->getUrl());
+        $this->assertEquals($expectedRequestUrl, $this->getLastRequest()->getUrl());
     }
 
     /**
