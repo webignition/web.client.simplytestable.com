@@ -122,10 +122,11 @@ class TeamInviteService extends CoreApplicationService
 
         try {
             $this->webResourceService->get($request);
-            return true;
         } catch (WebResourceException $webResourceException) {
             return false;
         }
+
+        return true;
     }
 
     /**

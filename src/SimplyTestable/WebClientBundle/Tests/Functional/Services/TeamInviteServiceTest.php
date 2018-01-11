@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\TeamInvite;
 
 use Guzzle\Http\Exception\CurlException;
+use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\History\HistoryPlugin;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
@@ -16,15 +17,14 @@ use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServi
 
 class TeamInviteServiceTest extends BaseSimplyTestableTestCase
 {
+    const TEAM_NAME = 'Team Name';
+    const TOKEN = 'TokenValue';
+    const USERNAME = 'user@example.com';
+
     /**
      * @var TeamInviteService
      */
     private $teamInviteService;
-
-    /**
-     * @var User
-     */
-    private $user;
 
     /**
      * @var HistoryPlugin
@@ -42,7 +42,7 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
             'simplytestable.services.teaminviteservice'
         );
 
-        $this->user = new User('user@example.com');
+        $this->teamInviteService->setUser(new User(self::USERNAME));
 
         $this->httpHistoryPlugin = new HistoryPlugin();
 
@@ -68,10 +68,9 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
         $expectedExceptionCode
     ) {
         $this->setHttpFixtures($httpFixtures);
-        $this->teamInviteService->setUser($this->user);
 
         $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
-        $this->teamInviteService->get($this->user->getUsername());
+        $this->teamInviteService->get(self::USERNAME);
     }
 
     /**
@@ -119,25 +118,21 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
 
     public function testGetSuccess()
     {
-        $teamName = 'Team Name';
-        $token = 'TokenValueHere';
-
         $this->setHttpFixtures([
             HttpResponseFactory::createJsonResponse([
-                'team' => $teamName,
-                'user' => $this->user->getUsername(),
-                'token' => $token,
+                'team' => self::TEAM_NAME,
+                'user' => self::USERNAME,
+                'token' => self::TOKEN,
             ]),
         ]);
-        $this->teamInviteService->setUser($this->user);
 
-        $invite = $this->teamInviteService->get($this->user->getUsername());
+        $invite = $this->teamInviteService->get(self::USERNAME);
 
         $this->assertInstanceOf(Invite::class, $invite);
 
-        $this->assertEquals($teamName, $invite->getTeam());
-        $this->assertEquals($token, $invite->getToken());
-        $this->assertEquals($this->user->getUsername(), $invite->getUser());
+        $this->assertEquals(self::TEAM_NAME, $invite->getTeam());
+        $this->assertEquals(self::TOKEN, $invite->getToken());
+        $this->assertEquals(self::USERNAME, $invite->getUser());
 
         $lastRequest = $this->httpHistoryPlugin->getLastRequest();
 
@@ -146,19 +141,15 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
 
     public function testGetForUserSuccess()
     {
-        $teamName = 'Team Name';
-        $token = 'TokenValueHere';
-
         $this->setHttpFixtures([
             HttpResponseFactory::createJsonResponse([
                 [
-                    'team' => $teamName,
-                    'user' => $this->user->getUsername(),
-                    'token' => $token,
+                    'team' => self::TEAM_NAME,
+                    'user' => self::USERNAME,
+                    'token' => self::TOKEN,
                 ],
             ]),
         ]);
-        $this->teamInviteService->setUser($this->user);
 
         $invites = $this->teamInviteService->getForUser();
 
@@ -167,12 +158,59 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
 
         $this->assertInstanceOf(Invite::class, $invite);
 
-        $this->assertEquals($teamName, $invite->getTeam());
-        $this->assertEquals($token, $invite->getToken());
-        $this->assertEquals($this->user->getUsername(), $invite->getUser());
+        $this->assertEquals(self::TEAM_NAME, $invite->getTeam());
+        $this->assertEquals(self::TOKEN, $invite->getToken());
+        $this->assertEquals(self::USERNAME, $invite->getUser());
+
 
         $lastRequest = $this->httpHistoryPlugin->getLastRequest();
 
         $this->assertEquals('http://null/team/user/invites/', $lastRequest->getUrl());
+    }
+
+    /**
+     * @dataProvider declineInviteDataProvider
+     *
+     * @param array $httpFixtures
+     * @param bool $expectedReturnValue
+     */
+    public function testDeclineInvite(array $httpFixtures, $expectedReturnValue)
+    {
+        $this->setHttpFixtures($httpFixtures);
+
+        $invite = new Invite([
+            'team' => self::TEAM_NAME,
+        ]);
+
+        $returnValue = $this->teamInviteService->declineInvite($invite);
+
+        $this->assertEquals($expectedReturnValue, $returnValue);
+
+        /* @var EntityEnclosingRequest $lastRequest */
+        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
+
+        $this->assertEquals('http://null/team/invite/decline/', $lastRequest->getUrl());
+        $this->assertEquals(self::TEAM_NAME, $lastRequest->getPostField('team'));
+    }
+
+    /**
+     * @return array
+     */
+    public function declineInviteDataProvider()
+    {
+        return [
+            'failure' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 400'),
+                ],
+                'expectedReturnValue' => false,
+            ],
+            'success' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 200'),
+                ],
+                'expectedReturnValue' => true,
+            ],
+        ];
     }
 }
