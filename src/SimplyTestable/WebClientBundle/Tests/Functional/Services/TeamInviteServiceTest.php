@@ -5,7 +5,6 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\TeamInvite;
 use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\History\HistoryPlugin;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
@@ -13,10 +12,10 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\TeamInviteService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
 use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServiceException;
+use SimplyTestable\WebClientBundle\Tests\Functional\Services\AbstractCoreApplicationServiceTest;
 
-class TeamInviteServiceTest extends BaseSimplyTestableTestCase
+class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
 {
     const TEAM_NAME = 'Team Name';
     const TOKEN = 'TokenValue';
@@ -26,11 +25,6 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
      * @var TeamInviteService
      */
     private $teamInviteService;
-
-    /**
-     * @var HistoryPlugin
-     */
-    private $httpHistoryPlugin;
 
     /**
      * {@inheritdoc}
@@ -44,11 +38,6 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
         );
 
         $this->teamInviteService->setUser(new User(self::USERNAME));
-
-        $this->httpHistoryPlugin = new HistoryPlugin();
-
-        $httpClientService = $this->getHttpClientService();
-        $httpClientService->get()->addSubscriber($this->httpHistoryPlugin);
     }
 
     /**
@@ -134,10 +123,7 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
         $this->assertEquals(self::TEAM_NAME, $invite->getTeam());
         $this->assertEquals(self::TOKEN, $invite->getToken());
         $this->assertEquals(self::USERNAME, $invite->getUser());
-
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
-
-        $this->assertEquals('http://null/team/invite/user@example.com/', $lastRequest->getUrl());
+        $this->assertEquals('http://null/team/invite/user@example.com/', $this->getLastRequest()->getUrl());
     }
 
     public function testGetForUserSuccess()
@@ -162,11 +148,7 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
         $this->assertEquals(self::TEAM_NAME, $invite->getTeam());
         $this->assertEquals(self::TOKEN, $invite->getToken());
         $this->assertEquals(self::USERNAME, $invite->getUser());
-
-
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
-
-        $this->assertEquals('http://null/team/user/invites/', $lastRequest->getUrl());
+        $this->assertEquals('http://null/team/user/invites/', $this->getLastRequest()->getUrl());
     }
 
     /**
@@ -188,7 +170,7 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
         $this->assertEquals($expectedReturnValue, $returnValue);
 
         /* @var EntityEnclosingRequest $lastRequest */
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
+        $lastRequest = $this->getLastRequest();
 
         $this->assertEquals('http://null/team/invite/decline/', $lastRequest->getUrl());
         $this->assertEquals(self::TEAM_NAME, $lastRequest->getPostField('team'));
@@ -213,7 +195,7 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
         $this->assertEquals($expectedReturnValue, $returnValue);
 
         /* @var EntityEnclosingRequest $lastRequest */
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
+        $lastRequest = $this->getLastRequest();
 
         $this->assertEquals('http://null/team/invite/accept/', $lastRequest->getUrl());
         $this->assertEquals(self::TEAM_NAME, $lastRequest->getPostField('team'));
@@ -241,11 +223,7 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
         $this->assertEquals(self::TEAM_NAME, $invite->getTeam());
         $this->assertEquals(self::TOKEN, $invite->getToken());
         $this->assertEquals(self::USERNAME, $invite->getUser());
-
-
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
-
-        $this->assertEquals('http://null/team/invites/', $lastRequest->getUrl());
+        $this->assertEquals('http://null/team/invites/', $this->getLastRequest()->getUrl());
     }
 
     /**
@@ -266,11 +244,7 @@ class TeamInviteServiceTest extends BaseSimplyTestableTestCase
         $returnValue = $this->teamInviteService->removeForUser($invite);
 
         $this->assertEquals($expectedReturnValue, $returnValue);
-
-        /* @var EntityEnclosingRequest $lastRequest */
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
-
-        $this->assertEquals('http://null/team/invite/user@example.com/remove/', $lastRequest->getUrl());
+        $this->assertEquals('http://null/team/invite/user@example.com/remove/', $this->getLastRequest()->getUrl());
     }
 
     /**

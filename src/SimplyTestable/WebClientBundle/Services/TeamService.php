@@ -2,62 +2,61 @@
 namespace SimplyTestable\WebClientBundle\Services;
 
 use SimplyTestable\WebClientBundle\Model\Team\Team;
-use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServiceException;
+use webignition\WebResource\JsonDocument\JsonDocument;
 
-class TeamService extends CoreApplicationService {
-
-
+class TeamService extends CoreApplicationService
+{
     /**
      * @var Team[]
      */
     private $teams = [];
 
-    public function create($name) {
+    /**
+     * @param string $name
+     */
+    public function create($name)
+    {
         $request = $this->webResourceService->getHttpClientService()->postRequest(
             $this->getUrl('team_create'),
             null,
-            array(
-                'name' => $name
-            ));
+            [
+                'name' => $name,
+            ]
+        );
 
         $this->addAuthorisationToRequest($request);
-        $response = $request->send();
-        return $response->getStatusCode() == 200 ? true : $response->getStatusCode();
+        $request->send();
     }
-
-
-
-
 
     /**
      * @return Team
      * @throws \Exception
      * @throws \Guzzle\Http\Exception\CurlException
      */
-    public function getTeam() {
-        if (!isset($this->teams[$this->getUser()->getUsername()])) {
+    public function getTeam()
+    {
+        $username = $this->getUser()->getUsername();
+
+        if (!isset($this->teams[$username])) {
             $request = $this->webResourceService->getHttpClientService()->getRequest(
                 $this->getUrl('team_get')
             );
 
             $this->addAuthorisationToRequest($request);
 
-            try {
-                $this->teams[$this->getUser()->getUsername()] = new Team($this->webResourceService->get($request)->getContentObject());
-            } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-                throw $curlException;
-            }
+            /* @var JsonDocument $jsonDocument */
+            $jsonDocument = $this->webResourceService->get($request);
+            $this->teams[$username] = new Team($jsonDocument->getContentObject());
         }
 
         return $this->teams[$this->getUser()->getUsername()];
     }
 
-
     /**
      * @param string $member
-     * @return bool
      */
-    public function removeFromTeam($member) {
+    public function removeFromTeam($member)
+    {
         $request = $this->webResourceService->getHttpClientService()->postRequest(
             $this->getUrl('team_remove', [
                 'member_email' => $member
@@ -66,27 +65,16 @@ class TeamService extends CoreApplicationService {
 
         $this->addAuthorisationToRequest($request);
 
-        return $request->send()->getStatusCode() == 200;
+        $request->send();
     }
 
-
-    /**
-     * @return bool
-     */
-    public function leave() {
+    public function leave()
+    {
         $request = $this->webResourceService->getHttpClientService()->postRequest(
             $this->getUrl('team_leave')
         );
 
         $this->addAuthorisationToRequest($request);
-
-        try {
-            $request->send();
-            return true;
-        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
-        }
-
-        return false;
+        $request->send();
     }
-
 }

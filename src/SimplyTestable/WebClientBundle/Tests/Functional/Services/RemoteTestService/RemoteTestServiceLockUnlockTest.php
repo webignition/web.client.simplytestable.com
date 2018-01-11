@@ -36,24 +36,12 @@ class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
     public function testLock()
     {
         $this->remoteTestService->lock();
-
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
-
-        $this->assertEquals(
-            'http://null/job/http%3A%2F%2Fexample.com%2F/1/set-private/',
-            $lastRequest->getUrl()
-        );
+        $this->assertEquals('http://null/job/http%3A%2F%2Fexample.com%2F/1/set-private/', $this->getLastRequest()->getUrl());
     }
 
     public function testUnlock()
     {
         $this->remoteTestService->unlock();
-
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
-
-        $this->assertEquals(
-            'http://null/job/http%3A%2F%2Fexample.com%2F/1/set-public/',
-            $lastRequest->getUrl()
-        );
+        $this->assertEquals('http://null/job/http%3A%2F%2Fexample.com%2F/1/set-public/', $this->getLastRequest()->getUrl());
     }
 }

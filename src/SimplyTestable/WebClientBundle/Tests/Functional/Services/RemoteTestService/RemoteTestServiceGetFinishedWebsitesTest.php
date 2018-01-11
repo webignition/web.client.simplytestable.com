@@ -24,7 +24,7 @@ class RemoteTestServiceGetFinishedWebsitesTest extends AbstractRemoteTestService
 
         $this->assertEquals($expectedResponse, $response);
 
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
+        $lastRequest = $this->getLastRequest();
 
         if (is_null($expectedRequestUrl)) {
             $this->assertNull($lastRequest);

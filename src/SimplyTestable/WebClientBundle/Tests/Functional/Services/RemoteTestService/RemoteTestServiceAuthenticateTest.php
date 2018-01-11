@@ -51,13 +51,7 @@ class RemoteTestServiceAuthenticateTest extends AbstractRemoteTestServiceTest
         $this->remoteTestService->setUser($this->user);
 
         $this->assertEquals($expectedAuthenticateResult, $this->remoteTestService->authenticate());
-
-        $lastRequest = $this->httpHistoryPlugin->getLastRequest();
-
-        $this->assertEquals(
-            'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
-            $lastRequest->getUrl()
-        );
+        $this->assertEquals('http://null/job/http%3A%2F%2Fexample.com%2F/1/', $this->getLastRequest()->getUrl());
     }
 
     /**
