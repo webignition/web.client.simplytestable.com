@@ -117,12 +117,13 @@ class UserService extends CoreApplicationService
     }
 
     /**
-     *
-     * @return boolean
+     * @return bool
      */
-    public function isLoggedIn() {
+    public function isLoggedIn()
+    {
         $user = $this->getUser();
-        if ($user->equals($this->getPublicUser())) {
+
+        if ($this->isPublicUser($user)) {
             return false;
         }
 

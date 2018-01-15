@@ -74,4 +74,47 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             ],
         ];
     }
+
+    /**
+     * @dataProvider isLoggedInDataProvider
+     *
+     * @param User|null $user
+     * @param bool $expectedIsLoggedIn
+     */
+    public function testIsLoggedIn($user, $expectedIsLoggedIn)
+    {
+        if (!empty($user)) {
+            $session = $this->container->get('session');
+            $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+
+            $session->set('user', $userSerializerService->serialize($user));
+        }
+
+        $this->assertEquals($expectedIsLoggedIn, $this->userService->isLoggedIn());
+    }
+
+    /**
+     * @return array
+     */
+    public function isLoggedInDataProvider()
+    {
+        return [
+            'no user' => [
+                'user' => null,
+                'expectedIsLoggedIn' => false,
+            ],
+            'public user' => [
+                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'expectedIsLoggedIn' => false,
+            ],
+            'admin user' => [
+                'user' => new User('admin'),
+                'expectedIsLoggedIn' => false,
+            ],
+            'private user' => [
+                'user' => new User('user@example.com'),
+                'expectedIsLoggedIn' => true,
+            ],
+        ];
+    }
 }
