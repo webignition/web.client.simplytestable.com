@@ -3,8 +3,10 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
 use Guzzle\Http\Exception\BadResponseException;
+use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Model\Coupon;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
@@ -262,6 +264,147 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
                     Response::fromMessage('HTTP/1.1 404'),
                 ],
                 'expectedAuthenticateReturnValue' => false,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider createFailureDataProvider
+     *
+     * @param array $httpFixtures
+     * @param int $expectedCreateReturnValue
+     *
+     * @throws CoreApplicationAdminRequestException
+     */
+    public function testCreateFailure(
+        array $httpFixtures,
+        $expectedCreateReturnValue
+    ) {
+        $this->setHttpFixtures($httpFixtures);
+
+        $createReturnValue = $this->userService->create(
+            'user@example.com',
+            'password',
+            'basic'
+        );
+
+        $this->assertEquals($expectedCreateReturnValue, $createReturnValue);
+    }
+
+    /**
+     * @return array
+     */
+    public function createFailureDataProvider()
+    {
+        return [
+            'user already exists' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 302'),
+                ],
+                'expectedCreateResponse' => 302,
+            ],
+            'maintenance mode' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 503'),
+                ],
+                'expectedCreateResponse' => 503,
+            ],
+            'CURL 6' => [
+                'httpFixtures' => [
+                    CurlExceptionFactory::create('Unable to resolve host', 6)
+                ],
+                'expectedCreateResponse' => 6,
+            ],
+        ];
+    }
+
+    public function testCreateInvalidAdminCredentials()
+    {
+        $this->setHttpFixtures([
+            Response::fromMessage('HTTP/1.1 401'),
+        ]);
+
+        $this->setExpectedException(
+            CoreApplicationAdminRequestException::class,
+            'Invalid admin user credentials',
+            401
+        );
+
+        $this->userService->create(
+            'user@example.com',
+            'password',
+            'basic'
+        );
+    }
+
+    /**
+     * @dataProvider createSuccessDataProvider
+     *
+     * @param string $email
+     * @param string $password
+     * @param string $plan
+     * @param string|null $coupon
+     * @param array $expectedPostFields
+     *
+     * @throws CoreApplicationAdminRequestException
+     */
+    public function testCreateSuccess(
+        $email,
+        $password,
+        $plan,
+        $coupon,
+        array $expectedPostFields
+    ) {
+        $this->setHttpFixtures([
+            Response::fromMessage('HTTP/1.1 200'),
+        ]);
+
+        $createReturnValue = $this->userService->create(
+            $email,
+            $password,
+            $plan,
+            $coupon
+        );
+
+        $this->assertEquals(true, $createReturnValue);
+
+        /* @var EntityEnclosingRequest $lastRequest */
+        $lastRequest = $this->getLastRequest();
+
+        $this->assertEquals($expectedPostFields, $lastRequest->getPostFields()->toArray());
+    }
+
+    /**
+     * @return array
+     */
+    public function createSuccessDataProvider()
+    {
+        $coupon = new Coupon();
+        $coupon->setCode('coupon-code');
+
+        return [
+            'no coupon' => [
+                'email' => 'user@example.com',
+                'password' => 'password-value',
+                'plan' => 'basic',
+                'coupon' => null,
+                'expectedPostFields' => [
+                    'email' => 'user%40example.com',
+                    'password' => 'password-value',
+                    'plan' => 'basic',
+                ],
+            ],
+            'with coupon' => [
+                'email' => 'user@example.com',
+                'password' => 'password-value',
+                'plan' => 'basic',
+                'coupon' => $coupon,
+                'expectedPostFields' => [
+                    'email' => 'user%40example.com',
+                    'password' => 'password-value',
+                    'plan' => 'basic',
+                    'coupon' => 'coupon-code',
+                ],
             ],
         ];
     }

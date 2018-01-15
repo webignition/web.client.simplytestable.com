@@ -215,8 +215,18 @@ class UserService extends CoreApplicationService
         return $response->isSuccessful();
     }
 
-
-    public function create($email, $password, $plan, Coupon $coupon = null) {
+    /**
+     * @param string $email
+     * @param string $password
+     * @param string $plan
+     * @param Coupon|null $coupon
+     *
+     * @return bool|int|null
+     *
+     * @throws CoreApplicationAdminRequestException
+     */
+    public function create($email, $password, $plan, Coupon $coupon = null)
+    {
         $requestData = [
             'email' => rawurlencode($email),
             'password' => rawurlencode($password),
