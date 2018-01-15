@@ -215,15 +215,6 @@ class TestService
     }
 
     /**
-     * @return TestRepository
-     */
-    public function getEntityRepository()
-    {
-        return $this->entityManager->getRepository(Test::class);
-    }
-
-
-    /**
      *
      * @return \Doctrine\ORM\EntityManager
      */
