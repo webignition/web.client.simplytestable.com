@@ -98,17 +98,6 @@ class UserService extends CoreApplicationService
         return $user;
     }
 
-
-    /**
-     *
-     * @param User $user
-     * @return boolean
-     */
-    public function isSpecialUser(User $user) {
-        return $this->isPublicUser($user) || $this->isAdminUser($user);
-    }
-
-
     /**
      *
      * @param User $user
