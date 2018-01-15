@@ -350,26 +350,6 @@ class UserService extends CoreApplicationService
     }
 
     /**
-     * @param null|string $email
-     * @return bool
-     */
-    public function hasInvites($email = null) {
-        if (!$this->hasUser()) {
-            return false;
-        }
-
-        $email = (is_null($email)) ? $this->getUser()->getUsername() : $email;
-
-        return $this->getAdminBooleanResponse(
-            $this->httpClientService->postRequest(
-                $this->getUrl('user_hasinvites', ['email_canonical' => $email])
-            )
-        );
-
-    }
-
-
-    /**
      *
      * @param \Guzzle\Http\Message\Request $request
      * @return boolean
