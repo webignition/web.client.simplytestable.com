@@ -131,11 +131,6 @@ services:
         session: "@session"
         userSerializerService: "@simplytestable.services.userserializerservice"
 
-  simplytestable.services.urlcheckerservice:
-    class:  SimplyTestable\WebClientBundle\Services\UrlCheckerService
-    arguments:
-        webResourceService: "@simplytestable.services.webresourceservice"
-
   simplytestable.services.documentationurlcheckerservice:
     class:  SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService
 
