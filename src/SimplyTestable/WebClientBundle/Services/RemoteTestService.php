@@ -35,7 +35,7 @@ class RemoteTestService extends CoreApplicationService
         $this->test = $test;
         $remoteTest = $this->get();
 
-        if ($remoteTest->getId() != $test->getTestId()) {
+        if ($remoteTest instanceof RemoteTest && $remoteTest->getId() != $test->getTestId()) {
             $this->remoteTest = null;
         }
     }
@@ -208,22 +208,6 @@ class RemoteTestService extends CoreApplicationService
         }
 
         return $this->remoteTest;
-    }
-
-    /**
-     * @return bool
-     */
-    public function has()
-    {
-        if (is_null($this->remoteTest)) {
-            return false;
-        }
-
-        if (is_null($this->test)) {
-            return false;
-        }
-
-        return $this->remoteTest->getId() == $this->test->getTestId();
     }
 
     /**
