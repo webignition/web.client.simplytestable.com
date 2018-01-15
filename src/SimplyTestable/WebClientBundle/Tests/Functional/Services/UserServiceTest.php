@@ -130,29 +130,18 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      *
      * @param array $httpFixtures
      * @param int $expectedReturnValue
-     * @param string$expectedRequestUrl
      *
      * @throws CoreApplicationAdminRequestException
      */
     public function testResetPasswordFailure(
         array $httpFixtures,
-        $expectedReturnValue,
-        $expectedRequestUrl
+        $expectedReturnValue
     ) {
         $this->setHttpFixtures($httpFixtures);
 
         $returnValue = $this->userService->resetPassword('token', 'password');
 
         $this->assertEquals($expectedReturnValue, $returnValue);
-
-        if (empty($expectedRequestUrl)) {
-            $this->assertNull($this->getLastRequest());
-        } else {
-            $this->assertEquals(
-                $expectedRequestUrl,
-                $this->getLastRequest()->getUrl()
-            );
-        }
     }
 
     /**
@@ -166,21 +155,18 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
                     Response::fromMessage('HTTP/1.1 404'),
                 ],
                 'expectedReturnValue' => 404,
-                'expectedRequestUrl' => 'http://null/user/reset-password/token/',
             ],
             'HTTP 503 (down for maintenance)' => [
                 'httpFixtures' => [
                     Response::fromMessage('HTTP/1.1 503'),
                 ],
                 'expectedReturnValue' => 503,
-                'expectedRequestUrl' => 'http://null/user/reset-password/token/',
             ],
             'CURL 28' => [
                 'httpFixtures' => [
                     CurlExceptionFactory::create('Operation timed out', 28),
                 ],
                 'expectedReturnValue' => 28,
-                'expectedRequestUrl' => null,
             ],
         ];
     }
@@ -206,11 +192,17 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             Response::fromMessage('HTTP/1.1 200'),
         ]);
 
-        $this->assertTrue($this->userService->resetPassword('token', 'password'));
+        $this->assertTrue($this->userService->resetPassword('token', 'password value'));
 
+        /* @var EntityEnclosingRequest $lastRequest */
+        $lastRequest = $this->getLastRequest();
+
+        $this->assertEquals('http://null/user/reset-password/token/', $lastRequest->getUrl());
         $this->assertEquals(
-            'http://null/user/reset-password/token/',
-            $this->getLastRequest()->getUrl()
+            [
+                'password' => 'password%20value',
+            ],
+            $lastRequest->getPostFields()->toArray()
         );
     }
 
@@ -223,7 +215,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->userService->setUser(new User('user@example.com'));
 
-        $this->assertTrue($this->userService->resetLoggedInUserPassword('password'));
+        $this->assertTrue($this->userService->resetLoggedInUserPassword('password@value'));
 
         $this->assertEquals(
             [
@@ -231,6 +223,17 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
                 'http://null/user/reset-password/token/',
             ],
             $this->getRequestedUrls()
+        );
+
+        /* @var EntityEnclosingRequest $lastRequest */
+        $lastRequest = $this->getLastRequest();
+
+        $this->assertEquals('http://null/user/reset-password/token/', $lastRequest->getUrl());
+        $this->assertEquals(
+            [
+                'password' => 'password%40value',
+            ],
+            $lastRequest->getPostFields()->toArray()
         );
     }
 
@@ -371,6 +374,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
 
+        $this->assertEquals('http://null/user/create/', $lastRequest->getUrl());
         $this->assertEquals($expectedPostFields, $lastRequest->getPostFields()->toArray());
     }
 
@@ -407,5 +411,82 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
                 ],
             ],
         ];
+    }
+
+    /**
+     * @dataProvider activateFailureDataProvider
+     *
+     * @param array $httpFixtures
+     * @param int|bool $expectedActivateReturnValue
+     *
+     * @throws CoreApplicationAdminRequestException
+     */
+    public function testActivateFailure(
+        array $httpFixtures,
+        $expectedActivateReturnValue
+    ) {
+        $this->setHttpFixtures($httpFixtures);
+
+        $createReturnValue = $this->userService->activate('token-value');
+
+        $this->assertEquals($expectedActivateReturnValue, $createReturnValue);
+    }
+
+    /**
+     * @return array
+     */
+    public function activateFailureDataProvider()
+    {
+        return [
+            'invalid token' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 400'),
+                ],
+                'expectedActivateReturnValue' => false,
+            ],
+            'maintenance mode' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 503'),
+                ],
+                'expectedActivateReturnValue' => 503,
+            ],
+            'CURL 6' => [
+                'httpFixtures' => [
+                    CurlExceptionFactory::create('Unable to resolve host', 6)
+                ],
+                'expectedActivateReturnValue' => 6,
+            ],
+        ];
+    }
+
+    public function testActivateInvalidAdminCredentials()
+    {
+        $this->setHttpFixtures([
+            Response::fromMessage('HTTP/1.1 401'),
+        ]);
+
+        $this->setExpectedException(
+            CoreApplicationAdminRequestException::class,
+            'Invalid admin user credentials',
+            401
+        );
+
+        $this->userService->activate('token-value');
+    }
+
+    public function testActivateSuccess()
+    {
+        $this->setHttpFixtures([
+            Response::fromMessage('HTTP/1.1 200'),
+        ]);
+
+        $activateReturnValue = $this->userService->activate('token-value');
+
+        $this->assertEquals(true, $activateReturnValue);
+
+        /* @var EntityEnclosingRequest $lastRequest */
+        $lastRequest = $this->getLastRequest();
+
+        $this->assertEquals('http://null/user/activate/token-value/', $lastRequest->getUrl());
     }
 }

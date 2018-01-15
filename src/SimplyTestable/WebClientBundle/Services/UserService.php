@@ -260,8 +260,15 @@ class UserService extends CoreApplicationService
         }
     }
 
-
-    public function activate($token) {
+    /**
+     * @param string $token
+     *
+     * @return bool|int
+     *
+     * @throws CoreApplicationAdminRequestException
+     */
+    public function activate($token)
+    {
         $this->setUser($this->getAdminUser());
 
         $request = $this->httpClientService->postRequest(
