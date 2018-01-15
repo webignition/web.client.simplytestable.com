@@ -116,20 +116,6 @@ class UserService extends CoreApplicationService
         return $this->getPublicUser()->equals($comparatorUser);
     }
 
-
-    /**
-     *
-     * @param User $user
-     * @return boolean
-     */
-    public function isAdminUser(User $user) {
-        $comparatorUser = new User();
-        $comparatorUser->setUsername(strtolower($user->getUsername()));
-
-        return $this->getAdminUser()->equals($comparatorUser);
-    }
-
-
     /**
      *
      * @return boolean
