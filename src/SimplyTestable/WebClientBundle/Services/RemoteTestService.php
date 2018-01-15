@@ -211,22 +211,6 @@ class RemoteTestService extends CoreApplicationService
     }
 
     /**
-     * @return bool
-     */
-    public function has()
-    {
-        if (is_null($this->remoteTest)) {
-            return false;
-        }
-
-        if (is_null($this->test)) {
-            return false;
-        }
-
-        return $this->remoteTest->getId() == $this->test->getTestId();
-    }
-
-    /**
      * @param RemoteTest $remoteTest
      */
     public function set(RemoteTest $remoteTest)
