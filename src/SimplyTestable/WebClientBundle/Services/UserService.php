@@ -412,19 +412,17 @@ class UserService extends CoreApplicationService
         $email = (is_null($email)) ? $this->getUser()->getUsername() : $email;
 
         if (!isset($this->enabledResultsCache[$email])) {
-            $existsResult = $this->getAdminBooleanResponse($this->httpClientService->postRequest($this->getUrl('user_is_enabled', array(
+            $requestUrl = $this->getUrl('user_is_enabled', [
                 'email' => $email
-            ))));
-            if (is_null($existsResult)) {
-                return null;
-            }
+            ]);
+
+            $existsResult = $this->getAdminBooleanResponse($this->httpClientService->postRequest($requestUrl));
 
             $this->enabledResultsCache[$email] = $existsResult;
         }
 
         return $this->enabledResultsCache[$email];
     }
-
 
     /**
      *

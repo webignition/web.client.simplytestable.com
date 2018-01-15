@@ -644,4 +644,57 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             ],
         ];
     }
+
+    /**
+     * @dataProvider isEnabledDataProvider
+     *
+     * @param array $httpFixtures
+     * @param bool $expectedIsEnabled
+     * @param string$expectedLastRequestUrl
+     *
+     * @throws CoreApplicationAdminRequestException
+     */
+    public function testIsEnabled(array $httpFixtures, $expectedIsEnabled, $expectedLastRequestUrl)
+    {
+        $this->setHttpFixtures($httpFixtures);
+
+        $this->assertEquals($expectedIsEnabled, $this->userService->isEnabled('user@example.com'));
+
+        /* @var EntityEnclosingRequest $lastRequest */
+        $lastRequest = $this->getLastRequest();
+
+        $this->assertEquals($expectedLastRequestUrl, $lastRequest->getUrl());
+    }
+
+    /**
+     * @return array
+     */
+    public function isEnabledDataProvider()
+    {
+        return [
+            'not enabled; does not exist' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 404'),
+                ],
+                'expectedIsEnabled' => false,
+                'expectedLastRequestUrl' => 'http://null/user/user@example.com/exists/',
+            ],
+            'not enabled' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 200'),
+                    Response::fromMessage('HTTP/1.1 404'),
+                ],
+                'expectedIsEnabled' => false,
+                'expectedLastRequestUrl' => 'http://null/user/user@example.com/enabled/',
+            ],
+            'enabled' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 200'),
+                    Response::fromMessage('HTTP/1.1 200'),
+                ],
+                'expectedIsEnabled' => true,
+                'expectedLastRequestUrl' => 'http://null/user/user@example.com/enabled/',
+            ],
+        ];
+    }
 }
