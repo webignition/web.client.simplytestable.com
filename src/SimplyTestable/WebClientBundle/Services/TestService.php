@@ -215,23 +215,12 @@ class TestService
     }
 
     /**
-     *
-     * @param \SimplyTestable\WebClientBundle\Entity\Test\Test $test
-     * @return boolean
-     */
-    public function isFailed(Test $test) {
-        $failedStatePrefix = 'failed';
-        return substr($test->getState(), 0, strlen($failedStatePrefix)) === $failedStatePrefix;
-    }
-
-
-    /**
      * @param Test $test
+     *
      * @return bool
      */
-    public function isFinished(Test $test) {
+    public function isFinished(Test $test)
+    {
         return in_array($test->getState(), $this->finishedStates);
     }
-
-
 }
