@@ -38,6 +38,9 @@ class Test
     const STATE_RESOLVED = 'resolved';
     const STATE_CRAWLING = 'crawling';
 
+    const TYPE_FULL_SITE = 'Full site';
+    const TYPE_SINGLE_URL = 'Single URL';
+
     /**
      * @var int
      *

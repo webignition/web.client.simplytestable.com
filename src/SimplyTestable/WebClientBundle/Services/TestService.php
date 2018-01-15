@@ -5,10 +5,6 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Entity\Task\Task;
-use SimplyTestable\WebClientBundle\Entity\TimePeriod;
-use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Repository\TestRepository;
@@ -61,11 +57,6 @@ class TestService
         self::STATE_COMPLETED,
         self::STATE_FAILED_NO_SITEMAP,
     );
-
-    /**
-     * @var Test
-     */
-    private $test = null;
 
     /**
      * @param EntityManager $entityManager
@@ -131,87 +122,53 @@ class TestService
         ]);
 
         if (!empty($test)) {
-            $this->test = $test;
+            $this->remoteTestService->setTest($test);
+            $remoteTest = $this->remoteTestService->get();
 
-            $this->remoteTestService->setTest($this->test);
-
-            if (!in_array($this->test->getState(), [self::STATE_COMPLETED, self::STATE_REJECTED])) {
-                $this->update();
+            if ($remoteTest instanceof RemoteTest) {
+                $this->hydrateFromRemoteTest($test, $remoteTest);
             }
         } else {
-            $this->test = new Test();
-            $this->test->setTestId($testId);
-            $this->test->setWebsite(new NormalisedUrl($canonicalUrl));
-            $this->remoteTestService->setTest($this->test);
+            $test = new Test();
+            $test->setTestId($testId);
+            $test->setWebsite(new NormalisedUrl($canonicalUrl));
 
-            if (!$this->create()) {
+            $this->remoteTestService->setTest($test);
+            $remoteTest = $this->remoteTestService->get();
+
+            if (!$remoteTest instanceof RemoteTest) {
                 return false;
             }
+
+            $this->hydrateFromRemoteTest($test, $remoteTest);
         }
 
-        if ($this->remoteTestService->has()) {
-            $this->test->setUrlCount($this->remoteTestService->get()->getUrlCount());
-        }
-
-        $this->entityManager->persist($this->test);
+        $this->entityManager->persist($test);
         $this->entityManager->flush();
 
-        return $this->test;
+        return $test;
     }
 
     /**
-     * @return bool
-     *
-     * @throws WebResourceException
+     * @param Test $test
+     * @param RemoteTest $remoteTest
      */
-    private function create()
+    private function hydrateFromRemoteTest(Test $test, RemoteTest $remoteTest)
     {
-        $remoteTest = $this->remoteTestService->get();
-        if (!$remoteTest) {
-            return false;
-        }
-
-        $this->test->setState($remoteTest->getState());
-        $this->test->setUser($remoteTest->getUser());
-        $this->test->setWebsite(new NormalisedUrl($remoteTest->getWebsite()));
-        $this->test->setTestId($remoteTest->getId());
-        $this->test->setUrlCount($remoteTest->getUrlCount());
-        $this->test->setType($remoteTest->getType());
-
-        $this->test->setTaskTypes($remoteTest->getTaskTypes());
+        $test->setUser($remoteTest->getUser());
+        $test->setWebsite(new NormalisedUrl($remoteTest->getWebsite()));
+        $test->setState($remoteTest->getState());
+        $test->setUrlCount($remoteTest->getUrlCount());
+        $test->setTestId($remoteTest->getId());
+        $test->setType($remoteTest->getType());
+        $test->setTaskTypes($remoteTest->getTaskTypes());
 
         $remoteTimePeriod = $remoteTest->getTimePeriod();
+
         if (!is_null($remoteTimePeriod)) {
-            $this->test->getTimePeriod()->setStartDateTime($remoteTimePeriod->getStartDateTime());
-            $this->test->getTimePeriod()->setEndDateTime($remoteTimePeriod->getEndDateTime());
+            $test->getTimePeriod()->setStartDateTime($remoteTimePeriod->getStartDateTime());
+            $test->getTimePeriod()->setEndDateTime($remoteTimePeriod->getEndDateTime());
         }
-
-        return true;
-    }
-
-    /**
-     * @return bool
-     *
-     * @throws WebResourceException
-     */
-    private function update()
-    {
-        $remoteTest = $this->remoteTestService->get();
-        if (!$remoteTest instanceof RemoteTest) {
-            return false;
-        }
-
-        $this->test->setWebsite(new NormalisedUrl($remoteTest->getWebsite()));
-        $this->test->setState($remoteTest->getState());
-        $this->test->setUrlCount($remoteTest->getUrlCount());
-
-        $remoteTimePeriod = $remoteTest->getTimePeriod();
-        if (!is_null($remoteTimePeriod)) {
-            $this->test->getTimePeriod()->setStartDateTime($remoteTimePeriod->getStartDateTime());
-            $this->test->getTimePeriod()->setEndDateTime($remoteTimePeriod->getEndDateTime());
-        }
-
-        return true;
     }
 
     /**
