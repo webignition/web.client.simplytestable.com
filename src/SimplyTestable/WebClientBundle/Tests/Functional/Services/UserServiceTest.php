@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestExceptio
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 
 class UserServiceTest extends AbstractCoreApplicationServiceTest
 {
@@ -127,18 +128,29 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      *
      * @param array $httpFixtures
      * @param int $expectedReturnValue
+     * @param string$expectedRequestUrl
      *
      * @throws CoreApplicationAdminRequestException
      */
     public function testResetPasswordFailure(
         array $httpFixtures,
-        $expectedReturnValue
+        $expectedReturnValue,
+        $expectedRequestUrl
     ) {
         $this->setHttpFixtures($httpFixtures);
 
         $returnValue = $this->userService->resetPassword('token', 'password');
 
         $this->assertEquals($expectedReturnValue, $returnValue);
+
+        if (empty($expectedRequestUrl)) {
+            $this->assertNull($this->getLastRequest());
+        } else {
+            $this->assertEquals(
+                $expectedRequestUrl,
+                $this->getLastRequest()->getUrl()
+            );
+        }
     }
 
     /**
@@ -152,18 +164,21 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
                     Response::fromMessage('HTTP/1.1 404'),
                 ],
                 'expectedReturnValue' => 404,
+                'expectedRequestUrl' => 'http://null/user/reset-password/token/',
             ],
             'HTTP 503 (down for maintenance)' => [
                 'httpFixtures' => [
                     Response::fromMessage('HTTP/1.1 503'),
                 ],
                 'expectedReturnValue' => 503,
+                'expectedRequestUrl' => 'http://null/user/reset-password/token/',
             ],
             'CURL 28' => [
                 'httpFixtures' => [
                     CurlExceptionFactory::create('Operation timed out', 28),
                 ],
                 'expectedReturnValue' => 28,
+                'expectedRequestUrl' => null,
             ],
         ];
     }
@@ -190,5 +205,30 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         ]);
 
         $this->assertTrue($this->userService->resetPassword('token', 'password'));
+
+        $this->assertEquals(
+            'http://null/user/reset-password/token/',
+            $this->getLastRequest()->getUrl()
+        );
+    }
+
+    public function testResetLoggedInUserPasswordSuccess()
+    {
+        $this->setHttpFixtures([
+            HttpResponseFactory::createJsonResponse('token'),
+            Response::fromMessage('HTTP/1.1 200'),
+        ]);
+
+        $this->userService->setUser(new User('user@example.com'));
+
+        $this->assertTrue($this->userService->resetLoggedInUserPassword('password'));
+
+        $this->assertEquals(
+            [
+                'http://null/user/user@example.com/token/',
+                'http://null/user/reset-password/token/',
+            ],
+            $this->getRequestedUrls()
+        );
     }
 }

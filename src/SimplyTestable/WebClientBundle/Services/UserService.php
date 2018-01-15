@@ -171,11 +171,19 @@ class UserService extends CoreApplicationService
         return true;
     }
 
+    /**
+     * @param string $password
+     *
+     * @return bool|int
+     *
+     * @throws CoreApplicationAdminRequestException
+     */
+    public function resetLoggedInUserPassword($password)
+    {
+        $token = $this->getConfirmationToken($this->getUser()->getUsername());
 
-    public function resetLoggedInUserPassword($password) {
-        return $this->resetPassword($this->getConfirmationToken($this->getUser()->getUsername()), $password);
+        return $this->resetPassword($token, $password);
     }
-
 
     /**
      *
