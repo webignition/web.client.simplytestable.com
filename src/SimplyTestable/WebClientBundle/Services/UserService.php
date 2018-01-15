@@ -60,6 +60,11 @@ class UserService extends CoreApplicationService
     private $confirmationTokenCache = [];
 
     /**
+     * @var HttpClientService
+     */
+    private $httpClientService;
+
+    /**
      * @param array $parameters
      * @param WebResourceService $webResourceService
      * @param string $adminUserUsername
@@ -80,6 +85,8 @@ class UserService extends CoreApplicationService
         $this->adminUserPassword = $adminUserPassword;
         $this->session = $session;
         $this->userSerializerService = $userSerializerService;
+
+        $this->httpClientService = $webResourceService->getHttpClientService();
     }
 
     /**
@@ -146,7 +153,7 @@ class UserService extends CoreApplicationService
      */
     public function resetPassword($token, $password)
     {
-        $request = $this->webResourceService->getHttpClientService()->postRequest(
+        $request = $this->httpClientService->postRequest(
             $this->getUrl('user_reset_password', ['token' => $token]),
             null,
             [
@@ -186,21 +193,23 @@ class UserService extends CoreApplicationService
     }
 
     /**
-     *
-     * @return boolean
+     * @return bool
      */
-    public function authenticate() {
-        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('user_authenticate', array(
-            'email' => $this->getUser()->getUsername(),
-            'password' => $this->getUser()->getPassword()
-        )));
+    public function authenticate()
+    {
+        $user = $this->getUser();
+
+        $request = $this->httpClientService->getRequest($this->getUrl('user_authenticate', [
+            'email' => $user->getUsername(),
+            'password' => $user->getPassword()
+        ]));
 
         $this->addAuthorisationToRequest($request);
 
         try {
             $response = $request->send();
-        } catch (\Guzzle\Http\Exception\ClientErrorResponseException $clientErrorResponseException) {
-            $response = $clientErrorResponseException->getResponse();
+        } catch (BadResponseException $badResponseException) {
+            $response = $badResponseException->getResponse();
         }
 
         return $response->isSuccessful();
@@ -218,7 +227,7 @@ class UserService extends CoreApplicationService
             $requestData['coupon'] = $coupon->getCode();
         }
 
-        $request = $this->webResourceService->getHttpClientService()->postRequest(
+        $request = $this->httpClientService->postRequest(
             $this->getUrl('user_create'),
             null,
             $requestData
@@ -245,7 +254,7 @@ class UserService extends CoreApplicationService
     public function activate($token) {
         $this->setUser($this->getAdminUser());
 
-        $request = $this->webResourceService->getHttpClientService()->postRequest(
+        $request = $this->httpClientService->postRequest(
             $this->getUrl('user_activate', ['token' => $token])
         );
 
@@ -274,7 +283,7 @@ class UserService extends CoreApplicationService
 
 
     public function activateAndAccept(Invite $invite, $password) {
-        $request = $this->webResourceService->getHttpClientService()->postRequest(
+        $request = $this->httpClientService->postRequest(
             $this->getUrl('teaminvite_activateandaccept'),
             null,
             [
@@ -307,7 +316,7 @@ class UserService extends CoreApplicationService
         $email = (is_null($email)) ? $this->getUser()->getUsername() : $email;
 
         if (!isset($this->existsResultCache[$email])) {
-            $existsResult = $this->getAdminBooleanResponse($this->webResourceService->getHttpClientService()->postRequest($this->getUrl('user_exists', array(
+            $existsResult = $this->getAdminBooleanResponse($this->httpClientService->postRequest($this->getUrl('user_exists', array(
                 'email' => $email
             ))));
             if (is_null($existsResult)) {
@@ -333,7 +342,7 @@ class UserService extends CoreApplicationService
         $email = (is_null($email)) ? $this->getUser()->getUsername() : $email;
 
         return $this->getAdminBooleanResponse(
-            $this->webResourceService->getHttpClientService()->postRequest(
+            $this->httpClientService->postRequest(
                 $this->getUrl('user_hasinvites', ['email_canonical' => $email])
             )
         );
@@ -399,7 +408,7 @@ class UserService extends CoreApplicationService
         $email = (is_null($email)) ? $this->getUser()->getUsername() : $email;
 
         if (!isset($this->enabledResultsCache[$email])) {
-            $existsResult = $this->getAdminBooleanResponse($this->webResourceService->getHttpClientService()->postRequest($this->getUrl('user_is_enabled', array(
+            $existsResult = $this->getAdminBooleanResponse($this->httpClientService->postRequest($this->getUrl('user_is_enabled', array(
                 'email' => $email
             ))));
             if (is_null($existsResult)) {
@@ -421,7 +430,7 @@ class UserService extends CoreApplicationService
      */
     public function getConfirmationToken($email) {
         if (!isset($this->confirmationTokenCache[$email])) {
-            $this->confirmationTokenCache[$email] = json_decode($this->getAdminResponse($this->webResourceService->getHttpClientService()->getRequest($this->getUrl('user_get_token', array(
+            $this->confirmationTokenCache[$email] = json_decode($this->getAdminResponse($this->httpClientService->getRequest($this->getUrl('user_get_token', array(
                 'email' => $email
             ))))->getBody());
         }
@@ -498,7 +507,7 @@ class UserService extends CoreApplicationService
         }
 
         if (!isset($this->summaries[$user->getUsername()])) {
-            $request = $this->webResourceService->getHttpClientService()->getRequest(
+            $request = $this->httpClientService->getRequest(
                 $this->getUrl('user', array(
                     'email' => $user->getUsername()
                 ))

@@ -231,4 +231,38 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             $this->getRequestedUrls()
         );
     }
+
+    /**
+     * @dataProvider authenticateDataProvider
+     *
+     * @param array $httpFixtures
+     * @param bool $expectedAuthenticateReturnValue
+     */
+    public function testAuthenticate(array $httpFixtures, $expectedAuthenticateReturnValue)
+    {
+        $this->setHttpFixtures($httpFixtures);
+
+        $this->assertEquals($expectedAuthenticateReturnValue, $this->userService->authenticate());
+    }
+
+    /**
+     * @return array
+     */
+    public function authenticateDataProvider()
+    {
+        return [
+            'authenticated' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 200'),
+                ],
+                'expectedAuthenticateReturnValue' => true,
+            ],
+            'not authenticated' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 404'),
+                ],
+                'expectedAuthenticateReturnValue' => false,
+            ],
+        ];
+    }
 }
