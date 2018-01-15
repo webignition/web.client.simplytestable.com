@@ -216,15 +216,6 @@ class TestService
 
     /**
      *
-     * @return \Doctrine\ORM\EntityManager
-     */
-    public function getEntityManager() {
-        return $this->entityManager;
-    }
-
-
-    /**
-     *
      * @param \SimplyTestable\WebClientBundle\Entity\Test\Test $test
      * @return boolean
      */
