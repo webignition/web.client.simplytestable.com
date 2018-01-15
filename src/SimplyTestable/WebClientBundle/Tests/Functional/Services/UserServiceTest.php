@@ -659,11 +659,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $this->setHttpFixtures($httpFixtures);
 
         $this->assertEquals($expectedIsEnabled, $this->userService->isEnabled('user@example.com'));
-
-        /* @var EntityEnclosingRequest $lastRequest */
-        $lastRequest = $this->getLastRequest();
-
-        $this->assertEquals($expectedLastRequestUrl, $lastRequest->getUrl());
+        $this->assertEquals($expectedLastRequestUrl, $this->getLastRequest()->getUrl());
     }
 
     /**
@@ -696,5 +692,19 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
                 'expectedLastRequestUrl' => 'http://null/user/user@example.com/enabled/',
             ],
         ];
+    }
+
+    public function testGetConfirmationToken()
+    {
+        $token = 'token-value';
+
+        $this->setHttpFixtures([
+            HttpResponseFactory::createJsonResponse($token),
+        ]);
+
+        $retrievedToken = $this->userService->getConfirmationToken('user@example.com');
+
+        $this->assertEquals($token, $retrievedToken);
+        $this->assertEquals('http://null/user/user@example.com/token/', $this->getLastRequest()->getUrl());
     }
 }

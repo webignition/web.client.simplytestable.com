@@ -425,21 +425,26 @@ class UserService extends CoreApplicationService
     }
 
     /**
-     *
      * @param string $email
+     *
      * @return string
+     *
      * @throws CoreApplicationAdminRequestException
      */
-    public function getConfirmationToken($email) {
+    public function getConfirmationToken($email)
+    {
         if (!isset($this->confirmationTokenCache[$email])) {
-            $this->confirmationTokenCache[$email] = json_decode($this->getAdminResponse($this->httpClientService->getRequest($this->getUrl('user_get_token', array(
+            $requestUrl = $this->getUrl('user_get_token', [
                 'email' => $email
-            ))))->getBody());
+            ]);
+
+            $request = $this->httpClientService->getRequest($requestUrl);
+
+            $this->confirmationTokenCache[$email] = json_decode($this->getAdminResponse($request)->getBody());
         }
 
         return $this->confirmationTokenCache[$email];
     }
-
 
     /**
      *
