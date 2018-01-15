@@ -15,6 +15,7 @@ class UserService extends CoreApplicationService
 
     const PUBLIC_USER_USERNAME = 'public';
     const PUBLIC_USER_PASSWORD = 'public';
+    const PUBLIC_USER_EMAIL = 'public@simplytestable.com';
 
     /**
      * @var UserSummary[]
@@ -99,11 +100,12 @@ class UserService extends CoreApplicationService
     }
 
     /**
-     *
      * @param User $user
-     * @return boolean
+     *
+     * @return bool
      */
-    public function isPublicUser(User $user) {
+    public function isPublicUser(User $user)
+    {
         $comparatorUser = new User();
         $comparatorUser->setUsername(strtolower($user->getUsername()));
 

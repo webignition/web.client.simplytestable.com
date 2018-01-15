@@ -40,4 +40,38 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->assertEquals($expectedAdminUser, $this->userService->getAdminUser());
     }
+
+    /**
+     * @dataProvider isPublicUserDataProvider
+     *
+     * @param User $user
+     * @param bool $expectedIsPublicUser
+     */
+    public function testIsPublicUser(User $user, $expectedIsPublicUser)
+    {
+        $isPublicUser = $this->userService->isPublicUser($user);
+
+        $this->assertEquals($expectedIsPublicUser, $isPublicUser);
+    }
+
+    /**
+     * @return array
+     */
+    public function isPublicUserDataProvider()
+    {
+        return [
+            'standard public user' => [
+                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'expectedIsPublicUser' => true,
+            ],
+            'email-variant public user' => [
+                'user' => new User(UserService::PUBLIC_USER_EMAIL),
+                'expectedIsPublicUser' => true,
+            ],
+            'private user' => [
+                'user' => new User('user@example.com'),
+                'expectedIsPublicUser' => false,
+            ],
+        ];
+    }
 }
