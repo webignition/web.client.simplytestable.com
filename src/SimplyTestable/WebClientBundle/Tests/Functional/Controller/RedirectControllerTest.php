@@ -1,16 +1,40 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Redirect;
+namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller;
 
 use Guzzle\Http\Message\Response;
+use SimplyTestable\WebClientBundle\Controller\RedirectController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
+use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class RedirectControllerTestActionTest extends AbstractRedirectControllerTest
+class RedirectControllerTestActionTest extends BaseSimplyTestableTestCase
 {
+    const USERNAME = 'user@example.com';
+
+    /**
+     * @var RedirectController
+     */
+    protected $redirectController;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->redirectController = new RedirectController();
+        $this->redirectController->setContainer($this->container);
+
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService->setUser(new User(self::USERNAME));
+    }
+
     /**
      * @dataProvider dataProviderForTestAction
      *
@@ -218,5 +242,18 @@ class RedirectControllerTestActionTest extends AbstractRedirectControllerTest
                 'expectedRedirectUrl' => 'http://localhost/',
             ],
         ];
+    }
+
+    public function testTaskAction()
+    {
+        /* @var RedirectResponse $response */
+        $response = $this->redirectController->taskAction(
+            'http://example.com/',
+            1,
+            2
+        );
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals('http://localhost/http://example.com//1/2/results/', $response->getTargetUrl());
     }
 }

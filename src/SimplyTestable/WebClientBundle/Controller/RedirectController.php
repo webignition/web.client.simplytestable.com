@@ -19,16 +19,6 @@ class RedirectController extends BaseController
     const TASK_RESULTS_URL_PATTERN = '/\/[0-9]+\/[0-9]+\/results\/?$/';
 
     /**
-     * @var string
-     */
-    private $website = null;
-
-    /**
-     * @var null int
-     */
-    private $test_id = null;
-
-    /**
      * @var string[]
      */
     private $testFinishedStates = [
@@ -68,13 +58,17 @@ class RedirectController extends BaseController
             ));
         }
 
-        $this->prepareNormalisedWebsiteAndTestId($request, $website, $test_id);
+        list ($normalisedWebsite, $normalisedTestId) = $this->createNormalisedWebsiteAndTestId(
+            $request,
+            $website,
+            $test_id
+        );
 
-        $hasWebsite = !is_null($this->website);
-        $hasTestId = !is_null($this->test_id);
+        $hasWebsite = !is_null($normalisedWebsite);
+        $hasTestId = !is_null($normalisedTestId);
 
         if ($hasWebsite && !$hasTestId) {
-            $latestRemoteTest = $remoteTestService->retrieveLatest($this->website);
+            $latestRemoteTest = $remoteTestService->retrieveLatest($normalisedWebsite);
 
             if ($latestRemoteTest instanceof RemoteTest) {
                 return $this->redirect($this->generateUrl(
@@ -87,10 +81,19 @@ class RedirectController extends BaseController
                 ));
             }
 
-            if ($testRepository->hasForWebsite($this->website)) {
-                $testId = $testRepository->getLatestId($this->website);
+            if ($testRepository->hasForWebsite($normalisedWebsite)) {
+                $testId = $testRepository->getLatestId($normalisedWebsite);
 
-                return $this->redirect($this->getRedirectorUrl($this->website, $testId));
+                $redirectUrl = $this->generateUrl(
+                    'app_test_redirector',
+                    [
+                        'website' => $normalisedWebsite,
+                        'test_id' => $testId
+                    ],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+
+                return $this->redirect($redirectUrl);
             }
 
             return $this->redirect($this->generateUrl(
@@ -104,7 +107,7 @@ class RedirectController extends BaseController
             $test = null;
 
             try {
-                $test = $testService->get($this->website, $this->test_id);
+                $test = $testService->get($normalisedWebsite, $normalisedTestId);
             } catch (WebResourceException $webResourceException) {
                 $logger->error(sprintf(
                     'RedirectController::webResourceException %s',
@@ -115,13 +118,21 @@ class RedirectController extends BaseController
                 $logger->error('[response]');
                 $logger->error($webResourceException->getResponse());
 
-                return $this->redirect($this->getWebsiteUrl($website));
+                $redirectUrl = $this->generateUrl(
+                    'app_website',
+                    [
+                        'website' => $website
+                    ],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+
+                return $this->redirect($redirectUrl);
             }
 
             if (in_array($test->getState(), $this->testFinishedStates)) {
-                return $this->redirect($this->getResultsUrl($this->website, $this->test_id));
+                return $this->redirect($this->getResultsUrl($normalisedWebsite, $normalisedTestId));
             } else {
-                return $this->redirect($this->getProgressUrl($this->website, $this->test_id));
+                return $this->redirect($this->getProgressUrl($normalisedWebsite, $normalisedTestId));
             }
         }
 
@@ -132,11 +143,37 @@ class RedirectController extends BaseController
         ));
     }
 
-    public function taskAction($website, $test_id = null, $task_id = null) {
-        return $this->redirect($this->getTaskResultsUrl($website, $test_id, $task_id));
+    /**
+     * @param $website
+     * @param string $test_id
+     * @param int $task_id
+     *
+     * @return RedirectResponse
+     */
+    public function taskAction($website, $test_id, $task_id)
+    {
+        $router = $this->container->get('router');
+        $redirectUrl = $router->generate(
+            'view_test_task_results_index_index',
+            [
+                'website' => $website,
+                'test_id' => $test_id,
+                'task_id' => $task_id
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return new RedirectResponse($redirectUrl);
     }
 
-    private function prepareNormalisedWebsiteAndTestId(Request $request, $website, $test_id)
+    /**
+     * @param Request $request
+     * @param string $website
+     * @param int $test_id
+     *
+     * @return array
+     */
+    private function createNormalisedWebsiteAndTestId(Request $request, $website, $test_id)
     {
         $requestWebsite = $request->request->get('website');
         if (empty($requestWebsite)) {
@@ -148,7 +185,10 @@ class RedirectController extends BaseController
         }
 
         if (empty($requestWebsite) && empty($test_id)) {
-            return;
+            return [
+                null,
+                null,
+            ];
         }
 
         $normalisedWebsite = new NormalisedUrl($requestWebsite);
@@ -160,17 +200,17 @@ class RedirectController extends BaseController
         if (!$normalisedWebsite->hasHost()) {
             $normalisedWebsite = new NormalisedUrl($website . '/' . $test_id);
 
-            $this->website = (string)$normalisedWebsite;
-            $this->test_id = null;
-
-            return;
+            return [
+                (string)$normalisedWebsite,
+                null,
+            ];
         }
 
         if (is_int($test_id) || ctype_digit($test_id)) {
-            $this->website = (string)$normalisedWebsite;
-            $this->test_id = (int)$test_id;
-
-            return;
+            return [
+                (string)$normalisedWebsite,
+                (int)$test_id,
+            ];
         }
 
         $pathParts = explode('/', $normalisedWebsite->getPath());
@@ -180,51 +220,17 @@ class RedirectController extends BaseController
             if (ctype_digit($pathParts[$pathPartIndex])) {
                 $normalisedWebsite->setPath('');
 
-                $this->website = (string)$normalisedWebsite;
-                $this->test_id = (int)$pathParts[$pathPartIndex];
-
-                return;
+                return [
+                    (string)$normalisedWebsite,
+                    (int)$pathParts[$pathPartIndex],
+                ];
             }
         }
 
-        $this->website = (string)$normalisedWebsite;
-        $this->test_id = null;
-
-        return;
-    }
-
-
-    /**
-     *
-     * @param string $website
-     * @return string
-     */
-    protected function getWebsiteurl($website) {
-        return $this->generateUrl(
-            'app_website',
-            array(
-                'website' => $website
-            ),
-            true
-        );
-    }
-
-
-    /**
-     *
-     * @param string $website
-     * @param string $test_id
-     * @return string
-     */
-    protected function getRedirectorUrl($website, $test_id) {
-        return $this->generateUrl(
-            'app_test_redirector',
-            array(
-                'website' => $website,
-                'test_id' => $test_id
-            ),
-            true
-        );
+        return [
+            (string)$normalisedWebsite,
+            null,
+        ];
     }
 
     /**
