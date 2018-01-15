@@ -1,6 +1,8 @@
 <?php
 namespace SimplyTestable\WebClientBundle\Services;
 
+use Guzzle\Http\Exception\BadResponseException;
+use Guzzle\Http\Exception\CurlException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
@@ -134,36 +136,39 @@ class UserService extends CoreApplicationService
         return true;
     }
 
-
     /**
-     * @param $token
-     * @param $password
-     * @return bool|int|null
-     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
+     * @param string $token
+     * @param string $password
+     *
+     * @return bool|int
+     *
+     * @throws CoreApplicationAdminRequestException
      */
-    public function resetPassword($token, $password) {
+    public function resetPassword($token, $password)
+    {
         $request = $this->webResourceService->getHttpClientService()->postRequest(
-            $this->getUrl('user_reset_password', array('token' => $token)),
+            $this->getUrl('user_reset_password', ['token' => $token]),
             null,
-            array(
+            [
                 'password' => rawurlencode($password)
-            )
+            ]
         );
 
         $this->addAuthorisationToRequest($request);
 
         try {
-            $response = $request->send();
-            return ($response->getStatusCode() == 200) ? true : $response->getStatusCode();
-        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+            $request->send();
+        } catch (BadResponseException $badResponseException) {
             if ($badResponseException->getResponse()->getStatusCode() == 401) {
                 throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
             }
 
             return $badResponseException->getResponse()->getStatusCode();
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+        } catch (CurlException $curlException) {
             return $curlException->getErrorNo();
         }
+
+        return true;
     }
 
 
@@ -217,13 +222,13 @@ class UserService extends CoreApplicationService
         try {
             $response = $request->send();
             return $response->getStatusCode() == 200 ? true : $response->getStatusCode();
-        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+        } catch (BadResponseException $badResponseException) {
             if ($badResponseException->getResponse()->getStatusCode() == 401) {
                 throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
             }
 
             return $badResponseException->getResponse()->getStatusCode();
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+        } catch (CurlException $curlException) {
             return $curlException->getErrorNo();
         }
     }
@@ -240,9 +245,9 @@ class UserService extends CoreApplicationService
 
         try {
             $response = $request->send();
-        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+        } catch (BadResponseException $badResponseException) {
             $response = $badResponseException->getResponse();
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+        } catch (CurlException $curlException) {
             return $curlException->getErrorNo();
         }
 
@@ -273,9 +278,9 @@ class UserService extends CoreApplicationService
         try {
             $request->send();
             return true;
-        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+        } catch (BadResponseException $badResponseException) {
             return $badResponseException->getResponse()->getStatusCode();
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+        } catch (CurlException $curlException) {
             return $curlException->getErrorNo();
         }
     }
@@ -353,7 +358,7 @@ class UserService extends CoreApplicationService
 
         try {
             $response = $request->send();
-        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+        } catch (BadResponseException $badResponseException) {
             $response = $badResponseException->getResponse();
         }
 
@@ -477,7 +482,7 @@ class UserService extends CoreApplicationService
     /**
      * @param User $user
      * @return UserSummary
-     * @throws \Guzzle\Http\Exception\CurlException
+     * @throws CurlException
      */
     public function getSummary(User $user = null) {
         if (is_null($user)) {
@@ -495,7 +500,7 @@ class UserService extends CoreApplicationService
 
             try {
                 $this->summaries[$user->getUsername()] = new UserSummary($this->webResourceService->get($request)->getContentObject());
-            } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            } catch (CurlException $curlException) {
                 throw $curlException;
             }
         }

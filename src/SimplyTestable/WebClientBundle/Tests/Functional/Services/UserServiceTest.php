@@ -2,8 +2,12 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
+use Guzzle\Http\Exception\BadResponseException;
+use Guzzle\Http\Message\Response;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 
 class UserServiceTest extends AbstractCoreApplicationServiceTest
 {
@@ -116,5 +120,75 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
                 'expectedIsLoggedIn' => true,
             ],
         ];
+    }
+
+    /**
+     * @dataProvider resetPasswordFailureDataProvider
+     *
+     * @param array $httpFixtures
+     * @param int $expectedReturnValue
+     *
+     * @throws CoreApplicationAdminRequestException
+     */
+    public function testResetPasswordFailure(
+        array $httpFixtures,
+        $expectedReturnValue
+    ) {
+        $this->setHttpFixtures($httpFixtures);
+
+        $returnValue = $this->userService->resetPassword('token', 'password');
+
+        $this->assertEquals($expectedReturnValue, $returnValue);
+    }
+
+    /**
+     * @return array
+     */
+    public function resetPasswordFailureDataProvider()
+    {
+        return [
+            'HTTP 404 (invalid token)' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 404'),
+                ],
+                'expectedReturnValue' => 404,
+            ],
+            'HTTP 503 (down for maintenance)' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 503'),
+                ],
+                'expectedReturnValue' => 503,
+            ],
+            'CURL 28' => [
+                'httpFixtures' => [
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                ],
+                'expectedReturnValue' => 28,
+            ],
+        ];
+    }
+
+    public function testResetPasswordInvalidAdminCredentials()
+    {
+        $this->setHttpFixtures([
+            Response::fromMessage('HTTP/1.1 401'),
+        ]);
+
+        $this->setExpectedException(
+            CoreApplicationAdminRequestException::class,
+            'Invalid admin user credentials',
+            401
+        );
+
+        $this->userService->resetPassword('token', 'password');
+    }
+
+    public function testResetPasswordSuccess()
+    {
+        $this->setHttpFixtures([
+            Response::fromMessage('HTTP/1.1 200'),
+        ]);
+
+        $this->assertTrue($this->userService->resetPassword('token', 'password'));
     }
 }
