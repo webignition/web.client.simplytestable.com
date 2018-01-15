@@ -3,6 +3,8 @@ namespace SimplyTestable\WebClientBundle\Services;
 
 use Guzzle\Http\Exception\BadResponseException;
 use Guzzle\Http\Exception\CurlException;
+use Guzzle\Http\Message\Request;
+use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
@@ -334,7 +336,9 @@ class UserService extends CoreApplicationService
      */
     public function exists($email = null)
     {
-        $email = (is_null($email)) ? $this->getUser()->getUsername() : $email;
+        $email = empty($email)
+            ? $this->getUser()->getUsername()
+            : $email;
 
         if (!isset($this->existsResultCache[$email])) {
             $requestUrl = $this->getUrl('user_exists', [
@@ -350,23 +354,26 @@ class UserService extends CoreApplicationService
     }
 
     /**
+     * @param Request $request
      *
-     * @param \Guzzle\Http\Message\Request $request
-     * @return boolean
+     * @return bool
+     *
      * @throws CoreApplicationAdminRequestException
      */
-    private function getAdminBooleanResponse(\Guzzle\Http\Message\Request $request) {
+    private function getAdminBooleanResponse(Request $request)
+    {
         return $this->getAdminResponse($request)->getStatusCode() === 200;
     }
 
-
     /**
+     * @param Request $request
      *
-     * @param \Guzzle\Http\Message\Request $request
-     * @return boolean
+     * @return Response|null
+     *
      * @throws CoreApplicationAdminRequestException
      */
-    protected function getAdminResponse(\Guzzle\Http\Message\Request $request) {
+    protected function getAdminResponse(Request $request)
+    {
         $currentUser = $this->getUser();
 
         $this->setUser($this->getAdminUser());
@@ -386,20 +393,18 @@ class UserService extends CoreApplicationService
             throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
         }
 
-        if (is_null($response)) {
-            return null;
-        }
-
         return $response;
     }
 
-
     /**
-     * @param null $email
+     * @param string $email
+     *
      * @return bool|null
+     *
      * @throws CoreApplicationAdminRequestException
      */
-    public function isEnabled($email = null) {
+    public function isEnabled($email = null)
+    {
         if (!$this->exists($email)) {
             return false;
         }

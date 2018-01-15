@@ -579,24 +579,34 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      * @dataProvider existsSuccessDataProvider
      *
      * @param array $httpFixtures
+     * @param User|null $user
+     * @param string $email
      * @param int|bool $expectedReturnValue
+     * @param string $expectedRequestUrl
      *
      * @throws CoreApplicationAdminRequestException
      */
     public function testExistsSuccess(
         array $httpFixtures,
-        $expectedReturnValue
+        $user,
+        $email,
+        $expectedReturnValue,
+        $expectedRequestUrl
     ) {
         $this->setHttpFixtures($httpFixtures);
 
-        $returnValue = $this->userService->exists('user@example.com');
+        if (!empty($user)) {
+            $this->userService->setUser($user);
+        }
+
+        $returnValue = $this->userService->exists($email);
 
         $this->assertEquals($expectedReturnValue, $returnValue);
 
         /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
 
-        $this->assertEquals('http://null/user/user@example.com/exists/', $lastRequest->getUrl());
+        $this->assertEquals($expectedRequestUrl, $lastRequest->getUrl());
     }
 
     /**
@@ -609,13 +619,28 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
                 'httpFixtures' => [
                     Response::fromMessage('HTTP/1.1 404'),
                 ],
+                'user' => null,
+                'userEmail' => 'user@example.com',
                 'expectedReturnValue' => false,
+                'expectedRequestUrl' => 'http://null/user/user@example.com/exists/',
             ],
             'exists' => [
                 'httpFixtures' => [
                     Response::fromMessage('HTTP/1.1 200'),
                 ],
+                'user' => null,
+                'userEmail' => 'user@example.com',
                 'expectedReturnValue' => true,
+                'expectedRequestUrl' => 'http://null/user/user@example.com/exists/',
+            ],
+            'exists; user is set' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 200'),
+                ],
+                'user' => new User('user-foo@example.com'),
+                'userEmail' => null,
+                'expectedReturnValue' => true,
+                'expectedRequestUrl' => 'http://null/user/user-foo@example.com/exists/',
             ],
         ];
     }
