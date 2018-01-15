@@ -7,6 +7,7 @@ use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Model\Coupon;
+use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
@@ -488,5 +489,134 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $lastRequest = $this->getLastRequest();
 
         $this->assertEquals('http://null/user/activate/token-value/', $lastRequest->getUrl());
+    }
+
+    /**
+     * @dataProvider activateAndAcceptDataProvider
+     *
+     * @param array $httpFixtures
+     * @param int|bool $expectedReturnValue
+     * @param bool $expectedRequestIsMade
+     */
+    public function testActivateAndAccept(
+        array $httpFixtures,
+        $expectedReturnValue,
+        $expectedRequestIsMade
+    ) {
+        $this->setHttpFixtures($httpFixtures);
+
+        $invite = new Invite([
+            'token' => 'token-value',
+        ]);
+
+        $returnValue = $this->userService->activateAndAccept($invite, 'password-value');
+
+        $this->assertEquals($expectedReturnValue, $returnValue);
+
+        /* @var EntityEnclosingRequest $lastRequest */
+        $lastRequest = $this->getLastRequest();
+
+        if (!$expectedRequestIsMade) {
+            $this->assertNull($lastRequest);
+        } else {
+            $this->assertEquals('http://null/team/invite/activate/accept/', $lastRequest->getUrl());
+            $this->assertEquals(
+                [
+                    'token' => 'token-value',
+                    'password' => 'password-value',
+                ],
+                $lastRequest->getPostFields()->toArray()
+            );
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function activateAndAcceptDataProvider()
+    {
+        return [
+            'HTTP 400' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 400'),
+                ],
+                'expectedReturnValue' => 400,
+                'expectedRequestIsMade' => true,
+            ],
+            'CURL 28' => [
+                'httpFixtures' => [
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                ],
+                'expectedReturnValue' => 28,
+                'expectedRequestIsMade' => false,
+            ],
+            'Success' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 200'),
+                ],
+                'expectedReturnValue' => true,
+                'expectedRequestIsMade' => true,
+            ],
+        ];
+    }
+
+    public function testExistsInvalidAdminCredentials()
+    {
+        $this->setHttpFixtures([
+            Response::fromMessage('HTTP/1.1 401'),
+        ]);
+
+        $this->setExpectedException(
+            CoreApplicationAdminRequestException::class,
+            'Invalid admin user credentials',
+            401
+        );
+
+        $this->userService->exists('user@example.com');
+    }
+
+    /**
+     * @dataProvider existsSuccessDataProvider
+     *
+     * @param array $httpFixtures
+     * @param int|bool $expectedReturnValue
+     *
+     * @throws CoreApplicationAdminRequestException
+     */
+    public function testExistsSuccess(
+        array $httpFixtures,
+        $expectedReturnValue
+    ) {
+        $this->setHttpFixtures($httpFixtures);
+
+        $returnValue = $this->userService->exists('user@example.com');
+
+        $this->assertEquals($expectedReturnValue, $returnValue);
+
+        /* @var EntityEnclosingRequest $lastRequest */
+        $lastRequest = $this->getLastRequest();
+
+        $this->assertEquals('http://null/user/user@example.com/exists/', $lastRequest->getUrl());
+    }
+
+    /**
+     * @return array
+     */
+    public function existsSuccessDataProvider()
+    {
+        return [
+            'not exists' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 404'),
+                ],
+                'expectedReturnValue' => false,
+            ],
+            'exists' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 200'),
+                ],
+                'expectedReturnValue' => true,
+            ],
+        ];
     }
 }

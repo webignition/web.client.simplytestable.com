@@ -298,8 +298,14 @@ class UserService extends CoreApplicationService
         return $response->getStatusCode() == 200 ? true : $response->getStatusCode();
     }
 
-
-    public function activateAndAccept(Invite $invite, $password) {
+    /**
+     * @param Invite $invite
+     * @param string $password
+     *
+     * @return bool|int
+     */
+    public function activateAndAccept(Invite $invite, $password)
+    {
         $request = $this->httpClientService->postRequest(
             $this->getUrl('teaminvite_activateandaccept'),
             null,
@@ -311,41 +317,37 @@ class UserService extends CoreApplicationService
 
         try {
             $request->send();
-            return true;
         } catch (BadResponseException $badResponseException) {
             return $badResponseException->getResponse()->getStatusCode();
         } catch (CurlException $curlException) {
             return $curlException->getErrorNo();
         }
+
+        return true;
     }
 
-
     /**
-     * @param null $email
+     * @param string $email
      * @return bool|null
+     *
      * @throws CoreApplicationAdminRequestException
      */
-    public function exists($email = null) {
-        if (!$this->hasUser()) {
-            return false;
-        }
-
+    public function exists($email = null)
+    {
         $email = (is_null($email)) ? $this->getUser()->getUsername() : $email;
 
         if (!isset($this->existsResultCache[$email])) {
-            $existsResult = $this->getAdminBooleanResponse($this->httpClientService->postRequest($this->getUrl('user_exists', array(
+            $requestUrl = $this->getUrl('user_exists', [
                 'email' => $email
-            ))));
-            if (is_null($existsResult)) {
-                return null;
-            }
+            ]);
+
+            $existsResult = $this->getAdminBooleanResponse($this->httpClientService->postRequest($requestUrl));
 
             $this->existsResultCache[$email] = $existsResult;
         }
 
         return $this->existsResultCache[$email];
     }
-
 
     /**
      * @param null|string $email
