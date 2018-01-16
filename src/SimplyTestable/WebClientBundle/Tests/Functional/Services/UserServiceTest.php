@@ -95,7 +95,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             $session = $this->container->get('session');
             $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
-            $session->set('user', $userSerializerService->serialize($user));
+            $session->set(UserService::SESSION_USER_KEY, $userSerializerService->serialize($user));
         }
 
         $this->assertEquals($expectedIsLoggedIn, $this->userService->isLoggedIn());
@@ -706,5 +706,19 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->assertEquals($token, $retrievedToken);
         $this->assertEquals('http://null/user/user@example.com/token/', $this->getLastRequest()->getUrl());
+    }
+
+    public function testSetUser()
+    {
+        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $session = $this->container->get('session');
+
+        $user = new User('user@example.com', 'password-value');
+        $serializedUser = $userSerializerService->serialize($user);
+
+        $this->userService->setUser($user);
+
+        $this->assertEquals($serializedUser, $session->get(UserService::SESSION_USER_KEY));
+        $this->assertEquals($user, $this->userService->getUser());
     }
 }

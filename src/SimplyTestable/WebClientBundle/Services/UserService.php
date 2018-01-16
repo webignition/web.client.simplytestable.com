@@ -21,6 +21,8 @@ class UserService extends CoreApplicationService
     const PUBLIC_USER_PASSWORD = 'public';
     const PUBLIC_USER_EMAIL = 'public@simplytestable.com';
 
+    const SESSION_USER_KEY = 'user';
+
     /**
      * @var UserSummary[]
      */
@@ -447,14 +449,13 @@ class UserService extends CoreApplicationService
     }
 
     /**
-     *
      * @param User $user
      */
-    public function setUser(User $user) {
-        $this->session->set('user', $this->userSerializerService->serialize($user));
+    public function setUser(User $user)
+    {
+        $this->session->set(self::SESSION_USER_KEY, $this->userSerializerService->serialize($user));
         parent::setUser($user);
     }
-
 
     /**
      *
