@@ -500,11 +500,10 @@ class UserService extends CoreApplicationService
         return parent::getUser();
     }
 
-
-    public function clearUser() {
-        $this->session->set('user', null);
+    public function clearUser()
+    {
+        $this->session->set(self::SESSION_USER_KEY, null);
     }
-
 
     /**
      * @param User $user

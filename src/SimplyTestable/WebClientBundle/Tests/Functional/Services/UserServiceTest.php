@@ -825,4 +825,18 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             ],
         ];
     }
+
+    public function testClearUser()
+    {
+        $session = $this->container->get('session');
+        $user = 'foo';
+
+        $session->set(UserService::SESSION_USER_KEY, $user);
+
+        $this->assertEquals($user, $session->get(UserService::SESSION_USER_KEY));
+
+        $this->userService->clearUser();
+
+        $this->assertNull($session->get(UserService::SESSION_USER_KEY));
+    }
 }
