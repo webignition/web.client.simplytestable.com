@@ -7,12 +7,28 @@ use Guzzle\Http\Message\Response;
 class HttpResponseFactory
 {
     /**
-     * @param string $message
+     * @param int $statusCode
+     * @param array $headers
+     * @param string $body
      *
      * @return Response
      */
-    public static function create($message)
+    public static function create($statusCode, $headers = [], $body = '')
     {
+        $headersStringParts = [];
+        foreach ($headers as $key => $value) {
+            $headersStringParts[] = $key . ':' . $value;
+        }
+
+        $headersString = implode("\n", $headersStringParts);
+
+        $message = trim(sprintf(
+            "HTTP/1.1 %s\n%s\n\n%s",
+            $statusCode,
+            $headersString,
+            $body
+        ));
+
         return Response::fromMessage($message);
     }
 
@@ -23,6 +39,12 @@ class HttpResponseFactory
      */
     public static function createJsonResponse($data)
     {
-        return self::create("HTTP/1.1 200\nContent-Type:application/json\n\n" . json_encode($data));
+        return self::create(
+            200,
+            [
+                'Content-Type' => 'application/json',
+            ],
+            json_encode($data)
+        );
     }
 }
