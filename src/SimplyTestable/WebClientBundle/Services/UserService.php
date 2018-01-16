@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Session\Session;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\Coupon;
@@ -458,25 +459,24 @@ class UserService extends CoreApplicationService
     }
 
     /**
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @return null
+     * @param SymfonyRequest $request
      */
-    public function setUserFromRequest(\Symfony\Component\HttpFoundation\Request $request) {
-        if (!$request->cookies->has(self::USER_COOKIE_KEY)) {
-            $this->setUser($this->getPublicUser());
-            return;
+    public function setUserFromRequest(SymfonyRequest $request)
+    {
+        $user = null;
+
+        if ($request->cookies->has(self::USER_COOKIE_KEY)) {
+            $serializedUser = $request->cookies->get(self::USER_COOKIE_KEY);
+
+            $user = $this->userSerializerService->unserializedFromString($serializedUser);
         }
 
-        $user = $this->userSerializerService->unserializedFromString($request->cookies->get(self::USER_COOKIE_KEY));
-
-        if (is_null($user)) {
-            return;
+        if (empty($user)) {
+            $user = $this->getPublicUser();
         }
 
         $this->setUser($user);
     }
-
 
     /**
      *

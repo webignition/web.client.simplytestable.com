@@ -12,6 +12,8 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
+use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\Request;
 
 class UserServiceTest extends AbstractCoreApplicationServiceTest
 {
@@ -720,5 +722,58 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->assertEquals($serializedUser, $session->get(UserService::SESSION_USER_KEY));
         $this->assertEquals($user, $this->userService->getUser());
+    }
+
+    /**
+     * @dataProvider setUserFromRequestDataProvider
+     *
+     * @param Request $request
+     * @param User $expectedUser
+     */
+    public function testSetUserFromRequest(Request $request, User $expectedUser)
+    {
+        if ($request->cookies->has(UserService::USER_COOKIE_KEY)) {
+            $cookieUser = $request->cookies->get(UserService::USER_COOKIE_KEY);
+
+            if ($cookieUser instanceof User) {
+                $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+                $request->cookies->set(
+                    UserService::USER_COOKIE_KEY,
+                    $userSerializerService->serializeToString($cookieUser)
+                );
+            }
+        }
+
+        $this->userService->setUserFromRequest($request);
+
+        $this->assertEquals($expectedUser, $this->userService->getUser());
+    }
+
+    /**
+     * @return array
+     */
+    public function setUserFromRequestDataProvider()
+    {
+        $publicUser = new User(UserService::PUBLIC_USER_USERNAME, UserService::PUBLIC_USER_PASSWORD);
+        $privateUser = new User('user@example.com');
+
+        return [
+            'no user in request cookie' => [
+                'request' => new Request(),
+                'expectedUser' => $publicUser,
+            ],
+            'invalid user in request cookie' => [
+                'request' => new Request([], [], [], [
+                    UserService::USER_COOKIE_KEY => 'foo',
+                ]),
+                'expectedUser' => $publicUser,
+            ],
+            'valid user in request cookie' => [
+                'request' => new Request([], [], [], [
+                    UserService::USER_COOKIE_KEY => $privateUser,
+                ]),
+                'expectedUser' => $privateUser,
+            ],
+        ];
     }
 }
