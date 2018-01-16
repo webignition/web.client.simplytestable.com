@@ -479,18 +479,20 @@ class UserService extends CoreApplicationService
     }
 
     /**
-     *
      * @return User
      */
-    public function getUser() {
-        if (is_null($this->session->get('user'))) {
-            $this->setUser($this->getPublicUser());
-        }
+    public function getUser()
+    {
+        $sessionUser = $this->session->get(self::SESSION_USER_KEY);
 
-        $user = $this->userSerializerService->unserialize($this->session->get('user'));
-
-        if ($this->isPublicUser($user)) {
+        if (empty($sessionUser)) {
             $user = $this->getPublicUser();
+        } else {
+            $user = $this->userSerializerService->unserialize($sessionUser);
+
+            if ($this->isPublicUser($user)) {
+                $user = $this->getPublicUser();
+            }
         }
 
         parent::setUser($user);

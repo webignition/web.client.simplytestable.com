@@ -776,4 +776,53 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             ],
         ];
     }
+
+    /**
+     * @dataProvider getUserDataProvider
+     *
+     * @param User|null $sessionUser
+     * @param User $expectedUser
+     */
+    public function testGetUser($sessionUser, User $expectedUser)
+    {
+        if (!empty($sessionUser)) {
+            $session = $this->container->get('session');
+            $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+
+            $session->set(UserService::SESSION_USER_KEY, $userSerializerService->serialize($sessionUser));
+        }
+
+        $user = $this->userService->getUser();
+
+        $this->assertEquals($expectedUser, $user);
+    }
+
+    /**
+     * @return array
+     */
+    public function getUserDataProvider()
+    {
+        $publicUser = new User(UserService::PUBLIC_USER_USERNAME, UserService::PUBLIC_USER_PASSWORD);
+        $publicUserEmailVariant = new User(UserService::PUBLIC_USER_EMAIL, UserService::PUBLIC_USER_PASSWORD);
+        $privateUser = new User('user@example.com');
+
+        return [
+            'no user in session' => [
+                'sessionUser' => null,
+                'expectedUser' => $publicUser
+            ],
+            'has public user in session' => [
+                'sessionUser' => $publicUser,
+                'expectedUser' => $publicUser
+            ],
+            'has public user email variant in session' => [
+                'sessionUser' => $publicUserEmailVariant,
+                'expectedUser' => $publicUser
+            ],
+            'has private user in session' => [
+                'sessionUser' => $privateUser,
+                'expectedUser' => $privateUser
+            ],
+        ];
+    }
 }
