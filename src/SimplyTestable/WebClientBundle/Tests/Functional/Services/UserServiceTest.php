@@ -3,9 +3,11 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
 use Guzzle\Http\Exception\BadResponseException;
+use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\Coupon;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\User;
@@ -838,5 +840,115 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $this->userService->clearUser();
 
         $this->assertNull($session->get(UserService::SESSION_USER_KEY));
+    }
+
+    /**
+     * @dataProvider getSummaryFailureDataProvider
+     *
+     * @param array $httpFixtures
+     * @param string $expectedException
+     * @param string $expectedExceptionMessage
+     * @param int $expectedExceptionCode
+     *
+     * @throws WebResourceException
+     */
+    public function testGetSummaryFailure(
+        array $httpFixtures,
+        $expectedException,
+        $expectedExceptionMessage,
+        $expectedExceptionCode
+    ) {
+        $this->setHttpFixtures($httpFixtures);
+
+        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+
+        $this->userService->getSummary();
+    }
+
+    /**
+     * @return array
+     */
+    public function getSummaryFailureDataProvider()
+    {
+        return [
+            'HTTP 500' => [
+                'httpFixtures' => [
+                    Response::fromMessage('HTTP/1.1 500'),
+                ],
+                'expectedException' => WebResourceException::class,
+                'expectedExceptionMessage' => 'Internal Server Error',
+                'expectedExceptionCode' => 500,
+            ],
+            'CURL 28' => [
+                'httpFixtures' => [
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                ],
+                'expectedException' => CurlException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getSummarySuccessDataProvider
+     *
+     * @param User|null $user
+     * @param string $expectedRequestUrl
+     *
+     * @throws WebResourceException
+     */
+    public function testGetSummarySuccess($user, $expectedRequestUrl)
+    {
+        if (!empty($user)) {
+            $this->userService->setUser($user);
+        }
+
+        $this->setHttpFixtures([
+            HttpResponseFactory::createJsonResponse([
+                'email' => 'basic-not-in-team@example.com',
+                'user_plan' => [
+                    'plan' => [
+                        'name' => 'basic',
+                        'is_premium' => false,
+                    ],
+                    'start_trial_period' => 30,
+                ],
+                'plan_constraints' => [
+                    'credits' => [
+                        'limit' => 500,
+                        'used' => 0,
+                    ],
+                    'urls_per_job' => 10,
+                ],
+                'team_summary' => [
+                    'in' => false,
+                    'has_invite' => false,
+                ],
+            ]),
+        ]);
+
+        $userSummary = $this->getUserService()->getSummary();
+
+        $this->assertInstanceOf(User\Summary::class, $userSummary);
+
+        $this->assertEquals($expectedRequestUrl, $this->getLastRequest()->getUrl());
+    }
+
+    /**
+     * @return array
+     */
+    public function getSummarySuccessDataProvider()
+    {
+        return [
+            'has user' => [
+                'user' => new User('user@example.com'),
+                'expectedRequestUrl' => 'http://null/user/user@example.com/',
+            ],
+            'no user' => [
+                'user' => null,
+                'expectedRequestUrl' => 'http://null/user/public/',
+            ],
+        ];
     }
 }

@@ -5,6 +5,7 @@ use Guzzle\Http\Exception\BadResponseException;
 use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Message\Request;
 use Guzzle\Http\Message\Response;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Session\Session;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\Coupon;
+use webignition\WebResource\JsonDocument\JsonDocument;
 
 class UserService extends CoreApplicationService
 {
@@ -506,32 +508,37 @@ class UserService extends CoreApplicationService
     }
 
     /**
-     * @param User $user
+     * @param User|null $user
+     *
      * @return UserSummary
+     *
+     * @throws WebResourceException
      * @throws CurlException
      */
-    public function getSummary(User $user = null) {
+    public function getSummary(User $user = null)
+    {
         if (is_null($user)) {
             $user = $this->getUser();
         }
 
-        if (!isset($this->summaries[$user->getUsername()])) {
+        $username = $user->getUsername();
+
+        if (!isset($this->summaries[$username])) {
             $request = $this->httpClientService->getRequest(
-                $this->getUrl('user', array(
-                    'email' => $user->getUsername()
-                ))
+                $this->getUrl('user', [
+                    'email' => $username
+                ])
             );
 
             $this->addAuthorisationToRequest($request);
 
-            try {
-                $this->summaries[$user->getUsername()] = new UserSummary($this->webResourceService->get($request)->getContentObject());
-            } catch (CurlException $curlException) {
-                throw $curlException;
-            }
+            /* @var JsonDocument $jsonDocument */
+            $jsonDocument = $this->webResourceService->get($request);
+
+            $this->summaries[$username] = new UserSummary($jsonDocument->getContentObject());
         }
 
-        return $this->summaries[$user->getUsername()];
+        return $this->summaries[$username];
     }
 
 
