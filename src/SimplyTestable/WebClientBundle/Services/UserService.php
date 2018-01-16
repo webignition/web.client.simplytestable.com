@@ -541,23 +541,23 @@ class UserService extends CoreApplicationService
         return $this->summaries[$username];
     }
 
-
     /**
+     * @param Response $response
      *
-     * @param \Guzzle\Http\Message\Response $response
-     * @return boolean
+     * @return bool
      */
-    protected function httpResponseHasStripeError(\Guzzle\Http\Message\Response $response) {
+    protected function httpResponseHasStripeError(Response $response)
+    {
         return count($this->getStripeErrorValuesFromHttpResponse($response)) > 0;
     }
 
-
     /**
+     * @param Response $response
      *
-     * @param \Guzzle\Http\Message\Response $response
-     * @return \SimplyTestable\WebClientBundle\Exception\UserAccountCardException
+     * @return UserAccountCardException
      */
-    protected function getUserAccountCardExceptionFromHttpResponse(\Guzzle\Http\Message\Response $response) {
+    protected function getUserAccountCardExceptionFromHttpResponse(Response $response)
+    {
         $stripeErrorValues = $this->getStripeErrorValuesFromHttpResponse($response);
 
         $message = (isset($stripeErrorValues['message'])) ? $stripeErrorValues['message'] : '';
@@ -567,13 +567,13 @@ class UserService extends CoreApplicationService
         return new UserAccountCardException($message, $param, $code);
     }
 
-
     /**
+     * @param Response $response
      *
-     * @param \Guzzle\Http\Message\Response $response
      * @return array
      */
-    private function getStripeErrorValuesFromHttpResponse(\Guzzle\Http\Message\Response $response) {
+    private function getStripeErrorValuesFromHttpResponse(Response $response)
+    {
         $stripeErrorKeys = array('message', 'param', 'code');
         $stripeErrorValues = array();
 
@@ -591,6 +591,4 @@ class UserService extends CoreApplicationService
 
         return $stripeErrorValues;
     }
-
-
 }
