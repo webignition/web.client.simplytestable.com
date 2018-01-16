@@ -2,86 +2,92 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
-//use Egulias\EmailValidator\EmailValidator;
-//use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
+use SimplyTestable\WebClientBundle\Services\UserService;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class PasswordChangeController extends AccountCredentialsChangeController {
+class PasswordChangeController extends AccountCredentialsChangeController
+{
+    const FLASH_BAG_REQUEST_KEY = 'user_account_details_update_password_request_notice';
+    const FLASH_BAG_REQUEST_ERROR_MESSAGE_PASSWORD_MISSING = 'password-missing';
+    const FLASH_BAG_REQUEST_ERROR_MESSAGE_PASSWORD_INVALID = 'password-invalid';
+    const FLASH_BAG_REQUEST_ERROR_MESSAGE_FAILED_READ_ONLY = 'password-failed-read-only';
+    const FLASH_BAG_REQUEST_ERROR_MESSAGE_FAILED_UNKNOWN = 'unknown';
+    const FLASH_BAG_REQUEST_SUCCESS_MESSAGE = 'password-done';
 
-    public function requestAction() {
-        $redirectResponse = $this->redirect($this->generateUrl('view_user_account_index_index', [], true));
+    /**
+     * @param Request $request
+     *
+     * @return RedirectResponse
+     */
+    public function requestAction(Request $request)
+    {
+        $session = $this->container->get('session');
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $requestData = $request->request;
 
-        if (!$this->hasRequestCurrentPassword() || !$this->hasRequestNewPassword()) {
-            $this->get('session')->getFlashBag()->set('user_account_details_update_password_request_notice', 'password-missing');
+        $currentPassword = strtolower(trim($requestData->get('current-password')));
+        $newPassword = strtolower(trim($requestData->get('new-password')));
+
+        $redirectResponse = $this->redirect($this->generateUrl(
+            'view_user_account_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
+
+        if (empty($currentPassword) || empty($newPassword)) {
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_REQUEST_KEY,
+                self::FLASH_BAG_REQUEST_ERROR_MESSAGE_PASSWORD_MISSING
+            );
+
             return $redirectResponse;
         }
 
-        if ($this->getRequestCurrentPassword() != $this->getUser()->getPassword()) {
-            $this->get('session')->getFlashBag()->set('user_account_details_update_password_request_notice', 'password-invalid');
+        $user = $this->getUser();
+
+        if ($currentPassword != $user->getPassword()) {
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_REQUEST_KEY,
+                self::FLASH_BAG_REQUEST_ERROR_MESSAGE_PASSWORD_INVALID
+            );
+
             return $redirectResponse;
         }
 
-        $this->getUserService()->setUser($this->getUser());
-        $passwordResetResponse = $this->getUserService()->resetLoggedInUserPassword($this->getRequestNewPassword());
+        $userService->setUser($user);
+        $passwordResetResponse = $userService->resetLoggedInUserPassword($newPassword);
 
         if ($passwordResetResponse === true) {
-            $user = $this->getUser();
-            $user->setPassword($this->getRequestNewPassword());
-            $this->getUserService()->setUser($user, true);
+            $user->setPassword($newPassword);
+            $userService->setUser($user);
 
-            if (!is_null($this->getRequest()->cookies->get('simplytestable-user'))) {
+            $cookieSerializedUser = $request->cookies->get(UserService::USER_COOKIE_KEY);
+
+            if (!empty($cookieSerializedUser)) {
                 $redirectResponse->headers->setCookie($this->getUserAuthenticationCookie());
             }
 
-            $this->get('session')->getFlashBag()->set('user_account_details_update_password_request_notice', 'password-done');
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_REQUEST_KEY,
+                self::FLASH_BAG_REQUEST_SUCCESS_MESSAGE
+            );
 
         } else {
-            switch ($passwordResetResponse) {
-                case 503:
-                    $this->get('session')->getFlashBag()->set('user_account_details_update_password_request_notice', 'password-failed-read-only');
-                    break;
-
-                default:
-                    $this->get('session')->getFlashBag()->set('user_account_details_update_password_request_notice', 'unknown');
+            if ($passwordResetResponse === 503) {
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_REQUEST_KEY,
+                    self::FLASH_BAG_REQUEST_ERROR_MESSAGE_FAILED_READ_ONLY
+                );
+            } else {
+                $session->getFlashBag()->set(
+                    self::FLASH_BAG_REQUEST_KEY,
+                    self::FLASH_BAG_REQUEST_ERROR_MESSAGE_FAILED_UNKNOWN
+                );
             }
         }
 
-
-
         return $redirectResponse;
     }
-
-
-    /**
-     * @return bool
-     */
-    private function hasRequestCurrentPassword() {
-        return $this->getRequestCurrentPassword() !== '';
-    }
-
-
-    /**
-     * @return bool
-     */
-    private function hasRequestNewPassword() {
-        return $this->getRequestNewPassword() !== '';
-    }
-
-
-    /**
-     *
-     * @return string
-     */
-    private function getRequestCurrentPassword() {
-        return strtolower(trim($this->get('request')->request->get('current-password')));
-    }
-
-
-    /**
-     *
-     * @return string
-     */
-    private function getRequestNewPassword() {
-        return strtolower(trim($this->get('request')->request->get('new-password')));
-    }
-
 }
