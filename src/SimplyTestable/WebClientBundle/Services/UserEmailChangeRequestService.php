@@ -1,111 +1,122 @@
 <?php
 namespace SimplyTestable\WebClientBundle\Services;
 
-use SimplyTestable\WebClientBundle\Model\User;
+use Guzzle\Http\Exception\BadResponseException;
+use Guzzle\Http\Exception\CurlException;
+use Guzzle\Http\Message\Request;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
-use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 
-class UserEmailChangeRequestService extends UserService {    
-    
+class UserEmailChangeRequestService extends UserService
+{
     /**
-     *
      * @var array
      */
-    private $emailChangeRequestCache = array();   
+    private $emailChangeRequestCache = [];
 
-    
     /**
-     * 
      * @param string $email
-     * @return boolean
+     *
+     * @return bool
+     *
+     * @throws CoreApplicationAdminRequestException
      */
-    public function hasEmailChangeRequest($email) {
+    public function hasEmailChangeRequest($email)
+    {
         return !is_null($this->getEmailChangeRequest($email));
     }
-    
-    
+
     /**
-     * 
      * @param string $email
-     * @return stdClass
+     *
+     * @return array
+     *
+     * @throws CoreApplicationAdminRequestException
      */
-    public function getEmailChangeRequest($email) {         
+    public function getEmailChangeRequest($email)
+    {
         if (!isset($this->emailChangeRequestCache[$email])) {
-            $response = json_decode($this->getAdminResponse($this->webResourceService->getHttpClientService()->getRequest($this->getUrl('user_email_change_request_get', array(
+            $requestUrl = $this->getUrl('user_email_change_request_get', [
                 'email' => $email
-            ))))->getBody());
-            
-            if (isset($response->error)) {
+            ]);
+
+            $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
+            $response = $this->getAdminResponse($request);
+
+            if ($response->getStatusCode() === 200) {
+                $this->emailChangeRequestCache[$email] = json_decode($response->getBody(), true);
+            } else {
                 return null;
             }
-            
-            $this->emailChangeRequestCache[$email] = (array)$response;
         }
-        
-        return $this->emailChangeRequestCache[$email];        
+
+        return $this->emailChangeRequestCache[$email];
     }
-    
-    
-    public function cancelEmailChangeRequest() {
+
+    /**
+     * @return bool|int|null
+     */
+    public function cancelEmailChangeRequest()
+    {
         $request = $this->webResourceService->getHttpClientService()->postRequest(
-            $this->getUrl('user_email_change_request_cancel', array(
+            $this->getUrl('user_email_change_request_cancel', [
                 'email' => $this->getUser()->getUsername()
-            ))
+            ])
         );
-        
-        $this->addAuthorisationToRequest($request);        
-        
-        try {
-            $response = $request->send();             
-            return $response->getStatusCode() == 200 ? true : $response->getStatusCode();
-        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {            
-            return $badResponseException->getResponse()->getStatusCode();
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-            return $curlException->getErrorNo();
-        }         
+
+        return $this->issueUserRequest($request);
     }
-    
-    
-    public function confirmEmailChangeRequest($token) {
+
+    /**
+     * @param string $token
+     *
+     * @return bool|int|null
+     */
+    public function confirmEmailChangeRequest($token)
+    {
         $request = $this->webResourceService->getHttpClientService()->postRequest(
             $this->getUrl('user_email_change_request_confirm', array(
                 'email' => $this->getUser()->getUsername(),
                 'token' => $token
             ))
         );
-        
-        $this->addAuthorisationToRequest($request);
-        
-        try {
-            $response = $request->send();             
-            return $response->getStatusCode() == 200 ? true : $response->getStatusCode();
-        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {            
-            return $badResponseException->getResponse()->getStatusCode();
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-            return $curlException->getErrorNo();
-        }         
-    }    
-    
-    
-    public function createEmailChangeRequest($newEmail) {        
+
+        return $this->issueUserRequest($request);
+    }
+
+    /**
+     * @param string $newEmail
+     *
+     * @return bool|int|null
+     */
+    public function createEmailChangeRequest($newEmail)
+    {
         $request = $this->webResourceService->getHttpClientService()->postRequest(
             $this->getUrl('user_email_change_request_create', array(
                 'email' => $this->getUser()->getUsername(),
                 'new_email' => $newEmail
             ))
         );
-        
+
+        return $this->issueUserRequest($request);
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return bool|int|null
+     */
+    private function issueUserRequest(Request $request)
+    {
         $this->addAuthorisationToRequest($request);
-        
+
         try {
             $response = $request->send();
-            
+
             return $response->getStatusCode() == 200 ? true : $response->getStatusCode();
-        } catch (\Guzzle\Http\Exception\BadResponseException $badResponseException) {
+        } catch (BadResponseException $badResponseException) {
             return $badResponseException->getResponse()->getStatusCode();
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+        } catch (CurlException $curlException) {
             return $curlException->getErrorNo();
-        }        
+        }
     }
-    
 }
