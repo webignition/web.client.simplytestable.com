@@ -3,9 +3,7 @@ namespace SimplyTestable\WebClientBundle\Services;
 
 use Guzzle\Http\Exception\BadResponseException;
 use Guzzle\Http\Exception\CurlException;
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
-use SimplyTestable\WebClientBundle\Model\StripeError;
 use SimplyTestable\WebClientBundle\Model\User;
 
 class UserAccountCardService extends CoreApplicationService
@@ -14,6 +12,26 @@ class UserAccountCardService extends CoreApplicationService
     const STRIPE_ERROR_KEY_MESSAGE = 'message';
     const STRIPE_ERROR_KEY_PARAM = 'param';
     const STRIPE_ERROR_KEY_CODE = 'code';
+
+    /**
+     * @var StripeErrorFactory
+     */
+    private $stripeErrorFactory;
+
+    /**
+     * @param array $parameters
+     * @param WebResourceService $webResourceService
+     * @param StripeErrorFactory $stripeErrorFactory
+     */
+    public function __construct(
+        array $parameters,
+        WebResourceService $webResourceService,
+        StripeErrorFactory $stripeErrorFactory
+    ) {
+        parent::__construct($parameters, $webResourceService);
+
+        $this->stripeErrorFactory = $stripeErrorFactory;
+    }
 
     /**
      * @param User $user
@@ -38,7 +56,7 @@ class UserAccountCardService extends CoreApplicationService
             $response = $request->send();
         } catch (BadResponseException $badResponseException) {
             $response = $badResponseException->getResponse();
-            $stripeError = $this->createStripeErrorFromHttpResponse($response);
+            $stripeError = $this->stripeErrorFactory->createFromHttpResponse($response);
 
             if (!$stripeError->isEmpty()) {
                 throw new UserAccountCardException(
@@ -52,39 +70,5 @@ class UserAccountCardService extends CoreApplicationService
         }
 
         return $response->getStatusCode() == 200 ? true : $response->getStatusCode();
-    }
-
-    /**
-     * @param Response $response
-     *
-     * @return StripeError
-     */
-    private function createStripeErrorFromHttpResponse(Response $response)
-    {
-        $stripeErrorHeaderKeys = [
-            self::STRIPE_ERROR_HEADER_PREFIX . self::STRIPE_ERROR_KEY_MESSAGE,
-            self::STRIPE_ERROR_HEADER_PREFIX . self::STRIPE_ERROR_KEY_PARAM,
-            self::STRIPE_ERROR_HEADER_PREFIX . self::STRIPE_ERROR_KEY_CODE,
-        ];
-
-        $errorValues = [];
-
-        foreach ($stripeErrorHeaderKeys as $headerKey) {
-            $errorValue = '';
-
-            if ($response->hasHeader($headerKey)) {
-                $headerValues = $response->getHeader($headerKey)->toArray();
-
-                if (count($headerValues)) {
-                    $errorValue = $headerValues[0];
-                }
-            }
-
-            $errorValues[] = $errorValue;
-        }
-
-        list($message, $param, $code) = $errorValues;
-
-        return new StripeError($message, $param, $code);
     }
 }
