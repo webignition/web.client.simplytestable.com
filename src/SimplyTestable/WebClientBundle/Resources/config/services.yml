@@ -116,10 +116,6 @@ services:
     arguments:
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
-        adminUserUsername: %admin_user_username%
-        adminUserPassword: %admin_user_password%
-        session: "@session"
-        userSerializerService: "@simplytestable.services.userserializerservice"
 
   simplytestable.services.userstripeeventservice:
     class:  SimplyTestable\WebClientBundle\Services\UserStripeEventService
