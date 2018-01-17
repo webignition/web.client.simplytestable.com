@@ -27,7 +27,7 @@ class ContainerFactory
      *
      * @return ContainerInterface
      */
-    public function create(array $serviceIds, array $services, array $parameterIds)
+    public function create(array $serviceIds, array $services, array $parameterIds = [])
     {
         $container = new Container();
 

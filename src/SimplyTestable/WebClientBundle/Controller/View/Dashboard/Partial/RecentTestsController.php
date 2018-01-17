@@ -3,72 +3,54 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Dashboard\Partial;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
+use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
+use Symfony\Component\HttpFoundation\Response;
 
-class RecentTestsController extends BaseViewController implements RequiresValidUser {
+class RecentTestsController extends BaseViewController implements RequiresValidUser
+{
+    const LIMIT = 3;
 
     /**
-     * @var \SimplyTestable\WebClientBundle\Services\TestService
+     * @return Response
+     *
+     * @throws WebResourceException
      */
-    private $testService;
+    public function indexAction()
+    {
+        $testService = $this->container->get('simplytestable.services.testservice');
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $taskService = $this->container->get('simplytestable.services.taskservice');
+        $userService = $this->container->get('simplytestable.services.userservice');
 
-    protected function modifyViewName($viewName) {
-        return str_replace(
-            ':Dashboard',
-            ':bs3/Dashboard',
-            $viewName
-        );
-    }
-    
-    public function indexAction() {
-        return $this->renderCacheableResponse([
-            'test_list' => $this->getRecentActivity()
-        ]);
-    }
+        $remoteTestService->setUser($userService->getUser());
 
-    private function getRecentActivity() {
-        $testList = $this->getTestService()->getRemoteTestService()->getRecent(3);
+        $testList = $remoteTestService->getRecent(self::LIMIT);
 
         foreach ($testList->get() as $testObject) {
-            /* @var $remoteTest RemoteTest */
+            /* @var RemoteTest $remoteTest */
             $remoteTest = $testObject['remote_test'];
 
-            $this->getTestService()->getRemoteTestService()->set($remoteTest);
-            $test = $this->getTestService()->get($remoteTest->getWebsite(), $remoteTest->getId(), $remoteTest);
+            $remoteTestService->set($remoteTest);
+            $test = $testService->get($remoteTest->getWebsite(), $remoteTest->getId());
 
             $testList->addTest($test);
 
             if ($testList->requiresResults($test)) {
                 if ($remoteTest->isSingleUrl()) {
-                    $this->getTaskService()->getCollection($test);
+                    $taskService->getCollection($test);
                 }
             }
         }
 
-        return $testList;
+        $viewData = [
+            'test_list' => $testList,
+        ];
+
+        return $this->render(
+            'SimplyTestableWebClientBundle:bs3/Dashboard/Partial/RecentTests:index.html.twig',
+            $viewData
+        );
     }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TaskService
-     */
-    private function getTaskService() {
-        return $this->container->get('simplytestable.services.taskservice');
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TestService
-     */
-    private function getTestService() {
-        if (is_null($this->testService)) {
-            $this->testService = $this->container->get('simplytestable.services.testservice');
-            $this->testService->getRemoteTestService()->setUser($this->getUserService()->getUser());
-        }
-
-        return $this->testService;
-    }
-
 }
