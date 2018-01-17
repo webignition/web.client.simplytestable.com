@@ -242,3 +242,6 @@ services:
       adapter: '@simplytestable.services.testoptions.adapter.request'
       taskTypeService: '@simplytestable.services.tasktypeservice'
       parameters: '%test_options%'
+
+  simplytestable.services.urlviewvalues:
+    class: SimplyTestable\WebClientBundle\Services\UrlViewValuesService
