@@ -235,3 +235,13 @@ services:
 
   simplytestable.services.stripeerrorfactory:
     class: SimplyTestable\WebClientBundle\Services\StripeErrorFactory
+
+  simplytestable.services.testoptions.adapter.factory:
+    class: SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Factory
+    arguments:
+      adapter: '@simplytestable.services.testoptions.adapter.request'
+      taskTypeService: '@simplytestable.services.tasktypeservice'
+      parameters: '%test_options%'
+
+  simplytestable.services.urlviewvalues:
+    class: SimplyTestable\WebClientBundle\Services\UrlViewValuesService

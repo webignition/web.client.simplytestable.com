@@ -1,9 +1,13 @@
 {% if remote_test is defined %}
     {% set has_http_auth_username = remote_test.hasParameter('http-auth-username') and remote_test.parameter('http-auth-username') !='' %}
     {% set has_http_auth_password = remote_test.hasParameter('http-auth-password') and remote_test.parameter('http-auth-password') !='' %}
+    {% set http_auth_username = has_http_auth_username ? remote_test.parameter('http-auth-username') : '' %}
+    {% set http_auth_password = has_http_auth_password ? remote_test.parameter('http-auth-password') : '' %}
 {% else %}
     {% set has_http_auth_username = test_options['http-auth-username'] is defined and test_options['http-auth-username'] is not empty %}
     {% set has_http_auth_password = test_options['http-auth-password'] is defined and test_options['http-auth-password'] is not empty %}
+    {% set http_auth_username = has_http_auth_username ? test_options['http-auth-password'] : '' %}
+    {% set http_auth_password = has_http_auth_password ? test_options['http-auth-password'] : '' %}
 {% endif %}
 
 {% set test_authentication_enabled = has_http_auth_username or has_http_auth_password %}
@@ -56,7 +60,7 @@
                                class="form-control credential"
                                type="text"
                                placeholder="Enter required username"
-                               value="{{ (has_http_auth_username) ? remote_test.parameter('http-auth-username') : '' }}">
+                               value="{{ http_auth_username }}">
                     </div>
                 </div>
 
@@ -69,7 +73,7 @@
                                 class="form-control credential"
                                 type="password"
                                 placeholder="Enter required password"
-                                value="{{ (has_http_auth_password) ? remote_test.parameter('http-auth-password') : '' }}">
+                                value="{{ http_auth_password }}">
                     </div>
                 </div>
             </div>
