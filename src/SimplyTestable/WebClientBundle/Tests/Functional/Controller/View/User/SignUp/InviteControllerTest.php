@@ -7,11 +7,11 @@ use SimplyTestable\WebClientBundle\Controller\Action\SignUp\Team\InviteControlle
 use SimplyTestable\WebClientBundle\Controller\View\User\SignUp\InviteController;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
@@ -68,14 +68,14 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
     }
 
     /**
-     * @dataProvider indexActionFooDataProvider
+     * @dataProvider indexActionDataProvider
      *
      * @param array $httpFixtures
      * @param Request $request
      * @param array $flashBagValues
      * @param EngineInterface $templatingEngine
      */
-    public function testIndexActionFoo(
+    public function testIndexAction(
         array $httpFixtures,
         Request $request,
         array $flashBagValues,
@@ -93,28 +93,23 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
             $flashBag->set($key, $value);
         }
 
-        $containerServiceIds = [
-            'simplytestable.services.teaminviteservice',
-            'simplytestable.services.cacheableResponseService',
-            'simplytestable.services.userservice',
-        ];
+        $containerFactory = new ContainerFactory($this->container);
 
-        $containerParameters = [
-            'public_site',
-            'external_links',
-        ];
-
-        $container = new Container();
-        $container->set('session', $session);
-        $container->set('templating', $templatingEngine);
-
-        foreach ($containerServiceIds as $serviceId) {
-            $container->set($serviceId, $this->container->get($serviceId));
-        }
-
-        foreach ($containerParameters as $containerParameter) {
-            $container->setParameter($containerParameter, $this->container->getParameter($containerParameter));
-        }
+        $container = $containerFactory->create(
+            [
+                'simplytestable.services.teaminviteservice',
+                'simplytestable.services.cacheableResponseService',
+                'simplytestable.services.userservice',
+            ],
+            [
+                'session' => $session,
+                'templating' => $templatingEngine,
+            ],
+            [
+                'public_site',
+                'external_links',
+            ]
+        );
 
         $this->inviteController->setContainer($container);
         $this->inviteController->setRequest($request);
@@ -125,7 +120,7 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
     /**
      * @return array
      */
-    public function indexActionFooDataProvider()
+    public function indexActionDataProvider()
     {
         $inviteData = [
             'team' => self::TEAM_NAME,
