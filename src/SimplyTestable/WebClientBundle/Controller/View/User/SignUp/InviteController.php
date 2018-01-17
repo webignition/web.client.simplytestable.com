@@ -28,11 +28,15 @@ class InviteController extends CacheableViewController implements IEFiltered
 
         $flashBag = $session->getFlashBag();
 
+        $acceptErrorValues = $flashBag->get(ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY);
+        $acceptError = (empty($acceptErrorValues)) ? null : $acceptErrorValues[0];
+
+        $acceptFailureValues = $flashBag->get(ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY);
+        $acceptFailure = (empty($acceptFailureValues)) ? null : $acceptFailureValues[0];
+
         $viewData = [
-            ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY =>
-                $flashBag->get(ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY),
-            ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY =>
-                $flashBag->get(ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY),
+            ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY => $acceptError,
+            ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY => $acceptFailure,
             'token' => $token,
             'invite' => $invite,
             'has_invite' => !empty($invite),
@@ -61,19 +65,15 @@ class InviteController extends CacheableViewController implements IEFiltered
         $invite = $teamInviteService->getForToken($token);
         $flashBag = $session->getFlashBag();
 
-        $inviteAcceptErrorMessages = $flashBag->peek(
-            ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY,
-            ['']
-        );
+        $acceptErrorValues = $flashBag->get(ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY);
+        $acceptError = (empty($acceptErrorValues)) ? null : $acceptErrorValues[0];
 
-        $inviteAcceptFailureMessages = $flashBag->peek(
-            ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY,
-            ['']
-        );
+        $acceptFailureValues = $flashBag->get(ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY);
+        $acceptFailure = (empty($acceptFailureValues)) ? null : $acceptFailureValues[0];
 
         return [
-            'invite_accept_error' => $inviteAcceptErrorMessages[0],
-            'invite_accept_failure' => $inviteAcceptFailureMessages[0],
+            'invite_accept_error' => $acceptError,
+            'invite_accept_failure' => $acceptFailure,
             'token' => $token,
             'invite' => json_encode($invite),
             'has_invite' => json_encode(!empty($invite)),
