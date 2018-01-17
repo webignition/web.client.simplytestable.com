@@ -2,30 +2,24 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Dashboard\Partial;
 
-use Guzzle\Http\Message\Response;
-use SimplyTestable\WebClientBundle\Controller\Action\SignUp\Team\InviteController as ActionInviteController;
 use SimplyTestable\WebClientBundle\Controller\View\Dashboard\Partial\RecentTestsController;
-use SimplyTestable\WebClientBundle\Controller\View\User\SignUp\InviteController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
-use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\TestList;
-use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\TaskTypeService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
-use SimplyTestable\WebClientBundle\Tests\Factory\ModelFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class RecentTestsControllerTest extends BaseSimplyTestableTestCase
 {
     const INDEX_ACTION_VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Dashboard/Partial/RecentTests:index.html.twig';
+    const VIEW_NAME = 'view_dashboard_partial_recenttests_index';
 
     const USER_EMAIL = 'user@example.com';
 
@@ -44,42 +38,53 @@ class RecentTestsControllerTest extends BaseSimplyTestableTestCase
         $this->recentTestsController = new RecentTestsController();
     }
 
-//    public function testIndexActionGetRequest()
-//    {
-//        $this->setHttpFixtures([
-//            HttpResponseFactory::createJsonResponse([
-//                'team' => 'Team Name',
-//                'user' => self::INVITE_USERNAME,
-//                'token' => self::TOKEN,
-//            ]),
-//        ]);
-//
-//        $session = $this->container->get('session');
-//        $flashBag = $session->getFlashBag();
-//
-//        $flashBag->set(ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY, 'foo');
-//
-//        $router = $this->container->get('router');
-//        $requestUrl = $router->generate('view_user_signup_invite_index', [
-//            'token' => self::TOKEN,
-//        ]);
-//
-//        $this->client->request(
-//            'GET',
-//            $requestUrl
-//        );
-//
-//        /* @var SymfonyResponse $response */
-//        $response = $this->client->getResponse();
-//
-//        $this->assertTrue($response->isSuccessful());
-//    }
+    public function testIndexActionInvalidUserGetRequest()
+    {
+        $this->setHttpFixtures([
+            HttpResponseFactory::create(404),
+        ]);
+
+        $router = $this->container->get('router');
+        $requestUrl = $router->generate(self::VIEW_NAME);
+
+        $this->client->request(
+            'GET',
+            $requestUrl
+        );
+
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $this->assertTrue($response->isRedirect('http://localhost/signout/'));
+    }
+
+    public function testIndexActionGetRequest()
+    {
+        $this->setHttpFixtures([
+            HttpResponseFactory::create(200),
+        ]);
+
+        $router = $this->container->get('router');
+        $requestUrl = $router->generate(self::VIEW_NAME);
+
+        $this->client->request(
+            'GET',
+            $requestUrl
+        );
+
+        /* @var Response $response */
+        $response = $this->client->getResponse();
+
+        $this->assertTrue($response->isSuccessful());
+    }
 
     /**
      * @dataProvider indexActionDataProvider
      *
      * @param array $httpFixtures
      * @param EngineInterface $templatingEngine
+     *
+     * @throws WebResourceException
      */
     public function testIndexAction(
         array $httpFixtures,
@@ -105,8 +110,7 @@ class RecentTestsControllerTest extends BaseSimplyTestableTestCase
         $this->recentTestsController->setContainer($container);
 
         $response = $this->recentTestsController->indexAction();
-
-        $this->assertTrue($response->isSuccessful());
+        $this->assertInstanceOf(Response::class, $response);
     }
 
     /**
@@ -148,7 +152,7 @@ class RecentTestsControllerTest extends BaseSimplyTestableTestCase
 
                             return true;
                         },
-                        'return' => new SymfonyResponse(),
+                        'return' => new Response(),
                     ],
                 ]),
             ],
@@ -195,7 +199,7 @@ class RecentTestsControllerTest extends BaseSimplyTestableTestCase
 
                             return true;
                         },
-                        'return' => new SymfonyResponse(),
+                        'return' => new Response(),
                     ],
                 ]),
             ],
@@ -256,7 +260,7 @@ class RecentTestsControllerTest extends BaseSimplyTestableTestCase
 
                             return true;
                         },
-                        'return' => new SymfonyResponse(),
+                        'return' => new Response(),
                     ],
                 ]),
             ],
@@ -280,5 +284,14 @@ class RecentTestsControllerTest extends BaseSimplyTestableTestCase
             $this->assertInstanceOf(RemoteTest::class, $test['remote_test']);
             $this->assertInstanceOf(Test::class, $test['test']);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function tearDown()
+    {
+        \Mockery::close();
+        parent::tearDown();
     }
 }
