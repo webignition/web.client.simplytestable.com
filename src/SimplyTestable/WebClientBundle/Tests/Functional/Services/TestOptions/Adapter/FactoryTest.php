@@ -5,6 +5,8 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\TestOptions\A
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Factory;
 use SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter;
+use SimplyTestable\WebClientBundle\Services\UserSerializerService;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
@@ -27,13 +29,25 @@ class FactoryTest extends BaseSimplyTestableTestCase
 
     public function testCreate()
     {
-        $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
-
         $user = new User('user@example.com');
+
+        $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
         $taskTypeService->setUser($user);
+        $taskTypeService->setUserIsAuthenticated();
 
         $adapter = $this->factory->create();
+        $adapter->setRequestData(new ParameterBag([]));
 
         $this->assertInstanceOf(Adapter::class, $adapter);
+
+        $testOptions = $adapter->getTestOptions();
+
+        $this->assertEquals(
+            [
+                'http-authentication',
+                'cookies',
+            ],
+            $testOptions->getFeatures()
+        );
     }
 }

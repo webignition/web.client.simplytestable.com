@@ -44,7 +44,7 @@ class Factory
         $adapter->setAvailableTaskTypes($this->taskTypeService->getAvailable());
         $adapter->setInvertOptionKeys($this->parameters['invert_option_keys']);
 
-        if (isset($testOptionsParameters['features'])) {
+        if (isset($this->parameters['features'])) {
             $adapter->setAvailableFeatures($this->parameters['features']);
         }
 
