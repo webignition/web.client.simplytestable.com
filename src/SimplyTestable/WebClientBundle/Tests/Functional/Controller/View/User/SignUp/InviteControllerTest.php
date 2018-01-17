@@ -151,13 +151,10 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
                             );
 
                             $this->assertEquals(
-                                [ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_PASSWORD_BLANK],
+                                ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_PASSWORD_BLANK,
                                 $parameters[ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY]
                             );
-                            $this->assertEquals(
-                                [],
-                                $parameters[ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY]
-                            );
+                            $this->assertNull($parameters[ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY]);
 
                             $this->assertEquals(
                                 $invite,
@@ -196,11 +193,11 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
                             );
 
                             $this->assertEquals(
-                                [ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_FAILURE],
+                                ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_FAILURE,
                                 $parameters[ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY]
                             );
                             $this->assertEquals(
-                                [500],
+                                500,
                                 $parameters[ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY]
                             );
 
@@ -235,14 +232,8 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
                                 $viewName
                             );
 
-                            $this->assertEquals(
-                                [],
-                                $parameters[ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY]
-                            );
-                            $this->assertEquals(
-                                [],
-                                $parameters[ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY]
-                            );
+                            $this->assertNull($parameters[ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY]);
+                            $this->assertNull($parameters[ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY]);
 
                             $this->assertEquals($invite, $parameters['invite']);
                             $this->assertTrue($parameters['has_invite']);
