@@ -2,21 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
-use Guzzle\Http\Exception\BadResponseException;
-use Guzzle\Http\Exception\CurlException;
-use Guzzle\Http\Message\EntityEnclosingRequest;
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
-use SimplyTestable\WebClientBundle\Model\Coupon;
-use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService;
-use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
-use Symfony\Component\HttpFoundation\Cookie;
-use Symfony\Component\HttpFoundation\Request;
 
 class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTest
 {

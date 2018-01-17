@@ -4,18 +4,18 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\UserAccountCardService;
+use SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 
-class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
+class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
 {
-    const STRIPE_CARD_TOKEN = 'tok_Bb4A2szGLfgwJe';
+    const PLAN = 'personal';
 
     /**
-     * @var UserAccountCardService
+     * @var UserPlanSubscriptionService
      */
-    private $userAccountCardService;
+    private $userPlanSubscriptionService;
 
     /**
      * @var User
@@ -29,31 +29,31 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
     {
         parent::setUp();
 
-        $this->userAccountCardService = $this->container->get(
-            'simplytestable.services.useraccountcardservice'
+        $this->userPlanSubscriptionService = $this->container->get(
+            'simplytestable.services.userplansubscriptionservice'
         );
 
         $this->user = new User('user@example.com');
     }
 
     /**
-     * @dataProvider associateStripeErrorDataProvider
+     * @dataProvider subscribeStripeErrorDataProvider
      *
      * @param array $httpFixtures
      * @param string $expectedExceptionParam
      * @param string $expectedExceptionStripeCode
      */
-    public function testAssociateStripeError(
+    public function testSubscribeStripeError(
         array $httpFixtures,
         $expectedExceptionParam,
         $expectedExceptionStripeCode
     ) {
         $this->setHttpFixtures($httpFixtures);
 
-        $this->userAccountCardService->setUser($this->user);
+        $this->userPlanSubscriptionService->setUser($this->user);
 
         try {
-            $this->userAccountCardService->associate($this->user, self::STRIPE_CARD_TOKEN);
+            $this->userPlanSubscriptionService->subscribe($this->user, self::PLAN);
             $this->fail(UserAccountCardException::class. ' not thrown');
         } catch (UserAccountCardException $userAccountCardException) {
             $this->assertEquals($expectedExceptionParam, $userAccountCardException->getParam());
@@ -64,7 +64,7 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
     /**
      * @return array
      */
-    public function associateStripeErrorDataProvider()
+    public function subscribeStripeErrorDataProvider()
     {
         return [
             'invalid address zip' => [
@@ -85,7 +85,7 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
     }
 
     /**
-     * @dataProvider associateDataProvider
+     * @dataProvider subscribeDataProvider
      *
      * @param array $httpFixtures
      * @param string $expectedReturnValue
@@ -93,11 +93,11 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
      *
      * @throws UserAccountCardException
      */
-    public function testAssociate(array $httpFixtures, $expectedReturnValue, $expectedRequestIsMade)
+    public function testSubscribe(array $httpFixtures, $expectedReturnValue, $expectedRequestIsMade)
     {
         $this->setHttpFixtures($httpFixtures);
 
-        $returnValue = $this->userAccountCardService->associate($this->user, self::STRIPE_CARD_TOKEN);
+        $returnValue = $this->userPlanSubscriptionService->subscribe($this->user, self::PLAN);
 
         $this->assertEquals($expectedReturnValue, $returnValue);
 
@@ -105,7 +105,7 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
 
         if ($expectedRequestIsMade) {
             $this->assertEquals(
-                'http://null/user/user@example.com/card/tok_Bb4A2szGLfgwJe/associate/',
+                'http://null/user/user@example.com/personal/subscribe/',
                 $lastRequest->getUrl()
             );
         } else {
@@ -116,7 +116,7 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
     /**
      * @return array
      */
-    public function associateDataProvider()
+    public function subscribeDataProvider()
     {
         return [
             'HTTP 400' => [

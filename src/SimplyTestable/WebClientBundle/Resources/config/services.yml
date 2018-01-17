@@ -106,16 +106,14 @@ services:
     arguments:
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
-        adminUserUsername: %admin_user_username%
-        adminUserPassword: %admin_user_password%
-        session: "@session"
-        userSerializerService: "@simplytestable.services.userserializerservice"
+        stripeErrorFactory: '@simplytestable.services.stripeerrorfactory'
 
   simplytestable.services.useraccountcardservice:
     class:  SimplyTestable\WebClientBundle\Services\UserAccountCardService
     arguments:
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
+        stripeErrorFactory: '@simplytestable.services.stripeerrorfactory'
 
   simplytestable.services.userstripeeventservice:
     class:  SimplyTestable\WebClientBundle\Services\UserStripeEventService
@@ -234,3 +232,6 @@ services:
     class:  SimplyTestable\WebClientBundle\Services\PlansService
     calls:
       - [setPlansData, [%plans%]]
+
+  simplytestable.services.stripeerrorfactory:
+    class: SimplyTestable\WebClientBundle\Services\StripeErrorFactory
