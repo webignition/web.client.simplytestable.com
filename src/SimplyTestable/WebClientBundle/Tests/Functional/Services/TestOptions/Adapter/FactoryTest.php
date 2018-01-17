@@ -22,7 +22,7 @@ class FactoryTest extends BaseSimplyTestableTestCase
     {
         parent::setUp();
 
-        $this->factory = $this->container->get('simplytestable.services.testoptions.adpater.factory');
+        $this->factory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
     }
 
     public function testCreate()

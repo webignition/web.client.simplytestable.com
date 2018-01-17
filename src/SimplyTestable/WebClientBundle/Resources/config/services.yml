@@ -236,7 +236,7 @@ services:
   simplytestable.services.stripeerrorfactory:
     class: SimplyTestable\WebClientBundle\Services\StripeErrorFactory
 
-  simplytestable.services.testoptions.adpater.factory:
+  simplytestable.services.testoptions.adapter.factory:
     class: SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Factory
     arguments:
       adapter: '@simplytestable.services.testoptions.adapter.request'
