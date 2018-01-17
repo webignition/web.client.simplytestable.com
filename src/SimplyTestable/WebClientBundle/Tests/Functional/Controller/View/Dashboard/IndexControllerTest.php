@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class IndexContollerTest extends BaseSimplyTestableTestCase
+class IndexControllerTest extends BaseSimplyTestableTestCase
 {
     const INDEX_ACTION_VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Dashboard/Index:index.html.twig';
     const VIEW_NAME = 'view_dashboard_index_index';
