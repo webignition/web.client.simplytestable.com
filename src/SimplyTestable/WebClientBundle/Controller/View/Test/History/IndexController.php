@@ -3,134 +3,153 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\History;
 
 use SimplyTestable\WebClientBundle\Controller\View\Test\CacheableViewController;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
+use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
+use SimplyTestable\WebClientBundle\Model\TestList;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser {
-
+class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser
+{
     const RESULTS_PREPARATION_THRESHOLD = 10;
     const DEFAULT_PAGE_NUMBER = 1;
     const TEST_LIST_LIMIT = 10;
 
     /**
-     * @var \SimplyTestable\WebClientBundle\Model\TestList
-     */
-    private $testList = null;
-
-
-    protected function modifyViewName($viewName) {
-        return str_replace(array(
-            ':Test',
-            'history.html',
-            'all.html'
-        ), array(
-            ':bs3/Test',
-            'index.html',
-            'index.html'
-        ), $viewName);
-    }
-
-
-    public function indexAction() {
-        if ($this->isPageNumberBelowRange()) {
-            return $this->redirect($this->generateUrl('view_test_history_index_index'));
-        }
-
-        if ($this->isPageNumberAboveRange()) {
-            $redirectParameters = array(
-                'page_number' => $this->getTestList()->getPageCount(),
-            );
-
-            if (!is_null($this->getRequest()->get('filter'))) {
-                $redirectParameters['filter'] = $this->getRequest()->get('filter');
-            }
-
-            return $this->redirect($this->generateUrl('app_history', $redirectParameters));
-        }
-
-        return $this->renderCacheableResponse($this->getViewData());
-    }
-
-    private function getViewData() {
-        return array(
-            'test_list' => $this->getTestList(),
-            'pagination_page_numbers' => $this->getTestList()->getPageNumbers(),
-            'filter' => $this->getRequest()->get('filter'),
-            'websites_source' => $this->generateUrl('view_test_history_websitelist_index', array(), true)
-        );
-    }
-
-
-    /**
-     * @return int
-     */
-    private function getRequestPageNumber() {
-        return (int)$this->getRequest()->attributes->get('page_number');
-    }
-
-
-    public function getCacheValidatorParameters() {
-        return array(
-            'test_list_hash' => $this->getTestList()->getHash(),
-            'filter' => $this->getRequest()->get('filter'),
-            'page_number' => $this->getRequestPageNumber()
-        );
-    }
-    
-    /**
+     * @param Request $request
      *
-
-     * @return boolean
+     * @return RedirectResponse|Response
+     *
+     * @throws WebResourceException
      */
-    private function isPageNumberBelowRange() {
-        return $this->getRequestPageNumber() < self::DEFAULT_PAGE_NUMBER;
-    }
+    public function indexAction(Request $request)
+    {
+        $router = $this->container->get('router');
+        $cacheableResponseService = $this->container->get('simplytestable.services.cacheableresponseservice');
 
+        $pageNumber = (int)$request->attributes->get('page_number');
 
-    /**
-     * @return bool
-     */
-    private function isPageNumberAboveRange() {
-        return $this->getRequestPageNumber() > $this->getTestList()->getPageCount() && $this->getTestList()->getPageCount() > 0;
-    }
-
-
-    /**
-     * @return \SimplyTestable\WebClientBundle\Model\TestList
-     */
-    private function getTestList() {
-        if (is_null($this->testList)) {
-            $this->testList = $this->getFinishedTests(self::TEST_LIST_LIMIT, ($this->getRequestPageNumber() - 1) * self::TEST_LIST_LIMIT, $this->getRequest()->get('filter'));
+        if ($pageNumber < self::DEFAULT_PAGE_NUMBER) {
+            return new RedirectResponse($router->generate(
+                'view_test_history_index_index',
+                [],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            ));
         }
 
-        return $this->testList;
+        $filter = trim($request->get('filter'));
+        if (empty($filter)) {
+            $filter = null;
+        }
+
+        $testList = $this->getFinishedTests(
+            self::TEST_LIST_LIMIT,
+            ($pageNumber - 1) * self::TEST_LIST_LIMIT,
+            $filter
+        );
+
+        $isPageNumberAboveRange = $pageNumber > $testList->getPageCount() && $testList->getPageCount() > 0;
+
+        if ($isPageNumberAboveRange) {
+            return new RedirectResponse($router->generate(
+                'app_history',
+                [
+                    'page_number' => $testList->getPageCount(),
+                    'filter' => $filter,
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            ));
+        }
+
+        $websitesSourceUrl = $router->generate(
+            'view_test_history_websitelist_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        $viewData = [
+            'test_list' => $testList,
+            'pagination_page_numbers' => $testList->getPageNumbers(),
+            'filter' => $filter,
+            'websites_source' => $websitesSourceUrl
+        ];
+
+        return $cacheableResponseService->getCachableResponse(
+            $request,
+            parent::render(
+                'SimplyTestableWebClientBundle:bs3/Test/History/Index:index.html.twig',
+                array_merge($this->getDefaultViewParameters(), $viewData)
+            )
+        );
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getCacheValidatorParameters()
+    {
+        $request = $this->getRequest();
+
+        $pageNumber = (int)$request->attributes->get('page_number');
+
+        $filter = trim($request->get('filter'));
+        if (empty($filter)) {
+            $filter = null;
+        }
+
+        $testList = $this->getFinishedTests(
+            self::TEST_LIST_LIMIT,
+            ($pageNumber - 1) * self::TEST_LIST_LIMIT,
+            $filter
+        );
+
+        return [
+            'test_list_hash' => $testList->getHash(),
+            'filter' => $filter,
+            'page_number' => $pageNumber
+        ];
+    }
 
     /**
-     * @param $limit
-     * @param $offset
-     * @param null $filter
-     * @return \SimplyTestable\WebClientBundle\Model\TestList
+     * @param int $limit
+     * @param int $offset
+     * @param string $filter
+     *
+     * @return TestList
+     *
+     * @throws WebResourceException
      */
-    private function getFinishedTests($limit, $offset, $filter = null) {
-        $testList = $this->getTestService()->getRemoteTestService()->getFinished($limit, $offset, $filter);
-        
+    private function getFinishedTests($limit, $offset, $filter = null)
+    {
+        $testService = $this->container->get('simplytestable.services.testservice');
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $taskService = $this->container->get('simplytestable.services.taskservice');
+
+        $user = $userService->getUser();
+
+        $remoteTestService->setUser($user);
+
+        $testList = $remoteTestService->getFinished($limit, $offset, $filter);
+
         foreach ($testList->get() as $testObject) {
-            /* @var $remoteTest RemoteTest */
+            /* @var RemoteTest $remoteTest */
             $remoteTest = $testObject['remote_test'];
-            
-            $this->getTestService()->getRemoteTestService()->set($remoteTest);
-            $test = $this->getTestService()->get($remoteTest->getWebsite(), $remoteTest->getId(), $remoteTest);
-            
+
+            $remoteTestService->set($remoteTest);
+            $test = $testService->get($remoteTest->getWebsite(), $remoteTest->getId());
+
             $testList->addTest($test);
-            
+
             if ($testList->requiresResults($test) && $remoteTest->isSingleUrl()) {
-                $this->getTaskService()->getCollection($test);
+                $taskService->getCollection($test);
             }
         }
-        
+
         return $testList;
     }
-
 }
