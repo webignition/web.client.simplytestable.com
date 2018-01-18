@@ -39,12 +39,38 @@ class HttpResponseFactory
      */
     public static function createJsonResponse($data)
     {
-        return self::create(
-            200,
+        return self::createSuccessResponse(
             [
                 'Content-Type' => 'application/json',
             ],
             json_encode($data)
         );
+    }
+
+    /**
+     * @return Response
+     */
+    public static function createNotFoundResponse()
+    {
+        return self::create(404);
+    }
+
+    /**
+     * @param array $headers
+     * @param string $body
+     *
+     * @return Response
+     */
+    public static function createSuccessResponse($headers = [], $body = '')
+    {
+        return self::create(200, $headers, $body);
+    }
+
+    /**
+     * @return Response
+     */
+    public static function createForbiddenResponse()
+    {
+        return self::create(403);
     }
 }

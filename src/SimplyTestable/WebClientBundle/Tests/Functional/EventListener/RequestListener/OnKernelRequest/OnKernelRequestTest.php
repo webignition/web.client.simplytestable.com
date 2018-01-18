@@ -2,7 +2,51 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\EventListener\RequestListener\OnKernelRequest;
 
-use SimplyTestable\WebClientBundle\Tests\Functional\EventListener\RequestListener\ListenerTest;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-abstract class OnKernelRequestTest extends ListenerTest {    
+class OnKernelRequestTest extends AbstractOnKernelRequestTest
+{
+    const CONTROLLER_ACTION = 'foo';
+    const CONTROLLER_ROUTE = 'foo';
+
+    /**
+     * @dataProvider dataProvider
+     *
+     * @param string $requestType
+     *
+     * @throws \Exception
+     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
+     */
+    public function testOnKernelRequest($requestType)
+    {
+        $request = new Request();
+
+        $event = $this->createGetResponseEvent(
+            $request,
+            self::CONTROLLER_ACTION,
+            self::CONTROLLER_ROUTE,
+            null,
+            $requestType
+        );
+
+        $this->requestListener->onKernelRequest($event);
+
+        $this->assertNull($event->getResponse());
+    }
+
+    /**
+     * @return array
+     */
+    public function dataProvider()
+    {
+        return [
+            'sub request' => [
+                'requestType' => HttpKernelInterface::SUB_REQUEST
+            ],
+            'master request' => [
+                'requestType' => HttpKernelInterface::MASTER_REQUEST
+            ],
+        ];
+    }
 }
