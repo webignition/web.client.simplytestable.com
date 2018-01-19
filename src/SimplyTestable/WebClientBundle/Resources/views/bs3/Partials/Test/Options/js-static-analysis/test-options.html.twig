@@ -18,7 +18,7 @@
 
     {% if is_available and (is_enabled or (is_disabled and test_options['js-static-analysis'] is defined and test_options['js-static-analysis'] == 1)) %}
 
-        <div class="test-options-advanced" {% if has_http_auth %}style="display:none;"{% endif %}>
+        <div class="test-options-advanced">
             <span class="collapse-control collapsed link" data-toggle="collapse" data-target="#js-static-analysis-options-advanced">
                 Advanced JS static analysis and JSLint options
                 <i class="fa fa-caret-down"></i>
