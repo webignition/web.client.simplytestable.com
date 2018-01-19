@@ -27,9 +27,9 @@ class UrlLimitController extends CacheableViewController implements RequiresVali
         $cacheableResponseService = $this->container->get('simplytestable.services.cacheableresponseservice');
 
         $user = $userService->getUser();
-        $test = $testService->get($website, $test_id);
-
         $remoteTestService->setUser($user);
+
+        $test = $testService->get($website, $test_id);
         $remoteTestService->setTest($test);
 
         $remoteTest = $remoteTestService->get();

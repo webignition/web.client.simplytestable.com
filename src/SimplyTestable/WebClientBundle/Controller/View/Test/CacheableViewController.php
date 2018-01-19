@@ -3,54 +3,56 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Test;
 
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Cacheable;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 
-abstract class CacheableViewController extends ViewController implements Cacheable {
-    
+abstract class CacheableViewController extends ViewController implements Cacheable
+{
     /**
-     *
-     * @var \Symfony\Component\HttpFoundation\Request
+     * @var Request
      */
     private $request;
-    
-    
+
     /**
-     * 
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      */
-    public function setRequest(\Symfony\Component\HttpFoundation\Request $request) {
+    public function setRequest(Request $request)
+    {
         $this->request = $request;
-    }   
-    
-    
+    }
+
     /**
-     * 
-     * @return \Symfony\Component\HttpFoundation\Request
+     * @return Request
      */
-    public function getRequest() {
+    public function getRequest()
+    {
         return (is_null($this->request)) ? $this->get('request') : $this->request;
     }
 
-
-    /**
-     * @return bool
-     */
-    protected function isXmlHttpRequest() {
-        return $this->getRequest()->headers->has('X-Requested-With') && $this->getRequest()->headers->get('X-Requested-With') == 'XMLHttpRequest';
-    }
-
-
     /**
      * @param string $locationValue
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @param Request|null $request
+     *
+     * @return RedirectResponse|JsonResponse
      */
-    protected function issueRedirect($locationValue) {
-        if  ($this->isXmlHttpRequest()) {
-            return $this->renderResponse($this->getRequest(), [
+    protected function issueRedirect($locationValue, $request = null)
+    {
+        if (empty($request)) {
+            $request = $this->getRequest();
+        }
+
+        $requestHeaders = $request->headers;
+        $requestedWithHeaderName = 'X-Requested-With';
+
+        $isXmlHttpRequest = $requestHeaders->get($requestedWithHeaderName) == 'XMLHttpRequest';
+
+        if ($isXmlHttpRequest) {
+            return new JsonResponse([
                 'this_url' => $locationValue
             ]);
         }
 
-        return $this->redirect($locationValue);
+        return $this->redirect($locationValue, 302, $request);
     }
-
 }

@@ -3,15 +3,24 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Progress;
 
 use SimplyTestable\WebClientBundle\Controller\View\Test\CacheableViewController;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner {
-
+class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner
+{
     const RESULTS_PREPARATION_THRESHOLD = 100;
 
+    /**
+     * @var string[]
+     */
     private $testStateLabelMap = array(
         'new' => 'New, waiting to start',
         'queued' => 'waiting for first test to begin',
@@ -23,184 +32,198 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     );
 
     /**
-     * @var \SimplyTestable\WebClientBundle\Services\TaskTypeService
+     * @param Request $request
+     * @param string $website
+     * @param int $test_id
+     *
+     * @return RedirectResponse|Response
+     * @throws WebResourceException
      */
-    private $taskTypeService = null;
+    public function indexAction(Request $request, $website, $test_id)
+    {
+        $testService = $this->container->get('simplytestable.services.testservice');
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $cacheableResponseService = $this->container->get('simplytestable.services.cacheableresponseservice');
+        $router = $this->container->get('router');
+        $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
+        $serializer = $this->container->get('serializer');
+        $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
+        $testOptionsAdapterFactory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
+
+        $user = $userService->getUser();
+        $remoteTestService->setUser($user);
+
+        $test = $testService->get($website, $test_id);
+        $remoteTest = $remoteTestService->get();
+
+        $testWebsite = (string)$test->getWebsite();
+
+        if ($testWebsite !== $website) {
+            $redirectUrl = $router->generate(
+                'view_test_progress_index_index',
+                [
+                    'website' => $testWebsite,
+                    'test_id' => $test_id
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            return $this->issueRedirect($redirectUrl, $request);
+        }
+
+        if ($testService->isFinished($test)) {
+            if ($test->getState() !== Test::STATE_FAILED_NO_SITEMAP || $userService->isPublicUser($user)) {
+                $redirectUrl = $router->generate(
+                    'view_test_results_index_index',
+                    [
+                        'website' => $testWebsite,
+                        'test_id' => $test_id
+                    ],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+
+                return $this->issueRedirect($redirectUrl, $request);
+            }
+
+            $redirectUrl = $router->generate(
+                'app_test_retest',
+                [
+                    'website' => $testWebsite,
+                    'test_id' => $test_id
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            return $this->issueRedirect($redirectUrl, $request);
+        }
+
+        $taskTypeService->setUser($user);
+
+        $isAuthenticated = !$userService->isPublicUser($user);
+
+        if ($isAuthenticated) {
+            $taskTypeService->setUserIsAuthenticated();
+        }
+
+        $testOptionsAdapter = $testOptionsAdapterFactory->create();
+        $testOptionsAdapter->setRequestData($remoteTest->getOptions());
+        $testOptionsAdapter->setInvertInvertableOptions(true);
+
+        $commonViewData = [
+            'test' => $test,
+            'state_label' => $this->getStateLabel($test, $remoteTest),
+        ];
+
+        if ($this->requestIsForApplicationJson($request)) {
+            $viewData = array_merge($commonViewData, [
+                'remote_test' => $remoteTest->__toArray(),
+                'this_url' => $this->getProgressUrl($testWebsite, $test_id),
+            ]);
+
+            $response = new Response($serializer->serialize($viewData, 'json'));
+            $response->headers->set('content-type', 'application/json');
+        } else {
+            $viewData = array_merge($commonViewData, [
+                'remote_test' => $remoteTest,
+                'website' => $urlViewValuesService->create($testWebsite),
+                'available_task_types' => $taskTypeService->getAvailable(),
+                'task_types' => $taskTypeService->get(),
+                'test_options' => $testOptionsAdapter->getTestOptions()->__toKeyArray(),
+                'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
+                'css_validation_ignore_common_cdns' => $this->container->getParameter(
+                    'css-validation-ignore-common-cdns'
+                ),
+                'js_static_analysis_ignore_common_cdns' => $this->container->getParameter(
+                    'js-static-analysis-ignore-common-cdns'
+                ),
+                'default_css_validation_options' => array(
+                    'ignore-warnings' => 1,
+                    'vendor-extensions' => 'warn',
+                    'ignore-common-cdns' => 1
+                ),
+                'default_js_static_analysis_options' => array(
+                    'ignore-common-cdns' => 1,
+                    'jslint-option-maxerr' => 50,
+                    'jslint-option-indent' => 4,
+                    'jslint-option-maxlen' => 256
+                ),
+            ]);
+
+            $response = parent::render(
+                'SimplyTestableWebClientBundle:bs3/Test/Progress/Index:index.html.twig',
+                array_merge($this->getDefaultViewParameters(), $viewData)
+            );
+        }
+
+        return $cacheableResponseService->getCachableResponse($request, $response);
+    }
 
     /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
+     * {@inheritdoc}
      */
-    private $testOptionsAdapter = null;
+    public function getCacheValidatorParameters()
+    {
+        $testService = $this->container->get('simplytestable.services.testservice');
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $userService = $this->container->get('simplytestable.services.userservice');
 
-    protected function modifyViewName($viewName) {
-        return str_replace(array(
-            ':Test',
-        ), array(
-            ':bs3/Test',
-        ), $viewName);
-    }
+        $user = $userService->getUser();
+        $remoteTestService->setUser($user);
 
+        $request = $this->getRequest();
+        $requestAttributes = $request->attributes;
 
-    protected function getAllowedContentTypes() {
-        return array_merge(['application/json'], parent::getAllowedContentTypes());
-    }
+        $website = $requestAttributes->get('website');
+        $testId = $requestAttributes->get('test_id');
 
+        $test = $testService->get($website, $testId);
+        $remoteTest = $remoteTestService->get();
 
-    public function indexAction($website, $test_id) {
-        if ($this->getTest()->getWebsite() != $website) {
-            return $this->issueRedirect($this->generateUrl('view_test_progress_index_index', array(
-                'website' => $this->getTest()->getWebsite(),
-                'test_id' => $test_id
-            ), true));
-        }
-
-        if ($this->getTestService()->isFinished($this->getTest())) {
-            if ($this->getTest()->getState() !== 'failed-no-sitemap') {
-                return $this->issueRedirect($this->generateUrl('view_test_results_index_index', array(
-                    'website' => $this->getTest()->getWebsite(),
-                    'test_id' => $test_id
-                ), true));
-            }
-
-            if ($this->getUserService()->isPublicUser($this->getUser())) {
-                return $this->issueRedirect($this->generateUrl('view_test_results_index_index', array(
-                    'website' => $this->getTest()->getWebsite(),
-                    'test_id' => $test_id
-                ), true));
-            }
-
-            return $this->forward('SimplyTestableWebClientBundle:Test:retest', array(
-                'website' => $website,
-                'test_id' => $test_id
-            ));
-        }
-
-        $this->getTestOptionsAdapter()->setRequestData($this->getRemoteTest()->getOptions());
-
-        return $this->renderCacheableResponse([
-            'website' => $this->getUrlViewValues($website),
-            'test' => $this->getTest(),
-            'this_url' => $this->getProgressUrl($this->getTest()->getWebsite(), $test_id),
-            'remote_test' => $this->requestIsForApplicationJson($this->getRequest()) ? $this->getRemoteTest()->__toArray() : $this->getRemoteTest(),
-            'state_label' => $this->getStateLabel(),
-            'available_task_types' => $this->getTaskTypeService()->getAvailable(),
-            'task_types' => $this->getTaskTypeService()->get(),
-            'test_options' => $this->getTestOptionsAdapter()->getTestOptions()->__toKeyArray(),
-            'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
-            'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
-            'is_public_user_test' => $this->getTest()->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
-            'default_css_validation_options' => array(
-                'ignore-warnings' => 1,
-                'vendor-extensions' => 'warn',
-                'ignore-common-cdns' => 1
-            ),
-            'default_js_static_analysis_options' => array(
-                'ignore-common-cdns' => 1,
-                'jslint-option-maxerr' => 50,
-                'jslint-option-indent' => 4,
-                'jslint-option-maxlen' => 256
-            ),
-        ]);
-    }
-
-
-
-    public function getCacheValidatorParameters() {
-        $test = $this->getTest();
-
-        return array(
-            'website' => $this->getRequest()->attributes->get('website'),
-            'test_id' => $this->getRequest()->attributes->get('test_id'),
-            'is_public' => $this->getTestService()->getRemoteTestService()->isPublic(),
-            'is_public_user_test' => $test->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
-            'timestamp' => ($this->getRequest()->query->has('timestamp')) ? $this->getRequest()->query->get('timestamp') : '',
+        return [
+            'website' => $website,
+            'test_id' => $testId,
+            'is_public' => $remoteTest->getIsPublic(),
+            'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
+            'timestamp' => ($request->query->has('timestamp')) ? $request->query->get('timestamp') : '',
             'state' => $test->getState()
-        );
+        ];
     }
 
 
-    private function getStateLabel() {
-        $label = (isset($this->testStateLabelMap[$this->getTest()->getState()])) ? $this->testStateLabelMap[$this->getTest()->getState()] : '';
+    /**
+     * @param Test $test
+     * @param RemoteTest $remoteTest
+     *
+     * @return string
+     */
+    private function getStateLabel(Test $test, RemoteTest $remoteTest)
+    {
+        $testState = $test->getState();
 
-        if ($this->getTest()->getState() == 'in-progress') {
-            $label = $this->getRemoteTest()->getCompletionPercent().'% done';
+        $label = (isset($this->testStateLabelMap[$testState]))
+            ? $this->testStateLabelMap[$testState]
+            : '';
+
+        if ($testState == Test::STATE_IN_PROGRESS) {
+            $label = $this->getRemoteTest()->getCompletionPercent() . '% done';
         }
 
-        if (in_array($this->getTest()->getState(), ['queued', 'in-progress'])) {
-            $label = $this->getRemoteTest()->getUrlCount() . ' urls, ' . $this->getRemoteTest()->getTaskCount() . ' tests; ' . $label;
+        if (in_array($testState, [Test::STATE_QUEUED, Test::STATE_IN_PROGRESS])) {
+            $label = $remoteTest->getUrlCount() . ' urls, ' . $remoteTest->getTaskCount() . ' tests; ' . $label;
         }
 
-        if ($this->getTest()->getState() == 'crawling') {
-            $label .= ': '. $this->getRemoteTest()->getCrawl()->processed_url_count .' pages examined, ' . $this->getRemoteTest()->getCrawl()->discovered_url_count.' of '. $this->getRemoteTest()->getCrawl()->limit .' found';        }
+        if ($testState == Test::STATE_CRAWLING) {
+            $remoteTestCrawl = $remoteTest->getCrawl();
+
+            $label .= sprintf(
+                ': %s pages examined, %s of %s found',
+                $remoteTestCrawl->processed_url_count,
+                $remoteTestCrawl->discovered_url_count,
+                $remoteTestCrawl->limit
+            );
+        }
 
         return $label;
     }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
-     */
-    private function getTestOptionsAdapter() {
-        if (is_null($this->testOptionsAdapter)) {
-            $testOptionsParameters = $this->container->getParameter('test_options');
-
-            $this->testOptionsAdapter = $this->container->get('simplytestable.services.testoptions.adapter.request');
-
-            $this->testOptionsAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-            $this->testOptionsAdapter->setAvailableTaskTypes($this->getTaskTypeService()->getAvailable());
-            $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
-            $this->testOptionsAdapter->setInvertInvertableOptions(true);
-
-            if (isset($testOptionsParameters['features'])) {
-                $this->testOptionsAdapter->setAvailableFeatures($testOptionsParameters['features']);
-            }
-        }
-
-        return $this->testOptionsAdapter;
-    }
-
-
-    /**
-     *
-     * @return array
-     */
-    private function getCssValidationCommonCdnsToIgnore() {
-        if (!$this->container->hasParameter('css-validation-ignore-common-cdns')) {
-            return array();
-        }
-
-        return $this->container->getParameter('css-validation-ignore-common-cdns');
-    }
-
-
-    /**
-     *
-     * @return array
-     */
-    private function getJsStaticAnalysisCommonCdnsToIgnore() {
-        if (!$this->container->hasParameter('js-static-analysis-ignore-common-cdns')) {
-            return array();
-        }
-
-        return $this->container->getParameter('js-static-analysis-ignore-common-cdns');
-    }
-
-    /**
-     * @return \SimplyTestable\WebClientBundle\Services\TaskTypeService
-     */
-    private function getTaskTypeService() {
-        if (is_null($this->taskTypeService)) {
-            $this->taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
-            $this->taskTypeService->setUser($this->getUser());
-
-            if (!$this->getUser()->equals($this->getUserService()->getPublicUser())) {
-                $this->taskTypeService->setUserIsAuthenticated();
-            }
-        }
-
-        return $this->taskTypeService;
-    }
-
 }
