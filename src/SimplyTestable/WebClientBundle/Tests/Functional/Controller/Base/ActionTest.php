@@ -7,7 +7,7 @@ abstract class ActionTest extends BaseTest {
     private $expectedControllerExceptionClass = null;
     private $expectedControllerExceptionCode = null;
     private $expectedControllerExceptionMessage = null;
-    
+
     /**
      *
      * @var \Symfony\Component\HttpFoundation\Response
@@ -19,7 +19,7 @@ abstract class ActionTest extends BaseTest {
      * @var \Exception
      */
     protected $controllerException;
-    
+
     protected function setUp() {
         parent::setUp();
 
@@ -82,37 +82,37 @@ abstract class ActionTest extends BaseTest {
 
     protected function preCall() {
     }
-    
-    
+
+
     protected function getHttpFixtureItems() {
         return array();
     }
-    
-    
+
+
     abstract protected function getExpectedResponseStatusCode();
 
     protected function getRequestPostData() {
         return array();
     }
-    
+
     protected function getRequestQueryData() {
         return array();
     }
-    
+
     protected function getActionMethodArguments() {
         return array();
     }
-    
+
     public function testResponseStatusCode() {
         if ($this->response) {
             $this->assertEquals($this->getExpectedResponseStatusCode(), $this->response->getStatusCode());
         }
     }
-    
+
     protected function assertHasCookieNamed($name) {
         $this->assertTrue($this->responseHasCookieNamed($name), 'Response does not contain cookie named "' . $name . '"');
-    }    
-    
+    }
+
     protected function assertCookieValue($name, $value) {
         $this->assertHasCookieNamed($name);
         $this->assertEquals($value, $this->getResponseCookieValue($name));
@@ -129,28 +129,28 @@ abstract class ActionTest extends BaseTest {
     }
 
 
-    
-    
+
+
     /**
-     * 
+     *
      * @param string $name
      * @return boolean
      */
     private function responseHasCookieNamed($name) {
         foreach ($this->response->headers->getCookies() as $cookie) {
             /* @var $cookie \Symfony\Component\HttpFoundation\Cookie */
-            
+
             if ($cookie->getName() == $name) {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
-    
+
+
     /**
-     * 
+     *
      * @param string $name
      * @return mixed
      */
@@ -158,14 +158,14 @@ abstract class ActionTest extends BaseTest {
         if (!$this->responseHasCookieNamed($name)) {
             return null;
         }
-        
+
         foreach ($this->response->headers->getCookies() as $cookie) {
             /* @var $cookie \Symfony\Component\HttpFoundation\Cookie */
-            
+
             if ($cookie->getName() == $name) {
                 return $cookie->getValue();
             }
-        }      
+        }
     }
 
 
@@ -215,7 +215,9 @@ abstract class ActionTest extends BaseTest {
      * @return \MZ\PostmarkBundle\Postmark\Message
      */
     private function getLastMailMessage() {
-        return $this->getMailService()->getSender()->getLastMessage();
+        $mailService = $this->container->get('simplytestable.services.mail.service');
+
+        return $mailService->getSender()->getLastMessage();
     }
 
 

@@ -2,9 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional;
 
+use Guzzle\Http\Client as HttpClient;
 use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\Mock\MockPlugin;
+use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -21,7 +23,7 @@ abstract class BaseTestCase extends WebTestCase
     const FIXTURES_DATA_RELATIVE_PATH = '/../Fixtures/Data';
 
     /**
-     * @var \Symfony\Bundle\FrameworkBundle\Client
+     * @var Client
      */
     protected $client;
 
@@ -35,6 +37,9 @@ abstract class BaseTestCase extends WebTestCase
      */
     private $application;
 
+    /**
+     * {@inheritdoc}
+     */
     protected function setUp()
     {
         $this->client = static::createClient();
@@ -54,20 +59,24 @@ abstract class BaseTestCase extends WebTestCase
      */
     protected function getCommands()
     {
-        return array_merge(array(
-        ), $this->getAdditionalCommands());
+        return array_merge([], $this->getAdditionalCommands());
     }
 
     /**
-     *
      * @return ContainerAwareCommand[]
      */
     protected function getAdditionalCommands()
     {
-        return array();
+        return [];
     }
 
-    protected function executeCommand($name, $arguments = array())
+    /**
+     * @param string $name
+     * @param array $arguments
+     *
+     * @return int
+     */
+    protected function executeCommand($name, $arguments = [])
     {
         $command = $this->application->find($name);
         $commandTester = new CommandTester($command);
@@ -88,7 +97,8 @@ abstract class BaseTestCase extends WebTestCase
      * @param array $parameters
      * @param array $query
      * @param array $cookies
-     * @return \Symfony\Bundle\FrameworkBundle\Controller\Controller The built Controller object.
+     *
+     * @return Controller The built Controller object.
      */
     protected function createController(
         $controllerClass,
@@ -125,6 +135,16 @@ abstract class BaseTestCase extends WebTestCase
         return $controllerCallable[0];
     }
 
+    /**
+     * @param string $controllerClass
+     * @param string $controllerMethod
+     * @param string $routeName
+     * @param array $parameters
+     * @param array $query
+     * @param array $cookies
+     *
+     * @return Controller
+     */
     protected function createRoutedController(
         $controllerClass,
         $controllerMethod,
@@ -168,6 +188,11 @@ abstract class BaseTestCase extends WebTestCase
         return $controllerCallable[0];
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return bool|mixed
+     */
     private function getControllerCallable(Request $request)
     {
         $controllerResolver = new ControllerResolver();
@@ -179,7 +204,7 @@ abstract class BaseTestCase extends WebTestCase
      * Creates a new Request object and hydrates it with the proper values to make
      * a valid web request.
      *
-     * @return \Symfony\Component\HttpFoundation\Request The hydrated Request object.
+     * @return Request The hydrated Request object.
      */
     protected function createWebRequest()
     {
@@ -191,6 +216,7 @@ abstract class BaseTestCase extends WebTestCase
 
     /**
      * @param string $testName
+     *
      * @return string
      */
     protected function getFixturesDataPath($testName = null)
@@ -206,6 +232,11 @@ abstract class BaseTestCase extends WebTestCase
         return $fixturesPath;
     }
 
+    /**
+     * @param string $path
+     *
+     * @return bool
+     */
     protected function directoryContainsFiles($path)
     {
         if (realpath($path) === false) {
@@ -229,6 +260,11 @@ abstract class BaseTestCase extends WebTestCase
         return $containsFiles;
     }
 
+    /**
+     * @param string $testName
+     *
+     * @return string
+     */
     protected function getCustomFixturesDataPath($testName)
     {
         return __DIR__
@@ -238,11 +274,21 @@ abstract class BaseTestCase extends WebTestCase
             . '/' . $testName;
     }
 
+    /**
+     * @param string $testName
+     *
+     * @return bool
+     */
     protected function hasCustomFixturesDataPath($testName)
     {
         return realpath($this->getCustomFixturesDataPath($testName)) !== false;
     }
 
+    /**
+     * @param $fixtures
+     *
+     * @param HttpClient $client
+     */
     protected function setHttpFixtures($fixtures, $client = null)
     {
         if (count($fixtures) === 0) {
@@ -268,6 +314,7 @@ abstract class BaseTestCase extends WebTestCase
 
     /**
      * @param array $items Collection of http messages and/or curl exceptions
+     *
      * @return array
      */
     protected function buildHttpFixtureSet($items)
@@ -291,7 +338,6 @@ abstract class BaseTestCase extends WebTestCase
 
         return $fixtures;
     }
-
 
     /**
      * @param string $item
@@ -324,11 +370,21 @@ abstract class BaseTestCase extends WebTestCase
         return $curlException;
     }
 
+    /**
+     * @param string $path
+     *
+     * @return array
+     */
     protected function getHttpFixtures($path)
     {
         return $this->buildHttpFixtureSet($this->getHttpFixtureContents($path));
     }
 
+    /**
+     * @param string $path
+     *
+     * @return array
+     */
     protected function getHttpFixtureContents($path)
     {
         $fixtureContents = array();
@@ -351,6 +407,9 @@ abstract class BaseTestCase extends WebTestCase
         return $fixtureContents;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function tearDown()
     {
         parent::tearDown();
@@ -368,35 +427,19 @@ abstract class BaseTestCase extends WebTestCase
         }
     }
 
+    /**
+     * @return array
+     */
     protected function getRequestAttributes()
     {
-        return array();
-    }
-
-    protected function getRequestHeaders()
-    {
-        return array();
+        return [];
     }
 
     /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\Mail\Service
+     * @return array
      */
-    protected function getMailService()
+    protected function getRequestHeaders()
     {
-        return $this->container->get('simplytestable.services.mail.service');
-    }
-
-    protected function assertNotificationMessageContains($value)
-    {
-        $lastMessage = $this->getMailService()->getSender()->getLastMessage();
-        $refObject = new \ReflectionObject($lastMessage);
-        $refProperty = $refObject->getProperty('textMessage');
-        $refProperty->setAccessible(true);
-
-        $this->assertTrue(
-            substr_count($refProperty->getValue($lastMessage), $value) > 0,
-            'Notification message does not contain "'.$value.'"'
-        );
+        return [];
     }
 }
