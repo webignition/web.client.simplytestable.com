@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\History;
 
-use SimplyTestable\WebClientBundle\Controller\View\Test\CacheableViewController;
+use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser
+class IndexController extends BaseViewController implements IEFiltered, RequiresValidUser
 {
     const RESULTS_PREPARATION_THRESHOLD = 10;
     const DEFAULT_PAGE_NUMBER = 1;
@@ -29,7 +29,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     public function indexAction(Request $request)
     {
         $router = $this->container->get('router');
-        $cacheableResponseService = $this->container->get('simplytestable.services.cacheableresponseservice');
+        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
 
         $pageNumber = (int)$request->attributes->get('page_number');
 
@@ -65,6 +65,16 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             ));
         }
 
+        $response = $cacheValidatorService->createResponse($request, [
+            'test_list_hash' => $testList->getHash(),
+            'filter' => $filter,
+            'page_number' => $pageNumber
+        ]);
+
+        if ($cacheValidatorService->isNotModified($response)) {
+            return $response;
+        }
+
         $websitesSourceUrl = $router->generate(
             'view_test_history_websitelist_index',
             [],
@@ -78,40 +88,17 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'websites_source' => $websitesSourceUrl
         ];
 
-        return $cacheableResponseService->getCachableResponse(
-            $request,
-            parent::render(
-                'SimplyTestableWebClientBundle:bs3/Test/History/Index:index.html.twig',
-                array_merge($this->getDefaultViewParameters(), $viewData)
-            )
-        );
-    }
+        $templating = $this->container->get('templating');
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCacheValidatorParameters()
-    {
-        $request = $this->getRequest();
-
-        $pageNumber = (int)$request->attributes->get('page_number');
-
-        $filter = trim($request->get('filter'));
-        if (empty($filter)) {
-            $filter = null;
-        }
-
-        $testList = $this->getFinishedTests(
-            self::TEST_LIST_LIMIT,
-            ($pageNumber - 1) * self::TEST_LIST_LIMIT,
-            $filter
+        $content = $templating->render(
+            'SimplyTestableWebClientBundle:bs3/Test/History/Index:index.html.twig',
+            array_merge($this->getDefaultViewParameters(), $viewData)
         );
 
-        return [
-            'test_list_hash' => $testList->getHash(),
-            'filter' => $filter,
-            'page_number' => $pageNumber
-        ];
+        $response->setContent($content);
+        $response->headers->set('content-type', 'text/html');
+
+        return $response;
     }
 
     /**

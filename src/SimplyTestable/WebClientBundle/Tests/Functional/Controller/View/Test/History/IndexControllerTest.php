@@ -71,12 +71,6 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                 'offset' => 90,
                 'jobs' => [],
             ]),
-            HttpResponseFactory::createJsonResponse([
-                'max_results' => 90,
-                'limit' => IndexController::TEST_LIST_LIMIT,
-                'offset' => 90,
-                'jobs' => [],
-            ]),
         ]);
 
         $router = $this->container->get('router');
@@ -247,7 +241,7 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
      *
      * @throws WebResourceException
      */
-    public function testIndexActionFoo(
+    public function testIndexActionRender(
         array $httpFixtures,
         User $user,
         Request $request,
@@ -270,6 +264,7 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                 'simplytestable.services.userservice',
                 'simplytestable.services.taskservice',
                 'simplytestable.services.cacheableresponseservice',
+                'simplytestable.services.cachevalidator',
             ],
             [
                 'templating' => $templatingEngine,
@@ -306,10 +301,9 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                     'page_number' => 1,
                 ]),
                 'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'renderResponse' => [
-                        'withArgs' => function ($viewName, $parameters, $response) {
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);
-                            $this->assertNull($response);
                             $this->assertViewParameterKeys($parameters);
 
                             $this->assertInstanceOf(TestList::class, $parameters['test_list']);
@@ -348,11 +342,10 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                     'page_number' => 1,
                 ]),
                 'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'renderResponse' => [
-                        'withArgs' => function ($viewName, $parameters, $response) {
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);
-                            $this->assertNull($response);
-                            $this->assertViewParameterKeys($parameters);
+                              $this->assertViewParameterKeys($parameters);
 
                             $this->assertInstanceOf(TestList::class, $parameters['test_list']);
                             $this->assertEquals(
@@ -388,10 +381,9 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                     'page_number' => 3,
                 ]),
                 'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'renderResponse' => [
-                        'withArgs' => function ($viewName, $parameters, $response) {
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);
-                            $this->assertNull($response);
                             $this->assertViewParameterKeys($parameters);
 
                             $this->assertInstanceOf(TestList::class, $parameters['test_list']);
@@ -435,10 +427,9 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                     'page_number' => 11,
                 ]),
                 'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'renderResponse' => [
-                        'withArgs' => function ($viewName, $parameters, $response) {
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);
-                            $this->assertNull($response);
                             $this->assertViewParameterKeys($parameters);
 
                             $this->assertInstanceOf(TestList::class, $parameters['test_list']);
@@ -462,6 +453,46 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                 ]),
             ],
         ];
+    }
+
+    public function testIndexActionCachedResponse()
+    {
+        $this->setHttpFixtures([
+            HttpResponseFactory::createJsonResponse([
+                'max_results' => 0,
+                'limit' => IndexController::TEST_LIST_LIMIT,
+                'offset' => 0,
+                'jobs' => [],
+            ]),
+            HttpResponseFactory::createJsonResponse([
+                'max_results' => 0,
+                'limit' => IndexController::TEST_LIST_LIMIT,
+                'offset' => 0,
+                'jobs' => [],
+            ]),
+        ]);
+
+        $request = new Request([], [], [
+            'page_number' => 1,
+        ]);
+
+        $this->container->set('request', $request);
+        $this->indexController->setContainer($this->container);
+
+        $response = $this->indexController->indexAction($request);
+        $this->assertInstanceOf(Response::class, $response);
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $responseLastModified = new \DateTime($response->headers->get('last-modified'));
+        $responseLastModified->modify('+1 hour');
+
+        $newRequest = $request->duplicate();
+
+        $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
+        $newResponse = $this->indexController->indexAction($newRequest);
+
+        $this->assertInstanceOf(Response::class, $newResponse);
+        $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
     /**
