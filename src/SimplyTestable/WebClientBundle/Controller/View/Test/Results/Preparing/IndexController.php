@@ -2,75 +2,130 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results\Preparing;
 
-use SimplyTestable\WebClientBundle\Controller\View\Test\CacheableViewController;
+use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
-use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner {
+class IndexController extends BaseViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner
+{
+    /**
+     * @param Request $request
+     * @param string $website
+     * @param int $test_id
+     *
+     * @return RedirectResponse|Response
+     *
+     * @throws WebResourceException
+     */
+    public function indexAction(Request $request, $website, $test_id)
+    {
+        $testService = $this->container->get('simplytestable.services.testservice');
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
+        $router = $this->container->get('router');
+        $taskService = $this->container->get('simplytestable.services.taskservice');
+        $templating = $this->container->get('templating');
+        $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
 
-    protected function modifyViewName($viewName) {
-        return str_replace(array(
-            ':Test'
-        ), array(
-            ':bs3/Test'
-        ), $viewName);
-    }
-    
-    
-    public function indexAction($website, $test_id) {
-        if (!$this->getTestService()->isFinished($this->getTest())) {
-            return $this->redirect($this->getProgressUrl($website, $test_id));
+        $user = $userService->getUser();
+        $remoteTestService->setUser($user);
+        $taskService->setUser($user);
+
+        $test = $testService->get($website, $test_id);
+        $remoteTest = $remoteTestService->get();
+
+        $localTaskCount = $test->getTaskCount();
+        $remoteTaskCount = $remoteTest->getTaskCount();
+
+        if (0 === $remoteTaskCount) {
+            $redirectUrl = $router->generate(
+                'app_test_redirector',
+                [
+                    'website' => $test->getWebsite(),
+                    'test_id' => $test_id,
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            return new RedirectResponse($redirectUrl);
         }
 
-        if ($this->getTest()->getWebsite() != $website) {
-            return $this->redirect($this->generateUrl('app_test_redirector', array(
-                'website' => $this->getTest()->getWebsite(),
-                'test_id' => $test_id
-            ), true));
+        $completionPercent = (int)round(($localTaskCount / $remoteTaskCount) * 100);
+        $tasksToRetrieveCount = $remoteTaskCount - $localTaskCount;
+
+        $response = $cacheValidatorService->createResponse($request, [
+            'website' => $website,
+            'test_id' => $test_id,
+            'completion_percent' => $completionPercent,
+            'remaining_tasks_to_retrieve_count' => $tasksToRetrieveCount,
+        ]);
+
+        if ($cacheValidatorService->isNotModified($response)) {
+            return $response;
         }
 
-        if (!$this->getTest()->hasTaskIds()) {
-            $this->getTaskService()->getRemoteTaskIds($this->getTest());
+        if (!$testService->isFinished($test)) {
+            $redirectUrl = $router->generate(
+                'view_test_progress_index_index',
+                [
+                    'website' => $website,
+                    'test_id' => $test_id,
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            return new RedirectResponse($redirectUrl);
         }
 
-        return $this->renderCacheableResponse(array(
-            'completion_percent' => $this->getCompletionPercent($this->getTest()->getTaskCount()),
-            'website' => $this->getUrlViewValues($website),
-            'test' => $this->getTest(),
-            'local_task_count' => $this->getTest()->getTaskCount(),
-            'remote_task_count' => $this->getRemoteTest()->getTaskCount(),
-            'remaining_tasks_to_retrieve_count' => $this->getRemainingTasksToRetrieveCount($this->getTest()->getTaskCount())
-        ));
-    }
+        if ($test->getWebsite() != $website) {
+            $redirectUrl = $router->generate(
+                'app_test_redirector',
+                [
+                    'website' => $test->getWebsite(),
+                    'test_id' => $test_id,
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
 
-    public function getCacheValidatorParameters() {
-        $test = $this->getTest();
+            return new RedirectResponse($redirectUrl);
+        }
 
-        return array(
-            'website' => $this->getRequest()->attributes->get('website'),
-            'test_id' => $this->getRequest()->attributes->get('test_id'),
-            'completion_percent' => $this->getCompletionPercent($test->getTaskCount()),
-            'remaining_tasks_to_retrieve_count' => $this->getRemainingTasksToRetrieveCount($test->getTaskCount())
+        if (!$test->hasTaskIds()) {
+            $taskService->getRemoteTaskIds($test);
+        }
+
+        $viewData = [
+            'completion_percent' => $completionPercent,
+            'website' => $urlViewValuesService->create($website),
+            'test' => $test,
+            'local_task_count' => $test->getTaskCount(),
+            'remote_task_count' => $remoteTest->getTaskCount(),
+            'remaining_tasks_to_retrieve_count' => $tasksToRetrieveCount,
+        ];
+
+        $content = $templating->render(
+            'SimplyTestableWebClientBundle:bs3/Test/Results/Preparing/Index:index.html.twig',
+            array_merge($this->getDefaultViewParameters(), $viewData)
         );
+
+        $response->setContent($content);
+        $response->headers->set('content-type', 'text/html');
+
+        return $response;
     }
 
     /**
-     * @param $localTaskCount int
-     * @return int
+     * {@inheritdoc}
      */
-    private function getCompletionPercent($localTaskCount) {
-        return (int)round(($localTaskCount / $this->getRemoteTest()->getTaskCount()) * 100);
+    public function getInvalidOwnerResponse()
+    {
+        return new Response('', 400);
     }
-
-
-    /**
-     * @param $localTaskCount int
-     * @return int
-     */
-    private function getRemainingTasksToRetrieveCount($localTaskCount) {
-        return $this->getRemoteTest()->getTaskCount() - $localTaskCount;
-    }
-
 }
