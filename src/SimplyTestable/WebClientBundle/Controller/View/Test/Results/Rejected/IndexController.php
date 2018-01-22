@@ -2,78 +2,124 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results\Rejected;
 
-use SimplyTestable\WebClientBundle\Controller\View\Test\CacheableViewController;
+use SimplyTestable\WebClientBundle\Controller\View\Test\ViewController;
+use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
+use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner {
+class IndexController extends ViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner
+{
+    /**
+     * @param Request $request
+     * @param string $website
+     * @param int $test_id
+     *
+     * @return RedirectResponse|Response
+     *
+     * @throws WebResourceException
+     */
+    public function indexAction(Request $request, $website, $test_id)
+    {
+        $testService = $this->container->get('simplytestable.services.testservice');
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $router = $this->container->get('router');
+        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
+        $templating = $this->container->get('templating');
+        $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
 
-    protected function modifyViewName($viewName) {
-        return str_replace(array(
-            ':Test'
-        ), array(
-            ':bs3/Test'
-        ), $viewName);
-    }
-    
-    
-    public function indexAction($website, $test_id) {
-        if ($this->getTest()->getWebsite() != $website) {
-            return $this->redirect($this->generateUrl('app_test_redirector', array(
-                'website' => $this->getTest()->getWebsite(),
-                'test_id' => $test_id
-            ), true));
+        $user = $userService->getUser();
+        $remoteTestService->setUser($user);
+
+        $test = $testService->get($website, $test_id);
+        $remoteTest = $remoteTestService->get();
+
+        $cacheValidatorParameters = [
+            'website' => $website,
+            'test_id' => $test_id,
+        ];
+
+        if ($this->isRejectedDueToCreditLimit($remoteTest)) {
+            $userSummary = $userService->getSummary();
+            $planConstraints = $userSummary->getPlanConstraints();
+
+            $cacheValidatorParameters['limits'] =
+                $remoteTest->getRejection()->getConstraint()->limit . ':' . $planConstraints->credits->limit;
+            $cacheValidatorParameters['credits_remaining'] =
+                $planConstraints->credits->limit - $planConstraints->credits->used;
         }
 
-        if ($this->getTest()->getState() !== 'rejected') {
-            return $this->redirect($this->getProgressUrl($website, $test_id));
+        $response = $cacheValidatorService->createResponse($request, $cacheValidatorParameters);
+
+        if ($cacheValidatorService->isNotModified($response)) {
+            return $response;
         }
 
-        $viewData = array(
-            'website' => $this->getUrlViewValues($website),
-            'remote_test' => $this->getTestService()->getRemoteTestService()->get(),
-            'plans' => $this->container->getParameter('plans')
+        if ($test->getWebsite() != $website) {
+            $redirectUrl = $router->generate(
+                'app_test_redirector',
+                [
+                    'website' => $test->getWebsite(),
+                    'test_id' => $test_id
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            return new RedirectResponse($redirectUrl);
+        }
+
+        if (Test::STATE_REJECTED !== $test->getState()) {
+            $redirectUrl = $router->generate(
+                'view_test_progress_index_index',
+                [
+                    'website' => $website,
+                    'test_id' => $test_id
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            return new RedirectResponse($redirectUrl);
+        }
+
+        $viewData = [
+            'website' => $urlViewValuesService->create($website),
+            'remote_test' => $remoteTest,
+            'plans' => $this->container->getParameter('plans'),
+        ];
+
+        if ($this->isRejectedDueToCreditLimit($remoteTest)) {
+            $viewData['userSummary'] = $userService->getSummary();
+        }
+
+        $content = $templating->render(
+            'SimplyTestableWebClientBundle:bs3/Test/Results/Rejected/Index:index.html.twig',
+            array_merge($this->getDefaultViewParameters(), $viewData)
         );
 
-        if ($this->isRejectedDueToCreditLimit()) {
-            $viewData['userSummary'] = $this->getUserService()->getSummary();
-        }
+        $response->setContent($content);
+        $response->headers->set('content-type', 'text/html');
 
-        return $this->renderCacheableResponse($viewData);
+        return $response;
     }
-
-    public function getCacheValidatorParameters() {
-        $cacheValidatorParameters = array(
-            'website' => $this->getRequest()->attributes->get('website'),
-            'test_id' => $this->getRequest()->attributes->get('test_id')
-        );
-
-        $this->getTestService()->get(
-            $this->getRequest()->attributes->get('website'),
-            $this->getRequest()->attributes->get('test_id')
-        );
-
-        $remoteTest = $this->getTestService()->getRemoteTestService()->get();
-
-        if ($this->isRejectedDueToCreditLimit()) {
-            $userSummary = $this->getUserService()->getSummary();
-            $cacheValidatorParameters['limits'] = $remoteTest->getRejection()->getConstraint()->limit . ':' . $userSummary->getPlanConstraints()->credits->limit;
-            $cacheValidatorParameters['credits_remaining'] = $userSummary->getPlanConstraints()->credits->limit -$userSummary->getPlanConstraints()->credits->used;
-        }
-
-        return $cacheValidatorParameters;
-    }
-
 
     /**
+     * @param RemoteTest $remoteTest
+     *
      * @return bool
      */
-    private function isRejectedDueToCreditLimit() {
-        if ($this->getRemoteTest()->getRejection()->getReason() != 'plan-constraint-limit-reached') {
+    private function isRejectedDueToCreditLimit(RemoteTest $remoteTest)
+    {
+        if ($remoteTest->getRejection()->getReason() != 'plan-constraint-limit-reached') {
             return false;
         }
 
-        return $this->getRemoteTest()->getRejection()->getConstraint()->name == 'credits_per_month';
+        return $remoteTest->getRejection()->getConstraint()->name == 'credits_per_month';
     }
 }
