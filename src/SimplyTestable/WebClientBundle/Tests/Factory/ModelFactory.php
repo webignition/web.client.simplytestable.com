@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Factory;
 
+use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
@@ -46,6 +47,9 @@ class ModelFactory
     const TEST_OPTIONS_FEATURE_OPTIONS = 'feature_options';
 
     const TASK_OUTPUT = 'output';
+
+    const CACHE_VALIDATOR_HEADERS_IDENTIFIER = 'identifier';
+    const CACHE_VALIDATOR_HEADERS_LAST_MODIFIED_DATE = 'last-modified-date';
 
     /**
      * @param array $taskOutputValues
@@ -293,5 +297,22 @@ class ModelFactory
         }
 
         return $task;
+    }
+
+    /**
+     * @param array $cacheValidatorHeadersValues
+     *
+     * @return CacheValidatorHeaders
+     */
+    public static function createCacheValidatorHeaders($cacheValidatorHeadersValues = [])
+    {
+        $cacheValidatorHeaders = new CacheValidatorHeaders();
+
+        $cacheValidatorHeaders->setIdentifier($cacheValidatorHeadersValues[self::CACHE_VALIDATOR_HEADERS_IDENTIFIER]);
+        $cacheValidatorHeaders->setLastModifiedDate(
+            $cacheValidatorHeadersValues[self::CACHE_VALIDATOR_HEADERS_LAST_MODIFIED_DATE]
+        );
+
+        return $cacheValidatorHeaders;
     }
 }

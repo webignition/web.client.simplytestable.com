@@ -4,6 +4,8 @@ namespace SimplyTestable\WebClientBundle\Tests\Factory;
 
 use Mockery\MockInterface;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 
 class MockFactory
@@ -71,6 +73,56 @@ class MockFactory
                 ->andReturn($calls['renderResponse']['return']);
         }
 
+        if (isset($calls['render'])) {
+            $templatingEngine
+                ->shouldReceive('render')
+                ->withArgs($calls['render']['withArgs'])
+                ->andReturn($calls['render']['return']);
+        }
+
         return $templatingEngine;
+    }
+
+    /**
+     * @param array $calls
+     *
+     * @return MockInterface|CacheValidatorHeadersService
+     */
+    public static function createCacheValidatorHeadersService($calls = [])
+    {
+        $cacheValidatorHeadersService = \Mockery::mock(CacheValidatorHeadersService::class);
+
+        if (isset($calls['get'])) {
+            $cacheValidatorHeadersService
+                ->shouldReceive('get')
+                ->withArgs($calls['get']['withArgs'])
+                ->andReturn($calls['get']['return']);
+        }
+
+        return $cacheValidatorHeadersService;
+    }
+
+    /**
+     * @param array $calls
+     *
+     * @return MockInterface|UserService
+     */
+    public static function createUserService($calls = [])
+    {
+        $userService = \Mockery::mock(UserService::class);
+
+        if (isset($calls['getUser'])) {
+            $userService
+                ->shouldReceive('getUser')
+                ->andReturn($calls['getUser']['return']);
+        }
+
+        if (isset($calls['isLoggedIn'])) {
+            $userService
+                ->shouldReceive('isLoggedIn')
+                ->andReturn($calls['isLoggedIn']['return']);
+        }
+
+        return $userService;
     }
 }
