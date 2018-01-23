@@ -5,23 +5,23 @@ namespace SimplyTestable\WebClientBundle\Controller\View\User\Account\Team;
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class IndexController extends BaseViewController implements RequiresPrivateUser, IEFiltered {
-    
+
     const STRIPE_CARD_CHECK_KEY_POSTFIX = '_check';
 
     protected function modifyViewName($viewName) {
         return str_replace(':User', ':bs3/User', $viewName);
     }
 
-
     /**
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * {@inheritdoc}
      */
-    public function getUserSignInRedirectResponse() {
+    public function getUserSignInRedirectResponse(Request $request)
+    {
         return new RedirectResponse($this->generateUrl('view_user_signin_index', [
             'redirect' => base64_encode(json_encode(['route' => 'view_user_account_team_index_index']))
         ], true));

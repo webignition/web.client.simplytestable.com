@@ -10,6 +10,7 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresCompletedT
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 //use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 abstract class ResultsController
     extends CacheableViewController
@@ -28,21 +29,33 @@ abstract class ResultsController
      */
     private $taskTypeService = null;
 
-    public function getFailedNoSitemapTestResponse() {
+    /**
+     * {@inheritdoc}
+     */
+    public function getFailedNoSitemapTestResponse(Request $request)
+    {
         return new RedirectResponse($this->generateUrl('view_test_results_failednourlsdetected_index_index', array(
             'website' => $this->getRequest()->attributes->get('website'),
             'test_id' => $this->getRequest()->attributes->get('test_id')
         ), true));
     }
 
-    public function getRejectedTestResponse() {
+    /**
+     * {@inheritdoc}
+     */
+    public function getRejectedTestResponse(Request $request)
+    {
         return new RedirectResponse($this->generateUrl('view_test_results_rejected_index_index', array(
             'website' => $this->getRequest()->attributes->get('website'),
             'test_id' => $this->getRequest()->attributes->get('test_id')
         ), true));
     }
 
-    public function getNotFinishedTestResponse() {
+    /**
+     * {@inheritdoc}
+     */
+    public function getNotFinishedTestResponse(Request $request)
+    {
         return new RedirectResponse($this->generateUrl('view_test_progress_index_index', array(
             'website' => $this->getRequest()->attributes->get('website'),
             'test_id' => $this->getRequest()->attributes->get('test_id')

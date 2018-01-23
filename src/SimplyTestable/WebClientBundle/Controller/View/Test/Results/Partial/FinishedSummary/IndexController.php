@@ -64,7 +64,7 @@ class IndexController extends BaseViewController implements RequiresValidUser, R
     /**
      * {@inheritdoc}
      */
-    public function getInvalidOwnerResponse()
+    public function getInvalidOwnerResponse(Request $request)
     {
         return new Response('', 400);
     }

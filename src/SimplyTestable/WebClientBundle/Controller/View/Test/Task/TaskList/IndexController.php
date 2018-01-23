@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner {
@@ -19,8 +20,11 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         ), $viewName);
     }
 
-
-    public function getInvalidOwnerResponse() {
+    /**
+     * {@inheritdoc}
+     */
+    public function getInvalidOwnerResponse(Request $request)
+    {
         return new Response('', 400);
     }
 
@@ -32,8 +36,8 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
             'task_collection_hash' => $this->getTaskCollectionHash()
         );
     }
-    
-    
+
+
     public function indexAction($website, $test_id) {
         if (!$this->hasRequestTaskIds()) {
             return new Response('');

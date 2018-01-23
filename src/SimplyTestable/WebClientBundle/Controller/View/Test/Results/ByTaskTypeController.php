@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Model\Test\Task\ErrorTaskMapCollection;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class ByTaskTypeController extends ResultsController {
 
@@ -28,8 +29,11 @@ class ByTaskTypeController extends ResultsController {
         ), $viewName);
     }
 
-
-    public function getRequestWebsiteMismatchResponse() {
+    /**
+     * {@inheritdoc}
+     */
+    public function getRequestWebsiteMismatchResponse(Request $request)
+    {
         return new RedirectResponse($this->generateUrl('view_test_results_bytasktype_index', array(
             'website' => $this->getRequest()->attributes->get('website'),
             'test_id' => $this->getRequest()->attributes->get('test_id'),

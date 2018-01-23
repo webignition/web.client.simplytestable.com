@@ -78,7 +78,7 @@ class UrlLimitController extends CacheableViewController implements RequiresVali
     /**
      * @inheritdoc}
      */
-    public function getInvalidOwnerResponse()
+    public function getInvalidOwnerResponse(Request $request)
     {
         return new Response('');
     }

@@ -112,7 +112,7 @@ class RequestListener
             /* @var RequiresPrivateUserController $controller */
             $controller = $this->createController();
 
-            $this->event->setResponse($controller->getUserSignInRedirectResponse());
+            $this->event->setResponse($controller->getUserSignInRedirectResponse($this->request));
 
             return;
         }
@@ -129,7 +129,7 @@ class RequestListener
                 $controller = $this->createController();
 
                 if (!$testService->has($website, $testId)) {
-                    $this->event->setResponse($controller->getInvalidOwnerResponse());
+                    $this->event->setResponse($controller->getInvalidOwnerResponse($this->request));
 
                     return;
                 }
@@ -140,7 +140,7 @@ class RequestListener
                 $controller = $this->createController();
 
                 if ($webResourceException->getCode() == 403) {
-                    $this->event->setResponse($controller->getInvalidOwnerResponse());
+                    $this->event->setResponse($controller->getInvalidOwnerResponse($this->request));
 
                     return;
                 }
@@ -165,25 +165,25 @@ class RequestListener
             $test = $testService->get($website, $testId);
 
             if ($test->getState() == Test::STATE_FAILED_NO_SITEMAP) {
-                $this->event->setResponse($controller->getFailedNoSitemapTestResponse());
+                $this->event->setResponse($controller->getFailedNoSitemapTestResponse($this->request));
 
                 return;
             }
 
             if ($test->getState() == Test::STATE_REJECTED) {
-                $this->event->setResponse($controller->getRejectedTestResponse());
+                $this->event->setResponse($controller->getRejectedTestResponse($this->request));
 
                 return;
             }
 
             if (!$testService->isFinished($test)) {
-                $this->event->setResponse($controller->getNotFinishedTestResponse());
+                $this->event->setResponse($controller->getNotFinishedTestResponse($this->request));
 
                 return;
             }
 
             if ($test->getWebsite() != $this->request->attributes->get('website')) {
-                $this->event->setResponse($controller->getRequestWebsiteMismatchResponse());
+                $this->event->setResponse($controller->getRequestWebsiteMismatchResponse($this->request));
 
                 return;
             }

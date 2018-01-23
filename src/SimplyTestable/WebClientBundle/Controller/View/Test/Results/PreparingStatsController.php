@@ -7,13 +7,14 @@ use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class PreparingStatsController extends ViewController implements RequiresValidUser, RequiresValidOwner
 {
     /**
      * {@inheritdoc}
      */
-    public function getInvalidOwnerResponse()
+    public function getInvalidOwnerResponse(Request $request)
     {
         return $this->createJsonResponse(0, 0, 0, 0, 0);
     }
