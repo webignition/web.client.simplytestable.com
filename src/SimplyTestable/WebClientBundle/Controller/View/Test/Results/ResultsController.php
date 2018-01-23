@@ -2,19 +2,24 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results;
 
+use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Controller\View\Test\CacheableViewController;
+use SimplyTestable\WebClientBundle\Controller\View\Test\ViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresCompletedTest;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 //use Symfony\Component\HttpFoundation\Response;
+use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-abstract class ResultsController
-    extends CacheableViewController
-    implements IEFiltered, RequiresValidUser, RequiresValidOwner, RequiresCompletedTest
+abstract class ResultsController extends BaseViewController implements
+    IEFiltered,
+    RequiresValidUser,
+    RequiresValidOwner,
+    RequiresCompletedTest
 {
     const RESULTS_PREPARATION_THRESHOLD = 100;
 
@@ -64,12 +69,15 @@ abstract class ResultsController
 
 
     /**
+     * @param RemoteTest $remoteTest
+     * @param Test $test
+     *
      * @return bool
      */
-    protected function requiresPreparation() {
-        return ($this->getRemoteTest()->getTaskCount() - self::RESULTS_PREPARATION_THRESHOLD) > $this->getTest()->getTaskCount();
+    protected function requiresPreparation(RemoteTest $remoteTest, Test $test)
+    {
+        return ($remoteTest->getTaskCount() - self::RESULTS_PREPARATION_THRESHOLD) > $test->getTaskCount();
     }
-
 
     /**
      * @return RedirectResponse
@@ -151,7 +159,8 @@ abstract class ResultsController
     }
 
 
-    protected function getFilteredTaskCollectionRemoteIds($taskOutcomeFilter, $taskTypeFilter) {
+    protected function getFilteredTaskCollectionRemoteIds($taskOutcomeFilter, $taskTypeFilter)
+    {
         if ($taskTypeFilter == 'javascript static analysis') {
             $taskTypeFilter = 'js static analysis';
         }

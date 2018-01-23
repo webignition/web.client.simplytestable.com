@@ -276,4 +276,36 @@ class IndexController extends ResultsController {
         );
     }
 
+    public function getInvalidOwnerResponse(Request $request)
+    {
+        foreach (['website', 'test_id'] as $requiredRequestAttribute) {
+            if (!$request->attributes->has($requiredRequestAttribute)) {
+                return new Response('', 400);
+            }
+        }
+
+        if ($this->getUserService()->isLoggedIn()) {
+            return $this->render(
+                'SimplyTestableWebClientBundle:bs3/Test/Results:not-authorised.html.twig',
+                array_merge($this->getDefaultViewParameters(), [
+                    'test_id' => $request->attributes->get('test_id'),
+                    'website' => $this->getUrlViewValues($request->attributes->get('website')),
+                ])
+            );
+        }
+
+        $redirectParameters = json_encode(array(
+            'route' => 'view_test_progress_index_index',
+            'parameters' => array(
+                'website' => $request->attributes->get('website'),
+                'test_id' => $request->attributes->get('test_id')
+            )
+        ));
+
+        $this->container->get('session')->getFlashBag()->set('user_signin_error', 'test-not-logged-in');
+
+        return new RedirectResponse($this->generateUrl('view_user_signin_index', array(
+            'redirect' => base64_encode($redirectParameters)
+        ), true));
+    }
 }
