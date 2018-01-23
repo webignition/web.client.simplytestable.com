@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class CardController extends BaseViewController implements RequiresPrivateUser, IEFiltered {
 
@@ -14,16 +15,16 @@ class CardController extends BaseViewController implements RequiresPrivateUser, 
     }
 
     /**
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * {@inheritdoc}
      */
-    public function getUserSignInRedirectResponse() {
+    public function getUserSignInRedirectResponse(Request $request)
+    {
         return new RedirectResponse($this->generateUrl('view_user_signin_index', [
             'redirect' => base64_encode(json_encode(['route' => 'view_user_account_card_index']))
         ], true));
     }
-    
-    public function indexAction() {        
+
+    public function indexAction() {
         $userSummary = $this->getUserService()->getSummary($this->getUser());
         if ($userSummary->getTeamSummary()->isInTeam()) {
             $this->getTeamService()->setUser($this->getUser());
@@ -35,7 +36,7 @@ class CardController extends BaseViewController implements RequiresPrivateUser, 
         }
 
         $currentYear = date('Y');
-        
+
         $viewData = array_merge(array(
             'public_site' => $this->container->getParameter('public_site'),
             'user' => $this->getUser(),
@@ -304,7 +305,7 @@ class CardController extends BaseViewController implements RequiresPrivateUser, 
     }
 
     /**
-     * 
+     *
      * @return \SimplyTestable\WebClientBundle\Services\UserAccountCardService
      */
     protected function getUserAccountCardService() {

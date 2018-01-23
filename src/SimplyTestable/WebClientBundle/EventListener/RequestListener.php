@@ -112,7 +112,7 @@ class RequestListener
             /* @var RequiresPrivateUserController $controller */
             $controller = $this->createController();
 
-            $this->event->setResponse($controller->getUserSignInRedirectResponse());
+            $this->event->setResponse($controller->getUserSignInRedirectResponse($this->request));
 
             return;
         }

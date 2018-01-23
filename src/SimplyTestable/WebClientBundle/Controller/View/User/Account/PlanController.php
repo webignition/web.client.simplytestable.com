@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class PlanController extends BaseViewController implements RequiresPrivateUser, IEFiltered {
 
@@ -14,15 +15,15 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
     }
 
     /**
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * {@inheritdoc}
      */
-    public function getUserSignInRedirectResponse() {
+    public function getUserSignInRedirectResponse(Request $request)
+    {
         return new RedirectResponse($this->generateUrl('view_user_signin_index', [
             'redirect' => base64_encode(json_encode(['route' => 'view_user_account_card_index']))
         ], true));
     }
-    
+
     public function indexAction() {
         $userSummary = $this->getUserService()->getSummary($this->getUser());
 

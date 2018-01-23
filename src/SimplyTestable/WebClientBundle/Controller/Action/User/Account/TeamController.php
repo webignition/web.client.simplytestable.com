@@ -9,6 +9,7 @@ use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class TeamController extends BaseController implements RequiresPrivateUser
@@ -40,9 +41,9 @@ class TeamController extends BaseController implements RequiresPrivateUser
     const FLASH_BAG_TEAM_RESEND_INVITE_KEY = 'team_invite_resend';
 
     /**
-     * @return RedirectResponse
+     * {@inheritdoc}
      */
-    public function getUserSignInRedirectResponse()
+    public function getUserSignInRedirectResponse(Request $request)
     {
         return new RedirectResponse($this->generateUrl('view_user_signin_index', [
             'redirect' => base64_encode(json_encode(['route' => 'view_user_account_index_index']))

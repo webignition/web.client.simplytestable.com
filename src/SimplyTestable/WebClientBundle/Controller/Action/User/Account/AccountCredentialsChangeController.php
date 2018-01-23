@@ -6,16 +6,17 @@ use SimplyTestable\WebClientBundle\Controller\BaseController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\Request;
 
 abstract class AccountCredentialsChangeController extends BaseController implements RequiresPrivateUser {
 
     const ONE_YEAR_IN_SECONDS = 31536000;
 
     /**
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * {@inheritdoc}
      */
-    public function getUserSignInRedirectResponse() {
+    public function getUserSignInRedirectResponse(Request $request)
+    {
         return new RedirectResponse($this->generateUrl('view_user_signin_index', [
             'redirect' => base64_encode(json_encode(['route' => 'view_user_account_index_index']))
         ], true));

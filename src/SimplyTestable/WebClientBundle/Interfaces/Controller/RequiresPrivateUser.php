@@ -2,12 +2,15 @@
 
 namespace SimplyTestable\WebClientBundle\Interfaces\Controller;
 
-interface RequiresPrivateUser {
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 
+interface RequiresPrivateUser
+{
     /**
+     * @param Request $request
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      */
-    public function getUserSignInRedirectResponse();
-
+    public function getUserSignInRedirectResponse(Request $request);
 }

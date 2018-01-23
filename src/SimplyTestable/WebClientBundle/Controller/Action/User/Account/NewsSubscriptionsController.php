@@ -6,14 +6,15 @@ use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Controller\BaseController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use ZfrMailChimp\Exception\Ls\InvalidImportException;
 
 class NewsSubscriptionsController extends BaseController implements RequiresPrivateUser
 {
     /**
-     * @return RedirectResponse
+     * {@inheritdoc}
      */
-    public function getUserSignInRedirectResponse()
+    public function getUserSignInRedirectResponse(Request $request)
     {
         return new RedirectResponse($this->generateUrl('view_user_signin_index', [
             'redirect' => base64_encode(json_encode(['route' => 'view_user_account_index_index']))

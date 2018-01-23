@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class EmailChangeController extends AccountCredentialsChangeController
@@ -36,9 +37,9 @@ class EmailChangeController extends AccountCredentialsChangeController
     const FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN = 'postmark-failure';
 
     /**
-     * @return RedirectResponse
+     * {@inheritdoc}
      */
-    public function getUserSignInRedirectResponse()
+    public function getUserSignInRedirectResponse(Request $request)
     {
         return new RedirectResponse($this->generateUrl('view_user_signin_index', [
             'redirect' => base64_encode(json_encode(['route' => 'view_user_account_index_index']))
