@@ -165,25 +165,25 @@ class RequestListener
             $test = $testService->get($website, $testId);
 
             if ($test->getState() == Test::STATE_FAILED_NO_SITEMAP) {
-                $this->event->setResponse($controller->getFailedNoSitemapTestResponse());
+                $this->event->setResponse($controller->getFailedNoSitemapTestResponse($this->request));
 
                 return;
             }
 
             if ($test->getState() == Test::STATE_REJECTED) {
-                $this->event->setResponse($controller->getRejectedTestResponse());
+                $this->event->setResponse($controller->getRejectedTestResponse($this->request));
 
                 return;
             }
 
             if (!$testService->isFinished($test)) {
-                $this->event->setResponse($controller->getNotFinishedTestResponse());
+                $this->event->setResponse($controller->getNotFinishedTestResponse($this->request));
 
                 return;
             }
 
             if ($test->getWebsite() != $this->request->attributes->get('website')) {
-                $this->event->setResponse($controller->getRequestWebsiteMismatchResponse());
+                $this->event->setResponse($controller->getRequestWebsiteMismatchResponse($this->request));
 
                 return;
             }

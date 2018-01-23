@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results;
 
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -27,7 +28,11 @@ class IndexController extends ResultsController {
         ), $viewName);
     }
 
-    public function getRequestWebsiteMismatchResponse() {
+    /**
+     * {@inheritdoc}
+     */
+    public function getRequestWebsiteMismatchResponse(Request $request)
+    {
         return new RedirectResponse($this->generateUrl('app_test_redirector', array(
             'website' => $this->getRequest()->attributes->get('website'),
             'test_id' => $this->getRequest()->attributes->get('test_id')
