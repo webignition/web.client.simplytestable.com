@@ -124,7 +124,7 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
     /**
      * {@inheritdoc}
      */
-    public function getInvalidOwnerResponse()
+    public function getInvalidOwnerResponse(Request $request)
     {
         return new Response('', 400);
     }

@@ -129,7 +129,7 @@ class RequestListener
                 $controller = $this->createController();
 
                 if (!$testService->has($website, $testId)) {
-                    $this->event->setResponse($controller->getInvalidOwnerResponse());
+                    $this->event->setResponse($controller->getInvalidOwnerResponse($this->request));
 
                     return;
                 }
@@ -140,7 +140,7 @@ class RequestListener
                 $controller = $this->createController();
 
                 if ($webResourceException->getCode() == 403) {
-                    $this->event->setResponse($controller->getInvalidOwnerResponse());
+                    $this->event->setResponse($controller->getInvalidOwnerResponse($this->request));
 
                     return;
                 }

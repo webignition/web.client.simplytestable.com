@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Test;
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 abstract class ViewController extends BaseViewController {
@@ -131,10 +132,13 @@ abstract class ViewController extends BaseViewController {
         return $url;
     }
 
-
-    public function getInvalidOwnerResponse() {
+    /**
+     * {@inheritdoc}
+     */
+    public function getInvalidOwnerResponse(Request $request)
+    {
         foreach (['website', 'test_id'] as $requiredRequestAttribute) {
-            if (!$this->getRequest()->attributes->has($requiredRequestAttribute)) {
+            if (!$request->attributes->has($requiredRequestAttribute)) {
                 return new Response('', 400);
             }
         }
@@ -143,8 +147,8 @@ abstract class ViewController extends BaseViewController {
             return $this->render(
                 'SimplyTestableWebClientBundle:bs3/Test/Results:not-authorised.html.twig',
                 array_merge($this->getDefaultViewParameters(), [
-                    'test_id' => $this->getRequest()->attributes->get('test_id'),
-                    'website' => $this->getUrlViewValues($this->getRequest()->attributes->get('website')),
+                    'test_id' => $request->attributes->get('test_id'),
+                    'website' => $this->getUrlViewValues($request->attributes->get('website')),
                 ])
             );
         }
@@ -152,8 +156,8 @@ abstract class ViewController extends BaseViewController {
         $redirectParameters = json_encode(array(
             'route' => 'view_test_progress_index_index',
             'parameters' => array(
-                'website' => $this->getRequest()->attributes->get('website'),
-                'test_id' => $this->getRequest()->attributes->get('test_id')
+                'website' => $request->attributes->get('website'),
+                'test_id' => $request->attributes->get('test_id')
             )
         ));
 
