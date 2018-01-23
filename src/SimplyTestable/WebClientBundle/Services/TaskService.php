@@ -478,6 +478,16 @@ class TaskService extends CoreApplicationService
     }
 
     /**
+     * @param Task[] $tasks
+     */
+    public function setParsedOutputOnCollection($tasks)
+    {
+        foreach ($tasks as $task) {
+            $this->setParsedOutput($task);
+        }
+    }
+
+    /**
      * @param Task $task
      *
      * @return bool
