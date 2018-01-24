@@ -34,14 +34,4 @@ interface RequiresCompletedTest
      * @return Response
      */
     public function getRequestWebsiteMismatchResponse(Request $request);
-
-    /**
-     * @param Request $request
-     */
-    public function setRequest(Request $request);
-
-    /**
-     * @return Request
-     */
-    public function getRequest();
 }

@@ -35,8 +35,8 @@ abstract class ResultsController
     public function getFailedNoSitemapTestResponse(Request $request)
     {
         return new RedirectResponse($this->generateUrl('view_test_results_failednourlsdetected_index_index', array(
-            'website' => $this->getRequest()->attributes->get('website'),
-            'test_id' => $this->getRequest()->attributes->get('test_id')
+            'website' => $request->attributes->get('website'),
+            'test_id' => $request->attributes->get('test_id')
         ), true));
     }
 
@@ -46,8 +46,8 @@ abstract class ResultsController
     public function getRejectedTestResponse(Request $request)
     {
         return new RedirectResponse($this->generateUrl('view_test_results_rejected_index_index', array(
-            'website' => $this->getRequest()->attributes->get('website'),
-            'test_id' => $this->getRequest()->attributes->get('test_id')
+            'website' => $request->attributes->get('website'),
+            'test_id' => $request->attributes->get('test_id')
         ), true));
     }
 
@@ -57,8 +57,8 @@ abstract class ResultsController
     public function getNotFinishedTestResponse(Request $request)
     {
         return new RedirectResponse($this->generateUrl('view_test_progress_index_index', array(
-            'website' => $this->getRequest()->attributes->get('website'),
-            'test_id' => $this->getRequest()->attributes->get('test_id')
+            'website' => $request->attributes->get('website'),
+            'test_id' => $request->attributes->get('test_id')
         ), true));
     }
 
