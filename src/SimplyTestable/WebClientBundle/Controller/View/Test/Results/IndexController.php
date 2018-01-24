@@ -3,277 +3,368 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results;
 
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class IndexController extends ResultsController {
+class IndexController extends AbstractResultsController
+{
+    const FILTER_WITH_ERRORS = 'with-errors';
+    const FILTER_WITH_WARNINGS = 'with-warnings';
+    const FILTER_WITHOUT_ERRORS = 'without-errors';
+    const FILTER_ALL = 'all';
+    const FILTER_SKIPPED = 'skipped';
+    const FILTER_CANCELLED = 'cancelled';
 
-    private $filters = array(
-        'with-errors',
-        'with-warnings',
-        'without-errors',
-        'all',
-        'skipped',
-        'cancelled',
-    );
-
-    protected function modifyViewName($viewName) {
-        return str_replace(array(
-            ':Test',
-            'verbose.html.twig'
-        ), array(
-            ':bs3/Test',
-            'index.html.twig'
-        ), $viewName);
-    }
+    /**
+     * @var string[]
+     */
+    private $filters = [
+        self::FILTER_WITH_ERRORS,
+        self::FILTER_WITH_WARNINGS,
+        self::FILTER_WITHOUT_ERRORS,
+        self::FILTER_ALL,
+        self::FILTER_SKIPPED,
+        self::FILTER_CANCELLED,
+    ];
 
     /**
      * {@inheritdoc}
      */
     public function getRequestWebsiteMismatchResponse(Request $request)
     {
-        return new RedirectResponse($this->generateUrl('app_test_redirector', array(
-            'website' => $request->attributes->get('website'),
-            'test_id' => $request->attributes->get('test_id')
-        ), true));
+        $router = $this->container->get('router');
+
+        $redirectUrl = $router->generate(
+            'app_test_redirector',
+            [
+                'website' => $request->attributes->get('website'),
+                'test_id' => $request->attributes->get('test_id')
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return new RedirectResponse($redirectUrl);
     }
 
+    /**
+     * @param Request $request
+     * @param string $website
+     * @param int $test_id
+     *
+     * @return RedirectResponse|Response
+     *
+     * @throws WebResourceException
+     */
+    public function indexAction(Request $request, $website, $test_id)
+    {
+        $router = $this->container->get('router');
+        $testService = $this->container->get('simplytestable.services.testservice');
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
+        $taskService = $this->container->get('simplytestable.services.taskservice');
+        $taskCollectionFilterService = $this->container->get('simplytestable.services.taskcollectionfilterservice');
+        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
+        $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
+        $templating = $this->container->get('templating');
+        $testOptionsAdapterFactory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
 
-    public function indexAction($website, $test_id) {
-        if ($this->requiresPreparation()) {
-            return $this->getPreparationRedirectResponse();
+        $user = $userService->getUser();
+        $remoteTestService->setUser($user);
+
+        $test = $testService->get($website, $test_id);
+        $remoteTest = $remoteTestService->get();
+
+        $taskTypeService->setUser($user);
+        if (!$userService->isPublicUser($user)) {
+            $taskTypeService->setUserIsAuthenticated();
         }
 
-        if ($this->getRawRequestFilter() != $this->getRequestFilter()) {
-            return $this->redirect($this->generateUrl('view_test_results_index_index', array(
-                'website' => $website,
-                'test_id' => $test_id,
-                'filter' => $this->getDefaultRequestFilter()
-            ), true));
+        if ($this->requiresPreparation($remoteTest, $test)) {
+            $redirectUrl = $router->generate(
+                'view_test_results_preparing_index_index',
+                [
+                    'website' => $website,
+                    'test_id' => $test_id,
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            return new RedirectResponse($redirectUrl);
         }
 
-        $this->getTaskService()->getCollection($this->getTest());
-        $tasks = $this->getTaskService()->getCollection($this->getTest(), $this->getRemoteTaskIds());
+        $taskService->getCollection($test);
 
-        $this->getTestOptionsAdapter()->setRequestData($this->getRemoteTest()->getOptions());
+        $filter = trim($request->query->get('filter'));
+        $taskType = trim($request->query->get('type'));
+        $defaultFilter = $this->getDefaultRequestFilter($test);
 
-        $viewData = array(
-            'website' => $this->getUrlViewValues($website),
-            'test' => $this->getTest(),
-            'is_public' => $this->getTestService()->getRemoteTestService()->isPublic(),
-            'is_public_user_test' => $this->getTest()->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
-            'remote_test' => $this->getRemoteTest(),
-            'is_owner' => $this->getTestService()->getRemoteTestService()->owns($this->getTest()),
-            'type' => $this->getRequestType(),
-            'type_label' => $this->getTaskTypeLabel($this->getRequestType()),
-            'filter' => $this->getRequestFilter(),
-            'filter_label' => ucwords(str_replace('-', ' ', $this->getRequestFilter())),
+        $taskCollectionFilterService->setTest($test);
+        $taskCollectionFilterService->setTypeFilter($taskType);
+
+        $filteredTaskCounts = $this->createFilteredTaskCounts($taskCollectionFilterService);
+
+        if (!$this->isFilterValid($filter, $filteredTaskCounts)) {
+            $redirectUrl = $router->generate(
+                'view_test_results_index_index',
+                [
+                    'website' => $website,
+                    'test_id' => $test_id,
+                    'filter' => $defaultFilter
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            return new RedirectResponse($redirectUrl);
+        }
+
+        $response = $cacheValidatorService->createResponse($request, [
+            'website' => $website,
+            'test_id' => $test_id,
+            'is_public' => $remoteTest->getIsPublic(),
+            'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
+            'type' => $taskType,
+            'filter' => $filter,
+        ]);
+
+        if ($cacheValidatorService->isNotModified($response)) {
+            return $response;
+        }
+
+        $remoteTaskIds = $this->getRemoteTaskIds(
+            $taskCollectionFilterService,
+            $filter,
+            $taskType
+        );
+
+        $tasks = $taskService->getCollection($test, $remoteTaskIds);
+
+        $testOptionsAdapter = $testOptionsAdapterFactory->create();
+        $testOptionsAdapter->setRequestData($remoteTest->getOptions());
+        $testOptionsAdapter->setInvertInvertableOptions(true);
+
+        $viewData = [
+            'website' => $urlViewValuesService->create($website),
+            'test' => $test,
+            'is_public' => $remoteTest->getIsPublic(),
+            'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
+            'remote_test' => $remoteTest,
+            'is_owner' => $remoteTestService->owns(),
+            'type' => $taskType,
+            'type_label' => $this->getTaskTypeLabel($taskType),
+            'filter' => $filter,
+            'filter_label' => ucwords(str_replace('-', ' ', $filter)),
             'available_task_types' => $this->getAvailableTaskTypes(),
-            'task_types' => $this->getTaskTypeService()->get(),
-            'test_options' => $this->getTestOptionsAdapter()->getTestOptions()->__toKeyArray(),
-            'css_validation_ignore_common_cdns' => $this->getCssValidationCommonCdnsToIgnore(),
-            'js_static_analysis_ignore_common_cdns' => $this->getJsStaticAnalysisCommonCdnsToIgnore(),
+            'task_types' => $taskTypeService->get(),
+            'test_options' => $testOptionsAdapter->getTestOptions()->__toKeyArray(),
+            'css_validation_ignore_common_cdns' =>
+                $this->container->getParameter('css-validation-ignore-common-cdns'),
+            'js_static_analysis_ignore_common_cdns' =>
+                $this->container->getParameter('js-static-analysis-ignore-common-cdns'),
             'tasks' => $tasks,
-            'filtered_task_counts' => $this->getFilteredTaskCounts(),
-            'domain_test_count' => $this->getTestService()->getRemoteTestService()->getFinishedCount($this->getTest()->getWebsite()),
-            'default_css_validation_options' => array(
+            'filtered_task_counts' => $filteredTaskCounts,
+            'domain_test_count' => $remoteTestService->getFinishedCount($website),
+            'default_css_validation_options' => [
                 'ignore-warnings' => 1,
                 'vendor-extensions' => 'warn',
                 'ignore-common-cdns' => 1
-            ),
-            'default_js_static_analysis_options' => array(
+            ],
+            'default_js_static_analysis_options' => [
                 'ignore-common-cdns' => 1,
                 'jslint-option-maxerr' => 50,
                 'jslint-option-indent' => 4,
                 'jslint-option-maxlen' => 256
-            ),
+            ],
+        ];
+
+        $content = $templating->render(
+            'SimplyTestableWebClientBundle:bs3/Test/Results/Index:index.html.twig',
+            array_merge($this->getDefaultViewParameters(), $viewData)
         );
 
-        return $this->renderCacheableResponse($viewData);
+        $response->setContent($content);
+        $response->headers->set('content-type', 'text/html');
+
+        return $response;
     }
-
-    public function getCacheValidatorParameters() {
-        $test = $this->getTest();
-
-        return array(
-            'website' => $this->getRequest()->attributes->get('website'),
-            'test_id' => $this->getRequest()->attributes->get('test_id'),
-            'is_public' => $this->getTestService()->getRemoteTestService()->isPublic(),
-            'is_public_user_test' => $test->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
-            'type' => $this->getRequestType(),
-            'filter' => $this->getRequestFilter(),
-        );
-    }
-
 
     /**
-     * @return string|null
-     */
-    private function getRequestType() {
-        if (!$this->getRequest()->query->has('type')) {
-            return null;
-        }
-
-        $type = trim($this->getRequest()->query->get('type'));
-        return ($type == '') ? null : $type;
-    }
-
-
-    /**
-     * @return string
-     */
-    private function getRequestFilter() {
-        if (!$this->getRequest()->query->has('filter')) {
-            return $this->getDefaultRequestFilter();
-        }
-
-        $filter = trim($this->getRequest()->query->get('filter'));
-
-        if (!$this->isRelevantRequestFilter($filter)) {
-            return $this->getDefaultRequestFilter();
-        }
-
-        return $filter;
-    }
-
-
-    /**
-     * @return string|null
-     */
-    private function getRawRequestFilter() {
-        return $this->getRequest()->query->get('filter');
-    }
-
-
-    /**
-     * @param $filter
+     * @param string $filter
+     * @param array $filteredTaskCounts
+     *
      * @return bool
      */
-    private function isRelevantRequestFilter($filter) {
+    private function isFilterValid($filter, array $filteredTaskCounts)
+    {
         if (!in_array($filter, $this->filters)) {
             return false;
         }
 
         $modifiedFilter = str_replace('-', '_', $filter);
 
-        if (!array_key_exists($modifiedFilter, $this->getFilteredTaskCounts())) {
-            return false;
-        }
-
-        return $this->getFilteredTaskCounts()[$modifiedFilter] > 0;
+        return $filteredTaskCounts[$modifiedFilter] > 0;
     }
 
 
     /**
+     * @param Test $test
+     *
      * @return string
      */
-    private function getDefaultRequestFilter() {
-        if ($this->getTest()->hasErrors()) {
+    private function getDefaultRequestFilter(Test $test)
+    {
+        if ($test->hasErrors()) {
             return 'with-errors';
         }
 
-        if ($this->getTest()->hasWarnings()) {
+        if ($test->hasWarnings()) {
             return 'with-warnings';
         }
 
         return 'without-errors';
     }
 
-
     /**
+     * @param $taskType
      *
-     * @return array
+     * @return string
      */
-    private function getCssValidationCommonCdnsToIgnore() {
-        if (!$this->container->hasParameter('css-validation-ignore-common-cdns')) {
-            return array();
-        }
-
-        return $this->container->getParameter('css-validation-ignore-common-cdns');
-    }
-
-
-    /**
-     *
-     * @return array
-     */
-    private function getJsStaticAnalysisCommonCdnsToIgnore() {
-        if (!$this->container->hasParameter('js-static-analysis-ignore-common-cdns')) {
-            return array();
-        }
-
-        return $this->container->getParameter('js-static-analysis-ignore-common-cdns');
-    }
-
-
-    private function getTaskTypeLabel($taskTypeFilter) {
-        if (is_null($taskTypeFilter)) {
+    private function getTaskTypeLabel($taskType)
+    {
+        if (empty($taskType)) {
             return 'All';
         }
 
         $taskTypeLabel = str_replace(
-            array('css', 'html', 'js', 'link'),
-            array('CSS', 'HTML', 'JS', 'Link'),
-            $taskTypeFilter
+            ['css', 'html', 'js', 'link'],
+            ['CSS', 'HTML', 'JS', 'Link'],
+            $taskType
         );
 
         return $taskTypeLabel;
     }
 
-
     /**
-     * @return string
+     * @param TaskCollectionFilterService $taskCollectionFilterService
+     *
+     * @return array
      */
-    private function getNormalisedRequestType() {
-        $type = $this->getRequestType();
+    private function createFilteredTaskCounts(TaskCollectionFilterService $taskCollectionFilterService)
+    {
+        $filteredTaskCounts = [];
 
-        if ($type == 'javascript static analysis') {
-            $type = 'js static analysis';
+        $taskCollectionFilterService->setOutcomeFilter(null);
+        $filteredTaskCounts['all'] = $taskCollectionFilterService->getRemoteIdCount();
+
+        $filters = [
+            self::FILTER_WITH_ERRORS,
+            self::FILTER_WITH_WARNINGS,
+            self::FILTER_WITHOUT_ERRORS,
+            self::FILTER_SKIPPED,
+            self::FILTER_CANCELLED,
+        ];
+
+        foreach ($filters as $filter) {
+            $taskCollectionFilterService->setOutcomeFilter($filter);
+
+            $filteredTaskCountKey = str_replace('-', '_', $filter);
+            $filteredTaskCounts[$filteredTaskCountKey] = $taskCollectionFilterService->getRemoteIdCount();
         }
-
-        return $type;
-    }
-
-
-    private function getFilteredTaskCounts() {
-        $this->getTaskCollectionFilterService()->setTypeFilter($this->getNormalisedRequestType());
-
-        $filteredTaskCounts = array();
-
-        $this->getTaskCollectionFilterService()->setOutcomeFilter(null);
-        $filteredTaskCounts['all'] = $this->getTaskCollectionFilterService()->getRemoteIdCount();
-
-        $filteredTaskCounts['with_errors'] = $this->getFilteredTaskCount('with-errors');
-        $filteredTaskCounts['with_warnings'] = $this->getFilteredTaskCount('with-warnings');
-        $filteredTaskCounts['without_errors'] = $this->getFilteredTaskCount('without-errors');
-        $filteredTaskCounts['skipped'] = $this->getFilteredTaskCount('skipped');
-        $filteredTaskCounts['cancelled'] = $this->getFilteredTaskCount('cancelled');
 
         return $filteredTaskCounts;
     }
 
-
-    private function getFilteredTaskCount($outcomeFilter) {
-        $this->getTaskCollectionFilterService()->setTypeFilter($this->getNormalisedRequestType());
-        $this->getTaskCollectionFilterService()->setOutcomeFilter($outcomeFilter);
-
-        return $this->getTaskCollectionFilterService()->getRemoteIdCount();
-    }
-
-
     /**
+     * @param TaskCollectionFilterService $taskCollectionFilterService
+     * @param string $filter
+     * @param string $taskType
+     *
      * @return int[]|null
      */
-    private function getRemoteTaskIds() {
-        if ($this->getRequestFilter() == 'all' && is_null($this->getRequestType())) {
+    private function getRemoteTaskIds(TaskCollectionFilterService $taskCollectionFilterService, $filter, $taskType)
+    {
+        if ($filter == 'all' && empty($taskType)) {
             return null;
         }
 
-        return $this->getFilteredTaskCollectionRemoteIds(
-            $this->getRequestFilter(),
-            $this->getRequestType()
-        );
+        $taskCollectionFilterService->setOutcomeFilter($filter);
+        $taskCollectionFilterService->setTypeFilter($taskType);
+
+        return $taskCollectionFilterService->getRemoteIds();
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return RedirectResponse|Response
+     */
+    public function getInvalidOwnerResponse(Request $request)
+    {
+        $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $session = $this->container->get('session');
+        $router = $this->container->get('router');
+
+        if ($userService->isLoggedIn()) {
+            return $this->render(
+                'SimplyTestableWebClientBundle:bs3/Test/Results:not-authorised.html.twig',
+                array_merge($this->getDefaultViewParameters(), [
+                    'test_id' => $request->attributes->get('test_id'),
+                    'website' => $urlViewValuesService->create($request->attributes->get('website')),
+                ])
+            );
+        }
+
+        $redirectParameters = json_encode([
+            'route' => 'view_test_progress_index_index',
+            'parameters' => [
+                'website' => $request->attributes->get('website'),
+                'test_id' => $request->attributes->get('test_id')
+            ]
+        ]);
+
+        $session->getFlashBag()->set('user_signin_error', 'test-not-logged-in');
+
+        $redirectUrl = $router->generate(
+            'view_user_signin_index',
+            [
+                'redirect' => base64_encode($redirectParameters)
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return new RedirectResponse($redirectUrl);
+    }
+
+    /**
+     * @return array
+     *
+     * @throws WebResourceException
+     */
+    private function getAvailableTaskTypes()
+    {
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
+
+        $remoteTest = $remoteTestService->get();
+
+        if ($remoteTest->getIsPublic() && !$remoteTestService->owns()) {
+            $availableTaskTypes = $taskTypeService->get();
+            $remoteTestTaskTypes = $remoteTest->getTaskTypes();
+
+            foreach ($availableTaskTypes as $taskTypeKey => $taskTypeDetails) {
+                if (!in_array($taskTypeDetails['name'], $remoteTestTaskTypes)) {
+                    unset($availableTaskTypes[$taskTypeKey]);
+                }
+            }
+
+            return $availableTaskTypes;
+        }
+
+        return $taskTypeService->getAvailable();
+    }
 }
