@@ -2,19 +2,20 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Progress;
 
-use SimplyTestable\WebClientBundle\Controller\View\Test\CacheableViewController;
+use SimplyTestable\WebClientBundle\Controller\View\Test\ViewController;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner
+class IndexController extends ViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner
 {
     const RESULTS_PREPARATION_THRESHOLD = 100;
 
@@ -44,12 +45,13 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         $testService = $this->container->get('simplytestable.services.testservice');
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
         $userService = $this->container->get('simplytestable.services.userservice');
-        $cacheableResponseService = $this->container->get('simplytestable.services.cacheableresponseservice');
         $router = $this->container->get('router');
         $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
         $serializer = $this->container->get('serializer');
         $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
         $testOptionsAdapterFactory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
+        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
+        $templating = $this->container->get('templating');
 
         $user = $userService->getUser();
         $remoteTestService->setUser($user);
@@ -69,7 +71,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
                 UrlGeneratorInterface::ABSOLUTE_URL
             );
 
-            return $this->issueRedirect($redirectUrl, $request);
+            return $this->issueRedirect($request, $redirectUrl);
         }
 
         if ($testService->isFinished($test)) {
@@ -83,7 +85,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
                     UrlGeneratorInterface::ABSOLUTE_URL
                 );
 
-                return $this->issueRedirect($redirectUrl, $request);
+                return $this->issueRedirect($request, $redirectUrl);
             }
 
             $redirectUrl = $router->generate(
@@ -95,7 +97,22 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
                 UrlGeneratorInterface::ABSOLUTE_URL
             );
 
-            return $this->issueRedirect($redirectUrl, $request);
+            return $this->issueRedirect($request, $redirectUrl);
+        }
+
+        $requestTimeStamp = $request->query->get('timestamp');
+
+        $response = $cacheValidatorService->createResponse($request, [
+            'website' => $website,
+            'test_id' => $test_id,
+            'is_public' => $remoteTest->getIsPublic(),
+            'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
+            'timestamp' => empty($requestTimeStamp) ? '' : $requestTimeStamp,
+            'state' => $test->getState()
+        ]);
+
+        if ($cacheValidatorService->isNotModified($response)) {
+            return $response;
         }
 
         $taskTypeService->setUser($user);
@@ -121,7 +138,7 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
                 'this_url' => $this->getProgressUrl($testWebsite, $test_id),
             ]);
 
-            $response = new Response($serializer->serialize($viewData, 'json'));
+            $response->setContent($serializer->serialize($viewData, 'json'));
             $response->headers->set('content-type', 'application/json');
         } else {
             $viewData = array_merge($commonViewData, [
@@ -150,46 +167,17 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
                 ),
             ]);
 
-            $response = parent::render(
+            $content = $templating->render(
                 'SimplyTestableWebClientBundle:bs3/Test/Progress/Index:index.html.twig',
                 array_merge($this->getDefaultViewParameters(), $viewData)
             );
+
+            $response->setContent($content);
+            $response->headers->set('content-type', 'text/html');
         }
 
-        return $cacheableResponseService->getCachableResponse($request, $response);
+        return $response;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCacheValidatorParameters()
-    {
-        $testService = $this->container->get('simplytestable.services.testservice');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
-
-        $user = $userService->getUser();
-        $remoteTestService->setUser($user);
-
-        $request = $this->getRequest();
-        $requestAttributes = $request->attributes;
-
-        $website = $requestAttributes->get('website');
-        $testId = $requestAttributes->get('test_id');
-
-        $test = $testService->get($website, $testId);
-        $remoteTest = $remoteTestService->get();
-
-        return [
-            'website' => $website,
-            'test_id' => $testId,
-            'is_public' => $remoteTest->getIsPublic(),
-            'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
-            'timestamp' => ($request->query->has('timestamp')) ? $request->query->get('timestamp') : '',
-            'state' => $test->getState()
-        ];
-    }
-
 
     /**
      * @param Test $test
@@ -225,5 +213,27 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         }
 
         return $label;
+    }
+
+    /**
+     * @param Request $request
+     * @param string $locationValue
+     *
+     * @return RedirectResponse|JsonResponse
+     */
+    private function issueRedirect(Request $request, $locationValue)
+    {
+        $requestHeaders = $request->headers;
+        $requestedWithHeaderName = 'X-Requested-With';
+
+        $isXmlHttpRequest = $requestHeaders->get($requestedWithHeaderName) == 'XMLHttpRequest';
+
+        if ($isXmlHttpRequest) {
+            return new JsonResponse([
+                'this_url' => $locationValue
+            ]);
+        }
+
+        return $this->redirect($locationValue, 302, $request);
     }
 }
