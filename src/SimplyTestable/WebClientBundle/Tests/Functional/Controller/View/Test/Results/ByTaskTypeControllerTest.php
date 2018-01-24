@@ -622,7 +622,7 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
                                     'task_type' => Task::TYPE_HTML_VALIDATION,
                                     'is_owner' => true,
                                     'is_public_user_test' => true,
-                                    'taskIds' => [3, 1],
+                                    'taskIds' => [1, 3],
                                 ],
                                 $parameters
                             );
@@ -731,6 +731,8 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
             /* @var Task $task */
             $taskIds[] = $task->getTaskId();
         }
+
+        sort($taskIds);
 
         $this->assertEquals($expectedParameterData['taskIds'], $taskIds);
     }

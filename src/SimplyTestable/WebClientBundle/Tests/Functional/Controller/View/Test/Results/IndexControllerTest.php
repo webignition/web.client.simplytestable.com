@@ -871,6 +871,8 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
             $taskIds[] = $task->getTaskId();
         }
 
+        sort($taskIds);
+
         $this->assertEquals($expectedParameterData['taskIds'], $taskIds);
     }
 
