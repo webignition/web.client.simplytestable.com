@@ -275,7 +275,7 @@ class TaskRepository extends EntityRepository
             $queryBuilder->setParameter('States', $excludeStates);
         }
 
-        if (!is_null($taskType)) {
+        if (!empty($taskType)) {
             $queryBuilder->andWhere('Task.type = :TaskType');
             $queryBuilder->setParameter('TaskType', $taskType);
         }
