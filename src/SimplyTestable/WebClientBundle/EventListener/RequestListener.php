@@ -159,8 +159,6 @@ class RequestListener
             /* @var RequiresCompletedTestController $controller */
             $controller = $this->createController();
 
-            $controller->setRequest($this->event->getRequest());
-
             /* @var Test $test */
             $test = $testService->get($website, $testId);
 
