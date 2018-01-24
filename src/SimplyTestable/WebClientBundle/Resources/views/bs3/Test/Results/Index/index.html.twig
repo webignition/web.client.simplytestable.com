@@ -195,7 +195,7 @@
                         {% endif %}
                     </h2>
 
-                    {% if (type is not null) %}
+                    {% if (type is not empty) %}
                         <a class="clear-type badge" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': filter }) }}">
                             clear &ldquo;{{ type|replace({'html': 'HTML', 'css': 'CSS', 'js': 'JS'}) }}&rdquo; filter
                             <i class="fa fa-times"></i>
