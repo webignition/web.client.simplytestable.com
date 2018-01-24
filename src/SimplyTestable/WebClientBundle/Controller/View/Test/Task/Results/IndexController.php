@@ -2,168 +2,220 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Task\Results;
 
-use SimplyTestable\WebClientBundle\Controller\View\Test\CacheableViewController;
+use SimplyTestable\WebClientBundle\Controller\View\Test\ViewController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
+use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
+use SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage;
+use SimplyTestable\WebClientBundle\Model\TaskOutput\LinkIntegrityMessage;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use webignition\HtmlValidationErrorLinkifier\HtmlValidationErrorLinkifier;
+use webignition\HtmlValidationErrorNormaliser\HtmlValidationErrorNormaliser;
+use webignition\HtmlValidationErrorNormaliser\Result as HtmlValidationErrorNormalisationResult;
 
-class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner {
+class IndexController extends ViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner
+{
+    const DOCUMENTATION_SITEMAP_RESOURCE_PATH =
+        '@SimplyTestableWebClientBundle/Resources/config/documentation_sitemap.xml';
 
-    protected function modifyViewName($viewName) {
-        return str_replace(array(
-            ':Test',
-            'verbose.html.twig'
-        ), array(
-            ':bs3/Test',
-            'index.html.twig'
-        ), $viewName);
-    }
+    /**
+     * @param Request $request
+     * @param string $website
+     * @param int $test_id
+     * @param int $task_id
+     *
+     * @return Response
+     *
+     * @throws WebResourceException
+     */
+    public function indexAction(Request $request, $website, $test_id, $task_id)
+    {
+        $router = $this->container->get('router');
+        $testService = $this->container->get('simplytestable.services.testservice');
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
+        $taskService = $this->container->get('simplytestable.services.taskservice');
+        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
+        $templating = $this->container->get('templating');
 
+        $user = $userService->getUser();
+        $remoteTestService->setUser($user);
 
-    public function getCacheValidatorParameters() {
-        $test = $this->getTestService()->get(
-            $this->getRequest()->attributes->get('website'),
-            $this->getRequest()->attributes->get('test_id')
-        );
+        $test = $testService->get($website, $test_id);
+        $isOwner = $remoteTestService->owns();
 
-        return array(
-            'website' => $this->getRequest()->attributes->get('website'),
-            'test_id' => $this->getRequest()->attributes->get('test_id'),
-            'task_id' => $this->getRequest()->attributes->get('task_id'),
-            'is_public_user_test' => $test->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
-        );
-    }
-    
-    
-    public function indexAction($website, $test_id, $task_id) {
-        $isOwner = $this->getTestService()->getRemoteTestService()->owns();
+        $task = $taskService->get($test, $task_id);
 
-        $test = $this->getTestService()->get($website, $test_id);
-        $task = $this->getTaskService()->get($test, $task_id);
+        if (empty($task)) {
+            $redirectUrl = $router->generate(
+                'app_test_redirector',
+                [
+                    'website' => $website,
+                    'test_id' => $test_id
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
 
-        if (is_null($task)) {
-            return $this->redirect($this->generateUrl('app_test_redirector', array(
-                'website' => $website,
-                'test_id' => $test_id
-            )));
+            return new RedirectResponse($redirectUrl);
         }
 
-        if (!$this->hasErrorsOrWarnings($task) || $this->getTaskService()->isIncomplete($task)) {
-            return $this->redirect($this->generateUrl('app_test_redirector', array(
-                'website' => $website,
-                'test_id' => $test_id
-            )));
+        $taskOutput = $task->getOutput();
+        $taskHasErrorsOrWarnings = $taskOutput->getErrorCount() > 0 || $taskOutput->getWarningCount() > 0;
+
+        if (!$taskHasErrorsOrWarnings || $taskService->isIncomplete($task)) {
+            $redirectUrl = $router->generate(
+                'app_test_redirector',
+                [
+                    'website' => $website,
+                    'test_id' => $test_id
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            return new RedirectResponse($redirectUrl);
+        }
+
+        $response = $cacheValidatorService->createResponse($request, [
+            'website' => $website,
+            'test_id' => $test_id,
+            'task_id' => $task_id,
+            'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
+        ]);
+
+        if ($cacheValidatorService->isNotModified($response)) {
+            return $response;
         }
 
         $viewData = array(
-            'website_url' => $this->getUrlViewValues($test->getWebsite()),
+            'website_url' => $urlViewValuesService->create($website),
             'test' => $test,
             'task' => $task,
-            'task_url' => $this->getUrlViewValues($task->getUrl()),
+            'task_url' => $urlViewValuesService->create($task->getUrl()),
             'is_owner' => $isOwner,
             'is_public_user_test' => $test->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
         );
 
-        if ($task->getType() == 'HTML validation') {
+        if (Task::TYPE_HTML_VALIDATION === $task->getType()) {
             $documentationUrls = $this->getHtmlValidationErrorDocumentationUrls($task);
-            $fixes = $this->getErrorFixes($task, $documentationUrls);
+            $fixes = $this->getHtmlValidationErrorFixes($task, $documentationUrls);
 
             $viewData['documentation_urls'] = $documentationUrls;
             $viewData['fixes'] = $fixes;
-            $viewData['distinct_fixes'] = $this->getDistinctFixes($fixes);
+            $viewData['distinct_fixes'] = $this->getDistinctHtmlValidationErrorFixes($fixes);
         }
 
-        if ($task->getType() == 'CSS validation') {
-            $viewData['errors_by_ref'] = $this->getCssValidationIssuesGroupedByRef($task, $task->getOutput()->getResult()->getErrors());
-            $viewData['warnings_by_ref'] = $this->getCssValidationIssuesGroupedByRef($task, $task->getOutput()->getResult()->getWarnings());
+        if (Task::TYPE_CSS_VALIDATION === $task->getType()) {
+            $taskOutputResult = $taskOutput->getResult();
+
+            /* @var CssTextFileMessage[] $errors */
+            $errors = $taskOutputResult->getErrors();
+
+            /* @var CssTextFileMessage[] $warnings */
+            $warnings = $taskOutputResult->getWarnings();
+
+            $viewData['errors_by_ref'] = $this->getCssValidationIssuesGroupedByRef($errors);
+            $viewData['warnings_by_ref'] = $this->getCssValidationIssuesGroupedByRef($warnings);
         }
 
-        if ($task->getType() == 'JS static analysis') {
+        if (Task::TYPE_JS_STATIC_ANALYSIS === $task->getType()) {
             $viewData['errors_by_js_context'] = $this->getJsStaticAnalysisErrorsGroupedByContext($task);
         }
 
-        if ($task->getType() == 'Link integrity') {
+        if (Task::TYPE_LINK_INTEGRITY === $task->getType()) {
             $viewData['errors_by_link_state'] = $this->getLinkIntegrityErrorsGroupedByLinkState($task);
-            $viewData['link_class_labels'] = array(
+            $viewData['link_class_labels'] = [
                 'curl' => 'Network-Level (curl)',
                 'http' => 'HTTP'
-            );
-            $viewData['link_state_descriptions'] = array(
-                'curl' => array(
-                    3 => array(
+            ];
+            $viewData['link_state_descriptions'] = [
+                'curl' => [
+                    3 => [
                         'The URL was not properly formatted',
                         'These URLs (or ones these redirect to) are not formed correctly.'
-                    ),
-                    6 => array(
+                    ],
+                    6 => [
                         'Couldn\'t resolve host',
                         'Are the domain names in the given links still valid and working?'
-                    ),
-                    7 => array(
+                    ],
+                    7 => [
                         'Failed to connect() to host or proxy',
                         'This could be temporary issue.'
-                    ),
-                    35 => array(
+                    ],
+                    35 => [
                         'A problem occurred somewhere in the SSL/TLS handshake'
-                    ),
-                    52 => array(
+                    ],
+                    52 => [
                         'Nothing was returned from the server',
                         'Under the circumstances, getting nothing is considered an error.'
-                    ),
-                    56 => array(
+                    ],
+                    56 => [
                         'Failure with receiving network data.',
                         'Whatever lives at the given domains isn\'t talking back.'
-                    ),
-                    60 => array(
+                    ],
+                    60 => [
                         'Peer certificate cannot be authenticated with known CA certificates',
                         'There is a problem with the SSL certificates these domains are using.'
-                    )
-                ),
-                'http' => array(
-                    302 => array(
+                    ]
+                ],
+                'http' => [
+                    302 => [
                         'Too many redirects',
-                    ),
-                    403 => array(
+                    ],
+                    403 => [
                         "Access denied",
                         "Are these a password-protected pages?"
-                    ),
-                    404 => array(
+                    ],
+                    404 => [
                         "Not found",
                         "These resources appear to no longer exist at the given URLs."
-                    ),
-                    410 => array(
+                    ],
+                    410 => [
                         "Gone",
                         "These resources are no longer at the given URLs."
-                    ),
-                    500 => array(
+                    ],
+                    500 => [
                         "Internal server error",
                         "The application serving the given content failed."
-                    ),
-                    503 => array(
+                    ],
+                    503 => [
                         "Service Unavailable",
                         "The application serving the content is not available right now."
-                    )
-                )
-            );
+                    ]
+                ]
+            ];
         }
 
-        return $this->renderCacheableResponse($viewData);
-    }
+        $content = $templating->render(
+            'SimplyTestableWebClientBundle:bs3/Test/Task/Results/Index:index.html.twig',
+            array_merge($this->getDefaultViewParameters(), $viewData)
+        );
 
+        $response->setContent($content);
+        $response->headers->set('content-type', 'text/html');
+
+        return $response;
+    }
 
     /**
      * @param Task $task
-     * @return bool
+     *
+     * @return array
      */
-    private function hasErrorsOrWarnings(Task $task) {
-        return $task->getOutput()->getErrorCount() > 0 || $task->getOutput()->getWarningCount() > 0;
-    }
+    private function getHtmlValidationErrorDocumentationUrls(Task $task)
+    {
+        $documentationUrlChecker = $this->container->get('simplytestable.services.documentationurlcheckerservice');
+        $kernel = $this->container->get('kernel');
 
+        $documentationUrls = [];
 
-    private function getHtmlValidationErrorDocumentationUrls(Task $task) {
-        $documentationUrls = array();
-
-        if ($task->getOutput()->getErrorCount() === 0) {
+        if (0 === $task->getOutput()->getErrorCount()) {
             return $documentationUrls;
         }
 
@@ -175,70 +227,75 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
 
         $errors = $task->getOutput()->getResult()->getErrors();
 
-        $normaliser = new \webignition\HtmlValidationErrorNormaliser\HtmlValidationErrorNormaliser();
-        $linkifier = new \webignition\HtmlValidationErrorLinkifier\HtmlValidationErrorLinkifier();
+        $normaliser = new HtmlValidationErrorNormaliser();
+        $linkifier = new HtmlValidationErrorLinkifier();
 
-        $this->getDocumentationUrlCheckerService()->setDocumentationSitemapPath($this->container->get('kernel')->locateResource('@SimplyTestableWebClientBundle/Resources/config/documentation_sitemap.xml'));
+        $sitemapPath = $kernel->locateResource(self::DOCUMENTATION_SITEMAP_RESOURCE_PATH);
+
+        $documentationUrlChecker->setDocumentationSitemapPath($sitemapPath);
         foreach ($errors as $error) {
+            /* @var HtmlValidationErrorNormalisationResult $normalisationResult */
             $normalisationResult = $normaliser->normalise($error->getMessage());
 
             if ($normalisationResult->isNormalised()) {
-                $parameterisedUrl = $baseUrl . $linkifier->linkify($normalisationResult->getNormalisedError()->getNormalForm()) . '/' . $linkifier->linkify($normalisationResult->getNormalisedError()->getNormalForm(), $normalisationResult->getNormalisedError()->getParameters()) . '/';
+                $normalisedError = $normalisationResult->getNormalisedError();
+                $normalForm = $normalisedError->getNormalForm();
 
-                if ($this->getDocumentationUrlCheckerService()->exists($parameterisedUrl)) {
-                    $documentationUrls[] = array(
+                $parameterisedUrl = sprintf(
+                    '%s%s/%s/',
+                    $baseUrl,
+                    $linkifier->linkify($normalForm),
+                    $linkifier->linkify($normalForm, $normalisedError->getParameters())
+                );
+
+                if ($documentationUrlChecker->exists($parameterisedUrl)) {
+                    $documentationUrls[] = [
                         'url' => $parameterisedUrl,
                         'exists' => true
-                    );
+                    ];
                 } else {
-                    $url = $baseUrl . $linkifier->linkify($normalisationResult->getNormalisedError()->getNormalForm()) . '/';
-                    $documentationUrls[] = array(
+                    $url = $baseUrl . $linkifier->linkify($normalForm) . '/';
+                    $documentationUrls[] = [
                         'url' => $url,
-                        'exists' => $this->getDocumentationUrlCheckerService()->exists($url)
-                    );
+                        'exists' => $documentationUrlChecker->exists($url)
+                    ];
                 }
             } else {
                 $url = $baseUrl . $linkifier->linkify($normalisationResult->getRawError()) . '/';
-                $documentationUrls[] = array(
+                $documentationUrls[] = [
                     'url' => $url,
-                    'exists' => $this->getDocumentationUrlCheckerService()->exists($url)
-                );
+                    'exists' => $documentationUrlChecker->exists($url)
+                ];
             }
         }
 
         return $documentationUrls;
     }
 
-
     /**
+     * @param Task $task
+     * @param array $documentationUrls
      *
-     * @return \SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService
+     * @return array
      */
-    private function getDocumentationUrlCheckerService() {
-        return $this->container->get('simplytestable.services.documentationurlcheckerservice');
-    }
+    private function getHtmlValidationErrorFixes(Task $task, $documentationUrls)
+    {
+        $taskOutput = $task->getOutput();
 
+        $fixes = [];
 
-
-    private function getErrorFixes(Task $task, $documentationUrls) {
-        $fixes = array();
-
-        if ($task->getOutput()->getErrorCount() === 0) {
+        if (0 === $taskOutput->getErrorCount()) {
             return $fixes;
         }
 
-        if ($task->getType() != 'HTML validation') {
-            return $fixes;
-        }
-
-        $errors = $task->getOutput()->getResult()->getErrors();
+        $errors = $taskOutput->getResult()->getErrors();
 
         foreach ($errors as $errorIndex => $error) {
             if (isset($documentationUrls[$errorIndex]) && $documentationUrls[$errorIndex]['exists'] === true) {
-                $fixes[] = array(
+                $fixes[] = [
                     'error' => ucfirst($error),
                     'documentation_url' => $documentationUrls[$errorIndex]['url']
-                );
+                ];
             }
         }
 
@@ -246,10 +303,15 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
     }
 
 
-
-    private function getDistinctFixes($fixes) {
-        $distinctUrls = array();
-        $distinctFixes = array();
+    /**
+     * @param array $fixes
+     *
+     * @return array
+     */
+    private function getDistinctHtmlValidationErrorFixes($fixes)
+    {
+        $distinctUrls = [];
+        $distinctFixes = [];
 
         foreach ($fixes as $fix) {
             if (!in_array($fix['documentation_url'], $distinctUrls)) {
@@ -261,19 +323,18 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         return $distinctFixes;
     }
 
-
-
-    private function getCssValidationIssuesGroupedByRef(Task $task, $issues) {
-        if ($task->getType() != 'CSS validation') {
-            return array();
-        }
-
-        $groupedByRef = array();
+    /**
+     * @param CssTextFileMessage[] $issues
+     *
+     * @return array
+     */
+    private function getCssValidationIssuesGroupedByRef($issues)
+    {
+        $groupedByRef = [];
 
         foreach ($issues as $issue) {
-            /* @var $error \SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage */
             if (!isset($groupedByRef[$issue->getRef()])) {
-                $groupedByRef[$issue->getRef()] = array();
+                $groupedByRef[$issue->getRef()] = [];
             }
 
             $groupedByRef[$issue->getRef()][] = $issue;
@@ -289,21 +350,23 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         return $groupedByRef;
     }
 
+    /**
+     * @param Task $task
+     *
+     * @return array
+     */
+    private function getJsStaticAnalysisErrorsGroupedByContext(Task $task)
+    {
+        $errorsGroupedByContext = [];
 
-    private function getJsStaticAnalysisErrorsGroupedByContext(Task $task) {
-        if ($task->getType() != 'JS static analysis') {
-            return array();
-        }
-
-        $errorsGroupedByContext = array();
+        /* @var JsTextFileMessage[] $errors */
         $errors = $task->getOutput()->getResult()->getErrors();
 
         foreach ($errors as $error) {
             $context = rawurldecode($error->getContext());
 
-            /* @var $error \SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage */
             if (!isset($errorsGroupedByContext[$context])) {
-                $errorsGroupedByContext[$context] = array();
+                $errorsGroupedByContext[$context] = [];
             }
 
             $errorsGroupedByContext[$context][] = $error;
@@ -312,25 +375,31 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         return $errorsGroupedByContext;
     }
 
-    private function getLinkIntegrityErrorsGroupedByLinkState(Task $task) {
-        if ($task->getType() != 'Link integrity') {
-            return array();
-        }
+    /**
+     * @param Task $task
+     *
+     * @return array
+     */
+    private function getLinkIntegrityErrorsGroupedByLinkState(Task $task)
+    {
+        $errorsGroupedByLinkState = [];
 
-        $errorsGroupedByLinkState = array();
+        /* @var LinkIntegrityMessage[] $errors */
         $errors = $task->getOutput()->getResult()->getErrors();
 
         foreach ($errors as $error) {
-            /* @var $error \SimplyTestable\WebClientBundle\Model\TaskOutput\LinkIntegrityMessage */
-            if (!isset($errorsGroupedByLinkState[$error->getClass()])) {
-                $errorsGroupedByLinkState[$error->getClass()] = array();
+            $class = $error->getClass();
+            $state = $error->getState();
+
+            if (!isset($errorsGroupedByLinkState[$class])) {
+                $errorsGroupedByLinkState[$class] = [];
             }
 
-            if (!isset($errorsGroupedByLinkState[$error->getClass()][$error->getState()])) {
-                $errorsGroupedByLinkState[$error->getClass()][$error->getState()] = array();
+            if (!isset($errorsGroupedByLinkState[$class][$state])) {
+                $errorsGroupedByLinkState[$class][$state] = [];
             }
 
-            $errorsGroupedByLinkState[$error->getClass()][$error->getState()][] = $error;
+            $errorsGroupedByLinkState[$class][$state][] = $error;
         }
 
         return $errorsGroupedByLinkState;
