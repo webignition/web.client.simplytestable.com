@@ -55,11 +55,15 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
         $this->indexController = new IndexController();
     }
 
-    public function testIndexActionInvalidUserGetRequest()
+    /**
+     * @dataProvider indexActionInvalidGetRequestDataProvider
+     *
+     * @param array $httpFixtures
+     * @param string $expectedRedirectUrl
+     */
+    public function testIndexActionInvalidGetRequest(array $httpFixtures, $expectedRedirectUrl)
     {
-        $this->setHttpFixtures([
-            HttpResponseFactory::create(404),
-        ]);
+        $this->setHttpFixtures($httpFixtures);
 
         $router = $this->container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
@@ -74,35 +78,34 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
 
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
-
-        $this->assertTrue($response->isRedirect('http://localhost/signout/'));
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
     }
 
-    public function testIndexActionInvalidOwnerGetRequest()
+    /**
+     * @return array
+     */
+    public function indexActionInvalidGetRequestDataProvider()
     {
-        $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
-            HttpResponseFactory::createForbiddenResponse(),
-        ]);
-
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
-        $this->client->request(
-            'GET',
-            $requestUrl
-        );
-
-        /* @var RedirectResponse $response */
-        $response = $this->client->getResponse();
-
-        $this->assertRegExp(
-            '/http:\/\/localhost\/signin\/\?redirect=.+/',
-            $response->getTargetUrl()
-        );
+        return [
+            'invalid user' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::create(404),
+                ],
+                'expectedRedirectUrl' => 'http://localhost/signout/',
+            ],
+            'invalid owner, not logged in' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::create(200),
+                    HttpResponseFactory::createForbiddenResponse(),
+                ],
+                'expectedRedirectUrl' => sprintf(
+                    'http://localhost/signin/?redirect=%s%s',
+                    'eyJyb3V0ZSI6InZpZXdfdGVzdF9wcm9ncmVzc19pbmRleF9pbmRleCIsInBhcmFtZXRlcnMiOnsid2Vic2l0ZSI6I',
+                    'mh0dHA6XC9cL2V4YW1wbGUuY29tXC8iLCJ0ZXN0X2lkIjoiMSJ9fQ%3D%3D'
+                ),
+            ],
+        ];
     }
 
     public function testIndexActionPublicUserGetRequest()
@@ -117,7 +120,6 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
         ]);
-
 
         $this->client->request(
             'GET',
@@ -290,7 +292,7 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
     }
 
     /**
-     * @dataProvider indexActionTextHtmlResponseDataProvider
+     * @dataProvider indexActionRenderTextHtmlDataProvider
      *
      * @param array $httpFixtures
      * @param User $user
@@ -298,7 +300,7 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
      *
      * @throws WebResourceException
      */
-    public function testIndexActionTextHtmlResponse(
+    public function testIndexActionRenderTextHtml(
         array $httpFixtures,
         User $user,
         EngineInterface $templatingEngine
@@ -318,7 +320,7 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                 'simplytestable.services.testservice',
                 'simplytestable.services.remotetestservice',
                 'simplytestable.services.userservice',
-                'simplytestable.services.cacheableresponseservice',
+                'simplytestable.services.cachevalidator',
                 'simplytestable.services.urlviewvalues',
                 'serializer',
                 'simplytestable.services.tasktypeservice',
@@ -344,7 +346,7 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
     /**
      * @return array
      */
-    public function indexActionTextHtmlResponseDataProvider()
+    public function indexActionRenderTextHtmlDataProvider()
     {
         return [
             'public user, in-progress, 79% done' => [
@@ -361,10 +363,9 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                 ],
                 'user' => new User(UserService::PUBLIC_USER_USERNAME),
                 'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'renderResponse' => [
-                        'withArgs' => function ($viewName, $parameters, $response) {
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::VIEW_NAME, $viewName);
-                            $this->assertNull($response);
                             $this->assertViewParameterKeys($parameters);
                             $this->assertTestAndRemoteTest($parameters);
                             $this->assertInternalType('array', $parameters['website']);
@@ -393,10 +394,9 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                 ],
                 'user' => new User(UserService::PUBLIC_USER_USERNAME),
                 'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'renderResponse' => [
-                        'withArgs' => function ($viewName, $parameters, $response) {
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::VIEW_NAME, $viewName);
-                            $this->assertNull($response);
                             $this->assertViewParameterKeys($parameters);
                             $this->assertTestAndRemoteTest($parameters);
                             $this->assertInternalType('array', $parameters['website']);
@@ -433,10 +433,9 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                 ],
                 'user' => new User('user@example.com'),
                 'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'renderResponse' => [
-                        'withArgs' => function ($viewName, $parameters, $response) {
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::VIEW_NAME, $viewName);
-                            $this->assertNull($response);
                             $this->assertViewParameterKeys($parameters);
                             $this->assertTestAndRemoteTest($parameters);
                             $this->assertInternalType('array', $parameters['website']);
@@ -463,14 +462,15 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
     }
 
     /**
-     * @dataProvider indexActionApplicationJsonResponseDataProvider
+     * @dataProvider indexActionRenderApplicationJsonDataProvider
      *
      * @param array $httpFixtures
      * @param User $user
+     * @param string $expectedStateLabel
      *
      * @throws WebResourceException
      */
-    public function testIndexActionApplicationJsonResponse(
+    public function testIndexActionRenderApplicationJson(
         array $httpFixtures,
         User $user,
         $expectedStateLabel
@@ -516,7 +516,7 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
     /**
      * @return array
      */
-    public function indexActionApplicationJsonResponseDataProvider()
+    public function indexActionRenderApplicationJsonDataProvider()
     {
         return [
             'public user, in-progress, 79% done' => [
@@ -564,6 +564,41 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                 'expectedStateLabel' => 'Finding URLs to test: 10 pages examined, 30 of 250 found',
             ],
         ];
+    }
+
+    public function testIndexActionCachedResponse()
+    {
+        $this->setHttpFixtures([
+            HttpResponseFactory::createJsonResponse($this->remoteTestData),
+        ]);
+
+        $request = new Request();
+
+        $this->container->set('request', $request);
+        $this->indexController->setContainer($this->container);
+
+        $response = $this->indexController->indexAction(
+            $request,
+            self::WEBSITE,
+            self::TEST_ID
+        );
+        $this->assertInstanceOf(Response::class, $response);
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $responseLastModified = new \DateTime($response->headers->get('last-modified'));
+        $responseLastModified->modify('+1 hour');
+
+        $newRequest = $request->duplicate();
+
+        $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
+        $newResponse = $this->indexController->indexAction(
+            $newRequest,
+            self::WEBSITE,
+            self::TEST_ID
+        );
+
+        $this->assertInstanceOf(Response::class, $newResponse);
+        $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
     /**
