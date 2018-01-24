@@ -945,6 +945,317 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
         $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
+    /**
+     * @dataProvider indexActionFailedTaskDataProvider
+     *
+     * @param array $outputContent
+     * @param string|array $expectedHeadingContent
+     */
+    public function testIndexActionFailedTask(array $outputContent, $expectedHeadingContent)
+    {
+        $this->setHttpFixtures([
+            HttpResponseFactory::create(200),
+            HttpResponseFactory::createJsonResponse($this->remoteTestData),
+            HttpResponseFactory::createJsonResponse([
+                array_merge($this->remoteTaskData, [
+                    'state' => Task::STATE_FAILED_NO_RETRY_AVAILABLE,
+                    'output' => [
+                        'output' => json_encode($outputContent),
+                        'content-type' => 'application/json',
+                        'error_count' => 5,
+                        'warning_count' => 0,
+                    ],
+                ]),
+            ]),
+        ]);
+
+        $router = $this->container->get('router');
+        $requestUrl = $router->generate(self::ROUTE_NAME, [
+            'website' => self::WEBSITE,
+            'test_id' => self::TEST_ID,
+            'task_id' => self::TASK_ID
+        ]);
+
+        $heading = $this->getCrawler($requestUrl)->filter('h2');
+
+        $headingText = trim($heading->text());
+
+        if (is_string($expectedHeadingContent)) {
+            $this->assertEquals($expectedHeadingContent, $headingText);
+        }
+
+        if (is_array($expectedHeadingContent)) {
+            foreach ($expectedHeadingContent as $contentItem) {
+                $this->assertContains($contentItem, $headingText);
+            }
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function indexActionFailedTaskDataProvider()
+    {
+        return [
+            'character encoding failure' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => 'foo',
+                            'messageId' => 'character-encoding',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => 'Character Encoding Confusion!',
+            ],
+            'css validator ssl error' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => 'SSL Error',
+                            'class' => 'css-validation-ssl-error',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => 'SSL Error!',
+            ],
+            'css validator unknown error' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => 'Unknown error',
+                            'class' => 'css-validation-exception-unknown',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => 'Unknown Validator Error!',
+            ],
+            'curl DNS timeout' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => 'DNS lookup failure resolving resource domain name',
+                            'messageId' => 'http-retrieval-curl-code-6',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => 'DNS Timeout!',
+            ],
+            'curl connection timeout' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => 'Timeout reached retrieving resource',
+                            'messageId' => 'http-retrieval-curl-code-28',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => 'Connection Timeout!',
+            ],
+            'curl ssl connection error' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => '',
+                            'messageId' => 'http-retrieval-curl-code-35',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => 'SSL Error!',
+            ],
+            'curl malformed URL' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => 'Invalid resource URL',
+                            'messageId' => 'http-retrieval-curl-code-3',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => 'Bad URL!',
+            ],
+            'doctype invalid' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => '',
+                            'messageId' => 'document-type-invalid',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => 'Invalid Document Type!',
+            ],
+            'doctype missing' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => 'No doctype',
+                            'messageId' => 'document-type-missing',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => 'Missing Document Type!',
+            ],
+            'HTTP 401 authorization required' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => 'Authorization Required',
+                            'messageId' => 'http-retrieval-401',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => [
+                    'HTTP 401',
+                    'Authorization',
+                    'Required',
+                ],
+            ],
+            'HTTP 403 forbidden' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => 'Forbidden',
+                            'messageId' => 'http-retrieval-403',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => [
+                    'HTTP 403',
+                    'Forbidden',
+                ],
+            ],
+            'HTTP 404 not found' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => 'Not found',
+                            'messageId' => 'http-retrieval-404',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => [
+                    'HTTP 404',
+                    'Not',
+                    'Found',
+                ],
+            ],
+            'HTTP 405 method not allowed' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => 'Method not allowed',
+                            'messageId' => 'http-retrieval-405',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => [
+                    'HTTP 405',
+                    'Method',
+                    'Not',
+                    'Allowed',
+                ],
+            ],
+            'HTTP 500 internal server error' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => 'Internal server error',
+                            'messageId' => 'http-retrieval-500',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => [
+                    'HTTP 500',
+                    'Internal',
+                    'Server',
+                    'Error',
+                ],
+            ],
+            'HTTP 502 bad gateway' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => 'Bad gateway',
+                            'messageId' => 'http-retrieval-502',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => [
+                    'HTTP 502',
+                    'Bad',
+                    'Gateway',
+                ],
+            ],
+            'HTTP 503 service unavailable' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => 'Service unavailable',
+                            'messageId' => 'http-retrieval-503',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => [
+                    'HTTP 503',
+                    'Service',
+                    'Unavailable',
+                ],
+            ],
+            'No markup found in document' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => 'Not markup',
+                            'messageId' => 'document-is-not-markup',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => 'No Markup Found!',
+            ],
+            'Redirect limit' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => 'Redirect limit of 4 redirects reached',
+                            'messageId' => 'http-retrieval-redirect-limit-reached',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => 'Redirect Limit Reached!',
+            ],
+            'Redirect loop' => [
+                'outputContent' => [
+                    'messages' => [
+                        [
+                            'message' => 'Redirect loop detected',
+                            'messageId' => 'http-retrieval-redirect-loop',
+                            'type' => 'error',
+                        ],
+                    ],
+                ],
+                'expectedHeadingContent' => 'Redirect Loop Detected!',
+            ],
+        ];
+    }
 
     /**
      * @param array $expectedParameterData
