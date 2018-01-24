@@ -34,8 +34,8 @@ class IndexController extends ResultsController {
     public function getRequestWebsiteMismatchResponse(Request $request)
     {
         return new RedirectResponse($this->generateUrl('app_test_redirector', array(
-            'website' => $this->getRequest()->attributes->get('website'),
-            'test_id' => $this->getRequest()->attributes->get('test_id')
+            'website' => $request->attributes->get('website'),
+            'test_id' => $request->attributes->get('test_id')
         ), true));
     }
 
