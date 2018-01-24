@@ -725,11 +725,23 @@ class TaskRepositoryTest extends BaseSimplyTestableTestCase
     public function getRemoteIdByTestAndIssueCountAndTaskTypeExcludingStatesDataProvider()
     {
         return [
-            'test 0 without errors' => [
+            'test 0 without errors; tasktype=null' => [
                 'testIndex' => 0,
                 'issueCount' => '= 0',
                 'issueType' => 'error',
                 'taskType' => null,
+                'states' => [
+                    Task::STATE_QUEUED,
+                ],
+                'expectedRemoteTaskIds' => [
+                    1,
+                ],
+            ],
+            'test 0 without errors; tasktype=""' => [
+                'testIndex' => 0,
+                'issueCount' => '= 0',
+                'issueType' => 'error',
+                'taskType' => '',
                 'states' => [
                     Task::STATE_QUEUED,
                 ],
@@ -903,11 +915,21 @@ class TaskRepositoryTest extends BaseSimplyTestableTestCase
     public function getRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStatesDataProvider()
     {
         return [
-            'test 0 without errors' => [
+            'test 0 without errors; taskType=null' => [
                 'testIndex' => 0,
                 'issueCount' => '= 0',
                 'issueType' => 'error',
                 'taskType' => null,
+                'states' => [
+                    Task::STATE_QUEUED,
+                ],
+                'expectedRemoteIdCount' => 1,
+            ],
+            'test 0 without errors; taskType=""' => [
+                'testIndex' => 0,
+                'issueCount' => '= 0',
+                'issueType' => 'error',
+                'taskType' => '',
                 'states' => [
                     Task::STATE_QUEUED,
                 ],
