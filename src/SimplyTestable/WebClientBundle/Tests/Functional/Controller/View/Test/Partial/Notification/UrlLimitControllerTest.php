@@ -10,6 +10,7 @@ use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class IndexControllerTest extends BaseSimplyTestableTestCase
@@ -93,7 +94,7 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
      * @param bool $expectedResponseHasContent
      * @param array $expectedContentContains
      */
-    public function testIndexActionGetRequestFoo(
+    public function testIndexActionGetRequest(
         User $user,
         array $remoteTestData,
         $expectedResponseHasContent,
@@ -226,5 +227,50 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                 ],
             ],
         ];
+    }
+
+    public function testIndexActionCachedResponse()
+    {
+        $remoteTestData = [
+            'id' => self::TEST_ID,
+            'website' => self::WEBSITE,
+            'task_types' => [],
+            'user' => self::USER_EMAIL,
+            'state' => Test::STATE_COMPLETED,
+            'ammendments' => [
+                [
+                    'constraint' => [
+                        'limit' => 10,
+                    ],
+                    'reason' => 'plan-url-limit-reached:discovered-url-count-12',
+                ],
+            ],
+        ];
+
+        $this->setHttpFixtures([
+            HttpResponseFactory::createJsonResponse($remoteTestData),
+            HttpResponseFactory::createJsonResponse($remoteTestData),
+        ]);
+
+        $request = new Request();
+
+        $this->container->set('request', $request);
+        $this->indexController->setContainer($this->container);
+
+        $response = $this->indexController->indexAction($request, self::WEBSITE, self::TEST_ID);
+        $this->assertInstanceOf(Response::class, $response);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $responseLastModified = new \DateTime($response->headers->get('last-modified'));
+        $responseLastModified->modify('+1 hour');
+
+        $newRequest = $request->duplicate();
+
+        $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
+        $newResponse = $this->indexController->indexAction($newRequest, self::WEBSITE, self::TEST_ID);
+
+        $this->assertInstanceOf(Response::class, $newResponse);
+        $this->assertEquals(304, $newResponse->getStatusCode());
     }
 }
