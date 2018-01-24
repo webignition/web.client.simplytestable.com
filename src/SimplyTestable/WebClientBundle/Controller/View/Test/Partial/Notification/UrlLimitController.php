@@ -2,13 +2,13 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Partial\Notification;
 
-use SimplyTestable\WebClientBundle\Controller\View\Test\CacheableViewController;
+use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class UrlLimitController extends CacheableViewController implements RequiresValidUser, RequiresValidOwner
+class UrlLimitController extends BaseViewController implements RequiresValidUser, RequiresValidOwner
 {
     /**
      * @param Request $request
@@ -24,7 +24,8 @@ class UrlLimitController extends CacheableViewController implements RequiresVali
         $testService = $this->container->get('simplytestable.services.testservice');
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
         $userService = $this->container->get('simplytestable.services.userservice');
-        $cacheableResponseService = $this->container->get('simplytestable.services.cacheableresponseservice');
+        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
+        $templating = $this->container->get('templating');
 
         $user = $userService->getUser();
         $remoteTestService->setUser($user);
@@ -39,40 +40,29 @@ class UrlLimitController extends CacheableViewController implements RequiresVali
             return new Response();
         }
 
-        return $cacheableResponseService->getCachableResponse(
-            $request,
-            $this->render(
-                'SimplyTestableWebClientBundle:bs3/Test/Partial/Notification/UrlLimit:index.html.twig',
-                array_merge($this->getDefaultViewParameters(), [
-                    'remote_test' => $remoteTest,
-                    'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
-                ])
-            )
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCacheValidatorParameters()
-    {
-        $testService = $this->container->get('simplytestable.services.testservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
-
-        $request = $this->getRequest();
-        $requestAttributes = $request->attributes;
-
-        $testId = $requestAttributes->get('test_id');
-
-        $test = $testService->get(
-            $requestAttributes->get('website'),
-            $testId
-        );
-
-        return array(
-            'test_id' => $testId,
+        $response = $cacheValidatorService->createResponse($request, [
+            'test_id' => $test_id,
             'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
+        ]);
+
+        if ($cacheValidatorService->isNotModified($response)) {
+            return $response;
+        }
+
+        $viewData = [
+            'remote_test' => $remoteTest,
+            'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
+        ];
+
+        $content = $templating->render(
+            'SimplyTestableWebClientBundle:bs3/Test/Partial/Notification/UrlLimit:index.html.twig',
+            array_merge($this->getDefaultViewParameters(), $viewData)
         );
+
+        $response->setContent($content);
+        $response->headers->set('content-type', 'text/html');
+
+        return $response;
     }
 
     /**
