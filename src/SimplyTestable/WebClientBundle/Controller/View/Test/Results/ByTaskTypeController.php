@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class ByTaskTypeController extends ResultsController
+class ByTaskTypeController extends AbstractResultsController
 {
     const FILTER_BY_PAGE = 'by-page';
     const FILTER_BY_ERROR = 'by-error';
@@ -46,6 +46,7 @@ class ByTaskTypeController extends ResultsController
         $taskService = $this->container->get('simplytestable.services.taskservice');
         $taskCollectionFilterService = $this->container->get('simplytestable.services.taskcollectionfilterservice');
         $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
+        $templating = $this->container->get('templating');
 
         $user = $userService->getUser();
         $remoteTestService->setUser($user);
@@ -135,8 +136,6 @@ class ByTaskTypeController extends ResultsController
             'tasks' => $tasks,
             'error_task_maps' => $errorTaskMaps
         ];
-
-        $templating = $this->container->get('templating');
 
         $content = $templating->render(
             'SimplyTestableWebClientBundle:bs3/Test/Results/ByTaskType:index.html.twig',

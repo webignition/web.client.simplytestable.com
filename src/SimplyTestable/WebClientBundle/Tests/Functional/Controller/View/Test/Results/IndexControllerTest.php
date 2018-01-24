@@ -2,11 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Test\Results;
 
-use SimplyTestable\WebClientBundle\Controller\View\Test\Results\ByTaskTypeController;
+use SimplyTestable\WebClientBundle\Controller\View\Test\Results\IndexController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
-use SimplyTestable\WebClientBundle\Model\Test\Task\ErrorTaskMapCollection;
+use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
@@ -21,20 +21,19 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
+class IndexControllerTest extends BaseSimplyTestableTestCase
 {
-    const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Test/Results/ByTaskType:index.html.twig';
-    const ROUTE_NAME_DEFAULT = 'view_test_results_bytasktype_index_default';
-    const ROUTE_NAME_FILTER = 'view_test_results_bytasktype_index';
+    const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Test/Results/Index:index.html.twig';
+    const ROUTE_NAME = 'view_test_results_index_index';
 
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
 
     /**
-     * @var ByTaskTypeController
+     * @var IndexController
      */
-    private $byTaskTypeController;
+    private $indexController;
 
     /**
      * @var array
@@ -118,7 +117,7 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
     {
         parent::setUp();
 
-        $this->byTaskTypeController = new ByTaskTypeController();
+        $this->indexController = new IndexController();
     }
 
     /**
@@ -132,10 +131,9 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
         $this->setHttpFixtures($httpFixtures);
 
         $router = $this->container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME_DEFAULT, [
+        $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
-            'task_type' => Task::TYPE_HTML_VALIDATION,
         ]);
 
         $this->client->request(
@@ -188,7 +186,25 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
                         'website' => 'http://foo.example.com/',
                     ])),
                 ],
-                'expectedRedirectUrl' => 'http://localhost/http://foo.example.com//1/results/HTML+validation/by-error/',
+                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/',
+            ],
+            'failed test' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::create(200),
+                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
+                        'state' => Test::STATE_FAILED_NO_SITEMAP,
+                    ])),
+                ],
+                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/failed/no-urls-detected/',
+            ],
+            'rejected test' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::create(200),
+                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
+                        'state' => Test::STATE_REJECTED,
+                    ])),
+                ],
+                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/rejected/',
             ],
         ];
     }
@@ -203,10 +219,9 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
         ]);
 
         $router = $this->container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME_DEFAULT, [
+        $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
-            'task_type' => Task::TYPE_HTML_VALIDATION,
         ]);
 
         $this->client->getCookieJar()->set(new Cookie(
@@ -231,24 +246,15 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
         $this->setHttpFixtures([
             HttpResponseFactory::create(200),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
-            HttpResponseFactory::createJsonResponse([1,]),
-            HttpResponseFactory::createJsonResponse([
-                [
-                    'id' => 1,
-                    'url' => 'http://example.com/',
-                    'state' => Task::STATE_COMPLETED,
-                    'worker' => '',
-                    'type' => Task::TYPE_HTML_VALIDATION,
-                ],
-            ]),
+            HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
+            HttpResponseFactory::createJsonResponse($this->remoteTasksData),
         ]);
 
         $router = $this->container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME_FILTER, [
+        $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
-            'task_type' => Task::TYPE_HTML_VALIDATION,
-            'filter' => ByTaskTypeController::FILTER_BY_ERROR,
+            'filter' => IndexController::FILTER_WITH_ERRORS,
         ]);
 
         $this->client->request(
@@ -267,8 +273,6 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
      * @param array $httpFixtures
      * @param User $user
      * @param Request $request
-     * @param string $taskType
-     * @param string $filter
      * @param string $expectedRedirectUrl
      * @param string[] $expectedRequestUrls
      *
@@ -278,8 +282,6 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
         array $httpFixtures,
         User $user,
         Request $request,
-        $taskType,
-        $filter,
         $expectedRedirectUrl,
         $expectedRequestUrls
     ) {
@@ -290,15 +292,13 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
 
         $this->setHttpFixtures($httpFixtures);
 
-        $this->byTaskTypeController->setContainer($this->container);
+        $this->indexController->setContainer($this->container);
 
         /* @var RedirectResponse $response */
-        $response = $this->byTaskTypeController->indexAction(
+        $response = $this->indexController->indexAction(
             $request,
             self::WEBSITE,
-            self::TEST_ID,
-            $taskType,
-            $filter
+            self::TEST_ID
         );
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
@@ -317,58 +317,6 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
     public function indexActionRedirectDataProvider()
     {
         return [
-            'empty task type' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
-                ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
-                'request' => new Request(),
-                'taskType' => '',
-                'filter' => '',
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/',
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
-                ],
-            ],
-            'invalid task type' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
-                ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
-                'request' => new Request(),
-                'taskType' => 'foo',
-                'filter' => '',
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/',
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
-                ],
-            ],
-            'empty filter' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
-                ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
-                'request' => new Request(),
-                'taskType' => Task::TYPE_HTML_VALIDATION,
-                'filter' => '',
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/html+validation/by-error/',
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
-                ],
-            ],
-            'invalid filter' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
-                ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
-                'request' => new Request(),
-                'taskType' => Task::TYPE_HTML_VALIDATION,
-                'filter' => 'foo',
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/html+validation/by-error/',
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
-                ],
-            ],
             'requires preparation' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
@@ -377,11 +325,88 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
                 ],
                 'user' => new User(UserService::PUBLIC_USER_USERNAME),
                 'request' => new Request(),
-                'taskType' => Task::TYPE_HTML_VALIDATION,
-                'filter' => ByTaskTypeController::FILTER_BY_ERROR,
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/preparing/',
                 'expectedRequestUrls' => [
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                ],
+            ],
+            'invalid filter' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
+                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
+                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
+                ],
+                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'request' => new Request([
+                    'filter' => 'foo',
+                ]),
+                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/?filter=with-errors',
+                'expectedRequestUrls' => [
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/ids/',
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
+                ],
+            ],
+            'non-relevant filter; filter=with-errors, one task with no errors' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
+                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
+                    HttpResponseFactory::createJsonResponse([
+                        [
+                            'id' => 1,
+                            'url' => 'http://example.com/',
+                            'state' => Task::STATE_COMPLETED,
+                            'worker' => '',
+                            'type' => Task::TYPE_HTML_VALIDATION,
+                            'output' => [
+                                'output' => '',
+                                'content-type' => 'application/json',
+                                'error_count' => 0,
+                                'warning_count' => 0,
+                            ],
+                        ],
+                    ]),
+                ],
+                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'request' => new Request([
+                    'filter' => IndexController::FILTER_WITH_ERRORS,
+                ]),
+                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/?filter=without-errors',
+                'expectedRequestUrls' => [
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/ids/',
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
+                ],
+            ],
+            'non-relevant filter; filter=with-errors, one task with no errors and with warnings' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
+                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
+                    HttpResponseFactory::createJsonResponse([
+                        [
+                            'id' => 1,
+                            'url' => 'http://example.com/',
+                            'state' => Task::STATE_COMPLETED,
+                            'worker' => '',
+                            'type' => Task::TYPE_HTML_VALIDATION,
+                            'output' => [
+                                'output' => '',
+                                'content-type' => 'application/json',
+                                'error_count' => 0,
+                                'warning_count' => 1,
+                            ],
+                        ],
+                    ]),
+                ],
+                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'request' => new Request([
+                    'filter' => IndexController::FILTER_WITH_ERRORS,
+                ]),
+                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/?filter=with-warnings',
+                'expectedRequestUrls' => [
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/ids/',
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
                 ],
             ],
         ];
@@ -428,6 +453,8 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
                 'simplytestable.services.urlviewvalues',
                 'simplytestable.services.taskservice',
                 'simplytestable.services.taskcollectionfilterservice',
+                'simplytestable.services.tasktypeservice',
+                'simplytestable.services.testoptions.adapter.factory',
             ],
             [
                 'templating' => $templatingEngine,
@@ -435,19 +462,23 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
             [
                 'public_site',
                 'external_links',
+                'css-validation-ignore-common-cdns',
+                'js-static-analysis-ignore-common-cdns',
             ]
         );
 
-        $this->byTaskTypeController->setContainer($container);
+        $this->indexController->setContainer($container);
 
-        $response = $this->byTaskTypeController->indexAction(
-            new Request(),
+        $response = $this->indexController->indexAction(
+            new Request([
+                'type' => $taskType,
+                'filter' => $filter,
+            ]),
             self::WEBSITE,
-            self::TEST_ID,
-            $taskType,
-            $filter
+            self::TEST_ID
         );
         $this->assertInstanceOf(Response::class, $response);
+        $this->assertNotInstanceOf(RedirectResponse::class, $response);
     }
 
     /**
@@ -456,49 +487,19 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
     public function indexActionRenderDataProvider()
     {
         return [
-            'public user, private test, no tasks' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
-                    HttpResponseFactory::createJsonResponse([]),
-                    HttpResponseFactory::createJsonResponse([]),
-                ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
-                'testValues' => [],
-                'taskType' => Task::TYPE_HTML_VALIDATION,
-                'filter' => ByTaskTypeController::FILTER_BY_ERROR,
-                'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'render' => [
-                        'withArgs' => function ($viewName, $parameters) {
-                            $this->assertStandardViewData($viewName, $parameters);
-
-                            $this->assertParameterData(
-                                [
-                                    'task_type' => Task::TYPE_HTML_VALIDATION,
-                                    'is_owner' => false,
-                                    'is_public_user_test' => false,
-                                    'taskIds' => [],
-                                ],
-                                $parameters
-                            );
-
-                            return true;
-                        },
-                        'return' => new Response(),
-                    ],
-                ]),
-            ],
-            'public user, public test, no tasks' => [
+            'public user, public test, html validation, with errors, null domain test count' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'user' => UserService::PUBLIC_USER_USERNAME,
+                        'is_public' => true,
                     ])),
-                    HttpResponseFactory::createJsonResponse([]),
-                    HttpResponseFactory::createJsonResponse([]),
+                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
+                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
                 ],
                 'user' => new User(UserService::PUBLIC_USER_USERNAME),
                 'testValues' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
-                'filter' => ByTaskTypeController::FILTER_BY_ERROR,
+                'filter' => IndexController::FILTER_WITH_ERRORS,
                 'templatingEngine' => MockFactory::createTemplatingEngine([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -506,10 +507,27 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
 
                             $this->assertParameterData(
                                 [
-                                    'task_type' => Task::TYPE_HTML_VALIDATION,
-                                    'is_owner' => true,
+                                    'is_public' => true,
                                     'is_public_user_test' => true,
-                                    'taskIds' => [],
+                                    'is_owner' => true,
+                                    'type' => Task::TYPE_HTML_VALIDATION,
+                                    'type_label' => Task::TYPE_HTML_VALIDATION,
+                                    'filter' => IndexController::FILTER_WITH_ERRORS,
+                                    'filter_label' => 'With Errors',
+                                    'available_task_types' => [
+                                        'html-validation',
+                                        'css-validation',
+                                    ],
+                                    'taskIds' => [1, 3],
+                                    'filtered_task_counts' => [
+                                        'all' => 2,
+                                        'with_errors' => 2,
+                                        'with_warnings' => 0,
+                                        'without_errors' => 0,
+                                        'skipped' => 0,
+                                        'cancelled' => 0,
+                                    ],
+                                    'domain_test_count' => null,
                                 ],
                                 $parameters
                             );
@@ -520,18 +538,124 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
                     ],
                 ]),
             ],
-            'private user, private test, no tasks' => [
+            'public user, public test, html validation, with errors, has domain test count' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'user' => self::USER_EMAIL,
+                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'is_public' => true,
                     ])),
-                    HttpResponseFactory::createJsonResponse([]),
-                    HttpResponseFactory::createJsonResponse([]),
+                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
+                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
+                    HttpResponseFactory::createJsonResponse(99),
+                ],
+                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'testValues' => [],
+                'taskType' => Task::TYPE_HTML_VALIDATION,
+                'filter' => IndexController::FILTER_WITH_ERRORS,
+                'templatingEngine' => MockFactory::createTemplatingEngine([
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
+                            $this->assertStandardViewData($viewName, $parameters);
+
+                            $this->assertParameterData(
+                                [
+                                    'is_public' => true,
+                                    'is_public_user_test' => true,
+                                    'is_owner' => true,
+                                    'type' => Task::TYPE_HTML_VALIDATION,
+                                    'type_label' => Task::TYPE_HTML_VALIDATION,
+                                    'filter' => IndexController::FILTER_WITH_ERRORS,
+                                    'filter_label' => 'With Errors',
+                                    'available_task_types' => [
+                                        'html-validation',
+                                        'css-validation',
+                                    ],
+                                    'taskIds' => [1, 3],
+                                    'filtered_task_counts' => [
+                                        'all' => 2,
+                                        'with_errors' => 2,
+                                        'with_warnings' => 0,
+                                        'without_errors' => 0,
+                                        'skipped' => 0,
+                                        'cancelled' => 0,
+                                    ],
+                                    'domain_test_count' => 99,
+                                ],
+                                $parameters
+                            );
+
+                            return true;
+                        },
+                        'return' => new Response(),
+                    ],
+                ]),
+            ],
+            'public user, public test, no task type, all' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
+                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'is_public' => true,
+                    ])),
+                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
+                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
+                    HttpResponseFactory::createJsonResponse(99),
+                ],
+                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'testValues' => [],
+                'taskType' => null,
+                'filter' => IndexController::FILTER_ALL,
+                'templatingEngine' => MockFactory::createTemplatingEngine([
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
+                            $this->assertStandardViewData($viewName, $parameters);
+
+                            $this->assertParameterData(
+                                [
+                                    'is_public' => true,
+                                    'is_public_user_test' => true,
+                                    'is_owner' => true,
+                                    'type' => '',
+                                    'type_label' => 'All',
+                                    'filter' => IndexController::FILTER_ALL,
+                                    'filter_label' => 'All',
+                                    'available_task_types' => [
+                                        'html-validation',
+                                        'css-validation',
+                                    ],
+                                    'taskIds' => [1, 2, 3, 4],
+                                    'filtered_task_counts' => [
+                                        'all' => 3,
+                                        'with_errors' => 3,
+                                        'with_warnings' => 0,
+                                        'without_errors' => 1,
+                                        'skipped' => 0,
+                                        'cancelled' => 0,
+                                    ],
+                                    'domain_test_count' => 99,
+                                ],
+                                $parameters
+                            );
+
+                            return true;
+                        },
+                        'return' => new Response(),
+                    ],
+                ]),
+            ],
+            'private user, public test' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
+                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'is_public' => true,
+                    ])),
+                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
+                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
+                    HttpResponseFactory::createJsonResponse(99),
                 ],
                 'user' => new User(self::USER_EMAIL),
                 'testValues' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
-                'filter' => ByTaskTypeController::FILTER_BY_ERROR,
+                'filter' => IndexController::FILTER_WITH_ERRORS,
                 'templatingEngine' => MockFactory::createTemplatingEngine([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -539,57 +663,80 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
 
                             $this->assertParameterData(
                                 [
-                                    'task_type' => Task::TYPE_HTML_VALIDATION,
-                                    'is_owner' => true,
+                                    'is_public' => true,
+                                    'is_public_user_test' => true,
+                                    'is_owner' => false,
+                                    'type' => Task::TYPE_HTML_VALIDATION,
+                                    'type_label' => Task::TYPE_HTML_VALIDATION,
+                                    'filter' => IndexController::FILTER_WITH_ERRORS,
+                                    'filter_label' => 'With Errors',
+                                    'available_task_types' => [
+                                        'html-validation',
+                                    ],
+                                    'taskIds' => [1, 3],
+                                    'filtered_task_counts' => [
+                                        'all' => 2,
+                                        'with_errors' => 2,
+                                        'with_warnings' => 0,
+                                        'without_errors' => 0,
+                                        'skipped' => 0,
+                                        'cancelled' => 0,
+                                    ],
+                                    'domain_test_count' => 99,
+                                ],
+                                $parameters
+                            );
+
+                            return true;
+                        },
+                        'return' => new Response(),
+                    ],
+                ]),
+            ],
+            'private user, private test, html validation, with errors' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
+                        'user' => self::USER_EMAIL,
+                        'is_public' => false,
+                    ])),
+                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
+                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
+                    HttpResponseFactory::createJsonResponse(99),
+                ],
+                'user' => new User(self::USER_EMAIL),
+                'testValues' => [],
+                'taskType' => Task::TYPE_HTML_VALIDATION,
+                'filter' => IndexController::FILTER_WITH_ERRORS,
+                'templatingEngine' => MockFactory::createTemplatingEngine([
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
+                            $this->assertStandardViewData($viewName, $parameters);
+
+                            $this->assertParameterData(
+                                [
+                                    'is_public' => false,
                                     'is_public_user_test' => false,
-                                    'taskIds' => [],
-                                ],
-                                $parameters
-                            );
-
-                            return true;
-                        },
-                        'return' => new Response(),
-                    ],
-                ]),
-            ],
-            'public user, public test, has tasks, no errors' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'user' => UserService::PUBLIC_USER_USERNAME,
-                    ])),
-                    HttpResponseFactory::createJsonResponse([1, 2, 3,]),
-                    HttpResponseFactory::createJsonResponse([
-                        [
-                            'id' => 1,
-                            'url' => 'http://example.com/',
-                            'state' => Task::STATE_COMPLETED,
-                            'worker' => '',
-                            'type' => Task::TYPE_HTML_VALIDATION,
-                            'output' => [
-                                'output' => '',
-                                'content-type' => 'application/json',
-                                'error_count' => 0,
-                                'warning_count' => 0,
-                            ],
-                        ],
-                    ]),
-                ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
-                'testValues' => [],
-                'taskType' => Task::TYPE_HTML_VALIDATION,
-                'filter' => ByTaskTypeController::FILTER_BY_ERROR,
-                'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'render' => [
-                        'withArgs' => function ($viewName, $parameters) {
-                            $this->assertStandardViewData($viewName, $parameters);
-
-                            $this->assertParameterData(
-                                [
-                                    'task_type' => Task::TYPE_HTML_VALIDATION,
                                     'is_owner' => true,
-                                    'is_public_user_test' => true,
-                                    'taskIds' => [],
+                                    'type' => Task::TYPE_HTML_VALIDATION,
+                                    'type_label' => Task::TYPE_HTML_VALIDATION,
+                                    'filter' => IndexController::FILTER_WITH_ERRORS,
+                                    'filter_label' => 'With Errors',
+                                    'available_task_types' => [
+                                        'html-validation',
+                                        'css-validation',
+                                        'js-static-analysis',
+                                        'link-integrity',
+                                    ],
+                                    'taskIds' => [1, 3],
+                                    'filtered_task_counts' => [
+                                        'all' => 2,
+                                        'with_errors' => 2,
+                                        'with_warnings' => 0,
+                                        'without_errors' => 0,
+                                        'skipped' => 0,
+                                        'cancelled' => 0,
+                                    ],
+                                    'domain_test_count' => 99,
                                 ],
                                 $parameters
                             );
@@ -600,51 +747,20 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
                     ],
                 ]),
             ],
-            'public user, public test, has tasks, has errors, html validation' => [
+            'private user, private test, css validation, without errors' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'user' => self::USER_EMAIL,
+                        'is_public' => false,
                     ])),
-                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4,]),
+                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
                     HttpResponseFactory::createJsonResponse($this->remoteTasksData),
+                    HttpResponseFactory::createJsonResponse(99),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
-                'testValues' => [],
-                'taskType' => Task::TYPE_HTML_VALIDATION,
-                'filter' => ByTaskTypeController::FILTER_BY_ERROR,
-                'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'render' => [
-                        'withArgs' => function ($viewName, $parameters) {
-                            $this->assertStandardViewData($viewName, $parameters);
-
-                            $this->assertParameterData(
-                                [
-                                    'task_type' => Task::TYPE_HTML_VALIDATION,
-                                    'is_owner' => true,
-                                    'is_public_user_test' => true,
-                                    'taskIds' => [3, 1],
-                                ],
-                                $parameters
-                            );
-
-                            return true;
-                        },
-                        'return' => new Response(),
-                    ],
-                ]),
-            ],
-            'public user, public test, has tasks, has errors, css validation' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'user' => UserService::PUBLIC_USER_USERNAME,
-                    ])),
-                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4,]),
-                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
-                ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => new User(self::USER_EMAIL),
                 'testValues' => [],
                 'taskType' => Task::TYPE_CSS_VALIDATION,
-                'filter' => ByTaskTypeController::FILTER_BY_ERROR,
+                'filter' => IndexController::FILTER_WITHOUT_ERRORS,
                 'templatingEngine' => MockFactory::createTemplatingEngine([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -652,10 +768,29 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
 
                             $this->assertParameterData(
                                 [
-                                    'task_type' => Task::TYPE_CSS_VALIDATION,
+                                    'is_public' => false,
+                                    'is_public_user_test' => false,
                                     'is_owner' => true,
-                                    'is_public_user_test' => true,
+                                    'type' => Task::TYPE_CSS_VALIDATION,
+                                    'type_label' => Task::TYPE_CSS_VALIDATION,
+                                    'filter' => IndexController::FILTER_WITHOUT_ERRORS,
+                                    'filter_label' => 'Without Errors',
+                                    'available_task_types' => [
+                                        'html-validation',
+                                        'css-validation',
+                                        'js-static-analysis',
+                                        'link-integrity',
+                                    ],
                                     'taskIds' => [2],
+                                    'filtered_task_counts' => [
+                                        'all' => 1,
+                                        'with_errors' => 1,
+                                        'with_warnings' => 0,
+                                        'without_errors' => 1,
+                                        'skipped' => 0,
+                                        'cancelled' => 0,
+                                    ],
+                                    'domain_test_count' => 99,
                                 ],
                                 $parameters
                             );
@@ -673,21 +808,21 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
     {
         $this->setHttpFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
-            HttpResponseFactory::createJsonResponse([]),
-            HttpResponseFactory::createJsonResponse([]),
+            HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
+            HttpResponseFactory::createJsonResponse($this->remoteTasksData),
         ]);
 
-        $request = new Request();
+        $request = new Request([
+            'filter' => IndexController::FILTER_WITH_ERRORS,
+        ]);
 
         $this->container->set('request', $request);
-        $this->byTaskTypeController->setContainer($this->container);
+        $this->indexController->setContainer($this->container);
 
-        $response = $this->byTaskTypeController->indexAction(
+        $response = $this->indexController->indexAction(
             $request,
             self::WEBSITE,
-            self::TEST_ID,
-            Task::TYPE_HTML_VALIDATION,
-            ByTaskTypeController::FILTER_BY_ERROR
+            self::TEST_ID
         );
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
@@ -698,12 +833,10 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $this->byTaskTypeController->indexAction(
+        $newResponse = $this->indexController->indexAction(
             $newRequest,
             self::WEBSITE,
-            self::TEST_ID,
-            Task::TYPE_HTML_VALIDATION,
-            ByTaskTypeController::FILTER_BY_ERROR
+            self::TEST_ID
         );
 
         $this->assertInstanceOf(Response::class, $newResponse);
@@ -717,17 +850,23 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
      */
     private function assertParameterData($expectedParameterData, $parameters)
     {
-        $this->assertEquals($expectedParameterData['task_type'], $parameters['task_type']);
-        $this->assertEquals($expectedParameterData['is_owner'], $parameters['is_owner']);
+        $this->assertEquals($expectedParameterData['is_public'], $parameters['is_public']);
         $this->assertEquals($expectedParameterData['is_public_user_test'], $parameters['is_public_user_test']);
-
-        $expectedTaskCount = count($expectedParameterData['taskIds']);
-
-        $this->assertCount($expectedTaskCount, $parameters['tasks']);
+        $this->assertEquals($expectedParameterData['is_owner'], $parameters['is_owner']);
+        $this->assertEquals($expectedParameterData['type'], $parameters['type']);
+        $this->assertEquals($expectedParameterData['type_label'], $parameters['type_label']);
+        $this->assertEquals($expectedParameterData['filter'], $parameters['filter']);
+        $this->assertEquals($expectedParameterData['filter_label'], $parameters['filter_label']);
+        $this->assertEquals($expectedParameterData['filtered_task_counts'], $parameters['filtered_task_counts']);
+        $this->assertEquals($expectedParameterData['domain_test_count'], $parameters['domain_test_count']);
+        $this->assertEquals(
+            $expectedParameterData['available_task_types'],
+            array_keys($parameters['available_task_types'])
+        );
 
         $taskIds = [];
 
-        foreach ($parameters['tasks'] as $taskIndex => $task) {
+        foreach ($parameters['tasks'] as $task) {
             /* @var Task $task */
             $taskIds[] = $task->getTaskId();
         }
@@ -744,13 +883,31 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
         $this->assertEquals(self::VIEW_NAME, $viewName);
         $this->assertViewParameterKeys($parameters);
         $this->assertInternalType('array', $parameters['website']);
-        $this->assertInstanceOf(ErrorTaskMapCollection::class, $parameters['error_task_maps']);
 
         /* @var Test $test */
         $test = $parameters['test'];
         $this->assertInstanceOf(Test::class, $test);
         $this->assertEquals(self::TEST_ID, $test->getTestId());
         $this->assertEquals(self::WEBSITE, (string)$test->getWebsite());
+
+        /* @var RemoteTest $remoteTest */
+        $remoteTest = $parameters['remote_test'];
+        $this->assertInstanceOf(RemoteTest::class, $remoteTest);
+        $this->assertEquals(self::TEST_ID, $remoteTest->getId());
+        $this->assertEquals(self::WEBSITE, $remoteTest->getWebsite());
+
+        $this->assertEquals([
+            'html-validation',
+            'css-validation',
+            'js-static-analysis',
+            'link-integrity',
+        ], array_keys($parameters['task_types']));
+
+        $this->assertInternalType('array', $parameters['test_options']);
+        $this->assertInternalType('array', $parameters['css_validation_ignore_common_cdns']);
+        $this->assertInternalType('array', $parameters['js_static_analysis_ignore_common_cdns']);
+        $this->assertInternalType('array', $parameters['default_css_validation_options']);
+        $this->assertInternalType('array', $parameters['default_js_static_analysis_options']);
     }
 
     /**
@@ -764,14 +921,26 @@ class ByTaskTypeControllerTest extends BaseSimplyTestableTestCase
                 'is_logged_in',
                 'public_site',
                 'external_links',
-                'is_owner',
-                'is_public_user_test',
                 'website',
                 'test',
-                'task_type',
+                'is_public',
+                'is_public_user_test',
+                'remote_test',
+                'is_owner',
+                'type',
+                'type_label',
                 'filter',
+                'filter_label',
+                'available_task_types',
+                'task_types',
+                'test_options',
+                'css_validation_ignore_common_cdns',
+                'js_static_analysis_ignore_common_cdns',
                 'tasks',
-                'error_task_maps',
+                'filtered_task_counts',
+                'domain_test_count',
+                'default_css_validation_options',
+                'default_js_static_analysis_options',
             ],
             array_keys($parameters)
         );
