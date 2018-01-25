@@ -2,11 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\History;
 
-use SimplyTestable\WebClientBundle\Controller\View\Test\ViewController;
+use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class WebsiteListController extends ViewController implements RequiresValidUser
+class WebsiteListController extends BaseViewController implements RequiresValidUser
 {
     /**
      * @return JsonResponse

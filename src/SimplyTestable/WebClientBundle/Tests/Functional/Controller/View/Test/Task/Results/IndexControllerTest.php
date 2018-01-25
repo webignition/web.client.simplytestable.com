@@ -98,16 +98,9 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
     {
         $this->setHttpFixtures($httpFixtures);
 
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-            'task_id' => self::TASK_ID,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->createRequestUrl()
         );
 
         /* @var RedirectResponse $response */
@@ -151,13 +144,6 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-            'task_id' => self::TASK_ID,
-        ]);
-
         $this->client->getCookieJar()->set(new Cookie(
             UserService::USER_COOKIE_KEY,
             $userSerializerService->serializeToString(new User(self::USER_EMAIL))
@@ -165,7 +151,7 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
 
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->createRequestUrl()
         );
 
         /* @var Response $response */
@@ -183,16 +169,9 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
             HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
         ]);
 
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-            'task_id' => self::TASK_ID
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->createRequestUrl()
         );
 
         /* @var Response $response */
@@ -1310,6 +1289,20 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
             ],
             array_keys($parameters)
         );
+    }
+
+    /**
+     * @return string
+     */
+    private function createRequestUrl()
+    {
+        $router = $this->container->get('router');
+
+        return $router->generate(self::ROUTE_NAME, [
+            'website' => self::WEBSITE,
+            'test_id' => self::TEST_ID,
+            'task_id' => self::TASK_ID,
+        ]);
     }
 
     /**

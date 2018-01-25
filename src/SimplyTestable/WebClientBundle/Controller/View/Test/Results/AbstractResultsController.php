@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results;
 
-use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Controller\View\Test\ViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-abstract class AbstractResultsController extends BaseViewController implements
+abstract class AbstractResultsController extends ViewController implements
     IEFiltered,
     RequiresValidUser,
     RequiresValidOwner,
