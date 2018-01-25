@@ -3,50 +3,56 @@
 namespace SimplyTestable\WebClientBundle\Controller;
 
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
-use Symfony\Component\HttpFoundation\Response;
+use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class UserAccountCardController extends AbstractUserAccountController {
+class UserAccountCardController extends Controller implements RequiresPrivateUser
+{
+    /**
+     * @param $stripe_card_token
+     *
+     * @return JsonResponse
+     */
+    public function associateAction($stripe_card_token)
+    {
+        $router = $this->container->get('router');
+        $userAccountCardService = $this->get('simplytestable.services.useraccountcardservice');
+        $userService = $this->container->get('simplytestable.services.userservice');
 
-    public function associateAction($stripe_card_token) {        
-        if (($notLoggedInResponse = $this->getNotLoggedInResponse()) instanceof Response) {
-            return $notLoggedInResponse;
-        }
-        
+        $user = $userService->getUser();
+
         try {
-            $this->getUserAccountCardService()->associate($this->getUser(), $stripe_card_token);
-            return $this->redirect($this->generateUrl('view_user_account_index_index', array(), true));
+            $userAccountCardService->associate($user, $stripe_card_token);
         } catch (UserAccountCardException $userAccountCardException) {
-            if ($this->requestIsForApplicationJson($this->getRequest())) {
-
-                $response = new Response($this->getSerializer()->serialize([
-                    'user_account_card_exception_message' => $userAccountCardException->getMessage(),
-                    'user_account_card_exception_param' => $userAccountCardException->getParam(),
-                    'user_account_card_exception_code' => $userAccountCardException->getStripeCode()
-                ], 'json'));
-
-                $response->headers->set('Content-Type', 'application/json');
-                return $response;
-
-            } else {
-                $this->get('session')->getFlashBag()->set('user_account_card_exception_message', $userAccountCardException->getMessage());
-                $this->get('session')->getFlashBag()->set('user_account_card_exception_param', $userAccountCardException->getParam());
-                $this->get('session')->getFlashBag()->set('user_account_card_exception_code', $userAccountCardException->getCode());
-                return $this->redirect($this->generateUrl('view_user_account_card_index', array(), true));
-            }
+            return new JsonResponse([
+                'user_account_card_exception_message' => $userAccountCardException->getMessage(),
+                'user_account_card_exception_param' => $userAccountCardException->getParam(),
+                'user_account_card_exception_code' => $userAccountCardException->getStripeCode(),
+            ]);
         }
+
+        return new JsonResponse([
+            'this_url' => $router->generate(
+                'view_user_account_index_index',
+                [],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            ),
+        ]);
     }
 
     /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Services\UserAccountCardService
+     * {@inheritdoc}
      */
-    protected function getUserAccountCardService() {
-        return $this->get('simplytestable.services.useraccountcardservice');
+    public function getUserSignInRedirectResponse(Request $request)
+    {
+        $router = $this->container->get('router');
+
+        $redirectUrl = $router->generate('view_user_signin_index', [], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        return new RedirectResponse($redirectUrl);
     }
-
-
-    protected function getAllowedContentTypes() {
-        return array_merge(['application/json'], parent::getAllowedContentTypes());
-    }
-
 }
