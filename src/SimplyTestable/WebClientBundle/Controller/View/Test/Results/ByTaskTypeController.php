@@ -217,48 +217,4 @@ class ByTaskTypeController extends AbstractResultsController
 
         return new RedirectResponse($redirectUrl);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getInvalidOwnerResponse(Request $request)
-    {
-        $userService = $this->container->get('simplytestable.services.userservice');
-        $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
-        $session = $this->container->get('session');
-        $router = $this->container->get('router');
-
-        $website = $request->attributes->get('website');
-        $testId = $request->attributes->get('test_id');
-
-        if ($userService->isLoggedIn()) {
-            return $this->render(
-                'SimplyTestableWebClientBundle:bs3/Test/Results:not-authorised.html.twig',
-                array_merge($this->getDefaultViewParameters(), [
-                    'test_id' => $testId,
-                    'website' => $urlViewValuesService->create($website),
-                ])
-            );
-        }
-
-        $redirectParameters = json_encode([
-            'route' => 'view_test_progress_index_index',
-            'parameters' => [
-                'website' => $website,
-                'test_id' => $testId,
-            ]
-        ]);
-
-        $session->getFlashBag()->set('user_signin_error', 'test-not-logged-in');
-
-        $redirectUrl = $router->generate(
-            'view_user_signin_index',
-            [
-                'redirect' => base64_encode($redirectParameters)
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
-    }
 }

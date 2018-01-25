@@ -2,12 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Task\Results;
 
-use SimplyTestable\WebClientBundle\Controller\View\Test\ViewController;
+use SimplyTestable\WebClientBundle\Controller\View\Test\AbstractRequiresValidOwnerController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\LinkIntegrityMessage;
@@ -19,7 +18,7 @@ use webignition\HtmlValidationErrorLinkifier\HtmlValidationErrorLinkifier;
 use webignition\HtmlValidationErrorNormaliser\HtmlValidationErrorNormaliser;
 use webignition\HtmlValidationErrorNormaliser\Result as HtmlValidationErrorNormalisationResult;
 
-class IndexController extends ViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner
+class IndexController extends AbstractRequiresValidOwnerController implements IEFiltered, RequiresValidUser
 {
     const DOCUMENTATION_SITEMAP_RESOURCE_PATH =
         '@SimplyTestableWebClientBundle/Resources/config/documentation_sitemap.xml';

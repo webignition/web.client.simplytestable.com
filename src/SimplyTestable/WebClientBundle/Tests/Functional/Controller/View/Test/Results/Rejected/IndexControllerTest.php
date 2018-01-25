@@ -8,12 +8,14 @@ use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpHistory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -64,15 +66,9 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
             HttpResponseFactory::create(404),
         ]);
 
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->createRequestUrl()
         );
 
         /* @var RedirectResponse $response */
@@ -88,15 +84,9 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->createRequestUrl()
         );
 
         /* @var RedirectResponse $response */
@@ -109,6 +99,32 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
         );
     }
 
+    public function testIndexActionInvalidTestOwnerIsLoggedIn()
+    {
+        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+
+        $this->setHttpFixtures([
+            HttpResponseFactory::create(200),
+            HttpResponseFactory::createForbiddenResponse(),
+        ]);
+
+        $this->client->getCookieJar()->set(new Cookie(
+            UserService::USER_COOKIE_KEY,
+            $userSerializerService->serializeToString(new User(self::USER_EMAIL))
+        ));
+
+        $this->client->request(
+            'GET',
+            $this->createRequestUrl()
+        );
+
+        /* @var Response $response */
+        $response = $this->client->getResponse();
+
+        $this->assertInstanceOf(Response::class, $response);
+        $this->assertContains('<title>Not authorised', $response->getContent());
+    }
+
     public function testIndexActionPublicUserGetRequest()
     {
         $this->setHttpFixtures([
@@ -116,15 +132,9 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->createRequestUrl()
         );
 
         /* @var Response $response */
@@ -389,6 +399,18 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
         $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
+    /**
+     * @return string
+     */
+    private function createRequestUrl()
+    {
+        $router = $this->container->get('router');
+
+        return $router->generate(self::ROUTE_NAME, [
+            'website' => self::WEBSITE,
+            'test_id' => self::TEST_ID,
+        ]);
+    }
 
     /**
      * {@inheritdoc}

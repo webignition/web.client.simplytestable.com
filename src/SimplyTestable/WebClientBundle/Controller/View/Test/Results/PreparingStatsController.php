@@ -2,14 +2,14 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results;
 
-use SimplyTestable\WebClientBundle\Controller\View\Test\ViewController;
+use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class PreparingStatsController extends ViewController implements RequiresValidUser, RequiresValidOwner
+class PreparingStatsController extends BaseViewController implements RequiresValidUser, RequiresValidOwner
 {
     /**
      * {@inheritdoc}

@@ -2,16 +2,15 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Task\TaskList;
 
-use SimplyTestable\WebClientBundle\Controller\View\Test\ViewController;
+use SimplyTestable\WebClientBundle\Controller\View\Test\AbstractRequiresValidOwnerController;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use SimplyTestable\WebClientBundle\Model\Task\Collection as TaskCollection;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class IndexController extends ViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner
+class IndexController extends AbstractRequiresValidOwnerController implements IEFiltered, RequiresValidUser
 {
     /**
      * {@inheritdoc}
