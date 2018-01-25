@@ -194,7 +194,7 @@ class IndexController extends ViewController implements IEFiltered, RequiresVali
             : '';
 
         if ($testState == Test::STATE_IN_PROGRESS) {
-            $label = $this->getRemoteTest()->getCompletionPercent() . '% done';
+            $label = $remoteTest->getCompletionPercent() . '% done';
         }
 
         if (in_array($testState, [Test::STATE_QUEUED, Test::STATE_IN_PROGRESS])) {
