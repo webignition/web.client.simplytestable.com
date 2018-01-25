@@ -3,54 +3,20 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Test;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-abstract class ViewController extends BaseViewController {
-
+abstract class ViewController extends BaseViewController
+{
     /**
-     * @var Test
-     */
-    private $test;
-
-
-    /**
-     * @var \SimplyTestable\WebClientBundle\Services\TestService
-     */
-    private $testService;
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TestService
-     */
-    protected function getTestService() {
-        if (is_null($this->testService)) {
-            $this->testService = $this->container->get('simplytestable.services.testservice');
-            $this->testService->getRemoteTestService()->setUser($this->getUserService()->getUser());
-        }
-
-        return $this->testService;
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TaskService
-     */
-    protected function getTaskService() {
-        return $this->container->get('simplytestable.services.taskservice');
-    }
-
-
-    /**
-     *
      * @param string $url
+     *
      * @return string[]
      */
-    protected function getUrlViewValues($url = null) {
+    protected function getUrlViewValues($url = null)
+    {
         if (is_null($url) || trim($url) === '') {
             return array();
         }
@@ -167,33 +133,4 @@ abstract class ViewController extends BaseViewController {
             'redirect' => base64_encode($redirectParameters)
         ), true));
     }
-
-
-    /**
-     * @return Test
-     */
-    protected function getTest() {
-        if (is_null($this->test)) {
-            $this->test = $this->getTestService()->get(
-                $this->getRequest()->attributes->get('website'),
-                $this->getRequest()->attributes->get('test_id')
-            );
-        }
-
-        return $this->test;
-    }
-
-
-    /**
-     * @return bool|\SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest
-     */
-    protected function getRemoteTest() {
-        if (is_null($this->getTestService()->getRemoteTestService()->getTest())) {
-            $this->getTest();
-        }
-
-        return $this->getTestService()->getRemoteTestService()->get();
-    }
-
-
 }
