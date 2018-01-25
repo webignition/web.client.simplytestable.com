@@ -47,6 +47,8 @@ class ModelFactory
     const TEST_OPTIONS_FEATURE_OPTIONS = 'feature_options';
 
     const TASK_OUTPUT = 'output';
+    const TASK_TASK_ID = 'id';
+    const TASK_STATE = 'state';
 
     const CACHE_VALIDATOR_HEADERS_IDENTIFIER = 'identifier';
     const CACHE_VALIDATOR_HEADERS_LAST_MODIFIED_DATE = 'last-modified-date';
@@ -294,6 +296,14 @@ class ModelFactory
 
         if (isset($taskValues[self::TASK_OUTPUT])) {
             $task->setOutput($taskValues[self::TASK_OUTPUT]);
+        }
+
+        if (isset($taskValues[self::TASK_TASK_ID])) {
+            $task->setTaskId($taskValues[self::TASK_TASK_ID]);
+        }
+
+        if (isset($taskValues[self::TASK_STATE])) {
+            $task->setState($taskValues[self::TASK_STATE]);
         }
 
         return $task;
