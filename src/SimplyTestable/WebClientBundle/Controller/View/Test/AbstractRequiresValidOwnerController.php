@@ -3,11 +3,12 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Test;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-abstract class ViewController extends BaseViewController
+abstract class AbstractRequiresValidOwnerController extends BaseViewController implements RequiresValidOwner
 {
     /**
      * {@inheritdoc}

@@ -2,19 +2,18 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results\Rejected;
 
-use SimplyTestable\WebClientBundle\Controller\View\Test\ViewController;
+use SimplyTestable\WebClientBundle\Controller\View\Test\AbstractRequiresValidOwnerController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class IndexController extends ViewController implements IEFiltered, RequiresValidUser, RequiresValidOwner
+class IndexController extends AbstractRequiresValidOwnerController implements IEFiltered, RequiresValidUser
 {
     /**
      * @param Request $request
