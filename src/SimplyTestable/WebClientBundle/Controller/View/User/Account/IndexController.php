@@ -3,132 +3,186 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\User\Account;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\UserStripeEventService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 
-class IndexController extends BaseViewController implements RequiresPrivateUser, IEFiltered {
-
+class IndexController extends BaseViewController implements RequiresPrivateUser, IEFiltered
+{
     const STRIPE_CARD_CHECK_KEY_POSTFIX = '_check';
-
-    protected function modifyViewName($viewName) {
-        return str_replace(':User', ':bs3/User', $viewName);
-    }
 
     /**
      * {@inheritdoc}
      */
     public function getUserSignInRedirectResponse(Request $request)
     {
-        return new RedirectResponse($this->generateUrl('view_user_signin_index', [
-            'redirect' => base64_encode(json_encode(['route' => 'view_user_account_index_index']))
-        ], true));
+        $router = $this->container->get('router');
+
+        $redirectUrl = $router->generate(
+            'view_user_signin_index',
+            [
+                'redirect' => base64_encode(json_encode(['route' => 'view_user_account_index_index']))
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return new RedirectResponse($redirectUrl);
     }
 
-    public function indexAction() {
-        $userSummary = $this->getUserService()->getSummary();
-
+    /**
+     * @param Request $request
+     * @return Response
+     *
+     * @throws CoreApplicationAdminRequestException
+     * @throws WebResourceException
+     * @throws \Exception
+     */
+    public function indexAction(Request $request)
+    {
+        $userService = $this->container->get('simplytestable.services.userservice');
         $mailChimpListRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
+        $teamService = $this->container->get('simplytestable.services.teamservice');
+        $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
+        $templating = $this->container->get('templating');
+        $userStripeEventService = $this->container->get('simplytestable.services.userstripeeventservice');
+        $flashBagValuesService = $this->container->get('simplytestable.services.flashbagvalues');
+
+        $user = $userService->getUser();
+        $username = $user->getUsername();
+        $userSummary = $userService->getSummary();
+
         $updatesListRecipients = $mailChimpListRecipientsService->get('updates');
         $announcementsListRecipients = $mailChimpListRecipientsService->get('announcements');
 
-        $user = $this->getUser();
-        $username = $user->getUsername();
-
-        $viewData = array_merge(array(
-            'user_summary' => $userSummary,
-            'plan_presentation_name' => $this->getPlanPresentationName(
-                $userSummary->getPlan()->getAccountPlan()->getName()
-            ),
-            'stripe_event_data' => $this->getUserStripeEvents($userSummary),
-            'stripe' => $this->container->getParameter('stripe'),
-            'this_url' => $this->generateUrl('view_user_account_index_index', array(), true),
-            'premium_plan_launch_offer_end' => $this->container->getParameter('premium_plan_launch_offer_end'),
-            'mailchimp_updates_subscribed' => $updatesListRecipients->contains($username),
-            'mailchimp_announcements_subscribed' => $announcementsListRecipients->contains($username),
-            'card_expiry_month' => $this->getCardExpiryMonth($userSummary),
-            'currency_map' => $this->container->getParameter('currency_map')
-        ), $this->getViewFlashValues(array(
-            'user_account_details_update_notice',
-            'user_account_details_update_email',
-            'user_account_details_update_email_confirm_notice',
-            'user_account_card_exception_message',
-            'user_account_card_exception_param',
-            'user_account_card_exception_code',
-            'user_account_details_resend_email_change_notice',
-            'user_account_details_resend_email_change_error',
-            'user_account_details_update_email_request_notice',
-            'user_account_details_update_password_request_notice',
-            'user_account_newssubscriptions_update'
-        )));
-
-        if ($userSummary->getTeamSummary()->isInTeam()) {
-            $this->getTeamService()->setUser($this->getUser());
-            $viewData['team'] = $this->getTeamService()->getTeam();
-        }
-
-        if ($this->getUserEmailChangeRequestService()->hasEmailChangeRequest($this->getUser()->getUsername())) {
-            $viewData['email_change_request'] = $this->getUserEmailChangeRequestService()->getEmailChangeRequest($username);
-            $viewData['token'] = $this->get('request')->query->get('token');
-        }
-
-        return $this->renderResponse($this->getRequest(), $viewData);
-    }
-
-
-    private function getUserStripeEvents(\SimplyTestable\WebClientBundle\Model\User\Summary $userSummary) {
-        if (!$userSummary->hasStripeCustomer()) {
-            return array();
-        }
-
-        if (!$userSummary->getStripeCustomer()->hasSubscription()) {
-            return array();
-        }
-
-        $stripeEvents = array();
-
-        $eventKeys = array(
-            'invoice.updated',
-            'invoice.created'
+        $viewData = array_merge(
+            $this->getDefaultViewParameters(),
+            [
+                'user_summary' => $userSummary,
+                'plan_presentation_name' => $this->getPlanPresentationName(
+                    $userSummary->getPlan()->getAccountPlan()->getName()
+                ),
+                'stripe_event_data' => $this->getUserStripeEvents($user, $userSummary, $userStripeEventService),
+                'stripe' => $this->container->getParameter('stripe'),
+                'premium_plan_launch_offer_end' => $this->container->getParameter('premium_plan_launch_offer_end'),
+                'mailchimp_updates_subscribed' => $updatesListRecipients->contains($username),
+                'mailchimp_announcements_subscribed' => $announcementsListRecipients->contains($username),
+                'card_expiry_month' => $this->getCardExpiryMonth($userSummary),
+                'currency_map' => $this->container->getParameter('currency_map')
+            ],
+            $flashBagValuesService->get([
+                'user_account_details_update_notice',
+                'user_account_details_update_email',
+                'user_account_details_update_email_confirm_notice',
+                'user_account_card_exception_message',
+                'user_account_card_exception_param',
+                'user_account_card_exception_code',
+                'user_account_details_resend_email_change_notice',
+                'user_account_details_resend_email_change_error',
+                'user_account_details_update_email_request_notice',
+                'user_account_details_update_password_request_notice',
+                'user_account_newssubscriptions_update'
+            ])
         );
 
+        if ($userSummary->getTeamSummary()->isInTeam()) {
+            $teamService->setUser($user);
+            $viewData['team'] = $teamService->getTeam();
+        }
+
+        $emailChangeRequest = $emailChangeRequestService->getEmailChangeRequest($user->getUsername());
+
+        if (!empty($emailChangeRequest)) {
+            $viewData['email_change_request'] = $emailChangeRequest;
+            $viewData['token'] = $request->query->get('token');
+        }
+
+        return new Response(
+            $templating->render(
+                'SimplyTestableWebClientBundle:bs3/User/Account/Index:index.html.twig',
+                $viewData
+            )
+        );
+    }
+
+    /**
+     * @param User $user
+     * @param UserSummary $userSummary
+     *
+     * @param UserStripeEventService $userStripeEventService
+     * @return array
+     *
+     * @throws WebResourceException
+     */
+    private function getUserStripeEvents(
+        User $user,
+        UserSummary $userSummary,
+        UserStripeEventService $userStripeEventService
+    ) {
+        $stripeCustomer = $userSummary->getStripeCustomer();
+
+        if (empty($stripeCustomer)) {
+            return [];
+        }
+
+        if (!$stripeCustomer->hasSubscription()) {
+            return [];
+        }
+
+        $stripeEvents = [];
+
+        $eventKeys = [
+            'invoice.updated',
+            'invoice.created'
+        ];
+
         foreach ($eventKeys as $eventKey) {
-            $eventData = $this->getUserStripeEventService()->getLatest($this->getUser(), $eventKey);
+            $eventData = $userStripeEventService->getLatest($user, $eventKey);
             if (!is_null($eventData) && !isset($stripeEvents['invoice'])) {
                 $stripeEvents['invoice'] = $eventData->getDataObject()->getObject();
             }
         }
 
-
         return $stripeEvents;
     }
 
-
     /**
+     * @param UserSummary $userSummary
      *
-     * @param \SimplyTestable\WebClientBundle\Model\User\Summary $userSummary
      * @return string|null
      */
-    private function getCardExpiryMonth(\SimplyTestable\WebClientBundle\Model\User\Summary $userSummary) {
-        if (!$userSummary->hasStripeCustomer()) {
+    private function getCardExpiryMonth(UserSummary $userSummary)
+    {
+        $stripeCustomer = $userSummary->getStripeCustomer();
+
+        if (empty($stripeCustomer)) {
             return null;
         }
 
-        if (!$userSummary->getStripeCustomer()->hasActiveCard()) {
+        if (!$stripeCustomer->hasActiveCard()) {
             return null;
         }
 
-        return \DateTime::createFromFormat('!m', $userSummary->getStripeCustomer()->getActiveCard()->getExpiryMonth())->format('F');
+        return \DateTime::createFromFormat(
+            '!m',
+            $stripeCustomer->getActiveCard()->getExpiryMonth()
+        )->format('F');
     }
 
-
     /**
-     *
      * @param string $plan
+     *
      * @return string
      */
-    private function getPlanPresentationName($plan) {
+    private function getPlanPresentationName($plan)
+    {
         if (substr_count($plan, '-custom')) {
             $planParts = explode('-custom', $plan);
             return $planParts[0];
@@ -136,43 +190,4 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
 
         return ucwords($plan);
     }
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\UserStripeEventService
-     */
-    private function getUserStripeEventService() {
-        return $this->container->get('simplytestable.services.userstripeeventservice');
-    }
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\MailChimp\Service
-     */
-    private function getMailchimpService() {
-        return $this->container->get('simplytestable.services.mailchimpservice');
-    }
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService
-     */
-    protected function getUserEmailChangeRequestService() {
-        return $this->get('simplytestable.services.useremailchangerequestservice');
-    }
-
-
-    protected function getAllowedContentTypes() {
-        return array_merge(['application/json'], parent::getAllowedContentTypes());
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TeamService
-     */
-    private function getTeamService() {
-        return $this->container->get('simplytestable.services.teamservice');
-    }
-
 }
