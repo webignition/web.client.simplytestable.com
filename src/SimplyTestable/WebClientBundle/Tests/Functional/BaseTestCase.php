@@ -7,7 +7,6 @@ use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\Mock\MockPlugin;
 use Symfony\Bundle\FrameworkBundle\Client;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -16,7 +15,6 @@ use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Console\Tester\CommandTester;
 
 abstract class BaseTestCase extends WebTestCase
 {
@@ -47,43 +45,7 @@ abstract class BaseTestCase extends WebTestCase
         $this->application = new Application(self::$kernel);
         $this->application->setAutoExit(false);
 
-        foreach ($this->getCommands() as $command) {
-            $this->application->add($command);
-        }
-
         $this->container->get('doctrine')->getConnection()->beginTransaction();
-    }
-
-    /**
-     * @return ContainerAwareCommand[]
-     */
-    protected function getCommands()
-    {
-        return array_merge([], $this->getAdditionalCommands());
-    }
-
-    /**
-     * @return ContainerAwareCommand[]
-     */
-    protected function getAdditionalCommands()
-    {
-        return [];
-    }
-
-    /**
-     * @param string $name
-     * @param array $arguments
-     *
-     * @return int
-     */
-    protected function executeCommand($name, $arguments = [])
-    {
-        $command = $this->application->find($name);
-        $commandTester = new CommandTester($command);
-
-        $arguments['command'] = $command->getName();
-
-        return $commandTester->execute($arguments);
     }
 
     /**
