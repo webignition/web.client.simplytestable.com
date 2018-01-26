@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\User\SignUp;
 
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Controller\View\CacheableViewController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,34 +15,32 @@ class InviteController extends CacheableViewController implements IEFiltered
      * @param Request $request
      *
      * @return Response
+     *
+     * @throws CoreApplicationAdminRequestException
      */
     public function indexAction(Request $request)
     {
         $teamInviteService = $this->container->get('simplytestable.services.teaminviteservice');
-        $session = $this->container->get('session');
         $cacheableResponseService = $this->get('simplytestable.services.cacheableResponseService');
+        $flashBagValuesService = $this->container->get('simplytestable.services.flashbagvalues');
 
         $token = trim($request->attributes->get('token'));
         $staySignedIn = $request->query->get('stay-signed-in');
 
         $invite = $teamInviteService->getForToken($token);
 
-        $flashBag = $session->getFlashBag();
-
-        $acceptErrorValues = $flashBag->get(ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY);
-        $acceptError = (empty($acceptErrorValues)) ? null : $acceptErrorValues[0];
-
-        $acceptFailureValues = $flashBag->get(ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY);
-        $acceptFailure = (empty($acceptFailureValues)) ? null : $acceptFailureValues[0];
-
-        $viewData = [
-            ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY => $acceptError,
-            ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY => $acceptFailure,
-            'token' => $token,
-            'invite' => $invite,
-            'has_invite' => !empty($invite),
-            'stay_signed_in' => $staySignedIn,
-        ];
+        $viewData = array_merge(
+            [
+                'token' => $token,
+                'invite' => $invite,
+                'has_invite' => !empty($invite),
+                'stay_signed_in' => $staySignedIn,
+            ],
+            $flashBagValuesService->get([
+                ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY,
+                ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY,
+            ])
+        );
 
         return $cacheableResponseService->getCachableResponse(
             $request,
@@ -59,25 +58,22 @@ class InviteController extends CacheableViewController implements IEFiltered
     {
         $container = $this->container;
         $teamInviteService = $container->get('simplytestable.services.teaminviteservice');
-        $session = $container->get('session');
+        $flashBagValuesService = $this->container->get('simplytestable.services.flashbagvalues');
 
         $token = trim($this->getRequest()->attributes->get('token'));
         $invite = $teamInviteService->getForToken($token);
-        $flashBag = $session->getFlashBag();
 
-        $acceptErrorValues = $flashBag->get(ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY);
-        $acceptError = (empty($acceptErrorValues)) ? null : $acceptErrorValues[0];
-
-        $acceptFailureValues = $flashBag->get(ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY);
-        $acceptFailure = (empty($acceptFailureValues)) ? null : $acceptFailureValues[0];
-
-        return [
-            'invite_accept_error' => $acceptError,
-            'invite_accept_failure' => $acceptFailure,
-            'token' => $token,
-            'invite' => json_encode($invite),
-            'has_invite' => json_encode(!empty($invite)),
-            'stay_signed_in' => $this->getRequest()->query->get('stay-signed-in')
-        ];
+        return array_merge(
+            [
+                'token' => $token,
+                'invite' => json_encode($invite),
+                'has_invite' => json_encode(!empty($invite)),
+                'stay_signed_in' => $this->getRequest()->query->get('stay-signed-in')
+            ],
+            $flashBagValuesService->get([
+                ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY,
+                ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY,
+            ])
+        );
     }
 }

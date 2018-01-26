@@ -251,3 +251,8 @@ services:
     arguments:
       cacheValidatorHeadersService: '@simplytestable.services.cachevalidatorheadersservice'
       userService: '@simplytestable.services.userservice'
+
+  simplytestable.services.flashbagvalues:
+    class: SimplyTestable\WebClientBundle\Services\FlashBagValues
+    arguments:
+      session: '@session'
