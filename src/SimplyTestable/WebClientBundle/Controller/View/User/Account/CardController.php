@@ -3,65 +3,97 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\User\Account;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class CardController extends BaseViewController implements RequiresPrivateUser, IEFiltered {
-
-    protected function modifyViewName($viewName) {
-        return str_replace(':User', ':bs3/User', $viewName);
-    }
+class CardController extends BaseViewController implements RequiresPrivateUser, IEFiltered
+{
+    const CARD_EXPIRY_DATE_YEAR_RANGE = 10;
 
     /**
      * {@inheritdoc}
      */
     public function getUserSignInRedirectResponse(Request $request)
     {
-        return new RedirectResponse($this->generateUrl('view_user_signin_index', [
-            'redirect' => base64_encode(json_encode(['route' => 'view_user_account_card_index']))
-        ], true));
+        $router = $this->container->get('router');
+
+        $redirectUrl = $router->generate(
+            'view_user_signin_index',
+            [
+                'redirect' => base64_encode(json_encode(['route' => 'view_user_account_card_index']))
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return new RedirectResponse($redirectUrl);
     }
 
-    public function indexAction() {
-        $userSummary = $this->getUserService()->getSummary($this->getUser());
-        if ($userSummary->getTeamSummary()->isInTeam()) {
-            $this->getTeamService()->setUser($this->getUser());
-            $team = $this->getTeamService()->getTeam();
+    /**
+     * @return RedirectResponse|Response
+     *
+     * @throws \Exception
+     * @throws WebResourceException
+     */
+    public function indexAction()
+    {
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $teamService = $this->container->get('simplytestable.services.teamservice');
+        $router = $this->container->get('router');
+        $templating = $this->container->get('templating');
 
-            if ($team->getLeader() != $this->getUser()->getUsername()) {
-                return $this->redirect($this->generateUrl('view_user_account_index_index'));
+        $user = $userService->getUser();
+        $userSummary = $userService->getSummary();
+        $team = null;
+
+        if ($userSummary->getTeamSummary()->isInTeam()) {
+            $teamService->setUser($user);
+            $team = $teamService->getTeam();
+
+            if ($team->getLeader() !== $user->getUsername()) {
+                $redirectUrl = $router->generate(
+                    'view_user_account_index_index',
+                    [],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+
+                return new RedirectResponse($redirectUrl);
             }
         }
 
-        $currentYear = date('Y');
+        $currentYear = (int)date('Y');
 
-        $viewData = array_merge(array(
-            'public_site' => $this->container->getParameter('public_site'),
-            'user' => $this->getUser(),
-            'user_summary' => $userSummary,
+        $viewData = array_merge($this->getDefaultViewParameters(), [
             'stripe_publishable_key' => $this->container->getParameter('stripe_publishable_key'),
+            'plan_presentation_name' => ucwords($userSummary->getPlan()->getAccountPlan()->getName()),
+            'user_summary' => $userSummary,
             'countries' => $this->getCountries(),
-            'is_logged_in' => true,
             'expiry_year_start' => $currentYear,
-            'expiry_year_end' => $currentYear + 10,
-            'plan_presentation_name' => $this->getPlanPresentationName($userSummary->getPlan()->getAccountPlan()->getName())
-        ), $this->getViewFlashValues(array(
-            'user_account_card_exception_message',
-            'user_account_card_exception_param',
-            'user_account_card_exception_code'
-        )));
+            'expiry_year_end' => $currentYear + self::CARD_EXPIRY_DATE_YEAR_RANGE,
+        ]);
 
         if ($userSummary->getTeamSummary()->isInTeam()) {
             $viewData['team'] = $team;
         }
 
-        return $this->renderResponse($this->getRequest(), $viewData);
+        $content = $templating->render(
+            'SimplyTestableWebClientBundle:bs3/User/Account/Card:index.html.twig',
+            $viewData
+        );
+
+        return new Response($content);
     }
 
-    private function getCountries() {
-        return array(
+    /**
+     * @return array
+     */
+    private function getCountries()
+    {
+        return [
             "AF" => "Afghanistan",
             "AL" => "Albania",
             "DZ" => "Algeria",
@@ -301,34 +333,6 @@ class CardController extends BaseViewController implements RequiresPrivateUser, 
             "YE" => "Yemen",
             "ZM" => "Zambia",
             "ZW" => "Zimbabwe",
-        );
+        ];
     }
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\UserAccountCardService
-     */
-    protected function getUserAccountCardService() {
-        return $this->get('simplytestable.services.useraccountcardservice');
-    }
-
-
-    /**
-     *
-     * @param string $plan
-     * @return string
-     */
-    private function getPlanPresentationName($plan) {
-        return ucwords($plan);
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TeamService
-     */
-    private function getTeamService() {
-        return $this->container->get('simplytestable.services.teamservice');
-    }
-
 }
