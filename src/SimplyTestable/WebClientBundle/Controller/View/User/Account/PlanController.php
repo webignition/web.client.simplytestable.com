@@ -44,7 +44,7 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
         $templating = $this->container->get('templating');
         $planService = $this->container->get('simplytestable.services.plansservice');
         $router = $this->container->get('router');
-        $session = $this->container->get('session');
+        $flashBagValuesService = $this->container->get('simplytestable.services.flashbagvalues');
 
         $user = $userService->getUser();
         $userSummary = $userService->getSummary();
@@ -67,19 +67,6 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
             $planService->setPriceModifier($priceModifier);
         }
 
-        $flashBag = $session->getFlashBag();
-        $flashBagValues = [
-            'plan_subscribe_error' => '',
-            'plan_subscribe_success' => '',
-        ];
-
-        foreach ($flashBagValues as $key => $currentValue) {
-            $values = $flashBag->get($key);
-            if (!empty($values)) {
-                $flashBagValues[$key] = $values[0];
-            }
-        }
-
         $viewData = array_merge(
             $this->getDefaultViewParameters(),
             [
@@ -87,9 +74,11 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
                 'plan_presentation_name' => ucwords($userSummary->getPlan()->getAccountPlan()->getName()),
                 'plans' => $planService->listPremiumOnly()->getList(),
                 'currency_map' => $this->container->getParameter('currency_map'),
-                'plan_subscribe_error' => $flashBagValues['plan_subscribe_error'],
-                'plan_subscribe_success' => $flashBagValues['plan_subscribe_success'],
-            ]
+            ],
+            $flashBagValuesService->get([
+                'plan_subscribe_error',
+                'plan_subscribe_success',
+            ])
         );
 
         if ($userSummary->getTeamSummary()->isInTeam()) {

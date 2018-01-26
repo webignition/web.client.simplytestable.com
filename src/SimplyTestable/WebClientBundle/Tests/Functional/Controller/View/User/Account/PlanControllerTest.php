@@ -207,10 +207,10 @@ class PlanControllerTest extends BaseSimplyTestableTestCase
         $container = $containerFactory->create(
             [
                 'router',
-                'session',
                 'simplytestable.services.userservice',
                 'simplytestable.services.teamservice',
                 'simplytestable.services.plansservice',
+                'simplytestable.services.flashbagvalues',
             ],
             [
                 'templating' => $templatingEngine,
@@ -250,8 +250,8 @@ class PlanControllerTest extends BaseSimplyTestableTestCase
                             $this->assertCommonViewData($viewName, $parameters);
 
                             $this->assertArrayNotHasKey('team', $parameters);
-                            $this->assertEmpty($parameters['plan_subscribe_error']);
-                            $this->assertEmpty($parameters['plan_subscribe_success']);
+                            $this->assertArrayNotHasKey('plan_subscribe_error', $parameters);
+                            $this->assertArrayNotHasKey('plan_subscribe_success', $parameters);
 
                             return true;
                         },
@@ -288,8 +288,8 @@ class PlanControllerTest extends BaseSimplyTestableTestCase
                             $this->assertCommonViewData($viewName, $parameters);
 
                             $this->assertArrayNotHasKey('team', $parameters);
-                            $this->assertEmpty($parameters['plan_subscribe_error']);
-                            $this->assertEmpty($parameters['plan_subscribe_success']);
+                            $this->assertArrayNotHasKey('plan_subscribe_error', $parameters);
+                            $this->assertArrayNotHasKey('plan_subscribe_success', $parameters);
 
                             /* @var Plan[] $plans */
                             $plans = $parameters['plans'];
@@ -328,8 +328,8 @@ class PlanControllerTest extends BaseSimplyTestableTestCase
 
                             $this->assertArrayHasKey('team', $parameters);
                             $this->assertInstanceOf(Team::class, $parameters['team']);
-                            $this->assertEmpty($parameters['plan_subscribe_error']);
-                            $this->assertEmpty($parameters['plan_subscribe_success']);
+                            $this->assertArrayNotHasKey('plan_subscribe_error', $parameters);
+                            $this->assertArrayNotHasKey('plan_subscribe_success', $parameters);
 
                             return true;
                         },
@@ -403,8 +403,6 @@ class PlanControllerTest extends BaseSimplyTestableTestCase
                 'plan_presentation_name',
                 'plans',
                 'currency_map',
-                'plan_subscribe_error',
-                'plan_subscribe_success',
             ],
             array_keys($parameters)
         );
