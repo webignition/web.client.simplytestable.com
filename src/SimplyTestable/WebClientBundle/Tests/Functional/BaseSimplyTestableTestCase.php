@@ -139,14 +139,6 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase
     }
 
     /**
-     * @return TestService
-     */
-    protected function getTestService()
-    {
-        return $this->container->get('simplytestable.services.testservice');
-    }
-
-    /**
      * @return UserSerializerService
      */
     protected function getUserSerializerService()
