@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\User\S
 use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\SignUp\Team\InviteController as ActionInviteController;
 use SimplyTestable\WebClientBundle\Controller\View\User\SignUp\InviteController;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
@@ -74,6 +75,8 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
      * @param Request $request
      * @param array $flashBagValues
      * @param EngineInterface $templatingEngine
+     *
+     * @throws CoreApplicationAdminRequestException
      */
     public function testIndexAction(
         array $httpFixtures,
@@ -100,9 +103,9 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
                 'simplytestable.services.teaminviteservice',
                 'simplytestable.services.cacheableResponseService',
                 'simplytestable.services.userservice',
+                'simplytestable.services.flashbagvalues',
             ],
             [
-                'session' => $session,
                 'templating' => $templatingEngine,
             ],
             [
@@ -154,7 +157,10 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
                                 ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_PASSWORD_BLANK,
                                 $parameters[ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY]
                             );
-                            $this->assertNull($parameters[ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY]);
+                            $this->assertArrayNotHasKey(
+                                ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY,
+                                $parameters
+                            );
 
                             $this->assertEquals(
                                 $invite,
@@ -232,8 +238,14 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
                                 $viewName
                             );
 
-                            $this->assertNull($parameters[ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY]);
-                            $this->assertNull($parameters[ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY]);
+                            $this->assertArrayNotHasKey(
+                                ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY,
+                                $parameters
+                            );
+                            $this->assertArrayNotHasKey(
+                                ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY,
+                                $parameters
+                            );
 
                             $this->assertEquals($invite, $parameters['invite']);
                             $this->assertTrue($parameters['has_invite']);
