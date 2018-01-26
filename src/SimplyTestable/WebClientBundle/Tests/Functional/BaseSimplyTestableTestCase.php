@@ -155,14 +155,6 @@ abstract class BaseSimplyTestableTestCase extends BaseTestCase
     }
 
     /**
-     * @return UserService
-     */
-    protected function getUserService()
-    {
-        return $this->container->get('simplytestable.services.userservice');
-    }
-
-    /**
      * @return User
      */
     protected function makeUser()

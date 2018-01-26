@@ -2,7 +2,6 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
-use Guzzle\Http\Exception\BadResponseException;
 use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\Response;
@@ -14,7 +13,6 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
-use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 
 class UserServiceTest extends AbstractCoreApplicationServiceTest
@@ -900,6 +898,8 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testGetSummarySuccess($user, $expectedRequestUrl)
     {
+        $userService = $this->container->get('simplytestable.services.userservice');
+
         if (!empty($user)) {
             $this->userService->setUser($user);
         }
@@ -928,10 +928,9 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             ]),
         ]);
 
-        $userSummary = $this->getUserService()->getSummary();
+        $userSummary = $userService->getSummary();
 
         $this->assertInstanceOf(User\Summary::class, $userSummary);
-
         $this->assertEquals($expectedRequestUrl, $this->getLastRequest()->getUrl());
     }
 
