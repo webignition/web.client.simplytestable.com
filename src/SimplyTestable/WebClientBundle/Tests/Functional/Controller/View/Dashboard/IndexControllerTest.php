@@ -106,7 +106,7 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
     }
 
     /**
-     * @dataProvider indexActionDataProvider
+     * @dataProvider indexActionRenderDataProvider
      *
      * @param array $httpFixtures
      * @param User $user
@@ -114,7 +114,7 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
      * @param Request $request
      * @param EngineInterface $templatingEngine
      */
-    public function testIndexAction(
+    public function testIndexActionRender(
         array $httpFixtures,
         User $user,
         array $flashBagValues,
@@ -142,10 +142,10 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                 'simplytestable.services.tasktypeservice',
                 'simplytestable.services.userservice',
                 'simplytestable.services.testoptions.adapter.factory',
-                'session',
-                'simplytestable.services.cacheableresponseservice',
                 'simplytestable.services.userserializerservice',
                 'simplytestable.services.urlviewvalues',
+                'simplytestable.services.cachevalidator',
+                'simplytestable.services.flashbagvalues',
             ],
             [
                 'templating' => $templatingEngine,
@@ -168,7 +168,7 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
     /**
      * @return array
      */
-    public function indexActionDataProvider()
+    public function indexActionRenderDataProvider()
     {
         return [
             'public user' => [
@@ -177,10 +177,9 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                 'flashBagValues' => [],
                 'request' => new Request(),
                 'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'renderResponse' => [
-                        'withArgs' => function ($viewName, $parameters, $response) {
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);
-                            $this->assertNull($response);
                             $this->assertViewParameterKeys($parameters);
 
                             $this->assertAvailableTaskTypeKeys($parameters, [
@@ -202,10 +201,9 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                 'flashBagValues' => [],
                 'request' => new Request(),
                 'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'renderResponse' => [
-                        'withArgs' => function ($viewName, $parameters, $response) {
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);
-                            $this->assertNull($response);
                             $this->assertViewParameterKeys($parameters);
 
                             $this->assertAvailableTaskTypeKeys($parameters, [
@@ -231,10 +229,9 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                 ],
                 'request' => new Request(),
                 'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'renderResponse' => [
-                        'withArgs' => function ($viewName, $parameters, $response) {
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);
-                            $this->assertNull($response);
                             $this->assertViewParameterKeys($parameters);
 
                             $this->assertAvailableTaskTypeKeys($parameters, [
@@ -253,6 +250,29 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                 ]),
             ],
         ];
+    }
+
+    public function testIndexActionCachedResponse()
+    {
+        $request = new Request();
+
+        $this->container->set('request', $request);
+        $this->indexController->setContainer($this->container);
+
+        $response = $this->indexController->indexAction($request);
+        $this->assertInstanceOf(Response::class, $response);
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $responseLastModified = new \DateTime($response->headers->get('last-modified'));
+        $responseLastModified->modify('+1 hour');
+
+        $newRequest = $request->duplicate();
+
+        $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
+        $newResponse = $this->indexController->indexAction($newRequest);
+
+        $this->assertInstanceOf(Response::class, $newResponse);
+        $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
     /**
