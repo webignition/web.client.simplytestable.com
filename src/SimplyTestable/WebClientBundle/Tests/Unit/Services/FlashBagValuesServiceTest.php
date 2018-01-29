@@ -110,4 +110,43 @@ class FlashBagValuesServiceTest extends \PHPUnit_Framework_TestCase
             ],
         ];
     }
+
+    /**
+     * @dataProvider getSingleDataProvider
+     *
+     * @param array $existingFlashBagValues
+     * @param string $key
+     * @param string|null $expectedReturnValue
+     */
+    public function testGetSingle(array $existingFlashBagValues, $key, $expectedReturnValue)
+    {
+        foreach ($existingFlashBagValues as $key => $value) {
+            $this->flashBag->set($key, $value);
+        }
+
+        $returnValue = $this->flashBagValues->getSingle($key);
+
+        $this->assertEquals($expectedReturnValue, $returnValue);
+    }
+
+    /**
+     * @return array
+     */
+    public function getSingleDataProvider()
+    {
+        return [
+            'no existing flash bag values, has key' => [
+                'exitingFlashBagValues' => [],
+                'key' => 'foo',
+                'expectedReturnValue' => null,
+            ],
+            'has existing flash bag values, has key' => [
+                'exitingFlashBagValues' => [
+                    'foo' => 'bar',
+                ],
+                'key' => 'foo',
+                'expectedReturnValue' => 'bar',
+            ],
+        ];
+    }
 }

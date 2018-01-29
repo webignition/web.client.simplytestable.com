@@ -39,4 +39,18 @@ class FlashBagValues
 
         return $values;
     }
+
+    /**
+     * @param string $key
+     *
+     * @return mixed|null
+     */
+    public function getSingle($key)
+    {
+        $values = $this->get([$key]);
+
+        return isset($values[$key])
+            ? $values[$key]
+            : null;
+    }
 }
