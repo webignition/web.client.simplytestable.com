@@ -2,68 +2,87 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\User\SignUp;
 
+use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
-use SimplyTestable\WebClientBundle\Controller\View\CacheableViewController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-class ConfirmController extends CacheableViewController implements IEFiltered {    
-    
-    protected function modifyViewName($viewName) {
-        return str_replace(':User', ':bs3/User', $viewName);
-    }
-    
-    public function indexAction($email) {
-        $notificationKeys = array(
+class ConfirmController extends BaseViewController implements IEFiltered
+{
+    /**
+     * @param Request $request
+     * @param string $email
+     *
+     * @return Response
+     *
+     * @throws CoreApplicationAdminRequestException
+     */
+    public function indexAction(Request $request, $email)
+    {
+        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $flashBagValuesService = $this->container->get('simplytestable.services.flashbagvalues');
+        $templating = $this->container->get('templating');
+
+        $notificationKeys = [
             'token_resend_confirmation',
             'user_create_confirmation',
             'user_token_error',
             'token_resend_error',
-            'user_error'
-        );
-        
-        $userError = ($this->getUserService()->exists($email)) ? '' : 'invalid-user';
+        ];
 
-        $viewData = $this->getTransientViewData();
-        $viewData['user_error'] = $userError;
-        
-        if ($viewData['token_resend_error'] == 'invalid-user') {
-            $viewData['token_resend_error'] = '';
+        $viewData = array_merge([
+            'email' => $email,
+            'token' => trim($request->query->get('token')),
+        ], $flashBagValuesService->get([
+            'token_resend_confirmation',
+            'user_create_confirmation',
+            'user_token_error',
+            'token_resend_error',
+        ]));
+
+        if (!$userService->exists($email)) {
             $viewData['user_error'] = 'invalid-user';
         }
-        
+
+        if (isset($viewData['token_resend_error']) && $viewData['token_resend_error'] === 'invalid-user') {
+            unset($viewData['token_resend_error']);
+            $viewData['user_error'] = 'invalid-user';
+        }
+
+        $response = $cacheValidatorService->createResponse($request, $viewData);
+
+        if ($cacheValidatorService->isNotModified($response)) {
+            return $response;
+        }
+
         $viewData['has_notification'] = $this->hasNotification($notificationKeys, $viewData);
 
-        return $this->renderCacheableResponse($viewData);
-
-    }
-    
-    
-    private function getTransientViewData($flush = true) {
-        return array(
-            'token_resend_confirmation' => $this->getFlash('token_resend_confirmation', $flush),
-            'user_create_confirmation' => $this->getFlash('user_create_confirmation', $flush),
-            'user_token_error' => $this->getFlash('user_token_error', $flush),
-            'token_resend_error' => $this->getFlash('token_resend_error', $flush),
-            'user_activate_error' => $this->getFlash('user_activate_error', $flush),
-            'token' => trim($this->getRequest()->query->get('token')),
-            'email' => strtolower(trim($this->getRequest()->attributes->get('email'))),
+        $content = $templating->render(
+            'SimplyTestableWebClientBundle:bs3/User/SignUp/Confirm:index.html.twig',
+            array_merge($this->getDefaultViewParameters(), $viewData)
         );
+
+        $response->setContent($content);
+
+        return $response;
     }
 
-    
-    public function getCacheValidatorParameters() {        
-        return $this->getTransientViewData(false);
-    }
-    
-    
-
-    private function hasNotification($notificationKeys, $viewData) {
+    /**
+     * @param array $notificationKeys
+     * @param array $viewData
+     *
+     * @return bool
+     */
+    private function hasNotification(array $notificationKeys, array $viewData)
+    {
         foreach ($notificationKeys as $notificationKey) {
-            if (array_key_exists($notificationKey, $viewData) && !empty($viewData[$notificationKey])) {
+            if (array_key_exists($notificationKey, $viewData)) {
                 return true;
             }
         }
-        
-        return false;
-    }    
 
+        return false;
+    }
 }
