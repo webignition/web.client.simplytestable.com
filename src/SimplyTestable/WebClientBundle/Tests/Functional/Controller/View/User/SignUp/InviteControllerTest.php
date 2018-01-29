@@ -69,7 +69,7 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
     }
 
     /**
-     * @dataProvider indexActionDataProvider
+     * @dataProvider indexActionRenderDataProvider
      *
      * @param array $httpFixtures
      * @param Request $request
@@ -78,7 +78,7 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
      *
      * @throws CoreApplicationAdminRequestException
      */
-    public function testIndexAction(
+    public function testIndexActionRender(
         array $httpFixtures,
         Request $request,
         array $flashBagValues,
@@ -101,9 +101,9 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
         $container = $containerFactory->create(
             [
                 'simplytestable.services.teaminviteservice',
-                'simplytestable.services.cacheableResponseService',
                 'simplytestable.services.userservice',
                 'simplytestable.services.flashbagvalues',
+                'simplytestable.services.cachevalidator',
             ],
             [
                 'templating' => $templatingEngine,
@@ -115,15 +115,14 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
         );
 
         $this->inviteController->setContainer($container);
-        $this->inviteController->setRequest($request);
 
-        $this->inviteController->indexAction($request);
+        $this->inviteController->indexAction($request, self::TOKEN);
     }
 
     /**
      * @return array
      */
-    public function indexActionDataProvider()
+    public function indexActionRenderDataProvider()
     {
         $inviteData = [
             'team' => self::TEAM_NAME,
@@ -138,16 +137,14 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse($inviteData),
                 ],
-                'request' => new Request([], [], [
-                    'token' => self::TOKEN,
-                ]),
+                'request' => new Request(),
                 'flashBagValues' => [
                     ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY =>
                         ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_PASSWORD_BLANK
                 ],
                 'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'renderResponse' => [
-                        'withArgs' => function ($viewName, $parameters, $response) use ($invite) {
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) use ($invite) {
                             $this->assertEquals(
                                 'SimplyTestableWebClientBundle:bs3/User/SignUp/Invite:index.html.twig',
                                 $viewName
@@ -168,7 +165,6 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
                             );
                             $this->assertTrue($parameters['has_invite']);
                             $this->assertNull($parameters['stay_signed_in']);
-                            $this->assertNull($response);
 
                             $this->assertTemplateParameters($parameters);
 
@@ -182,17 +178,15 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
                 'httpFixtures' => [
                     Response::fromMessage('HTTP/1.1 500'),
                 ],
-                'request' => new Request([], [], [
-                    'token' => self::TOKEN,
-                ]),
+                'request' => new Request(),
                 'flashBagValues' => [
                     ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY =>
                         ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_FAILURE,
                     ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY => 500,
                 ],
                 'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'renderResponse' => [
-                        'withArgs' => function ($viewName, $parameters, $response) {
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(
                                 'SimplyTestableWebClientBundle:bs3/User/SignUp/Invite:index.html.twig',
                                 $viewName
@@ -210,7 +204,6 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
                             $this->assertNull($parameters['invite']);
                             $this->assertFalse($parameters['has_invite']);
                             $this->assertNull($parameters['stay_signed_in']);
-                            $this->assertNull($response);
 
                             $this->assertTemplateParameters($parameters);
 
@@ -226,13 +219,11 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
                 ],
                 'request' => new Request([
                     'stay-signed-in' => 1,
-                ], [], [
-                    'token' => self::TOKEN,
                 ]),
                 'flashBagValues' => [],
                 'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'renderResponse' => [
-                        'withArgs' => function ($viewName, $parameters, $response) use ($invite) {
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) use ($invite) {
                             $this->assertEquals(
                                 'SimplyTestableWebClientBundle:bs3/User/SignUp/Invite:index.html.twig',
                                 $viewName
@@ -250,7 +241,6 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
                             $this->assertEquals($invite, $parameters['invite']);
                             $this->assertTrue($parameters['has_invite']);
                             $this->assertEquals(1, $parameters['stay_signed_in']);
-                            $this->assertNull($response);
 
                             $this->assertTemplateParameters($parameters);
 
@@ -261,6 +251,37 @@ class InviteControllerTest extends BaseSimplyTestableTestCase
                 ]),
             ],
         ];
+    }
+
+    public function testIndexActionCachedResponse()
+    {
+        $this->setHttpFixtures([
+            HttpResponseFactory::createJsonResponse([
+                'team' => self::TEAM_NAME,
+                'user' => self::INVITE_USERNAME,
+                'token' => self::TOKEN,
+            ]),
+        ]);
+
+        $request = new Request();
+
+        $this->container->set('request', $request);
+        $this->inviteController->setContainer($this->container);
+
+        $response = $this->inviteController->indexAction($request, self::TOKEN);
+        $this->assertInstanceOf(SymfonyResponse::class, $response);
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $responseLastModified = new \DateTime($response->headers->get('last-modified'));
+        $responseLastModified->modify('+1 hour');
+
+        $newRequest = $request->duplicate();
+
+        $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
+        $newResponse = $this->inviteController->indexAction($newRequest, self::TOKEN);
+
+        $this->assertInstanceOf(SymfonyResponse::class, $newResponse);
+        $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
     /**

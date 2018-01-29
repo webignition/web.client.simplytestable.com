@@ -2,15 +2,15 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Dashboard;
 
+use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter as TestOptionsRequestAdapter;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
-use SimplyTestable\WebClientBundle\Controller\View\CacheableViewController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class IndexController extends CacheableViewController implements IEFiltered, RequiresValidUser
+class IndexController extends BaseViewController implements IEFiltered, RequiresValidUser
 {
     /**
      * @param Request $request
@@ -22,13 +22,16 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
         $userService = $this->container->get('simplytestable.services.userservice');
         $testOptionsAdapterFactory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
-        $session = $this->container->get('session');
-        $cacheableResponseService = $this->container->get('simplytestable.services.cacheableresponseservice');
         $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
+        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
+        $flashBagValuesService = $this->container->get('simplytestable.services.flashbagvalues');
+        $templating = $this->container->get('templating');
 
         $user = $userService->getUser();
+        $isLoggedIn = !$userService->isPublicUser($user);
+
         $taskTypeService->setUser($user);
-        if (!$userService->isPublicUser($user)) {
+        if ($isLoggedIn) {
             $taskTypeService->setUserIsAuthenticated();
         }
 
@@ -36,29 +39,49 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         $testOptionsAdapter = $testOptionsAdapterFactory->create();
         $testOptionsAdapter->setRequestData($requestData);
 
-        $testStartErrorValues = $session->getFlashBag()->get('test_start_error');
-        $hasTestStartError = !empty($testStartErrorValues);
-        $testStartError = $hasTestStartError ? $testStartErrorValues[0] : null;
+        $testStartError = $flashBagValuesService->getSingle('test_start_error');
+        $hasTestStartError = !empty($testStartError);
+
+        $website = $requestData->get('website');
+        $availableTaskTypes = $taskTypeService->getAvailable();
+        $taskTypes = $taskTypeService->get();
+        $testOptions = $this->getTestOptionsArray($testOptionsAdapter, $requestData, $hasTestStartError);
+        $cssValidationIgnoreCommonCdns = $this->container->getParameter('css-validation-ignore-common-cdns');
+        $jsStaticAnalysisIgnoreCommonCdns = $this->container->getParameter('js-static-analysis-ignore-common-cdns');
+
+        $response = $cacheValidatorService->createResponse($request, [
+            'test_start_error' => $testStartError,
+            'website' => $website,
+            'available_task_types' => json_encode($availableTaskTypes),
+            'task_types' => json_encode($taskTypes),
+            'test_options' => json_encode($testOptions),
+            'css_validation_ignore_common_cdns' => json_encode($cssValidationIgnoreCommonCdns),
+            'js_static_analysis_ignore_common_cdns' => json_encode($jsStaticAnalysisIgnoreCommonCdns),
+            'is_logged_in' => $isLoggedIn,
+        ]);
+
+        if ($cacheValidatorService->isNotModified($response)) {
+            return $response;
+        }
 
         $viewData = [
-            'available_task_types' => $taskTypeService->getAvailable(),
-            'task_types' => $taskTypeService->get(),
-            'test_options' => $this->getTestOptionsArray($testOptionsAdapter, $requestData, $hasTestStartError),
-            'css_validation_ignore_common_cdns' =>
-                $this->container->getParameter('css-validation-ignore-common-cdns'),
-            'js_static_analysis_ignore_common_cdns' =>
-                $this->container->getParameter('js-static-analysis-ignore-common-cdns'),
+            'available_task_types' => $availableTaskTypes,
+            'task_types' => $taskTypes,
+            'test_options' => $testOptions,
+            'css_validation_ignore_common_cdns' => $cssValidationIgnoreCommonCdns,
+            'js_static_analysis_ignore_common_cdns' => $jsStaticAnalysisIgnoreCommonCdns,
             'test_start_error' => $testStartError,
-            'website' => $urlViewValuesService->create($requestData->get('website')),
+            'website' => $urlViewValuesService->create($website),
         ];
 
-        return $cacheableResponseService->getCachableResponse(
-            $request,
-            parent::render(
-                'SimplyTestableWebClientBundle:bs3/Dashboard/Index:index.html.twig',
-                array_merge($this->getDefaultViewParameters(), $viewData)
-            )
+        $content = $templating->render(
+            'SimplyTestableWebClientBundle:bs3/Dashboard/Index:index.html.twig',
+            array_merge($this->getDefaultViewParameters(), $viewData)
         );
+
+        $response->setContent($content);
+
+        return $response;
     }
 
     /**
@@ -94,52 +117,5 @@ class IndexController extends CacheableViewController implements IEFiltered, Req
         }
 
         return $testOptions;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCacheValidatorParameters()
-    {
-        $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
-        $testOptionsAdapterFactory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
-        $session = $this->container->get('session');
-
-        $user = $userService->getUser();
-        $taskTypeService->setUser($user);
-
-        $isAuthenticated = !$userService->isPublicUser($user);
-
-        if ($isAuthenticated) {
-            $taskTypeService->setUserIsAuthenticated();
-        }
-
-        $requestData = $this->getRequest()->query;
-        $testOptionsAdapter = $testOptionsAdapterFactory->create();
-        $testOptionsAdapter->setRequestData($requestData);
-
-        $testStartErrorValues = $session->getFlashBag()->peek('test_start_error');
-        $hasTestStartError = !empty($testStartErrorValues);
-        $testStartError = $hasTestStartError ? $testStartErrorValues[0] : '';
-
-        return [
-            'test_start_error' => $testStartError,
-            'website' => $this->getRequest()->query->has('website') ? $this->getRequest()->query->get('website') : '',
-            'available_task_types' => json_encode($taskTypeService->getAvailable()),
-            'task_types' => json_encode($this->container->getParameter('task_types')),
-            'test_options' => json_encode($this->getTestOptionsArray(
-                $testOptionsAdapter,
-                $requestData,
-                $hasTestStartError
-            )),
-            'css_validation_ignore_common_cdns' => json_encode(
-                $this->container->getParameter('css-validation-ignore-common-cdns')
-            ),
-            'js_static_analysis_ignore_common_cdns' => json_encode(
-                $this->container->getParameter('js-static-analysis-ignore-common-cdns')
-            ),
-            'is_logged_in' => $isAuthenticated,
-        ];
     }
 }
