@@ -15,13 +15,12 @@ class WebsiteListController extends BaseViewController implements RequiresValidU
     {
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
         $userService = $this->container->get('simplytestable.services.userservice');
-        $cacheableResponseService = $this->container->get('simplytestable.services.cacheableresponseservice');
 
         $user = $userService->getUser();
 
         $remoteTestService->setUser($user);
         $finishedWebsites = $remoteTestService->getFinishedWebsites();
 
-        return $cacheableResponseService->getUncacheableResponse(new JsonResponse($finishedWebsites));
+        return new JsonResponse($finishedWebsites);
     }
 }
