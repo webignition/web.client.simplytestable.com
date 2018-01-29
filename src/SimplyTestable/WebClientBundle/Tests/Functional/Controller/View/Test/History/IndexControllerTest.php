@@ -263,7 +263,6 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                 'simplytestable.services.remotetestservice',
                 'simplytestable.services.userservice',
                 'simplytestable.services.taskservice',
-                'simplytestable.services.cacheableresponseservice',
                 'simplytestable.services.cachevalidator',
             ],
             [
