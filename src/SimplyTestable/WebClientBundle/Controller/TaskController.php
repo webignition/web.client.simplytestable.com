@@ -2,53 +2,67 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
+use SimplyTestable\WebClientBundle\Services\TaskService;
+use SimplyTestable\WebClientBundle\Services\TestService;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 
-class TaskController extends TestViewController
+class TaskController extends TestViewController implements RequiresValidOwner
 {
     const DEFAULT_UNRETRIEVED_TASKID_LIMIT = 100;
     const MAX_UNRETRIEVED_TASKID_LIMIT = 1000;
 
-    public function idCollectionAction($website, $test_id) {
-        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
+    /**
+     * @param string $website
+     * @param int $test_id
+     *
+     * @return JsonResponse
+     *
+     * @throws WebResourceException
+     */
+    public function idCollectionAction($website, $test_id)
+    {
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $testService = $this->container->get('simplytestable.services.testservice');
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $taskService = $this->container->get('simplytestable.services.taskservice');
 
-        try {
-            if (!$this->getTestService()->has($website, $test_id)) {
-                return $this->sendNotFoundResponse();
-            }
+        $user = $userService->getUser();
+        $remoteTestService->setUser($user);
 
-            $test = $this->getTestService()->get($website, $test_id);
-            if (!$this->getTestService()->getRemoteTestService()->authenticate()) {
-                return $this->sendNotFoundResponse();
-            }
+        $test = $testService->get($website, $test_id);
 
-            $taskIds = $this->getTaskService()->getRemoteTaskIds($test);
+        $taskIds = $taskService->getRemoteTaskIds($test);
 
-            return new Response($this->getSerializer()->serialize($taskIds, 'json'));
-
-        } catch (WebResourceException $webResourceException) {
-            if ($webResourceException->getCode() == 403) {
-                return $this->sendNotFoundResponse();
-            }
-
-            return new Response($this->getSerializer()->serialize(null, 'json'));
-        } catch (\Guzzle\Http\Exception\RequestException $requestException)  {
-            return new Response($this->getSerializer()->serialize(null, 'json'));
-        }
+        return new JsonResponse($taskIds);
     }
 
+    /**
+     * @param string $website
+     * @param int $test_id
+     * @param int|null $limit
+     *
+     * @return JsonResponse
+     *
+     * @throws WebResourceException
+     */
+    public function unretrievedIdCollectionAction($website, $test_id, $limit = null)
+    {
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $testService = $this->container->get('simplytestable.services.testservice');
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $taskService = $this->container->get('simplytestable.services.taskservice');
 
-    public function unretrievedIdCollectionAction($website, $test_id, $limit = null) {
-        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
+        $user = $userService->getUser();
+        $remoteTestService->setUser($user);
 
-        if (!$this->getTestService()->has($website, $test_id, $this->getUser())) {
-            return $this->sendNotFoundResponse();
-        }
+        $test = $testService->get($website, $test_id);
 
-        $test = $this->getTestService()->get($website, $test_id, $this->getUser());
         $limit = filter_var($limit, FILTER_VALIDATE_INT);
-        if ($limit === false) {
+        if (false === $limit) {
             $limit = self::DEFAULT_UNRETRIEVED_TASKID_LIMIT;
         }
 
@@ -56,77 +70,34 @@ class TaskController extends TestViewController
             $limit = self::MAX_UNRETRIEVED_TASKID_LIMIT;
         }
 
-        $taskIds = $this->getTaskService()->getUnretrievedRemoteTaskIds($test, $limit);//
-        return new Response($this->getSerializer()->serialize($taskIds, 'json'));
+        $taskIds = $taskService->getUnretrievedRemoteTaskIds($test, $limit);
+
+        return new JsonResponse($taskIds);
     }
 
-
     /**
-     *
-     * @return array|null
+     * @return TestService
      */
-    private function getRequestTaskIds() {
-        $requestTaskIds = $this->getRequestValue('taskIds');
-        $taskIds = array();
-
-        if (substr_count($requestTaskIds, ':')) {
-            $rangeLimits = explode(':', $requestTaskIds);
-
-            for ($i = $rangeLimits[0]; $i<=$rangeLimits[1]; $i++) {
-                $taskIds[] = $i;
-            }
-        } else {
-            $rawRequestTaskIds = explode(',', $requestTaskIds);
-
-            foreach ($rawRequestTaskIds as $requestTaskId) {
-                if (ctype_digit($requestTaskId)) {
-                    $taskIds[] = (int)$requestTaskId;
-                }
-            }
-        }
-
-        return (count($taskIds) > 0) ? $taskIds : null;
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TestService
-     */
-    protected function getTestService() {
+    protected function getTestService()
+    {
         return $this->container->get('simplytestable.services.testservice');
     }
 
     /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TaskService
+     * @return TaskService
      */
-    protected function getTaskService() {
+    protected function getTaskService()
+    {
         return $this->container->get('simplytestable.services.taskservice');
     }
 
     /**
+     * @param Request $request
      *
-     * @return \SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService
+     * @return Response
      */
-    protected function getDocumentationUrlCheckerService() {
-        return $this->container->get('simplytestable.services.documentationurlcheckerservice');
-    }
-
-
-    /**
-     *
-     * @return \JMS\SerializerBundle\Serializer\Serializer
-     */
-    protected function getSerializer() {
-        return $this->container->get('serializer');
-    }
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory
-     */
-    private function getTaskOutputResultParserService() {
-        return $this->container->get('simplytestable.services.taskoutputresultparserfactoryservice');
+    public function getInvalidOwnerResponse(Request $request)
+    {
+        return new JsonResponse();
     }
 }
