@@ -33,6 +33,8 @@ class OnKernelRequestCacheableTest extends AbstractOnKernelRequestTest
         $cacheValidatorHeadersLastModified,
         $expectedHasResponse
     ) {
+        $this->markTestSkipped('Remove in 1611');
+
         if (!empty($cacheValidatorIdentifierParameters)) {
             $entityManager = $this->container->get('doctrine.orm.entity_manager');
 
