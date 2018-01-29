@@ -2,12 +2,10 @@
 
 namespace SimplyTestable\WebClientBundle\EventListener;
 
-use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -16,10 +14,8 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser as 
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser as RequiresValidUserController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner as RequiresValidTestOwnerController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresCompletedTest as RequiresCompletedTestController;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\Cacheable as CacheableController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered as IEFilteredController;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
-use SimplyTestable\WebClientBundle\Model\CacheValidatorIdentifier;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -186,69 +182,6 @@ class RequestListener
                 return;
             }
         }
-
-        try {
-            if ($controller instanceof CacheableController) {
-                $cacheableResponseService = $this->container->get('simplytestable.services.cacheableresponseservice');
-                $session = $this->container->get('session');
-
-                $this->setRequestCacheValidatorHeaders();
-
-                /* @var Response $response */
-                $response = $cacheableResponseService->getCachableResponse($this->event->getRequest());
-
-                $this->fixRequestIfNoneMatchHeader();
-
-                if ($response->isNotModified($this->request)) {
-                    $this->event->setResponse($response);
-                    $session->getFlashBag()->clear();
-
-                    return;
-                }
-            }
-        } catch (\Exception $e) {
-            // Exceptions may well be raised by a controller when getting cache validator parameters as the controller
-            // can assume user and test authentication has already been carried out prior to the request reaching the
-            // controller.
-            // It is safe to ignore such exceptions.
-            // It is much faster to try and return a 304 Not Modified response at this stage prior to any significant
-            // processing occurring.
-        }
-    }
-
-    private function setRequestCacheValidatorHeaders()
-    {
-        $cacheValidatorHeadersService = $this->container->get('simplytestable.services.cachevalidatorheadersservice');
-
-        /* @var CacheableController $controller */
-        $controller = $this->createController();
-
-        $controller->setRequest($this->request);
-        $cacheValidatorParameters = $controller->getCacheValidatorParameters();
-
-        if ($this->request->headers->has('accept')) {
-            $cacheValidatorHeaders['http-header-accept'] = $this->request->headers->get('accept');
-        }
-
-        $cacheValidatorIdentifier = $this->createCacheValidatorIdentifier($cacheValidatorParameters);
-
-        /* @var CacheValidatorHeaders $cacheValidatorHeaders */
-        $cacheValidatorHeaders = $cacheValidatorHeadersService->get($cacheValidatorIdentifier);
-
-        $this->request->headers->set('x-cache-validator-etag', $cacheValidatorHeaders->getETag());
-        $this->request->headers->set(
-            'x-cache-validator-lastmodified',
-            $cacheValidatorHeaders->getLastModifiedDate()->format('c')
-        );
-    }
-
-    private function fixRequestIfNoneMatchHeader()
-    {
-        $currentIfNoneMatch = $this->request->headers->get('if-none-match');
-
-        $modifiedEtag = preg_replace('/-gzip"$/', '"', $currentIfNoneMatch);
-
-        $this->request->headers->set('if-none-match', $modifiedEtag);
     }
 
     /**
@@ -344,27 +277,5 @@ class RequestListener
         }
 
         return $request->server->get('HTTP_USER_AGENT');
-    }
-
-    /**
-     * @param array $parameters
-     *
-     * @return CacheValidatorIdentifier
-     */
-    private function createCacheValidatorIdentifier(array $parameters = [])
-    {
-        $userService = $this->container->get('simplytestable.services.userservice');
-        $user = $userService->getUser();
-
-        $identifier = new CacheValidatorIdentifier();
-        $identifier->setParameter('route', $this->request->get('_route'));
-        $identifier->setParameter('user', $user->getUsername());
-        $identifier->setParameter('is_logged_in', $userService->isLoggedIn());
-
-        foreach ($parameters as $key => $value) {
-            $identifier->setParameter($key, $value);
-        }
-
-        return $identifier;
     }
 }
