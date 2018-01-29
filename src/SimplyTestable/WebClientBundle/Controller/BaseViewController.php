@@ -182,22 +182,6 @@ abstract class BaseViewController extends BaseController {
         return $this->responseFormatService;
     }
 
-
-    /**
-     *
-     * @param array $additionalParameters
-     * @return Response
-     */
-    protected function renderCacheableResponse(array $additionalParameters = array()) {
-        return $this->getCacheableResponseService()->getCachableResponse(
-            $this->getRequest(), $this->renderResponse(
-                $this->getRequest(),
-                $additionalParameters
-            )
-        );
-    }
-
-
     /**
      * @param array $additionalParameters
      * @return Response
@@ -215,16 +199,6 @@ abstract class BaseViewController extends BaseController {
 
         return $response;
     }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\CacheableResponseService
-     */
-    protected function getCacheableResponseService() {
-        return $this->get('simplytestable.services.cacheableResponseService');
-    }
-
 
     /**
      *
