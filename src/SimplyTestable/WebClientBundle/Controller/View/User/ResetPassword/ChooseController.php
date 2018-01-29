@@ -2,7 +2,8 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\User\ResetPassword;
 
-use SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword\IndexController;
+use SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword\IndexController
+    as ResetPasswordActionController;
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
@@ -29,7 +30,9 @@ class ChooseController extends BaseViewController implements IEFiltered
 
         $staySignedIn = $request->query->get('stay-signed-in');
         $actualToken = $userService->getConfirmationToken($email);
-        $userResetPasswordError = $flashBagValuesService->getSingle(IndexController::FLASH_BAG_REQUEST_ERROR_KEY);
+        $userResetPasswordError = $flashBagValuesService->getSingle(
+            ResetPasswordActionController::FLASH_BAG_REQUEST_ERROR_KEY
+        );
 
         if ($token !== $actualToken) {
             $userResetPasswordError = 'invalid-token';
