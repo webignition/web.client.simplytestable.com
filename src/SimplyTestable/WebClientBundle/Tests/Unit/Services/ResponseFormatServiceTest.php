@@ -3,10 +3,8 @@
 namespace SimplyTestable\WebClientBundle\Tests\Unit\Services;
 
 use ReflectionClass;
-use SimplyTestable\WebClientBundle\Services\CacheableResponseService;
 use SimplyTestable\WebClientBundle\Services\ResponseFormatService;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use webignition\InternetMediaType\InternetMediaType;
 
 class ResponseFormatServiceTest extends \PHPUnit_Framework_TestCase
