@@ -3,8 +3,6 @@
 namespace SimplyTestable\WebClientBundle\Controller;
 
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
-use SimplyTestable\WebClientBundle\Services\TaskService;
-use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,6 +12,14 @@ class TaskController extends TestViewController implements RequiresValidOwner
 {
     const DEFAULT_UNRETRIEVED_TASKID_LIMIT = 100;
     const MAX_UNRETRIEVED_TASKID_LIMIT = 1000;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getInvalidOwnerResponse(Request $request)
+    {
+        return new JsonResponse();
+    }
 
     /**
      * @param string $website
@@ -76,28 +82,61 @@ class TaskController extends TestViewController implements RequiresValidOwner
     }
 
     /**
-     * @return TestService
+     * @param Request $request
+     * @param string $website
+     * @param int $test_id
+     *
+     * @return Response
+     *
+     * @throws WebResourceException
      */
-    protected function getTestService()
+    public function retrieveAction(Request $request, $website, $test_id)
     {
-        return $this->container->get('simplytestable.services.testservice');
-    }
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $testService = $this->container->get('simplytestable.services.testservice');
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $taskService = $this->container->get('simplytestable.services.taskservice');
 
-    /**
-     * @return TaskService
-     */
-    protected function getTaskService()
-    {
-        return $this->container->get('simplytestable.services.taskservice');
+        $user = $userService->getUser();
+        $remoteTestService->setUser($user);
+        $taskService->setUser($user);
+
+        $test = $testService->get($website, $test_id);
+
+        $taskService->getCollection($test, $this->getRequestRemoteTaskIds($request));
+
+        return new Response();
     }
 
     /**
      * @param Request $request
      *
-     * @return Response
+     * @return array|null
      */
-    public function getInvalidOwnerResponse(Request $request)
+    private function getRequestRemoteTaskIds(Request $request)
     {
-        return new JsonResponse();
+        $requestTaskIds = $request->request->get('remoteTaskIds');
+
+        $taskIds = [];
+
+        if (substr_count($requestTaskIds, ':')) {
+            $rangeLimits = explode(':', $requestTaskIds);
+            $start = (int)$rangeLimits[0];
+            $end = (int)$rangeLimits[1];
+
+            for ($i = $start; $i <= $end; $i++) {
+                $taskIds[] = $i;
+            }
+        } else {
+            $rawRequestTaskIds = explode(',', $requestTaskIds);
+
+            foreach ($rawRequestTaskIds as $requestTaskId) {
+                if (ctype_digit($requestTaskId)) {
+                    $taskIds[] = (int)$requestTaskId;
+                }
+            }
+        }
+
+        return (count($taskIds) > 0) ? $taskIds : null;
     }
 }

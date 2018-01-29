@@ -270,7 +270,7 @@ view_test_results_preparingstats_index:
 
 task_results_retrieve:
     pattern:  /{website}/{test_id}/results/retrieve/
-    defaults: { _controller: SimplyTestableWebClientBundle:TaskResults:retrieve }
+    defaults: { _controller: SimplyTestableWebClientBundle:Task:retrieve }
     requirements:
        website: ".+"
 
