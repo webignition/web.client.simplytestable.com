@@ -2,249 +2,218 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+use Guzzle\Http\Exception\CurlException;
+use SimplyTestable\WebClientBundle\Entity\Task\Task;
+use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\TestOptions;
-use SimplyTestable\WebClientBundle\Exception\UserServiceException;
-use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
+use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
+use webignition\NormalisedUrl\NormalisedUrl;
 
 class TestStartController extends TestController
-{  
-    const HTTP_AUTH_FEATURE_NAME = 'http-authentication';    
+{
+    const HTTP_AUTH_FEATURE_NAME = 'http-authentication';
     const HTTP_AUTH_FEATURE_USERNAME_KEY = 'http-auth-username';
     const HTTP_AUTH_FEATURE_PASSWORD_KEY = 'http-auth-password';
     const COOKIES_FEATURE_NAME = 'cookies';
 
-    
     /**
+     * @param Request $request
      *
-     * @var \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
+     * @return RedirectResponse
      */
-    private $testOptionsAdapter = null;
+    public function startNewAction(Request $request)
+    {
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $testOptionsAdapterFactory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
+        $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
+        $session = $this->container->get('session');
+        $router = $this->container->get('router');
 
-    /**
-     * @var \SimplyTestable\WebClientBundle\Services\TaskTypeService
-     */
-    private $taskTypeService = null;
-    
-    
-    public function startNewAction()
-    {  
-        $requestValues = $this->getRequestValues(\Guzzle\Http\Message\Request::POST);
-        
-        if (!$requestValues->has('link-integrity-excluded-domains') && $this->container->hasParameter('link-integrity-excluded-domains')) {
-            $requestValues->set('link-integrity-excluded-domains', $this->container->getParameter('link-integrity-excluded-domains'));
-        }        
-        
-        return $this->startAction($requestValues);
-    }
-    
-    private function startAction(\Symfony\Component\HttpFoundation\ParameterBag $requestValues)
-    {        
-        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
-        
-        $this->getTestOptionsAdapter()->setRequestData($requestValues);
-        $testOptions = $this->getTestOptionsAdapter()->getTestOptions();
-        
+        $user = $userService->getUser();
+        $remoteTestService->setUser($user);
+
+        $taskTypeService->setUser($user);
+        if (!$userService->isPublicUser($user)) {
+            $taskTypeService->setUserIsAuthenticated();
+        }
+
+        $requestData = $request->request;
+
+        if ($requestData->get(Task::TYPE_KEY_LINK_INTEGRITY)) {
+            $requestData->set(
+                'link-integrity-excluded-domains',
+                $this->container->getParameter('link-integrity-excluded-domains')
+            );
+        }
+
+        $testOptionsAdapter = $testOptionsAdapterFactory->create();
+        $testOptionsAdapter->setRequestData($requestData);
+        $testOptionsAdapter->setInvertInvertableOptions(true);
+
+        $testOptions = $testOptionsAdapter->getTestOptions();
+
         if ($testOptions->hasFeatureOptions(self::HTTP_AUTH_FEATURE_NAME)) {
             $httpAuthFeatureOptions = $testOptions->getFeatureOptions(self::HTTP_AUTH_FEATURE_NAME);
-            
-            if ($httpAuthFeatureOptions[self::HTTP_AUTH_FEATURE_USERNAME_KEY] == '' && $httpAuthFeatureOptions[self::HTTP_AUTH_FEATURE_PASSWORD_KEY] == '') {
+
+            $notHasUsername = ('' === $httpAuthFeatureOptions[self::HTTP_AUTH_FEATURE_USERNAME_KEY]);
+            $notHasPassword = ('' === $httpAuthFeatureOptions[self::HTTP_AUTH_FEATURE_PASSWORD_KEY]);
+
+            if ($notHasUsername && $notHasPassword) {
                 $testOptions->removeFeatureOptions(self::HTTP_AUTH_FEATURE_NAME);
-                $httpAuthFeatureOptions = $testOptions->getFeatureOptions(self::HTTP_AUTH_FEATURE_NAME);
-            }            
-        }
-
-        if ($testOptions->hasFeatureOptions(self::COOKIES_FEATURE_NAME)) {
-            $cookieFeatureOptions = $testOptions->getFeatureOptions(self::COOKIES_FEATURE_NAME);
-            $cookies = $cookieFeatureOptions['cookies'];
-
-            foreach ($cookies as $index => $cookie) {
-                foreach ($cookie as $key => $value) {
-                    if (is_null($value)) {
-                        $cookie[$key] = '';
-                    }
-                }
-
-                $cookies[$index] = $cookie;
             }
-
-            $cookieFeatureOptions['cookies'] = $cookies;
-
-            $testOptions->setFeatureOptions(self::COOKIES_FEATURE_NAME, $cookieFeatureOptions);
         }
 
-        if (!$this->hasWebsite()) {
-            $this->get('session')->getFlashBag()->set('test_start_error', 'website-blank');
-            return $this->redirect($this->generateUrl('view_dashboard_index_index', $this->getRedirectValues($testOptions), true));
+        $website = trim($requestData->get('website'));
+        $redirectRouteParameters = $this->getRedirectRouteParameters($testOptions, $website);
+        $flashBag = $session->getFlashBag();
+
+        if (empty($website)) {
+            $flashBag->set('test_start_error', 'website-blank');
+
+            return new RedirectResponse($this->createStartErrorRedirectUrl($router, $redirectRouteParameters));
         }
-        
-        if ($testOptions->hasTestTypes() === false) {
-            $this->get('session')->getFlashBag()->set('test_start_error', 'no-test-types-selected');
-            return $this->redirect($this->generateUrl('view_dashboard_index_index', $this->getRedirectValues($testOptions), true));
+
+        if (!$testOptions->hasTestTypes()) {
+            $flashBag->set('test_start_error', 'no-test-types-selected');
+
+            return new RedirectResponse($this->createStartErrorRedirectUrl($router, $redirectRouteParameters));
         }
-        
+
+        $isFullSiteTest = $this->isFullSiteTest($requestData);
+        $testType = $isFullSiteTest ? 'full site' : 'single url';
+        $urlToTest = $this->getUrlToTest($isFullSiteTest, $website);
+
         try {
-            $jsonResponseObject = $this->getTestService()->getRemoteTestService()->start($this->getTestUrl(), $testOptions, ($this->isFullTest() ? 'full site' : 'single url'))->getContentObject();            
-            return $this->redirect($this->generateUrl(
+            $jsonDocument = $remoteTestService->start($urlToTest, $testOptions, $testType);
+            $responseData = $jsonDocument->getContentArray();
+
+            $redirectUrl = $router->generate(
                 'view_test_progress_index_index',
-                array(
-                    'website' => $jsonResponseObject->website,
-                    'test_id' => $jsonResponseObject->id
-                ),
-                true
-            ));
-        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
-            $this->get('session')->getFlashBag()->set('test_start_error', 'curl-error');
-            $this->get('session')->getFlashBag()->set('curl_error_code', $curlException->getErrorNo());
-            return $this->redirect($this->generateUrl('view_dashboard_index_index', $this->getRedirectValues($testOptions), true));
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {                            
-            $this->get('session')->getFlashBag()->set('test_start_error', 'web_resource_exception');
-            
-            return $this->redirect($this->generateUrl('view_dashboard_index_index', $this->getRedirectValues($testOptions), true));
+                [
+                    'website' => $responseData['website'],
+                    'test_id' => $responseData['id'],
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            return new RedirectResponse($redirectUrl);
+        } catch (CurlException $curlException) {
+            $flashBag->set('test_start_error', 'curl-error');
+            $flashBag->set('curl_error_code', $curlException->getErrorNo());
+
+            return new RedirectResponse($this->createStartErrorRedirectUrl($router, $redirectRouteParameters));
+        } catch (WebResourceException $webResourceException) {
+            $flashBag->set('test_start_error', 'web_resource_exception');
+
+            return new RedirectResponse($this->createStartErrorRedirectUrl($router, $redirectRouteParameters));
         }
     }
-    
-    
-//    private function getStartRedirectUrl(\SimplyTestable\WebClientBundle\Model\TestOptions $testOptions) {
-//        $url = $this->generateUrl('view_dashboard_index_index', $this->getRedirectValues($testOptions), true);
-//        return str_replace(array(
-//            urlencode('{{cookie-name}}'),
-//            urlencode('{{cookie-value}}')
-//        ), '', $url);
-//    }
-    
-    
+
     /**
-     * 
-     * @return type
-     */
-    private function getTestUrl() {
-        if ($this->isFullTest()) {
-            return $this->getCanonicalUrlFromWebsite($this->getWebsite());
-        }
-        
-        $url = new \webignition\NormalisedUrl\NormalisedUrl($this->getWebsite());
-        return (string)$url;
-    }
-    
-    
-    /**
-     * 
-     * @return boolean
-     */
-    private function isFullTest() {
-        /* @var $requestParameters \Symfony\Component\HttpFoundation\ParameterBag */
-        $requestParameters = $this->getRequestValues(\Guzzle\Http\Message\Request::POST);
-        if (!$requestParameters->has('full-single')) {
-            return true;
-        }
-        
-        return $requestParameters->get('full-single') == 'full';
-    }
-    
-    
-    /**
-     * 
+     * @param bool $isFullSiteTest
      * @param string $website
+     *
      * @return string
      */
-    private function getCanonicalUrlFromWebsite($website) {
-        $url = new \webignition\NormalisedUrl\NormalisedUrl($website);
-        $url->setFragment(null);
-        $url->setPath('/');
-        $url->setQuery(null);
-        
+    private function getUrlToTest($isFullSiteTest, $website)
+    {
+        $url = new NormalisedUrl($website);
+        if (!$url->hasScheme()) {
+            $url->setScheme('http');
+        }
+
+        if ($isFullSiteTest) {
+            $url->setFragment(null);
+            $url->setPath('/');
+            $url->setQuery(null);
+        }
+
         return (string)$url;
     }
-    
-    
+
     /**
-     * 
-     * @param \SimplyTestable\WebClientBundle\Model\TestOptions $testOptions
+     * @param ParameterBag $requestData
+     *
+     * @return bool
+     */
+    private function isFullSiteTest(ParameterBag $requestData)
+    {
+        $testTypeKey = 'full-single';
+
+        if (!$requestData->has($testTypeKey)) {
+            return true;
+        }
+
+        return 'full' === $requestData->get($testTypeKey);
+    }
+
+    /**
+     * @param TestOptions $testOptions
+     * @param string $website
+     *
      * @return array
      */
-    private function getRedirectValues(TestOptions $testOptions) {
-        $redirectValues = array();
-        
-        if ($this->hasWebsite()) {
-            $redirectValues['website'] = trim($this->getRequestValue('website'));
+    private function getRedirectRouteParameters(TestOptions $testOptions, $website)
+    {
+        $redirectRouteParameters = [];
+
+        if (!empty($website)) {
+            $redirectRouteParameters['website'] = $website;
         }
-        
-        $absoluteTestTypes = $testOptions->getAbsoluteTestTypes();        
-        
+
+        $absoluteTestTypes = $testOptions->getAbsoluteTestTypes();
+
         foreach ($absoluteTestTypes as $testTypeKey => $selectedValue) {
-            $redirectValues[$testTypeKey] = $selectedValue;
-            $redirectValues = array_merge($redirectValues, $testOptions->getAbsoluteTestTypeOptions($testTypeKey));
+            $redirectRouteParameters[$testTypeKey] = $selectedValue;
+            $redirectRouteParameters = array_merge(
+                $redirectRouteParameters,
+                $testOptions->getAbsoluteTestTypeOptions($testTypeKey)
+            );
         }
-        
+
         $absoluteFeatures = $testOptions->getAbsoluteFeatures();
-        foreach ($absoluteFeatures as $featureKey => $selectedValue) {            
+        foreach ($absoluteFeatures as $featureKey => $selectedValue) {
             $featureOptions = $testOptions->getAbsoluteFeatureOptions($featureKey);
-            
+
             foreach ($featureOptions as $optionKey => $optionValue) {
                 if (!$this->isIgnoredOnRedirect($optionKey)) {
-                    $redirectValues[$optionKey] = $optionValue;   
-                }                 
-            }                       
-        }
-        
-        return $redirectValues;
-    }
-    
-    
-    /**
-     * 
-     * @param string $formKey
-     * @return boolean
-     */
-    private function isIgnoredOnRedirect($formKey) {
-        $testOptionsParameters = $this->container->getParameter('test_options'); 
-        if (!isset($testOptionsParameters['ignore_on_error'])) {
-            return false;
-        }
-        
-        //var_dump("cp01", $formKey, $testOptionsParameters['ignore_on_error']);
-        
-        return in_array($formKey, $testOptionsParameters['ignore_on_error']);
-    }
-    
-    
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
-     */
-    private function getTestOptionsAdapter() {
-        if (is_null($this->testOptionsAdapter)) {
-            $testOptionsParameters = $this->container->getParameter('test_options');         
-            
-            $this->testOptionsAdapter = $this->container->get('simplytestable.services.testoptions.adapter.request');
-        
-            $this->testOptionsAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-            $this->testOptionsAdapter->setAvailableTaskTypes($this->getTaskTypeService()->getAvailable());
-            $this->testOptionsAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
-            $this->testOptionsAdapter->setInvertInvertableOptions(true);
-            
-            if (isset($testOptionsParameters['features'])) {
-                $this->testOptionsAdapter->setAvailableFeatures($testOptionsParameters['features']);
-            }            
-        }
-        
-        return $this->testOptionsAdapter;
-    }
-
-
-    /**
-     * @return \SimplyTestable\WebClientBundle\Services\TaskTypeService
-     */
-    private function getTaskTypeService() {
-        if (is_null($this->taskTypeService)) {
-            $this->taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
-            $this->taskTypeService->setUser($this->getUser());
-
-            if (!$this->getUser()->equals($this->getUserService()->getPublicUser())) {
-                $this->taskTypeService->setUserIsAuthenticated();
+                    $redirectRouteParameters[$optionKey] = $optionValue;
+                }
             }
         }
 
-        return $this->taskTypeService;
+        return $redirectRouteParameters;
+    }
+
+    /**
+     * @param string $formKey
+     *
+     * @return bool
+     */
+    private function isIgnoredOnRedirect($formKey)
+    {
+        $testOptionsParameters = $this->container->getParameter('test_options');
+
+        return in_array($formKey, $testOptionsParameters['ignore_on_error']);
+    }
+
+    /**
+     * @param RouterInterface $router
+     * @param array $redirectRouteParameters
+     *
+     * @return string
+     */
+    private function createStartErrorRedirectUrl(RouterInterface $router, array $redirectRouteParameters)
+    {
+        return $router->generate(
+            'view_dashboard_index_index',
+            $redirectRouteParameters,
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
     }
 }

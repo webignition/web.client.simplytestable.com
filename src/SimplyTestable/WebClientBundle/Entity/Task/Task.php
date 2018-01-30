@@ -33,6 +33,11 @@ class Task
     const TYPE_JS_STATIC_ANALYSIS = 'JS static analysis';
     const TYPE_LINK_INTEGRITY = 'Link integrity';
 
+    const TYPE_KEY_HTML_VALIDATION = 'html-validation';
+    const TYPE_KEY_CSS_VALIDATION = 'css-validation';
+    const TYPE_KEY_JS_STATIC_ANALYSIS = 'js-static-analysis';
+    const TYPE_KEY_LINK_INTEGRITY = 'link-integrity';
+
     /**
      * @var int
      *
