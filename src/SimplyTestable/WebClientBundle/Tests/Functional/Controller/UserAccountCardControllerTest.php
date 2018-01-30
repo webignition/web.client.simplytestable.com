@@ -2,7 +2,6 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller;
 
-use SimplyTestable\WebClientBundle\Controller\RedirectController;
 use SimplyTestable\WebClientBundle\Controller\UserAccountCardController;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserService;
