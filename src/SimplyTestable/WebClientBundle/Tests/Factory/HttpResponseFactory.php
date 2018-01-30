@@ -73,4 +73,12 @@ class HttpResponseFactory
     {
         return self::create(403);
     }
+
+    /**
+     * @return Response
+     */
+    public static function createInternalServerErrorResponse()
+    {
+        return self::create(500);
+    }
 }

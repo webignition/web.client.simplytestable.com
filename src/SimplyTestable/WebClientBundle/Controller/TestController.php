@@ -2,213 +2,242 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+use Guzzle\Http\Exception\CurlException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
-use webignition\IsHttpStatusCode\IsHttpStatusCode;
+use SimplyTestable\WebClientBundle\Services\TestService;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use webignition\WebResource\JsonDocument\JsonDocument;
 
 class TestController extends BaseController
 {
-    
-    public function lockAction() {
-        return $this->lockUnlock('lock');        
+    const ACTION_LOCK = 'lock';
+    const ACTION_UNLOCK = 'unlock';
+
+    /**
+     * @param string $website
+     * @param int $test_id
+     *
+     * @return RedirectResponse
+     */
+    public function lockAction($website, $test_id)
+    {
+        return $this->lockUnlock($website, $test_id, self::ACTION_LOCK);
     }
-    
-    public function unlockAction() {
-        return $this->lockUnlock('unlock');
-    } 
-    
-    
-    private function lockUnlock($action) {
-        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
-        
+
+    /**
+     * @param string $website
+     * @param int $test_id
+     *
+     * @return RedirectResponse
+     */
+    public function unlockAction($website, $test_id)
+    {
+        return $this->lockUnlock($website, $test_id, self::ACTION_UNLOCK);
+    }
+
+    /**
+     * @param string $website
+     * @param int $test_id
+     * @param string $action
+     *
+     * @return RedirectResponse
+     */
+    private function lockUnlock($website, $test_id, $action)
+    {
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $testService = $this->container->get('simplytestable.services.testservice');
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $router = $this->container->get('router');
+
+        $user = $userService->getUser();
+        $remoteTestService->setUser($user);
+
         try {
-            if ($this->getTestService()->has($this->getWebsite(), $this->getTestId())) {
-                $test = $this->getTestService()->get($this->getWebsite(), $this->getTestId()); 
-                
-                if ($this->getTestService()->getRemoteTestService()->authenticate()) {           
-                    $this->getTestService()->getRemoteTestService()->$action($test);
-                }                 
-            }                        
-        } catch (\Exception $e) {            
+            $testService->get($website, $test_id);
+
+            if (self::ACTION_LOCK === $action) {
+                $remoteTestService->lock();
+            } else {
+                $remoteTestService->unlock();
+            }
+
+        } catch (\Exception $e) {
             // We already redirect back to test results regardless of if this action succeeds
         }
-        
-        return $this->redirect($this->generateUrl(
-            'view_test_results_index_index',
-            array(
-                'website' => $this->getWebsite(),
-                'test_id' => $this->getTestId()
-            ),
-            true
-        ));        
-    }
-    
-    
-    public function cancelAction()
-    {
-        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
-        
-        try {
-            if (!$this->getTestService()->has($this->getWebsite(), $this->getTestId())) {
-                return $this->redirect($this->generateUrl(
-                    'view_dashboard_index_index',
-                    array(),
-                    true
-                ));
-            }            
-            
-            $test = $this->getTestService()->get($this->getWebsite(), $this->getTestId());            
-            if (!$this->getTestService()->getRemoteTestService()->authenticate()) {           
-                return $this->redirect($this->generateUrl(
-                    'view_dashboard_index_index',
-                    array(),
-                    true
-                ));
-            }
-            
-            $this->getTestService()->getRemoteTestService()->cancel();
-            return $this->redirect($this->generateUrl(
-                'view_test_results_index_index',
-                array(
-                    'website' => $test->getWebsite(),
-                    'test_id' => $test->getTestId()
-                ),
-                true
-            ));
-           
-        } catch (WebResourceException $webResourceException) {            
-            if ($webResourceException->getResponse()->getStatusCode() == 403) {
-                return $this->redirect($this->generateUrl(
-                    'view_dashboard_index_index',
-                    array(),
-                    true
-                ));                
-            }
-            
-            $this->getLogger()->err('TestController::cancelAction:webResourceException ['.$webResourceException->getResponse()->getStatusCode().']');            
-            
-            return $this->redirect($this->generateUrl(
-                'view_test_progress_index_index',
-                array(
-                    'website' => $this->getWebsite(),
-                    'test_id' => $this->getTestId()
-                ),
-                true
-            )); 
-        } catch (\Guzzle\Http\Exception\CurlException $curlException)  {
-            $this->getLogger()->err('TestController::cancelAction:curlException ['.$curlException->getErrorNo().']');
-            
-            return $this->redirect($this->generateUrl(
-                'view_test_progress_index_index',
-                array(
-                    'website' => $this->getWebsite(),
-                    'test_id' => $this->getTestId()
-                ),
-                true
-            ));
-        }     
-    } 
-    
-    
-    public function cancelCrawlAction() {
-        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
-        
-        try {
-            $test = $this->getTestService()->get($this->getWebsite(), $this->getTestId(), $this->getUser());            
-            $remoteTest = $this->getTestService()->getRemoteTestService()->get();
-           
-            $this->getTestService()->getRemoteTestService()->cancelByTestProperties($remoteTest->getCrawl()->id, $test->getWebsite());
-            return $this->redirect($this->generateUrl(
-                'view_test_progress_index_index',
-                array(
-                    'website' => $test->getWebsite(),
-                    'test_id' => $test->getTestId()
-                ),
-                true
-            ));           
-        } catch (\SimplyTestable\WebClientBundle\Exception\UserServiceException $userServiceException) {
-            return $this->redirect($this->generateUrl(
-                'view_dashboard_index_index',
-                array(),
-                true
-            ));
-        } catch (\SimplyTestable\WebClientBundle\Exception\WebResourceException $webResourceException) {                        
-            $this->getLogger()->err('TestController::cancelAction:webResourceException ['.$webResourceException->getResponse()->getStatusCode().']');            
-            
-            return $this->redirect($this->generateUrl(
-                'view_test_progress_index_index',
-                array(
-                    'website' => $this->getWebsite(),
-                    'test_id' => $this->getTestId()
-                ),
-                true
-            ));             
 
-        } catch (\Guzzle\Http\Exception\CurlException $curlException)  {
-            $this->getLogger()->err('TestController::cancelAction:curlException ['.$curlException->getErrorNo().']');
-            
-            return $this->redirect($this->generateUrl(
-                'view_test_progress_index_index',
-                array(
-                    'website' => $this->getWebsite(),
-                    'test_id' => $this->getTestId()
-                ),
-                true
-            ));
-        }
+        $redirectUrl = $router->generate(
+            'view_test_results_index_index',
+            [
+                'website' => $website,
+                'test_id' => $test_id,
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return new RedirectResponse($redirectUrl);
     }
-    
-    
+
     /**
+     * @param string $website
+     * @param int $test_id
      *
-     * @return boolean
+     * @return RedirectResponse
      */
-    protected function hasWebsite() {
+    public function cancelAction($website, $test_id)
+    {
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $testService = $this->container->get('simplytestable.services.testservice');
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $router = $this->container->get('router');
+
+        $user = $userService->getUser();
+        $remoteTestService->setUser($user);
+
+        $routeParameters = [
+            'website' => $website,
+            'test_id' => $test_id,
+        ];
+
+        try {
+            $testService->get($website, $test_id);
+            $remoteTestService->cancel();
+        } catch (WebResourceException $webResourceException) {
+            if ($webResourceException->getResponse()->getStatusCode() === 403) {
+                $redirectUrl = $router->generate(
+                    'view_dashboard_index_index',
+                    [],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+
+                return new RedirectResponse($redirectUrl);
+            }
+
+            $redirectUrl = $router->generate(
+                'view_test_progress_index_index',
+                $routeParameters,
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            return new RedirectResponse($redirectUrl);
+        } catch (CurlException $curlException) {
+            $redirectUrl = $router->generate(
+                'view_test_progress_index_index',
+                $routeParameters,
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            return new RedirectResponse($redirectUrl);
+        }
+
+        $redirectUrl = $router->generate(
+            'view_test_results_index_index',
+            $routeParameters,
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return new RedirectResponse($redirectUrl);
+    }
+
+    /**
+     * @param string $website
+     * @param int $test_id
+     *
+     * @return RedirectResponse
+     */
+    public function cancelCrawlAction($website, $test_id)
+    {
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $testService = $this->container->get('simplytestable.services.testservice');
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $router = $this->container->get('router');
+
+        $user = $userService->getUser();
+        $remoteTestService->setUser($user);
+
+        try {
+            $test = $testService->get($website, $test_id);
+            $remoteTest = $remoteTestService->get();
+
+            $remoteTestService->cancelByTestProperties($remoteTest->getCrawl()->id, $test->getWebsite());
+        } catch (WebResourceException $webResourceException) {
+            // Nothing happens, we redirect to the test progress page regardless
+        } catch (CurlException $curlException) {
+            // Nothing happens, we redirect to the test progress page regardless
+        }
+
+        $redirectUrl = $router->generate(
+            'view_test_progress_index_index',
+            [
+                'website' => $website,
+                'test_id' => $test_id,
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return new RedirectResponse($redirectUrl);
+    }
+
+    /**
+     * @param string $website
+     * @param string $test_id
+     *
+     * @return RedirectResponse
+     *
+     * @throws WebResourceException
+     */
+    public function retestAction($website, $test_id)
+    {
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $router = $this->container->get('router');
+
+        $user = $userService->getUser();
+        $remoteTestService->setUser($user);
+
+        /* @var JsonDocument $response */
+        $response = $remoteTestService->retest($test_id, $website);
+
+        $responseData = $response->getContentArray();
+
+        $redirectUrl = $router->generate(
+            'view_test_progress_index_index',
+            [
+                'website' => $responseData['website'],
+                'test_id' => $responseData['id'],
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return new RedirectResponse($redirectUrl);
+    }
+
+    /**
+     * @return bool
+     */
+    protected function hasWebsite()
+    {
         return trim($this->getRequestValue('website')) != '';
     }
-    
-    
+
     /**
-     *
      * @return string
      */
-    protected function getWebsite() {
+    protected function getWebsite()
+    {
         $websiteUrl = $this->getNormalisedRequestUrl();
         if (!$websiteUrl) {
             return null;
         }
-        
-        return (string)$websiteUrl; 
-    }    
-    
-    
-    /**
-     *
-     * @return int 
-     */
-    private function getTestId() {
-        return $this->getRequestValue('test_id', 0);
-    }
-    
-    
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\TestService
-     */
-    protected function getTestService() {
-        return $this->container->get('simplytestable.services.testservice');
-    } 
-    
-    public function retestAction($website, $test_id) {
-        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
-        $response = $this->getTestService()->getRemoteTestService()->retest($test_id, $website);
 
-        return $this->redirect($this->generateUrl(
-            'view_test_progress_index_index',
-            array(
-                'website' => $response->getContentObject()->website,
-                'test_id' => $response->getContentObject()->id
-            ),
-            true
-        ));      
-    }     
+        return (string)$websiteUrl;
+    }
+
+    /**
+     * @return TestService
+     */
+    protected function getTestService()
+    {
+        return $this->container->get('simplytestable.services.testservice');
+    }
 }
