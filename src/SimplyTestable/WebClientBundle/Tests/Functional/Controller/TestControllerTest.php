@@ -193,4 +193,65 @@ class TestControllerTest extends BaseSimplyTestableTestCase
             ],
         ];
     }
+
+    /**
+     * @dataProvider cancelCrawlActionGetRequestDataProvider
+     *
+     * @param array $httpFixtures
+     */
+    public function testCancelCrawlActionGetRequest(array $httpFixtures)
+    {
+        $this->setHttpFixtures($httpFixtures);
+
+        $router = $this->container->get('router');
+        $requestUrl = $router->generate('test_cancel_crawl', [
+            'website' => self::WEBSITE,
+            'test_id' => self::TEST_ID,
+        ]);
+
+        $this->client->request(
+            'GET',
+            $requestUrl
+        );
+
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals('http://localhost/http://example.com//1/progress/', $response->getTargetUrl());
+    }
+
+    /**
+     * @return array
+     */
+    public function cancelCrawlActionGetRequestDataProvider()
+    {
+        return [
+            'invalid owner' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createForbiddenResponse(),
+                ],
+            ],
+            'HTTP 500' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                ],
+            ],
+            'CURL exception' => [
+                'httpFixtures' => [
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                ],
+            ],
+            'Success' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
+                        'crawl' => [
+                            'id' => 2,
+                        ]
+                    ])),
+                    HttpResponseFactory::createSuccessResponse(),
+                ],
+            ],
+        ];
+    }
 }
