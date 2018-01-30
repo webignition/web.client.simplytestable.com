@@ -2,7 +2,6 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller;
 
-use SimplyTestable\WebClientBundle\Controller\RedirectController;
 use SimplyTestable\WebClientBundle\Controller\UserAccountCardController;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserService;
@@ -20,7 +19,7 @@ class UserAccountCardControllerTest extends BaseSimplyTestableTestCase
     const STRIPE_CARD_TOKEN = 'card_Bb4A2szGLfgwJe';
 
     /**
-     * @var RedirectController
+     * @var UserAccountCardController
      */
     protected $userAccountCardController;
 
