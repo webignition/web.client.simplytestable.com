@@ -135,6 +135,10 @@ class TaskCollectionFilterService
      */
     private function createIssueCountFromOutcomeFilter()
     {
+        if (empty($this->outcomeFilter)) {
+            return null;
+        }
+
         $outcomeFilterContainsWithout = substr_count($this->outcomeFilter, 'without') > 0;
         $comparison = $outcomeFilterContainsWithout
             ? '='
