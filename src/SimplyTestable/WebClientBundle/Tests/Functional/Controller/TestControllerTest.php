@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Repository\TestRepository;
+use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -127,6 +128,68 @@ class TestControllerTest extends BaseSimplyTestableTestCase
                     'website' => self::WEBSITE,
                     'test_id' => self::TEST_ID,
                 ],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider cancelActionGetRequestDataProvider
+     *
+     * @param array $httpFixtures
+     * @param string $expectedRedirectUrl
+     */
+    public function testCancelActionGetRequest(array $httpFixtures, $expectedRedirectUrl)
+    {
+        $this->setHttpFixtures($httpFixtures);
+
+        $router = $this->container->get('router');
+        $requestUrl = $router->generate('test_cancel', [
+            'website' => self::WEBSITE,
+            'test_id' => self::TEST_ID,
+        ]);
+
+        $this->client->request(
+            'GET',
+            $requestUrl
+        );
+
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
+    }
+
+    /**
+     * @return array
+     */
+    public function cancelActionGetRequestDataProvider()
+    {
+        return [
+            'invalid owner' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createForbiddenResponse(),
+                ],
+                'expectedRedirectUrl' => 'http://localhost/',
+            ],
+            'HTTP 500' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                ],
+                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+            ],
+            'CURL exception' => [
+                'httpFixtures' => [
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                ],
+                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+            ],
+            'Success' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
+                    HttpResponseFactory::createSuccessResponse(),
+                ],
+                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/',
             ],
         ];
     }

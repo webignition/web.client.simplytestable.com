@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+use Guzzle\Http\Exception\CurlException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -75,72 +76,66 @@ class TestController extends BaseController
         return new RedirectResponse($redirectUrl);
     }
 
-
-    public function cancelAction()
+    /**
+     * @param string $website
+     * @param int $test_id
+     *
+     * @return RedirectResponse
+     */
+    public function cancelAction($website, $test_id)
     {
-        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $testService = $this->container->get('simplytestable.services.testservice');
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $router = $this->container->get('router');
+
+        $user = $userService->getUser();
+        $remoteTestService->setUser($user);
+
+        $routeParameters = [
+            'website' => $website,
+            'test_id' => $test_id,
+        ];
 
         try {
-            if (!$this->getTestService()->has($this->getWebsite(), $this->getTestId())) {
-                return $this->redirect($this->generateUrl(
-                    'view_dashboard_index_index',
-                    array(),
-                    true
-                ));
-            }
-
-            $test = $this->getTestService()->get($this->getWebsite(), $this->getTestId());
-            if (!$this->getTestService()->getRemoteTestService()->authenticate()) {
-                return $this->redirect($this->generateUrl(
-                    'view_dashboard_index_index',
-                    array(),
-                    true
-                ));
-            }
-
-            $this->getTestService()->getRemoteTestService()->cancel();
-            return $this->redirect($this->generateUrl(
-                'view_test_results_index_index',
-                array(
-                    'website' => $test->getWebsite(),
-                    'test_id' => $test->getTestId()
-                ),
-                true
-            ));
-
+            $testService->get($website, $test_id);
+            $remoteTestService->cancel();
         } catch (WebResourceException $webResourceException) {
-            if ($webResourceException->getResponse()->getStatusCode() == 403) {
-                return $this->redirect($this->generateUrl(
+            if ($webResourceException->getResponse()->getStatusCode() === 403) {
+                $redirectUrl = $router->generate(
                     'view_dashboard_index_index',
-                    array(),
-                    true
-                ));
+                    [],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+
+                return new RedirectResponse($redirectUrl);
             }
 
-            $this->getLogger()->err('TestController::cancelAction:webResourceException ['.$webResourceException->getResponse()->getStatusCode().']');
-
-            return $this->redirect($this->generateUrl(
+            $redirectUrl = $router->generate(
                 'view_test_progress_index_index',
-                array(
-                    'website' => $this->getWebsite(),
-                    'test_id' => $this->getTestId()
-                ),
-                true
-            ));
-        } catch (\Guzzle\Http\Exception\CurlException $curlException)  {
-            $this->getLogger()->err('TestController::cancelAction:curlException ['.$curlException->getErrorNo().']');
+                $routeParameters,
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
 
-            return $this->redirect($this->generateUrl(
+            return new RedirectResponse($redirectUrl);
+        } catch (CurlException $curlException) {
+            $redirectUrl = $router->generate(
                 'view_test_progress_index_index',
-                array(
-                    'website' => $this->getWebsite(),
-                    'test_id' => $this->getTestId()
-                ),
-                true
-            ));
+                $routeParameters,
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            return new RedirectResponse($redirectUrl);
         }
-    }
 
+        $redirectUrl = $router->generate(
+            'view_test_results_index_index',
+            $routeParameters,
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return new RedirectResponse($redirectUrl);
+    }
 
     public function cancelCrawlAction() {
         $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
@@ -176,7 +171,7 @@ class TestController extends BaseController
                 true
             ));
 
-        } catch (\Guzzle\Http\Exception\CurlException $curlException)  {
+        } catch (CurlException $curlException)  {
             $this->getLogger()->err('TestController::cancelAction:curlException ['.$curlException->getErrorNo().']');
 
             return $this->redirect($this->generateUrl(
