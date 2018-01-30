@@ -81,4 +81,12 @@ class HttpResponseFactory
     {
         return self::create(500);
     }
+
+    /**
+     * @return Response
+     */
+    public static function createServiceUnavailableResponse()
+    {
+        return self::create(503);
+    }
 }
