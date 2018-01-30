@@ -6,6 +6,7 @@ use Guzzle\Http\Exception\CurlException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use webignition\WebResource\JsonDocument\JsonDocument;
 
 class TestController extends BaseController
 {
@@ -176,6 +177,40 @@ class TestController extends BaseController
         return new RedirectResponse($redirectUrl);
     }
 
+    /**
+     * @param string $website
+     * @param string $test_id
+     *
+     * @return RedirectResponse
+     *
+     * @throws WebResourceException
+     */
+    public function retestAction($website, $test_id)
+    {
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $router = $this->container->get('router');
+
+        $user = $userService->getUser();
+        $remoteTestService->setUser($user);
+
+        /* @var JsonDocument $response */
+        $response = $remoteTestService->retest($test_id, $website);
+
+        $responseData = $response->getContentArray();
+
+        $redirectUrl = $router->generate(
+            'view_test_progress_index_index',
+            [
+                'website' => $responseData['website'],
+                'test_id' => $responseData['id'],
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return new RedirectResponse($redirectUrl);
+    }
+
 
     /**
      *
@@ -217,17 +252,5 @@ class TestController extends BaseController
         return $this->container->get('simplytestable.services.testservice');
     }
 
-    public function retestAction($website, $test_id) {
-        $this->getTestService()->getRemoteTestService()->setUser($this->getUser());
-        $response = $this->getTestService()->getRemoteTestService()->retest($test_id, $website);
 
-        return $this->redirect($this->generateUrl(
-            'view_test_progress_index_index',
-            array(
-                'website' => $response->getContentObject()->website,
-                'test_id' => $response->getContentObject()->id
-            ),
-            true
-        ));
-    }
 }

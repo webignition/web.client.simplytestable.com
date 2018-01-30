@@ -254,4 +254,30 @@ class TestControllerTest extends BaseSimplyTestableTestCase
             ],
         ];
     }
+
+    public function testRetestActionGetRequest()
+    {
+        $this->setHttpFixtures([
+            HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
+                'id' => 2,
+            ])),
+        ]);
+
+        $router = $this->container->get('router');
+        $requestUrl = $router->generate('app_test_retest', [
+            'website' => self::WEBSITE,
+            'test_id' => self::TEST_ID,
+        ]);
+
+        $this->client->request(
+            'GET',
+            $requestUrl
+        );
+
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals('http://localhost/http://example.com//2/progress/', $response->getTargetUrl());
+    }
 }
