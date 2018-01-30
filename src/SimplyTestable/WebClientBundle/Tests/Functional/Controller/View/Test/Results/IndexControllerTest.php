@@ -624,7 +624,7 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                                     ],
                                     'taskIds' => [1, 2, 3, 4],
                                     'filtered_task_counts' => [
-                                        'all' => 3,
+                                        'all' => 4,
                                         'with_errors' => 3,
                                         'with_warnings' => 0,
                                         'without_errors' => 1,
@@ -783,7 +783,7 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
                                     ],
                                     'taskIds' => [2],
                                     'filtered_task_counts' => [
-                                        'all' => 1,
+                                        'all' => 2,
                                         'with_errors' => 1,
                                         'with_warnings' => 0,
                                         'without_errors' => 1,
