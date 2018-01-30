@@ -4,7 +4,6 @@ namespace SimplyTestable\WebClientBundle\Controller;
 
 use Guzzle\Http\Exception\CurlException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
-use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use webignition\WebResource\JsonDocument\JsonDocument;
@@ -210,34 +209,5 @@ class TestController extends BaseController
         );
 
         return new RedirectResponse($redirectUrl);
-    }
-
-    /**
-     * @return bool
-     */
-    protected function hasWebsite()
-    {
-        return trim($this->getRequestValue('website')) != '';
-    }
-
-    /**
-     * @return string
-     */
-    protected function getWebsite()
-    {
-        $websiteUrl = $this->getNormalisedRequestUrl();
-        if (!$websiteUrl) {
-            return null;
-        }
-
-        return (string)$websiteUrl;
-    }
-
-    /**
-     * @return TestService
-     */
-    protected function getTestService()
-    {
-        return $this->container->get('simplytestable.services.testservice');
     }
 }
