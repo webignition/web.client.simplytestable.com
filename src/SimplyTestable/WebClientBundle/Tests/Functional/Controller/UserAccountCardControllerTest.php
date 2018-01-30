@@ -20,7 +20,7 @@ class UserAccountCardControllerTest extends BaseSimplyTestableTestCase
     const STRIPE_CARD_TOKEN = 'card_Bb4A2szGLfgwJe';
 
     /**
-     * @var RedirectController
+     * @var UserAccountCardController
      */
     protected $userAccountCardController;
 
