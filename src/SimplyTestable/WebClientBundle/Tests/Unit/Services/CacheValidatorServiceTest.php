@@ -95,7 +95,7 @@ class CacheValidatorServiceTest extends \PHPUnit_Framework_TestCase
                         'return' => true,
                     ],
                 ]),
-                'expectedResponseEtag' => '"' . md5('foo') . '"',
+                'expectedResponseEtag' => 'W/"' . md5('foo') . '"',
                 'expectedResponseLastModified' => new \DateTime(
                     '2018-01-01 10:00:00 GMT'
                 ),
@@ -143,7 +143,7 @@ class CacheValidatorServiceTest extends \PHPUnit_Framework_TestCase
                         'return' => true,
                     ],
                 ]),
-                'expectedResponseEtag' => '"' . md5('foo') . '"',
+                'expectedResponseEtag' => 'W/"' . md5('foo') . '"',
                 'expectedResponseLastModified' => new \DateTime(
                     '2018-01-01 10:00:00 GMT'
                 ),
@@ -189,7 +189,7 @@ class CacheValidatorServiceTest extends \PHPUnit_Framework_TestCase
                         'return' => false,
                     ],
                 ]),
-                'expectedResponseEtag' => '"' . md5('foo') . '"',
+                'expectedResponseEtag' => 'W/"' . md5('foo') . '"',
                 'expectedResponseLastModified' => new \DateTime(
                     '2018-01-01 10:00:00 GMT'
                 ),
@@ -234,7 +234,7 @@ class CacheValidatorServiceTest extends \PHPUnit_Framework_TestCase
                         'return' => true,
                     ],
                 ]),
-                'expectedResponseEtag' => '"' . md5('foo') . '"',
+                'expectedResponseEtag' => 'W/"' . md5('foo') . '"',
                 'expectedResponseLastModified' => null,
                 'expectedResponseStatusCode' => 304,
                 'expectedIsNotModified' =>  true,

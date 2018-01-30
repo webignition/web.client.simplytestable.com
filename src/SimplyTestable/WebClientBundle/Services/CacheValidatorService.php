@@ -43,7 +43,7 @@ class CacheValidatorService
 
         $response = new Response();
         $response->setPublic();
-        $response->setEtag($cacheValidatorHeaders->getETag());
+        $response->setEtag($cacheValidatorHeaders->getETag(), true);
         $response->setLastModified(new \DateTime($cacheValidatorHeaders->getLastModifiedDate()->format('c')));
         $response->headers->addCacheControlDirective('must-revalidate', true);
 
@@ -86,6 +86,10 @@ class CacheValidatorService
         }
 
         foreach ($parameters as $key => $value) {
+            if (is_bool($value)) {
+                $value = $value ? 'true' : 'false';
+            }
+
             $identifier->setParameter($key, $value);
         }
 
