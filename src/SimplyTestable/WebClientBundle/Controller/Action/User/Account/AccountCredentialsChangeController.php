@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
 use SimplyTestable\WebClientBundle\Controller\BaseController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,12 +25,15 @@ abstract class AccountCredentialsChangeController extends BaseController impleme
 
 
     /**
+     * @param $serializedUser
+     *
      * @return Cookie
      */
-    protected function getUserAuthenticationCookie() {
+    protected function createUserAuthenticationCookie($serializedUser)
+    {
         return new Cookie(
-            'simplytestable-user',
-            $this->getUserSerializerService()->serializeToString($this->getUser()),
+            UserService::USER_COOKIE_KEY,
+            $serializedUser,
             time() + self::ONE_YEAR_IN_SECONDS,
             '/',
             '.simplytestable.com',
@@ -37,8 +41,4 @@ abstract class AccountCredentialsChangeController extends BaseController impleme
             true
         );
     }
-
-
-
-
 }

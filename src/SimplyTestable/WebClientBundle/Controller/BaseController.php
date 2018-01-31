@@ -15,13 +15,14 @@ abstract class BaseController extends Controller
     public function getUser()
     {
         $userService = $this->container->get('simplytestable.services.userservice');
+        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
         $user = $userService->getUser();
 
         if ($userService->isPublicUser($user)) {
             $userCookie = $this->getRequest()->cookies->get('simplytestable-user');
             if (!is_null($userCookie)) {
-                $user = $this->getUserSerializerService()->unserializedFromString($userCookie);
+                $user = $userSerializerService->unserializedFromString($userCookie);
                 if (is_null($user)) {
                     $user = $userService->getPublicUser();
                 } else {
@@ -31,13 +32,5 @@ abstract class BaseController extends Controller
         }
 
         return $userService->getUser();
-    }
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\UserSerializerService
-     */
-    protected function getUserSerializerService() {
-        return $this->container->get('simplytestable.services.userserializerservice');
     }
 }

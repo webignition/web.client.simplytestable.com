@@ -25,6 +25,8 @@ class PasswordChangeController extends AccountCredentialsChangeController
     {
         $session = $this->container->get('session');
         $userService = $this->container->get('simplytestable.services.userservice');
+        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+
         $requestData = $request->request;
 
         $currentPassword = strtolower(trim($requestData->get('current-password')));
@@ -66,7 +68,10 @@ class PasswordChangeController extends AccountCredentialsChangeController
             $cookieSerializedUser = $request->cookies->get(UserService::USER_COOKIE_KEY);
 
             if (!empty($cookieSerializedUser)) {
-                $redirectResponse->headers->setCookie($this->getUserAuthenticationCookie());
+                $serializedUser = $userSerializerService->serializeToString($user);
+                $userCookie = $this->createUserAuthenticationCookie($serializedUser);
+
+                $redirectResponse->headers->setCookie($userCookie);
             }
 
             $session->getFlashBag()->set(

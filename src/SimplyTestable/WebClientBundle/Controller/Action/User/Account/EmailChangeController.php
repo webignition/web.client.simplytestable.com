@@ -216,6 +216,7 @@ class EmailChangeController extends AccountCredentialsChangeController
         $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
         $resqueJobFactory = $this->container->get('simplytestable.services.resque.jobfactoryservice');
         $userService = $this->container->get('simplytestable.services.userservice');
+        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
         $requestData = $request->request;
 
@@ -298,7 +299,10 @@ class EmailChangeController extends AccountCredentialsChangeController
         $userService->setUser($user);
 
         if (!is_null($this->getRequest()->cookies->get('simplytestable-user'))) {
-            $redirectResponse->headers->setCookie($this->getUserAuthenticationCookie());
+            $serializedUser = $userSerializerService->serializeToString($user);
+            $userCookie = $this->createUserAuthenticationCookie($serializedUser);
+
+            $redirectResponse->headers->setCookie($userCookie);
         }
 
         $this->get('session')->getFlashBag()->set(
