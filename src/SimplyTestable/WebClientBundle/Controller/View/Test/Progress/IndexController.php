@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Progress;
 
+use Negotiation\FormatNegotiator;
 use SimplyTestable\WebClientBundle\Controller\View\Test\AbstractRequiresValidOwnerController;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use webignition\NormalisedUrl\NormalisedUrl;
 
 class IndexController extends AbstractRequiresValidOwnerController implements IEFiltered, RequiresValidUser
 {
@@ -233,6 +235,38 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
             ]);
         }
 
-        return $this->redirect($locationValue, 302, $request);
+        $requestQuery = $request->query;
+
+        if ($requestQuery->get('output') == 'json') {
+            $normalisedUrl = new NormalisedUrl($locationValue);
+
+            if ($normalisedUrl->hasQuery()) {
+                $normalisedUrl->getQuery()->set('output', 'json');
+            } else {
+                $normalisedUrl->setQuery('output=json');
+            }
+
+            $locationValue = (string)$normalisedUrl;
+        }
+
+        return parent::redirect($locationValue);
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return bool
+     */
+    private function requestIsForApplicationJson(Request $request)
+    {
+        if (!$request->headers->has('accept')) {
+            return false;
+        }
+
+        $negotiator = new FormatNegotiator();
+        $priorities = array('*/*');
+        $format = $negotiator->getBest($request->headers->get('accept'), $priorities);
+
+        return $format->getValue() == 'application/json';
     }
 }
