@@ -12,30 +12,25 @@ abstract class BaseController extends Controller
      *
      * @return \SimplyTestable\WebClientBundle\Model\User
      */
-    public function getUser() {
-        $user = $this->getUserService()->getUser();
+    public function getUser()
+    {
+        $userService = $this->container->get('simplytestable.services.userservice');
 
-        if ($this->getUserService()->isPublicUser($user)) {
+        $user = $userService->getUser();
+
+        if ($userService->isPublicUser($user)) {
             $userCookie = $this->getRequest()->cookies->get('simplytestable-user');
             if (!is_null($userCookie)) {
                 $user = $this->getUserSerializerService()->unserializedFromString($userCookie);
                 if (is_null($user)) {
-                    $user = $this->getUserService()->getPublicUser();
+                    $user = $userService->getPublicUser();
                 } else {
-                    $this->getUserService()->setUser($user);
+                    $userService->setUser($user);
                 }
             }
         }
 
-        return $this->getUserService()->getUser();
-    }
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\UserService
-     */
-    protected function getUserService() {
-        return $this->get('simplytestable.services.userservice');
+        return $userService->getUser();
     }
 
     /**

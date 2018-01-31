@@ -215,6 +215,7 @@ class EmailChangeController extends AccountCredentialsChangeController
         $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
         $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
         $resqueJobFactory = $this->container->get('simplytestable.services.resque.jobfactoryservice');
+        $userService = $this->container->get('simplytestable.services.userservice');
 
         $requestData = $request->request;
 
@@ -294,7 +295,7 @@ class EmailChangeController extends AccountCredentialsChangeController
         );
 
         $user->setUsername($emailChangeRequest['new_email']);
-        $this->getUserService()->setUser($user);
+        $userService->setUser($user);
 
         if (!is_null($this->getRequest()->cookies->get('simplytestable-user'))) {
             $redirectResponse->headers->setCookie($this->getUserAuthenticationCookie());

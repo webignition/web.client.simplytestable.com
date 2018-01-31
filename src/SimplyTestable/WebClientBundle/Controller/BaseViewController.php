@@ -9,9 +9,11 @@ abstract class BaseViewController extends BaseController
      */
     protected function getDefaultViewParameters()
     {
+        $userService = $this->container->get('simplytestable.services.userservice');
+
         return [
-            'user' => $this->getUserService()->getUser(),
-            'is_logged_in' => $this->getUserService()->isLoggedIn(),
+            'user' => $userService->getUser(),
+            'is_logged_in' => $userService->isLoggedIn(),
             'public_site' => $this->container->getParameter('public_site'),
             'external_links' => $this->container->getParameter('external_links')
         ];
