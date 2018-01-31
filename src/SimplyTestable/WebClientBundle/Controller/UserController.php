@@ -4,13 +4,16 @@ namespace SimplyTestable\WebClientBundle\Controller;
 
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 use SimplyTestable\WebClientBundle\Model\User;
 use Symfony\Component\HttpFoundation\Cookie;
 use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class UserController extends BaseViewController
 {
@@ -38,11 +41,23 @@ class UserController extends BaseViewController
     const FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS = 'user-exists';
     const FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED = 'user-created';
 
-    public function signOutSubmitAction() {
-        $this->getUserService()->clearUser();
+    /**
+     * @return RedirectResponse
+     */
+    public function signOutSubmitAction()
+    {
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $router = $this->container->get('router');
 
-        $response = $this->redirect($this->generateUrl('view_dashboard_index_index', array(), true));
-        $response->headers->clearCookie('simplytestable-user', '/', '.simplytestable.com');
+        $userService->clearUser();
+
+        $response = new RedirectResponse($router->generate(
+            'view_dashboard_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
+
+        $response->headers->clearCookie(UserService::USER_COOKIE_KEY, '/', '.simplytestable.com');
 
         return $response;
     }
