@@ -16,6 +16,7 @@ use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\BrowserKit\Cookie;
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -955,7 +956,17 @@ class IndexControllerTest extends BaseSimplyTestableTestCase
             'task_id' => self::TASK_ID
         ]);
 
-        $heading = $this->getCrawler($requestUrl)->filter('h2');
+        $this->client->request(
+            'GET',
+            $requestUrl
+        );
+
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $crawler = new Crawler($response->getContent());
+
+        $heading = $crawler->filter('h2');
 
         $headingText = trim($heading->text());
 
