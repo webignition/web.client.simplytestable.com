@@ -48,7 +48,6 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         $userService = $this->container->get('simplytestable.services.userservice');
         $router = $this->container->get('router');
         $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
-        $serializer = $this->container->get('serializer');
         $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
         $testOptionsAdapterFactory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
         $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
@@ -148,7 +147,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
                 'this_url' => $testProgressUrl,
             ]);
 
-            $response->setContent($serializer->serialize($viewData, 'json'));
+            $response->setContent(json_encode($viewData));
             $response->headers->set('content-type', 'application/json');
         } else {
             $viewData = array_merge($commonViewData, [

@@ -3,7 +3,6 @@
 namespace SimplyTestable\WebClientBundle\Entity\Task;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\SerializerBundle\Annotation as SerializerAnnotation;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 
 /**
@@ -14,8 +13,6 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
  *     }
  * )
  * @ORM\Entity(repositoryClass="SimplyTestable\WebClientBundle\Repository\TaskOutputRepository")
- *
- * @SerializerAnnotation\ExclusionPolicy("all")
  */
 class Output
 {
@@ -37,8 +34,6 @@ class Output
      * @var string
      *
      * @ORM\Column(type="text", nullable=true)
-     * @SerializerAnnotation\Expose
-     * @SerializerAnnotation\Accessor(getter="getPublicSerialisedContent")
      */
     private $content;
 
@@ -46,7 +41,6 @@ class Output
      * @var string
      *
      * @ORM\Column(type="string", nullable=false)
-     * @SerializerAnnotation\Expose
      */
     private $type;
 
@@ -59,7 +53,6 @@ class Output
      * @var int
      *
      * @ORM\Column(type="integer", nullable=false)
-     * @SerializerAnnotation\Expose
      */
     private $errorCount = 0;
 
@@ -67,7 +60,6 @@ class Output
      * @var int
      *
      * @ORM\Column(type="integer", nullable=false)
-     * @SerializerAnnotation\Expose
      */
     private $warningCount = 0;
 
@@ -124,14 +116,6 @@ class Output
     public function getType()
     {
         return $this->type;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPublicSerialisedContent()
-    {
-        return $this->getResult();
     }
 
     /**

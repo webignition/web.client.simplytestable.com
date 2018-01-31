@@ -19,7 +19,6 @@ class AppKernel extends Kernel
             new JMS\DiExtraBundle\JMSDiExtraBundle($this),
             new JMS\SecurityExtraBundle\JMSSecurityExtraBundle(),
             new SimplyTestable\WebClientBundle\SimplyTestableWebClientBundle(),
-            new JMS\SerializerBundle\JMSSerializerBundle($this),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             new MZ\PostmarkBundle\MZPostmarkBundle(),
             new BCC\ResqueBundle\BCCResqueBundle(),
