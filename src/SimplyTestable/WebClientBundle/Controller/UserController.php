@@ -360,54 +360,61 @@ class UserController extends BaseViewController
         return $response;
     }
 
-    public function signUpSubmitAction()
+    /**
+     * @param Request $request
+     *
+     * @return RedirectResponse
+     *
+     * @throws CoreApplicationAdminRequestException
+     * @throws MailConfigurationException
+     */
+    public function signUpSubmitAction(Request $request)
     {
         $session = $this->container->get('session');
         $userService = $this->container->get('simplytestable.services.userservice');
         $couponService = $this->container->get('simplytestable.services.couponservice');
+        $router = $this->container->get('router');
 
-        $request = $this->container->get('request');
         $requestData = $request->request;
+        $flashBag = $session->getFlashBag();
 
         $plan = trim($requestData->get('plan'));
         $email = strtolower(trim($requestData->get('email')));
         $password = trim($requestData->get('password'));
 
         if (empty($email)) {
-            $session->getFlashBag()->set(
+            $flashBag->set(
                 self::FLASH_BAG_SIGN_UP_ERROR_KEY,
                 self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_BLANK
             );
 
-            return $this->redirect($this->generateUrl('view_user_signup_index_index', [
+            return $this->createSignUpRedirectResponse($router, [
                 'plan' => $plan,
-            ], true));
+            ]);
         }
 
+        $failureRedirectResponse = $this->createSignUpRedirectResponse($router, [
+            'email' => $email,
+            'plan' => $plan,
+        ]);
+
         if (!$this->isEmailValid($email)) {
-            $session->getFlashBag()->set(
+            $flashBag->set(
                 self::FLASH_BAG_SIGN_UP_ERROR_KEY,
                 self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_INVALID
             );
 
-            return $this->redirect($this->generateUrl('view_user_signup_index_index', [
-                'email' => $email,
-                'plan' => $plan,
-            ], true));
+            return $failureRedirectResponse;
         }
 
         if (empty($password)) {
-            $session->getFlashBag()->set('user_create_prefil', $email);
-
-            $session->getFlashBag()->set(
+            $flashBag->set('user_create_prefil', $email);
+            $flashBag->set(
                 self::FLASH_BAG_SIGN_UP_ERROR_KEY,
                 self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_PASSWORD_BLANK
             );
 
-            return $this->redirect($this->generateUrl('view_user_signup_index_index', [
-                'email' => $email,
-                'plan' => $plan,
-            ], true));
+            return $failureRedirectResponse;
         }
 
         $couponService->setRequest($request);
@@ -424,36 +431,32 @@ class UserController extends BaseViewController
         $createResponse = $userService->create($email, $password, $plan, $coupon);
 
         if ($this->userCreationUserAlreadyExists($createResponse)) {
-            $session->getFlashBag()->set(
+            $flashBag->set(
                 self::FLASH_BAG_SIGN_UP_SUCCESS_KEY,
                 self::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS
             );
 
-            return $this->redirect($this->generateUrl('view_user_signup_index_index', ['email' => $email], true));
+            return $this->createSignUpRedirectResponse($router, [
+                'email' => $email,
+            ]);
         }
 
         if ($this->requestFailedDueToReadOnly($createResponse)) {
-            $session->getFlashBag()->set(
+            $flashBag->set(
                 self::FLASH_BAG_SIGN_UP_ERROR_KEY,
                 self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_READ_ONLY
             );
 
-            return $this->redirect($this->generateUrl('view_user_signup_index_index', [
-                'email' => $email,
-                'plan' => $plan,
-            ], true));
+            return $failureRedirectResponse;
         }
 
         if ($this->userCreationFailed($createResponse)) {
-            $session->getFlashBag()->set(
+            $flashBag->set(
                 self::FLASH_BAG_SIGN_UP_ERROR_KEY,
                 self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_UNKNOWN
             );
 
-            return $this->redirect($this->generateUrl('view_user_signup_index_index', [
-                'email' => $email,
-                'plan' => $plan,
-            ], true));
+            return $failureRedirectResponse;
         }
 
         $token = $userService->getConfirmationToken($email);
@@ -462,34 +465,39 @@ class UserController extends BaseViewController
             $this->sendConfirmationToken($email, $token);
         } catch (PostmarkResponseException $postmarkResponseException) {
             if ($postmarkResponseException->isNotAllowedToSendException()) {
-                $session->getFlashBag()->set(
+                $flashBag->set(
                     self::FLASH_BAG_SIGN_UP_ERROR_KEY,
                     self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND
                 );
             } elseif ($postmarkResponseException->isInactiveRecipientException()) {
-                $session->getFlashBag()->set(
+                $flashBag->set(
                     self::FLASH_BAG_SIGN_UP_ERROR_KEY,
                     self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT
                 );
             } else {
-                $session->getFlashBag()->set(
+                $flashBag->set(
                     self::FLASH_BAG_SIGN_UP_ERROR_KEY,
                     self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_INVALID
                 );
             }
 
-            return $this->redirect($this->generateUrl('view_user_signup_index_index', [
-                'email' => $email,
-                'plan' => $plan
-            ], true));
+            return $failureRedirectResponse;
         }
 
-        $session->getFlashBag()->set(
+        $flashBag->set(
             self::FLASH_BAG_SIGN_UP_SUCCESS_KEY,
             self::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED
         );
 
-        return $this->redirect($this->generateUrl('view_user_signup_confirm_index', ['email' => $email], true));
+        $successRedirectUrl = $router->generate(
+            'view_user_signup_confirm_index',
+            [
+                'email' => $email,
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return new RedirectResponse($successRedirectUrl);
     }
 
     /**
@@ -704,10 +712,27 @@ class UserController extends BaseViewController
      *
      * @return RedirectResponse
      */
-    private function createPasswordChooseRedirectResponse(RouterInterface $router, array $routeParameters = [])
+    private function createPasswordChooseRedirectResponse(RouterInterface $router, array $routeParameters)
     {
         $redirectUrl = $router->generate(
             'view_user_resetpassword_choose_index',
+            $routeParameters,
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return new RedirectResponse($redirectUrl);
+    }
+
+    /**
+     * @param RouterInterface $router
+     * @param array $routeParameters
+     *
+     * @return RedirectResponse
+     */
+    private function createSignUpRedirectResponse(RouterInterface $router, array $routeParameters = [])
+    {
+        $redirectUrl = $router->generate(
+            'view_user_signup_index_index',
             $routeParameters,
             UrlGeneratorInterface::ABSOLUTE_URL
         );
