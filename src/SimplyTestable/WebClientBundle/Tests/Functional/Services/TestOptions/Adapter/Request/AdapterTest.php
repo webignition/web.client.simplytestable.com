@@ -4,10 +4,10 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\TestOptions\A
 
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class AdapterTest extends BaseSimplyTestableTestCase
+class AdapterTest extends AbstractBaseTestCase
 {
     /**
      * @var Adapter

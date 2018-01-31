@@ -7,9 +7,9 @@ use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
 use SimplyTestable\WebClientBundle\Services\TaskTypeService;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 
-class TaskTypeServiceTest extends BaseSimplyTestableTestCase
+class TaskTypeServiceTest extends AbstractBaseTestCase
 {
     /**
      * @var TaskTypeService

@@ -8,12 +8,12 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class UserAccountPlanControllerTest extends BaseSimplyTestableTestCase
+class UserAccountPlanControllerTest extends AbstractBaseTestCase
 {
     const ROUTE_NAME = 'user_account_plan_subscribe';
 

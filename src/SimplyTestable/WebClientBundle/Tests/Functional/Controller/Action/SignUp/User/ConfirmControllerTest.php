@@ -7,11 +7,11 @@ use Mockery\Mock;
 use SimplyTestable\WebClientBundle\Controller\Action\SignUp\User\ConfirmController;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockPostmarkMessageFactory;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 
-class ConfirmControllerTest extends BaseSimplyTestableTestCase
+class ConfirmControllerTest extends AbstractBaseTestCase
 {
     const EMAIL = 'user@example.com';
     const EXPECTED_REDIRECT_URL = 'http://localhost/signup/confirm/'. self::EMAIL .'/';

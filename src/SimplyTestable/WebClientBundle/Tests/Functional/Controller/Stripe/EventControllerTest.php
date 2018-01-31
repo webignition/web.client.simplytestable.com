@@ -4,13 +4,13 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Stripe;
 
 use Mockery\Mock;
 use SimplyTestable\WebClientBundle\Controller\Stripe\EventController;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
 
-class EventControllerTest extends BaseSimplyTestableTestCase
+class EventControllerTest extends AbstractBaseTestCase
 {
     const ROUTE_NAME = 'action_user_resetpassword_index_request';
     const EMAIL = 'user@example.com';

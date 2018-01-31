@@ -3,10 +3,10 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\MailChimp;
 
 use SimplyTestable\WebClientBundle\Controller\MailChimp\EventController;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-class EventControllerTest extends BaseSimplyTestableTestCase
+class EventControllerTest extends AbstractBaseTestCase
 {
     const ROUTE_NAME = 'mailchimp_event';
 

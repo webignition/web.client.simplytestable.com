@@ -5,9 +5,9 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 use Guzzle\Http\Message\Request;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Plugin\History\HistoryPlugin;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 
-abstract class AbstractCoreApplicationServiceTest extends BaseSimplyTestableTestCase
+abstract class AbstractCoreApplicationServiceTest extends AbstractBaseTestCase
 {
     /**
      * @var HistoryPlugin

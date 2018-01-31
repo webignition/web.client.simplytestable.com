@@ -4,10 +4,10 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User
 
 use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-abstract class AbstractTeamControllerTest extends BaseSimplyTestableTestCase
+abstract class AbstractTeamControllerTest extends AbstractBaseTestCase
 {
     /**
      * @var TeamController

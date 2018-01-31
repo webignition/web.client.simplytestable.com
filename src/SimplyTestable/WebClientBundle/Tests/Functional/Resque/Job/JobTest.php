@@ -3,9 +3,9 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Resque\Job;
 
 use SimplyTestable\WebClientBundle\Resque\Job\Job;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 
-abstract class JobTest extends BaseSimplyTestableTestCase {
+abstract class JobTest extends AbstractBaseTestCase {
 
     abstract protected function getArgs();
     abstract protected function getExpectedQueue();

@@ -3,9 +3,9 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\User;
 
 use SimplyTestable\WebClientBundle\Controller\UserController;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 
-abstract class AbstractUserControllerTest extends BaseSimplyTestableTestCase
+abstract class AbstractUserControllerTest extends AbstractBaseTestCase
 {
     /**
      * @var UserController
