@@ -81,7 +81,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         $this->userController->setContainer($this->container);
 
         /* @var RedirectResponse $response */
-        $response = $this->userController->signUpSubmitAction();
+        $response = $this->userController->signUpSubmitAction($request);
 
         $this->assertEquals($expectedRedirectLocation, $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -164,7 +164,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         $this->userController->setContainer($this->container);
 
         /* @var RedirectResponse $response */
-        $response = $this->userController->signUpSubmitAction();
+        $response = $this->userController->signUpSubmitAction($request);
 
         $this->assertEquals($expectedRedirectLocation, $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -250,7 +250,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         $this->userController->setContainer($this->container);
 
         /* @var RedirectResponse $response */
-        $response = $this->userController->signUpSubmitAction();
+        $response = $this->userController->signUpSubmitAction($request);
 
         $this->assertEquals(
             'http://localhost/signup/?email=user%40example.com&plan=basic',
@@ -391,7 +391,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         $couponService->setCouponData($couponData);
 
         /* @var RedirectResponse $response */
-        $response = $this->userController->signUpSubmitAction();
+        $response = $this->userController->signUpSubmitAction($request);
 
         $this->assertEquals(
             'http://localhost/signup/confirm/user@example.com/',

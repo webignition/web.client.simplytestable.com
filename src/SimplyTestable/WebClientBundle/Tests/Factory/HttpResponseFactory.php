@@ -89,4 +89,12 @@ class HttpResponseFactory
     {
         return self::create(503);
     }
+
+    /**
+     * @return Response
+     */
+    public static function createBadRequestResponse()
+    {
+        return self::create(400);
+    }
 }
