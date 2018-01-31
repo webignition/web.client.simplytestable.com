@@ -31,24 +31,6 @@ abstract class BaseController extends Controller
     }
 
     /**
-     * Get the results page URL for a given site and test ID
-     *
-     * @param string $website
-     * @param string $test_id
-     * @return string
-     */
-    protected function getResultsUrl($website, $test_id) {
-        return $this->generateUrl(
-            'view_test_results_index_index',
-            array(
-                'website' => $website,
-                'test_id' => $test_id
-            ),
-            true
-        );
-    }
-
-    /**
      *
      * @return \SimplyTestable\WebClientBundle\Services\UserService
      */

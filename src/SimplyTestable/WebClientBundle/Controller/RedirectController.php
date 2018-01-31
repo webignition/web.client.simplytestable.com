@@ -130,20 +130,20 @@ class RedirectController extends BaseController
                 return $this->redirect($redirectUrl);
             }
 
-            if (in_array($test->getState(), $this->testFinishedStates)) {
-                return $this->redirect($this->getResultsUrl($normalisedWebsite, $normalisedTestId));
-            } else {
-                $redirectUrl = $router->generate(
-                    'view_test_progress_index_index',
-                    [
-                        'website' => $normalisedWebsite,
-                        'test_id' => $normalisedTestId
-                    ],
-                    UrlGeneratorInterface::ABSOLUTE_URL
-                );
+            $routeName = in_array($test->getState(), $this->testFinishedStates)
+                ? 'view_test_results_index_index'
+                : 'view_test_progress_index_index';
 
-                return new RedirectResponse($redirectUrl);
-            }
+            $redirectUrl = $router->generate(
+                $routeName,
+                [
+                    'website' => $normalisedWebsite,
+                    'test_id' => $normalisedTestId
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            return new RedirectResponse($redirectUrl);
         }
 
         return $this->redirect($this->generateUrl(
