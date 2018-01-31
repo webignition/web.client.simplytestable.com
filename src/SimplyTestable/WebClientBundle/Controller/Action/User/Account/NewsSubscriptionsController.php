@@ -3,13 +3,13 @@
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
 use Doctrine\ORM\EntityManagerInterface;
-use SimplyTestable\WebClientBundle\Controller\BaseController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use ZfrMailChimp\Exception\Ls\InvalidImportException;
 
-class NewsSubscriptionsController extends BaseController implements RequiresPrivateUser
+class NewsSubscriptionsController extends Controller implements RequiresPrivateUser
 {
     /**
      * {@inheritdoc}
@@ -25,11 +25,12 @@ class NewsSubscriptionsController extends BaseController implements RequiresPriv
     {
         $mailChimpListRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
         $mailChimpService = $this->container->get('simplytestable.services.mailchimpservice');
+        $userService = $this->container->get('simplytestable.services.userservice');
 
         /* @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
 
-        $user = $this->getUser();
+        $user = $userService->getUser();
         $username = $user->getUsername();
 
         $flashData = [];

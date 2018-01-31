@@ -98,7 +98,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
             'task' => $task,
             'task_url' => $urlViewValuesService->create($task->getUrl()),
             'is_owner' => $isOwner,
-            'is_public_user_test' => $test->getUser() == $this->getUserService()->getPublicUser()->getUsername(),
+            'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
         );
 
         if (Task::TYPE_HTML_VALIDATION === $task->getType()) {

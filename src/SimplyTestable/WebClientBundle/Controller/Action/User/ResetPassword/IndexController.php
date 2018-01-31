@@ -2,14 +2,14 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword;
 
-use SimplyTestable\WebClientBundle\Controller\BaseController;
 use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class IndexController extends BaseController
+class IndexController extends Controller
 {
     const FLASH_BAG_REQUEST_ERROR_KEY = 'user_reset_password_error';
     const FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_BLANK = 'blank-email';

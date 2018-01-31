@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Repository\TestRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -14,7 +15,7 @@ use webignition\NormalisedUrl\NormalisedUrl;
 /**
  * Redirects valid-looking URLs to those that match actual controller actions
  */
-class RedirectController extends BaseController
+class RedirectController extends Controller
 {
     const TASK_RESULTS_URL_PATTERN = '/\/[0-9]+\/[0-9]+\/results\/?$/';
 
@@ -40,11 +41,15 @@ class RedirectController extends BaseController
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
         $logger = $this->container->get('logger');
+        $router = $this->container->get('router');
+        $userService = $this->container->get('simplytestable.services.userservice');
+
+        $user = $userService->getUser();
 
         /* @var TestRepository $testRepository */
         $testRepository = $entityManager->getRepository(Test::class);
 
-        $remoteTestService->setUser($this->getUser());
+        $remoteTestService->setUser($user);
 
         $isTaskResultsUrl = preg_match(self::TASK_RESULTS_URL_PATTERN, $website) > 0;
 
@@ -129,11 +134,20 @@ class RedirectController extends BaseController
                 return $this->redirect($redirectUrl);
             }
 
-            if (in_array($test->getState(), $this->testFinishedStates)) {
-                return $this->redirect($this->getResultsUrl($normalisedWebsite, $normalisedTestId));
-            } else {
-                return $this->redirect($this->getProgressUrl($normalisedWebsite, $normalisedTestId));
-            }
+            $routeName = in_array($test->getState(), $this->testFinishedStates)
+                ? 'view_test_results_index_index'
+                : 'view_test_progress_index_index';
+
+            $redirectUrl = $router->generate(
+                $routeName,
+                [
+                    'website' => $normalisedWebsite,
+                    'test_id' => $normalisedTestId
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            return new RedirectResponse($redirectUrl);
         }
 
         return $this->redirect($this->generateUrl(
@@ -194,7 +208,7 @@ class RedirectController extends BaseController
         $normalisedWebsite = new NormalisedUrl($requestWebsite);
 
         if (!$normalisedWebsite->hasScheme()) {
-            $normalisedWebsite->setScheme(self::DEFAULT_WEBSITE_SCHEME);
+            $normalisedWebsite->setScheme('http');
         }
 
         if (!$normalisedWebsite->hasHost()) {

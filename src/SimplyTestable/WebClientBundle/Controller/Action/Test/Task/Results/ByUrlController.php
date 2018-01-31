@@ -6,10 +6,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Controller\BaseController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class ByUrlController extends BaseController
+class ByUrlController extends Controller
 {
     /**
      * @param string $website

@@ -5,14 +5,13 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller;
 use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\RedirectController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class RedirectControllerTestActionTest extends AbstractBaseTestCase
+class RedirectControllerTest extends AbstractBaseTestCase
 {
     const USERNAME = 'user@example.com';
 
@@ -30,9 +29,6 @@ class RedirectControllerTestActionTest extends AbstractBaseTestCase
 
         $this->redirectController = new RedirectController();
         $this->redirectController->setContainer($this->container);
-
-        $userService = $this->container->get('simplytestable.services.userservice');
-        $userService->setUser(new User(self::USERNAME));
     }
 
     /**

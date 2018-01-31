@@ -2,12 +2,12 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\MailChimp;
 
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use SimplyTestable\WebClientBundle\Controller\BaseController;
 use SimplyTestable\WebClientBundle\Event\MailChimp\Event as MailChimpEvent;
 
-class EventController extends BaseController
+class EventController extends Controller
 {
     const LISTENER_EVENT_PREFIX = 'mailchimp.';
 

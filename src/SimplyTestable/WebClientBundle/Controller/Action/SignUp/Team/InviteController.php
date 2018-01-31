@@ -8,11 +8,12 @@ use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Model\User;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class InviteController extends BaseController
+class InviteController extends Controller
 {
     const ONE_YEAR_IN_SECONDS = 31536000;
 
