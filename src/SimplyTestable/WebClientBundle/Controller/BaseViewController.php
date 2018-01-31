@@ -2,7 +2,9 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
-abstract class BaseViewController extends BaseController
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+abstract class BaseViewController extends Controller
 {
     /**
      * @return array

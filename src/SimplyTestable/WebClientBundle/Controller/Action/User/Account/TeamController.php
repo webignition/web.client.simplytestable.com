@@ -2,17 +2,17 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
-use SimplyTestable\WebClientBundle\Controller\BaseController;
 use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServiceException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class TeamController extends BaseController implements RequiresPrivateUser
+class TeamController extends Controller implements RequiresPrivateUser
 {
     const FLASH_BAG_KEY_STATUS = 'status';
     const FLASH_BAG_KEY_ERROR = 'error';

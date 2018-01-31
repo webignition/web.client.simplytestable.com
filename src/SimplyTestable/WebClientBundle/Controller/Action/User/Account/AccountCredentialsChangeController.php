@@ -2,15 +2,15 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
-use SimplyTestable\WebClientBundle\Controller\BaseController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Services\UserService;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 
-abstract class AccountCredentialsChangeController extends BaseController implements RequiresPrivateUser {
-
+abstract class AccountCredentialsChangeController extends Controller implements RequiresPrivateUser
+{
     const ONE_YEAR_IN_SECONDS = 31536000;
 
     /**
@@ -22,7 +22,6 @@ abstract class AccountCredentialsChangeController extends BaseController impleme
             'redirect' => base64_encode(json_encode(['route' => 'view_user_account_index_index']))
         ], true));
     }
-
 
     /**
      * @param $serializedUser

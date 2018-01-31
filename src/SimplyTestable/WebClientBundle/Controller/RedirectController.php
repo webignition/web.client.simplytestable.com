@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Repository\TestRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -14,7 +15,7 @@ use webignition\NormalisedUrl\NormalisedUrl;
 /**
  * Redirects valid-looking URLs to those that match actual controller actions
  */
-class RedirectController extends BaseController
+class RedirectController extends Controller
 {
     const TASK_RESULTS_URL_PATTERN = '/\/[0-9]+\/[0-9]+\/results\/?$/';
 
@@ -207,7 +208,7 @@ class RedirectController extends BaseController
         $normalisedWebsite = new NormalisedUrl($requestWebsite);
 
         if (!$normalisedWebsite->hasScheme()) {
-            $normalisedWebsite->setScheme(self::DEFAULT_WEBSITE_SCHEME);
+            $normalisedWebsite->setScheme('http');
         }
 
         if (!$normalisedWebsite->hasHost()) {

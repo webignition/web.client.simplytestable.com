@@ -2,11 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Stripe;
 
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
-use SimplyTestable\WebClientBundle\Controller\BaseController;
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
 
-class EventController extends BaseController
+class EventController extends Controller
 {
     const LISTENER_EVENT_PREFIX = 'stripe.';
 
