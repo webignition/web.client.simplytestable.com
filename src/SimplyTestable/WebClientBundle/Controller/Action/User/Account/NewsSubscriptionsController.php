@@ -21,7 +21,7 @@ class NewsSubscriptionsController extends Controller implements RequiresPrivateU
         ], true));
     }
 
-    public function updateAction()
+    public function updateAction(Request $request)
     {
         $mailChimpListRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
         $mailChimpService = $this->container->get('simplytestable.services.mailchimpservice');
@@ -36,7 +36,7 @@ class NewsSubscriptionsController extends Controller implements RequiresPrivateU
         $flashData = [];
 
         foreach (['announcements', 'updates'] as $listName) {
-            $subscribeChoice = filter_var($this->get('request')->request->get($listName), FILTER_VALIDATE_BOOLEAN);
+            $subscribeChoice = filter_var($request->request->get($listName), FILTER_VALIDATE_BOOLEAN);
             $flashData[$listName] = [];
 
             $listRecipients = $mailChimpListRecipientsService->get($listName);
