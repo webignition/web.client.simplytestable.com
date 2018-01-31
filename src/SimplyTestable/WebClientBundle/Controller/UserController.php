@@ -50,6 +50,14 @@ class UserController extends BaseViewController
     const FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_PASSWORD_BLANK = 'blank-password';
     const FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_FAILED_READ_ONLY = 'failed-read-only';
 
+    const FLASH_BAG_SIGN_UP_CONFIRM_USER_ERROR_KEY = 'user_error';
+    const FLASH_BAG_SIGN_UP_CONFIRM_USER_ERROR_MESSAGE_USER_INVALID = 'invalid-user';
+
+    const FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_KEY = 'user_token_error';
+    const FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_MESSAGE_TOKEN_BLANK = 'blank-token';
+    const FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_MESSAGE_FAILED_READ_ONLY = 'failed-read-only';
+    const FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_MESSAGE_TOKEN_INVALID = 'invalid-token';
+
     /**
      * @return RedirectResponse
      */
@@ -542,76 +550,111 @@ class UserController extends BaseViewController
         return $this->get('simplytestable.services.mail.service');
     }
 
-    public function signupConfirmSubmitAction($email) {
-        if ($this->getUserService()->exists($email) === false) {
-            $this->get('session')->getFlashBag()->set('token_resend_error', 'invalid-user');
-            return $this->redirect($this->generateUrl('view_user_signup_confirm_index', array('email' => $email), true));
+    /**
+     * @param Request $request
+     * @param string $email
+     *
+     * @return RedirectResponse
+     *
+     * @throws CoreApplicationAdminRequestException
+     * @throws \CredisException
+     * @throws \Exception
+     */
+    public function signUpConfirmSubmitAction(Request $request, $email)
+    {
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $session = $this->container->get('session');
+        $router = $this->container->get('router');
+        $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
+        $resqueJobFactory = $this->container->get('simplytestable.services.resque.jobfactoryservice');
+
+        $userExists = $userService->exists($email);
+        $flashBag = $session->getFlashBag();
+        $requestData = $request->request;
+
+        $failureRedirect = new RedirectResponse($router->generate(
+            'view_user_signup_confirm_index',
+            [
+                'email' => $email,
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
+
+        if (!$userExists) {
+            $flashBag->set(
+                self::FLASH_BAG_SIGN_UP_CONFIRM_USER_ERROR_KEY,
+                self::FLASH_BAG_SIGN_UP_CONFIRM_USER_ERROR_MESSAGE_USER_INVALID
+            );
+
+            return $failureRedirect;
         }
 
-        $token = trim($this->get('request')->get('token'));
-        if ($token == '') {
-            $this->get('session')->getFlashBag()->set('user_token_error', 'blank-token');
-            return $this->redirect($this->generateUrl('view_user_signup_confirm_index', array('email' => $email), true));
+        $token = trim($requestData->get('token'));
+        if (empty($token)) {
+            $flashBag->set(
+                self::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_KEY,
+                self::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_MESSAGE_TOKEN_BLANK
+            );
+
+            return $failureRedirect;
         }
 
-        if ($this->getRequest()->request->has('password')) {
-            $password = trim($this->get('request')->get('password'));
-            if ($password == '') {
-                $this->get('session')->getFlashBag()->set('user_activate_error', 'blank-password');
-                return $this->redirect(
-                    $this->generateUrl('view_user_signup_confirm_index', [
-                        'email' => $email,
-                        'token' => $token
-                    ], true)
-                );
-            }
-        } else {
-            $password = null;
-        }
+        $activationResponse = $userService->activate($token);
 
-        $activationResponse = $this->getUserService()->activate($token, $password);
         if ($this->requestFailedDueToReadOnly($activationResponse)) {
-            $this->get('session')->getFlashBag()->set('user_token_error', 'failed-read-only');
-            return $this->redirect($this->generateUrl('view_user_signup_confirm_index', array('email' => $email), true));
+            $flashBag->set(
+                self::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_KEY,
+                self::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_MESSAGE_FAILED_READ_ONLY
+            );
+
+            return $failureRedirect;
         }
 
-        if ($activationResponse == false) {
-            $this->get('session')->getFlashBag()->set('user_token_error', 'invalid-token');
-            return $this->redirect($this->generateUrl('view_user_signup_confirm_index', array('email' => $email), true));
+        if (!$activationResponse) {
+            $flashBag->set(
+                self::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_KEY,
+                self::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_MESSAGE_TOKEN_INVALID
+            );
+
+            return $failureRedirect;
         }
 
-        $this->getResqueQueueService()->enqueue(
-            $this->getResqueJobFactoryService()->create(
-              'email-list-subscribe',
-                array(
+        $resqueQueueService->enqueue(
+            $resqueJobFactory->create(
+                'email-list-subscribe',
+                [
                     'listId' => 'announcements',
                     'email' => $email,
-                )
+                ]
             )
         );
 
-
-        $this->getResqueQueueService()->enqueue(
-            $this->getResqueJobFactoryService()->create(
+        $resqueQueueService->enqueue(
+            $resqueJobFactory->create(
                 'email-list-subscribe',
-                array(
+                [
                     'listId' => 'introduction',
                     'email' => $email,
-                )
+                ]
             )
         );
 
-        $this->get('session')->getFlashBag()->set('user_signin_confirmation', 'user-activated');
+        $flashBag->set('user_signin_confirmation', 'user-activated');
 
-        $redirectParameters = array(
+        $redirectParameters = [
             'email' => $email
-        );
+        ];
 
-        if (!is_null($this->get('request')->cookies->get('simplytestable-redirect'))) {
-            $redirectParameters['redirect'] = $this->get('request')->cookies->get('simplytestable-redirect');
+        $requestRedirectCookie = $request->cookies->get('simplytestable-redirect');
+        if (!empty($requestRedirectCookie)) {
+            $redirectParameters['redirect'] = $requestRedirectCookie;
         }
 
-        return $this->redirect($this->generateUrl('view_user_signin_index', $redirectParameters, true));
+        return new RedirectResponse($router->generate(
+            'view_user_signin_index',
+            $redirectParameters,
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
     }
 
     /**
