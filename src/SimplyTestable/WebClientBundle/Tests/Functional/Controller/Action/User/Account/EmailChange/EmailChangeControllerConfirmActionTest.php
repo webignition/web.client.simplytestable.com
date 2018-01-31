@@ -69,7 +69,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $this->container->set('request', $request);
 
         /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->confirmAction();
+        $response = $this->emailChangeController->confirmAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('http://localhost/account/', $response->getTargetUrl());
@@ -93,10 +93,9 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $request = new Request([], [
             'token' => 'foo',
         ]);
-        $this->container->set('request', $request);
 
         /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->confirmAction();
+        $response = $this->emailChangeController->confirmAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('http://localhost/account/', $response->getTargetUrl());
@@ -129,10 +128,9 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $request = new Request([], [
             'token' => 'token-value',
         ]);
-        $this->container->set('request', $request);
 
         /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->confirmAction();
+        $response = $this->emailChangeController->confirmAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('http://localhost/account/', $response->getTargetUrl());
@@ -197,10 +195,9 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         ], [], [
             'simplytestable-user' => $serializerUser,
         ]);
-        $this->container->set('request', $request);
 
         /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->confirmAction();
+        $response = $this->emailChangeController->confirmAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('http://localhost/account/', $response->getTargetUrl());

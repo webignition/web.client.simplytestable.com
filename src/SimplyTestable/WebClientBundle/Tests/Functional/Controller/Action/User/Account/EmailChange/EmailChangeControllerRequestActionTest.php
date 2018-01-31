@@ -104,10 +104,8 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 
         $userService->setUser($this->user);
 
-        $this->container->set('request', $request);
-
         /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->requestAction();
+        $response = $this->emailChangeController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
@@ -175,10 +173,8 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
             'email' => self::NEW_EMAIL,
         ]);
 
-        $this->container->set('request', $request);
-
         /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->requestAction();
+        $response = $this->emailChangeController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
@@ -252,10 +248,8 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
             'email' => self::NEW_EMAIL,
         ]);
 
-        $this->container->set('request', $request);
-
         /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->requestAction();
+        $response = $this->emailChangeController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
@@ -366,10 +360,8 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
             'email' => self::NEW_EMAIL,
         ]);
 
-        $this->container->set('request', $request);
-
         /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->requestAction();
+        $response = $this->emailChangeController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());

@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
 use Egulias\EmailValidator\EmailValidator;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,15 +48,15 @@ class EmailChangeController extends AccountCredentialsChangeController
     }
 
     /**
+     * @param Request $request
      * @return RedirectResponse
      *
      * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      */
-    public function requestAction()
+    public function requestAction(Request $request)
     {
         $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
         $session = $this->container->get('session');
-        $request = $this->container->get('request');
         $userService = $this->container->get('simplytestable.services.userservice');
 
         $requestData = $request->request;
@@ -204,13 +205,15 @@ class EmailChangeController extends AccountCredentialsChangeController
     }
 
     /**
+     * @param Request $request
      * @return RedirectResponse
+     *
      * @throws \CredisException
      * @throws \Exception
+     * @throws CoreApplicationAdminRequestException
      */
-    public function confirmAction()
+    public function confirmAction(Request $request)
     {
-        $request = $this->container->get('request');
         $session = $this->container->get('session');
         $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
         $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
@@ -298,7 +301,7 @@ class EmailChangeController extends AccountCredentialsChangeController
         $user->setUsername($emailChangeRequest['new_email']);
         $userService->setUser($user);
 
-        if (!is_null($this->getRequest()->cookies->get('simplytestable-user'))) {
+        if (!is_null($request->cookies->get('simplytestable-user'))) {
             $serializedUser = $userSerializerService->serializeToString($user);
             $userCookie = $this->createUserAuthenticationCookie($serializedUser);
 
