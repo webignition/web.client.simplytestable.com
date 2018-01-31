@@ -1,4 +1,0 @@
-HTTP/1.1 200 OK
-Content-Type: application/json
-
-[{"id":2,"url":"http:\/\/example.com\/","state":"completed","worker":"","type":"HTML validation","time_period":{"start_date_time":"2014-03-24T18:24:44+0000","end_date_time":"2014-03-24T18:24:45+0000"},"output":{"output":"{\"messages\":[]}","content_type":"application\/json","error_count":0,"warning_count":0}}]
