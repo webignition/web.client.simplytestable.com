@@ -2,22 +2,25 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\User;
 
-use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\Mock\MockPlugin;
 use SimplyTestable\WebClientBundle\Controller\UserController;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
+use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 
 class SignInSubmitActionTest extends AbstractUserControllerTest
 {
     public function testSignInSubmitActionPostRequest()
     {
         $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
-            Response::fromMessage('HTTP/1.1 200'),
-            Response::fromMessage('HTTP/1.1 200'),
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $router = $this->container->get('router');
@@ -42,8 +45,12 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      * @dataProvider signInSubmitActionBadRequestDataProvider
      *
      * @param Request $request
-     * @param string $expectedRedirectLocation
+     * @param $expectedRedirectLocation
      * @param array $expectedFlashBagValues
+     *
+     * @throws CoreApplicationAdminRequestException
+     * @throws MailConfigurationException
+     * @throws PostmarkResponseException
      */
     public function testSignInSubmitActionBadRequest(
         Request $request,
@@ -52,11 +59,10 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
     ) {
         $session = $this->container->get('session');
 
-        $this->container->set('request', $request);
         $this->userController->setContainer($this->container);
 
         /* @var RedirectResponse $response */
-        $response = $this->userController->signInSubmitAction();
+        $response = $this->userController->signInSubmitAction($request);
 
         $this->assertEquals($expectedRedirectLocation, $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -121,6 +127,10 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      *
      * @param array $httpFixtures
      * @param array $expectedFlashBagValues
+     *
+     * @throws CoreApplicationAdminRequestException
+     * @throws MailConfigurationException
+     * @throws PostmarkResponseException
      */
     public function testSignInSubmitActionAuthenticationFailure(
         array $httpFixtures,
@@ -139,11 +149,10 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             'password' => 'foo',
         ]);
 
-        $this->container->set('request', $request);
         $this->userController->setContainer($this->container);
 
         /* @var RedirectResponse $response */
-        $response = $this->userController->signInSubmitAction();
+        $response = $this->userController->signInSubmitAction($request);
 
         $this->assertEquals(
             'http://localhost/signin/?email=user%40example.com&redirect=&stay-signed-in=0',
@@ -160,8 +169,8 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         return [
             'user does not exist' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 404'),
-                    Response::fromMessage('HTTP/1.1 404'),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_IN_ERROR_KEY => [
@@ -171,9 +180,9 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             ],
             'user is enabled' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 404'),
-                    Response::fromMessage('HTTP/1.1 200'),
-                    Response::fromMessage('HTTP/1.1 200'),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createSuccessResponse(),
                 ],
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_IN_ERROR_KEY => [
@@ -188,6 +197,9 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      * @dataProvider signInSubmitActionResendConfirmationTokenDataProvider
      *
      * @param array $httpFixtures
+     * @throws CoreApplicationAdminRequestException
+     * @throws MailConfigurationException
+     * @throws PostmarkResponseException
      */
     public function testSignInSubmitActionResendConfirmationToken(array $httpFixtures)
     {
@@ -205,8 +217,6 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             'email' => 'user@example.com',
             'password' => 'foo',
         ]);
-
-        $this->container->set('request', $request);
 
         $postmarkMessage = MockFactory::createPostmarkMessage([
             'setFrom' => true,
@@ -230,7 +240,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         $this->userController->setContainer($this->container);
 
         /* @var RedirectResponse $response */
-        $response = $this->userController->signInSubmitAction();
+        $response = $this->userController->signInSubmitAction($request);
 
         $this->assertEquals(
             'http://localhost/signin/?email=user%40example.com&redirect=&stay-signed-in=0',
@@ -258,17 +268,17 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         return [
             'authentication failure and user is not enabled' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 404'),
-                    Response::fromMessage('HTTP/1.1 200'),
-                    Response::fromMessage('HTTP/1.1 404'),
-                    Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n\"confirmation-token-here\""),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createJsonResponse('confirmation-token-here'),
                 ],
             ],
             'authentication success and user is not enabled' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 200'),
-                    Response::fromMessage('HTTP/1.1 404'),
-                    Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n\"confirmation-token-here\""),
+                    HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createJsonResponse('confirmation-token-here'),
                 ],
             ],
         ];
@@ -278,33 +288,37 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      * @dataProvider signInSubmitActionSuccessDataProvider
      *
      * @param Request $request
-     * @param bool $expectedResponseHasUserCookie
+     * @param $expectedResponseHasUserCookie
+     * @param string $expectedRedirectUrl
+     *
+     * @throws CoreApplicationAdminRequestException
+     * @throws MailConfigurationException
+     * @throws PostmarkResponseException
      */
     public function testSignInSubmitActionSuccess(
         Request $request,
-        $expectedResponseHasUserCookie
+        $expectedResponseHasUserCookie,
+        $expectedRedirectUrl
     ) {
         $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
 
         $httpClient = $httpClientService->get();
 
         $httpFixtures = [
-            Response::fromMessage('HTTP/1.1 200'),
-            Response::fromMessage('HTTP/1.1 200'),
-            Response::fromMessage('HTTP/1.1 200'),
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createSuccessResponse(),
         ];
 
         $httpMockPlugin = new MockPlugin($httpFixtures);
         $httpClient->addSubscriber($httpMockPlugin);
 
-        $this->container->set('request', $request);
-
         $this->userController->setContainer($this->container);
 
         /* @var RedirectResponse $response */
-        $response = $this->userController->signInSubmitAction();
+        $response = $this->userController->signInSubmitAction($request);
 
-        $this->assertEquals('http://localhost/', $response->getTargetUrl());
+        $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
 
         $responseCookies = $response->headers->getCookies();
         if ($expectedResponseHasUserCookie) {
@@ -329,6 +343,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                     'password' => 'foo',
                 ]),
                 'expectedResponseHasUserCookie' => false,
+                'expectedRedirectUrl' => 'http://localhost/',
             ],
             'stay-signed-in true' => [
                 'request' => new Request([], [
@@ -337,6 +352,67 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                     'stay-signed-in' => true,
                 ]),
                 'expectedResponseHasUserCookie' => true,
+                'expectedRedirectUrl' => 'http://localhost/',
+            ],
+            'redirect without route, without parameters' => [
+                'request' => new Request([], [
+                    'email' => 'user@example.com',
+                    'password' => 'foo',
+                    'redirect' => base64_encode(json_encode([])),
+                ]),
+                'expectedResponseHasUserCookie' => false,
+                'expectedRedirectUrl' => 'http://localhost/',
+            ],
+            'redirect with invalid route, without parameters' => [
+                'request' => new Request([], [
+                    'email' => 'user@example.com',
+                    'password' => 'foo',
+                    'redirect' => base64_encode(json_encode([
+                        'route' => 'foo',
+                    ])),
+                ]),
+                'expectedResponseHasUserCookie' => false,
+                'expectedRedirectUrl' => 'http://localhost/',
+            ],
+            'redirect with valid route, without parameters' => [
+                'request' => new Request([], [
+                    'email' => 'user@example.com',
+                    'password' => 'foo',
+                    'redirect' => base64_encode(json_encode([
+                        'route' => 'view_user_account_card_index',
+                    ])),
+                ]),
+                'expectedResponseHasUserCookie' => false,
+                'expectedRedirectUrl' => 'http://localhost/account/card/',
+            ],
+            'redirect with valid route, invalid parameters' => [
+                'request' => new Request([], [
+                    'email' => 'user@example.com',
+                    'password' => 'foo',
+                    'redirect' => base64_encode(json_encode([
+                        'route' => 'view_test_progress_index_index',
+                        'parameters' => [
+                            'website' => 'http://example.com',
+                        ],
+                    ])),
+                ]),
+                'expectedResponseHasUserCookie' => false,
+                'expectedRedirectUrl' => 'http://localhost/',
+            ],
+            'redirect with valid route, with parameters' => [
+                'request' => new Request([], [
+                    'email' => 'user@example.com',
+                    'password' => 'foo',
+                    'redirect' => base64_encode(json_encode([
+                        'route' => 'view_test_progress_index_index',
+                        'parameters' => [
+                            'website' => 'http://example.com',
+                            'test_id' => 1,
+                        ],
+                    ])),
+                ]),
+                'expectedResponseHasUserCookie' => false,
+                'expectedRedirectUrl' => 'http://localhost/http://example.com/1/progress/',
             ],
         ];
     }

@@ -4,9 +4,11 @@ namespace SimplyTestable\WebClientBundle\Controller;
 
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 use SimplyTestable\WebClientBundle\Model\User;
@@ -14,6 +16,8 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use Symfony\Component\Routing\RouterInterface;
 
 class UserController extends BaseViewController
 {
@@ -51,22 +55,26 @@ class UserController extends BaseViewController
 
         $userService->clearUser();
 
-        $response = new RedirectResponse($router->generate(
-            'view_dashboard_index_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        $response = $this->createDashboardRedirectResponse($router);
 
         $response->headers->clearCookie(UserService::USER_COOKIE_KEY, '/', '.simplytestable.com');
 
         return $response;
     }
 
-    public function signInSubmitAction()
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     *
+     * @throws PostmarkResponseException
+     * @throws CoreApplicationAdminRequestException
+     * @throws MailConfigurationException
+     */
+    public function signInSubmitAction(Request $request)
     {
-        $request = $this->container->get('request');
         $session = $this->container->get('session');
         $userService = $this->container->get('simplytestable.services.userservice');
+        $router = $this->container->get('router');
 
         $requestData = $request->request;
 
@@ -75,42 +83,44 @@ class UserController extends BaseViewController
         $staySignedIn = empty(trim($requestData->get('stay-signed-in'))) ? 0 : 1;
         $password = trim($requestData->get('password'));
 
+        $flashBag = $session->getFlashBag();
+
         if (empty($email)) {
-            $session->getFlashBag()->set(
+            $flashBag->set(
                 self::FLASH_BAG_SIGN_IN_ERROR_KEY,
                 self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_EMAIL_BLANK
             );
 
-            return $this->redirect($this->generateUrl('view_user_signin_index', [
+            return $this->createSignInRedirectResponse($router, [
                 'redirect' => $redirect,
-                'stay-signed-in' => $staySignedIn
-            ], true));
+                'stay-signed-in' => $staySignedIn,
+            ]);
         }
 
         if (!$this->isEmailValid($email)) {
-            $session->getFlashBag()->set(
+            $flashBag->set(
                 self::FLASH_BAG_SIGN_IN_ERROR_KEY,
                 self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_EMAIL_INVALID
             );
 
-            return $this->redirect($this->generateUrl('view_user_signin_index', [
+            return $this->createSignInRedirectResponse($router, [
                 'email' => $email,
                 'redirect' => $redirect,
-                'stay-signed-in' => $staySignedIn
-            ], true));
+                'stay-signed-in' => $staySignedIn,
+            ]);
         }
 
         if (empty($password)) {
-            $session->getFlashBag()->set(
+            $flashBag->set(
                 self::FLASH_BAG_SIGN_IN_ERROR_KEY,
                 self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_PASSWORD_BLANK
             );
 
-            return $this->redirect($this->generateUrl('view_user_signin_index', [
+            return $this->createSignInRedirectResponse($router, [
                 'email' => $email,
                 'redirect' => $redirect,
-                'stay-signed-in' => $staySignedIn
-            ], true));
+                'stay-signed-in' => $staySignedIn,
+            ]);
         }
 
         $user = new User();
@@ -118,16 +128,16 @@ class UserController extends BaseViewController
         $user->setPassword($password);
 
         if ($userService->isPublicUser($user)) {
-            $session->getFlashBag()->set(
+            $flashBag->set(
                 self::FLASH_BAG_SIGN_IN_ERROR_KEY,
                 self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_PUBLIC_USER
             );
 
-            return $this->redirect($this->generateUrl('view_user_signin_index', [
+            return $this->createSignInRedirectResponse($router, [
                 'email' => $email,
                 'redirect' => $redirect,
-                'stay-signed-in' => $staySignedIn
-            ], true));
+                'stay-signed-in' => $staySignedIn,
+            ]);
         }
 
         $userService->setUser($user);
@@ -135,30 +145,30 @@ class UserController extends BaseViewController
         if (!$userService->authenticate()) {
             if (!$userService->exists()) {
                 $userService->clearUser();
-                $session->getFlashBag()->set(
+                $flashBag->set(
                     self::FLASH_BAG_SIGN_IN_ERROR_KEY,
                     self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_INVALID_USER
                 );
 
-                return $this->redirect($this->generateUrl('view_user_signin_index', [
+                return $this->createSignInRedirectResponse($router, [
                     'email' => $email,
                     'redirect' => $redirect,
-                    'stay-signed-in' => $staySignedIn
-                ], true));
+                    'stay-signed-in' => $staySignedIn,
+                ]);
             }
 
             if ($userService->isEnabled()) {
                 $userService->clearUser();
-                $session->getFlashBag()->set(
+                $flashBag->set(
                     self::FLASH_BAG_SIGN_IN_ERROR_KEY,
                     self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_AUTHENTICATION_FAILURE
                 );
 
-                return $this->redirect($this->generateUrl('view_user_signin_index', [
+                return $this->createSignInRedirectResponse($router, [
                     'email' => $email,
                     'redirect' => $redirect,
-                    'stay-signed-in' => $staySignedIn
-                ], true));
+                    'stay-signed-in' => $staySignedIn,
+                ]);
             }
 
             $userService->clearUser();
@@ -166,16 +176,16 @@ class UserController extends BaseViewController
 
             $this->sendConfirmationToken($email, $token);
 
-            $session->getFlashBag()->set(
+            $flashBag->set(
                 self::FLASH_BAG_SIGN_IN_ERROR_KEY,
                 self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_USER_NOT_ENABLED
             );
 
-            return $this->redirect($this->generateUrl('view_user_signin_index', array(
+            return $this->createSignInRedirectResponse($router, [
                 'email' => $email,
                 'redirect' => $redirect,
-                'stay-signed-in' => $staySignedIn
-            ), true));
+                'stay-signed-in' => $staySignedIn,
+            ]);
         }
 
         if (!$userService->isEnabled()) {
@@ -183,21 +193,21 @@ class UserController extends BaseViewController
             $token = $userService->getConfirmationToken($email);
             $this->sendConfirmationToken($email, $token);
 
-            $session->getFlashBag()->set(
+            $flashBag->set(
                 self::FLASH_BAG_SIGN_IN_ERROR_KEY,
                 self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_USER_NOT_ENABLED
             );
 
-            return $this->redirect($this->generateUrl('view_user_signin_index', array(
+            return $this->createSignInRedirectResponse($router, [
                 'email' => $email,
                 'redirect' => $redirect,
-                'stay-signed-in' => $staySignedIn
-            ), true));
+                'stay-signed-in' => $staySignedIn,
+            ]);
         }
 
         $userService->setUser($user);
 
-        $response = $this->getPostSignInRedirectResponse();
+        $response = $this->createPostSignInRedirectResponse($router, $redirect);
 
         if ($staySignedIn) {
             $stringifiedUser = $this->getUserSerializerService()->serializeToString($user);
@@ -218,16 +228,35 @@ class UserController extends BaseViewController
         return $response;
     }
 
-
-    private function getPostSignInRedirectResponse() {
-        $redirectValues = json_decode(base64_decode($this->get('request')->request->get('redirect')), true);
+    /**
+     * @param RouterInterface $router
+     * @param string $requestRedirect
+     *
+     * @return RedirectResponse
+     */
+    private function createPostSignInRedirectResponse(RouterInterface $router, $requestRedirect)
+    {
+        $redirectValues = json_decode(base64_decode($requestRedirect), true);
 
         if (!is_array($redirectValues) || !isset($redirectValues['route'])) {
-            return $this->redirect($this->generateUrl('view_dashboard_index_index', array(), true));
+            return $this->createDashboardRedirectResponse($router);
         }
 
-        $parameters = isset($redirectValues['parameters']) ? $redirectValues['parameters'] : array();
-        return $this->redirect($this->generateUrl($redirectValues['route'], $parameters, true));
+        $routeName = $redirectValues['route'];
+        $routeParameters = isset($redirectValues['parameters']) ? $redirectValues['parameters'] : [];
+
+        try {
+            $redirectUrl = $router->generate(
+                $routeName,
+                $routeParameters,
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            return new RedirectResponse($redirectUrl);
+        } catch (\Exception $exception) {
+        }
+
+        return $this->createDashboardRedirectResponse($router);
     }
 
 
@@ -609,5 +638,38 @@ class UserController extends BaseViewController
      */
     private function getResqueJobFactoryService() {
         return $this->container->get('simplytestable.services.resque.jobFactoryService');
+    }
+
+    /**
+     * @param RouterInterface $router
+     * @param array $routeParameters
+     *
+     * @return RedirectResponse
+     */
+    private function createSignInRedirectResponse(RouterInterface $router, array $routeParameters)
+    {
+        $redirectUrl = $router->generate(
+            'view_user_signin_index',
+            $routeParameters,
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return new RedirectResponse($redirectUrl);
+    }
+
+    /**
+     * @param RouterInterface $router
+     *
+     * @return RedirectResponse
+     */
+    private function createDashboardRedirectResponse(RouterInterface $router)
+    {
+        $redirectUrl = $router->generate(
+            'view_dashboard_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return new RedirectResponse($redirectUrl);
     }
 }
