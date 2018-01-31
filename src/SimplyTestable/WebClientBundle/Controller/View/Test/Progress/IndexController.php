@@ -134,9 +134,18 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         ];
 
         if ($this->requestIsForApplicationJson($request)) {
+            $testProgressUrl = $router->generate(
+                'view_test_progress_index_index',
+                [
+                    'website' => $testWebsite,
+                    'test_id' => $test_id
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
             $viewData = array_merge($commonViewData, [
                 'remote_test' => $remoteTest->__toArray(),
-                'this_url' => $this->getProgressUrl($testWebsite, $test_id),
+                'this_url' => $testProgressUrl,
             ]);
 
             $response->setContent($serializer->serialize($viewData, 'json'));

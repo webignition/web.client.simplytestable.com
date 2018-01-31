@@ -40,6 +40,7 @@ class RedirectController extends BaseController
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
         $logger = $this->container->get('logger');
+        $router = $this->container->get('router');
 
         /* @var TestRepository $testRepository */
         $testRepository = $entityManager->getRepository(Test::class);
@@ -132,7 +133,16 @@ class RedirectController extends BaseController
             if (in_array($test->getState(), $this->testFinishedStates)) {
                 return $this->redirect($this->getResultsUrl($normalisedWebsite, $normalisedTestId));
             } else {
-                return $this->redirect($this->getProgressUrl($normalisedWebsite, $normalisedTestId));
+                $redirectUrl = $router->generate(
+                    'view_test_progress_index_index',
+                    [
+                        'website' => $normalisedWebsite,
+                        'test_id' => $normalisedTestId
+                    ],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+
+                return new RedirectResponse($redirectUrl);
             }
         }
 
