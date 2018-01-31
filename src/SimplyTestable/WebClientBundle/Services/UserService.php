@@ -9,7 +9,6 @@ use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
-use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Session\Session;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
@@ -539,56 +538,5 @@ class UserService extends CoreApplicationService
         }
 
         return $this->summaries[$username];
-    }
-
-    /**
-     * @param Response $response
-     *
-     * @return bool
-     */
-    protected function httpResponseHasStripeError(Response $response)
-    {
-        return count($this->getStripeErrorValuesFromHttpResponse($response)) > 0;
-    }
-
-    /**
-     * @param Response $response
-     *
-     * @return UserAccountCardException
-     */
-    protected function getUserAccountCardExceptionFromHttpResponse(Response $response)
-    {
-        $stripeErrorValues = $this->getStripeErrorValuesFromHttpResponse($response);
-
-        $message = (isset($stripeErrorValues['message'])) ? $stripeErrorValues['message'] : '';
-        $param = (isset($stripeErrorValues['param'])) ? $stripeErrorValues['param'] : '';
-        $code = (isset($stripeErrorValues['code'])) ? $stripeErrorValues['code'] : '';
-
-        return new UserAccountCardException($message, $param, $code);
-    }
-
-    /**
-     * @param Response $response
-     *
-     * @return array
-     */
-    private function getStripeErrorValuesFromHttpResponse(Response $response)
-    {
-        $stripeErrorKeys = array('message', 'param', 'code');
-        $stripeErrorValues = array();
-
-        foreach ($stripeErrorKeys as $stripeErrorKeySuffix) {
-            $stripeErrorKey = 'x-stripe-error-' . $stripeErrorKeySuffix;
-
-            if ($response->hasHeader($stripeErrorKey)) {
-                $errorHeaderValues = $response->getHeader($stripeErrorKey)->toArray();
-
-                if (count($errorHeaderValues)) {
-                    $stripeErrorValues[$stripeErrorKeySuffix] = $errorHeaderValues[0];
-                }
-            }
-        }
-
-        return $stripeErrorValues;
     }
 }
