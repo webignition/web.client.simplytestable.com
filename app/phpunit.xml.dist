@@ -18,6 +18,14 @@
             <directory>../src/*/*Bundle/Tests</directory>
             <directory>../src/*/Bundle/*Bundle/Tests</directory>
         </testsuite>
+        <testsuite name="Controllers">
+            <directory>../src/*/*Bundle/Tests/Unit/Controllers</directory>
+            <directory>../src/*/*Bundle/Tests/Functional/Controllers</directory>
+        </testsuite>
+        <testsuite name="Services">
+            <directory>../src/*/*Bundle/Tests/Unit/Services</directory>
+            <directory>../src/*/*Bundle/Tests/Functional/Services</directory>
+        </testsuite>
     </testsuites>
 
     <!--
