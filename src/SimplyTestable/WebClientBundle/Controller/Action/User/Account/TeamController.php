@@ -58,6 +58,7 @@ class TeamController extends BaseController implements RequiresPrivateUser
         $session = $this->container->get('session');
         $request = $this->container->get('request');
         $teamService = $this->container->get('simplytestable.services.teamservice');
+        $userService = $this->container->get('simplytestable.services.userservice');
 
         $requestData = $request->request;
 
@@ -78,7 +79,7 @@ class TeamController extends BaseController implements RequiresPrivateUser
             return $redirectResponse;
         }
 
-        $teamService->setUser($this->getUser());
+        $teamService->setUser($userService->getUser());
         $teamService->create($name);
 
         return $redirectResponse;
@@ -108,7 +109,7 @@ class TeamController extends BaseController implements RequiresPrivateUser
 
         $invitee = trim($requestData->get('email'));
 
-        $user = $this->getUser();
+        $user = $userService->getUser();
         $username = $user->getUsername();
 
         $emailValidator = new EmailValidator;
@@ -230,6 +231,7 @@ class TeamController extends BaseController implements RequiresPrivateUser
     {
         $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
         $request = $this->container->get('request');
+        $userService = $this->container->get('simplytestable.services.userservice');
 
         $requestData = $request->request;
 
@@ -243,7 +245,7 @@ class TeamController extends BaseController implements RequiresPrivateUser
 
         if (in_array($response, ['accept', 'decline'])) {
             $team = trim($requestData->get('team'));
-            $user = $this->getUser();
+            $user = $userService->getUser();
             $username = $user->getUsername();
 
             $invite = new Invite([

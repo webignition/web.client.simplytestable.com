@@ -25,11 +25,12 @@ class NewsSubscriptionsController extends BaseController implements RequiresPriv
     {
         $mailChimpListRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
         $mailChimpService = $this->container->get('simplytestable.services.mailchimpservice');
+        $userService = $this->container->get('simplytestable.services.userservice');
 
         /* @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
 
-        $user = $this->getUser();
+        $user = $userService->getUser();
         $username = $user->getUsername();
 
         $flashData = [];

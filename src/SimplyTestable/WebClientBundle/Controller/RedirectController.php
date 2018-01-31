@@ -41,11 +41,14 @@ class RedirectController extends BaseController
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
         $logger = $this->container->get('logger');
         $router = $this->container->get('router');
+        $userService = $this->container->get('simplytestable.services.userservice');
+
+        $user = $userService->getUser();
 
         /* @var TestRepository $testRepository */
         $testRepository = $entityManager->getRepository(Test::class);
 
-        $remoteTestService->setUser($this->getUser());
+        $remoteTestService->setUser($user);
 
         $isTaskResultsUrl = preg_match(self::TASK_RESULTS_URL_PATTERN, $website) > 0;
 

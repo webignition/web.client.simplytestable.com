@@ -47,7 +47,7 @@ class PasswordChangeController extends AccountCredentialsChangeController
             return $redirectResponse;
         }
 
-        $user = $this->getUser();
+        $user = $userService->getUser();
 
         if ($currentPassword != $user->getPassword()) {
             $session->getFlashBag()->set(

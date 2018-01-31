@@ -66,7 +66,7 @@ class EmailChangeController extends AccountCredentialsChangeController
             UrlGeneratorInterface::ABSOLUTE_URL
         ));
 
-        $user = $this->getUser();
+        $user = $userService->getUser();
         $username = $user->getUsername();
 
         $newEmail = strtolower(trim($requestData->get('email')));
@@ -237,7 +237,7 @@ class EmailChangeController extends AccountCredentialsChangeController
             return $redirectResponse;
         }
 
-        $user = $this->getUser();
+        $user = $userService->getUser();
         $username = $user->getUsername();
 
         $emailChangeRequest = $emailChangeRequestService->getEmailChangeRequest($username);
@@ -340,9 +340,13 @@ class EmailChangeController extends AccountCredentialsChangeController
     {
         $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
         $mailService = $this->container->get('simplytestable.services.mail.service');
-        $mailServiceConfiguration = $mailService->getConfiguration();
+        $userService = $this->container->get('simplytestable.services.userservice');
 
-        $emailChangeRequest = $emailChangeRequestService->getEmailChangeRequest($this->getUser()->getUsername());
+        $mailServiceConfiguration = $mailService->getConfiguration();
+        $user = $userService->getUser();
+        $userName = $user->getUsername();
+
+        $emailChangeRequest = $emailChangeRequestService->getEmailChangeRequest($userName);
 
         $sender = $mailServiceConfiguration->getSender('default');
         $messageProperties = $mailServiceConfiguration->getMessageProperties('user_email_change_request_confirmation');
@@ -362,7 +366,7 @@ class EmailChangeController extends AccountCredentialsChangeController
         $message->addTo($emailChangeRequest['new_email']);
         $message->setSubject($messageProperties['subject']);
         $message->setTextMessage($this->renderView($viewName, [
-            'current_email' => $this->getUser()->getUsername(),
+            'current_email' => $userName,
             'new_email' => $emailChangeRequest['new_email'],
             'confirmation_url' => $confirmationUrl,
             'confirmation_code' => $emailChangeRequest['token']
