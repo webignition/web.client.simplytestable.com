@@ -2,15 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
-use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use SimplyTestable\WebClientBundle\Exception\UserServiceException;
 use SimplyTestable\WebClientBundle\Model\User;
 use Symfony\Component\HttpFoundation\Cookie;
 use Egulias\EmailValidator\EmailValidator;
@@ -19,7 +15,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\RouterInterface;
 
-class UserController extends BaseViewController
+class UserController extends Controller
 {
     const ONE_YEAR_IN_SECONDS = 31536000;
 
@@ -88,6 +84,7 @@ class UserController extends BaseViewController
         $session = $this->container->get('session');
         $userService = $this->container->get('simplytestable.services.userservice');
         $router = $this->container->get('router');
+        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
         $requestData = $request->request;
 
@@ -223,7 +220,7 @@ class UserController extends BaseViewController
         $response = $this->createPostSignInRedirectResponse($router, $redirect);
 
         if ($staySignedIn) {
-            $stringifiedUser = $this->getUserSerializerService()->serializeToString($user);
+            $stringifiedUser = $userSerializerService->serializeToString($user);
 
             $cookie = new Cookie(
                 'simplytestable-user',
@@ -284,6 +281,7 @@ class UserController extends BaseViewController
         $userService = $this->container->get('simplytestable.services.userservice');
         $router = $this->container->get('router');
         $session = $this->container->get('session');
+        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
         $requestData = $request->request;
         $flashBag = $session->getFlashBag();
@@ -331,9 +329,9 @@ class UserController extends BaseViewController
             return $failureRedirectResponse;
         }
 
-        $passwordResetResponse = $this->getUserService()->resetPassword($token, $password);
+        $passwordResetResponse = $userService->resetPassword($token, $password);
 
-        if ($this->requestFailedDueToReadOnly($passwordResetResponse)) {
+        if (503 === $passwordResetResponse) {
             $flashBag->set(
                 self::FLASH_BAG_RESET_PASSWORD_ERROR_KEY,
                 self::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_FAILED_READ_ONLY
@@ -350,7 +348,7 @@ class UserController extends BaseViewController
         $response = $this->createDashboardRedirectResponse($router);
 
         if ($staySignedIn) {
-            $serializedUser = $this->getUserSerializerService()->serializeToString($user);
+            $serializedUser = $userSerializerService->serializeToString($user);
 
             $cookie = new Cookie(
                 UserService::USER_COOKIE_KEY,
@@ -438,7 +436,7 @@ class UserController extends BaseViewController
         $userService->setUser($userService->getPublicUser());
         $createResponse = $userService->create($email, $password, $plan, $coupon);
 
-        if ($this->userCreationUserAlreadyExists($createResponse)) {
+        if (302 === $createResponse) {
             $flashBag->set(
                 self::FLASH_BAG_SIGN_UP_SUCCESS_KEY,
                 self::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS
@@ -449,7 +447,7 @@ class UserController extends BaseViewController
             ]);
         }
 
-        if ($this->requestFailedDueToReadOnly($createResponse)) {
+        if (503 === $createResponse) {
             $flashBag->set(
                 self::FLASH_BAG_SIGN_UP_ERROR_KEY,
                 self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_READ_ONLY
@@ -458,7 +456,7 @@ class UserController extends BaseViewController
             return $failureRedirectResponse;
         }
 
-        if ($this->userCreationFailed($createResponse)) {
+        if ($createResponse !== true) {
             $flashBag->set(
                 self::FLASH_BAG_SIGN_UP_ERROR_KEY,
                 self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_UNKNOWN
@@ -510,10 +508,10 @@ class UserController extends BaseViewController
 
     /**
      * @param string $email
-     * @param string  $token
+     * @param string $token
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
-     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
+     * @throws MailConfigurationException
+     * @throws PostmarkResponseException
      */
     private function sendConfirmationToken($email, $token)
     {
@@ -539,15 +537,7 @@ class UserController extends BaseViewController
             ]
         ));
 
-        $this->getMailService()->getSender()->send($message);
-    }
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\Mail\Service
-     */
-    private function getMailService() {
-        return $this->get('simplytestable.services.mail.service');
+        $mailService->getSender()->send($message);
     }
 
     /**
@@ -601,7 +591,7 @@ class UserController extends BaseViewController
 
         $activationResponse = $userService->activate($token);
 
-        if ($this->requestFailedDueToReadOnly($activationResponse)) {
+        if (503 === $activationResponse) {
             $flashBag->set(
                 self::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_KEY,
                 self::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_MESSAGE_FAILED_READ_ONLY
@@ -658,36 +648,6 @@ class UserController extends BaseViewController
     }
 
     /**
-     *
-     * @param mixed $responseCode
-     * @return boolean
-     */
-    private function requestFailedDueToReadOnly($responseCode) {
-        return $responseCode === 503;
-    }
-
-
-    /**
-     *
-     * @param mixed $createResponse
-     * @return boolean
-     */
-    private function userCreationFailed($createResponse) {
-        return $createResponse !== true;
-    }
-
-
-    /**
-     *
-     * @param boolean $createResponse
-     * @return boolean
-     */
-    private function userCreationUserAlreadyExists($createResponse) {
-        return $createResponse === 302;
-    }
-
-
-    /**
      * @param string $email
      *
      * @return bool
@@ -697,23 +657,6 @@ class UserController extends BaseViewController
         $validator = new EmailValidator();
 
         return $validator->isValid($email);
-    }
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\Resque\QueueService
-     */
-    private function getResqueQueueService() {
-        return $this->container->get('simplytestable.services.resque.queueService');
-    }
-
-
-    /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Services\Resque\JobFactoryService
-     */
-    private function getResqueJobFactoryService() {
-        return $this->container->get('simplytestable.services.resque.jobFactoryService');
     }
 
     /**
