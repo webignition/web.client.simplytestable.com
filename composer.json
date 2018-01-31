@@ -22,7 +22,6 @@
         "doctrine/doctrine-migrations-bundle": "~1.2",
         "webignition/url":">=1.9.10,<2.0",
         "webignition/web-json-model":"1.0.3",
-        "jms/serializer-bundle": "0.9.0",
         "webignition/is-http-status-code":"0.2",
         "guzzle/guzzle":"~3.8.0",
         "webignition/internet-media-type":">=0.1,<2.0",
