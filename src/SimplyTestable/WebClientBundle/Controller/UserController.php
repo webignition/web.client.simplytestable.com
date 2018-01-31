@@ -45,6 +45,11 @@ class UserController extends BaseViewController
     const FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS = 'user-exists';
     const FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED = 'user-created';
 
+    const FLASH_BAG_RESET_PASSWORD_ERROR_KEY = 'user_reset_password_error';
+    const FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_TOKEN_INVALID = 'invalid-token';
+    const FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_PASSWORD_BLANK = 'blank-password';
+    const FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_FAILED_READ_ONLY = 'failed-read-only';
+
     /**
      * @return RedirectResponse
      */
@@ -259,71 +264,89 @@ class UserController extends BaseViewController
         return $this->createDashboardRedirectResponse($router);
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return RedirectResponse
+     *
+     * @throws CoreApplicationAdminRequestException
+     */
+    public function resetPasswordChooseSubmitAction(Request $request)
+    {
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $router = $this->container->get('router');
+        $session = $this->container->get('session');
 
-    public function resetPasswordChooseSubmitAction() {
-        $email = trim($this->get('request')->request->get('email'));
-        $inputToken = trim($this->get('request')->request->get('token'));
-        $staySignedIn = trim($this->get('request')->request->get('stay-signed-in')) == '' ? 0 : 1;
+        $requestData = $request->request;
+        $flashBag = $session->getFlashBag();
 
-        if (!$this->isEmailValid($email) || $inputToken == '' || $this->getUserService()->exists($email) === false) {
-            return $this->redirect($this->generateUrl('view_user_resetpassword_index_index', array(), true));
+        $email = trim($requestData->get('email'));
+        $requestToken = trim($requestData->get('token'));
+        $staySignedIn = empty($requestData->get('stay-signed-in')) ? 0 : 1;
+        $userExists = $userService->exists($email);
+
+        if (!$this->isEmailValid($email) || empty($requestToken) || !$userExists) {
+            $redirectUrl = $router->generate(
+                'view_user_resetpassword_index_index',
+                [],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            return new RedirectResponse($redirectUrl);
         }
 
-        $token = $this->getUserService()->getConfirmationToken($email);
+        $failureRedirectResponse = $this->createPasswordChooseRedirectResponse($router, [
+            'email' => $email,
+            'token' => $requestToken,
+            'stay-signed-in' => $staySignedIn
+        ]);
 
-        if ($token != $inputToken) {
-            $this->get('session')->getFlashBag()->set('user_reset_password_error', 'invalid-token');
-            return $this->redirect($this->generateUrl('view_user_resetpassword_choose_index', array(
-                'email' => $email,
-                'token' => $inputToken,
-                'stay-signed-in' => $staySignedIn
-            ), true));
+        $token = $userService->getConfirmationToken($email);
+
+        if ($token !== $requestToken) {
+            $flashBag->set(
+                self::FLASH_BAG_RESET_PASSWORD_ERROR_KEY,
+                self::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_TOKEN_INVALID
+            );
+
+            return $failureRedirectResponse;
         }
 
-        $password = trim($this->get('request')->request->get('password'));
+        $password = trim($requestData->get('password'));
 
-        if ($password == '') {
-            $this->get('session')->getFlashBag()->set('user_reset_password_error', 'blank-password');
-            return $this->redirect($this->generateUrl('view_user_resetpassword_choose_index', array(
-                'email' => $email,
-                'token' => $inputToken,
-                'stay-signed-in' => $staySignedIn
-            ), true));
+        if (empty($password)) {
+            $flashBag->set(
+                self::FLASH_BAG_RESET_PASSWORD_ERROR_KEY,
+                self::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_PASSWORD_BLANK
+            );
+
+            return $failureRedirectResponse;
         }
 
         $passwordResetResponse = $this->getUserService()->resetPassword($token, $password);
 
         if ($this->requestFailedDueToReadOnly($passwordResetResponse)) {
-            $this->get('session')->getFlashBag()->set('user_reset_password_error', 'failed-read-only');
-            return $this->redirect($this->generateUrl('view_user_resetpassword_choose_index', array(
-                'email' => $email,
-                'token' => $inputToken,
-                'stay-signed-in' => $staySignedIn
-            ), true));
-        }
+            $flashBag->set(
+                self::FLASH_BAG_RESET_PASSWORD_ERROR_KEY,
+                self::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_FAILED_READ_ONLY
+            );
 
-        if ($passwordResetResponse === 404) {
-            $this->get('session')->getFlashBag()->set('user_reset_password_error', 'invalid-token');
-            return $this->redirect($this->generateUrl('view_user_resetpassword_choose_index', array(
-                'email' => $email,
-                'token' => $inputToken,
-                'stay-signed-in' => $staySignedIn
-            ), true));
+            return $failureRedirectResponse;
         }
 
         $user = new User();
         $user->setUsername($email);
         $user->setPassword($password);
-        $this->getUserService()->setUser($user);
+        $userService->setUser($user);
 
-        $response = $this->redirect($this->generateUrl('view_dashboard_index_index', array(), true));
+        $response = $this->createDashboardRedirectResponse($router);
 
-        if ($staySignedIn == "1") {
-            $stringifiedUser = $this->getUserSerializerService()->serializeToString($user);
+        if ($staySignedIn) {
+            $serializedUser = $this->getUserSerializerService()->serializeToString($user);
 
             $cookie = new Cookie(
-                'simplytestable-user',
-                $stringifiedUser,
+                UserService::USER_COOKIE_KEY,
+                $serializedUser,
                 time() + self::ONE_YEAR_IN_SECONDS,
                 '/',
                 '.simplytestable.com',
@@ -614,12 +637,14 @@ class UserController extends BaseViewController
 
 
     /**
-     *
      * @param string $email
-     * @return boolean
+     *
+     * @return bool
      */
-    private function isEmailValid($email) {
-        $validator = new EmailValidator;
+    private function isEmailValid($email)
+    {
+        $validator = new EmailValidator();
+
         return $validator->isValid($email);
     }
 
@@ -667,6 +692,23 @@ class UserController extends BaseViewController
         $redirectUrl = $router->generate(
             'view_dashboard_index_index',
             [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return new RedirectResponse($redirectUrl);
+    }
+
+    /**
+     * @param RouterInterface $router
+     * @param array $routeParameters
+     *
+     * @return RedirectResponse
+     */
+    private function createPasswordChooseRedirectResponse(RouterInterface $router, array $routeParameters = [])
+    {
+        $redirectUrl = $router->generate(
+            'view_user_resetpassword_choose_index',
+            $routeParameters,
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 
