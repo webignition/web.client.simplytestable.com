@@ -2,17 +2,12 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\User;
 
-use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\Mock\MockPlugin;
 use SimplyTestable\WebClientBundle\Controller\UserController;
-use SimplyTestable\WebClientBundle\Services\CouponService;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
-use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 
 class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
 {
