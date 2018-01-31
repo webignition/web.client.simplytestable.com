@@ -4,7 +4,6 @@ namespace SimplyTestable\WebClientBundle\Entity\Test;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\SerializerBundle\Annotation as SerializerAnnotation;
 use SimplyTestable\WebClientBundle\Entity\TimePeriod;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use webignition\NormalisedUrl\NormalisedUrl;
@@ -22,9 +21,8 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
  *     }
  * )
  * @ORM\Entity(repositoryClass="SimplyTestable\WebClientBundle\Repository\TestRepository")
- * @SerializerAnnotation\ExclusionPolicy("all")
  */
-class Test
+class Test implements \JsonSerializable
 {
     const STATE_STARTING = 'new';
     const STATE_CANCELLED = 'cancelled';
@@ -47,7 +45,6 @@ class Test
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SerializerAnnotation\Expose
      */
     private $id;
 
@@ -55,7 +52,6 @@ class Test
      * @var int
      *
      * @ORM\Column(type="integer", nullable=false)
-     * @SerializerAnnotation\Expose
      */
     private $testId;
 
@@ -63,7 +59,6 @@ class Test
      * @var string
      *
      * @ORM\Column(type="string", nullable=false)
-     * @SerializerAnnotation\Expose
      */
     private $user;
 
@@ -71,7 +66,6 @@ class Test
      * @var NormalisedUrl
      *
      * @ORM\Column(type="text", nullable=false)
-     * @SerializerAnnotation\Expose
      */
     private $website;
 
@@ -79,7 +73,6 @@ class Test
      * @var string
      *
      * @ORM\Column(type="string", nullable=false)
-     * @SerializerAnnotation\Expose
      */
     private $state;
 
@@ -106,7 +99,6 @@ class Test
      * @var DoctrineCollection
      *
      * @ORM\Column(type="array", nullable=false)
-     * @SerializerAnnotation\Expose
      */
     private $taskTypes;
 
@@ -114,7 +106,6 @@ class Test
      * @var TimePeriod
      *
      * @ORM\OneToOne(targetEntity="SimplyTestable\WebClientBundle\Entity\TimePeriod", cascade={"persist"})
-     * @SerializerAnnotation\Expose
      */
     private $timePeriod;
 
@@ -601,5 +592,21 @@ class Test
     public function getFormattedWebsite()
     {
         return rawurldecode($this->getWebsite());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'test_id' => $this->testId,
+            'user' => $this->user,
+            'website' => (string)$this->website,
+            'state' => $this->state,
+            'taskTypes' => $this->taskTypes,
+            'timePeriod' => $this->timePeriod->jsonSerialize(),
+        ];
     }
 }
