@@ -11,6 +11,7 @@ use SimplyTestable\WebClientBundle\Model\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class InviteController extends Controller
@@ -24,15 +25,16 @@ class InviteController extends Controller
     const FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY = 'invite_accept_failure';
 
     /**
+     * @param Request $request
      * @param string $token
      * @return bool|int|null|RedirectResponse
      *
      * @throws \CredisException
      * @throws \Exception
+     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
      */
-    public function acceptAction($token)
+    public function acceptAction(Request $request, $token)
     {
-        $request = $this->container->get('request');
         $teamInviteService = $this->container->get('simplytestable.services.teaminviteservice');
         $session = $this->container->get('session');
         $userService = $this->container->get('simplytestable.services.userservice');

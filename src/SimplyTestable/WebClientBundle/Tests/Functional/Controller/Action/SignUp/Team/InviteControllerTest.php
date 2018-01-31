@@ -93,7 +93,7 @@ class InviteControllerTest extends AbstractBaseTestCase
         $this->container->set('request', $request);
 
         /* @var RedirectResponse $response */
-        $response = $this->inviteController->acceptAction($token);
+        $response = $this->inviteController->acceptAction($request, $token);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
@@ -216,7 +216,7 @@ class InviteControllerTest extends AbstractBaseTestCase
         $this->container->set('request', $request);
 
         /* @var RedirectResponse $response */
-        $response = $this->inviteController->acceptAction(self::TOKEN);
+        $response = $this->inviteController->acceptAction($request, self::TOKEN);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('http://localhost/', $response->getTargetUrl());
