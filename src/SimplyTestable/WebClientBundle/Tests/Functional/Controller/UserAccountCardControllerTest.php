@@ -6,12 +6,12 @@ use SimplyTestable\WebClientBundle\Controller\UserAccountCardController;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class UserAccountCardControllerTest extends BaseSimplyTestableTestCase
+class UserAccountCardControllerTest extends AbstractBaseTestCase
 {
     const ROUTE_NAME = 'user_account_card_associate';
 

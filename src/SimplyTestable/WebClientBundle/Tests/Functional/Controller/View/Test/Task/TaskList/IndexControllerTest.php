@@ -7,13 +7,13 @@ use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class IndexControllerTest extends BaseSimplyTestableTestCase
+class IndexControllerTest extends AbstractBaseTestCase
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Test/Task/TaskList/Index:index.html.twig';
     const ROUTE_NAME = 'view_test_task_tasklist_index_index';

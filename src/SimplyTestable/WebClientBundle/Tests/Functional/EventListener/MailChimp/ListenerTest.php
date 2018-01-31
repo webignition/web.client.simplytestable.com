@@ -2,11 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\EventListener\MailChimp;
 
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use SimplyTestable\WebClientBundle\Event\MailChimp\Event as MailChimpEvent;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-abstract class ListenerTest extends BaseTestCase {
+abstract class ListenerTest extends AbstractBaseTestCase {
 
     abstract protected function getEventType();
     abstract protected function getListenerMethodName();

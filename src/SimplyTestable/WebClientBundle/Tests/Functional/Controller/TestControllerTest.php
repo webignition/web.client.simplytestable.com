@@ -2,21 +2,15 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller;
 
-use SimplyTestable\WebClientBundle\Controller\TaskController;
 use SimplyTestable\WebClientBundle\Controller\TestController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
-use SimplyTestable\WebClientBundle\Repository\TestRepository;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
-class TestControllerTest extends BaseSimplyTestableTestCase
+class TestControllerTest extends AbstractBaseTestCase
 {
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;

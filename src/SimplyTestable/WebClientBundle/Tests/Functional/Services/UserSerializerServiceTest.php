@@ -4,9 +4,9 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserSerializerService;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 
-class UserSerializerServiceTest extends BaseSimplyTestableTestCase
+class UserSerializerServiceTest extends AbstractBaseTestCase
 {
     /**
      * @var UserSerializerService

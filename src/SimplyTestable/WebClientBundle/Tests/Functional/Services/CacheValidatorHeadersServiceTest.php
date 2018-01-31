@@ -5,9 +5,9 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 
-class CacheValidatorHeadersServiceTest extends BaseSimplyTestableTestCase
+class CacheValidatorHeadersServiceTest extends AbstractBaseTestCase
 {
     /**
      * @var CacheValidatorHeadersService

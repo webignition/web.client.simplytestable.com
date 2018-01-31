@@ -9,9 +9,9 @@ use SimplyTestable\WebClientBundle\Repository\TaskRepository;
 use SimplyTestable\WebClientBundle\Tests\Factory\OutputFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TaskFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 
-class TaskRepositoryTest extends BaseSimplyTestableTestCase
+class TaskRepositoryTest extends AbstractBaseTestCase
 {
     /**
      * @var TaskRepository

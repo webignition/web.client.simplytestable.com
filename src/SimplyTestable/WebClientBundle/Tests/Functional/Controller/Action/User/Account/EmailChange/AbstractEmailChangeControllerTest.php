@@ -4,10 +4,10 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User
 
 use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\EmailChangeController;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-abstract class AbstractEmailChangeControllerTest extends BaseSimplyTestableTestCase
+abstract class AbstractEmailChangeControllerTest extends AbstractBaseTestCase
 {
     /**
      * @var EmailChangeController

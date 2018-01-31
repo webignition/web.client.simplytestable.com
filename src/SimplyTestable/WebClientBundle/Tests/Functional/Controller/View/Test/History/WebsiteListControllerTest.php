@@ -6,12 +6,12 @@ use SimplyTestable\WebClientBundle\Controller\View\Test\History\WebsiteListContr
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class WebsiteListControllerTest extends BaseSimplyTestableTestCase
+class WebsiteListControllerTest extends AbstractBaseTestCase
 {
     const ROUTE_NAME = 'view_test_history_websitelist_index';
 

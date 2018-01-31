@@ -7,10 +7,10 @@ use SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Factory;
 use SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter;
 use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use SimplyTestable\WebClientBundle\Services\UserService;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class FactoryTest extends BaseSimplyTestableTestCase
+class FactoryTest extends AbstractBaseTestCase
 {
     /**
      * @var Factory

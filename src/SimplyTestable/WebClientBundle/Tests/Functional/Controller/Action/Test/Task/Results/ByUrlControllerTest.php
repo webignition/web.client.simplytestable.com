@@ -6,10 +6,10 @@ use SimplyTestable\WebClientBundle\Controller\Action\Test\Task\Results\ByUrlCont
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Tests\Factory\TaskFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class ByUrlControllerTest extends BaseSimplyTestableTestCase
+class ByUrlControllerTest extends AbstractBaseTestCase
 {
     const WEBSITE_URL = 'http://example.com/';
     const TEST_ID = 1;

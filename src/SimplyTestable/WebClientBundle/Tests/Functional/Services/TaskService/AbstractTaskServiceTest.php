@@ -4,9 +4,9 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\TaskService;
 
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\TaskService;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 
-abstract class AbstractTaskServiceTest extends BaseSimplyTestableTestCase
+abstract class AbstractTaskServiceTest extends AbstractBaseTestCase
 {
     /**
      * @var TaskService

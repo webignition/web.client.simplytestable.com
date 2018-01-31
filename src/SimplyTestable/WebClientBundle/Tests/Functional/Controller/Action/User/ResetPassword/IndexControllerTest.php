@@ -8,12 +8,12 @@ use SimplyTestable\WebClientBundle\Controller\Action\SignUp\User\ConfirmControll
 use SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword\IndexController;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockPostmarkMessageFactory;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use Symfony\Component\HttpFoundation\Request;
 
-class IndexControllerTest extends BaseSimplyTestableTestCase
+class IndexControllerTest extends AbstractBaseTestCase
 {
     const ROUTE_NAME = 'action_user_resetpassword_index_request';
     const EMAIL = 'user@example.com';

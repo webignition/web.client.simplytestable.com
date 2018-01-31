@@ -5,9 +5,9 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\MailChimp;
 use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 
-class ListRecipientsServiceTest extends BaseSimplyTestableTestCase
+class ListRecipientsServiceTest extends AbstractBaseTestCase
 {
     /**
      * @var ListRecipientsService

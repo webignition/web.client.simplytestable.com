@@ -6,12 +6,12 @@ use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\SignUp\Team\InviteController;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class InviteControllerTest extends BaseSimplyTestableTestCase
+class InviteControllerTest extends AbstractBaseTestCase
 {
     const USERNAME = 'user@example.com';
     const TOKEN = 'tokenValue';

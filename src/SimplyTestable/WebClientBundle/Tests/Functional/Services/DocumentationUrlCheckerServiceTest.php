@@ -6,9 +6,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
 use SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 
-class DocumentationUrlCheckerServiceTest extends BaseSimplyTestableTestCase
+class DocumentationUrlCheckerServiceTest extends AbstractBaseTestCase
 {
     /**
      * @var DocumentationUrlCheckerService

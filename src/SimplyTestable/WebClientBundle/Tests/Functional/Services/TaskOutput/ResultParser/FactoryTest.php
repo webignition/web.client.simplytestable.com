@@ -9,9 +9,9 @@ use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidati
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser;
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser;
 use SimplyTestable\WebClientBundle\Tests\Factory\ModelFactory;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 
-class FactoryTest extends BaseSimplyTestableTestCase
+class FactoryTest extends AbstractBaseTestCase
 {
     /**
      * @var Factory

@@ -5,12 +5,12 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\EventListener\RequestL
 use SimplyTestable\WebClientBundle\EventListener\RequestListener;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserService;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-abstract class AbstractOnKernelRequestTest extends BaseSimplyTestableTestCase
+abstract class AbstractOnKernelRequestTest extends AbstractBaseTestCase
 {
     /**
      * @var RequestListener

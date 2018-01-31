@@ -3,9 +3,9 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\EventListener\Stripe;
 
 use SimplyTestable\WebClientBundle\EventListener\Stripe\Listener;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 
-abstract class AbstractListenerTest extends BaseTestCase
+abstract class AbstractListenerTest extends AbstractBaseTestCase
 {
     const EVENT_USER = 'user@example.com';
 

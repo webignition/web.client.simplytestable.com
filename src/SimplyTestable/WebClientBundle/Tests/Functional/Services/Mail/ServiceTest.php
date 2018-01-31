@@ -4,10 +4,10 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\Mail;
 
 use ReflectionClass;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 
-class ServiceTest extends BaseSimplyTestableTestCase
+class ServiceTest extends AbstractBaseTestCase
 {
     /**
      * @var MailService

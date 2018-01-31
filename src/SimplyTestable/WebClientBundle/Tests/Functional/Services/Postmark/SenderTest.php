@@ -4,12 +4,12 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\Postmark;
 
 use SimplyTestable\WebClientBundle\Services\Postmark\Sender;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
-use SimplyTestable\WebClientBundle\Tests\Functional\BaseSimplyTestableTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Model\Postmark\Response as PostmarkResponse;
 
-class SenderTest extends BaseSimplyTestableTestCase
+class SenderTest extends AbstractBaseTestCase
 {
     /**
      * @var array
