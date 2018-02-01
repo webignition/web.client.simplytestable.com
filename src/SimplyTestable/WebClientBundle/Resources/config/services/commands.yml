@@ -21,3 +21,10 @@ services:
       - '@simplytestable.services.mailchimpservice'
     tags:
       - { name: console.command }
+
+  SimplyTestable\WebClientBundle\Command\EmailList\UnsubscribeCommand:
+    class: SimplyTestable\WebClientBundle\Command\EmailList\UnsubscribeCommand
+    arguments:
+      - '@simplytestable.services.mailchimpservice'
+    tags:
+      - { name: console.command }
