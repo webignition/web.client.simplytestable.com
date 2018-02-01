@@ -28,3 +28,10 @@ services:
       - '@simplytestable.services.mailchimpservice'
     tags:
       - { name: console.command }
+
+  SimplyTestable\WebClientBundle\Command\MigrateAddHashToHashlessOutputCommand:
+    class: SimplyTestable\WebClientBundle\Command\MigrateAddHashToHashlessOutputCommand
+    arguments:
+      - '@doctrine.orm.entity_manager'
+    tags:
+      - { name: console.command }

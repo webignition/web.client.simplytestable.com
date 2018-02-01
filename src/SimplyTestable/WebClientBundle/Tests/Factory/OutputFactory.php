@@ -11,6 +11,7 @@ class OutputFactory
     const KEY_TYPE = 'type';
     const KEY_ERROR_COUNT = 'error-count';
     const KEY_WARNING_COUNT = 'warning-count';
+    const KEY_HASH = 'hash';
 
     const DEFAULT_TYPE = Output::TYPE_HTML_VALIDATION;
     const DEFAULT_ERROR_COUNT = 0;
@@ -59,6 +60,10 @@ class OutputFactory
         $output->setType($outputValues[self::KEY_TYPE]);
         $output->setErrorCount($outputValues[self::KEY_ERROR_COUNT]);
         $output->setWarningCount($outputValues[self::KEY_WARNING_COUNT]);
+
+        if (isset($outputValues[self::KEY_HASH])) {
+            $output->setHash($outputValues[self::KEY_HASH]);
+        }
 
         $entityManager->persist($output);
         $entityManager->flush();
