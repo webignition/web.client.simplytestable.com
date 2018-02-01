@@ -8,6 +8,7 @@ use Guzzle\Plugin\Mock\MockPlugin;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
 use SimplyTestable\WebClientBundle\Services\MailChimp\Service as MailChimpService;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 
 class ServiceTest extends AbstractBaseTestCase
@@ -102,18 +103,18 @@ class ServiceTest extends AbstractBaseTestCase
      * @dataProvider retrieveMembersDataProvider
      *
      * @param Response[] $httpFixtures
-     * @param string[] $expectedMemberEmails
+     * @param string[] $expectedResponseData
      */
-    public function testRetrieveMembers($httpFixtures, $expectedMemberEmails)
+    public function testRetrieveMembers($httpFixtures, $expectedResponseData)
     {
         $mockHttpPlugin = new MockPlugin($httpFixtures);
 
         $mailChimpClient = $this->container->get('simplytestable.services.mailchimp.client');
         $mailChimpClient->addSubscriber($mockHttpPlugin);
 
-        $memberEmails = $this->mailChimpService->retrieveMembers(self::LIST_NAME);
+        $responseData = $this->mailChimpService->retrieveMembers(self::LIST_NAME);
 
-        $this->assertEquals($expectedMemberEmails, $memberEmails);
+        $this->assertEquals($expectedResponseData, $responseData);
     }
 
     /**
@@ -124,13 +125,17 @@ class ServiceTest extends AbstractBaseTestCase
         return [
             'single member in single response' => [
                 'httpFixtures' => [
-                    $this->createGetListMembersHttpResponse(1, ['user@example.com']),
+                    HttpResponseFactory::createMailChimpListMembersResponse(1, ['user@example.com']),
                 ],
-                'expectedMemberEmails' => ['user@example.com'],
+                'expectedResponseData' => [
+                    [
+                        'email' => 'user@example.com',
+                    ],
+                ],
             ],
             'many members in single response' => [
                 'httpFixtures' => [
-                    $this->createGetListMembersHttpResponse(5, [
+                    HttpResponseFactory::createMailChimpListMembersResponse(5, [
                         'user1@example.com',
                         'user2@example.com',
                         'user3@example.com',
@@ -138,50 +143,54 @@ class ServiceTest extends AbstractBaseTestCase
                         'user5@example.com',
                     ]),
                 ],
-                'expectedMemberEmails' => [
-                    'user1@example.com',
-                    'user2@example.com',
-                    'user3@example.com',
-                    'user4@example.com',
-                    'user5@example.com',
+                'expectedResponseData' => [
+                    [
+                        'email' => 'user1@example.com',
+                    ],
+                    [
+                        'email' => 'user2@example.com',
+                    ],
+                    [
+                        'email' => 'user3@example.com',
+                    ],
+                    [
+                        'email' => 'user4@example.com',
+                    ],
+                    [
+                        'email' => 'user5@example.com',
+                    ],
                 ],
             ],
             'many members in many responses' => [
                 'httpFixtures' => [
-                    $this->createGetListMembersHttpResponse(5, [
+                    HttpResponseFactory::createMailChimpListMembersResponse(5, [
                         'user1@example.com',
                         'user2@example.com',
                     ]),
-                    $this->createGetListMembersHttpResponse(5, [
+                    HttpResponseFactory::createMailChimpListMembersResponse(5, [
                         'user3@example.com',
                         'user4@example.com',
                         'user5@example.com',
                     ]),
                 ],
-                'expectedMemberEmails' => [
-                    'user1@example.com',
-                    'user2@example.com',
-                    'user3@example.com',
-                    'user4@example.com',
-                    'user5@example.com',
+                'expectedResponseData' => [
+                    [
+                        'email' => 'user1@example.com',
+                    ],
+                    [
+                        'email' => 'user2@example.com',
+                    ],
+                    [
+                        'email' => 'user3@example.com',
+                    ],
+                    [
+                        'email' => 'user4@example.com',
+                    ],
+                    [
+                        'email' => 'user5@example.com',
+                    ],
                 ],
             ],
         ];
-    }
-
-    /**
-     * @param int $total
-     * @param string[] $memberEmails
-     *
-     * @return Response
-     */
-    private function createGetListMembersHttpResponse($total, $memberEmails)
-    {
-        $responseBody = json_encode([
-            'total' => $total,
-            'data' => $memberEmails,
-        ]);
-
-        return Response::fromMessage("HTTP/1.1 200 OK\nContent-type:application/json\n\n" . $responseBody);
     }
 }
