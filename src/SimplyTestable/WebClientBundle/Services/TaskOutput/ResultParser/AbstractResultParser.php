@@ -5,7 +5,7 @@ namespace SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 
-abstract class ResultParser
+abstract class AbstractResultParser
 {
     /**
      * @var array

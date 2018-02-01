@@ -5,7 +5,7 @@ namespace SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage;
 
-class JsStaticAnalysisResultParser extends ResultParser
+class JsStaticAnalysisResultParser extends AbstractResultParser
 {
     /**
      * {@inheritdoc}

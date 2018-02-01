@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\HtmlTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\TextFileMessage;
 
-class HtmlValidationResultParser extends ResultParser
+class HtmlValidationResultParser extends AbstractResultParser
 {
     /**
      * {@inheritdoc}

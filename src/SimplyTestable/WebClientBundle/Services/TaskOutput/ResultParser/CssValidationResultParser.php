@@ -5,7 +5,7 @@ namespace SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 
-class CssValidationResultParser extends ResultParser
+class CssValidationResultParser extends AbstractResultParser
 {
     /**
      * {@inheritdoc}

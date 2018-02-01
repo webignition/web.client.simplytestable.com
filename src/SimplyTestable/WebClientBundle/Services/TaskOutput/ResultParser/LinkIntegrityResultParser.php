@@ -5,7 +5,7 @@ namespace SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\LinkIntegrityMessage;
 
-class LinkIntegrityResultParser extends ResultParser
+class LinkIntegrityResultParser extends AbstractResultParser
 {
     /**
      * {@inheritdoc}
