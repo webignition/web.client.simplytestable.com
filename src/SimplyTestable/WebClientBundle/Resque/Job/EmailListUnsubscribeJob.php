@@ -13,7 +13,7 @@ class EmailListUnsubscribeJob extends CommandJob {
     }
 
     protected function getCommand() {
-        return new UnsubscribeCommand();
+        return $this->getContainer()->get(UnsubscribeCommand::class);
     }
 
     protected function getCommandArgs() {
