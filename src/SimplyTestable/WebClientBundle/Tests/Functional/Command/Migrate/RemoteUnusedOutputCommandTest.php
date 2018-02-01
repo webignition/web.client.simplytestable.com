@@ -1,8 +1,8 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Functional\Command;
+namespace SimplyTestable\WebClientBundle\Tests\Functional\Command\Migrate;
 
-use SimplyTestable\WebClientBundle\Command\MigrateRemoveUnusedOutputCommand;
+use SimplyTestable\WebClientBundle\Command\Migrate\RemoveUnusedOutputCommand;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use SimplyTestable\WebClientBundle\Tests\Factory\OutputFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TaskFactory;
@@ -14,9 +14,9 @@ use Symfony\Component\Console\Output\NullOutput;
 class MigrateRemoteUnusedOutputCommandTest extends AbstractBaseTestCase
 {
     /**
-     * @var MigrateRemoveUnusedOutputCommand
+     * @var RemoveUnusedOutputCommand
      */
-    protected $migrateRemoveUnusedOutputCommand;
+    protected $removeUnusedOutputCommand;
 
     /**
      * {@inheritdoc}
@@ -25,7 +25,7 @@ class MigrateRemoteUnusedOutputCommandTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->migrateRemoveUnusedOutputCommand = $this->container->get(MigrateRemoveUnusedOutputCommand::class);
+        $this->removeUnusedOutputCommand = $this->container->get(RemoveUnusedOutputCommand::class);
     }
 
     /**
@@ -80,10 +80,10 @@ class MigrateRemoteUnusedOutputCommandTest extends AbstractBaseTestCase
         $args = [];
 
         if ($dryRun) {
-            $args['--' . MigrateRemoveUnusedOutputCommand::OPT_DRY_RUN] = true;
+            $args['--' . RemoveUnusedOutputCommand::OPT_DRY_RUN] = true;
         }
 
-        $returnValue = $this->migrateRemoveUnusedOutputCommand->run(new ArrayInput($args), new NullOutput());
+        $returnValue = $this->removeUnusedOutputCommand->run(new ArrayInput($args), new NullOutput());
 
         $this->assertEquals(0, $returnValue);
 

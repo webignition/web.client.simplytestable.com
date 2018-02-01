@@ -29,22 +29,22 @@ services:
     tags:
       - { name: console.command }
 
-  SimplyTestable\WebClientBundle\Command\MigrateAddHashToHashlessOutputCommand:
-    class: SimplyTestable\WebClientBundle\Command\MigrateAddHashToHashlessOutputCommand
+  SimplyTestable\WebClientBundle\Command\Migrate\AddHashToHashlessOutputCommand:
+    class: SimplyTestable\WebClientBundle\Command\Migrate\AddHashToHashlessOutputCommand
     arguments:
       - '@doctrine.orm.entity_manager'
     tags:
       - { name: console.command }
 
-  SimplyTestable\WebClientBundle\Command\MigrateCanonicaliseTaskOutputCommand:
-    class: SimplyTestable\WebClientBundle\Command\MigrateCanonicaliseTaskOutputCommand
+  SimplyTestable\WebClientBundle\Command\Migrate\CanonicaliseTaskOutputCommand:
+    class: SimplyTestable\WebClientBundle\Command\Migrate\CanonicaliseTaskOutputCommand
     arguments:
       - '@doctrine.orm.entity_manager'
     tags:
       - { name: console.command }
 
-  SimplyTestable\WebClientBundle\Command\MigrateRemoveUnusedOutputCommand:
-    class: SimplyTestable\WebClientBundle\Command\MigrateRemoveUnusedOutputCommand
+  SimplyTestable\WebClientBundle\Command\Migrate\RemoveUnusedOutputCommand:
+    class: SimplyTestable\WebClientBundle\Command\Migrate\RemoveUnusedOutputCommand
     arguments:
       - '@doctrine.orm.entity_manager'
     tags:

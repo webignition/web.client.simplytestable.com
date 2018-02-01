@@ -1,20 +1,20 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Functional\Command;
+namespace SimplyTestable\WebClientBundle\Tests\Functional\Command\Migrate;
 
-use SimplyTestable\WebClientBundle\Command\MigrateAddHashToHashlessOutputCommand;
+use SimplyTestable\WebClientBundle\Command\Migrate\AddHashToHashlessOutputCommand;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use SimplyTestable\WebClientBundle\Tests\Factory\OutputFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 
-class MigrateAddHashToHashlessOutputCommandTest extends AbstractBaseTestCase
+class AddHashToHashlessOutputCommandTest extends AbstractBaseTestCase
 {
     /**
-     * @var MigrateAddHashToHashlessOutputCommand
+     * @var AddHashToHashlessOutputCommand
      */
-    protected $migrateAddHashToHashlessOutputCommand;
+    protected $addHashToHashlessOutputCommand;
 
     /**
      * {@inheritdoc}
@@ -23,9 +23,7 @@ class MigrateAddHashToHashlessOutputCommandTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->migrateAddHashToHashlessOutputCommand = $this->container->get(
-            MigrateAddHashToHashlessOutputCommand::class
-        );
+        $this->addHashToHashlessOutputCommand = $this->container->get(AddHashToHashlessOutputCommand::class);
     }
 
     /**
@@ -54,14 +52,14 @@ class MigrateAddHashToHashlessOutputCommandTest extends AbstractBaseTestCase
         $args = [];
 
         if (!is_null($limit)) {
-            $args['--' . MigrateAddHashToHashlessOutputCommand::OPT_LIMIT] = $limit;
+            $args['--' . AddHashToHashlessOutputCommand::OPT_LIMIT] = $limit;
         }
 
         if ($dryRun) {
-            $args['--' . MigrateAddHashToHashlessOutputCommand::OPT_DRY_RUN] = true;
+            $args['--' . AddHashToHashlessOutputCommand::OPT_DRY_RUN] = true;
         }
 
-        $returnValue = $this->migrateAddHashToHashlessOutputCommand->run(new ArrayInput($args), new NullOutput());
+        $returnValue = $this->addHashToHashlessOutputCommand->run(new ArrayInput($args), new NullOutput());
 
         $this->assertEquals(0, $returnValue);
 

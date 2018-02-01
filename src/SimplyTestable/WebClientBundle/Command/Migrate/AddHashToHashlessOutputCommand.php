@@ -1,5 +1,5 @@
 <?php
-namespace SimplyTestable\WebClientBundle\Command;
+namespace SimplyTestable\WebClientBundle\Command\Migrate;
 
 use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use SimplyTestable\WebClientBundle\Entity\Task\Output as TaskOutput;
 
-class MigrateAddHashToHashlessOutputCommand extends Command
+class AddHashToHashlessOutputCommand extends Command
 {
     const NAME = 'simplytestable:add-hash-to-hashless-output';
     const OPT_LIMIT = 'limit';

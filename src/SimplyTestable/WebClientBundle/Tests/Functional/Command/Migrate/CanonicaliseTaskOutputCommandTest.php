@@ -1,8 +1,8 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Tests\Functional\Command;
+namespace SimplyTestable\WebClientBundle\Tests\Functional\Command\Migrate;
 
-use SimplyTestable\WebClientBundle\Command\MigrateCanonicaliseTaskOutputCommand;
+use SimplyTestable\WebClientBundle\Command\Migrate\CanonicaliseTaskOutputCommand;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use SimplyTestable\WebClientBundle\Tests\Factory\OutputFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TaskFactory;
@@ -14,9 +14,9 @@ use Symfony\Component\Console\Output\NullOutput;
 class MigrateCanonicaliseTaskOutputCommandTest extends AbstractBaseTestCase
 {
     /**
-     * @var MigrateCanonicaliseTaskOutputCommand
+     * @var CanonicaliseTaskOutputCommand
      */
-    protected $migrateCanonicaliseTaskOutputCommand;
+    protected $canonicaliseTaskOutputCommand;
 
     /**
      * {@inheritdoc}
@@ -25,9 +25,7 @@ class MigrateCanonicaliseTaskOutputCommandTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->migrateCanonicaliseTaskOutputCommand = $this->container->get(
-            MigrateCanonicaliseTaskOutputCommand::class
-        );
+        $this->canonicaliseTaskOutputCommand = $this->container->get(CanonicaliseTaskOutputCommand::class);
     }
 
     /**
@@ -83,14 +81,14 @@ class MigrateCanonicaliseTaskOutputCommandTest extends AbstractBaseTestCase
         $args = [];
 
         if (!is_null($limit)) {
-            $args['--' . MigrateCanonicaliseTaskOutputCommand::OPT_LIMIT] = $limit;
+            $args['--' . CanonicaliseTaskOutputCommand::OPT_LIMIT] = $limit;
         }
 
         if ($dryRun) {
-            $args['--' . MigrateCanonicaliseTaskOutputCommand::OPT_DRY_RUN] = true;
+            $args['--' . CanonicaliseTaskOutputCommand::OPT_DRY_RUN] = true;
         }
 
-        $returnValue = $this->migrateCanonicaliseTaskOutputCommand->run(new ArrayInput($args), new NullOutput());
+        $returnValue = $this->canonicaliseTaskOutputCommand->run(new ArrayInput($args), new NullOutput());
 
         $this->assertEquals(0, $returnValue);
 

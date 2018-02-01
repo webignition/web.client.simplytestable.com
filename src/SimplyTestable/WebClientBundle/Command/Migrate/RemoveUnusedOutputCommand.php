@@ -1,16 +1,17 @@
 <?php
-namespace SimplyTestable\WebClientBundle\Command;
+namespace SimplyTestable\WebClientBundle\Command\Migrate;
 
 use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use SimplyTestable\WebClientBundle\Repository\TaskOutputRepository;
 use SimplyTestable\WebClientBundle\Repository\TaskRepository;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 
-class MigrateRemoveUnusedOutputCommand extends BaseCommand
+class RemoveUnusedOutputCommand extends Command
 {
     const NAME = 'simplytestable:migrate:remove-unused-output';
     const OPT_LIMIT = 'limit';
