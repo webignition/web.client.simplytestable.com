@@ -25,6 +25,42 @@ class LinkIntegrityResultParserTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider handlesDataProvider
+     *
+     * @param string $taskType
+     * @param bool $expectedHandles
+     */
+    public function testHandles($taskType, $expectedHandles)
+    {
+        $this->assertEquals($expectedHandles, $this->linkIntegrityResultParser->handles($taskType));
+    }
+
+    /**
+     * @return array
+     */
+    public function handlesDataProvider()
+    {
+        return [
+            Output::TYPE_HTML_VALIDATION => [
+                'taskType' => Output::TYPE_HTML_VALIDATION,
+                'expectedHandles' => false,
+            ],
+            Output::TYPE_CSS_VALIDATION => [
+                'taskType' => Output::TYPE_CSS_VALIDATION,
+                'expectedHandles' => false,
+            ],
+            Output::TYPE_JS_STATIC_ANALYSIS => [
+                'taskType' => Output::TYPE_JS_STATIC_ANALYSIS,
+                'expectedHandles' => false,
+            ],
+            Output::TYPE_LINK_INTEGRITY => [
+                'taskType' => Output::TYPE_LINK_INTEGRITY,
+                'expectedHandles' => true,
+            ],
+        ];
+    }
+
+    /**
      * @dataProvider getResultDataProvider
      *
      * @param Output $output

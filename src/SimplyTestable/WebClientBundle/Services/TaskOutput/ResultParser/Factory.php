@@ -7,27 +7,31 @@ use SimplyTestable\WebClientBundle\Entity\Task\Output;
 class Factory
 {
     /**
-     * @var array
+     * @var ResultParserInterface[]
      */
     private $parsers;
 
     /**
-     * @param $parserConfiguration
+     * @param ResultParserInterface $resultParser
      */
-    public function __construct($parserConfiguration)
+    public function addResultParser(ResultParserInterface $resultParser)
     {
-        foreach ($parserConfiguration as $taskType => $parserDetail) {
-            $this->parsers[$taskType] = new $parserDetail['class'];
-        }
+        $this->parsers[] = $resultParser;
     }
 
     /**
      * @param Output $output
      *
-     * @return ResultParser
+     * @return ResultParserInterface
      */
     public function getParser(Output $output)
     {
-        return $this->parsers[$output->getType()];
+        foreach ($this->parsers as $parser) {
+            if ($parser->handles($output->getType())) {
+                return $parser;
+            }
+        }
+
+        return null;
     }
 }

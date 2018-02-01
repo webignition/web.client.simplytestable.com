@@ -2,11 +2,22 @@
 
 namespace SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser;
 
+use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 
-class CssValidationResultParser extends ResultParser
+class CssValidationResultParser extends AbstractResultParser
 {
+    /**
+     * @param string $taskType
+     *
+     * @return bool
+     */
+    public function handles($taskType)
+    {
+        return strtolower(Output::TYPE_CSS_VALIDATION) === strtolower($taskType);
+    }
+
     /**
      * {@inheritdoc}
      */

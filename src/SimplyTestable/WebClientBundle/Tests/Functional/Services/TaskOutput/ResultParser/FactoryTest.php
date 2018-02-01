@@ -4,7 +4,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\TaskOutput\Re
 
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser;
-use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory;
+use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory as ResultParserFactory;
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser;
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser;
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser;
@@ -14,7 +14,7 @@ use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 class FactoryTest extends AbstractBaseTestCase
 {
     /**
-     * @var Factory
+     * @var ResultParserFactory
      */
     private $factory;
 
@@ -25,7 +25,7 @@ class FactoryTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->factory = $this->container->get('simplytestable.services.taskoutputresultparserfactoryservice');
+        $this->factory = $this->container->get(ResultParserFactory::class);
     }
 
     /**
@@ -49,28 +49,35 @@ class FactoryTest extends AbstractBaseTestCase
         return [
             'HTML validation' => [
                 'output' => ModelFactory::createTaskOutput([
-                    ModelFactory::TASK_OUTPUT_TYPE => 'HTML validation',
+                    ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_HTML_VALIDATION,
                 ]),
                 'expectedResultParserClassName' => HtmlValidationResultParser::class,
             ],
             'CSS validation' => [
                 'output' => ModelFactory::createTaskOutput([
-                    ModelFactory::TASK_OUTPUT_TYPE => 'CSS validation',
+                    ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_CSS_VALIDATION,
                 ]),
                 'expectedResultParserClassName' => CssValidationResultParser::class,
             ],
             'JS static analysis' => [
                 'output' => ModelFactory::createTaskOutput([
-                    ModelFactory::TASK_OUTPUT_TYPE => 'JS static analysis',
+                    ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_JS_STATIC_ANALYSIS,
                 ]),
                 'expectedResultParserClassName' => JsStaticAnalysisResultParser::class,
             ],
             'Link integrity' => [
                 'output' => ModelFactory::createTaskOutput([
-                    ModelFactory::TASK_OUTPUT_TYPE => 'Link integrity',
+                    ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_LINK_INTEGRITY,
                 ]),
                 'expectedResultParserClassName' => LinkIntegrityResultParser::class,
             ],
         ];
+    }
+
+    public function testGetParserForUnknownTaskType()
+    {
+        $this->assertNull($this->factory->getParser(ModelFactory::createTaskOutput([
+            ModelFactory::TASK_OUTPUT_TYPE => 'Foo',
+        ])));
     }
 }

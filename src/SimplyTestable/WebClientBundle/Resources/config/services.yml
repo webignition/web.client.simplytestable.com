@@ -31,17 +31,12 @@ services:
         entityManager: "@doctrine.orm.entity_manager"
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
-        taskOutputResultParserService: "@simplytestable.services.taskoutputresultparserfactoryservice"
+        taskOutputResultParserService: "@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory"
 
   simplytestable.services.taskcollectionfilterservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService
     arguments:
         entityManager: "@doctrine.orm.entity_manager"
-
-  simplytestable.services.taskoutputresultparserfactoryservice:
-    class:   SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory
-    arguments:
-      drivers: %task-output-result-parsers%
 
   simplytestable.services.cachevalidatorheadersservice:
     class:   SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService
@@ -256,3 +251,23 @@ services:
     class: SimplyTestable\WebClientBundle\Services\FlashBagValues
     arguments:
       session: '@session'
+
+  SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser:
+    class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser
+
+  SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser:
+    class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser
+
+  SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser:
+    class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser
+
+  SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser:
+    class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser
+
+  SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory:
+    class:   SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory
+    calls:
+      - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser']]
+      - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser']]
+      - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser']]
+      - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser']]

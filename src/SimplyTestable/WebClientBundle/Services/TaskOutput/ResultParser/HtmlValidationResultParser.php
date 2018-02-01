@@ -2,12 +2,23 @@
 
 namespace SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser;
 
+use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\HtmlTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\TextFileMessage;
 
-class HtmlValidationResultParser extends ResultParser
+class HtmlValidationResultParser extends AbstractResultParser
 {
+    /**
+     * @param string $taskType
+     *
+     * @return bool
+     */
+    public function handles($taskType)
+    {
+        return strtolower(Output::TYPE_HTML_VALIDATION) === strtolower($taskType);
+    }
+
     /**
      * {@inheritdoc}
      */
