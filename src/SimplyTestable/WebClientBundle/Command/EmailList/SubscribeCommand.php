@@ -1,46 +1,23 @@
 <?php
 namespace SimplyTestable\WebClientBundle\Command\EmailList;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use SimplyTestable\WebClientBundle\Services\MailChimp\Service as MailChimpService;
 
-class SubscribeCommand extends Command
+class SubscribeCommand extends AbstractSubscriptionCommand
 {
     const NAME = 'simplytestable:emaillist:subscribe';
-    const ARG_LIST_ID = 'listId';
-    const ARG_EMAIL = 'email';
-
-    /**
-     * @var MailChimpService
-     */
-    private $mailChimpService;
-
-    /**
-     * @param MailChimpService $mailChimpService
-     * @param string|null $name
-     */
-    public function __construct(
-        MailChimpService $mailChimpService,
-        $name = null
-    ) {
-        parent::__construct($name);
-
-        $this->mailChimpService = $mailChimpService;
-    }
 
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName(self::NAME)
             ->setDescription('Subscribe a user to a email list')
-            ->addArgument(self::ARG_LIST_ID, InputArgument::REQUIRED, 'id of list to subscribe to')
-            ->addArgument(self::ARG_EMAIL, InputArgument::REQUIRED, 'email of user to subscribe')
         ;
     }
 

@@ -10,8 +10,8 @@ services:
     class: SimplyTestable\WebClientBundle\Command\EmailList\RetrieveRecipientsCommand
     arguments:
       - '@simplytestable.services.mailchimp.listrecipients'
-      - '@simplytestable.services.mailchimpservice'
       - '@doctrine.orm.entity_manager'
+      - '@simplytestable.services.mailchimpservice'
     tags:
       - { name: console.command }
 

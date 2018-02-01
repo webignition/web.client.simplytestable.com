@@ -3,13 +3,12 @@ namespace SimplyTestable\WebClientBundle\Command\EmailList;
 
 use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use SimplyTestable\WebClientBundle\Services\MailChimp\Service as MailChimpService;
 
-class RetrieveRecipientsCommand extends Command
+class RetrieveRecipientsCommand extends AbstractEmailListCommand
 {
     const NAME = 'simplytestable:emaillist:retrieve-recipients';
     const ARG_LIST_NAME = 'listName';
@@ -18,11 +17,6 @@ class RetrieveRecipientsCommand extends Command
      * @var ListRecipientsService
      */
     private $listRecipientsService;
-
-    /**
-     * @var MailChimpService
-     */
-    private $mailChimpService;
 
     /**
      * @var EntityManagerInterface
@@ -37,14 +31,13 @@ class RetrieveRecipientsCommand extends Command
      */
     public function __construct(
         ListRecipientsService $listRecipientsService,
-        MailChimpService $mailChimpService,
         EntityManagerInterface $entityManager,
+        MailChimpService $mailChimpService,
         $name = null
     ) {
-        parent::__construct($name);
+        parent::__construct($mailChimpService, $name);
 
         $this->listRecipientsService = $listRecipientsService;
-        $this->mailChimpService = $mailChimpService;
         $this->entityManager = $entityManager;
     }
 
