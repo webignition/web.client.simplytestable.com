@@ -4,7 +4,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\TaskOutput\Re
 
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser;
-use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory;
+use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory as ResultParserFactory;
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser;
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser;
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser;
@@ -14,7 +14,7 @@ use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 class FactoryTest extends AbstractBaseTestCase
 {
     /**
-     * @var Factory
+     * @var ResultParserFactory
      */
     private $factory;
 
@@ -25,7 +25,7 @@ class FactoryTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->factory = $this->container->get('simplytestable.services.taskoutputresultparserfactoryservice');
+        $this->factory = $this->container->get(ResultParserFactory::class);
     }
 
     /**

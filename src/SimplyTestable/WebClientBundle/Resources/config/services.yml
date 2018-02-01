@@ -31,7 +31,7 @@ services:
         entityManager: "@doctrine.orm.entity_manager"
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
-        taskOutputResultParserService: "@simplytestable.services.taskoutputresultparserfactoryservice"
+        taskOutputResultParserService: "@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory"
 
   simplytestable.services.taskcollectionfilterservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService
@@ -263,3 +263,8 @@ services:
 
   SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser:
     class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser
+
+  SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory:
+    class:   SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory
+    arguments:
+      drivers: %task-output-result-parsers%
