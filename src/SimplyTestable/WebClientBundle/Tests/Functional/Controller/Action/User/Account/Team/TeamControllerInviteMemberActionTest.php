@@ -110,10 +110,8 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
     {
         $session = $this->container->get('session');
 
-        $this->container->set('request', $request);
-
         /* @var RedirectResponse $response */
-        $response = $this->teamController->inviteMemberAction();
+        $response = $this->teamController->inviteMemberAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -179,14 +177,12 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
     {
         $session = $this->container->get('session');
 
-        $this->container->set('request', new Request([], [
-            'email' => self::INVITEE_EMAIL,
-        ]));
-
         $this->setHttpFixtures($httpFixtures);
 
         /* @var RedirectResponse $response */
-        $response = $this->teamController->inviteMemberAction();
+        $response = $this->teamController->inviteMemberAction(new Request([], [
+            'email' => self::INVITEE_EMAIL,
+        ]));
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -287,10 +283,6 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         $session = $this->container->get('session');
         $mailService = $this->container->get('simplytestable.services.mail.service');
 
-        $this->container->set('request', new Request([], [
-            'email' => self::INVITEE_EMAIL,
-        ]));
-
         $inviteData = [
             'team' => self::TEAM_NAME,
             'user' => self::INVITEE_EMAIL,
@@ -307,7 +299,9 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         $mailService->setPostmarkMessage($postmarkMessage);
 
         /* @var RedirectResponse $response */
-        $response = $this->teamController->inviteMemberAction();
+        $response = $this->teamController->inviteMemberAction(new Request([], [
+            'email' => self::INVITEE_EMAIL,
+        ]));
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -410,10 +404,6 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         $session = $this->container->get('session');
         $mailService = $this->container->get('simplytestable.services.mail.service');
 
-        $this->container->set('request', new Request([], [
-            'email' => self::INVITEE_EMAIL,
-        ]));
-
         $inviteData = [
             'team' => self::TEAM_NAME,
             'user' => self::INVITEE_EMAIL,
@@ -430,7 +420,9 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         $mailService->setPostmarkMessage($postmarkMessage);
 
         /* @var RedirectResponse $response */
-        $response = $this->teamController->inviteMemberAction();
+        $response = $this->teamController->inviteMemberAction(new Request([], [
+            'email' => self::INVITEE_EMAIL,
+        ]));
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());

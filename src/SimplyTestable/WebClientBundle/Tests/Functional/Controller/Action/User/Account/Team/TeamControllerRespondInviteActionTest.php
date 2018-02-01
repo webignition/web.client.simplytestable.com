@@ -63,10 +63,8 @@ class TeamControllerRespondInviteActionTest extends AbstractTeamControllerTest
 
     public function testRespondInviteActionBadRequestResponseValue()
     {
-        $this->container->set('request', new Request());
-
         /* @var RedirectResponse $response */
-        $response = $this->teamController->respondInviteAction();
+        $response = $this->teamController->respondInviteAction(new Request());
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
@@ -79,14 +77,12 @@ class TeamControllerRespondInviteActionTest extends AbstractTeamControllerTest
      */
     public function testRespondInviteActionSuccess(Request $request)
     {
-        $this->container->set('request', $request);
-
         $this->setHttpFixtures([
             Response::fromMessage('HTTP/1.1 200'),
         ]);
 
         /* @var RedirectResponse $response */
-        $response = $this->teamController->respondInviteAction();
+        $response = $this->teamController->respondInviteAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());

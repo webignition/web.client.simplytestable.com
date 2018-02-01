@@ -67,10 +67,8 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
     {
         $session = $this->container->get('session');
 
-        $this->container->set('request', new Request());
-
         /* @var RedirectResponse $response */
-        $response = $this->teamController->createAction();
+        $response = $this->teamController->createAction(new Request());
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(
@@ -92,12 +90,10 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
             Response::fromMessage('HTTP/1.1 200'),
         ]);
 
-        $this->container->set('request', new Request([], [
+        /* @var RedirectResponse $response */
+        $response = $this->teamController->createAction(new Request([], [
             'name' => self::TEAM_NAME,
         ]));
-
-        /* @var RedirectResponse $response */
-        $response = $this->teamController->createAction();
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals([], $session->getFlashBag()->peekAll());

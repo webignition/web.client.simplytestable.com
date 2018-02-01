@@ -51,12 +51,13 @@ class TeamController extends Controller implements RequiresPrivateUser
     }
 
     /**
+     * @param Request $request
+     *
      * @return RedirectResponse
      */
-    public function createAction()
+    public function createAction(Request $request)
     {
         $session = $this->container->get('session');
-        $request = $this->container->get('request');
         $teamService = $this->container->get('simplytestable.services.teamservice');
         $userService = $this->container->get('simplytestable.services.userservice');
 
@@ -86,18 +87,18 @@ class TeamController extends Controller implements RequiresPrivateUser
     }
 
     /**
+     * @param Request $request
      * @return RedirectResponse
      *
      * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
      * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
      */
-    public function inviteMemberAction()
+    public function inviteMemberAction(Request $request)
     {
         $session = $this->container->get('session');
         $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
         $userService = $this->container->get('simplytestable.services.userservice');
-        $request = $this->container->get('request');
 
         $requestData = $request->request;
 
@@ -225,12 +226,13 @@ class TeamController extends Controller implements RequiresPrivateUser
     }
 
     /**
+     * @param Request $request
+     *
      * @return RedirectResponse
      */
-    public function respondInviteAction()
+    public function respondInviteAction(Request $request)
     {
         $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
-        $request = $this->container->get('request');
         $userService = $this->container->get('simplytestable.services.userservice');
 
         $requestData = $request->request;
@@ -264,11 +266,12 @@ class TeamController extends Controller implements RequiresPrivateUser
     }
 
     /**
+     * @param Request $request
+     *
      * @return RedirectResponse
      */
-    public function removeInviteAction()
+    public function removeInviteAction(Request $request)
     {
-        $request = $this->container->get('request');
         $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
 
         $requestData = $request->request;
@@ -287,11 +290,12 @@ class TeamController extends Controller implements RequiresPrivateUser
     }
 
     /**
+     * @param Request $request
+     *
      * @return RedirectResponse
      */
-    public function removeMemberAction()
+    public function removeMemberAction(Request $request)
     {
-        $request = $this->container->get('request');
         $teamService = $this->container->get('simplytestable.services.teamservice');
 
         $requestData = $request->request;
@@ -307,18 +311,19 @@ class TeamController extends Controller implements RequiresPrivateUser
     }
 
     /**
+     * @param Request $request
+     *
      * @return RedirectResponse
      *
      * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
      * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
      */
-    public function resendInviteAction()
+    public function resendInviteAction(Request $request)
     {
         $session = $this->container->get('session');
         $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
         $userService = $this->container->get('simplytestable.services.userservice');
-        $request = $this->container->get('request');
 
         $requestData = $request->request;
 

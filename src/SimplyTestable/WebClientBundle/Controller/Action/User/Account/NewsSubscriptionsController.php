@@ -21,6 +21,11 @@ class NewsSubscriptionsController extends Controller implements RequiresPrivateU
         ], true));
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return RedirectResponse
+     */
     public function updateAction(Request $request)
     {
         $mailChimpListRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
