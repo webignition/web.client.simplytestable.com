@@ -185,7 +185,7 @@ class SignInControllerTest extends AbstractBaseTestCase
     {
         $request = new Request();
 
-        $this->container->set('request', $request);
+        $this->container->get('request_stack')->push($request);
         $this->signInController->setContainer($this->container);
 
         $response = $this->signInController->indexAction($request);

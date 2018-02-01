@@ -248,7 +248,7 @@ class ChooseControllerTest extends AbstractBaseTestCase
 
         $request = new Request();
 
-        $this->container->set('request', $request);
+        $this->container->get('request_stack')->push($request);
         $this->chooseController->setContainer($this->container);
 
         $response = $this->chooseController->indexAction(
