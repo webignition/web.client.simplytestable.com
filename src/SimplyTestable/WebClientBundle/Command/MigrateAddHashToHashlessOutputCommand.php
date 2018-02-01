@@ -1,117 +1,106 @@
 <?php
 namespace SimplyTestable\WebClientBundle\Command;
 
-use Symfony\Component\Console\Input\InputArgument;
+use Doctrine\ORM\EntityManagerInterface;
+use SimplyTestable\WebClientBundle\Entity\Task\Output;
+use SimplyTestable\WebClientBundle\Repository\TaskOutputRepository;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use SimplyTestable\WebClientBundle\Entity\Task\Output as TaskOutput;
 
-class MigrateAddHashToHashlessOutputCommand extends BaseCommand
+class MigrateAddHashToHashlessOutputCommand extends Command
 {
-    
+    const NAME = 'simplytestable:add-hash-to-hashless-output';
+    const OPT_LIMIT = 'limit';
+    const OPT_DRY_RUN = 'dry-run';
+
     /**
-     *
-     * @var \Doctrine\ORM\EntityManager
+     * @var EntityManagerInterface
      */
     private $entityManager;
-    
+
     /**
-     *
-     * @var \Doctrine\ORM\EntityRepository
+     * @var TaskOutputRepository
      */
     private $taskOutputRepository;
-    
+
+    /**
+     * @param EntityManagerInterface $entityManager
+     * @param string|null $name
+     */
+    public function __construct(EntityManagerInterface $entityManager, $name = null)
+    {
+        parent::__construct($name);
+
+        $this->entityManager = $entityManager;
+        $this->taskOutputRepository = $entityManager->getRepository(Output::class);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         $this
-            ->setName('simplytestable:add-hash-to-hashless-output')
+            ->setName(self::NAME)
             ->setDescription('Set the hash property on TaskOutput objects that have no hash set')
-            ->addOption('limit')
-            ->addOption('dry-run')                   
+            ->addOption(self::OPT_LIMIT)
+            ->addOption(self::OPT_DRY_RUN)
         ;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
-    { 
+    {
+        $isDryRun = $input->getOption(self::OPT_DRY_RUN);
+        $limit = $this->getLimit($input);
+
         $output->writeln('Finding hashless output ...');
-        $hashlessOutputIds = $this->getTaskOutputRepository()->findHashlessOutputIds($this->getLimit($input));
-        
-        if (count($hashlessOutputIds) === 0) {
+        $hashlessOutputIds = $this->taskOutputRepository->findHashlessOutputIds($limit);
+
+        if (empty($hashlessOutputIds)) {
             $output->writeln('No task outputs require a hash to be set. Done.');
-            return true;
-        }
-        
-        $output->writeln(count($hashlessOutputIds).' outputs require a hash to be set.');
-        
-        foreach ($hashlessOutputIds as $hashlessOutputId) {
-            $taskOutput = $this->getTaskOutputRepository()->find($hashlessOutputId);
-            
-            /* @var $output TaskOutput */            
-            $output->writeln('Setting hash for ['.$taskOutput->getId().']');            
-            $taskOutput->generateHash();
-            
-            if (!$this->isDryRun($input)) {                
-                $this->getEntityManager()->persist($taskOutput);
-                $this->getEntityManager()->flush();
-            }           
-            
-            $this->getEntityManager()->detach($taskOutput);            
-        }
-        
-        return true;
-    }
-    
-    
-    /**
-     * 
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @return int
-     */
-    private function isDryRun(InputInterface $input) {
-        return $input->getOption('dry-run');
-    }    
-    
-    
-    /**
-     * 
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @return int
-     */
-    private function getLimit(InputInterface $input) {
-        if ($input->getOption('limit') === false) {
+
             return 0;
         }
-        
-        $limit = filter_var($input->getOption('limit'), FILTER_VALIDATE_INT);
-        
+
+        $output->writeln(count($hashlessOutputIds).' outputs require a hash to be set.');
+
+        foreach ($hashlessOutputIds as $hashlessOutputId) {
+            /* @var TaskOutput $taskOutput */
+            $taskOutput = $this->taskOutputRepository->find($hashlessOutputId);
+
+            $output->writeln('Setting hash for [' . $taskOutput->getId() . ']');
+            $taskOutput->generateHash();
+
+            if (!$isDryRun) {
+                $this->entityManager->persist($taskOutput);
+                $this->entityManager->flush();
+            }
+
+            $this->entityManager->detach($taskOutput);
+        }
+
+        return 0;
+    }
+
+    /**
+     * @param InputInterface $input
+     *
+     * @return int
+     */
+    private function getLimit(InputInterface $input)
+    {
+        if (false === $input->getOption(self::OPT_LIMIT)) {
+            return 0;
+        }
+
+        $limit = filter_var($input->getOption(self::OPT_LIMIT), FILTER_VALIDATE_INT);
+
         return ($limit <= 0) ? 0 : $limit;
-    }
-    
-    
-    /**
-     * 
-     * @return \Doctrine\ORM\EntityManager
-     */
-    private function getEntityManager() {
-        if (is_null($this->entityManager)) {
-            $this->entityManager = $this->getContainer()->get('doctrine')->getEntityManager();
-        }
-        
-        return  $this->entityManager;
-    }
-    
-    
-    /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Repository\TaskOutputRepository
-     */
-    private function getTaskOutputRepository() {
-        if (is_null($this->taskOutputRepository)) {
-            $this->taskOutputRepository = $this->getEntityManager()->getRepository('SimplyTestable\WebClientBundle\Entity\Task\Output');
-        }
-        
-        return $this->taskOutputRepository;
     }
 }
