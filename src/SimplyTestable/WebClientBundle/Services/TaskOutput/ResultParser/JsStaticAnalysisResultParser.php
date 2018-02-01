@@ -2,11 +2,22 @@
 
 namespace SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser;
 
+use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage;
 
 class JsStaticAnalysisResultParser extends AbstractResultParser
 {
+    /**
+     * @param string $taskType
+     *
+     * @return bool
+     */
+    public function handles($taskType)
+    {
+        return strtolower(Output::TYPE_JS_STATIC_ANALYSIS) === strtolower($taskType);
+    }
+
     /**
      * {@inheritdoc}
      */

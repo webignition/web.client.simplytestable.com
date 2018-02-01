@@ -49,28 +49,35 @@ class FactoryTest extends AbstractBaseTestCase
         return [
             'HTML validation' => [
                 'output' => ModelFactory::createTaskOutput([
-                    ModelFactory::TASK_OUTPUT_TYPE => 'HTML validation',
+                    ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_HTML_VALIDATION,
                 ]),
                 'expectedResultParserClassName' => HtmlValidationResultParser::class,
             ],
             'CSS validation' => [
                 'output' => ModelFactory::createTaskOutput([
-                    ModelFactory::TASK_OUTPUT_TYPE => 'CSS validation',
+                    ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_CSS_VALIDATION,
                 ]),
                 'expectedResultParserClassName' => CssValidationResultParser::class,
             ],
             'JS static analysis' => [
                 'output' => ModelFactory::createTaskOutput([
-                    ModelFactory::TASK_OUTPUT_TYPE => 'JS static analysis',
+                    ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_JS_STATIC_ANALYSIS,
                 ]),
                 'expectedResultParserClassName' => JsStaticAnalysisResultParser::class,
             ],
             'Link integrity' => [
                 'output' => ModelFactory::createTaskOutput([
-                    ModelFactory::TASK_OUTPUT_TYPE => 'Link integrity',
+                    ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_LINK_INTEGRITY,
                 ]),
                 'expectedResultParserClassName' => LinkIntegrityResultParser::class,
             ],
         ];
+    }
+
+    public function testGetParserForUnknownTaskType()
+    {
+        $this->assertNull($this->factory->getParser(ModelFactory::createTaskOutput([
+            ModelFactory::TASK_OUTPUT_TYPE => 'Foo',
+        ])));
     }
 }
