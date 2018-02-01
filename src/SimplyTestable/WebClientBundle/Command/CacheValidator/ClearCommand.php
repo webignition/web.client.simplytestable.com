@@ -2,12 +2,11 @@
 namespace SimplyTestable\WebClientBundle\Command\CacheValidator;
 
 use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use SimplyTestable\WebClientBundle\Command\BaseCommand;
-
-class ClearCommand extends BaseCommand
+class ClearCommand extends Command
 {
     const NAME = 'simplytestable:cachevalidator:clear';
 
