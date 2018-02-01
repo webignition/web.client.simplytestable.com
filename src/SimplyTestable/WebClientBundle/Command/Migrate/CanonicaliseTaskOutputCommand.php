@@ -6,20 +6,14 @@ use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Repository\TaskOutputRepository;
 use SimplyTestable\WebClientBundle\Repository\TaskRepository;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CanonicaliseTaskOutputCommand extends Command
+class CanonicaliseTaskOutputCommand extends AbstractMigrationCommand
 {
     const NAME = 'simplytestable:migrate:canonicalise-task-output';
     const OPT_LIMIT = 'limit';
     const OPT_DRY_RUN = 'dry-run';
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
 
     /**
      * @var TaskRepository
@@ -37,9 +31,8 @@ class CanonicaliseTaskOutputCommand extends Command
      */
     public function __construct(EntityManagerInterface $entityManager, $name = null)
     {
-        parent::__construct($name);
+        parent::__construct($entityManager, $name);
 
-        $this->entityManager = $entityManager;
         $this->taskRepository = $entityManager->getRepository(Task::class);
         $this->taskOutputRepository = $entityManager->getRepository(Output::class);
     }

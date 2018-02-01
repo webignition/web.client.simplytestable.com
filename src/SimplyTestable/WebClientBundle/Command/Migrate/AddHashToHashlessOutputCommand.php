@@ -4,22 +4,15 @@ namespace SimplyTestable\WebClientBundle\Command\Migrate;
 use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use SimplyTestable\WebClientBundle\Repository\TaskOutputRepository;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use SimplyTestable\WebClientBundle\Entity\Task\Output as TaskOutput;
 
-class AddHashToHashlessOutputCommand extends Command
+class AddHashToHashlessOutputCommand extends AbstractMigrationCommand
 {
     const NAME = 'simplytestable:add-hash-to-hashless-output';
     const OPT_LIMIT = 'limit';
     const OPT_DRY_RUN = 'dry-run';
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
 
     /**
      * @var TaskOutputRepository
@@ -32,9 +25,8 @@ class AddHashToHashlessOutputCommand extends Command
      */
     public function __construct(EntityManagerInterface $entityManager, $name = null)
     {
-        parent::__construct($name);
+        parent::__construct($entityManager, $name);
 
-        $this->entityManager = $entityManager;
         $this->taskOutputRepository = $entityManager->getRepository(Output::class);
     }
 

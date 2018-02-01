@@ -11,16 +11,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 
-class RemoveUnusedOutputCommand extends Command
+class RemoveUnusedOutputCommand extends AbstractMigrationCommand
 {
     const NAME = 'simplytestable:migrate:remove-unused-output';
     const OPT_LIMIT = 'limit';
     const OPT_DRY_RUN = 'dry-run';
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
 
     /**
      * @var TaskRepository
@@ -38,9 +33,8 @@ class RemoveUnusedOutputCommand extends Command
      */
     public function __construct(EntityManagerInterface $entityManager, $name = null)
     {
-        parent::__construct($name);
+        parent::__construct($entityManager, $name);
 
-        $this->entityManager = $entityManager;
         $this->taskRepository = $entityManager->getRepository(Task::class);
         $this->taskOutputRepository = $entityManager->getRepository(Output::class);
     }
