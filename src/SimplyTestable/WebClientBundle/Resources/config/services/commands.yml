@@ -5,3 +5,12 @@ services:
       - '@simplytestable.services.cachevalidatorheadersservice'
     tags:
       - { name: console.command }
+
+  SimplyTestable\WebClientBundle\Command\EmailList\RetrieveRecipientsCommand:
+    class: SimplyTestable\WebClientBundle\Command\EmailList\RetrieveRecipientsCommand
+    arguments:
+      - '@simplytestable.services.mailchimp.listrecipients'
+      - '@simplytestable.services.mailchimpservice'
+      - '@doctrine.orm.entity_manager'
+    tags:
+      - { name: console.command }
