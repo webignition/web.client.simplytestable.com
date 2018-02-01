@@ -103,18 +103,18 @@ class ServiceTest extends AbstractBaseTestCase
      * @dataProvider retrieveMembersDataProvider
      *
      * @param Response[] $httpFixtures
-     * @param string[] $expectedMemberEmails
+     * @param string[] $expectedResponseData
      */
-    public function testRetrieveMembers($httpFixtures, $expectedMemberEmails)
+    public function testRetrieveMembers($httpFixtures, $expectedResponseData)
     {
         $mockHttpPlugin = new MockPlugin($httpFixtures);
 
         $mailChimpClient = $this->container->get('simplytestable.services.mailchimp.client');
         $mailChimpClient->addSubscriber($mockHttpPlugin);
 
-        $memberEmails = $this->mailChimpService->retrieveMembers(self::LIST_NAME);
+        $responseData = $this->mailChimpService->retrieveMembers(self::LIST_NAME);
 
-        $this->assertEquals($expectedMemberEmails, $memberEmails);
+        $this->assertEquals($expectedResponseData, $responseData);
     }
 
     /**
@@ -127,7 +127,11 @@ class ServiceTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createMailChimpListMembersResponse(1, ['user@example.com']),
                 ],
-                'expectedMemberEmails' => ['user@example.com'],
+                'expectedResponseData' => [
+                    [
+                        'email' => 'user@example.com',
+                    ],
+                ],
             ],
             'many members in single response' => [
                 'httpFixtures' => [
@@ -139,12 +143,22 @@ class ServiceTest extends AbstractBaseTestCase
                         'user5@example.com',
                     ]),
                 ],
-                'expectedMemberEmails' => [
-                    'user1@example.com',
-                    'user2@example.com',
-                    'user3@example.com',
-                    'user4@example.com',
-                    'user5@example.com',
+                'expectedResponseData' => [
+                    [
+                        'email' => 'user1@example.com',
+                    ],
+                    [
+                        'email' => 'user2@example.com',
+                    ],
+                    [
+                        'email' => 'user3@example.com',
+                    ],
+                    [
+                        'email' => 'user4@example.com',
+                    ],
+                    [
+                        'email' => 'user5@example.com',
+                    ],
                 ],
             ],
             'many members in many responses' => [
@@ -159,12 +173,22 @@ class ServiceTest extends AbstractBaseTestCase
                         'user5@example.com',
                     ]),
                 ],
-                'expectedMemberEmails' => [
-                    'user1@example.com',
-                    'user2@example.com',
-                    'user3@example.com',
-                    'user4@example.com',
-                    'user5@example.com',
+                'expectedResponseData' => [
+                    [
+                        'email' => 'user1@example.com',
+                    ],
+                    [
+                        'email' => 'user2@example.com',
+                    ],
+                    [
+                        'email' => 'user3@example.com',
+                    ],
+                    [
+                        'email' => 'user4@example.com',
+                    ],
+                    [
+                        'email' => 'user5@example.com',
+                    ],
                 ],
             ],
         ];
