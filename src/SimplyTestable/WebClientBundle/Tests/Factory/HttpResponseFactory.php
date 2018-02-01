@@ -97,4 +97,18 @@ class HttpResponseFactory
     {
         return self::create(400);
     }
+
+    /**
+     * @param int $total
+     * @param string[] $memberEmails
+     *
+     * @return Response
+     */
+    public static function createMailChimpListMembersResponse($total, $memberEmails)
+    {
+        return self::createJsonResponse([
+            'total' => $total,
+            'data' => $memberEmails,
+        ]);
+    }
 }
