@@ -77,7 +77,6 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
     ) {
         $session = $this->container->get('session');
 
-        $this->container->set('request', $request);
         $this->userController->setContainer($this->container);
 
         /* @var RedirectResponse $response */
@@ -160,7 +159,6 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             'password' => 'password',
         ]);
 
-        $this->container->set('request', $request);
         $this->userController->setContainer($this->container);
 
         /* @var RedirectResponse $response */
@@ -242,8 +240,6 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             'email' => 'user@example.com',
             'password' => 'password',
         ]);
-
-        $this->container->set('request', $request);
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
@@ -364,8 +360,6 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 
         $httpMockPlugin = new MockPlugin($httpFixtures);
         $httpClient->addSubscriber($httpMockPlugin);
-
-        $this->container->set('request', $request);
 
         $postmarkMessage = MockFactory::createPostmarkMessage([
             'setFrom' => true,

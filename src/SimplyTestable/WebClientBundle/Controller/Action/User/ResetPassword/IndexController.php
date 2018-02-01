@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestExceptio
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class IndexController extends Controller
@@ -26,13 +27,16 @@ class IndexController extends Controller
     const FLASH_BAG_ERROR_MESSAGE_POSTMARK_INVALID_EMAIL = 'invalid-email';
 
     /**
+     * @param Request $request
+     *
      * @return RedirectResponse
      *
      * @throws CoreApplicationAdminRequestException
+     * @throws PostmarkResponseException
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
      */
-    public function requestAction()
+    public function requestAction(Request $request)
     {
-        $request = $this->container->get('request');
         $session = $this->container->get('session');
         $userService = $this->container->get('simplytestable.services.userservice');
 

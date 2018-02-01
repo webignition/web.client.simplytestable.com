@@ -81,15 +81,15 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param string $expectedRedirectUrl
      *
      * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
      */
     public function testRequestActionBadRequest(Request $request, array $expectedFlashBagValues, $expectedRedirectUrl)
     {
         $session = $this->container->get('session');
 
-        $this->container->set('request', $request);
-
         /* @var RedirectResponse $response */
-        $response = $this->indexController->requestAction();
+        $response = $this->indexController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -127,6 +127,8 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     /**
      * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
      */
     public function testRequestActionUserDoesNotExist()
     {
@@ -136,14 +138,12 @@ class IndexControllerTest extends AbstractBaseTestCase
             'email' => self::EMAIL,
         ]);
 
-        $this->container->set('request', $request);
-
         $this->setHttpFixtures([
             Response::fromMessage('HTTP/1.1 404'),
         ]);
 
         /* @var RedirectResponse $response */
-        $response = $this->indexController->requestAction();
+        $response = $this->indexController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('http://localhost/reset-password/?email=user%40example.com', $response->getTargetUrl());
@@ -159,6 +159,8 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     /**
      * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
      */
     public function testRequestActionInvalidAdminCredentials()
     {
@@ -168,8 +170,6 @@ class IndexControllerTest extends AbstractBaseTestCase
         $request = new Request([], [
             'email' => self::EMAIL,
         ]);
-
-        $this->container->set('request', $request);
 
         $this->setHttpFixtures([
             Response::fromMessage('HTTP/1.1 401'),
@@ -185,7 +185,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         ));
 
         /* @var RedirectResponse $response */
-        $response = $this->indexController->requestAction();
+        $response = $this->indexController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('http://localhost/reset-password/?email=user%40example.com', $response->getTargetUrl());
@@ -207,6 +207,8 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param array $expectedFlashBagValues
      *
      * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
+     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
      */
     public function testRequestActionSendConfirmationTokenFailure(
         PostmarkMessage $postmarkMessage,
@@ -227,10 +229,8 @@ class IndexControllerTest extends AbstractBaseTestCase
             'email' => self::EMAIL,
         ]);
 
-        $this->container->set('request', $request);
-
         /* @var RedirectResponse $response */
-        $response = $this->indexController->requestAction();
+        $response = $this->indexController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('http://localhost/reset-password/?email=user%40example.com', $response->getTargetUrl());
@@ -328,10 +328,8 @@ class IndexControllerTest extends AbstractBaseTestCase
             'email' => self::EMAIL,
         ]);
 
-        $this->container->set('request', $request);
-
         /* @var RedirectResponse $response */
-        $response = $this->indexController->requestAction();
+        $response = $this->indexController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('http://localhost/reset-password/?email=user%40example.com', $response->getTargetUrl());

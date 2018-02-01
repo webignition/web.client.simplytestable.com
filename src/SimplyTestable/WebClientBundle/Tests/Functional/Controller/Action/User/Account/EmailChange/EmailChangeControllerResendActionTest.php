@@ -114,12 +114,6 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
             ])),
         ]);
 
-        $request = new Request([], [
-            'email' => self::NEW_EMAIL,
-        ]);
-
-        $this->container->set('request', $request);
-
         /* @var RedirectResponse $response */
         $response = $this->emailChangeController->resendAction();
 
@@ -214,12 +208,6 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
                 'new_email' => self::NEW_EMAIL,
             ])),
         ]);
-
-        $request = new Request([], [
-            'email' => self::NEW_EMAIL,
-        ]);
-
-        $this->container->set('request', $request);
 
         /* @var RedirectResponse $response */
         $response = $this->emailChangeController->resendAction();

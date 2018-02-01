@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\TemplateReference;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\FlattenException;
 use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,38 +17,36 @@ use Symfony\Component\HttpFoundation\Response;
 class ExceptionController extends Controller
 {
     /**
-     * Converts an Exception to a Response.
-     *
-     * @param FlattenException     $exception A FlattenException instance
-     * @param DebugLoggerInterface $logger    A DebugLoggerInterface instance
-     * @param string               $format    The format to use for rendering (html, xml, ...)
+     * @param Request $request
+     * @param FlattenException $exception
+     * @param DebugLoggerInterface|null $logger
      *
      * @return Response
      *
-     * @throws \InvalidArgumentException When the exception template does not exist
+     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
      */
-    public function showAction(FlattenException $exception, DebugLoggerInterface $logger = null, $format = 'html')
+    public function showAction(Request $request, FlattenException $exception, DebugLoggerInterface $logger = null)
     {
         if (!$this->container->get('kernel')->isDebug()) {
-            $this->sendDeveloperEmail($exception);
-        }       
-        
-        $this->container->get('request')->setRequestFormat($format);
+            $this->sendDeveloperEmail($request, $exception);
+        }
 
-        $currentContent = $this->getAndCleanOutputBuffering();
+        $currentContent = $this->getAndCleanOutputBuffering($request->headers->get('X-Php-Ob-Level', -1));
 
         $templating = $this->container->get('templating');
         $code = $exception->getStatusCode();
 
+        $request->setRequestFormat('html');
+
         return $templating->renderResponse(
-            $this->findTemplate($templating, $format, $code, $this->container->get('kernel')->isDebug()),
+            $this->findTemplate($templating, $request->getRequestFormat(), $code, $this->container->get('kernel')->isDebug()),
             array(
                 'status_code'    => $code,
                 'status_text'    => isset(Response::$statusTexts[$code]) ? Response::$statusTexts[$code] : '',
                 'exception'      => $exception,
                 'logger'         => $logger,
                 'currentContent' => $currentContent,
-                'requestUri' => $this->container->get('request')->getRequestUri(),
+                'requestUri' => $request->getRequestUri(),
                 'public_site' => $this->container->getParameter('public_site'),
                 'external_links' => $this->container->getParameter('external_links')
             )
@@ -55,15 +54,15 @@ class ExceptionController extends Controller
     }
 
     /**
+     * @param int $startObLevel
+     *
      * @return string
      */
-    protected function getAndCleanOutputBuffering()
-    {        
+    protected function getAndCleanOutputBuffering($startObLevel)
+    {
         // ob_get_level() never returns 0 on some Windows configurations, so if
         // the level is the same two times in a row, the loop should be stopped.
         $previousObLevel = null;
-        $startObLevel = $this->container->get('request')->headers->get('X-Php-Ob-Level', -1);
-
         $currentContent = '';
 
         while (($obLevel = ob_get_level()) > $startObLevel && $obLevel !== $previousObLevel) {
@@ -83,81 +82,71 @@ class ExceptionController extends Controller
      * @return TemplateReference
      */
     protected function findTemplate($templating, $format, $code, $debug)
-    {        
+    {
         $name = $debug ? 'exception' : 'error';
         if ($debug && 'html' == $format) {
             $name = 'exception_full';
         }
-        
-//        $name = 'error';
-//        $debug = false;
 
         // when not in debug, try to find a template for the specific HTTP status code and format
         if (!$debug) {
             $template = new TemplateReference('SimplyTestableWebClientBundle', 'Exception', $name.$code, $format, 'twig');
             if ($templating->exists($template)) {
                 return $template;
-            }          
+            }
         }
 
         // try to find a template for the given format
         $template = new TemplateReference('TwigBundle', 'Exception', $name, $format, 'twig');
-        
+
         if ($templating->exists($template)) {
             return $template;
         }
 
-        // default to a generic HTML exception
-        $this->container->get('request')->setRequestFormat('html');
-
         return new TemplateReference('TwigBundle', 'Exception', $name, 'html', 'twig');
     }
-    
-    
+
     /**
-     * 
-     * @param \Symfony\Component\HttpKernel\Exception\FlattenException $exception
+     * @param Request $request
+     * @param FlattenException $exception
+     *
+     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
      */
-    private function sendDeveloperEmail(FlattenException $exception) {
+    private function sendDeveloperEmail(Request $request, FlattenException $exception)
+    {
         /* @var $message \MZ\PostmarkBundle\Postmark\Message */
         $message  = $this->get('postmark.message');
         $message->addTo('jon@simplytestable.com');
         $message->setSubject($this->getDeveloperEmailSubject($exception));
-        $message->setTextMessage($this->renderView('SimplyTestableWebClientBundle:Email:exception.txt.twig', array(
+        $message->setTextMessage($this->renderView('SimplyTestableWebClientBundle:Email:exception.txt.twig', [
             'status_code' => $exception->getStatusCode(),
             'status_text' => '"status text"',
             'exception' => $exception,
-            'request' => (string)$this->container->get('request')
-        )));
+            'request' => (string)$request,
+        ]));
 
-        $this->getPostmarkSenderService()->send($message);
+        $postmarkSenderService = $this->container->get('simplytestable.services.postmark.sender');
+
+        $postmarkSenderService->send($message);
     }
-    
+
     /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Services\Postmark\Sender
-     */
-    private function getPostmarkSenderService() {
-        return $this->get('simplytestable.services.postmark.sender');
-    }    
-    
-    
-    /**
-     * 
-     * @param \Symfony\Component\HttpKernel\Exception\FlattenException $exception
+     * @param FlattenException $exception
+     *
      * @return string
      */
-    private function getDeveloperEmailSubject(FlattenException $exception) {
+    private function getDeveloperEmailSubject(FlattenException $exception)
+    {
         $subject = 'Exception ['.$exception->getCode().','.$exception->getStatusCode().']';
-        
+
         if ($exception->getStatusCode() == 404) {
             $subject .= ' [' . $exception->getMessage() . ']';
         }
-        
+
         if ($exception->getStatusCode() == 500) {
             $subject .= ' [' . $exception->getMessage() . ']';
-        }        
-        
+        }
+
         return $subject;
     }
 }

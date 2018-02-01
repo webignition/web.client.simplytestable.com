@@ -126,10 +126,8 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
             $listRecipientsCollection[$listName] = $listRecipients;
         }
 
-        $this->container->set('request', $request);
-
         /* @var RedirectResponse $response */
-        $response = $this->newsSubscriptionsController->updateAction();
+        $response = $this->newsSubscriptionsController->updateAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertTrue($response->isRedirect('http://localhost/account/#news-subscriptions'));

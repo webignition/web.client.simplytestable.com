@@ -33,13 +33,12 @@ class EventControllerTest extends AbstractBaseTestCase
     public function testIndexActionEventHasNoUser()
     {
         $container = $this->createContainer([
-            'request' => new Request(),
             'event_dispatcher' => null,
         ]);
 
         $this->eventController->setContainer($container);
 
-        $response = $this->eventController->indexAction();
+        $response = $this->eventController->indexAction(new Request());
 
         $this->assertTrue($response->isClientError());
     }
@@ -54,16 +53,15 @@ class EventControllerTest extends AbstractBaseTestCase
             ->andReturn([]);
 
         $container = $this->createContainer([
-            'request' => new Request([], [
-                'event' => 'customer.subscription.created',
-                'user' => 'user@example.com',
-            ]),
             'event_dispatcher' => $eventDispatcher,
         ]);
 
         $this->eventController->setContainer($container);
 
-        $response = $this->eventController->indexAction();
+        $response = $this->eventController->indexAction(new Request([], [
+            'event' => 'customer.subscription.created',
+            'user' => 'user@example.com',
+        ]));
 
         $this->assertTrue($response->isClientError());
     }
@@ -94,16 +92,15 @@ class EventControllerTest extends AbstractBaseTestCase
             });
 
         $container = $this->createContainer([
-            'request' => new Request([], [
-                'event' => 'customer.subscription.created',
-                'user' => 'user@example.com',
-            ]),
             'event_dispatcher' => $eventDispatcher,
         ]);
 
         $this->eventController->setContainer($container);
 
-        $response = $this->eventController->indexAction();
+        $response = $this->eventController->indexAction(new Request([], [
+            'event' => 'customer.subscription.created',
+            'user' => 'user@example.com',
+        ]));
 
         $this->assertTrue($response->isSuccessful());
     }
@@ -116,11 +113,6 @@ class EventControllerTest extends AbstractBaseTestCase
     {
         /* @var ContainerInterface|Mock $container */
         $container = \Mockery::mock(ContainerInterface::class);
-
-        $container
-            ->shouldReceive('get')
-            ->with('request')
-            ->andReturn($services['request']);
 
         $container
             ->shouldReceive('get')
