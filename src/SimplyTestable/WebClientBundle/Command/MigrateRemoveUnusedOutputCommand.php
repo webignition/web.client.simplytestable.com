@@ -1,121 +1,97 @@
 <?php
 namespace SimplyTestable\WebClientBundle\Command;
 
-use Symfony\Component\Console\Input\InputArgument;
+use Doctrine\ORM\EntityManagerInterface;
+use SimplyTestable\WebClientBundle\Entity\Task\Output;
+use SimplyTestable\WebClientBundle\Repository\TaskOutputRepository;
+use SimplyTestable\WebClientBundle\Repository\TaskRepository;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 
 class MigrateRemoveUnusedOutputCommand extends BaseCommand
 {
-    
+    const NAME = 'simplytestable:migrate:remove-unused-output';
+    const OPT_LIMIT = 'limit';
+    const OPT_DRY_RUN = 'dry-run';
+
     /**
-     *
-     * @var \Doctrine\ORM\EntityManager
+     * @var EntityManagerInterface
      */
     private $entityManager;
-    
-    
+
     /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Repository\TaskRepository
+     * @var TaskRepository
      */
     private $taskRepository;
-    
+
     /**
-     *
-     * @var \Doctrine\ORM\EntityRepository
+     * @var TaskOutputRepository
      */
     private $taskOutputRepository;
-    
+
+    /**
+     * @param EntityManagerInterface $entityManager
+     * @param string|null $name
+     */
+    public function __construct(EntityManagerInterface $entityManager, $name = null)
+    {
+        parent::__construct($name);
+
+        $this->entityManager = $entityManager;
+        $this->taskRepository = $entityManager->getRepository(Task::class);
+        $this->taskOutputRepository = $entityManager->getRepository(Output::class);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         $this
-            ->setName('simplytestable:migrate:remove-unused-output')
+            ->setName(self::NAME)
             ->setDescription('Remove output not linked to any task')
-            ->addOption('limit')
-            ->addOption('dry-run')             
+            ->addOption('dry-run')
         ;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
-    {        
+    {
+        $isDryRun = $input->getOption(self::OPT_DRY_RUN);
+
         $output->writeln('Finding unsued output ...');
-        
-        $usedTaskOutputIds = $this->getTaskRepository()->findUsedTaskOutputIds();
-        $unusedTaskOutputIds = $this->getTaskOutputRepository()->findIdsNotIn($usedTaskOutputIds);
-        
-        if (count($unusedTaskOutputIds) === 0) {
+
+        $usedTaskOutputIds = $this->taskRepository->findUsedTaskOutputIds();
+        if (empty($usedTaskOutputIds)) {
+            $output->writeln('No task outputs found. Done.');
+
+            return 0;
+        }
+
+        $unusedTaskOutputIds = $this->taskOutputRepository->findIdsNotIn($usedTaskOutputIds);
+        if (empty($unusedTaskOutputIds)) {
             $output->writeln('No unused task outputs found. Done.');
-            return true;
-        }   
-        
+
+            return 0;
+        }
+
         $output->writeln('['.count($unusedTaskOutputIds).'] outputs found');
-        
+
         foreach ($unusedTaskOutputIds as $unusedTaskOutputId) {
-            $taskOutputToRemove = $this->getTaskOutputRepository()->find($unusedTaskOutputId);
-            
+            $taskOutputToRemove = $this->taskOutputRepository->find($unusedTaskOutputId);
+
             $output->writeln('Removing output ['.$unusedTaskOutputId.']');
-            
-            if (!$this->isDryRun($input)) {
-                $this->getEntityManager()->remove($taskOutputToRemove);
-                $this->getEntityManager()->flush();
+
+            if (!$isDryRun) {
+                $this->entityManager->remove($taskOutputToRemove);
+                $this->entityManager->flush();
             }
         }
-        
-        return true;
-    }
-    
-    
-    
-    /**
-     * 
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @return int
-     */
-    private function isDryRun(InputInterface $input) {
-        return $input->getOption('dry-run');
-    }
-    
-    
-    /**
-     * 
-     * @return \Doctrine\ORM\EntityManager
-     */
-    private function getEntityManager() {
-        if (is_null($this->entityManager)) {
-            $this->entityManager = $this->getContainer()->get('doctrine')->getEntityManager();
-        }
-        
-        return  $this->entityManager;
-    }
-    
-    
-    
-    /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Repository\TaskRepository
-     */
-    private function getTaskRepository() {
-        if (is_null($this->taskRepository)) {
-            $this->taskRepository = $this->getEntityManager()->getRepository('SimplyTestable\WebClientBundle\Entity\Task\Task');
-        }
-        
-        return $this->taskRepository;
-    }
-    
-    
-    /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Repository\TaskOutputRepository
-     */
-    private function getTaskOutputRepository() {
-        if (is_null($this->taskOutputRepository)) {
-            $this->taskOutputRepository = $this->getEntityManager()->getRepository('SimplyTestable\WebClientBundle\Entity\Task\Output');
-        }
-        
-        return $this->taskOutputRepository;
+
+        return 0;
     }
 }

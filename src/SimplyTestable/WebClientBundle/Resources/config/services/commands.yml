@@ -42,3 +42,10 @@ services:
       - '@doctrine.orm.entity_manager'
     tags:
       - { name: console.command }
+
+  SimplyTestable\WebClientBundle\Command\MigrateRemoveUnusedOutputCommand:
+    class: SimplyTestable\WebClientBundle\Command\MigrateRemoveUnusedOutputCommand
+    arguments:
+      - '@doctrine.orm.entity_manager'
+    tags:
+      - { name: console.command }
