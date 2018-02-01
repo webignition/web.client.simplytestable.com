@@ -14,3 +14,10 @@ services:
       - '@doctrine.orm.entity_manager'
     tags:
       - { name: console.command }
+
+  SimplyTestable\WebClientBundle\Command\EmailList\SubscribeCommand:
+    class: SimplyTestable\WebClientBundle\Command\EmailList\SubscribeCommand
+    arguments:
+      - '@simplytestable.services.mailchimpservice'
+    tags:
+      - { name: console.command }
