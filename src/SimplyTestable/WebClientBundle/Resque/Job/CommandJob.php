@@ -4,15 +4,14 @@ namespace SimplyTestable\WebClientBundle\Resque\Job;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
-use CoreSphere\ConsoleBundle\Output\StringOutput;
+use Symfony\Component\Console\Output\BufferedOutput;
 
-abstract class CommandJob extends Job {
-
+abstract class CommandJob extends Job
+{
     /**
      * @return Command
      */
     abstract protected function getCommand();
-
 
     /**
      * Get the arguments required by the to-be-run command.
@@ -24,12 +23,12 @@ abstract class CommandJob extends Job {
      */
     abstract protected function getCommandArgs();
 
-
-    public function run($args) {
+    public function run($args)
+    {
         $command = $this->getCommand();
 
         $input = new ArrayInput($this->getCommandArgs());
-        $output = new StringOutput();
+        $output = new BufferedOutput();
 
         $returnCode = ($this->isTestEnvironment()) ? $this->args['returnCode'] : $command->run($input, $output);
 
@@ -37,15 +36,17 @@ abstract class CommandJob extends Job {
             return true;
         }
 
-        $this->getContainer()->get('logger')->error(get_class($this) . ': task [' . $args['id'] . '] returned ' . $returnCode);
-        $this->getContainer()->get('logger')->error(get_class($this) . ': task [' . $args['id'] . '] output ' . trim($output->getBuffer()));
-    }
+        $logger = $this->getContainer()->get('logger');
 
+        $logger->error(get_class($this) . ': task [' . $args['id'] . '] returned ' . $returnCode);
+        $logger->error(get_class($this) . ': task [' . $args['id'] . '] output ' . trim($output->fetch()));
+    }
 
     /**
      * @return bool
      */
-    private function isTestEnvironment() {
+    private function isTestEnvironment()
+    {
         if (!isset($this->args['kernel.environment'])) {
             return false;
         }
