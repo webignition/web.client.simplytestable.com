@@ -35,3 +35,10 @@ services:
       - '@doctrine.orm.entity_manager'
     tags:
       - { name: console.command }
+
+  SimplyTestable\WebClientBundle\Command\MigrateCanonicaliseTaskOutputCommand:
+    class: SimplyTestable\WebClientBundle\Command\MigrateCanonicaliseTaskOutputCommand
+    arguments:
+      - '@doctrine.orm.entity_manager'
+    tags:
+      - { name: console.command }
