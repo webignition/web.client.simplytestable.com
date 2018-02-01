@@ -10,7 +10,21 @@ services:
     class: SimplyTestable\WebClientBundle\Command\EmailList\RetrieveRecipientsCommand
     arguments:
       - '@simplytestable.services.mailchimp.listrecipients'
-      - '@simplytestable.services.mailchimpservice'
       - '@doctrine.orm.entity_manager'
+      - '@simplytestable.services.mailchimpservice'
+    tags:
+      - { name: console.command }
+
+  SimplyTestable\WebClientBundle\Command\EmailList\SubscribeCommand:
+    class: SimplyTestable\WebClientBundle\Command\EmailList\SubscribeCommand
+    arguments:
+      - '@simplytestable.services.mailchimpservice'
+    tags:
+      - { name: console.command }
+
+  SimplyTestable\WebClientBundle\Command\EmailList\UnsubscribeCommand:
+    class: SimplyTestable\WebClientBundle\Command\EmailList\UnsubscribeCommand
+    arguments:
+      - '@simplytestable.services.mailchimpservice'
     tags:
       - { name: console.command }

@@ -13,7 +13,7 @@ class EmailListSubscribeJob extends CommandJob {
     }
 
     protected function getCommand() {
-        return new SubscribeCommand();
+        return $this->getContainer()->get(SubscribeCommand::class);
     }
 
     protected function getCommandArgs() {
