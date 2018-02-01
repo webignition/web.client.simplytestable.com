@@ -439,7 +439,6 @@ class IndexControllerTest extends AbstractBaseTestCase
             'taskIds' => [2],
         ]);
 
-        $this->container->set('request', $request);
         $this->indexController->setContainer($this->container);
 
         $response = $this->indexController->indexAction(

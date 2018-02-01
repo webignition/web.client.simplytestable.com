@@ -90,8 +90,6 @@ class InviteControllerTest extends AbstractBaseTestCase
             $this->setHttpFixtures($httpFixtures);
         }
 
-        $this->container->set('request', $request);
-
         /* @var RedirectResponse $response */
         $response = $this->inviteController->acceptAction($request, $token);
 
@@ -212,8 +210,6 @@ class InviteControllerTest extends AbstractBaseTestCase
             ]),
             Response::fromMessage('HTTP/1.1 200'),
         ]);
-
-        $this->container->set('request', $request);
 
         /* @var RedirectResponse $response */
         $response = $this->inviteController->acceptAction($request, self::TOKEN);

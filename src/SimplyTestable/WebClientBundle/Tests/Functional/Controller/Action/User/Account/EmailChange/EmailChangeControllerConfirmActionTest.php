@@ -66,7 +66,6 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $session = $this->container->get('session');
 
         $request = new Request([], []);
-        $this->container->set('request', $request);
 
         /* @var RedirectResponse $response */
         $response = $this->emailChangeController->confirmAction($request);

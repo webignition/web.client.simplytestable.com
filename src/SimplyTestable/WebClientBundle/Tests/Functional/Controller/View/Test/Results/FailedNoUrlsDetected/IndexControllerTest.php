@@ -102,8 +102,10 @@ class IndexControllerTest extends AbstractBaseTestCase
     /**
      * @dataProvider indexActionBadRequestDataProvider
      *
+     * @param array $httpFixtures
      * @param User $user
      * @param Request $request
+     * @param string $website
      * @param string $expectedRedirectUrl
      * @param string[] $expectedRequestUrls
      *

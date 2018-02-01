@@ -5,7 +5,6 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\User\R
 use SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword\IndexController;
 use SimplyTestable\WebClientBundle\Controller\View\User\ResetPassword\ChooseController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
