@@ -2,14 +2,14 @@
 
 namespace SimplyTestable\WebClientBundle\Resque\Job;
 
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use CoreSphere\ConsoleBundle\Output\StringOutput;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
 abstract class CommandJob extends Job {
 
     /**
-     * @return ContainerAwareCommand
+     * @return Command
      */
     abstract protected function getCommand();
 
@@ -27,13 +27,12 @@ abstract class CommandJob extends Job {
 
     public function run($args) {
         $command = $this->getCommand();
-        $command->setContainer($this->getContainer());
 
         $input = new ArrayInput($this->getCommandArgs());
         $output = new StringOutput();
 
         $returnCode = ($this->isTestEnvironment()) ? $this->args['returnCode'] : $command->run($input, $output);
-        
+
         if ($returnCode === 0) {
             return true;
         }
