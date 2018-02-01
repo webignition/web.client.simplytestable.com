@@ -588,7 +588,7 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $request = new Request();
 
-        $this->container->set('request', $request);
+        $this->container->get('request_stack')->push($request);
         $this->indexController->setContainer($this->container);
 
         $response = $this->indexController->indexAction(

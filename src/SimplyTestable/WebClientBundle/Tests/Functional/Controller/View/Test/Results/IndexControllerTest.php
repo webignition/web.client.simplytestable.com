@@ -816,7 +816,7 @@ class IndexControllerTest extends AbstractBaseTestCase
             'filter' => IndexController::FILTER_WITH_ERRORS,
         ]);
 
-        $this->container->set('request', $request);
+        $this->container->get('request_stack')->push($request);
         $this->indexController->setContainer($this->container);
 
         $response = $this->indexController->indexAction(

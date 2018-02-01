@@ -265,7 +265,7 @@ class InviteControllerTest extends AbstractBaseTestCase
 
         $request = new Request();
 
-        $this->container->set('request', $request);
+        $this->container->get('request_stack')->push($request);
         $this->inviteController->setContainer($this->container);
 
         $response = $this->inviteController->indexAction($request, self::TOKEN);

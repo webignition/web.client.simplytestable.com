@@ -475,7 +475,7 @@ class IndexControllerTest extends AbstractBaseTestCase
             'page_number' => 1,
         ]);
 
-        $this->container->set('request', $request);
+        $this->container->get('request_stack')->push($request);
         $this->indexController->setContainer($this->container);
 
         $response = $this->indexController->indexAction($request);

@@ -327,7 +327,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
 
         $request = new Request();
 
-        $this->container->set('request', $request);
+        $this->container->get('request_stack')->push($request);
         $this->confirmController->setContainer($this->container);
 
         $response = $this->confirmController->indexAction(

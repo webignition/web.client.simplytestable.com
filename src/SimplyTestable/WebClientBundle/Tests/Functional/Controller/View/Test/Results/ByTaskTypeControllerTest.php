@@ -679,7 +679,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
 
         $request = new Request();
 
-        $this->container->set('request', $request);
+        $this->container->get('request_stack')->push($request);
         $this->byTaskTypeController->setContainer($this->container);
 
         $response = $this->byTaskTypeController->indexAction(
