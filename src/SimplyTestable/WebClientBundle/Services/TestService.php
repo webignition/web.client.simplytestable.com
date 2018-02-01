@@ -79,14 +79,6 @@ class TestService
     }
 
     /**
-     * @return RemoteTestService
-     */
-    public function getRemoteTestService()
-    {
-        return $this->remoteTestService;
-    }
-
-    /**
      * @param string $canonicalUrl
      * @param int $testId
      *
