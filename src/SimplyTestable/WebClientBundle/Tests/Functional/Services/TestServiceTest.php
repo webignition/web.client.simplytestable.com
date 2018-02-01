@@ -286,14 +286,6 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
         ];
     }
 
-    public function testGetRemoteTestService()
-    {
-        $this->assertEquals(
-            $this->container->get('simplytestable.services.remotetestservice'),
-            $this->testService->getRemoteTestService()
-        );
-    }
-
     /**
      * @dataProvider isFinishedDataProvider
      *
