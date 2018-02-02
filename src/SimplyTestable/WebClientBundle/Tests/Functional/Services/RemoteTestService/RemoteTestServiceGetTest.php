@@ -124,6 +124,6 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
         $remoteTest = $this->remoteTestService->get();
 
         $this->assertInstanceOf(RemoteTest::class, $remoteTest);
-        $this->assertEquals('http://null/job/http%3A%2F%2Fexample.com%2F/1/', $this->getLastRequest()->getUrl() );
+        $this->assertEquals('http://null/job/http%3A%2F%2Fexample.com%2F/1/', $this->getLastRequest()->getUrl());
     }
 }

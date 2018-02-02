@@ -53,6 +53,9 @@ class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
         $response = $this->remoteTestService->cancelByTestProperties(2, 'http://foo.example.com');
 
         $this->assertInstanceOf(WebResource::class, $response);
-        $this->assertEquals('http://null/job/http%3A%2F%2Ffoo.example.com/2/cancel/', $this->getLastRequest()->getUrl());
+        $this->assertEquals(
+            'http://null/job/http%3A%2F%2Ffoo.example.com/2/cancel/',
+            $this->getLastRequest()->getUrl()
+        );
     }
 }

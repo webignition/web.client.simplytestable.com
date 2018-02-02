@@ -79,6 +79,71 @@ class CoreApplicationRouterTest extends AbstractBaseTestCase
                     ],
                 ]),
             ],
+            'test_status' => [
+                'route' => 'test_status',
+                'parameters' => [
+                    'canonical_url' => 'http://example.com',
+                    'test_id' => 1,
+                ],
+                'expectedUrl' => 'http://null/job/http%3A%2F%2Fexample.com/1/',
+            ],
+            'test_cancel' => [
+                'route' => 'test_cancel',
+                'parameters' => [
+                    'canonical_url' => 'http://example.com',
+                    'test_id' => 1,
+                ],
+                'expectedUrl' => 'http://null/job/http%3A%2F%2Fexample.com/1/cancel/',
+            ],
+            'test_retest' => [
+                'route' => 'test_retest',
+                'parameters' => [
+                    'canonical_url' => 'http://example.com',
+                    'test_id' => 1,
+                ],
+                'expectedUrl' => 'http://null/job/http%3A%2F%2Fexample.com/1/re-test/',
+            ],
+            'test_set_public' => [
+                'route' => 'test_set_public',
+                'parameters' => [
+                    'canonical_url' => 'http://example.com',
+                    'test_id' => 1,
+                ],
+                'expectedUrl' => 'http://null/job/http%3A%2F%2Fexample.com/1/set-public/',
+            ],
+            'test_set_private' => [
+                'route' => 'test_set_private',
+                'parameters' => [
+                    'canonical_url' => 'http://example.com',
+                    'test_id' => 1,
+                ],
+                'expectedUrl' => 'http://null/job/http%3A%2F%2Fexample.com/1/set-private/',
+            ],
+            'tests_list' => [
+                'route' => 'tests_list',
+                'parameters' => [
+                    'limit' => 1,
+                    'offset' => 2,
+                ],
+                'expectedUrl' => 'http://null/jobs/list/1/2/',
+            ],
+            'tests_list_websites' => [
+                'route' => 'tests_list_websites',
+                'parameters' => [],
+                'expectedUrl' => 'http://null/jobs/list/websites/',
+            ],
+            'tests_list_count' => [
+                'route' => 'tests_list_count',
+                'parameters' => [],
+                'expectedUrl' => 'http://null/jobs/list/count/',
+            ],
+            'test_latest' => [
+                'route' => 'test_latest',
+                'parameters' => [
+                    'canonical_url' => 'http://example.com',
+                ],
+                'expectedUrl' => 'http://null/job/http%3A%2F%2Fexample.com/latest/',
+            ],
         ];
     }
 }

@@ -1,4 +1,5 @@
 parameters:
+  core_url: http://null
   bcc_resque_prefix: web.client.simplytestable.com
   resque-job-class-map:
     "email-list-subscribe": "SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob"
@@ -8,15 +9,11 @@ parameters:
   core_application:
     urls:
       base: http://null
-      test_start: /job/{canonical-url}/start/
-      test_status: /job/{canonical-url}/{test_id}/
-      test_cancel: /job/{canonical-url}/{test_id}/cancel/
       test_tasks: /job/{canonical-url}/{test_id}/tasks/
       test_task_ids: /job/{canonical-url}/{test_id}/tasks/ids/
       test_list_urls: /tests/{canonical-url}/{test_id}/urls/
       task_status: /tasks/{canonical-url}/{test_id}/{task_id}/status/
       task_collection_status: /tasks/{canonical-url}/{test_id}/status/collection/
-      tests_list: /jobs/list/{limit}/{offset}/
       user_create: /user/create/
       user_get_token: /user/{email}/token/
       user_activate: /user/activate/{token}/
@@ -26,7 +23,6 @@ parameters:
       user: /user/{email}/
       user_authenticate: /user/{email}/authenticate/
       user_is_enabled: /user/{email}/enabled/
-      test_latest: /job/{canonical-url}/latest/
       user_email_change_request_get: /user/{email}/email-change-request/
       user_email_change_request_create: /user/{email}/email-change-request/{new_email}/create/
       user_email_change_request_cancel: /user/{email}/email-change-request/cancel/
@@ -34,12 +30,6 @@ parameters:
       user_plan_subscribe: /user/{email}/{plan}/subscribe/
       user_card_associate: /user/{email}/card/{stripe_card_token}/associate/
       user_list_stripe_events: /user/{email}/stripe-events/{type}/
-      test_is_public: /job/{canonical-url}/{test_id}/is_public/
-      test_set_public: /job/{canonical-url}/{test_id}/set-public/
-      test_set_private: /job/{canonical-url}/{test_id}/set-private/
-      test_retest: /job/{canonical-url}/{test_id}/re-test/
-      tests_list_websites: /jobs/list/websites/
-      tests_list_count: /jobs/list/count/
       team_get: /team/
       team_create: /team/create/
       teaminvite_accept: /team/invite/accept/

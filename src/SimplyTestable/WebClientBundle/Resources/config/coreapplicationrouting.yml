@@ -2,3 +2,42 @@ test_start:
   path: /job/{canonical_url}/start/
   requirements:
     canonical_url: ".+"
+
+test_status:
+  path: /job/{canonical_url}/{test_id}/
+  requirements:
+    canonical_url: ".+"
+
+test_cancel:
+  path: /job/{canonical_url}/{test_id}/cancel/
+  requirements:
+    canonical_url: ".+"
+
+test_retest:
+  path: /job/{canonical_url}/{test_id}/re-test/
+  requirements:
+    canonical_url: ".+"
+
+test_set_public:
+  path: /job/{canonical_url}/{test_id}/set-public/
+  requirements:
+    canonical_url: ".+"
+
+test_set_private:
+  path: /job/{canonical_url}/{test_id}/set-private/
+  requirements:
+    canonical_url: ".+"
+
+tests_list:
+  path: /jobs/list/{limit}/{offset}/
+
+tests_list_websites:
+  path: /jobs/list/websites/
+
+tests_list_count:
+  path: /jobs/list/count/
+
+test_latest:
+  path: /job/{canonical_url}/latest/
+  requirements:
+    canonical_url: ".+"

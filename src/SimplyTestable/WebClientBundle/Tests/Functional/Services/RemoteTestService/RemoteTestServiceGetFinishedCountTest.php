@@ -11,6 +11,7 @@ class RemoteTestServiceGetFinishedCountTest extends AbstractRemoteTestServiceTes
      * @dataProvider getFinishedCountDataProvider
      *
      * @param array $httpFixtures
+     * @param string $urlFilter
      * @param array $expectedResponse
      * @param string $expectedRequestUrl
      */
