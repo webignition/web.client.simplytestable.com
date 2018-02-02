@@ -271,3 +271,8 @@ services:
       - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser']]
       - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser']]
       - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser']]
+
+  SimplyTestable\WebClientBundle\Services\ResourceLocator:
+    class: SimplyTestable\WebClientBundle\Services\ResourceLocator
+    arguments:
+      - '@kernel'
