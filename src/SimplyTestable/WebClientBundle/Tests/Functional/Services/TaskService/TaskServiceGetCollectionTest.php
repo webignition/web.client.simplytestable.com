@@ -20,6 +20,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
      * @param array $testValues
      * @param int[] $remoteTaskIds
      * @param array $expectedTaskDataCollection
+     * @param string[] $expectedRequestUrls
      *
      * @throws WebResourceException
      */
@@ -27,7 +28,8 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
         array $httpFixtures,
         array $testValues,
         $remoteTaskIds,
-        array $expectedTaskDataCollection
+        array $expectedTaskDataCollection,
+        array $expectedRequestUrls
     ) {
         if (!empty($httpFixtures)) {
             $this->setHttpFixtures($httpFixtures);
@@ -86,6 +88,8 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                 );
             }
         }
+
+        $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrls());
     }
 
     /**
@@ -138,6 +142,10 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                         ],
                     ],
                 ],
+                'expectedRequestUrls' => [
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/ids/',
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
+                ],
             ],
             'all remote task ids, none exist locally' => [
                 'httpFixtures' => [
@@ -180,6 +188,9 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                         ],
                     ],
                 ],
+                'expectedRequestUrls' => [
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
+                ],
             ],
             'all remote task ids, all exist locally, all finished' => [
                 'httpFixtures' => [],
@@ -219,6 +230,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                         ],
                     ],
                 ],
+                'expectedRequestUrls' => [],
             ],
             'all remote task ids, all exist locally, some finished' => [
                 'httpFixtures' => [
@@ -297,6 +309,9 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                         ],
                     ],
                 ],
+                'expectedRequestUrls' => [
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
+                ],
             ],
             'all remote task ids, all exist locally, some finished, retrieved tasks have outputs' => [
                 'httpFixtures' => [
@@ -347,6 +362,9 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                             'endDateTime' => '2018-01-10T10:55:13+00:00',
                         ],
                     ],
+                ],
+                'expectedRequestUrls' => [
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
                 ],
             ],
             'all remote task ids, all exist locally, some finished, retrieved tasks have identical outputs' => [
@@ -425,6 +443,9 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                             'endDateTime' => null,
                         ],
                     ],
+                ],
+                'expectedRequestUrls' => [
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
                 ],
             ],
         ];

@@ -41,3 +41,13 @@ test_latest:
   path: /job/{canonical_url}/latest/
   requirements:
     canonical_url: ".+"
+
+test_tasks:
+  path: /job/{canonical_url}/{test_id}/tasks/
+  requirements:
+    canonical_url: ".+"
+
+test_task_ids:
+  path: /job/{canonical_url}/{test_id}/tasks/ids/
+  requirements:
+    canonical_url: ".+"

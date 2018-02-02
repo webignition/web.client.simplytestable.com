@@ -78,16 +78,23 @@ class TaskService extends CoreApplicationService
     private $httpClientService;
 
     /**
+     * @var CoreApplicationRouter
+     */
+    private $coreApplicationRouter;
+
+    /**
      * @param EntityManagerInterface $entityManager
      * @param $parameters
      * @param WebResourceService $webResourceService
      * @param TaskOutputResultParserFactory $taskOutputResultParserFactory
+     * @param CoreApplicationRouter $coreApplicationRouter
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         $parameters,
         WebResourceService $webResourceService,
-        TaskOutputResultParserFactory $taskOutputResultParserFactory
+        TaskOutputResultParserFactory $taskOutputResultParserFactory,
+        CoreApplicationRouter $coreApplicationRouter
     ) {
         parent::__construct($parameters, $webResourceService);
         $this->entityManager = $entityManager;
@@ -97,6 +104,7 @@ class TaskService extends CoreApplicationService
         $this->taskOutputRepository = $this->entityManager->getRepository(Output::class);
 
         $this->httpClientService = $this->webResourceService->getHttpClientService();
+        $this->coreApplicationRouter = $coreApplicationRouter;
     }
 
     /**
@@ -343,10 +351,12 @@ class TaskService extends CoreApplicationService
      */
     private function retrieveRemoteCollection(Test $test, $remoteTaskIds)
     {
-        $httpRequest = $this->httpClientService->postRequest($this->getUrl('test_tasks', [
-                'canonical-url' => urlencode($test->getWebsite()),
-                'test_id' => $test->getTestId()
-        ]), null, [
+        $requestUrl = $this->coreApplicationRouter->generate('test_tasks', [
+            'canonical_url' => (string)$test->getWebsite(),
+            'test_id' => $test->getTestId(),
+        ]);
+
+        $httpRequest = $this->httpClientService->postRequest($requestUrl, null, [
             'taskIds' => implode(',', $remoteTaskIds)
         ]);
 
@@ -414,10 +424,12 @@ class TaskService extends CoreApplicationService
      */
     private function retrieveRemoteTaskIds(Test $test)
     {
-        $httpRequest = $this->httpClientService->getRequest($this->getUrl('test_task_ids', [
-                'canonical-url' => urlencode($test->getWebsite()),
-                'test_id' => $test->getTestId()
-        ]));
+        $requestUrl = $this->coreApplicationRouter->generate('test_task_ids', [
+            'canonical_url' => (string)$test->getWebsite(),
+            'test_id' => $test->getTestId(),
+        ]);
+
+        $httpRequest = $this->httpClientService->getRequest($requestUrl);
 
         $this->addAuthorisationToRequest($httpRequest);
 

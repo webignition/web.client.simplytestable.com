@@ -168,6 +168,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                                 'state' => Test::STATE_IN_PROGRESS,
                                 'type' => Test::TYPE_SINGLE_URL,
                                 'task_count' => 10,
+                                'website' => 'http://example.com/',
                             ],
                         ],
                     ]),
@@ -188,8 +189,8 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'expectedRedirectUrl' => 'http://localhost/history/9/',
                 'expectedRequestUrls' => [
                     'http://null/jobs/list/10/90/?exclude-states%5B0%5D=rejected&exclude-current=1',
-                    'http://null/job/%2F/1/tasks/ids/',
-                    'http://null/job/%2F/1/tasks/',
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/ids/',
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
                 ],
             ],
             'greater than the number of pages: page number 10; has filter' => [
