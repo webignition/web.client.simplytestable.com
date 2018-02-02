@@ -2,10 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
-use Doctrine\ORM\EntityManagerInterface;
-use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
 use SimplyTestable\WebClientBundle\Services\ApplicationConfigurationService;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 
 class ApplicationConfigurationServiceTest extends AbstractBaseTestCase
