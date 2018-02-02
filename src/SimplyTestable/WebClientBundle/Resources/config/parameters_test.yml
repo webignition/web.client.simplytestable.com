@@ -6,18 +6,6 @@ parameters:
     "email-list-unsubscribe": "SimplyTestable\WebClientBundle\Resque\Job\EmailListUnsubscribeJob"
   early_access_users:
     - "jon@webignition.net"
-  core_application:
-    urls:
-      base: http://null
-      test_list_urls: /tests/{canonical-url}/{test_id}/urls/
-      task_status: /tasks/{canonical-url}/{test_id}/{task_id}/status/
-      task_collection_status: /tasks/{canonical-url}/{test_id}/status/collection/
-      user_hasinvites: /user/{email_canonical}/has-invites/
-      jobconfiguration_list: /jobconfiguration/list/
-      jobconfiguration_create: /jobconfiguration/create/
-      jobconfiguration_get: /jobconfiguration/{label}/
-      jobconfiguration_update: /jobconfiguration/{label}/update/
-      jobconfiguration_delete: /jobconfiguration/{label}/delete/
   public_site:
     urls:
       home: http://test.simplytestable.com/
@@ -32,15 +20,6 @@ parameters:
   content_type_web_resource_map:
     default: webignition\WebResource\WebResource
     application/json: webignition\WebResource\JsonDocument\JsonDocument
-  task-output-result-parsers:
-    "HTML validation":
-        class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser
-    "CSS validation":
-        class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser
-    "JS static analysis":
-        class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser
-    "Link integrity":
-        class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser
   mail:
     senders:
       default:

@@ -23,13 +23,6 @@ parameters:
         name: "Link integrity"
         description: "Check all links, report those that do not work"
         access-level: authenticated
-  core_application:
-    urls:
-      base: http://travis.app.simplytestable.com
-      test_list_urls: /tests/{canonical-url}/{test_id}/urls/
-      task_status: /tasks/{canonical-url}/{test_id}/{task_id}/status/
-      task_collection_status: /tasks/{canonical-url}/{test_id}/status/collection/
-      user_hasinvites: /user/{email_canonical}/has-invites/
   public_site:
     urls:
       home: http://test.simplytestable.com/

@@ -84,19 +84,17 @@ class TaskService extends CoreApplicationService
 
     /**
      * @param EntityManagerInterface $entityManager
-     * @param $parameters
      * @param WebResourceService $webResourceService
      * @param TaskOutputResultParserFactory $taskOutputResultParserFactory
      * @param CoreApplicationRouter $coreApplicationRouter
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        $parameters,
         WebResourceService $webResourceService,
         TaskOutputResultParserFactory $taskOutputResultParserFactory,
         CoreApplicationRouter $coreApplicationRouter
     ) {
-        parent::__construct($parameters, $webResourceService);
+        parent::__construct($webResourceService);
         $this->entityManager = $entityManager;
         $this->taskOutputResultParserService = $taskOutputResultParserFactory;
 

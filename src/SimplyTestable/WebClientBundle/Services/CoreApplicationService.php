@@ -17,19 +17,10 @@ abstract class CoreApplicationService
     protected $webResourceService;
 
     /**
-     * @var array
-     */
-    private $parameters;
-
-    /**
-     * @param array $parameters
      * @param WebResourceService $webResourceService
      */
-    public function __construct(
-        $parameters,
-        WebResourceService $webResourceService
-    ) {
-        $this->parameters = $parameters;
+    public function __construct(WebResourceService $webResourceService)
+    {
         $this->webResourceService = $webResourceService;
     }
 
@@ -55,29 +46,6 @@ abstract class CoreApplicationService
     public function hasUser()
     {
         return !is_null($this->getUser());
-    }
-
-    /**
-     * @param string $name
-     * @param array $parameters
-     *
-     * @return string
-     */
-    protected function getUrl($name = null, $parameters = null)
-    {
-        $url = $this->parameters['urls']['base'];
-
-        if (!is_null($name)) {
-            $url .= $this->parameters['urls'][$name];
-        }
-
-        if (is_array($parameters)) {
-            foreach ($parameters as $parameterName => $parameterValue) {
-                $url = str_replace('{'.$parameterName.'}', $parameterValue, $url);
-            }
-        }
-
-        return $url;
     }
 
     /**

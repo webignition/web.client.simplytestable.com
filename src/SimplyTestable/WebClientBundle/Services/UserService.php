@@ -76,7 +76,6 @@ class UserService extends CoreApplicationService
     protected $coreApplicationRouter;
 
     /**
-     * @param array $parameters
      * @param WebResourceService $webResourceService
      * @param string $adminUserUsername
      * @param string $adminUserPassword
@@ -85,7 +84,6 @@ class UserService extends CoreApplicationService
      * @param CoreApplicationRouter $coreApplicationRouter
      */
     public function __construct(
-        $parameters,
         WebResourceService $webResourceService,
         $adminUserUsername,
         $adminUserPassword,
@@ -93,7 +91,7 @@ class UserService extends CoreApplicationService
         UserSerializerService $userSerializerService,
         CoreApplicationRouter $coreApplicationRouter
     ) {
-        parent::__construct($parameters, $webResourceService);
+        parent::__construct($webResourceService);
         $this->adminUserUsername = $adminUserUsername;
         $this->adminUserPassword = $adminUserPassword;
         $this->session = $session;
