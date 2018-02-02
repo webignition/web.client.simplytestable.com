@@ -24,6 +24,7 @@ services:
     arguments:
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
+        coreApplicatioNRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
 
   simplytestable.services.taskservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskService
@@ -271,3 +272,21 @@ services:
       - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser']]
       - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser']]
       - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser']]
+
+  SimplyTestable\WebClientBundle\Services\ResourceLocator:
+    class: SimplyTestable\WebClientBundle\Services\ResourceLocator
+    arguments:
+      - '@kernel'
+
+  SimplyTestable\WebClientBundle\Services\ApplicationConfigurationService:
+    class: SimplyTestable\WebClientBundle\Services\ApplicationConfigurationService
+    arguments:
+      - "@=service('kernel').getRootDir()"
+      - "@=service('kernel').getCacheDir()"
+
+  SimplyTestable\WebClientBundle\Services\CoreApplicationRouter:
+    class: SimplyTestable\WebClientBundle\Services\CoreApplicationRouter
+    arguments:
+      - '%core_url%'
+      - '@SimplyTestable\WebClientBundle\Services\ResourceLocator'
+      - '@SimplyTestable\WebClientBundle\Services\ApplicationConfigurationService'

@@ -1,4 +1,5 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Services;
 
 use Guzzle\Http\Exception\CurlException;
@@ -24,6 +25,26 @@ class RemoteTestService extends CoreApplicationService
      * @var Test
      */
     private $test;
+
+    /**
+     * @var CoreApplicationRouter
+     */
+    private $coreApplicationRouter;
+
+    /**
+     * @param array $parameters
+     * @param WebResourceService $webResourceService
+     * @param CoreApplicationRouter $coreApplicationRouter
+     */
+    public function __construct(
+        array $parameters,
+        WebResourceService $webResourceService,
+        CoreApplicationRouter $coreApplicationRouter
+    ) {
+        parent::__construct($parameters, $webResourceService);
+
+        $this->coreApplicationRouter = $coreApplicationRouter;
+    }
 
     /**
      * @param Test $test
@@ -64,11 +85,13 @@ class RemoteTestService extends CoreApplicationService
             $this->getCookieDomain($canonicalUrl)
         );
 
-        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_start', [
-            'canonical-url' => rawurlencode($canonicalUrl)
-            ]).'?'.http_build_query(array_merge([
-            'type' => $testType
-            ], $testOptions->__toArray())));
+        $requestUrl = $this->coreApplicationRouter->generate('test_start', array_merge([
+            'canonical_url' => $canonicalUrl,
+            'type' => $testType,
+        ], $testOptions->__toArray()));
+
+        $httpClientService = $this->webResourceService->getHttpClientService();
+        $httpRequest = $httpClientService->getRequest($requestUrl);
 
         $this->addAuthorisationToRequest($httpRequest);
 
@@ -176,10 +199,6 @@ class RemoteTestService extends CoreApplicationService
     }
 
     /**
-     * @return RemoteTest|bool
-     */
-
-    /**
      * @return bool|RemoteTest
      *
      * @throws WebResourceException
@@ -190,10 +209,12 @@ class RemoteTestService extends CoreApplicationService
         if (is_null($this->remoteTest)) {
             $httpClientService = $this->webResourceService->getHttpClientService();
 
-            $httpRequest = $httpClientService->getRequest($this->getUrl('test_status', [
-                'canonical-url' => urlencode($this->test->getWebsite()),
-                'test_id' => $this->test->getTestId()
-            ]));
+            $requestUrl = $this->coreApplicationRouter->generate('test_status', [
+                'canonical_url' => (string)$this->test->getWebsite(),
+                'test_id' => $this->test->getTestId(),
+            ]);
+
+            $httpRequest = $httpClientService->getRequest($requestUrl);
 
             $this->addAuthorisationToRequest($httpRequest);
 
@@ -236,10 +257,12 @@ class RemoteTestService extends CoreApplicationService
      */
     public function cancelByTestProperties($testId, $website)
     {
-        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_cancel', [
-            'canonical-url' => urlencode($website),
-            'test_id' => $testId
-        ]));
+        $requestUrl = $this->coreApplicationRouter->generate('test_cancel', [
+            'canonical_url' => (string)$website,
+            'test_id' => $testId,
+        ]);
+
+        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
 
         $this->addAuthorisationToRequest($httpRequest);
 
@@ -255,10 +278,12 @@ class RemoteTestService extends CoreApplicationService
      */
     public function retest($testId, $website)
     {
-        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_retest', [
-            'canonical-url' => urlencode($website),
+        $requestUrl = $this->coreApplicationRouter->generate('test_retest', [
+            'canonical_url' => (string)$website,
             'test_id' => $testId
-        ]));
+        ]);
+
+        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
 
         $this->addAuthorisationToRequest($httpRequest);
 
@@ -267,10 +292,12 @@ class RemoteTestService extends CoreApplicationService
 
     public function lock()
     {
-        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_set_private', [
-            'canonical-url' => urlencode($this->getTest()->getWebsite()),
+        $requestUrl = $this->coreApplicationRouter->generate('test_set_private', [
+            'canonical_url' => (string)$this->getTest()->getWebsite(),
             'test_id' => $this->getTest()->getTestId()
-        ]));
+        ]);
+
+        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
 
         $this->addAuthorisationToRequest($request);
         $this->webResourceService->get($request);
@@ -278,10 +305,12 @@ class RemoteTestService extends CoreApplicationService
 
     public function unlock()
     {
-        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_set_public', [
-            'canonical-url' => urlencode($this->getTest()->getWebsite()),
+        $requestUrl = $this->coreApplicationRouter->generate('test_set_public', [
+            'canonical_url' => (string)$this->getTest()->getWebsite(),
             'test_id' => $this->getTest()->getTestId()
-        ]));
+        ]);
+
+        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
 
         $this->addAuthorisationToRequest($request);
         $this->webResourceService->get($request);
@@ -294,21 +323,18 @@ class RemoteTestService extends CoreApplicationService
      */
     public function getRecent($limit = 3)
     {
-        $requestUrl = $this->getUrl('tests_list', [
+        $requestUrl = $this->coreApplicationRouter->generate('tests_list', [
             'limit' => $limit,
-            'offset' => 0
+            'offset' => 0,
+            'exclude-states' => [
+                'new',
+                'preparing',
+                'resolving',
+                'resolved',
+                'rejected',
+                'queued',
+            ],
         ]);
-
-        $requestUrl .= '?' . http_build_query([
-                'exclude-states' => [
-                    'new',
-                    'preparing',
-                    'resolving',
-                    'resolved',
-                    'rejected',
-                    'queued',
-                ]
-            ]);
 
         $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
 
@@ -320,10 +346,11 @@ class RemoteTestService extends CoreApplicationService
      */
     public function getCurrent()
     {
-        $requestUrl = $this->getUrl('tests_list', [
+        $requestUrl = $this->coreApplicationRouter->generate('tests_list', [
             'limit' => 100,
-            'offset' => 0
-            ]) . '?exclude-finished=1';
+            'offset' => 0,
+            'exclude-finished' => 1,
+        ]);
 
         $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
 
@@ -339,21 +366,13 @@ class RemoteTestService extends CoreApplicationService
      */
     public function getFinished($limit, $offset, $filter = null)
     {
-        $requestUrl = $this->getUrl('tests_list', [
+        $requestUrl = $this->coreApplicationRouter->generate('tests_list', [
             'limit' => $limit,
-            'offset' => $offset
-        ]);
-
-        $query = [
+            'offset' => $offset,
             'exclude-states' => ['rejected'],
-            'exclude-current' => 1
-        ];
-
-        if (!is_null($filter)) {
-            $query['url-filter'] = $filter;
-        }
-
-        $requestUrl .= '?' . http_build_query($query);
+            'exclude-current' => 1,
+            'url-filter' => $filter,
+        ]);
 
         $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
 
@@ -365,17 +384,13 @@ class RemoteTestService extends CoreApplicationService
      */
     public function getFinishedWebsites()
     {
-        $requestUrl = $this->getUrl('tests_list_websites');
-
-        $query = [
+        $requestUrl = $this->coreApplicationRouter->generate('tests_list_websites', [
             'exclude-states' => [
                 'cancelled',
                 'rejected'
             ],
-            'exclude-current' => 1
-        ];
-
-        $requestUrl .= '?' . http_build_query($query);
+            'exclude-current' => 1,
+        ]);
 
         $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
 
@@ -401,18 +416,11 @@ class RemoteTestService extends CoreApplicationService
      */
     public function getFinishedCount($filter = null)
     {
-        $requestUrl = $this->getUrl('tests_list_count');
-
-        $query = [
+        $requestUrl = $this->coreApplicationRouter->generate('tests_list_count', [
             'exclude-states' => ['rejected'],
-            'exclude-current' => 1
-        ];
-
-        if (!is_null($filter)) {
-            $query['url-filter'] = $filter;
-        }
-
-        $requestUrl .= '?' . http_build_query($query);
+            'exclude-current' => 1,
+            'url-filter' => $filter,
+        ]);
 
         $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
 
@@ -466,9 +474,11 @@ class RemoteTestService extends CoreApplicationService
      */
     public function retrieveLatest($canonicalUrl)
     {
-        $request = $this->webResourceService->getHttpClientService()->getRequest($this->getUrl('test_latest', [
-            'canonical-url' => urlencode($canonicalUrl)
-        ]));
+        $requestUrl = $this->coreApplicationRouter->generate('test_latest', [
+            'canonical_url' => $canonicalUrl,
+        ]);
+
+        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
 
         $this->addAuthorisationToRequest($request);
 

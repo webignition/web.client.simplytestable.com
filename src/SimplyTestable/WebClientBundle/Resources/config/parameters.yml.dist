@@ -1,4 +1,5 @@
 parameters:
+  core_url: http://app.simplytestable.com
   bcc_resque_prefix: web.client.simplytestable.com
   resque-job-class-map:
     "email-list-subscribe": "SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob"
@@ -24,16 +25,12 @@ parameters:
         access-level: authenticated
   core_application:
     urls:
-      base: http://app.simplytestable.com      
-      test_start: /job/{canonical-url}/start/
-      test_status: /job/{canonical-url}/{test_id}/
-      test_cancel: /job/{canonical-url}/{test_id}/cancel/
+      base: http://app.simplytestable.com
       test_tasks: /job/{canonical-url}/{test_id}/tasks/
       test_task_ids: /job/{canonical-url}/{test_id}/tasks/ids/
       test_list_urls: /tests/{canonical-url}/{test_id}/urls/
       task_status: /tasks/{canonical-url}/{test_id}/{task_id}/status/
       task_collection_status: /tasks/{canonical-url}/{test_id}/status/collection/
-      tests_list: /jobs/list/{limit}/{offset}/
       user_create: /user/create/
       user_get_token: /user/{email}/token/
       user_activate: /user/activate/{token}/
@@ -43,20 +40,13 @@ parameters:
       user: /user/{email}/
       user_authenticate: /user/{email}/authenticate/
       user_is_enabled: /user/{email}/enabled/
-      test_latest: /job/{canonical-url}/latest/
       user_email_change_request_get: /user/{email}/email-change-request/
       user_email_change_request_create: /user/{email}/email-change-request/{new_email}/create/
       user_email_change_request_cancel: /user/{email}/email-change-request/cancel/
       user_email_change_request_confirm: /user/{email}/email-change-request/{token}/
-      user_plan_subscribe: /user/{email}/{plan}/subscribe/  
-      user_card_associate: /user/{email}/card/{stripe_card_token}/associate/  
-      user_list_stripe_events: /user/{email}/stripe-events/{type}/   
-      test_is_public: /job/{canonical-url}/{test_id}/is_public/
-      test_set_public: /job/{canonical-url}/{test_id}/set-public/
-      test_set_private: /job/{canonical-url}/{test_id}/set-private/
-      test_retest: /job/{canonical-url}/{test_id}/re-test/
-      tests_list_websites: /jobs/list/websites/
-      tests_list_count: /jobs/list/count/
+      user_plan_subscribe: /user/{email}/{plan}/subscribe/
+      user_card_associate: /user/{email}/card/{stripe_card_token}/associate/
+      user_list_stripe_events: /user/{email}/stripe-events/{type}/
       team_get: /team/
       team_create: /team/create/
       teaminvite_accept: /team/invite/accept/
@@ -83,15 +73,6 @@ parameters:
   content_type_web_resource_map:
     default: webignition\WebResource\WebResource
     application/json: webignition\WebResource\JsonDocument\JsonDocument
-  task-output-result-parsers:
-    "HTML validation":
-        class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser
-    "CSS validation":
-        class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser        
-    "JS static analysis":
-        class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser          
-    "Link integrity":
-        class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser  
   mail:
     senders:
       default:
@@ -112,21 +93,21 @@ parameters:
       stripe.invoice.created:
         subject: "[Simply Testable] Invoice {{invoice_id}} created, payment details needed"
       stripe.invoice.payment_succeeded:
-        subject: "[Simply Testable] Invoice {{invoice_id}} paid, thanks!"        
+        subject: "[Simply Testable] Invoice {{invoice_id}} paid, thanks!"
       stripe.customer.subscription.trial_will_end:
         subject: "[Simply Testable] Your {{plan_name}} account trial ends in 3 days{{payment_details_needed_suffix}}"
       stripe.invoice.payment_failed:
-        subject: "[Simply Testable] Invoice {{invoice_id}} payment failed"  
+        subject: "[Simply Testable] Invoice {{invoice_id}} payment failed"
       stripe.customer.subscription.updated-plan_change=1:
-        subject: "[Simply Testable] You've changed to the {{new_plan}} plan"                
+        subject: "[Simply Testable] You've changed to the {{new_plan}} plan"
       stripe.customer.subscription.updated-transition=trialing_to_active-has_card=0:
-        subject: "[Simply Testable] Premium trial has ended, you've been dropped down to our free plan"          
+        subject: "[Simply Testable] Premium trial has ended, you've been dropped down to our free plan"
       stripe.customer.subscription.updated-transition=trialing_to_active-has_card=1:
-        subject: "[Simply Testable] Premium trial has ended, payment for the next month will be taken soon" 
+        subject: "[Simply Testable] Premium trial has ended, payment for the next month will be taken soon"
       stripe.customer.subscription.deleted-actioned_by=user-is_during_trial=1:
-        subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled"                   
+        subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled"
       stripe.customer.subscription.deleted-actioned_by=user-is_during_trial=0:
-        subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled"                 
+        subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled"
       stripe.customer.subscription.deleted-actioned_by=system:
         subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled, you've been dropped down to our free plan"
       user_team_invite_invitation:
@@ -203,12 +184,12 @@ parameters:
         css-validation-domains-to-ignore:
           - ""
         js-static-analysis: 1
-        js-static-analysis-ignore-common-cdns: 1      
+        js-static-analysis-ignore-common-cdns: 1
         js-static-analysis-jslint-option-passfail: 0
         js-static-analysis-jslint-option-bitwise: 1
         js-static-analysis-jslint-option-continue: 1
         js-static-analysis-jslint-option-debug: 1
-        js-static-analysis-jslint-option-evil: 1       
+        js-static-analysis-jslint-option-evil: 1
         js-static-analysis-jslint-option-eqeq: 0
         js-static-analysis-jslint-option-forin: 1
         js-static-analysis-jslint-option-newcap: 0
@@ -218,7 +199,7 @@ parameters:
         js-static-analysis-jslint-option-unparam: 1
         js-static-analysis-jslint-option-sloppy: 0
         js-static-analysis-jslint-option-stupid: 0
-        js-static-analysis-jslint-option-sub: 1                                            
+        js-static-analysis-jslint-option-sub: 1
         js-static-analysis-jslint-option-vars: 0
         js-static-analysis-jslint-option-white: 0
         js-static-analysis-jslint-option-anon: 0
@@ -240,7 +221,7 @@ parameters:
         - js-static-analysis-jslint-option-continue
         - js-static-analysis-jslint-option-debug
         - js-static-analysis-jslint-option-evil
-        - js-static-analysis-jslint-option-eqeq    
+        - js-static-analysis-jslint-option-eqeq
         - js-static-analysis-jslint-option-forin
         - js-static-analysis-jslint-option-newcap
         - js-static-analysis-jslint-option-nomen
@@ -252,7 +233,7 @@ parameters:
         - js-static-analysis-jslint-option-sub
         - js-static-analysis-jslint-option-vars
         - js-static-analysis-jslint-option-white
-        - js-static-analysis-jslint-option-anon   
+        - js-static-analysis-jslint-option-anon
   link-integrity-exclude-domains:
    - instagram.com
   coupons:
