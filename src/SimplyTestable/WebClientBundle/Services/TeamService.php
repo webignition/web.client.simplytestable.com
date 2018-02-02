@@ -7,9 +7,29 @@ use webignition\WebResource\JsonDocument\JsonDocument;
 class TeamService extends CoreApplicationService
 {
     /**
+     * @var CoreApplicationRouter
+     */
+    private $coreApplicationRouter;
+
+    /**
      * @var Team[]
      */
     private $teams = [];
+
+    /**
+     * @param array $parameters
+     * @param WebResourceService $webResourceService
+     * @param CoreApplicationRouter $coreApplicationRouter
+     */
+    public function __construct(
+        array $parameters,
+        WebResourceService $webResourceService,
+        CoreApplicationRouter $coreApplicationRouter
+    ) {
+        parent::__construct($parameters, $webResourceService);
+
+        $this->coreApplicationRouter = $coreApplicationRouter;
+    }
 
     /**
      * @param string $name
@@ -17,7 +37,7 @@ class TeamService extends CoreApplicationService
     public function create($name)
     {
         $request = $this->webResourceService->getHttpClientService()->postRequest(
-            $this->getUrl('team_create'),
+            $this->coreApplicationRouter->generate('team_create'),
             null,
             [
                 'name' => $name,
@@ -39,7 +59,7 @@ class TeamService extends CoreApplicationService
 
         if (!isset($this->teams[$username])) {
             $request = $this->webResourceService->getHttpClientService()->getRequest(
-                $this->getUrl('team_get')
+                $this->coreApplicationRouter->generate('team_get')
             );
 
             $this->addAuthorisationToRequest($request);
@@ -58,7 +78,7 @@ class TeamService extends CoreApplicationService
     public function removeFromTeam($member)
     {
         $request = $this->webResourceService->getHttpClientService()->postRequest(
-            $this->getUrl('team_remove', [
+            $this->coreApplicationRouter->generate('team_remove', [
                 'member_email' => $member
             ])
         );
@@ -71,7 +91,7 @@ class TeamService extends CoreApplicationService
     public function leave()
     {
         $request = $this->webResourceService->getHttpClientService()->postRequest(
-            $this->getUrl('team_leave')
+            $this->coreApplicationRouter->generate('team_leave')
         );
 
         $this->addAuthorisationToRequest($request);
