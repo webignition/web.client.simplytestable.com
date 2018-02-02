@@ -129,3 +129,6 @@ user_email_change_request_cancel:
 
 user_email_change_request_confirm:
   path: /user/{email}/email-change-request/{token}/
+
+user_list_stripe_events:
+  path: /user/{email}/stripe-events/{type}/

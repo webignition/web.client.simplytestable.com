@@ -30,7 +30,6 @@ parameters:
       task_status: /tasks/{canonical-url}/{test_id}/{task_id}/status/
       task_collection_status: /tasks/{canonical-url}/{test_id}/status/collection/
       user_hasinvites: /user/{email_canonical}/has-invites/
-      user_list_stripe_events: /user/{email}/stripe-events/{type}/
   public_site:
     urls:
       home: http://test.simplytestable.com/

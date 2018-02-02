@@ -124,6 +124,7 @@ services:
     arguments:
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
+        coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
 
   simplytestable.services.documentationurlcheckerservice:
     class:  SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService
