@@ -114,6 +114,7 @@ services:
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
         stripeErrorFactory: '@simplytestable.services.stripeerrorfactory'
+        coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
 
   simplytestable.services.userstripeeventservice:
     class:  SimplyTestable\WebClientBundle\Services\UserStripeEventService
