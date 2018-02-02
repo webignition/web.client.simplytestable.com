@@ -24,18 +24,16 @@ class UserAccountCardService extends CoreApplicationService
     private $coreApplicationRouter;
 
     /**
-     * @param array $parameters
      * @param WebResourceService $webResourceService
      * @param StripeErrorFactory $stripeErrorFactory
      * @param CoreApplicationRouter $coreApplicationRouter
      */
     public function __construct(
-        array $parameters,
         WebResourceService $webResourceService,
         StripeErrorFactory $stripeErrorFactory,
         CoreApplicationRouter $coreApplicationRouter
     ) {
-        parent::__construct($parameters, $webResourceService);
+        parent::__construct($webResourceService);
 
         $this->stripeErrorFactory = $stripeErrorFactory;
         $this->coreApplicationRouter = $coreApplicationRouter;

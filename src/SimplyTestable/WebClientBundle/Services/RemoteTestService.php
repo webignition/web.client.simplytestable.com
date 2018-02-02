@@ -32,16 +32,14 @@ class RemoteTestService extends CoreApplicationService
     private $coreApplicationRouter;
 
     /**
-     * @param array $parameters
      * @param WebResourceService $webResourceService
      * @param CoreApplicationRouter $coreApplicationRouter
      */
     public function __construct(
-        array $parameters,
         WebResourceService $webResourceService,
         CoreApplicationRouter $coreApplicationRouter
     ) {
-        parent::__construct($parameters, $webResourceService);
+        parent::__construct($webResourceService);
 
         $this->coreApplicationRouter = $coreApplicationRouter;
     }

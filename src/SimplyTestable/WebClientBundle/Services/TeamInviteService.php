@@ -33,18 +33,16 @@ class TeamInviteService extends CoreApplicationService
     private $coreApplicationRouter;
 
     /**
-     * @param array $parameters
      * @param WebResourceService $webResourceService
      * @param UserService $userService
      * @param CoreApplicationRouter $coreApplicationRouter
      */
     public function __construct(
-        $parameters,
         WebResourceService $webResourceService,
         UserService $userService,
         CoreApplicationRouter $coreApplicationRouter
     ) {
-        parent::__construct($parameters, $webResourceService);
+        parent::__construct($webResourceService);
         $this->userService = $userService;
         $this->httpClientService = $webResourceService->getHttpClientService();
         $this->coreApplicationRouter = $coreApplicationRouter;

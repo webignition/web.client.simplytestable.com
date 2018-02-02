@@ -22,7 +22,6 @@ services:
   simplytestable.services.remotetestservice:
     class:   SimplyTestable\WebClientBundle\Services\RemoteTestService
     arguments:
-        parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
         coreApplicatioNRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
 
@@ -30,7 +29,6 @@ services:
     class:   SimplyTestable\WebClientBundle\Services\TaskService
     arguments:
         entityManager: "@doctrine.orm.entity_manager"
-        parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
         taskOutputResultParserService: "@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory"
         coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
@@ -61,7 +59,6 @@ services:
   simplytestable.services.userservice:
     class:  SimplyTestable\WebClientBundle\Services\UserService
     arguments:
-        parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
         adminUserUsername: %admin_user_username%
         adminUserPassword: %admin_user_password%
@@ -72,7 +69,6 @@ services:
   simplytestable.services.useremailchangerequestservice:
     class:  SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService
     arguments:
-        parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
         adminUserUsername: %admin_user_username%
         adminUserPassword: %admin_user_password%
@@ -97,16 +93,9 @@ services:
       - [addFeatureOptionsParser, ["@simplytestable.services.testoptions.adapter.request.featureOptionsParser"]]
       - [addFeatureOptionsParser, ["@simplytestable.services.testoptions.adapter.request.cookieOptionsParser", "cookies"]]
 
-  simplytestable.services.coreapplicationstatusservice:
-    class:  SimplyTestable\WebClientBundle\Services\CoreApplicationStatusService
-    arguments:
-        parameters: %core_application%
-        webResourceService: "@simplytestable.services.webresourceservice"
-
   simplytestable.services.userplansubscriptionservice:
     class:  SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService
     arguments:
-        parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
         stripeErrorFactory: '@simplytestable.services.stripeerrorfactory'
         coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
@@ -114,7 +103,6 @@ services:
   simplytestable.services.useraccountcardservice:
     class:  SimplyTestable\WebClientBundle\Services\UserAccountCardService
     arguments:
-        parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
         stripeErrorFactory: '@simplytestable.services.stripeerrorfactory'
         coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
@@ -122,7 +110,6 @@ services:
   simplytestable.services.userstripeeventservice:
     class:  SimplyTestable\WebClientBundle\Services\UserStripeEventService
     arguments:
-        parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
         coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
 
@@ -215,14 +202,12 @@ services:
   simplytestable.services.teamservice:
     class:   SimplyTestable\WebClientBundle\Services\TeamService
     arguments:
-        parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
         coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
 
   simplytestable.services.teaminviteservice:
     class:   SimplyTestable\WebClientBundle\Services\TeamInviteService
     arguments:
-        parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
         userService: "@simplytestable.services.userservice"
         coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
