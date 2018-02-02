@@ -9,6 +9,26 @@ use webignition\WebResource\JsonDocument\JsonDocument;
 class UserStripeEventService extends CoreApplicationService
 {
     /**
+     * @var CoreApplicationRouter
+     */
+    private $coreApplicationRouter;
+
+    /**
+     * @param array $parameters
+     * @param WebResourceService $webResourceService
+     * @param CoreApplicationRouter $coreApplicationRouter
+     */
+    public function __construct(
+        array $parameters,
+        WebResourceService $webResourceService,
+        CoreApplicationRouter $coreApplicationRouter
+    ) {
+        parent::__construct($parameters, $webResourceService);
+
+        $this->coreApplicationRouter = $coreApplicationRouter;
+    }
+
+    /**
      * @param User $user
      * @param string $type
      *
@@ -19,7 +39,7 @@ class UserStripeEventService extends CoreApplicationService
     public function getList(User $user, $type)
     {
         $request = $this->webResourceService->getHttpClientService()->getRequest(
-            $this->getUrl('user_list_stripe_events', [
+            $this->coreApplicationRouter->generate('user_list_stripe_events', [
                 'email' => $user->getUsername(),
                 'type' => $type
             ])

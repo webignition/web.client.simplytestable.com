@@ -75,6 +75,11 @@ class UserStripeEventServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->assertInternalType('array', $list);
         $this->assertCount($expectedListLength, $list);
+
+        $this->assertEquals(
+            'http://null/user/user@example.com/stripe-events/customer.subscription.created/',
+            $this->getLastRequest()->getUrl()
+        );
     }
 
     /**
