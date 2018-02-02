@@ -54,3 +54,6 @@ test_task_ids:
 
 user_card_associate:
   path: /user/{email}/card/{stripe_card_token}/associate/
+
+user_plan_subscribe:
+  path: /user/{email}/{plan}/subscribe/

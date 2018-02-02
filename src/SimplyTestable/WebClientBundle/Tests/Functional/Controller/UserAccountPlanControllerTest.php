@@ -94,7 +94,10 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
 
         $this->client->request(
             'POST',
-            $this->createRequestUrl()
+            $this->createRequestUrl(),
+            [
+                'plan' => 'personal',
+            ]
         );
 
         /* @var RedirectResponse $response */

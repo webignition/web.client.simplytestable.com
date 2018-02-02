@@ -19,18 +19,26 @@ class UserPlanSubscriptionService extends CoreApplicationService
     private $stripeErrorFactory;
 
     /**
+     * @var CoreApplicationRouter
+     */
+    private $coreApplicationRouter;
+
+    /**
      * @param array $parameters
      * @param WebResourceService $webResourceService
      * @param StripeErrorFactory $stripeErrorFactory
+     * @param CoreApplicationRouter $coreApplicationRouter
      */
     public function __construct(
         array $parameters,
         WebResourceService $webResourceService,
-        StripeErrorFactory $stripeErrorFactory
+        StripeErrorFactory $stripeErrorFactory,
+        CoreApplicationRouter $coreApplicationRouter
     ) {
         parent::__construct($parameters, $webResourceService);
 
         $this->stripeErrorFactory = $stripeErrorFactory;
+        $this->coreApplicationRouter = $coreApplicationRouter;
     }
 
     /**
@@ -43,12 +51,12 @@ class UserPlanSubscriptionService extends CoreApplicationService
      */
     public function subscribe(User $user, $plan)
     {
-        $request = $this->webResourceService->getHttpClientService()->postRequest(
-            $this->getUrl('user_plan_subscribe', [
-                'email' => $user->getUsername(),
-                'plan' => $plan
-            ])
-        );
+        $requestUrl = $this->coreApplicationRouter->generate('user_plan_subscribe', [
+            'email' => $user->getUsername(),
+            'plan' => $plan
+        ]);
+
+        $request = $this->webResourceService->getHttpClientService()->postRequest($requestUrl);
 
         $this->addAuthorisationToRequest($request);
 
