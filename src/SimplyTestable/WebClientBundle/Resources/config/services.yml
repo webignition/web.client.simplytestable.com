@@ -216,6 +216,7 @@ services:
     arguments:
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
+        coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
 
   simplytestable.services.teaminviteservice:
     class:   SimplyTestable\WebClientBundle\Services\TeamInviteService

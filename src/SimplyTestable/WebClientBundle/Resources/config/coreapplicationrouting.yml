@@ -84,3 +84,15 @@ user_get_token:
 
 user:
   path: /user/{email}/
+
+team_create:
+  path: /team/create/
+
+team_get:
+  path: /team/
+
+team_remove:
+  path: /team/remove/{member_email}/
+
+team_leave:
+  path: /team/leave/
