@@ -71,12 +71,18 @@ class UserService extends CoreApplicationService
     private $httpClientService;
 
     /**
+     * @var CoreApplicationRouter
+     */
+    private $coreApplicationRouter;
+
+    /**
      * @param array $parameters
      * @param WebResourceService $webResourceService
      * @param string $adminUserUsername
      * @param string $adminUserPassword
      * @param Session $session
      * @param UserSerializerService $userSerializerService
+     * @param CoreApplicationRouter $coreApplicationRouter
      */
     public function __construct(
         $parameters,
@@ -84,7 +90,8 @@ class UserService extends CoreApplicationService
         $adminUserUsername,
         $adminUserPassword,
         Session $session,
-        UserSerializerService $userSerializerService
+        UserSerializerService $userSerializerService,
+        CoreApplicationRouter $coreApplicationRouter
     ) {
         parent::__construct($parameters, $webResourceService);
         $this->adminUserUsername = $adminUserUsername;
@@ -93,6 +100,7 @@ class UserService extends CoreApplicationService
         $this->userSerializerService = $userSerializerService;
 
         $this->httpClientService = $webResourceService->getHttpClientService();
+        $this->coreApplicationRouter = $coreApplicationRouter;
     }
 
     /**
@@ -159,13 +167,11 @@ class UserService extends CoreApplicationService
      */
     public function resetPassword($token, $password)
     {
-        $request = $this->httpClientService->postRequest(
-            $this->getUrl('user_reset_password', ['token' => $token]),
-            null,
-            [
-                'password' => rawurlencode($password)
-            ]
-        );
+        $requestUrl = $this->coreApplicationRouter->generate('user_reset_password', ['token' => $token]);
+
+        $request = $this->httpClientService->postRequest($requestUrl, null, [
+            'password' => rawurlencode($password)
+        ]);
 
         $this->addAuthorisationToRequest($request);
 
@@ -205,10 +211,11 @@ class UserService extends CoreApplicationService
     {
         $user = $this->getUser();
 
-        $request = $this->httpClientService->getRequest($this->getUrl('user_authenticate', [
+        $requestUrl = $this->coreApplicationRouter->generate('user_authenticate', [
             'email' => $user->getUsername(),
-            'password' => $user->getPassword()
-        ]));
+        ]);
+
+        $request = $this->httpClientService->getRequest($requestUrl);
 
         $this->addAuthorisationToRequest($request);
 
@@ -244,7 +251,7 @@ class UserService extends CoreApplicationService
         }
 
         $request = $this->httpClientService->postRequest(
-            $this->getUrl('user_create'),
+            $this->coreApplicationRouter->generate('user_create'),
             null,
             $requestData
         );
@@ -278,7 +285,7 @@ class UserService extends CoreApplicationService
         $this->setUser($this->getAdminUser());
 
         $request = $this->httpClientService->postRequest(
-            $this->getUrl('user_activate', ['token' => $token])
+            $this->coreApplicationRouter->generate('user_activate', ['token' => $token])
         );
 
         $this->addAuthorisationToRequest($request);
@@ -313,7 +320,7 @@ class UserService extends CoreApplicationService
     public function activateAndAccept(Invite $invite, $password)
     {
         $request = $this->httpClientService->postRequest(
-            $this->getUrl('teaminvite_activateandaccept'),
+            $this->coreApplicationRouter->generate('teaminvite_activateandaccept'),
             null,
             [
                 'token' => $invite->getToken(),
@@ -345,8 +352,8 @@ class UserService extends CoreApplicationService
             : $email;
 
         if (!isset($this->existsResultCache[$email])) {
-            $requestUrl = $this->getUrl('user_exists', [
-                'email' => $email
+            $requestUrl = $this->coreApplicationRouter->generate('user_exists', [
+                'email' => $email,
             ]);
 
             $existsResult = $this->getAdminBooleanResponse($this->httpClientService->postRequest($requestUrl));
@@ -416,8 +423,8 @@ class UserService extends CoreApplicationService
         $email = (is_null($email)) ? $this->getUser()->getUsername() : $email;
 
         if (!isset($this->enabledResultsCache[$email])) {
-            $requestUrl = $this->getUrl('user_is_enabled', [
-                'email' => $email
+            $requestUrl = $this->coreApplicationRouter->generate('user_is_enabled', [
+                'email' => $email,
             ]);
 
             $existsResult = $this->getAdminBooleanResponse($this->httpClientService->postRequest($requestUrl));
@@ -438,7 +445,7 @@ class UserService extends CoreApplicationService
     public function getConfirmationToken($email)
     {
         if (!isset($this->confirmationTokenCache[$email])) {
-            $requestUrl = $this->getUrl('user_get_token', [
+            $requestUrl = $this->coreApplicationRouter->generate('user_get_token', [
                 'email' => $email
             ]);
 
@@ -524,8 +531,8 @@ class UserService extends CoreApplicationService
 
         if (!isset($this->summaries[$username])) {
             $request = $this->httpClientService->getRequest(
-                $this->getUrl('user', [
-                    'email' => $username
+                $this->coreApplicationRouter->generate('user', [
+                    'email' => $username,
                 ])
             );
 

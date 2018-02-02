@@ -251,6 +251,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $this->setHttpFixtures($httpFixtures);
 
         $this->assertEquals($expectedAuthenticateReturnValue, $this->userService->authenticate());
+        $this->assertEquals('http://null/user/public/authenticate/', $this->getLastRequest()->getUrl());
     }
 
     /**

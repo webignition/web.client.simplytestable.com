@@ -29,15 +29,7 @@ parameters:
       test_list_urls: /tests/{canonical-url}/{test_id}/urls/
       task_status: /tasks/{canonical-url}/{test_id}/{task_id}/status/
       task_collection_status: /tasks/{canonical-url}/{test_id}/status/collection/
-      user_create: /user/create/
-      user_get_token: /user/{email}/token/
-      user_activate: /user/activate/{token}/
-      user_exists: /user/{email}/exists/
       user_hasinvites: /user/{email_canonical}/has-invites/
-      user_reset_password: /user/reset-password/{token}/
-      user: /user/{email}/
-      user_authenticate: /user/{email}/authenticate/
-      user_is_enabled: /user/{email}/enabled/
       user_email_change_request_get: /user/{email}/email-change-request/
       user_email_change_request_create: /user/{email}/email-change-request/{new_email}/create/
       user_email_change_request_cancel: /user/{email}/email-change-request/cancel/
@@ -54,7 +46,6 @@ parameters:
       team_invites: /team/invites/
       teaminvite_remove: /team/invite/{invitee_email}/remove/
       teaminvite_getbytoken: /team/invite/bytoken/{token}/
-      teaminvite_activateandaccept: /team/invite/activate/accept/
   public_site:
     urls:
       home: http://test.simplytestable.com/

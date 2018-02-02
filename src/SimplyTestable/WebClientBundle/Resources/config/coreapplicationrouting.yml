@@ -57,3 +57,30 @@ user_card_associate:
 
 user_plan_subscribe:
   path: /user/{email}/{plan}/subscribe/
+
+user_reset_password:
+  path: /user/reset-password/{token}/
+
+user_authenticate:
+  path: /user/{email}/authenticate/
+
+user_create:
+  path: /user/create/
+
+user_activate:
+  path: /user/activate/{token}/
+
+teaminvite_activateandaccept:
+  path: /team/invite/activate/accept/
+
+user_exists:
+ path: /user/{email}/exists/
+
+user_is_enabled:
+  path: /user/{email}/enabled/
+
+user_get_token:
+  path: /user/{email}/token/
+
+user:
+  path: /user/{email}/
