@@ -33,6 +33,7 @@ services:
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
         taskOutputResultParserService: "@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory"
+        coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
 
   simplytestable.services.taskcollectionfilterservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService

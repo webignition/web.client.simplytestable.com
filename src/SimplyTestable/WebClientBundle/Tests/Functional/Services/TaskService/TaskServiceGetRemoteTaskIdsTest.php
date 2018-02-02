@@ -14,11 +14,13 @@ class TaskServiceGetRemoteTaskIdsTest extends AbstractTaskServiceTest
      * @param array $httpFixtures
      * @param array $testValues
      * @param array $expectedRemoteTaskIds
+     * @param string[] $expectedRequestUrls
      */
     public function testGetRemoteTaskIds(
         array $httpFixtures,
         array $testValues,
-        array $expectedRemoteTaskIds
+        array $expectedRemoteTaskIds,
+        array $expectedRequestUrls
     ) {
         if (!empty($httpFixtures)) {
             $this->setHttpFixtures($httpFixtures);
@@ -31,6 +33,7 @@ class TaskServiceGetRemoteTaskIdsTest extends AbstractTaskServiceTest
         $remoteTaskIds = $this->taskService->getRemoteTaskIds($test);
 
         $this->assertEquals($expectedRemoteTaskIds, $remoteTaskIds);
+        $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrls());
     }
 
     /**
@@ -46,6 +49,7 @@ class TaskServiceGetRemoteTaskIdsTest extends AbstractTaskServiceTest
                     TestFactory::KEY_STATE => Test::STATE_STARTING,
                 ],
                 'expectedRemoteTaskIds' => [],
+                'expectedRequestUrls' => [],
             ],
             'state: preparing' => [
                 'httpFixtures' => [],
@@ -54,6 +58,7 @@ class TaskServiceGetRemoteTaskIdsTest extends AbstractTaskServiceTest
                     TestFactory::KEY_STATE => Test::STATE_PREPARING,
                 ],
                 'expectedRemoteTaskIds' => [],
+                'expectedRequestUrls' => [],
             ],
             'state: completed' => [
                 'httpFixtures' => [
@@ -66,6 +71,9 @@ class TaskServiceGetRemoteTaskIdsTest extends AbstractTaskServiceTest
                     TestFactory::KEY_STATE => Test::STATE_COMPLETED,
                 ],
                 'expectedRemoteTaskIds' => [2, 3],
+                'expectedRequestUrls' => [
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/ids/',
+                ],
             ],
             'already set' => [
                 'httpFixtures' => [],
@@ -75,6 +83,7 @@ class TaskServiceGetRemoteTaskIdsTest extends AbstractTaskServiceTest
                     TestFactory::KEY_TASK_IDS => '4,5'
                 ],
                 'expectedRemoteTaskIds' => [4, 5],
+                'expectedRequestUrls' => [],
             ],
         ];
     }

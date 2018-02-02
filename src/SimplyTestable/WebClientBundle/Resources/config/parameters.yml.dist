@@ -26,8 +26,6 @@ parameters:
   core_application:
     urls:
       base: http://app.simplytestable.com
-      test_tasks: /job/{canonical-url}/{test_id}/tasks/
-      test_task_ids: /job/{canonical-url}/{test_id}/tasks/ids/
       test_list_urls: /tests/{canonical-url}/{test_id}/urls/
       task_status: /tasks/{canonical-url}/{test_id}/{task_id}/status/
       task_collection_status: /tasks/{canonical-url}/{test_id}/status/collection/
