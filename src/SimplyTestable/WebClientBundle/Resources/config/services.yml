@@ -276,3 +276,9 @@ services:
     class: SimplyTestable\WebClientBundle\Services\ResourceLocator
     arguments:
       - '@kernel'
+
+  SimplyTestable\WebClientBundle\Services\ApplicationConfigurationService:
+    class: SimplyTestable\WebClientBundle\Services\ApplicationConfigurationService
+    arguments:
+      - "@=service('kernel').getRootDir()"
+      - "@=service('kernel').getCacheDir()"
