@@ -18,13 +18,6 @@ parameters:
       user_email_change_request_cancel: /user/{email}/email-change-request/cancel/
       user_email_change_request_confirm: /user/{email}/email-change-request/{token}/
       user_list_stripe_events: /user/{email}/stripe-events/{type}/
-      teaminvite_accept: /team/invite/accept/
-      teaminvite_decline: /team/invite/decline/
-      teaminvite_get: /team/invite/{invitee_email}/
-      teaminvite_userlist: /team/user/invites/
-      team_invites: /team/invites/
-      teaminvite_remove: /team/invite/{invitee_email}/remove/
-      teaminvite_getbytoken: /team/invite/bytoken/{token}/
       jobconfiguration_list: /jobconfiguration/list/
       jobconfiguration_create: /jobconfiguration/create/
       jobconfiguration_get: /jobconfiguration/{label}/

@@ -28,18 +28,26 @@ class TeamInviteService extends CoreApplicationService
     private $httpClientService;
 
     /**
+     * @var CoreApplicationRouter
+     */
+    private $coreApplicationRouter;
+
+    /**
      * @param array $parameters
      * @param WebResourceService $webResourceService
      * @param UserService $userService
+     * @param CoreApplicationRouter $coreApplicationRouter
      */
     public function __construct(
         $parameters,
         WebResourceService $webResourceService,
-        UserService $userService
+        UserService $userService,
+        CoreApplicationRouter $coreApplicationRouter
     ) {
         parent::__construct($parameters, $webResourceService);
         $this->userService = $userService;
         $this->httpClientService = $webResourceService->getHttpClientService();
+        $this->coreApplicationRouter = $coreApplicationRouter;
     }
 
     /**
@@ -52,7 +60,7 @@ class TeamInviteService extends CoreApplicationService
     public function get($inviteeEmail)
     {
         $request = $this->httpClientService->getRequest(
-            $this->getUrl('teaminvite_get', [
+            $this->coreApplicationRouter->generate('teaminvite_get', [
                 'invitee_email' => $inviteeEmail
             ])
         );
@@ -86,7 +94,7 @@ class TeamInviteService extends CoreApplicationService
     public function getForUser()
     {
         $request = $this->httpClientService->getRequest(
-            $this->getUrl('teaminvite_userlist')
+            $this->coreApplicationRouter->generate('teaminvite_userlist')
         );
 
         $this->addAuthorisationToRequest($request);
@@ -111,7 +119,7 @@ class TeamInviteService extends CoreApplicationService
     public function declineInvite(Invite $invite)
     {
         $request = $this->httpClientService->postRequest(
-            $this->getUrl('teaminvite_decline'),
+            $this->coreApplicationRouter->generate('teaminvite_decline'),
             null,
             [
                 'team' => $invite->getTeam()
@@ -137,7 +145,7 @@ class TeamInviteService extends CoreApplicationService
     public function acceptInvite(Invite $invite)
     {
         $request = $this->httpClientService->postRequest(
-            $this->getUrl('teaminvite_accept'),
+            $this->coreApplicationRouter->generate('teaminvite_accept'),
             null,
             [
                 'team' => $invite->getTeam()
@@ -163,7 +171,7 @@ class TeamInviteService extends CoreApplicationService
     public function getForTeam()
     {
         $request = $this->httpClientService->getRequest(
-            $this->getUrl('team_invites')
+            $this->coreApplicationRouter->generate('team_invites')
         );
 
         $this->addAuthorisationToRequest($request);
@@ -188,7 +196,7 @@ class TeamInviteService extends CoreApplicationService
     public function removeForUser(Invite $invite)
     {
         $request = $this->httpClientService->postRequest(
-            $this->getUrl('teaminvite_remove', [
+            $this->coreApplicationRouter->generate('teaminvite_remove', [
                 'invitee_email' => $invite->getUser()
             ])
         );
@@ -214,7 +222,7 @@ class TeamInviteService extends CoreApplicationService
     public function getForToken($token)
     {
         if (!isset($this->inviteCache[$token])) {
-            $requestUrl = $this->getUrl('teaminvite_getbytoken', [
+            $requestUrl = $this->coreApplicationRouter->generate('teaminvite_getbytoken', [
                 'token' => $token
             ]);
 
