@@ -117,3 +117,15 @@ teaminvite_remove:
 
 teaminvite_getbytoken:
   path: /team/invite/bytoken/{token}/
+
+user_email_change_request_create:
+  path: /user/{email}/email-change-request/{new_email}/create/
+
+user_email_change_request_get:
+  path: /user/{email}/email-change-request/
+
+user_email_change_request_cancel:
+  path: /user/{email}/email-change-request/cancel/
+
+user_email_change_request_confirm:
+  path: /user/{email}/email-change-request/{token}/
