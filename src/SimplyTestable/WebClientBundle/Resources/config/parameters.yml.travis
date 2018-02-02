@@ -43,7 +43,6 @@ parameters:
       user_email_change_request_cancel: /user/{email}/email-change-request/cancel/
       user_email_change_request_confirm: /user/{email}/email-change-request/{token}/
       user_plan_subscribe: /user/{email}/{plan}/subscribe/
-      user_card_associate: /user/{email}/card/{stripe_card_token}/associate/
       user_list_stripe_events: /user/{email}/stripe-events/{type}/
       team_get: /team/
       team_create: /team/create/

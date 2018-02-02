@@ -51,3 +51,6 @@ test_task_ids:
   path: /job/{canonical_url}/{test_id}/tasks/ids/
   requirements:
     canonical_url: ".+"
+
+user_card_associate:
+  path: /user/{email}/card/{stripe_card_token}/associate/
