@@ -1,0 +1,4 @@
+test_start:
+  path: /job/{canonical_url}/start/
+  requirements:
+    canonical_url: ".+"
