@@ -224,6 +224,7 @@ services:
         parameters: %core_application%
         webResourceService: "@simplytestable.services.webresourceservice"
         userService: "@simplytestable.services.userservice"
+        coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
 
   simplytestable.services.couponService:
     class:  SimplyTestable\WebClientBundle\Services\CouponService

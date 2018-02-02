@@ -96,3 +96,24 @@ team_remove:
 
 team_leave:
   path: /team/leave/
+
+teaminvite_get:
+  path: /team/invite/{invitee_email}/
+
+teaminvite_userlist:
+  path: /team/user/invites/
+
+teaminvite_decline:
+  path: /team/invite/decline/
+
+teaminvite_accept:
+  path: /team/invite/accept/
+
+team_invites:
+  path: /team/invites/
+
+teaminvite_remove:
+  path: /team/invite/{invitee_email}/remove/
+
+teaminvite_getbytoken:
+  path: /team/invite/bytoken/{token}/
