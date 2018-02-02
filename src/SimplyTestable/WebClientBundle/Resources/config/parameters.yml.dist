@@ -30,10 +30,6 @@ parameters:
       task_status: /tasks/{canonical-url}/{test_id}/{task_id}/status/
       task_collection_status: /tasks/{canonical-url}/{test_id}/status/collection/
       user_hasinvites: /user/{email_canonical}/has-invites/
-      user_email_change_request_get: /user/{email}/email-change-request/
-      user_email_change_request_create: /user/{email}/email-change-request/{new_email}/create/
-      user_email_change_request_cancel: /user/{email}/email-change-request/cancel/
-      user_email_change_request_confirm: /user/{email}/email-change-request/{token}/
       user_list_stripe_events: /user/{email}/stripe-events/{type}/
   public_site:
     urls:

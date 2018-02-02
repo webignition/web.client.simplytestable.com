@@ -73,7 +73,7 @@ class UserService extends CoreApplicationService
     /**
      * @var CoreApplicationRouter
      */
-    private $coreApplicationRouter;
+    protected $coreApplicationRouter;
 
     /**
      * @param array $parameters

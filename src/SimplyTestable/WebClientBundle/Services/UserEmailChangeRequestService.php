@@ -35,7 +35,7 @@ class UserEmailChangeRequestService extends UserService
     public function getEmailChangeRequest($email)
     {
         if (!isset($this->emailChangeRequestCache[$email])) {
-            $requestUrl = $this->getUrl('user_email_change_request_get', [
+            $requestUrl = $this->coreApplicationRouter->generate('user_email_change_request_get', [
                 'email' => $email
             ]);
 
@@ -58,7 +58,7 @@ class UserEmailChangeRequestService extends UserService
     public function cancelEmailChangeRequest()
     {
         $request = $this->webResourceService->getHttpClientService()->postRequest(
-            $this->getUrl('user_email_change_request_cancel', [
+            $this->coreApplicationRouter->generate('user_email_change_request_cancel', [
                 'email' => $this->getUser()->getUsername()
             ])
         );
@@ -74,7 +74,7 @@ class UserEmailChangeRequestService extends UserService
     public function confirmEmailChangeRequest($token)
     {
         $request = $this->webResourceService->getHttpClientService()->postRequest(
-            $this->getUrl('user_email_change_request_confirm', array(
+            $this->coreApplicationRouter->generate('user_email_change_request_confirm', array(
                 'email' => $this->getUser()->getUsername(),
                 'token' => $token
             ))
@@ -91,7 +91,7 @@ class UserEmailChangeRequestService extends UserService
     public function createEmailChangeRequest($newEmail)
     {
         $request = $this->webResourceService->getHttpClientService()->postRequest(
-            $this->getUrl('user_email_change_request_create', array(
+            $this->coreApplicationRouter->generate('user_email_change_request_create', array(
                 'email' => $this->getUser()->getUsername(),
                 'new_email' => $newEmail
             ))
