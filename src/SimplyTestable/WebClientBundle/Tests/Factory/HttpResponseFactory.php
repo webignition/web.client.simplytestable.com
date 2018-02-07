@@ -108,6 +108,14 @@ class HttpResponseFactory
     }
 
     /**
+     * @return Response
+     */
+    public static function createConflictResponse()
+    {
+        return self::create(409);
+    }
+
+    /**
      * @param int $total
      * @param string[] $memberEmails
      *

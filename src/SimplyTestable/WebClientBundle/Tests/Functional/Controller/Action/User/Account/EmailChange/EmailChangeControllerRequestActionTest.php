@@ -4,13 +4,18 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User
 
 use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\EmailChangeController;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockPostmarkMessageFactory;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
+use \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 
 class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControllerTest
 {
@@ -62,11 +67,14 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         ));
 
         $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
-            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode([
-                    'token' => 'email-change-request-token',
-                    'new_email' => self::NEW_EMAIL,
-                ])),
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse([
+                'token' => 'email-change-request-token',
+                'new_email' => self::NEW_EMAIL,
+            ]),
         ]);
 
         $user = new User('user@example.com', 'password');
@@ -95,7 +103,9 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
      * @param Request $request
      * @param array $expectedFlashBagValues
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidCredentialsException
+     * @throws MailConfigurationException
      */
     public function testRequestActionBadRequest(Request $request, array $expectedFlashBagValues)
     {
@@ -155,19 +165,23 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
     /**
      * @dataProvider requestActionCreateFailureDataProvider
      *
-     * @param Response[] $httpFixtures
+     * @param array $httpFixtures
      * @param array $expectedFlashBagValues
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidCredentialsException
+     * @throws MailConfigurationException
      */
     public function testRequestActionCreateFailure(array $httpFixtures, array $expectedFlashBagValues)
     {
         $session = $this->container->get('session');
         $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $userService->setUser($this->user);
+        $coreApplicationHttpClient->setUser($this->user);
 
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $request = new Request([], [
             'email' => self::NEW_EMAIL,
@@ -189,7 +203,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         return [
             'email taken' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 409'),
+                    HttpResponseFactory::createConflictResponse()
                 ],
                 'expectedFlashBagValues' => [
                     EmailChangeController::FLASH_BAG_REQUEST_KEY => [
@@ -202,7 +216,10 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
             ],
             'unknown' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 500'),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
                 'expectedFlashBagValues' => [
                     EmailChangeController::FLASH_BAG_REQUEST_KEY => [
@@ -222,7 +239,9 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
      * @param PostmarkMessage $postmarkMessage
      * @param array $expectedFlashBagValues
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidCredentialsException
+     * @throws MailConfigurationException
      */
     public function testRequestActionSendConfirmationTokenFailure(
         PostmarkMessage $postmarkMessage,
@@ -231,17 +250,19 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         $session = $this->container->get('session');
         $userService = $this->container->get('simplytestable.services.userservice');
         $mailService = $this->container->get('simplytestable.services.mail.service');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $userService->setUser($this->user);
         $mailService->setPostmarkMessage($postmarkMessage);
+        $coreApplicationHttpClient->setUser($this->user);
 
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
-            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode([
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse([
                 'token' => 'email-change-request-token',
                 'new_email' => self::NEW_EMAIL,
-            ])),
-            Response::fromMessage('HTTP/1.1 200'),
+            ]),
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $request = new Request([], [
@@ -338,6 +359,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         $session = $this->container->get('session');
         $userService = $this->container->get('simplytestable.services.userservice');
         $mailService = $this->container->get('simplytestable.services.mail.service');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $userService->setUser($this->user);
         $mailService->setPostmarkMessage(MockPostmarkMessageFactory::createMockConfirmEmailAddressPostmarkMessage(
@@ -347,13 +369,14 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
                 'Message' => 'OK',
             ]
         ));
+        $coreApplicationHttpClient->setUser($this->user);
 
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
-            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode([
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse([
                 'token' => 'email-change-request-token',
                 'new_email' => self::NEW_EMAIL,
-            ])),
+            ]),
         ]);
 
         $request = new Request([], [

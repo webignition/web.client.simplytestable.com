@@ -3,11 +3,17 @@
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
 use Egulias\EmailValidator\EmailValidator;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
+use SimplyTestable\WebClientBundle\Exception\UserEmailChangeException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 
 class EmailChangeController extends AccountCredentialsChangeController
 {
@@ -51,7 +57,12 @@ class EmailChangeController extends AccountCredentialsChangeController
      * @param Request $request
      * @return RedirectResponse
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     * @throws MailConfigurationException
      */
     public function requestAction(Request $request)
     {
@@ -108,37 +119,17 @@ class EmailChangeController extends AccountCredentialsChangeController
         }
 
         $userService->setUser($user);
-        $response = $emailChangeRequestService->createEmailChangeRequest($newEmail);
 
-        if ($response === true) {
-            try {
-                $this->sendEmailChangeConfirmationToken();
-                $session->getFlashBag()->set(
-                    self::FLASH_BAG_REQUEST_KEY,
-                    self::FLASH_BAG_REQUEST_MESSAGE_SUCCESS
-                );
-            } catch (PostmarkResponseException $postmarkResponseException) {
-                $emailChangeRequestService->cancelEmailChangeRequest();
+        try {
+            $emailChangeRequestService->createEmailChangeRequest($newEmail);
+            $this->sendEmailChangeConfirmationToken();
 
-                if ($postmarkResponseException->isNotAllowedToSendException()) {
-                    $flashMessage = self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND;
-                } elseif ($postmarkResponseException->isInactiveRecipientException()) {
-                    $flashMessage = self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT;
-                } elseif ($postmarkResponseException->isInvalidEmailAddressException()) {
-                    $flashMessage = self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID;
-                } else {
-                    $flashMessage = self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN;
-                }
-
-                $session->getFlashBag()->set(self::FLASH_BAG_REQUEST_KEY, $flashMessage);
-
-                $session->getFlashBag()->set(
-                    self::FLASH_BAG_EMAIL_VALUE_KEY,
-                    $newEmail
-                );
-            }
-        } else {
-            if ($response == 409) {
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_REQUEST_KEY,
+                self::FLASH_BAG_REQUEST_MESSAGE_SUCCESS
+            );
+        } catch (UserEmailChangeException $userEmailChangeException) {
+            if ($userEmailChangeException->isEmailAddressAlreadyTakenException()) {
                 $flashMessage = self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_TAKEN;
             } else {
                 $flashMessage = self::FLASH_BAG_REQUEST_ERROR_MESSAGE_UNKNOWN;
@@ -153,6 +144,25 @@ class EmailChangeController extends AccountCredentialsChangeController
                 self::FLASH_BAG_EMAIL_VALUE_KEY,
                 $newEmail
             );
+        } catch (PostmarkResponseException $postmarkResponseException) {
+            $emailChangeRequestService->cancelEmailChangeRequest();
+
+            if ($postmarkResponseException->isNotAllowedToSendException()) {
+                $flashMessage = self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND;
+            } elseif ($postmarkResponseException->isInactiveRecipientException()) {
+                $flashMessage = self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT;
+            } elseif ($postmarkResponseException->isInvalidEmailAddressException()) {
+                $flashMessage = self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID;
+            } else {
+                $flashMessage = self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN;
+            }
+
+            $session->getFlashBag()->set(self::FLASH_BAG_REQUEST_KEY, $flashMessage);
+
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_EMAIL_VALUE_KEY,
+                $newEmail
+            );
         }
 
         return $redirectResponse;
@@ -161,7 +171,12 @@ class EmailChangeController extends AccountCredentialsChangeController
     /**
      * @return RedirectResponse
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     * @throws MailConfigurationException
      */
     public function resendAction()
     {
@@ -210,7 +225,8 @@ class EmailChangeController extends AccountCredentialsChangeController
      *
      * @throws \CredisException
      * @throws \Exception
-     * @throws CoreApplicationAdminRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidCredentialsException
      */
     public function confirmAction(Request $request)
     {
@@ -229,7 +245,7 @@ class EmailChangeController extends AccountCredentialsChangeController
             UrlGeneratorInterface::ABSOLUTE_URL
         ));
 
-        $token = strtolower(trim($requestData->get('token')));
+        $token = trim($requestData->get('token'));
 
         if (empty($token)) {
             $session->getFlashBag()->set(
@@ -253,10 +269,10 @@ class EmailChangeController extends AccountCredentialsChangeController
             return $redirectResponse;
         }
 
-        $result = $emailChangeRequestService->confirmEmailChangeRequest($token);
-
-        if ($result !== true) {
-            if ($result == 409) {
+        try {
+            $emailChangeRequestService->confirmEmailChangeRequest($emailChangeRequest);
+        } catch (UserEmailChangeException $userEmailChangeException) {
+            if ($userEmailChangeException->isEmailAddressAlreadyTakenException()) {
                 $session->getFlashBag()->set(
                     self::FLASH_BAG_CONFIRM_KEY,
                     self::FLASH_BAG_CONFIRM_ERROR_MESSAGE_EMAIL_TAKEN
@@ -319,6 +335,9 @@ class EmailChangeController extends AccountCredentialsChangeController
 
     /**
      * @return RedirectResponse
+     *
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidCredentialsException
      */
     public function cancelAction()
     {
@@ -336,8 +355,13 @@ class EmailChangeController extends AccountCredentialsChangeController
     }
 
     /**
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidCredentialsException
+     * @throws MailConfigurationException
      * @throws PostmarkResponseException
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
      */
     private function sendEmailChangeConfirmationToken()
     {
