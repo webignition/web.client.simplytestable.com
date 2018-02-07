@@ -283,3 +283,15 @@ services:
       - '%core_url%'
       - '@SimplyTestable\WebClientBundle\Services\ResourceLocator'
       - '@SimplyTestable\WebClientBundle\Services\ApplicationConfigurationService'
+
+  SimplyTestable\WebClientBundle\Services\CoreApplicationResponseCache:
+    class: SimplyTestable\WebClientBundle\Services\CoreApplicationResponseCache
+
+  SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient:
+    class: SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient
+    arguments:
+      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
+      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationResponseCache'
+      - '%admin_user_username%'
+      - '%admin_user_password%'
+

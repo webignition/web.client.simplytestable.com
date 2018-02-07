@@ -69,6 +69,15 @@ class HttpResponseFactory
     /**
      * @return Response
      */
+    public static function createUnauthorisedResponse()
+    {
+        return self::create(401);
+    }
+
+
+    /**
+     * @return Response
+     */
     public static function createForbiddenResponse()
     {
         return self::create(403);
