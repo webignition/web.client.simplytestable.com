@@ -7,11 +7,13 @@ use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -111,39 +113,42 @@ class IndexControllerTest extends AbstractBaseTestCase
         ];
     }
 
-//    public function testIndexActionPrivateUserGetRequest()
-//    {
-//        $user = new User(self::USER_EMAIL);
-//        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
-//
-//        $this->setHttpFixtures([
-//            HttpResponseFactory::create(200),
-//            HttpResponseFactory::createJsonResponse(array_merge($this->userData, [
-//                'team_summary' => [
-//                    'in' => false,
-//                    'has_invite' => false,
-//                ],
-//            ])),
-//            HttpResponseFactory::createJsonResponse([]),
-//            HttpResponseFactory::createJsonResponse([]),
-//            HttpResponseFactory::createNotFoundResponse(),
-//        ]);
-//
-//        $this->client->getCookieJar()->set(new Cookie(
-//            UserService::USER_COOKIE_KEY,
-//            $userSerializerService->serializeToString($user)
-//        ));
-//
-//        $this->client->request(
-//            'GET',
-//            $this->createRequestUrl()
-//        );
-//
-//        /* @var Response $response */
-//        $response = $this->client->getResponse();
-//
-//        $this->assertTrue($response->isSuccessful());
-//    }
+    public function testIndexActionPrivateUserGetRequest()
+    {
+        $user = new User(self::USER_EMAIL);
+        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+
+        $this->setHttpFixtures([
+            HttpResponseFactory::create(200),
+            HttpResponseFactory::createJsonResponse(array_merge($this->userData, [
+                'team_summary' => [
+                    'in' => false,
+                    'has_invite' => false,
+                ],
+            ])),
+            HttpResponseFactory::createJsonResponse([]),
+            HttpResponseFactory::createJsonResponse([]),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createNotFoundResponse(),
+        ]);
+
+        $this->client->getCookieJar()->set(new Cookie(
+            UserService::USER_COOKIE_KEY,
+            $userSerializerService->serializeToString($user)
+        ));
+
+        $this->client->request(
+            'GET',
+            $this->createRequestUrl()
+        );
+
+        /* @var Response $response */
+        $response = $this->client->getResponse();
+
+        $this->assertTrue($response->isSuccessful());
+    }
 
 
     /**
@@ -170,6 +175,9 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         if (!empty($httpFixtures)) {
             $this->setHttpFixtures($httpFixtures);
+            $this->setCoreApplicationHttpClientHttpFixtures([
+                $httpFixtures[count($httpFixtures) - 1],
+            ]);
         }
 
         if (!empty($flashBagValues)) {
