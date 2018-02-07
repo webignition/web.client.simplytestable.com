@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional;
 
 use Guzzle\Http\Exception\CurlException;
 use Guzzle\Plugin\Mock\MockPlugin;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -50,6 +51,19 @@ abstract class AbstractBaseTestCase extends WebTestCase
         }
 
         $client->addSubscriber($plugin);
+    }
+
+    /**
+     * @param array $httpFixtures
+     */
+    protected function setCoreApplicationHttpClientHttpFixtures(array $httpFixtures = [])
+    {
+        if (!empty($httpFixtures)) {
+            $mockPlugin = new MockPlugin($httpFixtures);
+
+            $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+            $coreApplicationHttpClient->getHttpClient()->addSubscriber($mockPlugin);
+        }
     }
 
     /**

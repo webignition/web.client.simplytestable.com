@@ -69,6 +69,15 @@ class HttpResponseFactory
     /**
      * @return Response
      */
+    public static function createUnauthorisedResponse()
+    {
+        return self::create(401);
+    }
+
+
+    /**
+     * @return Response
+     */
     public static function createForbiddenResponse()
     {
         return self::create(403);
@@ -96,6 +105,14 @@ class HttpResponseFactory
     public static function createBadRequestResponse()
     {
         return self::create(400);
+    }
+
+    /**
+     * @return Response
+     */
+    public static function createConflictResponse()
+    {
+        return self::create(409);
     }
 
     /**

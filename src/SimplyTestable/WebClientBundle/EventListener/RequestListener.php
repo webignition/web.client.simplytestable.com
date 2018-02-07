@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\EventListener;
 
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -77,6 +78,7 @@ class RequestListener
         }
 
         $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $controller = $this->createController();
 
         if ($controller instanceof IEFilteredController && $this->isUsingOldIE()) {
@@ -88,6 +90,10 @@ class RequestListener
         }
 
         $userService->setUserFromRequest($this->request);
+
+        $user = $userService->getUser();
+        $coreApplicationHttpClient->setUser($user);
+
         $requiresValidUserController =
             $controller instanceof RequiresValidUserController || $controller instanceof RequiresPrivateUserController;
 

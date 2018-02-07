@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 use Guzzle\Http\Message\Request;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Plugin\History\HistoryPlugin;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 
 abstract class AbstractCoreApplicationServiceTest extends AbstractBaseTestCase
@@ -13,6 +14,11 @@ abstract class AbstractCoreApplicationServiceTest extends AbstractBaseTestCase
      * @var HistoryPlugin
      */
     private $httpHistoryPlugin;
+
+    /**
+     * @var CoreApplicationHttpClient
+     */
+    protected $coreApplicationHttpClient;
 
     /**
      * {@inheritdoc}
@@ -25,6 +31,11 @@ abstract class AbstractCoreApplicationServiceTest extends AbstractBaseTestCase
 
         $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
         $httpClientService->get()->addSubscriber($this->httpHistoryPlugin);
+
+        $this->coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+
+        $httpClient = $this->coreApplicationHttpClient->getHttpClient();
+        $httpClient->addSubscriber($this->httpHistoryPlugin);
     }
 
     /**

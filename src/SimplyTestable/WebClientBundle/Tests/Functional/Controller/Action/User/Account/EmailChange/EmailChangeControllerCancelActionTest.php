@@ -4,7 +4,9 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User
 
 use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -33,7 +35,11 @@ class EmailChangeControllerCancelActionTest extends AbstractEmailChangeControlle
         $requestUrl = $router->generate(self::ROUTE_NAME);
 
         $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $user = new User('user@example.com', 'password');
@@ -59,6 +65,14 @@ class EmailChangeControllerCancelActionTest extends AbstractEmailChangeControlle
     public function testCancelAction()
     {
         $session = $this->container->get('session');
+        $userService = $this->container->get('simplytestable.services.userservice');
+
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
 
         /* @var RedirectResponse $response */
         $response = $this->emailChangeController->cancelAction();

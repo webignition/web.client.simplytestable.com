@@ -4,13 +4,17 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User
 
 use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\EmailChangeController;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockPostmarkMessageFactory;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
+use \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 
 class EmailChangeControllerResendActionTest extends AbstractEmailChangeControllerTest
 {
@@ -62,11 +66,14 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
         ));
 
         $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
-            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode([
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse([
                 'token' => 'email-change-request-token',
                 'new_email' => self::NEW_EMAIL,
-            ])),
+            ]),
         ]);
 
         $user = new User('user@example.com', 'password');
@@ -94,7 +101,10 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
      *
      * @param PostmarkMessage $postmarkMessage
      * @param array $expectedFlashBagValues
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     *
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidCredentialsException
+     * @throws MailConfigurationException
      */
     public function testResendActionSendConfirmationTokenFailure(
         PostmarkMessage $postmarkMessage,
@@ -107,11 +117,11 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
         $userService->setUser($this->user);
         $mailService->setPostmarkMessage($postmarkMessage);
 
-        $this->setHttpFixtures([
-            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode([
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse([
                 'token' => 'email-change-request-token',
                 'new_email' => self::NEW_EMAIL,
-            ])),
+            ]),
         ]);
 
         /* @var RedirectResponse $response */
@@ -192,6 +202,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
         $session = $this->container->get('session');
         $userService = $this->container->get('simplytestable.services.userservice');
         $mailService = $this->container->get('simplytestable.services.mail.service');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $userService->setUser($this->user);
         $mailService->setPostmarkMessage(MockPostmarkMessageFactory::createMockConfirmEmailAddressPostmarkMessage(
@@ -201,12 +212,13 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
                 'Message' => 'OK',
             ]
         ));
+        $coreApplicationHttpClient->setUser($this->user);
 
-        $this->setHttpFixtures([
-            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode([
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse([
                 'token' => 'email-change-request-token',
                 'new_email' => self::NEW_EMAIL,
-            ])),
+            ]),
         ]);
 
         /* @var RedirectResponse $response */

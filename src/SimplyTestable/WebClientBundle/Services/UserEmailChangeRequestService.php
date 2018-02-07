@@ -1,122 +1,141 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Services;
 
-use Guzzle\Http\Exception\BadResponseException;
-use Guzzle\Http\Exception\CurlException;
-use Guzzle\Http\Message\Request;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\UserEmailChangeException;
 
-class UserEmailChangeRequestService extends UserService
+class UserEmailChangeRequestService
 {
-    /**
-     * @var array
-     */
-    private $emailChangeRequestCache = [];
+    const EXCEPTION_CODE_EMAIL_TAKEN = 409;
 
     /**
-     * @param string $email
-     *
-     * @return bool
-     *
-     * @throws CoreApplicationAdminRequestException
+     * @var CoreApplicationHttpClient
      */
-    public function hasEmailChangeRequest($email)
+    private $coreApplicationHttpClient;
+
+    /**
+     * @param CoreApplicationHttpClient $coreApplicationHttpClient
+     */
+    public function __construct(CoreApplicationHttpClient $coreApplicationHttpClient)
     {
-        return !is_null($this->getEmailChangeRequest($email));
+        $this->coreApplicationHttpClient = $coreApplicationHttpClient;
     }
 
     /**
-     * @param string $email
-     *
+     * @param $email
      * @return array
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidCredentialsException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
      */
     public function getEmailChangeRequest($email)
     {
-        if (!isset($this->emailChangeRequestCache[$email])) {
-            $requestUrl = $this->coreApplicationRouter->generate('user_email_change_request_get', [
+        return $this->coreApplicationHttpClient->getJsonData(
+            'user_email_change_request_get',
+            [
                 'email' => $email
-            ]);
-
-            $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
-            $response = $this->getAdminResponse($request);
-
-            if ($response->getStatusCode() === 200) {
-                $this->emailChangeRequestCache[$email] = json_decode($response->getBody(), true);
-            } else {
-                return null;
-            }
-        }
-
-        return $this->emailChangeRequestCache[$email];
+            ],
+            [
+                CoreApplicationHttpClient::OPT_AS_ADMIN => true,
+                CoreApplicationHttpClient::OPT_TREAT_404_AS_EMPTY => true,
+            ]
+        );
     }
 
     /**
-     * @return bool|int|null
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidCredentialsException
      */
     public function cancelEmailChangeRequest()
     {
-        $request = $this->webResourceService->getHttpClientService()->postRequest(
-            $this->coreApplicationRouter->generate('user_email_change_request_cancel', [
-                'email' => $this->getUser()->getUsername()
-            ])
-        );
-
-        return $this->issueUserRequest($request);
+        try {
+            $this->coreApplicationHttpClient->post('user_email_change_request_cancel', [
+                'email' => CoreApplicationHttpClient::ROUTE_PARAMETER_USER_PLACEHOLDER,
+            ]);
+        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
+        }
     }
 
     /**
-     * @param string $token
+     * @param array $emailChangeRequest
      *
-     * @return bool|int|null
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidCredentialsException
+     * @throws UserEmailChangeException
      */
-    public function confirmEmailChangeRequest($token)
+    public function confirmEmailChangeRequest(array $emailChangeRequest)
     {
-        $request = $this->webResourceService->getHttpClientService()->postRequest(
-            $this->coreApplicationRouter->generate('user_email_change_request_confirm', array(
-                'email' => $this->getUser()->getUsername(),
-                'token' => $token
-            ))
-        );
+        try {
+            $this->coreApplicationHttpClient->post('user_email_change_request_confirm', [
+                'email' => CoreApplicationHttpClient::ROUTE_PARAMETER_USER_PLACEHOLDER,
+                'token' => $emailChangeRequest['token'],
+            ]);
+        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
+            if ($coreApplicationRequestException->isHttpException()) {
+                if (self::EXCEPTION_CODE_EMAIL_TAKEN === $coreApplicationRequestException->getCode()) {
+                    throw new UserEmailChangeException(
+                        sprintf(
+                            UserEmailChangeException::MESSAGE_EMAIL_ALREADY_TAKEN,
+                            $emailChangeRequest['new_email']
+                        ),
+                        UserEmailChangeException::CODE_EMAIL_ALREADY_TAKEN,
+                        $coreApplicationRequestException
+                    );
+                }
 
-        return $this->issueUserRequest($request);
+                throw new UserEmailChangeException(
+                    UserEmailChangeException::MESSAGE_UNKNOWN,
+                    UserEmailChangeException::CODE_UNKNOWN,
+                    $coreApplicationRequestException
+                );
+            }
+        }
     }
 
     /**
      * @param string $newEmail
      *
-     * @return bool|int|null
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidCredentialsException
+     * @throws UserEmailChangeException
      */
     public function createEmailChangeRequest($newEmail)
     {
-        $request = $this->webResourceService->getHttpClientService()->postRequest(
-            $this->coreApplicationRouter->generate('user_email_change_request_create', array(
-                'email' => $this->getUser()->getUsername(),
-                'new_email' => $newEmail
-            ))
-        );
-
-        return $this->issueUserRequest($request);
-    }
-
-    /**
-     * @param Request $request
-     *
-     * @return bool|int|null
-     */
-    private function issueUserRequest(Request $request)
-    {
-        $this->addAuthorisationToRequest($request);
-
         try {
-            $response = $request->send();
+            $this->coreApplicationHttpClient->post('user_email_change_request_create', [
+                'email' => CoreApplicationHttpClient::ROUTE_PARAMETER_USER_PLACEHOLDER,
+                'new_email' => $newEmail,
+            ]);
+        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
+            if ($coreApplicationRequestException->isHttpException()) {
+                if (self::EXCEPTION_CODE_EMAIL_TAKEN === $coreApplicationRequestException->getCode()) {
+                    throw new UserEmailChangeException(
+                        sprintf(
+                            UserEmailChangeException::MESSAGE_EMAIL_ALREADY_TAKEN,
+                            $newEmail
+                        ),
+                        UserEmailChangeException::CODE_EMAIL_ALREADY_TAKEN,
+                        $coreApplicationRequestException
+                    );
+                }
 
-            return $response->getStatusCode() == 200 ? true : $response->getStatusCode();
-        } catch (BadResponseException $badResponseException) {
-            return $badResponseException->getResponse()->getStatusCode();
-        } catch (CurlException $curlException) {
-            return $curlException->getErrorNo();
+                throw new UserEmailChangeException(
+                    UserEmailChangeException::MESSAGE_UNKNOWN,
+                    UserEmailChangeException::CODE_UNKNOWN,
+                    $coreApplicationRequestException
+                );
+            }
         }
     }
 }

@@ -5,7 +5,9 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User
 use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\EmailChangeController;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,10 +37,13 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $requestUrl = $router->generate(self::ROUTE_NAME);
 
         $this->setHttpFixtures([
-            Response::fromMessage("HTTP/1.1 200 OK\nContent-type:application/json\n\n" . json_encode([
+            HttpResponseFactory::createJsonResponse([
                 'token' => 'token-value',
-            ])),
-            Response::fromMessage('HTTP/1.1 200'),
+            ]),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $user = new User('user@example.com', 'password');
@@ -83,10 +88,10 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
     {
         $session = $this->container->get('session');
 
-        $this->setHttpFixtures([
-            Response::fromMessage("HTTP/1.1 200 OK\nContent-type:application/json\n\n" . json_encode([
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse([
                 'token' => 'token-value',
-            ]))
+            ]),
         ]);
 
         $request = new Request([], [
@@ -108,20 +113,29 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
     /**
      * @dataProvider confirmActionChangeFailureDataProvider
      *
-     * @param Response[] $confirmEmailChangeRequestHttpFixtures
+     * @param array $confirmEmailChangeRequestHttpFixtures
      * @param array $expectedFlashBagValues
+     *
+     * @throws \CredisException
+     * @throws \Exception
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException
      */
     public function testConfirmActionChangeFailure(
         array $confirmEmailChangeRequestHttpFixtures,
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
-        $this->setHttpFixtures(array_merge([
-            Response::fromMessage("HTTP/1.1 200 OK\nContent-type:application/json\n\n" . json_encode([
-                'token' => 'token-value',
+        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+
+        $this->setCoreApplicationHttpClientHttpFixtures(array_merge([
+            HttpResponseFactory::createJsonResponse([
                 'new_email' => 'new-email@example.com',
-            ]))
+                'token' => 'token-value',
+            ])
         ], $confirmEmailChangeRequestHttpFixtures));
 
         $request = new Request([], [
@@ -144,7 +158,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         return [
             'email taken' => [
                 'confirmEmailChangeRequestHttpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 409')
+                    HttpResponseFactory::createConflictResponse(),
                 ],
                 'expectedFlashBagValues' => [
                     EmailChangeController::FLASH_BAG_CONFIRM_KEY => [
@@ -157,7 +171,10 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
             ],
             'unknown error' => [
                 'confirmEmailChangeRequestHttpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 500')
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
                 'expectedFlashBagValues' => [
                     EmailChangeController::FLASH_BAG_CONFIRM_KEY => [
@@ -174,17 +191,19 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $userService = $this->container->get('simplytestable.services.userservice');
         $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $user = new User('user@example.com', 'password');
         $serializerUser = $userSerializerService->serializeToString($user);
         $newEmail = 'new-email@example.com';
+        $coreApplicationHttpClient->setUser($user);
 
-        $this->setHttpFixtures([
-            Response::fromMessage("HTTP/1.1 200 OK\nContent-type:application/json\n\n" . json_encode([
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse([
                 'token' => 'token-value',
                 'new_email' => $newEmail,
-            ])),
-            Response::fromMessage('HTTP/1.1 200'),
+            ]),
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $userService->setUser($user);

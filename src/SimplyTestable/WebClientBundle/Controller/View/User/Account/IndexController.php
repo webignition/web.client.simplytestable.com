@@ -3,7 +3,8 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\User\Account;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
@@ -41,9 +42,10 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
      * @param Request $request
      * @return Response
      *
-     * @throws CoreApplicationAdminRequestException
      * @throws WebResourceException
      * @throws \Exception
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidCredentialsException
      */
     public function indexAction(Request $request)
     {

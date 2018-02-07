@@ -19,8 +19,8 @@
             <directory>../src/*/Bundle/*Bundle/Tests</directory>
         </testsuite>
         <testsuite name="Controllers">
-            <directory>../src/*/*Bundle/Tests/Unit/Controllers</directory>
-            <directory>../src/*/*Bundle/Tests/Functional/Controllers</directory>
+            <directory>../src/*/*Bundle/Tests/Unit/Controller</directory>
+            <directory>../src/*/*Bundle/Tests/Functional/Controller</directory>
         </testsuite>
         <testsuite name="Services">
             <directory>../src/*/*Bundle/Tests/Unit/Services</directory>
