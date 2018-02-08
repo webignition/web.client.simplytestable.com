@@ -2,9 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\TaskService;
 
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
-use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -20,9 +18,7 @@ class TaskServiceGetUnretrievedRemoteTaskIdsTest extends AbstractTaskServiceTest
      * @param int $limit
      * @param int[] $expectedUnretrievedRemoteTaskIds
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */

@@ -21,7 +21,6 @@ class CoreApplicationHttpClient
 {
     const APPLICATION_JSON_CONTENT_TYPE = 'application/json';
 
-    const OPT_AS_ADMIN = 'as-admin';
     const OPT_TREAT_404_AS_EMPTY = 'treat-404-as-empty';
     const OPT_EXPECT_JSON_RESPONSE = 'expect-json-response';
 
@@ -100,19 +99,97 @@ class CoreApplicationHttpClient
      *
      * @return Response|array|mixed|null
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidCredentialsException
      * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function get($routeName, array $routeParameters = [], array $options = [])
     {
-        $requestUrl = $this->router->generate($routeName, $this->preProcessRouteParameters($routeParameters));
+        $response = null;
+
+        try {
+            $response = $this->getAsUser($this->user, $routeName, $routeParameters, $options);
+        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
+            // Not a write request, can't happen
+        } catch (InvalidAdminCredentialsException $invalidAdminCredentialsException) {
+            // Not an admin request, can't happen
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param string $routeName
+     * @param array $routeParameters
+     * @param array $options
+     *
+     * @return Response|array|mixed|null
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     */
+    public function getAsAdmin($routeName, array $routeParameters = [], array $options = [])
+    {
+        $response = null;
+
+        try {
+            $response = $this->getAsUser($this->adminUser, $routeName, $routeParameters, $options);
+        } catch (InvalidCredentialsException $invalidCredentialsException) {
+            // Not a regular user request, can't happen
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param User $user
+     * @param string $routeName
+     * @param array $routeParameters
+     * @param array $options
+     *
+     * @return Response|array|mixed|null
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     */
+    private function getAsUser(User $user, $routeName, array $routeParameters = [], array $options = [])
+    {
+        $requestUrl = $this->createRequestUrl($routeName, $routeParameters);
 
         $request = $this->httpClient->createRequest('GET', $requestUrl);
 
-        return $this->getResponse($request, $options);
+        return $this->getResponse($request, $options, $user);
+    }
+
+    /**
+     * @param string $routeName
+     * @param array $routeParameters
+     * @param array $postData
+     * @param array $options
+     *
+     * @return Response|array|mixed|null
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
+     * @throws InvalidContentTypeException
+     */
+    public function post($routeName, array $routeParameters = [], array $postData = [], array $options = [])
+    {
+        $response = null;
+
+        try {
+            $response = $this->postAsUser($this->user, $routeName, $routeParameters, $postData, $options);
+        } catch (InvalidAdminCredentialsException $invalidAdminCredentialsException) {
+            // Not an admin request, can't happen
+        }
+
+        return $response;
     }
 
     /**
@@ -126,31 +203,63 @@ class CoreApplicationHttpClient
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
-     * @throws InvalidCredentialsException
      * @throws InvalidContentTypeException
      */
-    public function post($routeName, array $routeParameters = [], array $postData = [], array $options = [])
+    public function postAsAdmin($routeName, array $routeParameters = [], array $postData = [], array $options = [])
     {
-        $requestUrl = $this->router->generate($routeName, $this->preProcessRouteParameters($routeParameters));
+        $response = null;
+
+        try {
+            $response = $this->postAsUser($this->adminUser, $routeName, $routeParameters, $postData, $options);
+        } catch (InvalidCredentialsException $invalidAdminCredentialsException) {
+            // Not a regular user request, can't happen
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param User $user
+     * @param string $routeName
+     * @param array $routeParameters
+     * @param array $postData
+     * @param array $options
+     *
+     * @return Response|array|mixed|null
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     */
+    private function postAsUser(
+        User $user,
+        $routeName,
+        array $routeParameters = [],
+        array $postData = [],
+        array $options = []
+    ) {
+        $requestUrl = $this->createRequestUrl($routeName, $routeParameters);
         $request = $this->httpClient->createRequest('POST', $requestUrl, [], $postData);
 
-        return $this->getResponse($request, $options);
+        return $this->getResponse($request, $options, $user);
     }
 
     /**
      * @param RequestInterface $request
      * @param array $options
+     * @param User $user
      * @return Response|null
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
-     * @throws InvalidCredentialsException
      * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
-    private function getResponse(RequestInterface $request, array $options)
+    private function getResponse(RequestInterface $request, array $options, User $user)
     {
-        $user = $this->getRequestUser($options);
         $this->addAuthorizationToRequest($request, $user);
 
         $response = $this->responseCache->get($request);
@@ -211,18 +320,6 @@ class CoreApplicationHttpClient
     }
 
     /**
-     * @param array $options
-     *
-     * @return User
-     */
-    private function getRequestUser(array $options)
-    {
-        return $this->isOptionTrue(self::OPT_AS_ADMIN, $options)
-            ? $this->adminUser
-            : $this->user;
-    }
-
-    /**
      * @param RequestInterface $request
      * @param User $user
      */
@@ -249,11 +346,12 @@ class CoreApplicationHttpClient
     }
 
     /**
+     * @param string $routeName
      * @param array $routeParameters
      *
-     * @return array
+     * @return string
      */
-    private function preProcessRouteParameters(array $routeParameters)
+    private function createRequestUrl($routeName, $routeParameters)
     {
         foreach ($routeParameters as $key => $value) {
             if (self::ROUTE_PARAMETER_USER_PLACEHOLDER === $value) {
@@ -261,6 +359,6 @@ class CoreApplicationHttpClient
             }
         }
 
-        return $routeParameters;
+        return $this->router->generate($routeName, $routeParameters);
     }
 }
