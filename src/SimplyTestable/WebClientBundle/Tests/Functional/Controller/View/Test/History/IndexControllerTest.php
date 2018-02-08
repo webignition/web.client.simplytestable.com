@@ -2,12 +2,15 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Test\History;
 
+use Guzzle\Http\Message\RequestInterface;
+use Guzzle\Plugin\History\HistoryPlugin;
 use SimplyTestable\WebClientBundle\Controller\View\Test\History\IndexController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\TestList;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpHistory;
@@ -104,12 +107,28 @@ class IndexControllerTest extends AbstractBaseTestCase
         $expectedRequestUrls
     ) {
         $userService = $this->container->get('simplytestable.services.userservice');
-        $userService->setUser(new User(UserService::PUBLIC_USER_USERNAME));
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
 
-        $httpHistory = new HttpHistory($this->container->get('simplytestable.services.httpclientservice'));
+        $user = new User(UserService::PUBLIC_USER_USERNAME);
+        $userService->setUser($user);
+        $coreApplicationHttpClient->setUser($user);
+
+        $httpHistoryPlugin = new HistoryPlugin();
+
+        $httpClient = $httpClientService->get();
+        $coreApplicationHttpClientHttpClient = $coreApplicationHttpClient->getHttpClient();
+
+        $httpClient->addSubscriber($httpHistoryPlugin);
+        $coreApplicationHttpClientHttpClient->addSubscriber($httpHistoryPlugin);
 
         if (!empty($httpFixtures)) {
             $this->setHttpFixtures($httpFixtures);
+        }
+
+        if (count($httpFixtures) > 1) {
+            array_shift($httpFixtures);
+            $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
         }
 
         $this->indexController->setContainer($this->container);
@@ -120,9 +139,18 @@ class IndexControllerTest extends AbstractBaseTestCase
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
 
         if (empty($expectedRequestUrls)) {
-            $this->assertEquals(0, $httpHistory->count());
+            $this->assertEmpty($httpHistoryPlugin->count());
         } else {
-            $this->assertEquals($expectedRequestUrls, $httpHistory->getRequestUrls());
+            $requestedUrls = [];
+
+            foreach ($httpHistoryPlugin->getAll() as $httpTransaction) {
+                /* @var RequestInterface $guzzleRequest */
+                $guzzleRequest = $httpTransaction['request'];
+
+                $requestedUrls[] = $guzzleRequest->getUrl();
+            }
+
+            $this->assertEquals($expectedRequestUrls, $requestedUrls);
         }
     }
 

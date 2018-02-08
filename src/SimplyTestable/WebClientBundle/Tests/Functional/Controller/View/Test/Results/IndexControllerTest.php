@@ -2,12 +2,15 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Test\Results;
 
+use Guzzle\Http\Message\RequestInterface;
+use Guzzle\Plugin\History\HistoryPlugin;
 use SimplyTestable\WebClientBundle\Controller\View\Test\Results\IndexController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpHistory;
@@ -246,6 +249,9 @@ class IndexControllerTest extends AbstractBaseTestCase
         $this->setHttpFixtures([
             HttpResponseFactory::create(200),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
             HttpResponseFactory::createJsonResponse($this->remoteTasksData),
         ]);
@@ -277,6 +283,11 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param string[] $expectedRequestUrls
      *
      * @throws WebResourceException
+     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException
+     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException
      */
     public function testIndexActionRedirect(
         array $httpFixtures,
@@ -286,11 +297,24 @@ class IndexControllerTest extends AbstractBaseTestCase
         $expectedRequestUrls
     ) {
         $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
+
         $userService->setUser($user);
+        $coreApplicationHttpClient->setUser($user);
 
-        $httpHistory = new HttpHistory($this->container->get('simplytestable.services.httpclientservice'));
+        $httpHistoryPlugin = new HistoryPlugin();
 
-        $this->setHttpFixtures($httpFixtures);
+        $httpClient = $httpClientService->get();
+        $coreApplicationHttpClientHttpClient = $coreApplicationHttpClient->getHttpClient();
+
+        $httpClient->addSubscriber($httpHistoryPlugin);
+        $coreApplicationHttpClientHttpClient->addSubscriber($httpHistoryPlugin);
+
+        $remoteTestHttpFixture = array_shift($httpFixtures);
+
+        $this->setHttpFixtures([$remoteTestHttpFixture]);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->indexController->setContainer($this->container);
 
@@ -305,9 +329,17 @@ class IndexControllerTest extends AbstractBaseTestCase
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
 
         if (empty($expectedRequestUrls)) {
-            $this->assertEquals(0, $httpHistory->count());
+            $this->assertEquals(0, $httpHistoryPlugin->count());
         } else {
-            $this->assertEquals($expectedRequestUrls, $httpHistory->getRequestUrls());
+            $requestedUrls = [];
+
+            foreach ($httpHistoryPlugin->getAll() as $httpTransaction) {
+                /* @var RequestInterface $guzzleRequest */
+                $guzzleRequest = $httpTransaction['request'];
+                $requestedUrls[] = $guzzleRequest->getUrl();
+            }
+
+            $this->assertEquals($expectedRequestUrls, $requestedUrls);
         }
     }
 
@@ -423,6 +455,11 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param EngineInterface $templatingEngine
      *
      * @throws WebResourceException
+     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException
+     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException
      */
     public function testIndexActionRender(
         array $httpFixtures,
@@ -433,9 +470,17 @@ class IndexControllerTest extends AbstractBaseTestCase
         EngineInterface $templatingEngine
     ) {
         $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userService->setUser($user);
+        $coreApplicationHttpClient->setUser($user);
 
-        $this->setHttpFixtures($httpFixtures);
+        $remoteTestHttpFixture = array_shift($httpFixtures);
+        $remoteTaskIdsHttpFixture = array_shift($httpFixtures);
+        $remoteTasksHttpFixture = array_shift($httpFixtures);
+        $domainTestCountHttpFixture = array_shift($httpFixtures);
+
+        $this->setHttpFixtures([$remoteTestHttpFixture, $domainTestCountHttpFixture]);
+        $this->setCoreApplicationHttpClientHttpFixtures([$remoteTaskIdsHttpFixture, $remoteTasksHttpFixture]);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);
@@ -806,8 +851,15 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionCachedResponse()
     {
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+
         $this->setHttpFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
             HttpResponseFactory::createJsonResponse($this->remoteTasksData),
         ]);

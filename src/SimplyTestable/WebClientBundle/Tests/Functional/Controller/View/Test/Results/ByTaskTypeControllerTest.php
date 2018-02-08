@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\Test\Task\ErrorTaskMapCollection;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpHistory;
@@ -15,6 +16,7 @@ use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
+use SimplyTestable\WebClientBundle\Tests\Functional\Services\CoreApplicationHttpClientTest;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -231,6 +233,10 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
         $this->setHttpFixtures([
             HttpResponseFactory::create(200),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
+
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([1,]),
             HttpResponseFactory::createJsonResponse([
                 [
@@ -273,6 +279,11 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
      * @param string[] $expectedRequestUrls
      *
      * @throws WebResourceException
+     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException
+     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException
      */
     public function testIndexActionRedirect(
         array $httpFixtures,
@@ -398,6 +409,11 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
      * @param EngineInterface $templatingEngine
      *
      * @throws WebResourceException
+     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException
+     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException
      */
     public function testIndexActionRender(
         array $httpFixtures,
@@ -408,9 +424,14 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
         EngineInterface $templatingEngine
     ) {
         $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userService->setUser($user);
+        $coreApplicationHttpClient->setUser($user);
 
-        $this->setHttpFixtures($httpFixtures);
+        $remoteTestHttpFixture = array_shift($httpFixtures);
+
+        $this->setHttpFixtures([$remoteTestHttpFixture]);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);
@@ -671,8 +692,15 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionCachedResponse()
     {
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+
         $this->setHttpFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([]),
             HttpResponseFactory::createJsonResponse([]),
         ]);
