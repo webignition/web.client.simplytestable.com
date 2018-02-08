@@ -6,7 +6,11 @@ use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\TimePeriod;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TaskFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
@@ -22,7 +26,11 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
      * @param array $expectedTaskDataCollection
      * @param string[] $expectedRequestUrls
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testGetCollection(
         array $httpFixtures,
@@ -31,9 +39,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
         array $expectedTaskDataCollection,
         array $expectedRequestUrls
     ) {
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
-        }
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $testFactory = new TestFactory($this->container);
 
@@ -89,7 +95,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
             }
         }
 
-        $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrls());
+        $this->assertEquals($expectedRequestUrls, $this->getRequestedUrls());
     }
 
     /**

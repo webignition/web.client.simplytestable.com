@@ -29,9 +29,8 @@ services:
     class:   SimplyTestable\WebClientBundle\Services\TaskService
     arguments:
         entityManager: "@doctrine.orm.entity_manager"
-        webResourceService: "@simplytestable.services.webresourceservice"
         taskOutputResultParserService: "@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory"
-        coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
+        coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
 
   simplytestable.services.taskcollectionfilterservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService

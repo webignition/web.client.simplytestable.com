@@ -6,13 +6,16 @@ use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Repository\TaskOutputRepository;
 use SimplyTestable\WebClientBundle\Repository\TaskRepository;
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory as TaskOutputResultParserFactory;
-use webignition\WebResource\JsonDocument\JsonDocument;
 
-class TaskService extends CoreApplicationService
+class TaskService
 {
     /**
      * @var string[]
@@ -73,44 +76,40 @@ class TaskService extends CoreApplicationService
     private $taskOutputResultParserService;
 
     /**
-     * @var HttpClientService
+     * @var CoreApplicationHttpClient
      */
-    private $httpClientService;
-
-    /**
-     * @var CoreApplicationRouter
-     */
-    private $coreApplicationRouter;
+    private $coreApplicationHttpClient;
 
     /**
      * @param EntityManagerInterface $entityManager
-     * @param WebResourceService $webResourceService
      * @param TaskOutputResultParserFactory $taskOutputResultParserFactory
-     * @param CoreApplicationRouter $coreApplicationRouter
+     * @param CoreApplicationHttpClient $coreApplicationHttpClient
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        WebResourceService $webResourceService,
         TaskOutputResultParserFactory $taskOutputResultParserFactory,
-        CoreApplicationRouter $coreApplicationRouter
+        CoreApplicationHttpClient $coreApplicationHttpClient
     ) {
-        parent::__construct($webResourceService);
         $this->entityManager = $entityManager;
         $this->taskOutputResultParserService = $taskOutputResultParserFactory;
 
         $this->taskRepository = $this->entityManager->getRepository(Task::class);
         $this->taskOutputRepository = $this->entityManager->getRepository(Output::class);
 
-        $this->httpClientService = $this->webResourceService->getHttpClientService();
-        $this->coreApplicationRouter = $coreApplicationRouter;
+        $this->coreApplicationHttpClient = $coreApplicationHttpClient;
     }
 
     /**
      * @param Test $test
      * @param array|null $remoteTaskIds
+     *
      * @return Task[]
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function getCollection(Test $test, $remoteTaskIds = null)
     {
@@ -149,13 +148,12 @@ class TaskService extends CoreApplicationService
         }
 
         if (count($tasksToRetrieve)) {
-            $remoteTasksObject = $this->retrieveRemoteCollection($test, $tasksToRetrieve);
-
+            $remoteTaskDataCollection = $this->retrieveRemoteCollection($test, $tasksToRetrieve);
             $outputs = [];
 
-            foreach ($remoteTasksObject as $remoteTaskObject) {
-                if (isset($remoteTaskObject->output)) {
-                    $outputs[] = $this->populateOutputFromRemoteOutputObject($remoteTaskObject);
+            foreach ($remoteTaskDataCollection as $remoteTaskData) {
+                if (array_key_exists('output', $remoteTaskData)) {
+                    $outputs[] = $this->populateOutputFromRemoteTaskData($remoteTaskData);
                 }
             }
 
@@ -171,10 +169,12 @@ class TaskService extends CoreApplicationService
                 };
             }
 
-            foreach ($remoteTasksObject as $remoteTaskObject) {
-                $task = (isset($tasks[$remoteTaskObject->id])) ? $tasks[$remoteTaskObject->id] : new Task();
+            foreach ($remoteTaskDataCollection as $remoteTaskData) {
+                $remoteTaskId = $remoteTaskData['id'];
+
+                $task = (isset($tasks[$remoteTaskId])) ? $tasks[$remoteTaskId] : new Task();
                 $task->setTest($test);
-                $this->populateFromRemoteTaskObject($task, $remoteTaskObject);
+                $this->populateFromRemoteTaskData($task, $remoteTaskData);
                 $tasks[$task->getTaskId()] = $task;
             }
         }
@@ -277,55 +277,50 @@ class TaskService extends CoreApplicationService
 
     /**
      * @param Task $task
-     * @param \stdClass $remoteTaskObject
+     *
+     * @param array $remoteTaskData
      */
-    private function populateFromRemoteTaskObject(Task $task, \stdClass $remoteTaskObject)
+    private function populateFromRemoteTaskData(Task $task, array $remoteTaskData)
     {
-        $propertyToMethodMap = [
-            'id' => 'setTaskId',
-            'url' => 'setUrl',
-            'state' => 'setState',
-            'worker'=> 'setWorker',
-            'type' => 'setType'
-        ];
+        $task->setTaskId($remoteTaskData['id']);
+        $task->setUrl($remoteTaskData['url']);
+        $task->setState($remoteTaskData['state']);
+        $task->setWorker($remoteTaskData['worker']);
+        $task->setType($remoteTaskData['type']);
 
-        foreach ($propertyToMethodMap as $propertyName => $methodName) {
-            $task->$methodName($remoteTaskObject->$propertyName);
-        }
+        if (array_key_exists('time_period', $remoteTaskData)) {
+            $timePeriodData = $remoteTaskData['time_period'];
 
-        if (isset($remoteTaskObject->time_period)) {
-            $timePeriodObject = $remoteTaskObject->time_period;
-
-            if (isset($timePeriodObject->start_date_time)) {
-                $task->getTimePeriod()->setStartDateTime(new \DateTime($timePeriodObject->start_date_time));
+            if (array_key_exists('start_date_time', $timePeriodData)) {
+                $task->getTimePeriod()->setStartDateTime(new \DateTime($timePeriodData['start_date_time']));
             }
 
-            if (isset($timePeriodObject->end_date_time)) {
-                $task->getTimePeriod()->setEndDateTime(new \DateTime($timePeriodObject->end_date_time));
+            if (array_key_exists('end_date_time', $timePeriodData)) {
+                $task->getTimePeriod()->setEndDateTime(new \DateTime($timePeriodData['end_date_time']));
             }
         }
 
-        if (isset($remoteTaskObject->output)) {
+        if (array_key_exists('output', $remoteTaskData)) {
             if (!$task->hasOutput()) {
-                $task->setOutput($this->populateOutputFromRemoteOutputObject($remoteTaskObject));
+                $task->setOutput($this->populateOutputFromRemoteTaskData($remoteTaskData));
             }
         }
     }
 
     /**
-     * @param \stdClass $remoteTaskObject
+     * @param array $remoteTaskData
      *
      * @return Output
      */
-    private function populateOutputFromRemoteOutputObject($remoteTaskObject)
+    private function populateOutputFromRemoteTaskData(array $remoteTaskData)
     {
-        $remoteOutputObject = $remoteTaskObject->output;
+        $remoteOutputData = $remoteTaskData['output'];
 
         $output = new Output();
-        $output->setContent($remoteOutputObject->output);
-        $output->setType($remoteTaskObject->type);
-        $output->setErrorCount($remoteOutputObject->error_count);
-        $output->setWarningCount($remoteOutputObject->warning_count);
+        $output->setContent($remoteOutputData['output']);
+        $output->setType($remoteTaskData['type']);
+        $output->setErrorCount($remoteOutputData['error_count']);
+        $output->setWarningCount($remoteOutputData['warning_count']);
         $output->generateHash();
 
         $existingOutput = $this->taskOutputRepository->findOneBy([
@@ -341,35 +336,43 @@ class TaskService extends CoreApplicationService
 
     /**
      * @param Test $test
-     * @param int[] $remoteTaskIds
+     * @param $remoteTaskIds
      *
-     * @return \stdClass
+     * @return array
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     private function retrieveRemoteCollection(Test $test, $remoteTaskIds)
     {
-        $requestUrl = $this->coreApplicationRouter->generate('test_tasks', [
-            'canonical_url' => (string)$test->getWebsite(),
-            'test_id' => $test->getTestId(),
-        ]);
-
-        $httpRequest = $this->httpClientService->postRequest($requestUrl, null, [
-            'taskIds' => implode(',', $remoteTaskIds)
-        ]);
-
-        $this->addAuthorisationToRequest($httpRequest);
-
-        /* @var JsonDocument $jsonDocument */
-        $jsonDocument = $this->webResourceService->get($httpRequest);
-
-        return $jsonDocument->getContentObject();
+        return $this->coreApplicationHttpClient->post(
+            'test_tasks',
+            [
+                'canonical_url' => (string)$test->getWebsite(),
+                'test_id' => $test->getTestId(),
+            ],
+            [
+                'taskIds' => implode(',', $remoteTaskIds),
+            ],
+            [
+                CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
+            ]
+        );
     }
 
     /**
      * @param Test $test
      *
      * @return int[]
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function getRemoteTaskIds(Test $test)
     {
@@ -392,6 +395,12 @@ class TaskService extends CoreApplicationService
      * @param int $limit
      *
      * @return int[]
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function getUnretrievedRemoteTaskIds(Test $test, $limit)
     {
@@ -418,23 +427,24 @@ class TaskService extends CoreApplicationService
      *
      * @return int[]
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     private function retrieveRemoteTaskIds(Test $test)
     {
-        $requestUrl = $this->coreApplicationRouter->generate('test_task_ids', [
-            'canonical_url' => (string)$test->getWebsite(),
-            'test_id' => $test->getTestId(),
-        ]);
-
-        $httpRequest = $this->httpClientService->getRequest($requestUrl);
-
-        $this->addAuthorisationToRequest($httpRequest);
-
-        /* @var JsonDocument $jsonDocument */
-        $jsonDocument = $this->webResourceService->get($httpRequest);
-
-        return $jsonDocument->getContentObject();
+        return $this->coreApplicationHttpClient->get(
+            'test_task_ids',
+            [
+                'canonical_url' => (string)$test->getWebsite(),
+                'test_id' => $test->getTestId(),
+            ],
+            [
+                CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
+            ]
+        );
     }
 
     /**
@@ -443,7 +453,11 @@ class TaskService extends CoreApplicationService
      *
      * @return Task|null
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function get(Test $test, $task_id)
     {
