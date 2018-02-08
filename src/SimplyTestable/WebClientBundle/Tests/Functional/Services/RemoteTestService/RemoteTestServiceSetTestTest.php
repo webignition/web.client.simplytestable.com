@@ -2,13 +2,10 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestService;
 
-use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
-use SimplyTestable\WebClientBundle\Services\PlansService;
-use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use webignition\NormalisedUrl\NormalisedUrl;
 
 class RemoteTestServiceSetTestTest extends AbstractRemoteTestServiceTest
@@ -35,10 +32,9 @@ class RemoteTestServiceSetTestTest extends AbstractRemoteTestServiceTest
         $this->test->setTestId(self::REMOTE_TEST_ID);
         $this->test->setWebsite(new NormalisedUrl('http://example.com/'));
 
-        $remoteTestData = new \stdClass();
-        $remoteTestData->id = self::REMOTE_TEST_ID;
-
-        $this->remoteTest = new RemoteTest($remoteTestData);
+        $this->remoteTest = new RemoteTest([
+            'id' => self::REMOTE_TEST_ID,
+        ]);
     }
 
     /**

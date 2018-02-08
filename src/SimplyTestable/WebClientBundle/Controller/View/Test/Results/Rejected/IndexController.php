@@ -48,11 +48,13 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         if ($this->isRejectedDueToCreditLimit($remoteTest)) {
             $userSummary = $userService->getSummary();
             $planConstraints = $userSummary->getPlanConstraints();
+            $planCredits = $planConstraints->credits;
 
-            $cacheValidatorParameters['limits'] =
-                $remoteTest->getRejection()->getConstraint()->limit . ':' . $planConstraints->credits->limit;
-            $cacheValidatorParameters['credits_remaining'] =
-                $planConstraints->credits->limit - $planConstraints->credits->used;
+            $rejection = $remoteTest->getRejection();
+            $constraint = $rejection->getConstraint();
+
+            $cacheValidatorParameters['limits'] = $constraint['limit'] . ':' . $planCredits->limit;
+            $cacheValidatorParameters['credits_remaining'] = $planCredits->limit - $planCredits->used;
         }
 
         $response = $cacheValidatorService->createResponse($request, $cacheValidatorParameters);
@@ -115,10 +117,14 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
      */
     private function isRejectedDueToCreditLimit(RemoteTest $remoteTest)
     {
-        if ($remoteTest->getRejection()->getReason() != 'plan-constraint-limit-reached') {
+        $rejection = $remoteTest->getRejection();
+
+        if ('plan-constraint-limit-reached' !== $rejection->getReason()) {
             return false;
         }
 
-        return $remoteTest->getRejection()->getConstraint()->name == 'credits_per_month';
+        $constraint = $rejection->getConstraint();
+
+        return 'credits_per_month' === $constraint['name'];
     }
 }
