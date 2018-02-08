@@ -215,9 +215,9 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
 
             $label .= sprintf(
                 ': %s pages examined, %s of %s found',
-                $remoteTestCrawl->processed_url_count,
-                $remoteTestCrawl->discovered_url_count,
-                $remoteTestCrawl->limit
+                $remoteTestCrawl['processed_url_count'],
+                $remoteTestCrawl['discovered_url_count'],
+                $remoteTestCrawl['limit']
             );
         }
 

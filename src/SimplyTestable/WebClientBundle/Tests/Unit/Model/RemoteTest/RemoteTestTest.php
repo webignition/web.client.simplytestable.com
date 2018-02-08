@@ -309,44 +309,6 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider getParametersDataProvider
-     *
-     * @param array $remoteTestData
-     * @param array $expectedParameters
-     */
-    public function testGetParameters(array $remoteTestData, array $expectedParameters)
-    {
-        $remoteTest = new RemoteTest($remoteTestData);
-
-        $parameters = $remoteTest->getParameters();
-
-        $this->assertEquals($expectedParameters, (array)$parameters);
-    }
-
-    /**
-     * @return array
-     */
-    public function getParametersDataProvider()
-    {
-        return [
-            'no parameters' => [
-                'remoteTestData' => [],
-                'expectedParameters' => [],
-            ],
-            'has parameters' => [
-                'remoteTestData' => [
-                    'parameters' => json_encode([
-                        'foo' => 'bar',
-                    ]),
-                ],
-                'expectedParameters' => [
-                    'foo' => 'bar',
-                ],
-            ],
-        ];
-    }
-
-    /**
      * @dataProvider getParameterDataProvider
      *
      * @param array $remoteTestData
@@ -518,42 +480,6 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
                 'expectedCrawlData' => [
                     'id' => 1,
                 ],
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider hasCrawlDataProvider
-     *
-     * @param array $remoteTestData
-     * @param bool $expectedHasCrawl
-     */
-    public function testHasCrawl(array $remoteTestData, $expectedHasCrawl)
-    {
-        $remoteTest = new RemoteTest($remoteTestData);
-
-        $hasCrawl = $remoteTest->hasCrawl();
-
-        $this->assertEquals($expectedHasCrawl, $hasCrawl);
-    }
-
-    /**
-     * @return array
-     */
-    public function hasCrawlDataProvider()
-    {
-        return [
-            'no crawl data' => [
-                'remoteTestData' => [],
-                'expectedHasCrawl' => false,
-            ],
-            'has crawl data' => [
-                'remoteTestData' => [
-                    'crawl' => [
-                        'id' => 1,
-                    ],
-                ],
-                'expectedHasCrawl' => true,
             ],
         ];
     }

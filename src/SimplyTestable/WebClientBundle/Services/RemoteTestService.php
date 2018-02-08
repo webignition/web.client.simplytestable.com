@@ -220,7 +220,7 @@ class RemoteTestService extends CoreApplicationService
             $remoteJsonDocument = $this->webResourceService->get($httpRequest);
 
             if ($remoteJsonDocument instanceof JsonDocument) {
-                $this->remoteTest = new RemoteTest($remoteJsonDocument->getContentObject());
+                $this->remoteTest = new RemoteTest($remoteJsonDocument->getContentArray());
             } else {
                 $this->remoteTest = false;
             }

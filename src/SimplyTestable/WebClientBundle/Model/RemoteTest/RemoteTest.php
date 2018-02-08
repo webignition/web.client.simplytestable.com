@@ -31,8 +31,9 @@ class RemoteTest extends AbstractStandardObject
     public function getState()
     {
         $state = $this->getProperty('state');
+        $crawlData = $this->getCrawl();
 
-        if (Test::STATE_FAILED_NO_SITEMAP === $state && $this->hasCrawl()) {
+        if (Test::STATE_CRAWLING === $state && !empty($crawlData)) {
             return Test::STATE_CRAWLING;
         }
 
@@ -126,23 +127,15 @@ class RemoteTest extends AbstractStandardObject
     }
 
     /**
-     * @return array
-     */
-    public function getParameters()
-    {
-        return $this->hasProperty('parameters')
-            ? json_decode($this->getProperty('parameters'), true)
-            : [];
-    }
-
-    /**
      * @param string $key
      *
      * @return mixed
      */
     public function getParameter($key)
     {
-        $parameters = $this->getParameters();
+        $parameters = $this->hasProperty('parameters')
+            ? json_decode($this->getProperty('parameters'), true)
+            : [];
 
         return array_key_exists($key, $parameters)
             ? $parameters[$key]
@@ -204,19 +197,13 @@ class RemoteTest extends AbstractStandardObject
     }
 
     /**
-     * @return bool
-     */
-    public function hasCrawl()
-    {
-        return !is_null($this->getCrawl());
-    }
-
-    /**
      * @return int|float
      */
     public function getCompletionPercent()
     {
-        if (Test::STATE_CRAWLING === $this->getState() && $this->hasCrawl()) {
+        $crawlData = $this->getCrawl();
+
+        if (Test::STATE_CRAWLING === $this->getState() && !empty($crawlData)) {
             $crawl = $this->getCrawl();
             $discoveredUrlCount = $crawl['discovered_url_count'];
 

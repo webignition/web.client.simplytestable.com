@@ -158,8 +158,9 @@ class TestController extends Controller
         try {
             $test = $testService->get($website, $test_id);
             $remoteTest = $remoteTestService->get();
+            $crawlData = $remoteTest->getCrawl();
 
-            $remoteTestService->cancelByTestProperties($remoteTest->getCrawl()->id, $test->getWebsite());
+            $remoteTestService->cancelByTestProperties($crawlData['id'], $test->getWebsite());
         } catch (WebResourceException $webResourceException) {
             // Nothing happens, we redirect to the test progress page regardless
         } catch (CurlException $curlException) {
