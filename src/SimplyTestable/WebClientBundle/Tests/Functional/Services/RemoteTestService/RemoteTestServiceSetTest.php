@@ -8,8 +8,7 @@ class RemoteTestServiceSetTest extends AbstractRemoteTestServiceTest
 {
     public function testSet()
     {
-        $remoteTestData = new \stdClass();
-        $remoteTest = new RemoteTest($remoteTestData);
+        $remoteTest = new RemoteTest([]);
 
         $this->remoteTestService->set($remoteTest);
 

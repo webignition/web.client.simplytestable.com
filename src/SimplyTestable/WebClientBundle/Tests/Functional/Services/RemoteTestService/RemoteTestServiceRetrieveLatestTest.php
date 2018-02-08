@@ -42,10 +42,9 @@ class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
      */
     public function retrieveLatestDataProvider()
     {
-        $remoteTestData = new \stdClass();
-        $remoteTestData->id = 1;
-
-        $remoteTest = new RemoteTest($remoteTestData);
+        $remoteTest = new RemoteTest([
+            'id' => 1,
+        ]);
 
         return [
             'HTTP 404' => [

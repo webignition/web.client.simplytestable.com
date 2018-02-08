@@ -451,12 +451,13 @@ class RemoteTestService extends CoreApplicationService
         try {
             /* @var $responseDocument JsonDocument */
             $responseDocument = $this->webResourceService->get($request);
+            $responseData = $responseDocument->getContentArray();
 
-            $list->setMaxResults($responseDocument->getContentObject()->max_results);
-            $list->setLimit($responseDocument->getContentObject()->limit);
-            $list->setOffset($responseDocument->getContentObject()->offset);
+            $list->setMaxResults($responseData['max_results']);
+            $list->setLimit($responseData['limit']);
+            $list->setOffset($responseData['offset']);
 
-            foreach ($responseDocument->getContentObject()->jobs as $remoteTestData) {
+            foreach ($responseData['jobs'] as $remoteTestData) {
                 $list->addRemoteTest(new RemoteTest($remoteTestData));
             }
         } catch (CurlException $curlException) {
@@ -484,7 +485,7 @@ class RemoteTestService extends CoreApplicationService
             $remoteJsonDocument = $this->webResourceService->get($request);
 
             if ($remoteJsonDocument instanceof JsonDocument) {
-                return new RemoteTest($remoteJsonDocument->getContentObject());
+                return new RemoteTest($remoteJsonDocument->getContentArray());
             }
         } catch (CurlException $curlException) {
             // Intentionally swallow
