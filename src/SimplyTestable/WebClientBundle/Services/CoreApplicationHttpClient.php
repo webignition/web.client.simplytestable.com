@@ -27,8 +27,6 @@ class CoreApplicationHttpClient
 
     const ROUTE_PARAMETER_USER_PLACEHOLDER = '{{ user }}';
 
-    const AS_ADMIN = true;
-
     /**
      * @var CoreApplicationRouter
      */
