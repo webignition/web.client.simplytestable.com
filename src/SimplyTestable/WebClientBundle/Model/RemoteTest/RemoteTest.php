@@ -1,16 +1,16 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Model\RemoteTest;
 
+use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\TimePeriod;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Doctrine\Common\Collections\ArrayCollection;
 
-class RemoteTest extends AbstractStandardObject {
-    
-    
+class RemoteTest extends AbstractStandardObject
+{
     /**
-     *
-     * @var array
+     * @var string[]
      */
     private $taskFinishedStates = array(
         'cancelled',
@@ -19,155 +19,151 @@ class RemoteTest extends AbstractStandardObject {
         'skipped'
     );
 
-
     /**
      * @var ArrayCollection
      */
     private $owners = null;
-    
-    
+
     /**
-     * 
+     *
      * @return string
      */
-    public function getState() {
+    public function getState()
+    {
         $state = $this->getProperty('state');
-        
-        if ($state == 'failed-no-sitemap' && $this->hasCrawl()) {
-            return 'crawling';
+
+        if (Test::STATE_FAILED_NO_SITEMAP === $state && $this->hasCrawl()) {
+            return Test::STATE_CRAWLING;
         }
-        
+
         return $state;
     }
-    
-    
+
     /**
-     * 
      * @return string
      */
-    public function getType() {
+    public function getType()
+    {
         return $this->getProperty('type');
     }
-    
+
     /**
-     * 
      * @return int|null
      */
-    public function getUrlCount() {        
+    public function getUrlCount()
+    {
         return $this->getProperty('url_count');
     }
-    
-    
-    
+
     /**
-     * 
      * @return int|null
      */
-    public function getTaskCount() {
-        return $this->getProperty('task_count');      
+    public function getTaskCount()
+    {
+        $taskCount = $this->getProperty('task_count');
+
+        return empty($taskCount) ? 0 : $taskCount;
     }
-    
-    
+
     /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Entity\TimePeriod|null
+     * @return TimePeriod|null
      */
-    public function getTimePeriod() {
+    public function getTimePeriod()
+    {
         if (!$this->hasProperty('time_period')) {
             return null;
         }
-        
-        $remoteTimePeriod = $this->getProperty('time_period');
-        
+
+        $remoteTimePeriodData = $this->getProperty('time_period');
+
         $timePeriod = new TimePeriod();
-        
-        if (isset($remoteTimePeriod->start_date_time)) {
-            $timePeriod->setStartDateTime(new \DateTime($remoteTimePeriod->start_date_time));
+
+        if (array_key_exists('start_date_time', $remoteTimePeriodData)) {
+            $timePeriod->setStartDateTime(new \DateTime($remoteTimePeriodData['start_date_time']));
         }
-        
-        if (isset($remoteTimePeriod->end_date_time)) {
-            $timePeriod->setEndDateTime(new \DateTime($remoteTimePeriod->end_date_time));
-        } 
-        
+
+        if (array_key_exists('end_date_time', $remoteTimePeriodData)) {
+            $timePeriod->setEndDateTime(new \DateTime($remoteTimePeriodData['end_date_time']));
+        }
+
         return $timePeriod;
     }
-    
-    
+
     /**
-     * 
      * @return array
      */
-    public function getTaskTypes() {
-        $taskTypes = array();
-        
-        foreach ($this->getSource()->task_types as $taskTypeObject) {
-            $taskTypes[] = $taskTypeObject->name;
-        }        
-        
+    public function getTaskTypes()
+    {
+        $taskTypes = [];
+
+        foreach ($this->source['task_types'] as $taskTypeData) {
+            $taskTypes[] = $taskTypeData['name'];
+        }
+
         return $taskTypes;
     }
-    
-    
-    
+
     /**
-     * 
-     * @return \Symfony\Component\HttpFoundation\ParameterBag
+     * @return ParameterBag
      */
-    public function getOptions() {
-        $parameterBag = new \Symfony\Component\HttpFoundation\ParameterBag();
-        
+    public function getOptions()
+    {
+        $parameterBag = new ParameterBag();
+
         foreach ($this->getTaskTypes() as $taskType) {
             $parameterBag->set(strtolower(str_replace(' ', '-', $taskType)), 1);
         }
-        
-        foreach ($this->getSource()->task_type_options as $taskType => $taskTypeOptions) {
+
+        foreach ($this->source['task_type_options'] as $taskType => $taskTypeOptions) {
             $taskTypeKey = strtolower(str_replace(' ', '-', $taskType));
-            
+
             foreach ($taskTypeOptions as $taskTypeOptionKey => $taskTypeOptionValue) {
                 $parameterBag->set($taskTypeKey . '-' . $taskTypeOptionKey, $taskTypeOptionValue);
             }
         }
-        
-        return $parameterBag;        
-    } 
-    
-    
-    /**
-     * 
-     * @return \stdClass
-     */
-    public function getParameters() {
-        return ($this->hasProperty('parameters')) ? json_decode($this->getProperty('parameters')) : new \stdClass();
+
+        return $parameterBag;
     }
-    
-    
+
     /**
-     * 
+     * @return array
+     */
+    public function getParameters()
+    {
+        return $this->hasProperty('parameters')
+            ? json_decode($this->getProperty('parameters'), true)
+            : [];
+    }
+
+    /**
      * @param string $key
+     *
      * @return mixed
      */
-    public function getParameter($key) {
+    public function getParameter($key)
+    {
         $parameters = $this->getParameters();
-        return (isset($parameters->$key)) ? $parameters->$key : null;        
+
+        return array_key_exists($key, $parameters)
+            ? $parameters[$key]
+            : null;
     }
-    
-    
+
     /**
-     * 
      * @param string $key
-     * @return boolean
+     * @return bool
      */
-    public function hasParameter($key) {
+    public function hasParameter($key)
+    {
         return !is_null($this->getParameter($key));
     }
-    
-    
+
     /**
-     *
-     * @return array 
+     * @return array
      */
-    public function getTaskCountByState() {        
-        $taskStates = array(
+    public function getTaskCountByState()
+    {
+        $taskStates = [
             'in-progress' => 'in_progress',
             'queued' => 'queued',
             'queued-for-assignment' => 'queued',
@@ -179,266 +175,226 @@ class RemoteTest extends AbstractStandardObject {
             'failed-retry-available' => 'failed',
             'failed-retry-limit-reached' => 'failed',
             'skipped' => 'skipped'
-        );
-        
-        $taskCountByState = array();        
-        
+        ];
+
+        $taskCountByState = [];
+        $taskCountByStateData = array_key_exists('task_count_by_state', $this->source)
+            ? $this->source['task_count_by_state']
+            : [];
+
         foreach ($taskStates as $taskState => $translatedState) {
             if (!isset($taskCountByState[$translatedState])) {
                 $taskCountByState[$translatedState] = 0;
             }
-            
-            if (isset($this->getSource()->task_count_by_state->$taskState)) {
-                $taskCountByState[$translatedState] += $this->getSource()->task_count_by_state->$taskState;
-            }            
+
+            if (array_key_exists($taskState, $taskCountByStateData)) {
+                $taskCountByState[$translatedState] += $taskCountByStateData[$taskState];
+            }
         }
-        
+
         return $taskCountByState;
-    } 
-    
-    
-    
+    }
+
     /**
-     * 
-     * @return \stdClass|null
+     * @return array|null
      */
-    public function getCrawl() {
+    public function getCrawl()
+    {
         return $this->getProperty('crawl');
     }
-    
-    
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function hasCrawl() {
+    public function hasCrawl()
+    {
         return !is_null($this->getCrawl());
     }
-    
-    
+
     /**
-     *
-     * @return int 
+     * @return int|float
      */
-    public function getCompletionPercent() {
-        if ($this->getState() === 'crawling' && $this->hasCrawl()) {            
-            $crawl = $this->getCrawl();            
-            if ($crawl->discovered_url_count === 0) {
+    public function getCompletionPercent()
+    {
+        if (Test::STATE_CRAWLING === $this->getState() && $this->hasCrawl()) {
+            $crawl = $this->getCrawl();
+            $discoveredUrlCount = $crawl['discovered_url_count'];
+
+            if (0 === $discoveredUrlCount) {
                 return 0;
             }
-            
-            return round(($crawl->discovered_url_count / $crawl->limit) * 100);
+
+            return round(($discoveredUrlCount / $crawl['limit']) * 100);
         }
-        
-        if ($this->getTaskCount() === 0) {
+
+        if (0 === $this->getTaskCount()) {
             return 0;
         }
-        
+
         $finishedCount = 0;
         foreach ($this->getTaskCountByState() as $stateName => $taskCount) {
             if (in_array($stateName, $this->taskFinishedStates)) {
                 $finishedCount += $taskCount;
             }
         }
-        
-        if ($finishedCount == $this->getTaskCount()) {
+
+        if ($finishedCount === $this->getTaskCount()) {
             return 100;
-        }   
-        
+        }
+
         $requiredPrecision = floor(log10($this->getTaskCount())) - 1;
-        
+
         if ($requiredPrecision == 0) {
             return floor(($finishedCount / $this->getTaskCount()) * 100);
-        }        
-        
-        return round(($finishedCount / $this->getTaskCount()) * 100, $requiredPrecision);         
-    }    
-    
-    
+        }
 
-    
-    
-    
+        return round(($finishedCount / $this->getTaskCount()) * 100, $requiredPrecision);
+    }
+
     /**
-     * 
      * @return array
      */
-    public function __toArray() {        
-        $remoteTestArray = (array)$this->getSource();
-        
-        foreach ($remoteTestArray as $key => $value) {            
-            if ($value instanceof \stdClass){
-                $remoteTestArray[$key] = get_object_vars($value);
-            }
-        }
-        
-        $remoteTestArray['task_count_by_state'] = $this->getTaskCountByState();
-        $remoteTestArray['completion_percent'] = $this->getCompletionPercent();
-        
-        if (isset($remoteTestArray['task_type_options'])) {
-            foreach ($remoteTestArray['task_type_options'] as $testType => $testTypeOptions) {
-                $remoteTestArray['task_type_options'][$testType] = get_object_vars($testTypeOptions);
-            }
-        }
-        
-        if (isset($remoteTestArray['ammendments'])) {
-            $remoteTestArray['ammendments'] = array();
-            
-            foreach ($this->getSource()->ammendments as $ammendment) {
-                $ammendmentArray = (array)$ammendment;                
-                if (isset($ammendment->constraint)) {
-                    $ammendmentArray['constraint'] = (array)$ammendment->constraint;
-                }                
-                
-                $remoteTestArray['ammendments'][] = $ammendmentArray;
-            }
-        }
-        
-        return $remoteTestArray;
+    public function __toArray()
+    {
+        return array_merge(
+            $this->source,
+            [
+                'task_count_by_state' => $this->getTaskCountByState(),
+                'completion_percent' => $this->getCompletionPercent(),
+            ]
+        );
     }
-    
-    
+
     /**
-     * 
      * @return string
      */
-    public function getUser() {
+    public function getUser()
+    {
         return $this->getProperty('user');
     }
-    
-    
-    /**
-     * 
-     * @return boolean
-     */
-    public function getIsPublic() {        
-        return $this->getProperty('is_public');
-    }
-    
-    
-    
-    /**
-     * 
-     * @return int
-     */
-    public function getErroredTaskCount() {
-        return $this->getProperty('errored_task_count');
-    }
-    
-    
-    /**
-     * 
-     * @return int
-     */
-    public function getCancelledTaskCount() {
-        return $this->getProperty('cancelled_task_count');
-    }
-    
 
     /**
-     * 
+     * @return bool
+     */
+    public function getIsPublic()
+    {
+        return $this->getProperty('is_public');
+    }
+
+    /**
      * @return int
      */
-    public function getSkippedTaskCount() {
+    public function getErroredTaskCount()
+    {
+        return $this->getProperty('errored_task_count');
+    }
+
+    /**
+     * @return int
+     */
+    public function getCancelledTaskCount()
+    {
+        return $this->getProperty('cancelled_task_count');
+    }
+
+    /**
+     * @return int
+     */
+    public function getSkippedTaskCount()
+    {
         return $this->getProperty('skipped_task_count');
     }
-    
-    
+
     /**
-     * 
      * @return int
      */
-    public function getWarningedTaskCount() {
+    public function getWarningedTaskCount()
+    {
         return $this->getProperty('warninged_task_count');
     }
-    
-    
+
     /**
-     * 
      * @return int
      */
-    public function getErrorFreeTaskCount() {        
+    public function getErrorFreeTaskCount()
+    {
         return $this->getTaskCount() - $this->getErroredTaskCount() - $this->getCancelledTaskCount();
     }
-    
-    
+
     /**
-     * 
      * @return string
      */
-    public function getWebsite() {
+    public function getWebsite()
+    {
         return $this->getProperty('website');
     }
-    
-    
+
     /**
-     * 
      * @return int
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->getProperty('id');
     }
-    
-    
+
     /**
-     * 
      * @return array
      */
-    public function getAmmendments() {
+    public function getAmmendments()
+    {
         return $this->getProperty('ammendments');
     }
-    
-    
-    
+
     /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Model\RemoteTest\Rejection
+     * @return Rejection
      */
-    public function getRejection() {
+    public function getRejection()
+    {
         if (!$this->hasProperty('rejection')) {
             return null;
         }
-        
+
         return new Rejection($this->getProperty('rejection'));
     }
-    
-    
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function hasRejection() {
+    public function hasRejection()
+    {
         return !is_null($this->getRejection());
     }
-    
-    
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function isFullSite() {
-        return $this->getType() == 'Full site';
-    }
-    
-    
-    /**
-     * 
-     * @return boolean
-     */
-    public function isSingleUrl() {
-        return $this->getType() == 'Single URL';
+    public function isFullSite()
+    {
+        return Test::TYPE_FULL_SITE === $this->getType();
     }
 
+    /**
+     * @return bool
+     */
+    public function isSingleUrl()
+    {
+        return Test::TYPE_SINGLE_URL === $this->getType();
+    }
 
     /**
      * @return ArrayCollection
      */
-    public function getOwners() {
+    public function getOwners()
+    {
         if (is_null($this->owners)) {
-            $this->owners = new ArrayCollection(is_array($this->getProperty('owners')) ? $this->getProperty('owners') : []);
+            $ownersData = $this->getProperty('owners');
+            $ownersList = empty($ownersData)
+                ? []
+                : $ownersData;
+
+            $this->owners = new ArrayCollection($ownersList);
         }
 
         return $this->owners;
     }
-    
 }

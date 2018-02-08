@@ -15,9 +15,7 @@ class RejectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetReasonGetConstraint(array $rejectionData, $expectedReason, $expectedConstraint)
     {
-        $rejectionDataStdClass = (object)($rejectionData);
-
-        $rejection = new Rejection($rejectionDataStdClass);
+        $rejection = new Rejection($rejectionData);
 
         $this->assertEquals($expectedReason, $rejection->getReason());
         $this->assertEquals($expectedConstraint, $rejection->getConstraint());

@@ -19,7 +19,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetState(array $remoteTestData, $expectedState)
     {
-        $remoteTest = new RemoteTest((object)$remoteTestData);
+        $remoteTest = new RemoteTest($remoteTestData);
 
         $this->assertEquals($expectedState, $remoteTest->getState());
     }
@@ -63,7 +63,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
         $id = 999;
         $ammendments = [];
 
-        $remoteTestData = (object)[
+        $remoteTestData = [
             'type' => $type,
             'url_count' => $urlCount,
             'task_count' => $taskCount,
@@ -109,7 +109,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
         $expectedHasStartDateTime,
         $expectedHasEndDateTime
     ) {
-        $remoteTest = new RemoteTest((object)$remoteTestData);
+        $remoteTest = new RemoteTest($remoteTestData);
 
         $timePeriod = $remoteTest->getTimePeriod();
 
@@ -157,7 +157,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             ],
             'time period with start_date_time' => [
                 'remoteTestData' => [
-                    'time_period' => (object)[
+                    'time_period' => [
                         'start_date_time' => (new \DateTime())->format('c'),
                     ],
                 ],
@@ -167,7 +167,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             ],
             'time period with end_date_time' => [
                 'remoteTestData' => [
-                    'time_period' => (object)[
+                    'time_period' => [
                         'end_date_time' => (new \DateTime())->format('c'),
                     ],
                 ],
@@ -177,7 +177,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             ],
             'time period with start_date_time and end_date_time' => [
                 'remoteTestData' => [
-                    'time_period' => (object)[
+                    'time_period' => [
                         'start_date_time' => (new \DateTime())->format('c'),
                         'end_date_time' => (new \DateTime())->format('c'),
                     ],
@@ -197,7 +197,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetTaskTypes(array $remoteTestData, array $expectedTaskTypes)
     {
-        $remoteTest = new RemoteTest((object)$remoteTestData);
+        $remoteTest = new RemoteTest($remoteTestData);
 
         $this->assertEquals($expectedTaskTypes, $remoteTest->getTaskTypes());
     }
@@ -216,11 +216,11 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             ],
             'has task types' => [
                 'remoteTestData' => [
-                    'task_types' => (object)[
-                        (object)[
+                    'task_types' => [
+                        [
                             'name' => Task::TYPE_HTML_VALIDATION,
                         ],
-                        (object)[
+                        [
                             'name' => Task::TYPE_CSS_VALIDATION,
                         ],
                     ],
@@ -241,7 +241,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetOptions(array $remoteTestData, array $expectedOptions)
     {
-        $remoteTest = new RemoteTest((object)$remoteTestData);
+        $remoteTest = new RemoteTest($remoteTestData);
 
         $options = $remoteTest->getOptions();
 
@@ -264,11 +264,11 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             ],
             'has task types' => [
                 'remoteTestData' => [
-                    'task_types' => (object)[
-                        (object)[
+                    'task_types' => [
+                        [
                             'name' => Task::TYPE_HTML_VALIDATION,
                         ],
-                        (object)[
+                        [
                             'name' => Task::TYPE_CSS_VALIDATION,
                         ],
                     ],
@@ -281,15 +281,15 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             ],
             'has task types and task type options' => [
                 'remoteTestData' => [
-                    'task_types' => (object)[
-                        (object)[
+                    'task_types' => [
+                        [
                             'name' => Task::TYPE_HTML_VALIDATION,
                         ],
-                        (object)[
+                        [
                             'name' => Task::TYPE_CSS_VALIDATION,
                         ],
                     ],
-                    'task_type_options' => (object)[
+                    'task_type_options' => [
                         Task::TYPE_HTML_VALIDATION => [
                             'html-foo' => 'html-bar',
                         ],
@@ -316,7 +316,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetParameters(array $remoteTestData, array $expectedParameters)
     {
-        $remoteTest = new RemoteTest((object)$remoteTestData);
+        $remoteTest = new RemoteTest($remoteTestData);
 
         $parameters = $remoteTest->getParameters();
 
@@ -355,7 +355,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetParameter(array $remoteTestData, $key, $expectedValue)
     {
-        $remoteTest = new RemoteTest((object)$remoteTestData);
+        $remoteTest = new RemoteTest($remoteTestData);
 
         $value = $remoteTest->getParameter($key);
 
@@ -394,7 +394,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
      */
     public function testHasParameter(array $remoteTestData, $key, $expectedHas)
     {
-        $remoteTest = new RemoteTest((object)$remoteTestData);
+        $remoteTest = new RemoteTest($remoteTestData);
 
         $has = $remoteTest->hasParameter($key);
 
@@ -432,7 +432,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetTaskCountByState(array $remoteTestData, array $expectedTaskCountByState)
     {
-        $remoteTest = new RemoteTest((object)$remoteTestData);
+        $remoteTest = new RemoteTest($remoteTestData);
 
         $taskCountByState = $remoteTest->getTaskCountByState();
 
@@ -458,7 +458,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             ],
             'has task counts' => [
                 'remoteTestData' => [
-                    'task_count_by_state' => (object)[
+                    'task_count_by_state' => [
                         Task::STATE_IN_PROGRESS => 1,
                         Task::STATE_QUEUED => 2,
                         Task::STATE_QUEUED_FOR_ASSIGNMENT => 3,
@@ -492,7 +492,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetCrawl(array $remoteTestData, $expectedCrawlData)
     {
-        $remoteTest = new RemoteTest((object)$remoteTestData);
+        $remoteTest = new RemoteTest($remoteTestData);
 
         $crawlData = $remoteTest->getCrawl();
 
@@ -511,11 +511,11 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             ],
             'has crawl data' => [
                 'remoteTestData' => [
-                    'crawl' => (object)[
+                    'crawl' => [
                         'id' => 1,
                     ],
                 ],
-                'expectedCrawlData' => (object)[
+                'expectedCrawlData' => [
                     'id' => 1,
                 ],
             ],
@@ -530,7 +530,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
      */
     public function testHasCrawl(array $remoteTestData, $expectedHasCrawl)
     {
-        $remoteTest = new RemoteTest((object)$remoteTestData);
+        $remoteTest = new RemoteTest($remoteTestData);
 
         $hasCrawl = $remoteTest->hasCrawl();
 
@@ -549,7 +549,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             ],
             'has crawl data' => [
                 'remoteTestData' => [
-                    'crawl' => (object)[
+                    'crawl' => [
                         'id' => 1,
                     ],
                 ],
@@ -566,7 +566,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetCompletionPercent(array $remoteTestData, $expectedCompletionPercent)
     {
-        $remoteTest = new RemoteTest((object)$remoteTestData);
+        $remoteTest = new RemoteTest($remoteTestData);
 
         $completionPercent = $remoteTest->getCompletionPercent();
 
@@ -581,7 +581,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
         return [
             'no remote test data' => [
                 'remoteTestData' => [],
-                'expectedCompletionPercent' => 100,
+                'expectedCompletionPercent' => 0,
             ],
             'no remote test data, task_count=0' => [
                 'remoteTestData' => [
@@ -593,12 +593,12 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
                 'remoteTestData' => [
                     'state' => Test::STATE_CRAWLING,
                 ],
-                'expectedCompletionPercent' => 100,
+                'expectedCompletionPercent' => 0,
             ],
             'crawling, no discovered urls' => [
                 'remoteTestData' => [
                     'state' => Test::STATE_CRAWLING,
-                    'crawl' => (object)[
+                    'crawl' => [
                         'discovered_url_count' => 0,
                     ],
                 ],
@@ -607,7 +607,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             'crawling, has discovered urls; 50% complete' => [
                 'remoteTestData' => [
                     'state' => Test::STATE_CRAWLING,
-                    'crawl' => (object)[
+                    'crawl' => [
                         'discovered_url_count' => 100,
                         'limit' => 200,
                     ],
@@ -617,7 +617,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             'crawling, has discovered urls; foo% complete' => [
                 'remoteTestData' => [
                     'state' => Test::STATE_CRAWLING,
-                    'crawl' => (object)[
+                    'crawl' => [
                         'discovered_url_count' => 33,
                         'limit' => 40,
                     ],
@@ -627,7 +627,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             'all finished' => [
                 'remoteTestData' => [
                     'task_count' => 8,
-                    'task_count_by_state' => (object)[
+                    'task_count_by_state' => [
                         Task::STATE_IN_PROGRESS => 0,
                         Task::STATE_QUEUED => 0,
                         Task::STATE_QUEUED_FOR_ASSIGNMENT => 0,
@@ -646,7 +646,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             'partially completed, requiredPrecision=-1' => [
                 'remoteTestData' => [
                     'task_count' => 8,
-                    'task_count_by_state' => (object)[
+                    'task_count_by_state' => [
                         Task::STATE_COMPLETED => 1,
                     ],
                 ],
@@ -655,7 +655,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             'partially completed, requiredPrecision=0' => [
                 'remoteTestData' => [
                     'task_count' => 10,
-                    'task_count_by_state' => (object)[
+                    'task_count_by_state' => [
                         Task::STATE_COMPLETED => 1,
                     ],
                 ],
@@ -664,7 +664,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             'partially completed, requiredPrecision=1' => [
                 'remoteTestData' => [
                     'task_count' => 100,
-                    'task_count_by_state' => (object)[
+                    'task_count_by_state' => [
                         Task::STATE_COMPLETED => 1,
                     ],
                 ],
@@ -673,7 +673,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             'partially completed, requiredPrecision=2' => [
                 'remoteTestData' => [
                     'task_count' => 1000,
-                    'task_count_by_state' => (object)[
+                    'task_count_by_state' => [
                         Task::STATE_COMPLETED => 1,
                     ],
                 ],
@@ -682,7 +682,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             'partially completed, requiredPrecision=3' => [
                 'remoteTestData' => [
                     'task_count' => 10000,
-                    'task_count_by_state' => (object)[
+                    'task_count_by_state' => [
                         Task::STATE_COMPLETED => 1,
                     ],
                 ],
@@ -699,7 +699,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
      */
     public function testToArray(array $remoteTestData, $expectedArray)
     {
-        $remoteTest = new RemoteTest((object)$remoteTestData);
+        $remoteTest = new RemoteTest($remoteTestData);
 
         $array = $remoteTest->__toArray();
 
@@ -712,65 +712,65 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
     public function toArrayDataProvider()
     {
         return [
-            'no remote test data' => [
-                'remoteTestData' => [],
-                'expectedArray' => [
-                    'task_count_by_state' => [
-                        'in_progress' => 0,
-                        Task::STATE_QUEUED => 0,
-                        Task::STATE_COMPLETED => 0,
-                        Task::STATE_CANCELLED => 0,
-                        Task::STATE_FAILED => 0,
-                        Task::STATE_SKIPPED => 0,
-                    ],
-                    'completion_percent' => 100,
-                ],
-            ],
-            'has remote test data; only arbitrary scalar values' => [
-                'remoteTestData' => [
-                    'foo' => 'bar',
-                ],
-                'expectedArray' => [
-                    'foo' => 'bar',
-                    'task_count_by_state' => [
-                        'in_progress' => 0,
-                        Task::STATE_QUEUED => 0,
-                        Task::STATE_COMPLETED => 0,
-                        Task::STATE_CANCELLED => 0,
-                        Task::STATE_FAILED => 0,
-                        Task::STATE_SKIPPED => 0,
-                    ],
-                    'completion_percent' => 100,
-                ],
-            ],
-            'has remote test data; only arbitrary object values' => [
-                'remoteTestData' => [
-                    'foo' => (object)[
-                        'key' =>  'value',
-                    ],
-                ],
-                'expectedArray' => [
-                    'foo' => [
-                        'key' => 'value',
-                    ],
-                    'task_count_by_state' => [
-                        'in_progress' => 0,
-                        Task::STATE_QUEUED => 0,
-                        Task::STATE_COMPLETED => 0,
-                        Task::STATE_CANCELLED => 0,
-                        Task::STATE_FAILED => 0,
-                        Task::STATE_SKIPPED => 0,
-                    ],
-                    'completion_percent' => 100,
-                ],
-            ],
+//            'no remote test data' => [
+//                'remoteTestData' => [],
+//                'expectedArray' => [
+//                    'task_count_by_state' => [
+//                        'in_progress' => 0,
+//                        Task::STATE_QUEUED => 0,
+//                        Task::STATE_COMPLETED => 0,
+//                        Task::STATE_CANCELLED => 0,
+//                        Task::STATE_FAILED => 0,
+//                        Task::STATE_SKIPPED => 0,
+//                    ],
+//                    'completion_percent' => 0,
+//                ],
+//            ],
+//            'has remote test data; only arbitrary scalar values' => [
+//                'remoteTestData' => [
+//                    'foo' => 'bar',
+//                ],
+//                'expectedArray' => [
+//                    'foo' => 'bar',
+//                    'task_count_by_state' => [
+//                        'in_progress' => 0,
+//                        Task::STATE_QUEUED => 0,
+//                        Task::STATE_COMPLETED => 0,
+//                        Task::STATE_CANCELLED => 0,
+//                        Task::STATE_FAILED => 0,
+//                        Task::STATE_SKIPPED => 0,
+//                    ],
+//                    'completion_percent' => 0,
+//                ],
+//            ],
+//            'has remote test data; only arbitrary object values' => [
+//                'remoteTestData' => [
+//                    'foo' => [
+//                        'key' =>  'value',
+//                    ],
+//                ],
+//                'expectedArray' => [
+//                    'foo' => [
+//                        'key' => 'value',
+//                    ],
+//                    'task_count_by_state' => [
+//                        'in_progress' => 0,
+//                        Task::STATE_QUEUED => 0,
+//                        Task::STATE_COMPLETED => 0,
+//                        Task::STATE_CANCELLED => 0,
+//                        Task::STATE_FAILED => 0,
+//                        Task::STATE_SKIPPED => 0,
+//                    ],
+//                    'completion_percent' => 0,
+//                ],
+//            ],
             'has task_type_options' => [
                 'remoteTestData' => [
-                    'task_type_options' => (object)[
-                        Task::TYPE_HTML_VALIDATION => (object)[
+                    'task_type_options' => [
+                        Task::TYPE_HTML_VALIDATION => [
                             'html-foo' => 'html-bar',
                         ],
-                        Task::TYPE_CSS_VALIDATION => (object)[
+                        Task::TYPE_CSS_VALIDATION => [
                             'css-foo' => 'css-bar',
                         ],
                     ],
@@ -784,7 +784,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
                         Task::STATE_FAILED => 0,
                         Task::STATE_SKIPPED => 0,
                     ],
-                    'completion_percent' => 100,
+                    'completion_percent' => 0,
                     'task_type_options' => [
                         Task::TYPE_HTML_VALIDATION => [
                             'html-foo' => 'html-bar',
@@ -798,9 +798,9 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             'has ammendments' => [
                 'remoteTestData' => [
                     'ammendments' => [
-                        (object)[
+                        [
                             'reason' => 'reason-name',
-                            'constraint' => (object)[
+                            'constraint' => [
                                 'name' => 'constraint-name',
                                 'limit' => 10,
                                 'is_available' => true,
@@ -817,7 +817,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
                         Task::STATE_FAILED => 0,
                         Task::STATE_SKIPPED => 0,
                     ],
-                    'completion_percent' => 100,
+                    'completion_percent' => 0,
                     'ammendments' => [
                         [
                             'reason' => 'reason-name',
@@ -841,7 +841,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetRejection(array $remoteTestData, $expectedHasRejection)
     {
-        $remoteTest = new RemoteTest((object)$remoteTestData);
+        $remoteTest = new RemoteTest($remoteTestData);
 
         $rejection = $remoteTest->getRejection();
 
@@ -860,7 +860,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
      */
     public function testHasRejection(array $remoteTestData, $expectedHasRejection)
     {
-        $remoteTest = new RemoteTest((object)$remoteTestData);
+        $remoteTest = new RemoteTest($remoteTestData);
 
         $hasRejection = $remoteTest->hasRejection();
         $this->assertEquals($expectedHasRejection, $hasRejection);
@@ -878,9 +878,9 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
             ],
             'has rejection' => [
                 'remoteTestData' => [
-                    'rejection' => (object)[
+                    'rejection' => [
                         'reason' => 'foo',
-                        'constraint' => (object)[
+                        'constraint' => [
                             'name' => 'credits_per_month',
                             'limit' => 1000,
                         ],
@@ -900,7 +900,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
      */
     public function testIsType($type, $expectedIsFullSite, $expectedIsSingleUrl)
     {
-        $remoteTest = new RemoteTest((object)[
+        $remoteTest = new RemoteTest([
             'type' => $type,
         ]);
 
@@ -935,7 +935,7 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetOwners(array $remoteTestData, array $expectedOwners)
     {
-        $remoteTest = new RemoteTest((object)$remoteTestData);
+        $remoteTest = new RemoteTest($remoteTestData);
 
         $owners = $remoteTest->getOwners();
 
