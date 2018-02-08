@@ -36,30 +36,26 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
     }
 
     /**
-     * @dataProvider requestThrowsExceptionDataProvider
+     * @dataProvider getRequestThrowsExceptionDataProvider
      *
      * @param array $httpFixtures
      * @param array $options
-     * @param string $userName
      * @param string $expectedException
      * @param string $expectedExceptionMessage
      * @param int $expectedExceptionCode
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     public function testGetThrowsException(
         array $httpFixtures,
         array $options,
-        $userName,
         $expectedException,
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->coreApplicationHttpClient->setUser($this->getUserFromUserName($userName));
+        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
@@ -68,11 +64,10 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
     }
 
     /**
-     * @dataProvider requestThrowsExceptionDataProvider
+     * @dataProvider getAsAdminRequestThrowsExceptionDataProvider
      *
      * @param array $httpFixtures
      * @param array $options
-     * @param string $userName
      * @param string $expectedException
      * @param string $expectedExceptionMessage
      * @param int $expectedExceptionCode
@@ -81,17 +76,44 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
+     */
+    public function testGetAsAdminThrowsException(
+        array $httpFixtures,
+        array $options,
+        $expectedException,
+        $expectedExceptionMessage,
+        $expectedExceptionCode
+    ) {
+        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+
+        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+
+        $this->coreApplicationHttpClient->getAsAdmin('team_get', [], $options);
+    }
+
+    /**
+     * @dataProvider postRequestThrowsExceptionDataProvider
+     *
+     * @param array $httpFixtures
+     * @param array $options
+     * @param string $expectedException
+     * @param string $expectedExceptionMessage
+     * @param int $expectedExceptionCode
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     public function testPostThrowsException(
         array $httpFixtures,
         array $options,
-        $userName,
         $expectedException,
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->coreApplicationHttpClient->setUser($this->getUserFromUserName($userName));
+        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
@@ -100,113 +122,73 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
     }
 
     /**
-     * @return array
+     * @dataProvider postAsAdminRequestThrowsExceptionDataProvider
+     *
+     * @param array $httpFixtures
+     * @param array $options
+     * @param string $expectedException
+     * @param string $expectedExceptionMessage
+     * @param int $expectedExceptionCode
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      */
-    public function requestThrowsExceptionDataProvider()
+    public function testPostAsAdminThrowsException(
+        array $httpFixtures,
+        array $options,
+        $expectedException,
+        $expectedExceptionMessage,
+        $expectedExceptionCode
+    ) {
+        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+
+        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+
+        $this->coreApplicationHttpClient->postAsAdmin('team_get', [], [], $options);
+    }
+
+    /**
+     * @dataProvider getRequestDoesNotThrowExceptionDataProvider
+     *
+     * @param array $httpFixtures
+     * @param string $userName
+     * @param array $options
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     */
+    public function testGetDoesNotThrowException(array $httpFixtures, $userName, array $options)
     {
-        return [
-            'read only' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                ],
-                'options' => [],
-                'user' => 'public',
-                'expectedException' => CoreApplicationReadOnlyException::class,
-                'expectedExceptionMessage' => '',
-                'expectedExceptionCode' => 0,
-            ],
-            '404' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createNotFoundResponse(),
-                ],
-                'options' => [],
-                'user' => 'public',
-                'expectedException' => CoreApplicationRequestException::class,
-                'expectedExceptionMessage' => '',
-                'expectedExceptionCode' => 404,
-            ],
-            '500' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                ],
-                'options' => [],
-                'user' => 'public',
-                'expectedException' => CoreApplicationRequestException::class,
-                'expectedExceptionMessage' => '',
-                'expectedExceptionCode' => 500,
-            ],
-            'curl exception' => [
-                'httpFixtures' => [
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                ],
-                'options' => [],
-                'user' => 'public',
-                'expectedException' => CoreApplicationRequestException::class,
-                'expectedExceptionMessage' => 'Operation timed out',
-                'expectedExceptionCode' => 28,
-            ],
-            'invalid user credentials; 401' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createUnauthorisedResponse(),
-                ],
-                'options' => [],
-                'user' => 'private',
-                'expectedException' => InvalidCredentialsException::class,
-                'expectedExceptionMessage' => '',
-                'expectedExceptionCode' => 0,
-            ],
-            'invalid user credentials; 403' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createForbiddenResponse(),
-                ],
-                'options' => [],
-                'user' => 'private',
-                'expectedException' => InvalidCredentialsException::class,
-                'expectedExceptionMessage' => '',
-                'expectedExceptionCode' => 0,
-            ],
-            'invalid admin credentials; 401' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createUnauthorisedResponse(),
-                ],
-                'options' => [],
-                'user' => 'admin',
-                'expectedException' => InvalidAdminCredentialsException::class,
-                'expectedExceptionMessage' => '',
-                'expectedExceptionCode' => 0,
-            ],
-            'invalid admin credentials; 403' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createForbiddenResponse(),
-                ],
-                'options' => [],
-                'user' => 'admin',
-                'expectedException' => InvalidAdminCredentialsException::class,
-                'expectedExceptionMessage' => '',
-                'expectedExceptionCode' => 0,
-            ],
-            'invalid content type for expected json response' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createSuccessResponse(),
-                ],
-                'options' => [
-                    CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
-                ],
-                'user' => 'public',
-                'expectedException' => InvalidContentTypeException::class,
-                'expectedExceptionMessage' => '',
-                'expectedExceptionCode' => 0,
-            ],
-        ];
+        $this->coreApplicationHttpClient->setUser($this->getUserFromUserName($userName));
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+
+        $response = $this->coreApplicationHttpClient->get('team_get', [], $options);
+        $this->assertNull($response);
+    }
+
+    /**
+     * @dataProvider postRequestDoesNotThrowExceptionDataProvider
+     *
+     * @param array $httpFixtures
+     * @param string $userName
+     * @param array $options
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     * @throws CoreApplicationReadOnlyException
+     */
+    public function testPostDoesNotThrowException(array $httpFixtures, $userName, array $options)
+    {
+        $this->coreApplicationHttpClient->setUser($this->getUserFromUserName($userName));
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+
+        $response = $this->coreApplicationHttpClient->post('team_get', [], $options);
+        $this->assertNull($response);
     }
 
     /**
@@ -217,9 +199,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      *
      * @param mixed $expectedResponse
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
@@ -247,6 +227,30 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
+     */
+    public function testGetAsAdminSuccess(array $httpFixtures, array $options, $expectedResponse)
+    {
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+
+        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
+        $response1 = $this->coreApplicationHttpClient->getAsAdmin('team_get', [], $options);
+        $response2 = $this->coreApplicationHttpClient->getAsAdmin('team_get', [], $options);
+
+        $this->assertEquals($response1, $response2);
+        $this->assertEquals($expectedResponse, $response1);
+    }
+
+    /**
+     * @dataProvider requestSuccessDataProvider
+     *
+     * @param array $httpFixtures
+     * @param array $options
+     *
+     * @param mixed $expectedResponse
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     public function testPostSuccess(array $httpFixtures, array $options, $expectedResponse)
@@ -262,6 +266,41 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $this->coreApplicationHttpClient->getHttpClient()->addSubscriber($httpHistory);
         $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
         $response = $this->coreApplicationHttpClient->post('team_get', [], $postData, $options);
+
+        $this->assertEquals($expectedResponse, $response);
+
+        /* @var EntityEnclosingRequest $lastRequest */
+        $lastRequest = $httpHistory->getLastRequest();
+
+        $this->assertEquals($postData, $lastRequest->getPostFields()->getAll());
+    }
+
+    /**
+     * @dataProvider requestSuccessDataProvider
+     *
+     * @param array $httpFixtures
+     * @param array $options
+     *
+     * @param mixed $expectedResponse
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     */
+    public function testPostAsAdminSuccess(array $httpFixtures, array $options, $expectedResponse)
+    {
+        $postData = [
+            'foo' => 'bar',
+        ];
+
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+
+        $httpHistory = new HistoryPlugin();
+
+        $this->coreApplicationHttpClient->getHttpClient()->addSubscriber($httpHistory);
+        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
+        $response = $this->coreApplicationHttpClient->postAsAdmin('team_get', [], $postData, $options);
 
         $this->assertEquals($expectedResponse, $response);
 
@@ -333,6 +372,198 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 
         $this->assertEquals('http://null/user/user@example.com/', $httpHistoryPlugin->getLastRequest()->getUrl());
     }
+
+    /**
+     * @return array
+     */
+    public function getRequestDoesNotThrowExceptionDataProvider()
+    {
+        return array_merge([
+            'read only' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                ],
+                'user' => 'public',
+                'options' => [],
+            ],
+        ], $this->postRequestDoesNotThrowExceptionDataProvider());
+    }
+
+    /**
+     * @return array
+     */
+    public function postRequestDoesNotThrowExceptionDataProvider()
+    {
+        return [
+            'invalid admin credentials; 401' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createUnauthorisedResponse(),
+                ],
+                'user' => 'admin',
+                'options' => [],
+            ],
+            'invalid admin credentials; 403' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createForbiddenResponse(),
+                ],
+                'user' => 'admin',
+                'options' => [],
+            ],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getRequestThrowsExceptionDataProvider()
+    {
+        return array_merge([
+            'invalid user credentials; 401' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createUnauthorisedResponse(),
+                ],
+                'options' => [],
+                'expectedException' => InvalidCredentialsException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
+            ],
+            'invalid user credentials; 403' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createForbiddenResponse(),
+                ],
+                'options' => [],
+                'expectedException' => InvalidCredentialsException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
+            ],
+        ], $this->requestThrowsExceptionDataProvider());
+    }
+
+    /**
+     * @return array
+     */
+    public function getAsAdminRequestThrowsExceptionDataProvider()
+    {
+        return array_merge([
+            'invalid admin credentials; 401' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createUnauthorisedResponse(),
+                ],
+                'options' => [],
+                'expectedException' => InvalidAdminCredentialsException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
+            ],
+            'invalid admin credentials; 403' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createForbiddenResponse(),
+                ],
+                'options' => [],
+                'expectedException' => InvalidAdminCredentialsException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
+            ],
+        ], $this->requestThrowsExceptionDataProvider());
+    }
+
+    /**
+     * @return array
+     */
+    public function postAsAdminRequestThrowsExceptionDataProvider()
+    {
+        return array_merge([
+            'read only' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                ],
+                'options' => [],
+                'expectedException' => CoreApplicationReadOnlyException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
+            ],
+        ], $this->getAsAdminRequestThrowsExceptionDataProvider());
+    }
+
+    /**
+     * @return array
+     */
+    public function postRequestThrowsExceptionDataProvider()
+    {
+        return array_merge([
+            'read only' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                ],
+                'options' => [],
+                'expectedException' => CoreApplicationReadOnlyException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
+            ],
+        ], $this->getRequestThrowsExceptionDataProvider());
+    }
+
+    /**
+     * @return array
+     */
+    public function requestThrowsExceptionDataProvider()
+    {
+        return [
+            '404' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createNotFoundResponse(),
+                ],
+                'options' => [],
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 404,
+            ],
+            '500' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                ],
+                'options' => [],
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 500,
+            ],
+            'curl exception' => [
+                'httpFixtures' => [
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                ],
+                'options' => [],
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Operation timed out',
+                'expectedExceptionCode' => 28,
+            ],
+            'invalid content type for expected json response' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createSuccessResponse(),
+                ],
+                'options' => [
+                    CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
+                ],
+                'expectedException' => InvalidContentTypeException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
+            ],
+        ];
+    }
+
 
     /**
      * @param string $userName
