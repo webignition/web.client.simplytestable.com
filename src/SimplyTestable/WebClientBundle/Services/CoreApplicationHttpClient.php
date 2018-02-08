@@ -21,7 +21,6 @@ class CoreApplicationHttpClient
 {
     const APPLICATION_JSON_CONTENT_TYPE = 'application/json';
 
-    const OPT_AS_ADMIN = 'as-admin';
     const OPT_TREAT_404_AS_EMPTY = 'treat-404-as-empty';
     const OPT_EXPECT_JSON_RESPONSE = 'expect-json-response';
 

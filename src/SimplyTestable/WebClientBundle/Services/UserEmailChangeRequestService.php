@@ -27,24 +27,23 @@ class UserEmailChangeRequestService
     }
 
     /**
-     * @param $email
+     * @param string $email
+     *
      * @return array
      *
      * @throws InvalidAdminCredentialsException
-     * @throws InvalidCredentialsException
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      */
     public function getEmailChangeRequest($email)
     {
-        return $this->coreApplicationHttpClient->get(
+        return $this->coreApplicationHttpClient->getAsAdmin(
             'user_email_change_request_get',
             [
                 'email' => $email
             ],
             [
-                CoreApplicationHttpClient::OPT_AS_ADMIN => true,
                 CoreApplicationHttpClient::OPT_TREAT_404_AS_EMPTY => true,
                 CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
             ]
@@ -52,7 +51,6 @@ class UserEmailChangeRequestService
     }
 
     /**
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidCredentialsException
      */
     public function cancelEmailChangeRequest()
@@ -71,7 +69,6 @@ class UserEmailChangeRequestService
     /**
      * @param array $emailChangeRequest
      *
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidCredentialsException
      * @throws UserEmailChangeException
      */
@@ -110,7 +107,6 @@ class UserEmailChangeRequestService
     /**
      * @param string $newEmail
      *
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidCredentialsException
      * @throws UserEmailChangeException
      */
