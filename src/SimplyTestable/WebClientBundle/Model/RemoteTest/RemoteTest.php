@@ -33,7 +33,7 @@ class RemoteTest extends AbstractStandardObject
         $state = $this->getProperty('state');
         $crawlData = $this->getCrawl();
 
-        if (Test::STATE_CRAWLING === $state && !empty($crawlData)) {
+        if (Test::STATE_FAILED_NO_SITEMAP === $state && !empty($crawlData)) {
             return Test::STATE_CRAWLING;
         }
 
