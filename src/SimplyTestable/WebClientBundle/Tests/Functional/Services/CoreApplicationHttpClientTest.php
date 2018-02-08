@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
 use Guzzle\Http\Message\EntityEnclosingRequest;
+use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\History\HistoryPlugin;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
@@ -38,6 +39,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @dataProvider requestThrowsExceptionDataProvider
      *
      * @param array $httpFixtures
+     * @param array $options
      * @param string $userName
      * @param string $expectedException
      * @param string $expectedExceptionMessage
@@ -46,10 +48,12 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     public function testGetThrowsException(
         array $httpFixtures,
+        array $options,
         $userName,
         $expectedException,
         $expectedExceptionMessage,
@@ -60,13 +64,14 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 
         $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
 
-        $this->coreApplicationHttpClient->get('team_get');
+        $this->coreApplicationHttpClient->get('team_get', [], $options);
     }
 
     /**
      * @dataProvider requestThrowsExceptionDataProvider
      *
      * @param array $httpFixtures
+     * @param array $options
      * @param string $userName
      * @param string $expectedException
      * @param string $expectedExceptionMessage
@@ -75,10 +80,12 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     public function testPostThrowsException(
         array $httpFixtures,
+        array $options,
         $userName,
         $expectedException,
         $expectedExceptionMessage,
@@ -89,7 +96,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 
         $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
 
-        $this->coreApplicationHttpClient->post('team_get');
+        $this->coreApplicationHttpClient->post('team_get', [], [], $options);
     }
 
     /**
@@ -105,6 +112,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                     HttpResponseFactory::createServiceUnavailableResponse(),
                     HttpResponseFactory::createServiceUnavailableResponse(),
                 ],
+                'options' => [],
                 'user' => 'public',
                 'expectedException' => CoreApplicationReadOnlyException::class,
                 'expectedExceptionMessage' => '',
@@ -114,6 +122,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
+                'options' => [],
                 'user' => 'public',
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => '',
@@ -126,6 +135,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                     HttpResponseFactory::createInternalServerErrorResponse(),
                     HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
+                'options' => [],
                 'user' => 'public',
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => '',
@@ -138,6 +148,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                     CurlExceptionFactory::create('Operation timed out', 28),
                     CurlExceptionFactory::create('Operation timed out', 28),
                 ],
+                'options' => [],
                 'user' => 'public',
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Operation timed out',
@@ -147,6 +158,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createUnauthorisedResponse(),
                 ],
+                'options' => [],
                 'user' => 'private',
                 'expectedException' => InvalidCredentialsException::class,
                 'expectedExceptionMessage' => '',
@@ -156,6 +168,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createForbiddenResponse(),
                 ],
+                'options' => [],
                 'user' => 'private',
                 'expectedException' => InvalidCredentialsException::class,
                 'expectedExceptionMessage' => '',
@@ -165,6 +178,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createUnauthorisedResponse(),
                 ],
+                'options' => [],
                 'user' => 'admin',
                 'expectedException' => InvalidAdminCredentialsException::class,
                 'expectedExceptionMessage' => '',
@@ -174,57 +188,34 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createForbiddenResponse(),
                 ],
+                'options' => [],
                 'user' => 'admin',
                 'expectedException' => InvalidAdminCredentialsException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
+            ],
+            'invalid content type for expected json response' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createSuccessResponse(),
+                ],
+                'options' => [
+                    CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
+                ],
+                'user' => 'public',
+                'expectedException' => InvalidContentTypeException::class,
                 'expectedExceptionMessage' => '',
                 'expectedExceptionCode' => 0,
             ],
         ];
     }
 
-    public function testGetSuccess()
-    {
-        $this->setCoreApplicationHttpClientHttpFixtures([
-            HttpResponseFactory::createSuccessResponse()
-        ]);
-
-        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
-        $response1 = $this->coreApplicationHttpClient->get('team_get');
-        $response2 = $this->coreApplicationHttpClient->get('team_get');
-
-        $this->assertEquals($response1, $response2);
-    }
-
-    public function testGetJsonDataInvalidContentType()
-    {
-        $this->setCoreApplicationHttpClientHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
-        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
-
-        $this->setExpectedException(InvalidContentTypeException::class);
-        $this->coreApplicationHttpClient->getJsonData('team_get');
-    }
-
-    public function testPostGetJsonDataInvalidContentType()
-    {
-        $this->setCoreApplicationHttpClientHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
-        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
-
-        $this->setExpectedException(InvalidContentTypeException::class);
-        $this->coreApplicationHttpClient->postGetJsonData('team_get');
-    }
-
     /**
-     * @dataProvider getJsonDataSuccessDataProvider
+     * @dataProvider requestSuccessDataProvider
      *
      * @param array $httpFixtures
      * @param array $options
-     * @param mixed $expectedResponseData
+     *
+     * @param mixed $expectedResponse
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
@@ -232,24 +223,25 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function testGetJsonDataSuccess(array $httpFixtures, array $options, $expectedResponseData)
+    public function testGetSuccess(array $httpFixtures, array $options, $expectedResponse)
     {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
-        $response1 = $this->coreApplicationHttpClient->getJsonData('team_get', [], $options);
-        $response2 = $this->coreApplicationHttpClient->getJsonData('team_get', [], $options);
+        $response1 = $this->coreApplicationHttpClient->get('team_get', [], $options);
+        $response2 = $this->coreApplicationHttpClient->get('team_get', [], $options);
 
         $this->assertEquals($response1, $response2);
-        $this->assertEquals($expectedResponseData, $response1);
+        $this->assertEquals($expectedResponse, $response1);
     }
 
     /**
-     * @dataProvider getJsonDataSuccessDataProvider
+     * @dataProvider requestSuccessDataProvider
      *
      * @param array $httpFixtures
      * @param array $options
-     * @param mixed $expectedResponseData
+     *
+     * @param mixed $expectedResponse
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
@@ -257,7 +249,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function testPostGetJsonDataSuccess(array $httpFixtures, array $options, $expectedResponseData)
+    public function testPostSuccess(array $httpFixtures, array $options, $expectedResponse)
     {
         $postData = [
             'foo' => 'bar',
@@ -269,9 +261,9 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 
         $this->coreApplicationHttpClient->getHttpClient()->addSubscriber($httpHistory);
         $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
-        $response = $this->coreApplicationHttpClient->postGetJsonData('team_get', [], $postData, $options);
+        $response = $this->coreApplicationHttpClient->post('team_get', [], $postData, $options);
 
-        $this->assertEquals($expectedResponseData, $response);
+        $this->assertEquals($expectedResponse, $response);
 
         /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $httpHistory->getLastRequest();
@@ -282,19 +274,20 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
     /**
      * @return array
      */
-    public function getJsonDataSuccessDataProvider()
+    public function requestSuccessDataProvider()
     {
-        $responseData = [
+        $emptyResponse = new Response(200);
+        $jsonData = [
             'foo' => 'bar',
         ];
 
         return [
-            '200 with data' => [
+            '200; empty body' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($responseData),
+                    $emptyResponse,
                 ],
                 'options' => [],
-                'expectedResponseData' => $responseData,
+                'expectedResponse' => $emptyResponse,
             ],
             '404 treated as empty' => [
                 'httpFixtures' => [
@@ -306,31 +299,18 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 'options' => [
                     CoreApplicationHttpClient::OPT_TREAT_404_AS_EMPTY => true,
                 ],
-                'expectedResponseData' => null,
+                'expectedResponse' => null,
+            ],
+            'json' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createJsonResponse($jsonData),
+                ],
+                'options' => [
+                    CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
+                ],
+                'expectedResponse' => $jsonData,
             ],
         ];
-    }
-
-    public function testPostSuccess()
-    {
-        $postData = [
-            'foo' => 'bar',
-        ];
-
-        $this->setCoreApplicationHttpClientHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
-        $httpHistory = new HistoryPlugin();
-
-        $this->coreApplicationHttpClient->getHttpClient()->addSubscriber($httpHistory);
-        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
-        $this->coreApplicationHttpClient->post('team_get', [], $postData);
-
-        /* @var EntityEnclosingRequest $lastRequest */
-        $lastRequest = $httpHistory->getLastRequest();
-
-        $this->assertEquals($postData, $lastRequest->getPostFields()->getAll());
     }
 
     public function testPreProcessRouteParameters()
