@@ -129,9 +129,34 @@ class CoreApplicationHttpClient
     public function post($routeName, array $routeParameters = [], array $postData = [], array $options = [])
     {
         $requestUrl = $this->router->generate($routeName, $this->preProcessRouteParameters($routeParameters));
-        $request = $this->httpClient->createRequest('POST', $requestUrl, $postData);
+        $request = $this->httpClient->createRequest('POST', $requestUrl, [], $postData);
 
         return $this->getResponse($request, $options);
+    }
+
+    /**
+     * @param string $routeName
+     * @param array $routeParameters
+     * @param array $postData
+     * @param array $options
+     *
+     * @return mixed|null
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     */
+    public function postGetJsonData($routeName, array $routeParameters = [], array $postData = [], array $options = [])
+    {
+        $response = $this->post($routeName, $routeParameters, $postData, $options);
+
+        if (is_null($response)) {
+            return null;
+        }
+
+        return $this->handleApplicationJsonResponse($response);
     }
 
     /**
@@ -223,7 +248,6 @@ class CoreApplicationHttpClient
             }
 
             throw new CoreApplicationRequestException($clientErrorResponseException);
-
         } catch (ServerErrorResponseException $serverErrorResponseException) {
             // 500: boom
             // 503: read only
@@ -234,7 +258,6 @@ class CoreApplicationHttpClient
             }
 
             throw new CoreApplicationRequestException($serverErrorResponseException);
-
         } catch (CurlException $curlException) {
             throw new CoreApplicationRequestException($curlException);
         }

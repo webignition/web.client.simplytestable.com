@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
+use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Plugin\History\HistoryPlugin;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
@@ -206,6 +207,18 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $this->coreApplicationHttpClient->getJsonData('team_get');
     }
 
+    public function testPostGetJsonDataInvalidContentType()
+    {
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
+
+        $this->setExpectedException(InvalidContentTypeException::class);
+        $this->coreApplicationHttpClient->postGetJsonData('team_get');
+    }
+
     /**
      * @dataProvider getJsonDataSuccessDataProvider
      *
@@ -229,6 +242,41 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 
         $this->assertEquals($response1, $response2);
         $this->assertEquals($expectedResponseData, $response1);
+    }
+
+    /**
+     * @dataProvider getJsonDataSuccessDataProvider
+     *
+     * @param array $httpFixtures
+     * @param array $options
+     * @param mixed $expectedResponseData
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     */
+    public function testPostGetJsonDataSuccess(array $httpFixtures, array $options, $expectedResponseData)
+    {
+        $postData = [
+            'foo' => 'bar',
+        ];
+
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+
+        $httpHistory = new HistoryPlugin();
+
+        $this->coreApplicationHttpClient->getHttpClient()->addSubscriber($httpHistory);
+        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
+        $response = $this->coreApplicationHttpClient->postGetJsonData('team_get', [], $postData, $options);
+
+        $this->assertEquals($expectedResponseData, $response);
+
+        /* @var EntityEnclosingRequest $lastRequest */
+        $lastRequest = $httpHistory->getLastRequest();
+
+        $this->assertEquals($postData, $lastRequest->getPostFields()->getAll());
     }
 
     /**
@@ -261,6 +309,28 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 'expectedResponseData' => null,
             ],
         ];
+    }
+
+    public function testPostSuccess()
+    {
+        $postData = [
+            'foo' => 'bar',
+        ];
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $httpHistory = new HistoryPlugin();
+
+        $this->coreApplicationHttpClient->getHttpClient()->addSubscriber($httpHistory);
+        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
+        $this->coreApplicationHttpClient->post('team_get', [], $postData);
+
+        /* @var EntityEnclosingRequest $lastRequest */
+        $lastRequest = $httpHistory->getLastRequest();
+
+        $this->assertEquals($postData, $lastRequest->getPostFields()->getAll());
     }
 
     public function testPreProcessRouteParameters()
