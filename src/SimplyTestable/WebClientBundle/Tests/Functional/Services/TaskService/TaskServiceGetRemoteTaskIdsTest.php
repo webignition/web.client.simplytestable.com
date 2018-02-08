@@ -3,6 +3,11 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\TaskService;
 
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
 
@@ -15,6 +20,12 @@ class TaskServiceGetRemoteTaskIdsTest extends AbstractTaskServiceTest
      * @param array $testValues
      * @param array $expectedRemoteTaskIds
      * @param string[] $expectedRequestUrls
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testGetRemoteTaskIds(
         array $httpFixtures,
@@ -22,9 +33,7 @@ class TaskServiceGetRemoteTaskIdsTest extends AbstractTaskServiceTest
         array $expectedRemoteTaskIds,
         array $expectedRequestUrls
     ) {
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
-        }
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $testFactory = new TestFactory($this->container);
 
@@ -33,7 +42,7 @@ class TaskServiceGetRemoteTaskIdsTest extends AbstractTaskServiceTest
         $remoteTaskIds = $this->taskService->getRemoteTaskIds($test);
 
         $this->assertEquals($expectedRemoteTaskIds, $remoteTaskIds);
-        $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrls());
+        $this->assertEquals($expectedRequestUrls, $this->getRequestedUrls());
     }
 
     /**

@@ -5,9 +5,15 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Dashbo
 use SimplyTestable\WebClientBundle\Controller\View\Dashboard\Partial\RecentTestsController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\TestList;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
@@ -85,13 +91,27 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
      * @param EngineInterface $templatingEngine
      *
      * @throws WebResourceException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testIndexAction(
         array $httpFixtures,
         EngineInterface $templatingEngine
     ) {
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+
         if (!empty($httpFixtures)) {
             $this->setHttpFixtures($httpFixtures);
+        }
+
+        if (count($httpFixtures) > 1) {
+            array_shift($httpFixtures);
+            $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
         }
 
         $containerFactory = new ContainerFactory($this->container);

@@ -23,6 +23,7 @@ class CoreApplicationHttpClient
 
     const OPT_AS_ADMIN = 'as-admin';
     const OPT_TREAT_404_AS_EMPTY = 'treat-404-as-empty';
+    const OPT_EXPECT_JSON_RESPONSE = 'expect-json-response';
 
     const ROUTE_PARAMETER_USER_PLACEHOLDER = '{{ user }}';
 
@@ -97,12 +98,13 @@ class CoreApplicationHttpClient
      * @param array $routeParameters
      * @param array $options
      *
-     * @return Response|null
+     * @return Response|array|mixed|null
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
      * @throws InvalidCredentialsException
+     * @throws InvalidContentTypeException
      */
     public function get($routeName, array $routeParameters = [], array $options = [])
     {
@@ -119,59 +121,20 @@ class CoreApplicationHttpClient
      * @param array $postData
      * @param array $options
      *
-     * @return Response|null
+     * @return Response|array|mixed|null
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
      * @throws InvalidCredentialsException
+     * @throws InvalidContentTypeException
      */
     public function post($routeName, array $routeParameters = [], array $postData = [], array $options = [])
     {
         $requestUrl = $this->router->generate($routeName, $this->preProcessRouteParameters($routeParameters));
-        $request = $this->httpClient->createRequest('POST', $requestUrl, $postData);
+        $request = $this->httpClient->createRequest('POST', $requestUrl, [], $postData);
 
         return $this->getResponse($request, $options);
-    }
-
-    /**
-     * @param string $routeName
-     * @param array $routeParameters
-     * @param array $options
-     *
-     * @return mixed
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
-     */
-    public function getJsonData($routeName, array $routeParameters = [], array $options = [])
-    {
-        $response = $this->get($routeName, $routeParameters, $options);
-
-        if (is_null($response)) {
-            return null;
-        }
-
-        return $this->handleApplicationJsonResponse($response);
-    }
-
-    /**
-     * @param Response $response
-     *
-     * @return mixed
-     *
-     * @throws InvalidContentTypeException
-     */
-    private function handleApplicationJsonResponse(Response $response)
-    {
-        if (self::APPLICATION_JSON_CONTENT_TYPE !== $response->getContentType()) {
-            throw new InvalidContentTypeException($response->getContentType());
-        }
-
-        return json_decode($response->getBody(true), true);
     }
 
     /**
@@ -183,6 +146,7 @@ class CoreApplicationHttpClient
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
      * @throws InvalidCredentialsException
+     * @throws InvalidContentTypeException
      */
     private function getResponse(RequestInterface $request, array $options)
     {
@@ -191,52 +155,56 @@ class CoreApplicationHttpClient
 
         $response = $this->responseCache->get($request);
 
-        if ($response instanceof Response) {
-            return $response;
+        if (empty($response)) {
+            try {
+                $response = $request->send();
+                $this->responseCache->set($request, $response);
+            } catch (TooManyRedirectsException $tooManyRedirectsException) {
+                // not sure if we really need to handle these
+            } catch (ClientErrorResponseException $clientErrorResponseException) {
+                // 400 bad request: check for x-foo-error-code and x-foo-error message headers
+                // 401: invalid auth
+                // 404: often core app way of saying 'no'
+
+                $response = $clientErrorResponseException->getResponse();
+                $responseStatusCode = $response->getStatusCode();
+
+                if (in_array($responseStatusCode, [401, 403])) {
+                    if ($this->adminUser->getUsername() === $user->getUsername()) {
+                        throw new InvalidAdminCredentialsException();
+                    }
+
+                    throw new InvalidCredentialsException();
+                }
+
+                if (404 === $response->getStatusCode()) {
+                    if ($this->isOptionTrue(self::OPT_TREAT_404_AS_EMPTY, $options)) {
+                        return null;
+                    }
+                }
+
+                throw new CoreApplicationRequestException($clientErrorResponseException);
+            } catch (ServerErrorResponseException $serverErrorResponseException) {
+                // 500: boom
+                // 503: read only
+                $response = $serverErrorResponseException->getResponse();
+
+                if (503 === $response->getStatusCode()) {
+                    throw new CoreApplicationReadOnlyException();
+                }
+
+                throw new CoreApplicationRequestException($serverErrorResponseException);
+            } catch (CurlException $curlException) {
+                throw new CoreApplicationRequestException($curlException);
+            }
         }
 
-        try {
-            $response = $request->send();
-            $this->responseCache->set($request, $response);
-        } catch (TooManyRedirectsException $tooManyRedirectsException) {
-            // not sure if we really need to handle these
-        } catch (ClientErrorResponseException $clientErrorResponseException) {
-            // 400 bad request: check for x-foo-error-code and x-foo-error message headers
-            // 401: invalid auth
-            // 404: often core app way of saying 'no'
-
-            $response = $clientErrorResponseException->getResponse();
-            $responseStatusCode = $response->getStatusCode();
-
-            if (in_array($responseStatusCode, [401, 403])) {
-                if ($this->adminUser->getUsername() === $user->getUsername()) {
-                    throw new InvalidAdminCredentialsException();
-                }
-
-                throw new InvalidCredentialsException();
+        if ($this->isOptionTrue(self::OPT_EXPECT_JSON_RESPONSE, $options)) {
+            if (self::APPLICATION_JSON_CONTENT_TYPE !== $response->getContentType()) {
+                throw new InvalidContentTypeException($response->getContentType());
             }
 
-            if (404 === $response->getStatusCode()) {
-                if ($this->isOptionTrue(self::OPT_TREAT_404_AS_EMPTY, $options)) {
-                    return null;
-                }
-            }
-
-            throw new CoreApplicationRequestException($clientErrorResponseException);
-
-        } catch (ServerErrorResponseException $serverErrorResponseException) {
-            // 500: boom
-            // 503: read only
-            $response = $serverErrorResponseException->getResponse();
-
-            if (503 === $response->getStatusCode()) {
-                throw new CoreApplicationReadOnlyException();
-            }
-
-            throw new CoreApplicationRequestException($serverErrorResponseException);
-
-        } catch (CurlException $curlException) {
-            throw new CoreApplicationRequestException($curlException);
+            return json_decode($response->getBody(true), true);
         }
 
         return $response;

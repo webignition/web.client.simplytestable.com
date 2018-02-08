@@ -3,6 +3,11 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results;
 
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\Test\Task\ErrorTaskMapCollection;
@@ -32,9 +37,14 @@ class ByTaskTypeController extends AbstractResultsController
      * @param string $task_type
      * @param string|null $filter
      *
-     * @return Response
+     * @return RedirectResponse|Response
      *
      * @throws WebResourceException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function indexAction(Request $request, $website, $test_id, $task_type, $filter = null)
     {

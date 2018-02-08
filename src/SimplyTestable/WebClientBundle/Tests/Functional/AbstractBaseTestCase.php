@@ -43,6 +43,10 @@ abstract class AbstractBaseTestCase extends WebTestCase
         $plugin = new MockPlugin();
 
         foreach ($fixtures as $fixture) {
+            if (empty($fixture)) {
+                continue;
+            }
+
             if ($fixture instanceof CurlException) {
                 $plugin->addException($fixture);
             } else {

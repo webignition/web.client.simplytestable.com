@@ -4,7 +4,11 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\TaskService;
 
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TaskFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
@@ -19,7 +23,11 @@ class TaskServiceGetTest extends AbstractTaskServiceTest
      * @param int $remoteTaskId
      * @param array $expectedTaskData
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testGet(
         array $httpFixtures,
@@ -27,9 +35,7 @@ class TaskServiceGetTest extends AbstractTaskServiceTest
         $remoteTaskId,
         $expectedTaskData
     ) {
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
-        }
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $testFactory = new TestFactory($this->container);
 

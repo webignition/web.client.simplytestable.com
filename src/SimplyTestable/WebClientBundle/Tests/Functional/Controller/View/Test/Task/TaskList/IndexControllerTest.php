@@ -5,7 +5,13 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Test\T
 use SimplyTestable\WebClientBundle\Controller\View\Test\Task\TaskList\IndexController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\DomCrawler\Crawler;
@@ -119,6 +125,9 @@ class IndexControllerTest extends AbstractBaseTestCase
         $this->setHttpFixtures([
             HttpResponseFactory::create(200),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
         ]);
 
@@ -146,16 +155,25 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @dataProvider indexActionRenderEmptyContentDataProvider
      *
      * @param array $httpFixtures
-     *
      * @param Request $request
      *
      * @throws WebResourceException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testIndexActionRenderEmptyContent(
         array $httpFixtures,
         Request $request
     ) {
-        $this->setHttpFixtures($httpFixtures);
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+
+        $this->setHttpFixtures([$httpFixtures[0]]);
+        $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
 
         $this->indexController->setContainer($this->container);
 
@@ -213,6 +231,11 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param Request $request
      * @param array $expectedTaskSetCollection
      *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      * @throws WebResourceException
      */
     public function testIndexActionRenderContent(
@@ -220,7 +243,12 @@ class IndexControllerTest extends AbstractBaseTestCase
         Request $request,
         array $expectedTaskSetCollection
     ) {
-        $this->setHttpFixtures($httpFixtures);
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+
+        $this->setHttpFixtures([$httpFixtures[0]]);
+        $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
 
         $this->indexController->setContainer($this->container);
 
@@ -430,8 +458,15 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionCachedResponse()
     {
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+
         $this->setHttpFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
         ]);
 

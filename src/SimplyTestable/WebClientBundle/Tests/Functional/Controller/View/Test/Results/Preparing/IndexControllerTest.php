@@ -5,8 +5,14 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Test\R
 use SimplyTestable\WebClientBundle\Controller\View\Test\Results\Preparing\IndexController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpHistory;
@@ -107,9 +113,16 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionPublicUserGetRequest()
     {
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+
         $this->setHttpFixtures([
             HttpResponseFactory::create(200),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([1, 2, 3,]),
         ]);
 
@@ -155,6 +168,11 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param string[] $expectedRequestUrls
      *
      * @throws WebResourceException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testIndexActionBadRequest(
         array $httpFixtures,
@@ -227,11 +245,21 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param array $testValues
      * @param EngineInterface $templatingEngine
      *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      * @throws WebResourceException
      */
     public function testIndexActionRender(array $httpFixtures, array $testValues, EngineInterface $templatingEngine)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+
+        $this->setHttpFixtures([$httpFixtures[0]]);
+        $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);
@@ -361,8 +389,15 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionCachedResponse()
     {
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+
         $this->setHttpFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([1, 2, 3,]),
         ]);
 

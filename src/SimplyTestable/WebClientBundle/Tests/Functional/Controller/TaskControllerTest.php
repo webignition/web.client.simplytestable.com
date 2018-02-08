@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Repository\TestRepository;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -106,6 +107,10 @@ class TaskControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+
         $this->taskController = new TaskController();
         $this->taskController->setContainer($this->container);
     }
@@ -181,6 +186,9 @@ class TaskControllerTest extends AbstractBaseTestCase
 
         $this->setHttpFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([1, 2, 3, 4,]),
         ]);
 
@@ -200,6 +208,11 @@ class TaskControllerTest extends AbstractBaseTestCase
      * @param int $limit
      *
      * @throws WebResourceException
+     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException
+     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException
      */
     public function testUnretrievedIdCollectionActionRender($limit)
     {
@@ -207,6 +220,9 @@ class TaskControllerTest extends AbstractBaseTestCase
 
         $this->setHttpFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse($taskIds),
         ]);
 
@@ -246,6 +262,11 @@ class TaskControllerTest extends AbstractBaseTestCase
      * @param Request $request
      *
      * @throws WebResourceException
+     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException
+     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException
+     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException
      */
     public function testRetrieveActionRender(array $httpFixtures, Request $request)
     {
@@ -260,7 +281,10 @@ class TaskControllerTest extends AbstractBaseTestCase
 
         $this->assertNull($test);
 
-        $this->setHttpFixtures($httpFixtures);
+        $remoteTestHttpFixture = array_shift($httpFixtures);
+
+        $this->setHttpFixtures([$remoteTestHttpFixture]);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         /* @var Response $response */
         $response = $this->taskController->retrieveAction($request, self::WEBSITE, self::TEST_ID);

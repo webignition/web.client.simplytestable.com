@@ -38,7 +38,7 @@ class UserEmailChangeRequestService
      */
     public function getEmailChangeRequest($email)
     {
-        return $this->coreApplicationHttpClient->getJsonData(
+        return $this->coreApplicationHttpClient->get(
             'user_email_change_request_get',
             [
                 'email' => $email
@@ -46,6 +46,7 @@ class UserEmailChangeRequestService
             [
                 CoreApplicationHttpClient::OPT_AS_ADMIN => true,
                 CoreApplicationHttpClient::OPT_TREAT_404_AS_EMPTY => true,
+                CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
             ]
         );
     }
@@ -60,6 +61,8 @@ class UserEmailChangeRequestService
             $this->coreApplicationHttpClient->post('user_email_change_request_cancel', [
                 'email' => CoreApplicationHttpClient::ROUTE_PARAMETER_USER_PLACEHOLDER,
             ]);
+        } catch (InvalidContentTypeException $invalidContentTypeException) {
+            // Can't happen here
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
         }
@@ -79,6 +82,8 @@ class UserEmailChangeRequestService
                 'email' => CoreApplicationHttpClient::ROUTE_PARAMETER_USER_PLACEHOLDER,
                 'token' => $emailChangeRequest['token'],
             ]);
+        } catch (InvalidContentTypeException $invalidContentTypeException) {
+            // Can't happen here
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             if ($coreApplicationRequestException->isHttpException()) {
@@ -116,6 +121,8 @@ class UserEmailChangeRequestService
                 'email' => CoreApplicationHttpClient::ROUTE_PARAMETER_USER_PLACEHOLDER,
                 'new_email' => $newEmail,
             ]);
+        } catch (InvalidContentTypeException $invalidContentTypeException) {
+            // Can't happen here
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             if ($coreApplicationRequestException->isHttpException()) {
