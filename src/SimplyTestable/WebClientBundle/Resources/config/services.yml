@@ -288,3 +288,5 @@ services:
       - '%admin_user_username%'
       - '%admin_user_password%'
 
+  SimplyTestable\WebClientBundle\Services\JsonResponseHandler:
+    class: SimplyTestable\WebClientBundle\Services\JsonResponseHandler
