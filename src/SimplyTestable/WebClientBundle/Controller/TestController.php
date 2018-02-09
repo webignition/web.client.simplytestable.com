@@ -81,7 +81,6 @@ class TestController extends Controller
      * @return RedirectResponse
      *
      * @throws CoreApplicationReadOnlyException
-     * @throws InvalidContentTypeException
      */
     public function cancelAction($website, $test_id)
     {
@@ -147,8 +146,6 @@ class TestController extends Controller
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             // Nothing happens, we redirect to the test progress page regardless
         } catch (InvalidCredentialsException $invalidCredentialsException) {
-            // Nothing happens, we redirect to the test progress page regardless
-        } catch (InvalidContentTypeException $invalidContentTypeException) {
             // Nothing happens, we redirect to the test progress page regardless
         }
 

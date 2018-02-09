@@ -208,7 +208,6 @@ class RemoteTestService
     /**
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     public function cancel()
@@ -222,7 +221,6 @@ class RemoteTestService
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     public function cancelByTestProperties($testId, $website)

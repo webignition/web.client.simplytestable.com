@@ -66,8 +66,6 @@ class UserEmailChangeRequestService
             $this->coreApplicationHttpClient->post('user_email_change_request_cancel', [
                 'email' => CoreApplicationHttpClient::ROUTE_PARAMETER_USER_PLACEHOLDER,
             ]);
-        } catch (InvalidContentTypeException $invalidContentTypeException) {
-            // Can't happen here
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
         }
@@ -86,8 +84,6 @@ class UserEmailChangeRequestService
                 'email' => CoreApplicationHttpClient::ROUTE_PARAMETER_USER_PLACEHOLDER,
                 'token' => $emailChangeRequest['token'],
             ]);
-        } catch (InvalidContentTypeException $invalidContentTypeException) {
-            // Can't happen here
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             if ($coreApplicationRequestException->isHttpException()) {
@@ -124,8 +120,6 @@ class UserEmailChangeRequestService
                 'email' => CoreApplicationHttpClient::ROUTE_PARAMETER_USER_PLACEHOLDER,
                 'new_email' => $newEmail,
             ]);
-        } catch (InvalidContentTypeException $invalidContentTypeException) {
-            // Can't happen here
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             if ($coreApplicationRequestException->isHttpException()) {
