@@ -2,6 +2,8 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
@@ -70,17 +72,17 @@ class UserAccountPlanController extends Controller implements RequiresPrivateUse
         }
 
         try {
-            $response = $userAccountPlanSubscriptionService->subscribe($user, $plan);
+            $userAccountPlanSubscriptionService->subscribe($user, $plan);
+            $flashBag->set('plan_subscribe_success', 'ok');
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
+            $logger->error(sprintf(
+                'UserAccountPlanController::subscribeAction::subscribe method return %s ',
+                $coreApplicationRequestException->getCode()
+            ));
 
-            if (true === $response) {
-                $flashBag->set('plan_subscribe_success', 'ok');
-            } else {
-                $logger->error(sprintf(
-                    'UserAccountPlanController::subscribeAction::subscribe method return %s ',
-                    $response
-                ));
-                $flashBag->set('plan_subscribe_error', $response);
-            }
+            $flashBag->set('plan_subscribe_error', $coreApplicationRequestException->getCode());
+        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
+            $flashBag->set('plan_subscribe_error', 503);
         } catch (UserAccountCardException $userAccountCardException) {
             $logger->error('UserAccountPlanController::subscribeAction::stripe card error');
 

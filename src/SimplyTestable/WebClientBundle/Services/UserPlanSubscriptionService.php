@@ -1,12 +1,13 @@
 <?php
 namespace SimplyTestable\WebClientBundle\Services;
 
-use Guzzle\Http\Exception\BadResponseException;
-use Guzzle\Http\Exception\CurlException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
 use SimplyTestable\WebClientBundle\Model\User;
 
-class UserPlanSubscriptionService extends CoreApplicationService
+class UserPlanSubscriptionService
 {
     const STRIPE_ERROR_HEADER_PREFIX = 'x-stripe-error-';
     const STRIPE_ERROR_KEY_MESSAGE = 'message';
@@ -19,62 +20,53 @@ class UserPlanSubscriptionService extends CoreApplicationService
     private $stripeErrorFactory;
 
     /**
-     * @var CoreApplicationRouter
+     * @var CoreApplicationHttpClient
      */
-    private $coreApplicationRouter;
+    private $coreApplicationHttpClient;
 
     /**
-     * @param WebResourceService $webResourceService
      * @param StripeErrorFactory $stripeErrorFactory
-     * @param CoreApplicationRouter $coreApplicationRouter
+     * @param CoreApplicationHttpClient $coreApplicationHttpClient
      */
     public function __construct(
-        WebResourceService $webResourceService,
         StripeErrorFactory $stripeErrorFactory,
-        CoreApplicationRouter $coreApplicationRouter
+        CoreApplicationHttpClient $coreApplicationHttpClient
     ) {
-        parent::__construct($webResourceService);
-
         $this->stripeErrorFactory = $stripeErrorFactory;
-        $this->coreApplicationRouter = $coreApplicationRouter;
+        $this->coreApplicationHttpClient = $coreApplicationHttpClient;
     }
 
     /**
      * @param User $user
      * @param string $plan
      *
-     * @return bool|int|null
-     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      * @throws UserAccountCardException
      */
     public function subscribe(User $user, $plan)
     {
-        $requestUrl = $this->coreApplicationRouter->generate('user_plan_subscribe', [
-            'email' => $user->getUsername(),
-            'plan' => $plan
-        ]);
-
-        $request = $this->webResourceService->getHttpClientService()->postRequest($requestUrl);
-
-        $this->addAuthorisationToRequest($request);
-
         try {
-            $response = $request->send();
-        } catch (BadResponseException $badResponseException) {
-            $response = $badResponseException->getResponse();
-            $stripeError = $this->stripeErrorFactory->createFromHttpResponse($response);
+            $this->coreApplicationHttpClient->post('user_plan_subscribe', [
+                'email' => $user->getUsername(),
+                'plan' => $plan
+            ]);
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
+            if (400 === $coreApplicationRequestException->getCode()) {
+                $response = $coreApplicationRequestException->getResponse();
+                $stripeError = $this->stripeErrorFactory->createFromHttpResponse($response);
 
-            if (!$stripeError->isEmpty()) {
-                throw new UserAccountCardException(
-                    $stripeError->getMessage(),
-                    $stripeError->getParam(),
-                    $stripeError->getCode()
-                );
+                if (!$stripeError->isEmpty()) {
+                    throw new UserAccountCardException(
+                        $stripeError->getMessage(),
+                        $stripeError->getParam(),
+                        $stripeError->getCode()
+                    );
+                }
             }
-        } catch (CurlException $curlException) {
-            return $curlException->getErrorNo();
-        }
 
-        return $response->getStatusCode() == 200 ? true : $response->getStatusCode();
+            throw $coreApplicationRequestException;
+        }
     }
 }

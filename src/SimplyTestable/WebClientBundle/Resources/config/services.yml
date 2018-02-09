@@ -92,9 +92,8 @@ services:
   simplytestable.services.userplansubscriptionservice:
     class:  SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService
     arguments:
-        webResourceService: "@simplytestable.services.webresourceservice"
         stripeErrorFactory: '@simplytestable.services.stripeerrorfactory'
-        coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
+        coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
 
   simplytestable.services.useraccountcardservice:
     class:  SimplyTestable\WebClientBundle\Services\UserAccountCardService
