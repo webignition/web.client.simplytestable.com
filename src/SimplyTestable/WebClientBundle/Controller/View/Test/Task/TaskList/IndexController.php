@@ -3,7 +3,6 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Task\TaskList;
 
 use SimplyTestable\WebClientBundle\Controller\View\Test\AbstractRequiresValidOwnerController;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
@@ -30,7 +29,6 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
      *
      * @return Response
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException

@@ -112,7 +112,6 @@ class TaskService
      *
      * @return Task[]
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
@@ -346,23 +345,28 @@ class TaskService
      *
      * @return array
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     private function retrieveRemoteCollection(Test $test, $remoteTaskIds)
     {
-        $response = $this->coreApplicationHttpClient->post(
-            'test_tasks',
-            [
-                'canonical_url' => (string)$test->getWebsite(),
-                'test_id' => $test->getTestId(),
-            ],
-            [
-                'taskIds' => implode(',', $remoteTaskIds),
-            ]
-        );
+        $response = null;
+
+        try {
+            $response = $this->coreApplicationHttpClient->post(
+                'test_tasks',
+                [
+                    'canonical_url' => (string)$test->getWebsite(),
+                    'test_id' => $test->getTestId(),
+                ],
+                [
+                    'taskIds' => implode(',', $remoteTaskIds),
+                ]
+            );
+        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
+            // Not a write request, can't happen
+        }
 
         return $this->jsonResponseHandler->handle($response);
     }
@@ -450,7 +454,6 @@ class TaskService
      *
      * @return Task|null
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException

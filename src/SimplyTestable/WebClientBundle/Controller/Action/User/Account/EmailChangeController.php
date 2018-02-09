@@ -3,7 +3,6 @@
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
 use Egulias\EmailValidator\EmailValidator;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
@@ -57,7 +56,6 @@ class EmailChangeController extends AccountCredentialsChangeController
      * @param Request $request
      * @return RedirectResponse
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
@@ -171,11 +169,9 @@ class EmailChangeController extends AccountCredentialsChangeController
     /**
      * @return RedirectResponse
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      * @throws MailConfigurationException
      */
     public function resendAction()
@@ -336,7 +332,6 @@ class EmailChangeController extends AccountCredentialsChangeController
     /**
      * @return RedirectResponse
      *
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidCredentialsException
      */
     public function cancelAction()
@@ -356,10 +351,8 @@ class EmailChangeController extends AccountCredentialsChangeController
 
     /**
      * @throws InvalidAdminCredentialsException
-     * @throws InvalidCredentialsException
      * @throws MailConfigurationException
      * @throws PostmarkResponseException
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      */

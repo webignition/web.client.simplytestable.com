@@ -5,7 +5,6 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Dashbo
 use SimplyTestable\WebClientBundle\Controller\View\Dashboard\Partial\RecentTestsController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
@@ -97,7 +96,6 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
      * @param array $httpFixtures
      * @param EngineInterface $templatingEngine
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException

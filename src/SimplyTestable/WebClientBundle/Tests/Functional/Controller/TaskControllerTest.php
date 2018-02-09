@@ -5,7 +5,6 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller;
 use SimplyTestable\WebClientBundle\Controller\TaskController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
@@ -261,7 +260,6 @@ class TaskControllerTest extends AbstractBaseTestCase
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
-     * @throws CoreApplicationReadOnlyException
      */
     public function testRetrieveActionRender(array $httpFixtures, Request $request)
     {

@@ -2,7 +2,6 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
@@ -48,8 +47,6 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
      * @param array|null $expectedEmailChangeRequest
      *
      * @throws InvalidAdminCredentialsException
-     * @throws InvalidCredentialsException
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      */
@@ -100,7 +97,6 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
      * @param array $httpFixtures
      * @param bool $expectedRequestIsMade
      *
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidCredentialsException
      */
     public function testCancelEmailChangeRequest(array $httpFixtures, $expectedRequestIsMade)
@@ -129,7 +125,6 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
      * @param string $expectedExceptionMessage
      * @param int $expectedExceptionCode
      *
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidCredentialsException
      * @throws UserEmailChangeException
      */
@@ -159,7 +154,6 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
      * @param array $httpFixtures
      * @param bool $expectedRequestIsMade
      *
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidCredentialsException
      * @throws UserEmailChangeException
      */
@@ -192,7 +186,6 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
      * @param string $expectedExceptionMessage
      * @param int $expectedExceptionCode
      *
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidCredentialsException
      * @throws UserEmailChangeException
      */
@@ -219,7 +212,6 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
      * @param array $httpFixtures
      * @param $expectedRequestIsMade
      *
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidCredentialsException
      * @throws UserEmailChangeException
      */
@@ -300,5 +292,4 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
             ],
         ];
     }
-
 }
