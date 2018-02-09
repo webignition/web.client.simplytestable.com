@@ -2,6 +2,9 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserAccountCardService;
@@ -34,6 +37,7 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
         );
 
         $this->user = new User('user@example.com');
+        $this->coreApplicationHttpClient->setUser($this->user);
     }
 
     /**
@@ -42,15 +46,17 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
      * @param array $httpFixtures
      * @param string $expectedExceptionParam
      * @param string $expectedExceptionStripeCode
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function testAssociateStripeError(
         array $httpFixtures,
         $expectedExceptionParam,
         $expectedExceptionStripeCode
     ) {
-        $this->setHttpFixtures($httpFixtures);
-
-        $this->userAccountCardService->setUser($this->user);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         try {
             $this->userAccountCardService->associate($this->user, self::STRIPE_CARD_TOKEN);
@@ -69,14 +75,11 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
         return [
             'invalid address zip' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::create(
-                        400,
-                        [
-                            'X-Stripe-Error-Message' => 'The zip code you supplied failed validation.',
-                            'X-Stripe-Error-Param' => 'address_zip',
-                            'X-Stripe-Error-Code' => 'incorrect_zip'
-                        ]
-                    ),
+                    HttpResponseFactory::createBadRequestResponse([
+                        'X-Stripe-Error-Message' => 'The zip code you supplied failed validation.',
+                        'X-Stripe-Error-Param' => 'address_zip',
+                        'X-Stripe-Error-Code' => 'incorrect_zip'
+                    ]),
                 ],
                 'expectedExceptionParam' => 'address_zip',
                 'expectedExceptionStripeCode' => 'incorrect_zip',
@@ -85,68 +88,78 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
     }
 
     /**
-     * @dataProvider associateDataProvider
+     * @dataProvider associateFailureDataProvider
      *
      * @param array $httpFixtures
-     * @param string $expectedReturnValue
-     * @param bool $expectedRequestIsMade
+     * @param string $expectedException
+     * @param string $expectedExceptionMessage
+     * @param int $expectedExceptionCode
      *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      * @throws UserAccountCardException
      */
-    public function testAssociate(array $httpFixtures, $expectedReturnValue, $expectedRequestIsMade)
-    {
-        $this->setHttpFixtures($httpFixtures);
+    public function testAssociateFailure(
+        array $httpFixtures,
+        $expectedException,
+        $expectedExceptionMessage,
+        $expectedExceptionCode
+    ) {
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $returnValue = $this->userAccountCardService->associate($this->user, self::STRIPE_CARD_TOKEN);
+        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
 
-        $this->assertEquals($expectedReturnValue, $returnValue);
-
-        $lastRequest = $this->getLastRequest();
-
-        if ($expectedRequestIsMade) {
-            $this->assertEquals(
-                'http://null/user/user@example.com/card/tok_Bb4A2szGLfgwJe/associate/',
-                $lastRequest->getUrl()
-            );
-        } else {
-            $this->assertNull($lastRequest);
-        }
+        $this->userAccountCardService->associate($this->user, self::STRIPE_CARD_TOKEN);
     }
 
     /**
      * @return array
      */
-    public function associateDataProvider()
+    public function associateFailureDataProvider()
     {
         return [
             'HTTP 400' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::create(400),
+                    HttpResponseFactory::createBadRequestResponse(),
                 ],
-                'expectedReturnValue' => 400,
-                'expectedRequestIsMade' => true,
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Bad Request',
+                'expectedExceptionCode' => 400,
             ],
             'HTTP 404' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::create(404),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'expectedReturnValue' => 404,
-                'expectedRequestIsMade' => true,
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Not Found',
+                'expectedExceptionCode' => 404,
             ],
             'CURL 28' => [
                 'httpFixtures' => [
                     CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
                 ],
-                'expectedReturnValue' => 28,
-                'expectedRequestIsMade' => false,
-            ],
-            'Success' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::create(200),
-                ],
-                'expectedReturnValue' => true,
-                'expectedRequestIsMade' => true,
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Operation timed out',
+                'expectedExceptionCode' => 28,
             ],
         ];
+    }
+
+    public function testAssociateSuccess()
+    {
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->userAccountCardService->associate($this->user, self::STRIPE_CARD_TOKEN);
+
+        $this->assertEquals(
+            'http://null/user/user@example.com/card/tok_Bb4A2szGLfgwJe/associate/',
+            $this->getLastRequest()->getUrl()
+        );
     }
 }

@@ -36,7 +36,7 @@ class UserAccountCardControllerTest extends AbstractBaseTestCase
     public function testIndexActionPublicUserPostRequest()
     {
         $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $this->client->request(
@@ -61,7 +61,8 @@ class UserAccountCardControllerTest extends AbstractBaseTestCase
     {
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
-        $this->setHttpFixtures($httpFixtures);
+        $this->setHttpFixtures([$httpFixtures[0]]);
+        $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
 
         $this->client->getCookieJar()->set(new Cookie(
             UserService::USER_COOKIE_KEY,
@@ -102,14 +103,11 @@ class UserAccountCardControllerTest extends AbstractBaseTestCase
             'stripe error' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
-                    HttpResponseFactory::create(
-                        400,
-                        [
-                            'X-Stripe-Error-Message' => 'The zip code you supplied failed validation.',
-                            'X-Stripe-Error-Param' => 'address_zip',
-                            'X-Stripe-Error-Code' => 'incorrect_zip',
-                        ]
-                    ),
+                    HttpResponseFactory::createBadRequestResponse([
+                        'X-Stripe-Error-Message' => 'The zip code you supplied failed validation.',
+                        'X-Stripe-Error-Param' => 'address_zip',
+                        'X-Stripe-Error-Code' => 'incorrect_zip',
+                    ]),
                 ],
                 'expectedResponseData' => [
                     'user_account_card_exception_message' => 'The zip code you supplied failed validation.',

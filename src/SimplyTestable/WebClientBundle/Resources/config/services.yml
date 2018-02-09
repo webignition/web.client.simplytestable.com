@@ -98,9 +98,9 @@ services:
   simplytestable.services.useraccountcardservice:
     class:  SimplyTestable\WebClientBundle\Services\UserAccountCardService
     arguments:
-        webResourceService: "@simplytestable.services.webresourceservice"
         stripeErrorFactory: '@simplytestable.services.stripeerrorfactory'
         coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
+        coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
 
   simplytestable.services.userstripeeventservice:
     class:  SimplyTestable\WebClientBundle\Services\UserStripeEventService

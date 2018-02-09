@@ -1,12 +1,14 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Services;
 
-use Guzzle\Http\Exception\BadResponseException;
-use Guzzle\Http\Exception\CurlException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
 use SimplyTestable\WebClientBundle\Model\User;
 
-class UserAccountCardService extends CoreApplicationService
+class UserAccountCardService
 {
     const STRIPE_ERROR_HEADER_PREFIX = 'x-stripe-error-';
     const STRIPE_ERROR_KEY_MESSAGE = 'message';
@@ -24,19 +26,23 @@ class UserAccountCardService extends CoreApplicationService
     private $coreApplicationRouter;
 
     /**
-     * @param WebResourceService $webResourceService
+     * @var CoreApplicationHttpClient
+     */
+    private $coreApplicationHttpClient;
+
+    /**
      * @param StripeErrorFactory $stripeErrorFactory
      * @param CoreApplicationRouter $coreApplicationRouter
+     * @param CoreApplicationHttpClient $coreApplicationHttpClient
      */
     public function __construct(
-        WebResourceService $webResourceService,
         StripeErrorFactory $stripeErrorFactory,
-        CoreApplicationRouter $coreApplicationRouter
+        CoreApplicationRouter $coreApplicationRouter,
+        CoreApplicationHttpClient $coreApplicationHttpClient
     ) {
-        parent::__construct($webResourceService);
-
-        $this->stripeErrorFactory = $stripeErrorFactory;
+         $this->stripeErrorFactory = $stripeErrorFactory;
         $this->coreApplicationRouter = $coreApplicationRouter;
+        $this->coreApplicationHttpClient = $coreApplicationHttpClient;
     }
 
     /**
@@ -47,34 +53,38 @@ class UserAccountCardService extends CoreApplicationService
      *
      * @throws UserAccountCardException
      */
+
+    /**
+     * @param User $user
+     * @param string $stripe_card_token
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
+     * @throws UserAccountCardException
+     */
     public function associate(User $user, $stripe_card_token)
     {
-        $requestUrl = $this->coreApplicationRouter->generate('user_card_associate', [
-            'email' => $user->getUsername(),
-            'stripe_card_token' => $stripe_card_token,
-        ]);
-
-        $request = $this->webResourceService->getHttpClientService()->postRequest($requestUrl);
-
-        $this->addAuthorisationToRequest($request);
-
         try {
-            $response = $request->send();
-        } catch (BadResponseException $badResponseException) {
-            $response = $badResponseException->getResponse();
-            $stripeError = $this->stripeErrorFactory->createFromHttpResponse($response);
+            $this->coreApplicationHttpClient->post('user_card_associate', [
+                'email' => $user->getUsername(),
+                'stripe_card_token' => $stripe_card_token,
+            ]);
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
+            if (400 === $coreApplicationRequestException->getCode()) {
+                $response = $coreApplicationRequestException->getResponse();
+                $stripeError = $this->stripeErrorFactory->createFromHttpResponse($response);
 
-            if (!$stripeError->isEmpty()) {
-                throw new UserAccountCardException(
-                    $stripeError->getMessage(),
-                    $stripeError->getParam(),
-                    $stripeError->getCode()
-                );
+                if (!$stripeError->isEmpty()) {
+                    throw new UserAccountCardException(
+                        $stripeError->getMessage(),
+                        $stripeError->getParam(),
+                        $stripeError->getCode()
+                    );
+                }
             }
-        } catch (CurlException $curlException) {
-            return $curlException->getErrorNo();
-        }
 
-        return $response->getStatusCode() == 200 ? true : $response->getStatusCode();
+            throw $coreApplicationRequestException;
+        }
     }
 }
