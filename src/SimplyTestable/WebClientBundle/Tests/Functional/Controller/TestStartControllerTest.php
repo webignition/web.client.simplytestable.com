@@ -228,6 +228,11 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'test-types' => [
                         'HTML validation',
                     ],
+                    'test-type-options' => [
+                        'HTML validation' => [],
+                        'CSS validation' => [],
+                    ],
+                    'parameters' => [],
                 ],
             ],
             'HTTP 500; with http auth' => [
@@ -261,6 +266,10 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'test-types' => [
                         'HTML validation',
                     ],
+                    'test-type-options' => [
+                        'HTML validation' => [],
+                        'CSS validation' => [],
+                    ],
                     'parameters' => [
                         'http-auth-username' => 'user',
                         'http-auth-password' => 'pass',
@@ -287,6 +296,11 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'test-types' => [
                         'HTML validation',
                     ],
+                    'test-type-options' => [
+                        'HTML validation' => [],
+                        'CSS validation' => [],
+                    ],
+                    'parameters' => [],
                 ],
             ],
             'success; type=single' => [
@@ -310,6 +324,11 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'test-types' => [
                         'HTML validation',
                     ],
+                    'test-type-options' => [
+                        'HTML validation' => [],
+                        'CSS validation' => [],
+                    ],
+                    'parameters' => [],
                 ],
             ],
             'success; private user' => [
@@ -333,6 +352,8 @@ class TestStartControllerTest extends AbstractBaseTestCase
                         'HTML validation',
                     ],
                     'test-type-options' => [
+                        'HTML validation' => [],
+                        'CSS validation' => [],
                         'JS static analysis' => [
                             'jslint-option-bitwise' => 1,
                             'jslint-option-continue' => 1,
@@ -352,7 +373,9 @@ class TestStartControllerTest extends AbstractBaseTestCase
                             'jslint-option-white' => 1,
                             'jslint-option-anon' => 1,
                         ],
+                        'Link integrity' => [],
                     ],
+                    'parameters' => [],
                 ],
             ],
             'success; private user; link integrity' => [
@@ -376,6 +399,8 @@ class TestStartControllerTest extends AbstractBaseTestCase
                         'Link integrity',
                     ],
                     'test-type-options' => [
+                        'HTML validation' => [],
+                        'CSS validation' => [],
                         'JS static analysis' => [
                             'jslint-option-bitwise' => 1,
                             'jslint-option-continue' => 1,
@@ -401,6 +426,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
                             ],
                         ],
                     ],
+                    'parameters' => [],
                 ],
             ],
             'success; public user' => [
@@ -423,6 +449,11 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'test-types' => [
                         'HTML validation',
                     ],
+                    'test-type-options' => [
+                        'HTML validation' => [],
+                        'CSS validation' => [],
+                    ],
+                    'parameters' => [],
                 ],
             ],
             'success; public user; schemeless website' => [
@@ -445,6 +476,11 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'test-types' => [
                         'HTML validation',
                     ],
+                    'test-type-options' => [
+                        'HTML validation' => [],
+                        'CSS validation' => [],
+                    ],
+                    'parameters' => [],
                 ],
             ],
             'success; public user; http auth' => [
@@ -468,6 +504,10 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'type' => 'full site',
                     'test-types' => [
                         'HTML validation',
+                    ],
+                    'test-type-options' => [
+                        'HTML validation' => [],
+                        'CSS validation' => [],
                     ],
                     'parameters' => [
                         'http-auth-username' => 'user',
@@ -497,6 +537,11 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'test-types' => [
                         'HTML validation',
                     ],
+                    'test-type-options' => [
+                        'HTML validation' => [],
+                        'CSS validation' => [],
+                    ],
+                    'parameters' => [],
                 ],
             ],
             'success; public user; cookies' => [
@@ -524,6 +569,10 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'type' => 'full site',
                     'test-types' => [
                         'HTML validation',
+                    ],
+                    'test-type-options' => [
+                        'HTML validation' => [],
+                        'CSS validation' => [],
                     ],
                     'parameters' => [
                         'cookies' => [
