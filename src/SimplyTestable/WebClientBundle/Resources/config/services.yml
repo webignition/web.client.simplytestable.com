@@ -23,6 +23,7 @@ services:
     class:   SimplyTestable\WebClientBundle\Services\RemoteTestService
     arguments:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
+        jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
   simplytestable.services.taskservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskService
@@ -30,6 +31,7 @@ services:
         entityManager: "@doctrine.orm.entity_manager"
         taskOutputResultParserService: "@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory"
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
+        jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
   simplytestable.services.taskcollectionfilterservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService
@@ -68,6 +70,7 @@ services:
     class:  SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService
     arguments:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
+        jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
   simplytestable.services.userserializerservice:
     class:  SimplyTestable\WebClientBundle\Services\UserSerializerService
@@ -288,3 +291,5 @@ services:
       - '%admin_user_username%'
       - '%admin_user_password%'
 
+  SimplyTestable\WebClientBundle\Services\JsonResponseHandler:
+    class: SimplyTestable\WebClientBundle\Services\JsonResponseHandler

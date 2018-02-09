@@ -81,7 +81,6 @@ class TestController extends Controller
      * @return RedirectResponse
      *
      * @throws CoreApplicationReadOnlyException
-     * @throws InvalidContentTypeException
      */
     public function cancelAction($website, $test_id)
     {
@@ -131,7 +130,6 @@ class TestController extends Controller
      * @return RedirectResponse
      *
      * @throws CoreApplicationReadOnlyException
-     * @throws InvalidContentTypeException
      */
     public function cancelCrawlAction($website, $test_id)
     {

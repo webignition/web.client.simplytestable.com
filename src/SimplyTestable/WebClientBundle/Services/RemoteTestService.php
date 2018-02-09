@@ -32,11 +32,20 @@ class RemoteTestService
     private $coreApplicationHttpClient;
 
     /**
-     * @param CoreApplicationHttpClient $coreApplicationHttpClient
+     * @var JsonResponseHandler
      */
-    public function __construct(CoreApplicationHttpClient $coreApplicationHttpClient)
-    {
+    private $jsonResponseHandler;
+
+    /**
+     * @param CoreApplicationHttpClient $coreApplicationHttpClient
+     * @param JsonResponseHandler $jsonResponseHandler
+     */
+    public function __construct(
+        CoreApplicationHttpClient $coreApplicationHttpClient,
+        JsonResponseHandler $jsonResponseHandler
+    ) {
         $this->coreApplicationHttpClient = $coreApplicationHttpClient;
+        $this->jsonResponseHandler = $jsonResponseHandler;
     }
 
     /**
@@ -74,7 +83,7 @@ class RemoteTestService
             $this->getCookieDomain($canonicalUrl)
         );
 
-        $responseData = $this->coreApplicationHttpClient->post(
+        $response = $this->coreApplicationHttpClient->post(
             'test_start',
             [
                 'canonical_url' => $canonicalUrl,
@@ -84,11 +93,10 @@ class RemoteTestService
                     'type' => $testType,
                 ],
                 $testOptions->__toArray()
-            ),
-            [
-                CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
-            ]
+            )
         );
+
+        $responseData = $this->jsonResponseHandler->handle($response);
 
         return new RemoteTest($responseData);
     }
@@ -170,27 +178,19 @@ class RemoteTestService
     public function get()
     {
         if (is_null($this->remoteTest)) {
-            $remoteTestData = null;
-
             try {
-                $remoteTestData = $this->coreApplicationHttpClient->get(
+                $response = $this->coreApplicationHttpClient->get(
                     'test_status',
                     [
                         'canonical_url' => (string)$this->test->getWebsite(),
                         'test_id' => $this->test->getTestId(),
-                    ],
-                    [
-                        CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
                     ]
                 );
+
+                $remoteTestData = $this->jsonResponseHandler->handle($response);
+                $this->remoteTest = new RemoteTest($remoteTestData);
             } catch (InvalidContentTypeException $invalidContentTypeException) {
                 return false;
-            }
-
-            if (is_array($remoteTestData)) {
-                $this->remoteTest = new RemoteTest($remoteTestData);
-            } else {
-                $this->remoteTest = false;
             }
         }
 
@@ -208,7 +208,6 @@ class RemoteTestService
     /**
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     public function cancel()
@@ -222,7 +221,6 @@ class RemoteTestService
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     public function cancelByTestProperties($testId, $website)
@@ -246,17 +244,15 @@ class RemoteTestService
      */
     public function retest($testId, $website)
     {
-        $responseData = $this->coreApplicationHttpClient->post(
+        $response = $this->coreApplicationHttpClient->post(
             'test_retest',
             [
                 'canonical_url' => (string)$website,
                 'test_id' => $testId
-            ],
-            [],
-            [
-                CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
             ]
         );
+
+        $responseData = $this->jsonResponseHandler->handle($response);
 
         return new RemoteTest($responseData);
     }
@@ -333,7 +329,7 @@ class RemoteTestService
      */
     public function getFinishedWebsites()
     {
-        return $this->coreApplicationHttpClient->get(
+        $response = $this->coreApplicationHttpClient->get(
             'tests_list_websites',
             [
                 'exclude-states' => [
@@ -341,11 +337,10 @@ class RemoteTestService
                     'rejected'
                 ],
                 'exclude-current' => 1,
-            ],
-            [
-                CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
             ]
         );
+
+        return $this->jsonResponseHandler->handle($response);
     }
 
     /**
@@ -358,17 +353,16 @@ class RemoteTestService
         $finishedCount = null;
 
         try {
-            $finishedCount = $this->coreApplicationHttpClient->get(
+            $response = $this->coreApplicationHttpClient->get(
                 'tests_list_count',
                 [
                     'exclude-states' => ['rejected'],
                     'exclude-current' => 1,
                     'url-filter' => $filter,
-                ],
-                [
-                    CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
                 ]
             );
+
+            $finishedCount = $this->jsonResponseHandler->handle($response);
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             // Don't care
         } catch (InvalidContentTypeException $invalidContentTypeException) {
@@ -393,13 +387,9 @@ class RemoteTestService
     {
         $list = new TestList();
 
-        $responseData = $this->coreApplicationHttpClient->get(
-            'tests_list',
-            $routeParameters,
-            [
-                CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
-            ]
-        );
+        $response = $this->coreApplicationHttpClient->get('tests_list', $routeParameters);
+        $responseData = $this->jsonResponseHandler->handle($response);
+
         $list->setMaxResults($responseData['max_results']);
         $list->setLimit($responseData['limit']);
         $list->setOffset($responseData['offset']);
@@ -421,15 +411,14 @@ class RemoteTestService
         $remoteTest = null;
 
         try {
-            $remoteTestData = $this->coreApplicationHttpClient->get(
+            $response = $this->coreApplicationHttpClient->get(
                 'test_latest',
                 [
                     'canonical_url' => $canonicalUrl,
-                ],
-                [
-                    CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
                 ]
             );
+
+            $remoteTestData = $this->jsonResponseHandler->handle($response);
 
             $remoteTest = new RemoteTest($remoteTestData);
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
