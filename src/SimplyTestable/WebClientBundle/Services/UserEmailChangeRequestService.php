@@ -19,11 +19,20 @@ class UserEmailChangeRequestService
     private $coreApplicationHttpClient;
 
     /**
-     * @param CoreApplicationHttpClient $coreApplicationHttpClient
+     * @var JsonResponseHandler
      */
-    public function __construct(CoreApplicationHttpClient $coreApplicationHttpClient)
-    {
+    private $jsonResponseHandler;
+
+    /**
+     * @param CoreApplicationHttpClient $coreApplicationHttpClient
+     * @param JsonResponseHandler $jsonResponseHandler
+     */
+    public function __construct(
+        CoreApplicationHttpClient $coreApplicationHttpClient,
+        JsonResponseHandler $jsonResponseHandler
+    ) {
         $this->coreApplicationHttpClient = $coreApplicationHttpClient;
+        $this->jsonResponseHandler = $jsonResponseHandler;
     }
 
     /**
@@ -38,16 +47,14 @@ class UserEmailChangeRequestService
      */
     public function getEmailChangeRequest($email)
     {
-        return $this->coreApplicationHttpClient->getAsAdmin(
+        $response = $this->coreApplicationHttpClient->getAsAdmin(
             'user_email_change_request_get',
             [
                 'email' => $email
-            ],
-            [
-                CoreApplicationHttpClient::OPT_TREAT_404_AS_EMPTY => true,
-                CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
             ]
         );
+
+        return $this->jsonResponseHandler->handle($response);
     }
 
     /**

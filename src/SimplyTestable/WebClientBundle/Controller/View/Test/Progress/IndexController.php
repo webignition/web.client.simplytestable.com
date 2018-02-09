@@ -40,6 +40,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
      * @param int $test_id
      *
      * @return RedirectResponse|Response
+     *
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */

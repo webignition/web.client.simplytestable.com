@@ -80,14 +80,21 @@ class TaskService
     private $coreApplicationHttpClient;
 
     /**
+     * @var JsonResponseHandler
+     */
+    private $jsonResponseHandler;
+
+    /**
      * @param EntityManagerInterface $entityManager
      * @param TaskOutputResultParserFactory $taskOutputResultParserFactory
      * @param CoreApplicationHttpClient $coreApplicationHttpClient
+     * @param JsonResponseHandler $jsonResponseHandler
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         TaskOutputResultParserFactory $taskOutputResultParserFactory,
-        CoreApplicationHttpClient $coreApplicationHttpClient
+        CoreApplicationHttpClient $coreApplicationHttpClient,
+        JsonResponseHandler $jsonResponseHandler
     ) {
         $this->entityManager = $entityManager;
         $this->taskOutputResultParserService = $taskOutputResultParserFactory;
@@ -96,6 +103,7 @@ class TaskService
         $this->taskOutputRepository = $this->entityManager->getRepository(Output::class);
 
         $this->coreApplicationHttpClient = $coreApplicationHttpClient;
+        $this->jsonResponseHandler = $jsonResponseHandler;
     }
 
     /**
@@ -345,7 +353,7 @@ class TaskService
      */
     private function retrieveRemoteCollection(Test $test, $remoteTaskIds)
     {
-        return $this->coreApplicationHttpClient->post(
+        $response = $this->coreApplicationHttpClient->post(
             'test_tasks',
             [
                 'canonical_url' => (string)$test->getWebsite(),
@@ -353,11 +361,10 @@ class TaskService
             ],
             [
                 'taskIds' => implode(',', $remoteTaskIds),
-            ],
-            [
-                CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
             ]
         );
+
+        return $this->jsonResponseHandler->handle($response);
     }
 
     /**
@@ -426,16 +433,15 @@ class TaskService
      */
     private function retrieveRemoteTaskIds(Test $test)
     {
-        return $this->coreApplicationHttpClient->get(
+        $response = $this->coreApplicationHttpClient->get(
             'test_task_ids',
             [
                 'canonical_url' => (string)$test->getWebsite(),
                 'test_id' => $test->getTestId(),
-            ],
-            [
-                CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
             ]
         );
+
+        return $this->jsonResponseHandler->handle($response);
     }
 
     /**
