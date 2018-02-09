@@ -2,20 +2,17 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Test\Results\Preparing;
 
+use Guzzle\Plugin\History\HistoryPlugin;
 use SimplyTestable\WebClientBundle\Controller\View\Test\Results\Preparing\IndexController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
-use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
-use SimplyTestable\WebClientBundle\Tests\Factory\HttpHistory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TaskFactory;
@@ -66,7 +63,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionInvalidUserGetRequest()
     {
         $this->setHttpFixtures([
-            HttpResponseFactory::create(404),
+            HttpResponseFactory::createNotFoundResponse(),
         ]);
 
         $router = $this->container->get('router');
@@ -89,7 +86,10 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionInvalidOwnerGetRequest()
     {
         $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
@@ -118,11 +118,11 @@ class IndexControllerTest extends AbstractBaseTestCase
         $coreApplicationHttpClient->setUser($userService->getPublicUser());
 
         $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([1, 2, 3,]),
         ]);
 
@@ -144,7 +144,11 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionNoRemoteTasks()
     {
-        $this->setHttpFixtures([
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                 'task_count' => 0,
             ])),
@@ -165,12 +169,9 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param Request $request
      * @param $website
      * @param string $expectedRedirectUrl
-     * @param string[] $expectedRequestUrls
+     * @param string $expectedRequestUrl
      *
-     * @throws WebResourceException
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
@@ -180,14 +181,18 @@ class IndexControllerTest extends AbstractBaseTestCase
         Request $request,
         $website,
         $expectedRedirectUrl,
-        $expectedRequestUrls
+        $expectedRequestUrl
     ) {
         $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+
+        $coreApplicationHttpClient->setUser($userService->getPublicUser());
         $userService->setUser($user);
 
-        $httpHistory = new HttpHistory($this->container->get('simplytestable.services.httpclientservice'));
+        $httpHistoryPlugin = new HistoryPlugin();
+        $coreApplicationHttpClient->getHttpClient()->addSubscriber($httpHistoryPlugin);
 
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->indexController->setContainer($this->container);
 
@@ -195,12 +200,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $this->assertInstanceOf(RedirectResponse::class, $response);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
-
-        if (empty($expectedRequestUrls)) {
-            $this->assertEquals(0, $httpHistory->count());
-        } else {
-            $this->assertEquals($expectedRequestUrls, $httpHistory->getRequestUrls());
-        }
+        $this->assertEquals($expectedRequestUrl, $httpHistoryPlugin->getLastRequest()->getUrl());
     }
 
     /**
@@ -217,9 +217,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'request' => new Request(),
                 'website' => 'http://foo.example.com/',
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/',
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Ffoo.example.com%2F/1/',
-                ],
+                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Ffoo.example.com%2F/1/',
             ],
             'incorrect state' => [
                 'httpFixtures' => [
@@ -231,9 +229,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'request' => new Request(),
                 'website' => self::WEBSITE,
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
-                ],
+                'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
         ];
     }
@@ -245,12 +241,9 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param array $testValues
      * @param EngineInterface $templatingEngine
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
-     * @throws WebResourceException
      */
     public function testIndexActionRender(array $httpFixtures, array $testValues, EngineInterface $templatingEngine)
     {
@@ -258,8 +251,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $coreApplicationHttpClient->setUser($userService->getPublicUser());
 
-        $this->setHttpFixtures([$httpFixtures[0]]);
-        $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);
@@ -393,11 +385,8 @@ class IndexControllerTest extends AbstractBaseTestCase
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $coreApplicationHttpClient->setUser($userService->getPublicUser());
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([1, 2, 3,]),
         ]);
 

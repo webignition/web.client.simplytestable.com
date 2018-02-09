@@ -2,8 +2,8 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestService;
 
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use webignition\NormalisedUrl\NormalisedUrl;
 
 class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
@@ -26,11 +26,9 @@ class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
 
         $this->setRemoteTestServiceTest($this->test);
 
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
         ]);
-
-        $this->remoteTestService->setUser($this->user);
     }
 
     public function testLock()

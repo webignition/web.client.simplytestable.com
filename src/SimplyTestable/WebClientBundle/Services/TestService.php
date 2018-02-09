@@ -5,7 +5,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Repository\TestRepository;
 use webignition\NormalisedUrl\NormalisedUrl;
@@ -84,7 +85,7 @@ class TestService
      *
      * @return bool
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
      */
     public function has($canonicalUrl, $testId)
     {
@@ -100,12 +101,12 @@ class TestService
     }
 
     /**
-     * @param $canonicalUrl
-     * @param $testId
+     * @param string $canonicalUrl
+     * @param int $testId
      *
-     * @return bool|Test
+     * @return Test|bool
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
      */
     public function get($canonicalUrl, $testId)
     {
@@ -113,27 +114,24 @@ class TestService
             'testId' => $testId
         ]);
 
-        if (!empty($test)) {
-            $this->remoteTestService->setTest($test);
-            $remoteTest = $this->remoteTestService->get();
-
-            if ($remoteTest instanceof RemoteTest) {
-                $this->hydrateFromRemoteTest($test, $remoteTest);
-            }
-        } else {
+        if (empty($test)) {
             $test = new Test();
             $test->setTestId($testId);
             $test->setWebsite(new NormalisedUrl($canonicalUrl));
+        }
 
+        try {
             $this->remoteTestService->setTest($test);
             $remoteTest = $this->remoteTestService->get();
-
-            if (!$remoteTest instanceof RemoteTest) {
-                return false;
-            }
-
-            $this->hydrateFromRemoteTest($test, $remoteTest);
+        } catch (InvalidCredentialsException $invalidCredentialsException) {
+            return false;
         }
+
+        if (!$remoteTest instanceof RemoteTest) {
+            return false;
+        }
+
+        $this->hydrateFromRemoteTest($test, $remoteTest);
 
         $this->entityManager->persist($test);
         $this->entityManager->flush();

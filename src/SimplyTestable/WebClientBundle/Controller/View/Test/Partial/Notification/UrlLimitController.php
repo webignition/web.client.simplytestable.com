@@ -3,6 +3,8 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Partial\Notification;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +19,8 @@ class UrlLimitController extends BaseViewController implements RequiresValidUser
      *
      * @return Response
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function indexAction(Request $request, $website, $test_id)
     {
@@ -26,9 +29,6 @@ class UrlLimitController extends BaseViewController implements RequiresValidUser
         $userService = $this->container->get('simplytestable.services.userservice');
         $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
         $templating = $this->container->get('templating');
-
-        $user = $userService->getUser();
-        $remoteTestService->setUser($user);
 
         $test = $testService->get($website, $test_id);
         $remoteTestService->setTest($test);

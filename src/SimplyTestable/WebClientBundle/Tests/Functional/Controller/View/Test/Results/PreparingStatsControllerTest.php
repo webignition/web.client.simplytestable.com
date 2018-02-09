@@ -5,7 +5,9 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Test\R
 use SimplyTestable\WebClientBundle\Controller\View\Test\Results\PreparingStatsController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TaskFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
@@ -53,7 +55,7 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
     public function testIndexActionInvalidUserGetRequest()
     {
         $this->setHttpFixtures([
-            HttpResponseFactory::create(404),
+            HttpResponseFactory::createNotFoundResponse(),
         ]);
 
         $router = $this->container->get('router');
@@ -76,7 +78,10 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
     public function testIndexActionInvalidOwnerGetRequest()
     {
         $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
@@ -113,6 +118,9 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
     {
         $this->setHttpFixtures([
             HttpResponseFactory::create(200),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
@@ -136,12 +144,19 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
      *
      * @param array $httpFixtures
      * @param array $testValues
+     * @param array $expectedResponseData
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function testIndexActionRender(array $httpFixtures, array $testValues, array $expectedResponseData)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+
+        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);

@@ -7,13 +7,15 @@ use Guzzle\Plugin\History\HistoryPlugin;
 use SimplyTestable\WebClientBundle\Controller\View\Test\History\IndexController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\TestList;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
-use SimplyTestable\WebClientBundle\Tests\Factory\HttpHistory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
@@ -47,7 +49,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionInvalidUserGetRequest()
     {
         $this->setHttpFixtures([
-            HttpResponseFactory::create(404),
+            HttpResponseFactory::createNotFoundResponse(),
         ]);
 
         $router = $this->container->get('router');
@@ -67,7 +69,10 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionPublicUserGetRequest()
     {
         $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
                 'max_results' => 90,
                 'limit' => IndexController::TEST_LIST_LIMIT,
@@ -98,7 +103,10 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param string $expectedRedirectUrl
      * @param string[] $expectedRequestUrls
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testIndexActionBadPageNumber(
         array $httpFixtures,
@@ -122,14 +130,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $httpClient->addSubscriber($httpHistoryPlugin);
         $coreApplicationHttpClientHttpClient->addSubscriber($httpHistoryPlugin);
 
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
-        }
-
-        if (count($httpFixtures) > 1) {
-            array_shift($httpFixtures);
-            $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
-        }
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->indexController->setContainer($this->container);
 
@@ -268,7 +269,10 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param Request $request
      * @param EngineInterface $templatingEngine
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testIndexActionRender(
         array $httpFixtures,
@@ -277,12 +281,12 @@ class IndexControllerTest extends AbstractBaseTestCase
         EngineInterface $templatingEngine
     ) {
         $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $userService->setUser($user);
+        $coreApplicationHttpClient->setUser($user);
 
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
-        }
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $containerFactory = new ContainerFactory($this->container);
         $container = $containerFactory->create(
@@ -485,13 +489,11 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionCachedResponse()
     {
-        $this->setHttpFixtures([
-            HttpResponseFactory::createJsonResponse([
-                'max_results' => 0,
-                'limit' => IndexController::TEST_LIST_LIMIT,
-                'offset' => 0,
-                'jobs' => [],
-            ]),
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
                 'max_results' => 0,
                 'limit' => IndexController::TEST_LIST_LIMIT,

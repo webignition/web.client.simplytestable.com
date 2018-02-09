@@ -2,10 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestService;
 
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use webignition\NormalisedUrl\NormalisedUrl;
 
 class RemoteTestServiceSetTestTest extends AbstractRemoteTestServiceTest
@@ -43,14 +44,15 @@ class RemoteTestServiceSetTestTest extends AbstractRemoteTestServiceTest
      * @param array $httpFixtures
      * @param bool $expectedHasRemoteTest
      *
-     * @throws WebResourceException
+     * @throws \ReflectionException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function testSetTest(
         array $httpFixtures,
         $expectedHasRemoteTest
     ) {
-        $this->setHttpFixtures($httpFixtures);
-        $this->remoteTestService->setUser($this->user);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->remoteTestService->setTest($this->test);
 
@@ -69,17 +71,17 @@ class RemoteTestServiceSetTestTest extends AbstractRemoteTestServiceTest
         return [
             'remote test matches local test' => [
                 'httpFixtures' => [
-                    Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode([
-                            'id' => self::REMOTE_TEST_ID,
-                        ])),
+                    HttpResponseFactory::createJsonResponse([
+                        'id' => self::REMOTE_TEST_ID,
+                    ]),
                 ],
                 'expectedHasRemoteTest' => true,
             ],
             'remote test does not match local test' => [
                 'httpFixtures' => [
-                    Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode([
-                        'id' => self::REMOTE_TEST_ID - 1,
-                    ])),
+                    HttpResponseFactory::createJsonResponse([
+                        'id' => (self::REMOTE_TEST_ID - 1),
+                    ]),
                 ],
                 'expectedHasRemoteTest' => false,
             ],

@@ -4,14 +4,12 @@ namespace SimplyTestable\WebClientBundle\Controller;
 
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
-use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 
 class TaskController extends BaseViewController implements RequiresValidOwner
 {
@@ -32,22 +30,14 @@ class TaskController extends BaseViewController implements RequiresValidOwner
      *
      * @return JsonResponse
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
-     * @throws WebResourceException
      */
     public function idCollectionAction($website, $test_id)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $testService = $this->container->get('simplytestable.services.testservice');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
         $taskService = $this->container->get('simplytestable.services.taskservice');
-
-        $user = $userService->getUser();
-        $remoteTestService->setUser($user);
 
         $test = $testService->get($website, $test_id);
 
@@ -63,22 +53,14 @@ class TaskController extends BaseViewController implements RequiresValidOwner
      *
      * @return JsonResponse
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
-     * @throws WebResourceException
      */
     public function unretrievedIdCollectionAction($website, $test_id, $limit = null)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $testService = $this->container->get('simplytestable.services.testservice');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
         $taskService = $this->container->get('simplytestable.services.taskservice');
-
-        $user = $userService->getUser();
-        $remoteTestService->setUser($user);
 
         $test = $testService->get($website, $test_id);
 
@@ -103,22 +85,15 @@ class TaskController extends BaseViewController implements RequiresValidOwner
      *
      * @return Response
      *
-     * @throws WebResourceException
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     public function retrieveAction(Request $request, $website, $test_id)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $testService = $this->container->get('simplytestable.services.testservice');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
         $taskService = $this->container->get('simplytestable.services.taskservice');
-
-        $user = $userService->getUser();
-        $remoteTestService->setUser($user);
 
         $test = $testService->get($website, $test_id);
 

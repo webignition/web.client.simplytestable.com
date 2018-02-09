@@ -3,12 +3,9 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results\Preparing;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
-use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
@@ -26,10 +23,7 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
      *
      * @return RedirectResponse|Response
      *
-     * @throws WebResourceException
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
@@ -37,15 +31,11 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
     {
         $testService = $this->container->get('simplytestable.services.testservice');
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
         $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
         $router = $this->container->get('router');
         $taskService = $this->container->get('simplytestable.services.taskservice');
         $templating = $this->container->get('templating');
         $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
-
-        $user = $userService->getUser();
-        $remoteTestService->setUser($user);
 
         $test = $testService->get($website, $test_id);
         $remoteTest = $remoteTestService->get();

@@ -22,8 +22,7 @@ services:
   simplytestable.services.remotetestservice:
     class:   SimplyTestable\WebClientBundle\Services\RemoteTestService
     arguments:
-        webResourceService: "@simplytestable.services.webresourceservice"
-        coreApplicatioNRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
+        coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
 
   simplytestable.services.taskservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskService

@@ -2,9 +2,10 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller;
 
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\RedirectController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
@@ -49,9 +50,12 @@ class RedirectControllerTest extends AbstractBaseTestCase
         $testId,
         $expectedRedirectUrl
     ) {
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
-        }
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+
+        $user = new User(self::USERNAME);
+        $coreApplicationHttpClient->setUser($user);
+
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);
@@ -104,7 +108,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
             ],
             'posted website, no latest test, has test in repository' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 404'),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'testValues' => [
                     TestFactory::KEY_WEBSITE => 'http://example.com',
@@ -119,7 +123,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
             ],
             'get website, no latest test, does not have test in repository' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 404'),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'testValues' => [],
                 'request' => new Request([
@@ -131,7 +135,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
             ],
             'no website, no latest test, does not have test in repository' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 404'),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'testValues' => [],
                 'request' => new Request(),
@@ -141,7 +145,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
             ],
             'posted website, no latest test, does not have test in repository' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 404'),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'testValues' => [],
                 'request' => new Request([], [
@@ -153,7 +157,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
             ],
             'posted website, no scheme, no latest test, does not have test in repository' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 404'),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'testValues' => [],
                 'request' => new Request([], [
@@ -165,7 +169,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
             ],
             'posted website, no scheme, no host, no latest test, does not have test in repository' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 404'),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'testValues' => [],
                 'request' => new Request([], [
@@ -177,7 +181,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
             ],
             'posted website, no id, no latest test, does not have test in repository' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 404'),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'testValues' => [],
                 'request' => new Request([], [
@@ -189,7 +193,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
             ],
             'website and test_id, has latest test, http error retrieving remote test' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 404'),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'testValues' => [],
                 'request' => new Request(),

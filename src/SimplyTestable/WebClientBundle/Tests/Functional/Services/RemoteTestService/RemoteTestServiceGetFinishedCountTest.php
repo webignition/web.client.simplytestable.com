@@ -2,8 +2,8 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestService;
 
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 
 class RemoteTestServiceGetFinishedCountTest extends AbstractRemoteTestServiceTest
 {
@@ -17,9 +17,7 @@ class RemoteTestServiceGetFinishedCountTest extends AbstractRemoteTestServiceTes
      */
     public function testGetFinishedCount(array $httpFixtures, $urlFilter, $expectedResponse, $expectedRequestUrl)
     {
-        $this->remoteTestService->setUser($this->user);
-
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $response = $this->remoteTestService->getFinishedCount($urlFilter);
 
@@ -44,7 +42,10 @@ class RemoteTestServiceGetFinishedCountTest extends AbstractRemoteTestServiceTes
         return [
             'HTTP 500' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 500'),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
                 'urlFilter' => null,
                 'expectedResponse' => null,
@@ -53,6 +54,9 @@ class RemoteTestServiceGetFinishedCountTest extends AbstractRemoteTestServiceTes
             'CURL 28' => [
                 'httpFixtures' => [
                     CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
                 ],
                 'urlFilter' => null,
                 'expectedResponse' => null,
@@ -60,7 +64,7 @@ class RemoteTestServiceGetFinishedCountTest extends AbstractRemoteTestServiceTes
             ],
             'success' => [
                 'httpFixtures' => [
-                    Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n123"),
+                    HttpResponseFactory::createJsonResponse(123),
                 ],
                 'urlFilter' => null,
                 'expectedResponse' => 123,
@@ -68,7 +72,7 @@ class RemoteTestServiceGetFinishedCountTest extends AbstractRemoteTestServiceTes
             ],
             'success with url filter' => [
                 'httpFixtures' => [
-                    Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n123"),
+                    HttpResponseFactory::createJsonResponse(123),
                 ],
                 'urlFilter' => 'foo',
                 'expectedResponse' => 123,

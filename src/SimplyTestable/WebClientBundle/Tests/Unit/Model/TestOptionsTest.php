@@ -2,10 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Unit\Model;
 
-use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Model\ControllerTestRetrievalOutcome;
 use SimplyTestable\WebClientBundle\Model\TestOptions;
-use Symfony\Component\HttpFoundation\Response;
 
 class TestOptionsTest extends \PHPUnit_Framework_TestCase
 {

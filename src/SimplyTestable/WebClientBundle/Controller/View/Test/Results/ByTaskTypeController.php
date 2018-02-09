@@ -5,10 +5,8 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
-use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\Test\Task\ErrorTaskMapCollection;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -39,10 +37,8 @@ class ByTaskTypeController extends AbstractResultsController
      *
      * @return RedirectResponse|Response
      *
-     * @throws WebResourceException
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
@@ -59,7 +55,6 @@ class ByTaskTypeController extends AbstractResultsController
         $templating = $this->container->get('templating');
 
         $user = $userService->getUser();
-        $remoteTestService->setUser($user);
 
         $test = $testService->get($website, $test_id);
         $remoteTest = $remoteTestService->get();
@@ -137,7 +132,7 @@ class ByTaskTypeController extends AbstractResultsController
         $errorTaskMaps->sortMapsByOccurrenceCount()->sortByOccurrenceCount();
 
         $viewData = [
-            'is_owner' => $remoteTestService->owns(),
+            'is_owner' => $remoteTestService->owns($user),
             'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
             'website' => $urlViewValuesService->create($website),
             'test' => $test,

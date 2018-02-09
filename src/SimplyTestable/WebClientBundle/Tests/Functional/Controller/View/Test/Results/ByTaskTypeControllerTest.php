@@ -2,21 +2,23 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Test\Results;
 
+use Guzzle\Plugin\History\HistoryPlugin;
 use SimplyTestable\WebClientBundle\Controller\View\Test\Results\ByTaskTypeController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\Test\Task\ErrorTaskMapCollection;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
-use SimplyTestable\WebClientBundle\Tests\Factory\HttpHistory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
-use SimplyTestable\WebClientBundle\Tests\Functional\Services\CoreApplicationHttpClientTest;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -131,7 +133,11 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
      */
     public function testIndexActionInvalidGetRequest(array $httpFixtures, $expectedRedirectUrl)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setHttpFixtures([$httpFixtures[0]]);
+
+        if (count($httpFixtures) > 1) {
+            $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
+        }
 
         $router = $this->container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME_DEFAULT, [
@@ -159,13 +165,13 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
         return [
             'invalid user' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::create(404),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'expectedRedirectUrl' => 'http://localhost/signout/',
             ],
             'invalid owner, not logged in' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::create(200),
+                    HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createForbiddenResponse(),
                 ],
                 'expectedRedirectUrl' => sprintf(
@@ -176,7 +182,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
             ],
             'incomplete test' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::create(200),
+                    HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'state' => Test::STATE_IN_PROGRESS,
                     ])),
@@ -185,7 +191,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
             ],
             'website mismatch' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::create(200),
+                    HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'website' => 'http://foo.example.com/',
                     ])),
@@ -200,7 +206,10 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
         $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
@@ -232,11 +241,10 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
     {
         $this->setHttpFixtures([
             HttpResponseFactory::create(200),
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
-
         ]);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([1,]),
             HttpResponseFactory::createJsonResponse([
                 [
@@ -276,14 +284,12 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
      * @param string $taskType
      * @param string $filter
      * @param string $expectedRedirectUrl
-     * @param string[] $expectedRequestUrls
+     * @param string $expectedRequestUrl
      *
-     * @throws WebResourceException
-     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException
-     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testIndexActionRedirect(
         array $httpFixtures,
@@ -292,14 +298,18 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
         $taskType,
         $filter,
         $expectedRedirectUrl,
-        $expectedRequestUrls
+        $expectedRequestUrl
     ) {
         $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+
         $userService->setUser($user);
+        $coreApplicationHttpClient->setUser($user);
 
-        $httpHistory = new HttpHistory($this->container->get('simplytestable.services.httpclientservice'));
+        $httpHistoryPlugin = new HistoryPlugin();
+        $coreApplicationHttpClient->getHttpClient()->addSubscriber($httpHistoryPlugin);
 
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->byTaskTypeController->setContainer($this->container);
 
@@ -315,10 +325,12 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
 
-        if (empty($expectedRequestUrls)) {
-            $this->assertEquals(0, $httpHistory->count());
+        $lastRequest = $httpHistoryPlugin->getLastRequest();
+
+        if (empty($expectedRequestUrl)) {
+            $this->assertNull($lastRequest);
         } else {
-            $this->assertEquals($expectedRequestUrls, $httpHistory->getRequestUrls());
+            $this->assertEquals($expectedRequestUrl, $lastRequest->getUrl());
         }
     }
 
@@ -337,9 +349,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                 'taskType' => '',
                 'filter' => '',
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/',
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
-                ],
+                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
             'invalid task type' => [
                 'httpFixtures' => [
@@ -350,9 +360,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                 'taskType' => 'foo',
                 'filter' => '',
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/',
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
-                ],
+                'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
             'empty filter' => [
                 'httpFixtures' => [
@@ -363,9 +371,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => '',
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/html+validation/by-error/',
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
-                ],
+                'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
             'invalid filter' => [
                 'httpFixtures' => [
@@ -376,9 +382,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => 'foo',
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/html+validation/by-error/',
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
-                ],
+                'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
             'requires preparation' => [
                 'httpFixtures' => [
@@ -391,9 +395,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/preparing/',
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
-                ],
+                'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
         ];
     }
@@ -408,12 +410,10 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
      * @param string $filter
      * @param EngineInterface $templatingEngine
      *
-     * @throws WebResourceException
-     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException
-     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testIndexActionRender(
         array $httpFixtures,
@@ -428,9 +428,6 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
         $userService->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
-        $remoteTestHttpFixture = array_shift($httpFixtures);
-
-        $this->setHttpFixtures([$remoteTestHttpFixture]);
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($testValues)) {
@@ -696,11 +693,8 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $coreApplicationHttpClient->setUser($userService->getPublicUser());
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([]),
             HttpResponseFactory::createJsonResponse([]),
         ]);

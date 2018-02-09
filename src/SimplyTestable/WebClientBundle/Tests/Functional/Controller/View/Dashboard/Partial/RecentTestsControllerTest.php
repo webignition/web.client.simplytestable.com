@@ -7,10 +7,8 @@ use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
-use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\TestList;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
@@ -47,7 +45,7 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
     public function testIndexActionInvalidUserGetRequest()
     {
         $this->setHttpFixtures([
-            HttpResponseFactory::create(404),
+            HttpResponseFactory::createNotFoundResponse(),
         ]);
 
         $router = $this->container->get('router');
@@ -67,7 +65,16 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
     public function testIndexActionGetRequest()
     {
         $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse([
+                'max_results' => 0,
+                'limit' => 100,
+                'offset' => 0,
+                'jobs' => [],
+            ]),
         ]);
 
         $router = $this->container->get('router');
@@ -90,10 +97,8 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
      * @param array $httpFixtures
      * @param EngineInterface $templatingEngine
      *
-     * @throws WebResourceException
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
@@ -105,14 +110,7 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $coreApplicationHttpClient->setUser($userService->getPublicUser());
 
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
-        }
-
-        if (count($httpFixtures) > 1) {
-            array_shift($httpFixtures);
-            $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
-        }
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $containerFactory = new ContainerFactory($this->container);
         $container = $containerFactory->create(

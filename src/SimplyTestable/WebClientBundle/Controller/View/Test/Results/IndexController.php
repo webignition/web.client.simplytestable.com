@@ -5,10 +5,8 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
-use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -62,10 +60,8 @@ class IndexController extends AbstractResultsController
      *
      * @return RedirectResponse|Response
      *
-     * @throws WebResourceException
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
@@ -84,7 +80,6 @@ class IndexController extends AbstractResultsController
         $testOptionsAdapterFactory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
 
         $user = $userService->getUser();
-        $remoteTestService->setUser($user);
 
         $test = $testService->get($website, $test_id);
         $remoteTest = $remoteTestService->get();
@@ -157,18 +152,20 @@ class IndexController extends AbstractResultsController
         $testOptionsAdapter->setRequestData($remoteTest->getOptions());
         $testOptionsAdapter->setInvertInvertableOptions(true);
 
+        $isOwner = $remoteTestService->owns($user);
+
         $viewData = [
             'website' => $urlViewValuesService->create($website),
             'test' => $test,
             'is_public' => $remoteTest->getIsPublic(),
             'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
             'remote_test' => $remoteTest,
-            'is_owner' => $remoteTestService->owns(),
+            'is_owner' => $isOwner,
             'type' => $taskType,
             'type_label' => $this->getTaskTypeLabel($taskType),
             'filter' => $filter,
             'filter_label' => ucwords(str_replace('-', ' ', $filter)),
-            'available_task_types' => $this->getAvailableTaskTypes(),
+            'available_task_types' => $this->getAvailableTaskTypes($isOwner),
             'task_types' => $taskTypeService->get(),
             'test_options' => $testOptionsAdapter->getTestOptions()->__toKeyArray(),
             'css_validation_ignore_common_cdns' =>
@@ -308,18 +305,21 @@ class IndexController extends AbstractResultsController
     }
 
     /**
+     * @param bool $isOwner
+     *
      * @return array
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
-    private function getAvailableTaskTypes()
+    private function getAvailableTaskTypes($isOwner)
     {
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
         $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
 
         $remoteTest = $remoteTestService->get();
 
-        if ($remoteTest->getIsPublic() && !$remoteTestService->owns()) {
+        if ($remoteTest->getIsPublic() && !$isOwner) {
             $availableTaskTypes = $taskTypeService->get();
             $remoteTestTaskTypes = $remoteTest->getTaskTypes();
 

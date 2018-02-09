@@ -4,8 +4,10 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Test\R
 
 use SimplyTestable\WebClientBundle\Controller\View\Test\Results\Partial\FinishedSummary\IndexController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
@@ -54,7 +56,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionInvalidUserGetRequest()
     {
         $this->setHttpFixtures([
-            HttpResponseFactory::create(404),
+            HttpResponseFactory::createNotFoundResponse(),
         ]);
 
         $router = $this->container->get('router');
@@ -77,7 +79,10 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionInvalidOwnerGetRequest()
     {
         $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
@@ -102,7 +107,10 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionPublicUserGetRequest()
     {
         $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
@@ -127,23 +135,27 @@ class IndexControllerTest extends AbstractBaseTestCase
      *
      * @param EngineInterface $templatingEngine
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function testIndexActionRender(EngineInterface $templatingEngine)
     {
-        $this->setHttpFixtures([
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+
+        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
         $containerFactory = new ContainerFactory($this->container);
         $container = $containerFactory->create(
             [
-//                'router',
                 'simplytestable.services.testservice',
                 'simplytestable.services.remotetestservice',
                 'simplytestable.services.userservice',
                 'simplytestable.services.cachevalidator',
-//                'simplytestable.services.urlviewvalues',
             ],
             [
                 'templating' => $templatingEngine,
@@ -207,7 +219,12 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionCachedResponse()
     {
-        $this->setHttpFixtures([
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+
+        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 

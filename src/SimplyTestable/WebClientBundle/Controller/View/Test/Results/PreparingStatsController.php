@@ -3,7 +3,8 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,16 +26,13 @@ class PreparingStatsController extends BaseViewController implements RequiresVal
      *
      * @return JsonResponse
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function indexAction($website, $test_id)
     {
         $testService = $this->container->get('simplytestable.services.testservice');
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
-
-        $user = $userService->getUser();
-        $remoteTestService->setUser($user);
 
         $test = $testService->get($website, $test_id);
         $remoteTest = $remoteTestService->get();

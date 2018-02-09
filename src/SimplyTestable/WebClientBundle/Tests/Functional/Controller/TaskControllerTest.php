@@ -5,7 +5,10 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller;
 use SimplyTestable\WebClientBundle\Controller\TaskController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Repository\TestRepository;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -125,7 +128,10 @@ class TaskControllerTest extends AbstractBaseTestCase
     public function testInvalidOwnerRequest($method, $routeName, array $routeParameters)
     {
         $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
@@ -184,11 +190,8 @@ class TaskControllerTest extends AbstractBaseTestCase
     {
         $taskIds = [1, 2, 3, 4,];
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([1, 2, 3, 4,]),
         ]);
 
@@ -207,22 +210,16 @@ class TaskControllerTest extends AbstractBaseTestCase
      *
      * @param int $limit
      *
-     * @throws WebResourceException
-     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException
-     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testUnretrievedIdCollectionActionRender($limit)
     {
         $taskIds = [1, 2, 3, 4,];
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse($taskIds),
         ]);
 
@@ -261,12 +258,10 @@ class TaskControllerTest extends AbstractBaseTestCase
      * @param array $httpFixtures
      * @param Request $request
      *
-     * @throws WebResourceException
-     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException
-     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     * @throws CoreApplicationReadOnlyException
      */
     public function testRetrieveActionRender(array $httpFixtures, Request $request)
     {
@@ -281,9 +276,6 @@ class TaskControllerTest extends AbstractBaseTestCase
 
         $this->assertNull($test);
 
-        $remoteTestHttpFixture = array_shift($httpFixtures);
-
-        $this->setHttpFixtures([$remoteTestHttpFixture]);
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         /* @var Response $response */

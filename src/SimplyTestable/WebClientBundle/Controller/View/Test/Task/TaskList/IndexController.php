@@ -5,10 +5,8 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Test\Task\TaskList;
 use SimplyTestable\WebClientBundle\Controller\View\Test\AbstractRequiresValidOwnerController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
-use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\Task\Collection as TaskCollection;
@@ -32,24 +30,17 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
      *
      * @return Response
      *
-     * @throws WebResourceException
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     public function indexAction(Request $request, $website, $test_id)
     {
         $testService = $this->container->get('simplytestable.services.testservice');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
         $taskService = $this->container->get('simplytestable.services.taskservice');
         $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
         $templating = $this->container->get('templating');
-
-        $user = $userService->getUser();
-        $remoteTestService->setUser($user);
 
         $test = $testService->get($website, $test_id);
         $taskIds = $this->getTaskIdsFromRequest($request);

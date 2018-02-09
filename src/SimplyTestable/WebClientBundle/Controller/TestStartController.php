@@ -2,9 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
-use Guzzle\Http\Exception\CurlException;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\TestOptions;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -22,8 +24,10 @@ class TestStartController extends TestController
 
     /**
      * @param Request $request
-     *
      * @return RedirectResponse
+     *
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function startNewAction(Request $request)
     {
@@ -35,7 +39,6 @@ class TestStartController extends TestController
         $router = $this->container->get('router');
 
         $user = $userService->getUser();
-        $remoteTestService->setUser($user);
 
         $taskTypeService->setUser($user);
         if (!$userService->isPublicUser($user)) {
@@ -89,26 +92,29 @@ class TestStartController extends TestController
         $urlToTest = $this->getUrlToTest($isFullSiteTest, $website);
 
         try {
-            $jsonDocument = $remoteTestService->start($urlToTest, $testOptions, $testType);
-            $responseData = $jsonDocument->getContentArray();
+            $remoteTest = $remoteTestService->start($urlToTest, $testOptions, $testType);
 
             $redirectUrl = $router->generate(
                 'view_test_progress_index_index',
                 [
-                    'website' => $responseData['website'],
-                    'test_id' => $responseData['id'],
+                    'website' => $remoteTest->getWebsite(),
+                    'test_id' => $remoteTest->getId(),
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
             );
 
             return new RedirectResponse($redirectUrl);
-        } catch (CurlException $curlException) {
-            $flashBag->set('test_start_error', 'curl-error');
-            $flashBag->set('curl_error_code', $curlException->getErrorNo());
+        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
+            $flashBag->set('test_start_error', 'web_resource_exception');
 
             return new RedirectResponse($this->createStartErrorRedirectUrl($router, $redirectRouteParameters));
-        } catch (WebResourceException $webResourceException) {
-            $flashBag->set('test_start_error', 'web_resource_exception');
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
+            if ($coreApplicationRequestException->isCurlException()) {
+                $flashBag->set('test_start_error', 'curl-error');
+                $flashBag->set('curl_error_code', $coreApplicationRequestException->getCode());
+            } else {
+                $flashBag->set('test_start_error', 'web_resource_exception');
+            }
 
             return new RedirectResponse($this->createStartErrorRedirectUrl($router, $redirectRouteParameters));
         }

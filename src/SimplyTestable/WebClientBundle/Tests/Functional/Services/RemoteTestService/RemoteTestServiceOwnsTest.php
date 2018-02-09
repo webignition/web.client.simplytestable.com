@@ -2,9 +2,9 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestService;
 
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use webignition\NormalisedUrl\NormalisedUrl;
 
 class RemoteTestServiceOwnsTest extends AbstractRemoteTestServiceTest
@@ -31,66 +31,89 @@ class RemoteTestServiceOwnsTest extends AbstractRemoteTestServiceTest
     public function testOwnsDirectOwner()
     {
         $this->test->setUser($this->user->getUsername());
-        $this->remoteTestService->setUser($this->user);
 
-        $this->assertTrue($this->remoteTestService->owns());
+        $this->assertTrue($this->remoteTestService->owns($this->user));
     }
 
-    public function testOwnsRemoteHttpFailure()
+    /**
+     * @dataProvider ownsRemoteExceptionDataProvider
+     *
+     * @param array $httpFixtures
+     * @param string $expectedException
+     * @param string $expectedExceptionMessage
+     * @param int $expectedExceptionCode
+     *
+     * @throws CoreApplicationRequestException
+     */
+    public function testOwnsRemoteException(
+        array $httpFixtures,
+        $expectedException,
+        $expectedExceptionMessage,
+        $expectedExceptionCode
+    ) {
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+
+        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+
+        $this->remoteTestService->owns($this->user);
+    }
+
+    /**
+     * @return array
+     */
+    public function ownsRemoteExceptionDataProvider()
     {
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 503'),
-        ]);
-
-        $this->remoteTestService->setUser($this->user);
-
-        $this->setExpectedException(WebResourceException::class);
-
-        $this->remoteTestService->owns();
+        return [
+            'http 500' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                ],
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Internal Server Error',
+                'expectedExceptionCode' => 500,
+            ],
+        ];
     }
 
     public function testOwnsRemoteHttp403()
     {
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 403'),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $this->remoteTestService->setUser($this->user);
-
-        $this->assertFalse($this->remoteTestService->owns());
+        $this->assertFalse($this->remoteTestService->owns($this->user));
     }
 
     public function testOwnsOwnersDoesNotContain()
     {
-        $this->setHttpFixtures([
-            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode([
-                    'id' => 1,
-                    'owners' => [
-                        'foo@example.com',
-                        'bar@example.com',
-                    ],
-                ])),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse([
+                'id' => 1,
+                'owners' => [
+                    'foo@example.com',
+                    'bar@example.com',
+                ],
+            ]),
         ]);
 
-        $this->remoteTestService->setUser($this->user);
-
-        $this->assertFalse($this->remoteTestService->owns());
+        $this->assertFalse($this->remoteTestService->owns($this->user));
     }
 
     public function testOwnsOwnersContains()
     {
-        $this->setHttpFixtures([
-            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode([
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse([
                 'id' => 1,
                 'owners' => [
                     $this->user->getUsername(),
                     'bar@example.com',
                 ],
-            ])),
+            ]),
         ]);
 
-        $this->remoteTestService->setUser($this->user);
-
-        $this->assertTrue($this->remoteTestService->owns());
+        $this->assertTrue($this->remoteTestService->owns($this->user));
     }
 }

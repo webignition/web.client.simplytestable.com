@@ -5,10 +5,8 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Test\History;
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
-use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
@@ -31,10 +29,8 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
-     * @throws WebResourceException
      */
     public function indexAction(Request $request)
     {
@@ -118,10 +114,8 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
      *
      * @return TestList
      *
-     * @throws WebResourceException
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
@@ -129,12 +123,7 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
     {
         $testService = $this->container->get('simplytestable.services.testservice');
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
         $taskService = $this->container->get('simplytestable.services.taskservice');
-
-        $user = $userService->getUser();
-
-        $remoteTestService->setUser($user);
 
         $testList = $remoteTestService->getFinished($limit, $offset, $filter);
 
