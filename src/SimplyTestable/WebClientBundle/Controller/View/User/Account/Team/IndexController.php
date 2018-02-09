@@ -4,6 +4,9 @@ namespace SimplyTestable\WebClientBundle\Controller\View\User\Account\Team;
 
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
@@ -30,8 +33,11 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
      *
      * @return Response
      *
-     * @throws \Exception
      * @throws WebResourceException
+     * @throws \Exception
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function indexAction(Request $request)
     {

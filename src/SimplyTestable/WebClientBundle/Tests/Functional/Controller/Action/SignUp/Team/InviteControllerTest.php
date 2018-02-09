@@ -2,7 +2,6 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\SignUp\Team;
 
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\SignUp\Team\InviteController;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -35,13 +34,16 @@ class InviteControllerTest extends AbstractBaseTestCase
 
     public function testAcceptActionPostRequest()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
                 'team' => 'Team Name',
                 'user' => self::USERNAME,
                 'token' => self::TOKEN,
             ]),
-            Response::fromMessage('HTTP/1.1 200'),
+        ]);
+
+        $this->setHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $router = $this->container->get('router');
@@ -87,7 +89,11 @@ class InviteControllerTest extends AbstractBaseTestCase
         $session = $this->container->get('session');
 
         if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
+            $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[0]]);
+
+            if (count($httpFixtures) > 1) {
+                $this->setHttpFixtures([$httpFixtures[1]]);
+            }
         }
 
         /* @var RedirectResponse $response */
@@ -129,7 +135,7 @@ class InviteControllerTest extends AbstractBaseTestCase
             ],
             'invalid token' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse(0),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'token' => 'invalid token',
                 'request' => new Request(),
@@ -152,7 +158,7 @@ class InviteControllerTest extends AbstractBaseTestCase
             'activateAndAccept failure; HTTP 500' => [
                 'httpFixtures' => [
                     $inviteHttpResponse,
-                    Response::fromMessage('HTTP/1.1 500'),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
                 'token' => self::TOKEN,
                 'request' => new Request([], [
@@ -202,13 +208,16 @@ class InviteControllerTest extends AbstractBaseTestCase
         $session = $this->container->get('session');
         $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
 
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
                 'team' => 'Team Name',
                 'user' => self::USERNAME,
                 'token' => self::TOKEN,
             ]),
-            Response::fromMessage('HTTP/1.1 200'),
+        ]);
+
+        $this->setHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         /* @var RedirectResponse $response */

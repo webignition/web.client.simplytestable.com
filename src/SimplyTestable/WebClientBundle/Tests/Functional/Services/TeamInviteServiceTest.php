@@ -2,11 +2,13 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\TeamInvite;
 
-use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\Response;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\TeamInviteService;
@@ -37,7 +39,8 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
             'simplytestable.services.teaminviteservice'
         );
 
-        $this->teamInviteService->setUser(new User(self::USERNAME));
+        $user = new User(self::USERNAME);
+        $this->coreApplicationHttpClient->setUser($user);
     }
 
     /**
@@ -48,8 +51,10 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
      * @param string $expectedExceptionMessage
      * @param string $expectedExceptionCode
      *
+     * @throws CoreApplicationRequestException
      * @throws TeamServiceException
-     * @throws WebResourceException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testGetRemoteFailure(
         array $httpFixtures,
@@ -57,7 +62,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
         $this->teamInviteService->get(self::USERNAME);
@@ -71,33 +76,40 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
         return [
             'HTTP 404' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 404'),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'expectedException' => WebResourceException::class,
+                'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Not Found',
                 'expectedExceptionCode' => 404,
             ],
             'HTTP 500' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 500'),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
-                'expectedException' => WebResourceException::class,
+                'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Internal Server Error',
                 'expectedExceptionCode' => 500,
             ],
             'CURL 28' => [
                 'httpFixtures' => [
                     CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
                 ],
-                'expectedException' => CurlException::class,
-                'expectedExceptionMessage' => '',
-                'expectedExceptionCode' => 0,
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Operation timed out',
+                'expectedExceptionCode' => 28,
             ],
             'Application-level error' => [
                 'httpFixtures' => [
-                    Response::fromMessage(
-                        "HTTP/1.1 400\nX-TeamInviteGet-Error-Code:1\nX-TeamInviteGet-Error-Message:foo"
-                    ),
+                    HttpResponseFactory::createBadRequestResponse([
+                        'X-TeamInviteGet-Error-Code' => 1,
+                        'X-TeamInviteGet-Error-Message' => 'foo',
+                    ]),
                 ],
                 'expectedException' => TeamServiceException::class,
                 'expectedExceptionMessage' => 'foo',
@@ -108,7 +120,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
 
     public function testGetSuccess()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
                 'team' => self::TEAM_NAME,
                 'user' => self::USERNAME,
@@ -128,7 +140,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
 
     public function testGetForUserSuccess()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
                 [
                     'team' => self::TEAM_NAME,
@@ -156,10 +168,13 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
      *
      * @param array $httpFixtures
      * @param bool $expectedReturnValue
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws InvalidCredentialsException
      */
     public function testDeclineInvite(array $httpFixtures, $expectedReturnValue)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $invite = new Invite([
             'team' => self::TEAM_NAME,
@@ -181,10 +196,13 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
      *
      * @param array $httpFixtures
      * @param bool $expectedReturnValue
+     *
+     * @throws InvalidCredentialsException
+     * @throws CoreApplicationReadOnlyException
      */
     public function testAcceptInvite(array $httpFixtures, $expectedReturnValue)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $invite = new Invite([
             'team' => self::TEAM_NAME,
@@ -203,7 +221,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
 
     public function testGetForTeamSuccess()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
                 [
                     'team' => self::TEAM_NAME,
@@ -231,10 +249,13 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
      *
      * @param array $httpFixtures
      * @param bool $expectedReturnValue
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws InvalidCredentialsException
      */
     public function testRemoveForUser(array $httpFixtures, $expectedReturnValue)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $invite = new Invite([
             'team' => self::TEAM_NAME,
@@ -253,11 +274,12 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
      * @param array $httpFixtures
      * @param Invite|null $expectedReturnValue
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      */
     public function testGetForTokenSuccess(array $httpFixtures, $expectedReturnValue)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $invite = $this->teamInviteService->getForToken(self::TOKEN);
 
@@ -286,7 +308,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
             ],
             'invalid response data' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse(0),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'expectedReturnValue' => null,
             ],
@@ -295,11 +317,11 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
 
     public function testGetForTokenInvalidAdminCredentials()
     {
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 401'),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $this->setExpectedException(CoreApplicationAdminRequestException::class, 'Invalid admin user credentials', 401);
+        $this->setExpectedException(InvalidAdminCredentialsException::class, '', 0);
 
         $this->teamInviteService->getForToken(self::TOKEN);
     }

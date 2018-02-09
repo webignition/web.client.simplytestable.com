@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -95,13 +96,13 @@ class IndexControllerTest extends AbstractBaseTestCase
         return [
             'invalid user' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::create(404),
+                    HttpResponseFactory::createNotFoundResponse()
                 ],
                 'expectedRedirectUrl' => 'http://localhost/signout/',
             ],
             'public user' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::create(200),
+                    HttpResponseFactory::createSuccessResponse(),
                 ],
                 'expectedRedirectUrl' =>
                     'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNl'
@@ -116,7 +117,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
         $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(array_merge($this->userData, [
                 'team_summary' => [
                     'in' => false,
@@ -156,15 +157,19 @@ class IndexControllerTest extends AbstractBaseTestCase
         EngineInterface $templatingEngine
     ) {
         $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+
         $session = $this->container->get('session');
 
         $user = new User(self::USER_EMAIL);
 
         $userService->setUser($user);
+        $coreApplicationHttpClient->setUser($user);
 
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
-        }
+        $this->setHttpFixtures($httpFixtures);
+
+        $invitesFixture = array_pop($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures([$invitesFixture]);
 
         if (!empty($flashBagValues)) {
             foreach ($flashBagValues as $key => $value) {
