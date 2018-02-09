@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller;
 use SimplyTestable\WebClientBundle\Controller\UserAccountPlanController;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -89,6 +90,9 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
         $this->setHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($this->userData),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
@@ -111,19 +115,29 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
      * @dataProvider subscribeActionDataProvider
      *
      * @param array $httpFixtures
+     * @param array $coreApplicationHttpClientFixtures
      * @param Request $request
      * @param array $expectedFlashBagValues
      *
      * @throws WebResourceException
      * @throws \Exception
      */
-    public function testSubscribeAction(array $httpFixtures, Request $request, array $expectedFlashBagValues)
-    {
+    public function testSubscribeAction(
+        array $httpFixtures,
+        array $coreApplicationHttpClientFixtures,
+        Request $request,
+        array $expectedFlashBagValues
+    ) {
         $session = $this->container->get('session');
         $userService = $this->container->get('simplytestable.services.userservice');
-        $userService->setUser(new User(self::USER_EMAIL));
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+
+        $user = new User(self::USER_EMAIL);
+        $userService->setUser($user);
+        $coreApplicationHttpClient->setUser($user);
 
         $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($coreApplicationHttpClientFixtures);
 
         $this->userAccountPlanController->setContainer($this->container);
 
@@ -144,6 +158,7 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse($this->userData),
                 ],
+                'coreApplicationHttpClientFixtures' => [],
                 'request' => new Request([], [
                     'plan' => 'agency',
                 ]),
@@ -171,6 +186,7 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
                         ],
                     ]),
                 ],
+                'coreApplicationHttpClientFixtures' => [],
                 'request' => new Request([], [
                     'plan' => 'personal',
                 ]),
@@ -179,6 +195,11 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
             'HTTP 503 failure' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse($this->userData),
+                ],
+                'coreApplicationHttpClientFixtures' => [
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
                     HttpResponseFactory::createServiceUnavailableResponse(),
                 ],
                 'request' => new Request([], [
@@ -193,7 +214,12 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
             'CURL 28 failure' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse($this->userData),
-                    CurlExceptionFactory::create('Operation timed out', 28)
+                ],
+                'coreApplicationHttpClientFixtures' => [
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
                 ],
                 'request' => new Request([], [
                     'plan' => 'personal',
@@ -207,14 +233,13 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
             'stripe card error' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse($this->userData),
-                    HttpResponseFactory::create(
-                        400,
-                        [
-                            'X-Stripe-Error-Message' => 'The zip code you supplied failed validation.',
-                            'X-Stripe-Error-Param' => 'address_zip',
-                            'X-Stripe-Error-Code' => 'incorrect_zip',
-                        ]
-                    ),
+                ],
+                'coreApplicationHttpClientFixtures' => [
+                    HttpResponseFactory::createBadRequestResponse([
+                        'X-Stripe-Error-Message' => 'The zip code you supplied failed validation.',
+                        'X-Stripe-Error-Param' => 'address_zip',
+                        'X-Stripe-Error-Code' => 'incorrect_zip',
+                    ]),
                 ],
                 'request' => new Request([], [
                     'plan' => 'personal',
@@ -234,6 +259,8 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
             'success, not in team' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse($this->userData),
+                ],
+                'coreApplicationHttpClientFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                 ],
                 'request' => new Request([], [
@@ -262,6 +289,8 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
                             self::USER_EMAIL,
                         ],
                     ]),
+                ],
+                'coreApplicationHttpClientFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                 ],
                 'request' => new Request([], [

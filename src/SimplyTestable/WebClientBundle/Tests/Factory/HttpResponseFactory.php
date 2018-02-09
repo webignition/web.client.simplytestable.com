@@ -100,11 +100,13 @@ class HttpResponseFactory
     }
 
     /**
+     * @param array $headers
+     *
      * @return Response
      */
-    public static function createBadRequestResponse()
+    public static function createBadRequestResponse(array $headers = [])
     {
-        return self::create(400);
+        return self::create(400, $headers);
     }
 
     /**

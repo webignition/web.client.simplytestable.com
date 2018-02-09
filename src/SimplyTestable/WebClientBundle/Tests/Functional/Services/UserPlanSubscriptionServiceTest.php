@@ -2,8 +2,12 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -34,6 +38,8 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
         );
 
         $this->user = new User('user@example.com');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser($this->user);
     }
 
     /**
@@ -42,19 +48,21 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
      * @param array $httpFixtures
      * @param string $expectedExceptionParam
      * @param string $expectedExceptionStripeCode
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function testSubscribeStripeError(
         array $httpFixtures,
         $expectedExceptionParam,
         $expectedExceptionStripeCode
     ) {
-        $this->setHttpFixtures($httpFixtures);
-
-        $this->userPlanSubscriptionService->setUser($this->user);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         try {
             $this->userPlanSubscriptionService->subscribe($this->user, self::PLAN);
-            $this->fail(UserAccountCardException::class. ' not thrown');
+            $this->fail(UserAccountCardException::class . ' not thrown');
         } catch (UserAccountCardException $userAccountCardException) {
             $this->assertEquals($expectedExceptionParam, $userAccountCardException->getParam());
             $this->assertEquals($expectedExceptionStripeCode, $userAccountCardException->getStripeCode());
@@ -85,68 +93,78 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
     }
 
     /**
-     * @dataProvider subscribeDataProvider
+     * @dataProvider subscribeFailureDataProvider
      *
      * @param array $httpFixtures
-     * @param string $expectedReturnValue
-     * @param bool $expectedRequestIsMade
+     * @param string $expectedException
+     * @param string $expectedExceptionMessage
+     * @param int $expectedExceptionCode
      *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      * @throws UserAccountCardException
      */
-    public function testSubscribe(array $httpFixtures, $expectedReturnValue, $expectedRequestIsMade)
-    {
-        $this->setHttpFixtures($httpFixtures);
+    public function testSubscribeFailure(
+        array $httpFixtures,
+        $expectedException,
+        $expectedExceptionMessage,
+        $expectedExceptionCode
+    ) {
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $returnValue = $this->userPlanSubscriptionService->subscribe($this->user, self::PLAN);
+        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
 
-        $this->assertEquals($expectedReturnValue, $returnValue);
-
-        $lastRequest = $this->getLastRequest();
-
-        if ($expectedRequestIsMade) {
-            $this->assertEquals(
-                'http://null/user/user@example.com/personal/subscribe/',
-                $lastRequest->getUrl()
-            );
-        } else {
-            $this->assertNull($lastRequest);
-        }
+        $this->userPlanSubscriptionService->subscribe($this->user, self::PLAN);
     }
 
     /**
      * @return array
      */
-    public function subscribeDataProvider()
+    public function subscribeFailureDataProvider()
     {
         return [
             'HTTP 400' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::create(400),
+                    HttpResponseFactory::createBadRequestResponse(),
                 ],
-                'expectedReturnValue' => 400,
-                'expectedRequestIsMade' => true,
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Bad Request',
+                'expectedExceptionCode' => 400,
             ],
             'HTTP 404' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::create(404),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'expectedReturnValue' => 404,
-                'expectedRequestIsMade' => true,
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Not Found',
+                'expectedExceptionCode' => 404,
             ],
             'CURL 28' => [
                 'httpFixtures' => [
                     CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
                 ],
-                'expectedReturnValue' => 28,
-                'expectedRequestIsMade' => false,
-            ],
-            'Success' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::create(200),
-                ],
-                'expectedReturnValue' => true,
-                'expectedRequestIsMade' => true,
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Operation timed out',
+                'expectedExceptionCode' => 28,
             ],
         ];
+    }
+
+    public function testSubscribeSuccess()
+    {
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->userPlanSubscriptionService->subscribe($this->user, self::PLAN);
+
+        $this->assertEquals(
+            'http://null/user/user@example.com/personal/subscribe/',
+            $this->getLastRequest()->getUrl()
+        );
     }
 }
