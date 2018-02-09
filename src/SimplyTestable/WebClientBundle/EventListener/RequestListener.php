@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\EventListener;
 
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -62,7 +63,6 @@ class RequestListener
      * @param GetResponseEvent $event
      *
      * @throws \Exception
-     * @throws WebResourceException
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
@@ -136,18 +136,15 @@ class RequestListener
                     return;
                 }
 
-                $testService->get($website, $testId);
-            } catch (WebResourceException $webResourceException) {
-                /* @var RequiresValidTestOwnerController $controller */
-                $controller = $this->createController();
+                $test = $testService->get($website, $testId);
 
-                if ($webResourceException->getCode() == 403) {
-                    $this->event->setResponse($controller->getInvalidOwnerResponse($this->request));
-
-                    return;
+                if (empty($test)) {
+                    throw new InvalidCredentialsException();
                 }
+            } catch (InvalidCredentialsException $invalidCredentialsException) {
+                $this->event->setResponse($controller->getInvalidOwnerResponse($this->request));
 
-                throw $webResourceException;
+                return;
             }
         }
 
