@@ -70,7 +70,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @param string $expectedExceptionMessage
      * @param int $expectedExceptionCode
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
      */
@@ -215,7 +214,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      *
      * @param mixed $expectedResponse
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
      */
