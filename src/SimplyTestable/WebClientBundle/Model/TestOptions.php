@@ -303,6 +303,16 @@ class TestOptions
                     false
                 );
             }
+
+            foreach ($optionsAsArray['test-type-options'] as $taskTypeName => $taskTypeOptions) {
+                if (empty($taskTypeOptions)) {
+                    unset($optionsAsArray['test-type-options'][$taskTypeName]);
+                }
+            }
+
+            if (empty($optionsAsArray['test-type-options'])) {
+                unset($optionsAsArray['test-type-options']);
+            }
         }
 
         if ($this->hasFeatures()) {
@@ -315,6 +325,10 @@ class TestOptions
                     $optionsAsArray['parameters'],
                     $this->getAbsoluteFeatureOptions($featureKey)
                 );
+            }
+
+            if (empty($optionsAsArray['parameters'])) {
+                unset($optionsAsArray['parameters']);
             }
         }
 

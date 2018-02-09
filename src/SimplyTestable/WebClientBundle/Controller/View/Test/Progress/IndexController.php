@@ -4,7 +4,8 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Test\Progress;
 
 use Negotiation\FormatNegotiator;
 use SimplyTestable\WebClientBundle\Controller\View\Test\AbstractRequiresValidOwnerController;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
@@ -39,7 +40,8 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
      * @param int $test_id
      *
      * @return RedirectResponse|Response
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function indexAction(Request $request, $website, $test_id)
     {
@@ -54,7 +56,6 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         $templating = $this->container->get('templating');
 
         $user = $userService->getUser();
-        $remoteTestService->setUser($user);
 
         $test = $testService->get($website, $test_id);
         $remoteTest = $remoteTestService->get();

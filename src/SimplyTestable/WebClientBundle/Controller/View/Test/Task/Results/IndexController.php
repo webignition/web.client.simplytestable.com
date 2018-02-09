@@ -6,10 +6,8 @@ use SimplyTestable\WebClientBundle\Controller\View\Test\AbstractRequiresValidOwn
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
-use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
@@ -36,10 +34,8 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
      *
      * @return Response
      *
-     * @throws WebResourceException
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
@@ -55,10 +51,8 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         $templating = $this->container->get('templating');
 
         $user = $userService->getUser();
-        $remoteTestService->setUser($user);
-
         $test = $testService->get($website, $test_id);
-        $isOwner = $remoteTestService->owns();
+        $isOwner = $remoteTestService->owns($user);
 
         $task = $taskService->get($test, $task_id);
 

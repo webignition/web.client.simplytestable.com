@@ -104,7 +104,11 @@ class IndexControllerTest extends AbstractBaseTestCase
      */
     public function testIndexActionInvalidGetRequest(array $httpFixtures, $expectedRedirectUrl)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setHttpFixtures([$httpFixtures[0]]);
+
+        if (count($httpFixtures) > 1) {
+            $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
+        }
 
         $this->client->request(
             'GET',
@@ -149,6 +153,9 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $this->setHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
@@ -173,10 +180,10 @@ class IndexControllerTest extends AbstractBaseTestCase
     {
         $this->setHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
         ]);
 
@@ -199,6 +206,11 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param string $expectedRedirectUrl
      * @param string[] $expectedRequestUrls
      *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      * @throws WebResourceException
      */
     public function testIndexActionRedirect(
@@ -217,16 +229,13 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $httpHistoryPlugin = new HistoryPlugin();
 
-//        $httpHistory = new HttpHistory($this->container->get('simplytestable.services.httpclientservice'));
-
         $httpClient = $httpClientService->get();
         $coreApplicationHttpClientHttpClient = $coreApplicationHttpClient->getHttpClient();
 
         $httpClient->addSubscriber($httpHistoryPlugin);
         $coreApplicationHttpClientHttpClient->addSubscriber($httpHistoryPlugin);
 
-        $this->setHttpFixtures([$httpFixtures[0]]);
-        $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->indexController->setContainer($this->container);
 
@@ -348,8 +357,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $userService->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
-        $this->setHttpFixtures([$httpFixtures[0]]);
-        $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);
@@ -929,11 +937,8 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionCachedResponse()
     {
-        $this->setHttpFixtures([
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
         ]);
 
@@ -982,10 +987,10 @@ class IndexControllerTest extends AbstractBaseTestCase
     {
         $this->setHttpFixtures([
             HttpResponseFactory::create(200),
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([
                 array_merge($this->remoteTaskData, [
                     'state' => Task::STATE_FAILED_NO_RETRY_AVAILABLE,

@@ -2,13 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
-use Doctrine\Bundle\DoctrineBundle\Tests\DependencyInjection\TestType;
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\TimePeriod;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
-use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
@@ -32,9 +30,6 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
         $this->testService = $this->container->get(
             'simplytestable.services.testservice'
         );
-
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
-        $remoteTestService->setUser(new User(self::USERNAME));
     }
 
     /**
@@ -46,13 +41,15 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
      * @param int $testId
      * @param bool $expectedHas
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
      */
     public function testHas($httpFixtures, $testValues, $canonicalUrl, $testId, $expectedHas)
     {
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
-        }
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser($userService->getUser());
+
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);
@@ -97,7 +94,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
             ],
             'not has remotely' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 200'),
+                    HttpResponseFactory::createForbiddenResponse(),
                 ],
                 'testValues' => [],
                 'canonicalUrl' => 'http://example.com/',
@@ -116,13 +113,15 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
      * @param int $testId
      * @param array $expectedTestValues
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
      */
     public function testGet($httpFixtures, $testValues, $canonicalUrl, $testId, $expectedTestValues)
     {
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
-        }
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser($userService->getUser());
+
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);
@@ -276,7 +275,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
             ],
             'has not locally, has not remotely, do not create' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 200'),
+                    HttpResponseFactory::createForbiddenResponse(),
                 ],
                 'testValues' => [],
                 'canonicalUrl' => 'http://example.com/',

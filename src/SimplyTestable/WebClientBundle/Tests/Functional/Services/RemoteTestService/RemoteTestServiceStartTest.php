@@ -2,35 +2,42 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestService;
 
-use Guzzle\Http\Exception\CurlException;
-use Guzzle\Http\Message\Response;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use Guzzle\Http\Message\EntityEnclosingRequest;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
+use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\TestOptions;
-use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\ModelFactory;
-use webignition\WebResource\JsonDocument\JsonDocument;
 
 class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
 {
     const CANONICAL_URL = 'http://example.com';
 
     /**
-     * {@inheritdoc}
+     * @dataProvider startFailureDataProvider
+     *
+     * @param array $httpFixtures
+     * @param $expectedException
+     * @param $expectedExceptionMessage
+     * @param $expectedExceptionCode
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
-    protected function setUp()
-    {
-        parent::setUp();
+    public function testStartFailure(
+        array $httpFixtures,
+        $expectedException,
+        $expectedExceptionMessage,
+        $expectedExceptionCode
+    ) {
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->remoteTestService->setUser($this->user);
-    }
-
-    public function testStartCurlException()
-    {
-        $this->setHttpFixtures([
-            CurlExceptionFactory::create('Operation timed out', 28),
-        ]);
-
-        $this->setExpectedException(CurlException::class);
+        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
         $this->remoteTestService->start(
             self::CANONICAL_URL,
             ModelFactory::createTestOptions()
@@ -38,27 +45,85 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
     }
 
     /**
+     * @return array
+     */
+    public function startFailureDataProvider()
+    {
+        return [
+            'read only' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                ],
+                'expectedException' => CoreApplicationReadOnlyException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
+            ],
+            'http 500' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                ],
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Internal Server Error',
+                'expectedExceptionCode' => 500,
+            ],
+            'invalid response content' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createSuccessResponse([
+                        'content-type' => 'text/plain',
+                    ]),
+                ],
+                'expectedException' => InvalidContentTypeException::class,
+                'expectedExceptionMessage' => 'Invalid content type: "text/plain"',
+                'expectedExceptionCode' => 0,
+            ],
+            'invalid credentials' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createForbiddenResponse(),
+                ],
+                'expectedException' => InvalidCredentialsException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
+            ],
+        ];
+    }
+
+    /**
      * @dataProvider startSuccessDataProvider
      *
      * @param TestOptions $testOptions
+     * @param string $expectedRequestUrl
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
-    public function testStartSuccess(TestOptions $testOptions, $expectedRequestUrl)
+    public function testStartSuccess(TestOptions $testOptions, $expectedRequestUrl, $expectedPostData)
     {
-        $this->setHttpFixtures([
-            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode([
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse([
                 'id' => 1,
-            ]))
+            ]),
         ]);
 
-        $response = $this->remoteTestService->start(
+        $remoteTest = $this->remoteTestService->start(
             self::CANONICAL_URL,
             $testOptions
         );
 
-        $this->assertInstanceOf(JsonDocument::class, $response);
-        $this->assertEquals($expectedRequestUrl, $this->getLastRequest()->getUrl());
+        $this->assertInstanceOf(RemoteTest::class, $remoteTest);
+
+        /* @var EntityEnclosingRequest $lastRequest */
+        $lastRequest = $this->getLastRequest();
+
+        $this->assertEquals($expectedRequestUrl, $lastRequest->getUrl());
+        $this->assertEquals($expectedPostData, $lastRequest->getPostFields()->toArray());
     }
 
     /**
@@ -67,9 +132,12 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
     public function startSuccessDataProvider()
     {
         return [
-            'foo' => [
+            'default' => [
                 'testOptions' => ModelFactory::createTestOptions(),
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com/start/?type=full%20site',
+                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com/start/',
+                'expectedPostData' => [
+                    'type' => 'full site',
+                ],
             ],
             'custom cookies' => [
                 'testOptions' => ModelFactory::createTestOptions([
@@ -84,7 +152,8 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
                         ],
                     ],
                 ]),
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com/start/?' . http_build_query([
+                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com/start/',
+                'expectedPostData' => [
                     'type' => 'full site',
                     'parameters' => [
                         'cookies' => [
@@ -96,7 +165,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
                             ],
                         ],
                     ],
-                ], null, '&', PHP_QUERY_RFC3986),
+                ],
             ],
         ];
     }

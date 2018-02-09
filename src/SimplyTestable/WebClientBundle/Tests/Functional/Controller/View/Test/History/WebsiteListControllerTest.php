@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Test\H
 
 use SimplyTestable\WebClientBundle\Controller\View\Test\History\WebsiteListController;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
@@ -34,7 +35,7 @@ class WebsiteListControllerTest extends AbstractBaseTestCase
     public function testIndexActionInvalidUserGetRequest()
     {
         $this->setHttpFixtures([
-            HttpResponseFactory::create(404),
+            HttpResponseFactory::createNotFoundResponse(),
         ]);
 
         $router = $this->container->get('router');
@@ -55,6 +56,9 @@ class WebsiteListControllerTest extends AbstractBaseTestCase
     {
         $this->setHttpFixtures([
             HttpResponseFactory::create(200),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([]),
         ]);
 
@@ -83,11 +87,13 @@ class WebsiteListControllerTest extends AbstractBaseTestCase
         array $expectedResponseData
     ) {
         $userService = $this->container->get('simplytestable.services.userservice');
-        $userService->setUser(new User(UserService::PUBLIC_USER_USERNAME));
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
-        }
+        $user = new User(UserService::PUBLIC_USER_USERNAME);
+        $userService->setUser(new User(UserService::PUBLIC_USER_USERNAME));
+        $coreApplicationHttpClient->setUser($user);
+
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         /* @var JsonResponse $response */
         $response = $this->websiteListController->indexAction();

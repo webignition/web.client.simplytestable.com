@@ -2,23 +2,84 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestService;
 
-use Guzzle\Http\Message\Response;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 
 class RemoteTestServiceGetFinishedWebsitesTest extends AbstractRemoteTestServiceTest
 {
     /**
-     * @dataProvider getFinishedWebsitesDataProvider
+     * @dataProvider getFinishedWebsitesFailureDataProvider
+     *
+     * @param array $httpFixtures
+     * @param string $expectedException
+     * @param string $expectedExceptionMessage
+     * @param int $expectedExceptionCode
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     */
+    public function testGetFinishedWebsitesFailure(
+        array $httpFixtures,
+        $expectedException,
+        $expectedExceptionMessage,
+        $expectedExceptionCode
+    ) {
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+
+        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+
+        $this->remoteTestService->getFinishedWebsites();
+    }
+
+    /**
+     * @return array
+     */
+    public function getFinishedWebsitesFailureDataProvider()
+    {
+        return [
+            'HTTP 500' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                ],
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Internal Server Error',
+                'expectedExceptionCode' => 500,
+            ],
+            'CURL 28' => [
+                'httpFixtures' => [
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                ],
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Operation timed out',
+                'expectedExceptionCode' => 28,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getFinishedWebsitesSuccessDataProvider
      *
      * @param array $httpFixtures
      * @param array $expectedResponse
      * @param string $expectedRequestUrl
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
-    public function testGetFinishedWebsites(array $httpFixtures, $expectedResponse, $expectedRequestUrl)
+    public function testGetFinishedWebsitesSuccess(array $httpFixtures, $expectedResponse, $expectedRequestUrl)
     {
-        $this->remoteTestService->setUser($this->user);
-
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $response = $this->remoteTestService->getFinishedWebsites();
 
@@ -36,7 +97,7 @@ class RemoteTestServiceGetFinishedWebsitesTest extends AbstractRemoteTestService
     /**
      * @return array
      */
-    public function getFinishedWebsitesDataProvider()
+    public function getFinishedWebsitesSuccessDataProvider()
     {
         $websites = [
             'http://foo.example.com',
@@ -47,23 +108,9 @@ class RemoteTestServiceGetFinishedWebsitesTest extends AbstractRemoteTestService
             . 'exclude-states%5B0%5D=cancelled&exclude-states%5B1%5D=rejected&exclude-current=1';
 
         return [
-            'HTTP 500' => [
-                'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 500'),
-                ],
-                'expectedResponse' => [],
-                'expectedRequestUrl' => $successfulRequestUrl,
-            ],
-            'CURL 28' => [
-                'httpFixtures' => [
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                ],
-                'expectedResponse' => [],
-                'expectedRequestUrl' => null,
-            ],
             'success' => [
                 'httpFixtures' => [
-                    Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode($websites)),
+                    HttpResponseFactory::createJsonResponse($websites),
                 ],
                 'expectedResponse' => $websites,
                 'expectedRequestUrl' => $successfulRequestUrl,

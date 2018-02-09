@@ -2,19 +2,19 @@
 
 namespace SimplyTestable\WebClientBundle\Services;
 
-use Guzzle\Http\Exception\CurlException;
-use Guzzle\Http\Message\Request;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\TestList;
 use SimplyTestable\WebClientBundle\Model\TestOptions;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
-use webignition\WebResource\JsonDocument\JsonDocument;
 use Pdp\PublicSuffixListManager as PdpPublicSuffixListManager;
 use Pdp\Parser as PdpParser;
-use webignition\WebResource\WebResource;
+use SimplyTestable\WebClientBundle\Model\User;
 
-class RemoteTestService extends CoreApplicationService
+class RemoteTestService
 {
     /**
      * @var RemoteTest
@@ -27,27 +27,23 @@ class RemoteTestService extends CoreApplicationService
     private $test;
 
     /**
-     * @var CoreApplicationRouter
+     * @var CoreApplicationHttpClient
      */
-    private $coreApplicationRouter;
+    private $coreApplicationHttpClient;
 
     /**
-     * @param WebResourceService $webResourceService
-     * @param CoreApplicationRouter $coreApplicationRouter
+     * @param CoreApplicationHttpClient $coreApplicationHttpClient
      */
-    public function __construct(
-        WebResourceService $webResourceService,
-        CoreApplicationRouter $coreApplicationRouter
-    ) {
-        parent::__construct($webResourceService);
-
-        $this->coreApplicationRouter = $coreApplicationRouter;
+    public function __construct(CoreApplicationHttpClient $coreApplicationHttpClient)
+    {
+        $this->coreApplicationHttpClient = $coreApplicationHttpClient;
     }
 
     /**
      * @param Test $test
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function setTest(Test $test)
     {
@@ -60,21 +56,16 @@ class RemoteTestService extends CoreApplicationService
     }
 
     /**
-     * @return Test
-     */
-    public function getTest()
-    {
-        return $this->test;
-    }
-
-    /**
      * @param string $canonicalUrl
      * @param TestOptions $testOptions
      * @param string $testType
      *
-     * @return JsonDocument
+     * @return RemoteTest
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function start($canonicalUrl, TestOptions $testOptions, $testType = 'full site')
     {
@@ -83,24 +74,23 @@ class RemoteTestService extends CoreApplicationService
             $this->getCookieDomain($canonicalUrl)
         );
 
-        $requestUrl = $this->coreApplicationRouter->generate('test_start', array_merge([
-            'canonical_url' => $canonicalUrl,
-            'type' => $testType,
-        ], $testOptions->__toArray()));
+        $responseData = $this->coreApplicationHttpClient->post(
+            'test_start',
+            [
+                'canonical_url' => $canonicalUrl,
+            ],
+            array_merge(
+                [
+                    'type' => $testType,
+                ],
+                $testOptions->__toArray()
+            ),
+            [
+                CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
+            ]
+        );
 
-        $httpClientService = $this->webResourceService->getHttpClientService();
-        $httpRequest = $httpClientService->getRequest($requestUrl);
-
-        $this->addAuthorisationToRequest($httpRequest);
-
-        /* @var $response JsonDocument */
-        try {
-            $response = $this->webResourceService->get($httpRequest);
-        } catch (CurlException $curlException) {
-            throw $curlException;
-        }
-
-        return $response;
+        return new RemoteTest($responseData);
     }
 
     /**
@@ -148,27 +138,14 @@ class RemoteTestService extends CoreApplicationService
     }
 
     /**
+     * @param User $user
      * @return bool
      *
-     * @throws WebResourceException
-     * @throws CurlException
+     * @throws CoreApplicationRequestException
      */
-    public function authenticate()
+    public function owns(User $user)
     {
-        if ($this->owns()) {
-            return true;
-        }
-
-        return $this->isPublic();
-    }
-
-    /**
-     * @return bool
-     * @throws WebResourceException
-     */
-    public function owns()
-    {
-        if ($this->getUser()->getUsername() == $this->getTest()->getUser()) {
+        if ($user->getUsername() == $this->test->getUser()) {
             return true;
         }
 
@@ -176,51 +153,41 @@ class RemoteTestService extends CoreApplicationService
             $remoteTest = $this->get();
             $owners = $remoteTest->getOwners();
 
-            return $owners->contains($this->getUser()->getUsername());
-        } catch (WebResourceException $webResourceException) {
-            if ($webResourceException->getCode() == 403) {
-                return false;
-            }
-
-            throw $webResourceException;
+            return $owners->contains($user->getUsername());
+        } catch (InvalidCredentialsException $invalidCredentialsException) {
+            // Does not own
         }
-    }
 
-    /**
-     * @return bool
-     *
-     * @throws WebResourceException
-     */
-    public function isPublic()
-    {
-        return $this->get()->getIsPublic();
+        return false;
     }
 
     /**
      * @return bool|RemoteTest
      *
-     * @throws WebResourceException
-     * @throws CurlException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function get()
     {
         if (is_null($this->remoteTest)) {
-            $httpClientService = $this->webResourceService->getHttpClientService();
+            $remoteTestData = null;
 
-            $requestUrl = $this->coreApplicationRouter->generate('test_status', [
-                'canonical_url' => (string)$this->test->getWebsite(),
-                'test_id' => $this->test->getTestId(),
-            ]);
+            try {
+                $remoteTestData = $this->coreApplicationHttpClient->get(
+                    'test_status',
+                    [
+                        'canonical_url' => (string)$this->test->getWebsite(),
+                        'test_id' => $this->test->getTestId(),
+                    ],
+                    [
+                        CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
+                    ]
+                );
+            } catch (InvalidContentTypeException $invalidContentTypeException) {
+            }
 
-            $httpRequest = $httpClientService->getRequest($requestUrl);
-
-            $this->addAuthorisationToRequest($httpRequest);
-
-            /* @var JsonDocument $response */
-            $remoteJsonDocument = $this->webResourceService->get($httpRequest);
-
-            if ($remoteJsonDocument instanceof JsonDocument) {
-                $this->remoteTest = new RemoteTest($remoteJsonDocument->getContentArray());
+            if (is_array($remoteTestData)) {
+                $this->remoteTest = new RemoteTest($remoteTestData);
             } else {
                 $this->remoteTest = false;
             }
@@ -238,90 +205,89 @@ class RemoteTestService extends CoreApplicationService
     }
 
     /**
-     * @return WebResource
-     * @throws WebResourceException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function cancel()
     {
-        return $this->cancelByTestProperties($this->test->getTestId(), $this->test->getWebsite());
+        $this->cancelByTestProperties($this->test->getTestId(), $this->test->getWebsite());
     }
 
     /**
      * @param int $testId
      * @param string $website
      *
-     * @return WebResource
-     * @throws WebResourceException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function cancelByTestProperties($testId, $website)
     {
-        $requestUrl = $this->coreApplicationRouter->generate('test_cancel', [
+        $this->coreApplicationHttpClient->post('test_cancel', [
             'canonical_url' => (string)$website,
             'test_id' => $testId,
         ]);
-
-        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
-
-        $this->addAuthorisationToRequest($httpRequest);
-
-        return $this->webResourceService->get($httpRequest);
     }
 
     /**
      * @param int $testId
      * @param string $website
      *
-     * @return WebResource
-     * @throws WebResourceException
+     * @return RemoteTest
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function retest($testId, $website)
     {
-        $requestUrl = $this->coreApplicationRouter->generate('test_retest', [
-            'canonical_url' => (string)$website,
-            'test_id' => $testId
-        ]);
+        $responseData = $this->coreApplicationHttpClient->post(
+            'test_retest',
+            [
+                'canonical_url' => (string)$website,
+                'test_id' => $testId
+            ],
+            [],
+            [
+                CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
+            ]
+        );
 
-        $httpRequest = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
-
-        $this->addAuthorisationToRequest($httpRequest);
-
-        return $this->webResourceService->get($httpRequest);
+        return new RemoteTest($responseData);
     }
 
     public function lock()
     {
-        $requestUrl = $this->coreApplicationRouter->generate('test_set_private', [
-            'canonical_url' => (string)$this->getTest()->getWebsite(),
-            'test_id' => $this->getTest()->getTestId()
+        $this->coreApplicationHttpClient->post('test_set_private', [
+            'canonical_url' => (string)$this->test->getWebsite(),
+            'test_id' => $this->test->getTestId()
         ]);
-
-        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
-
-        $this->addAuthorisationToRequest($request);
-        $this->webResourceService->get($request);
     }
 
     public function unlock()
     {
-        $requestUrl = $this->coreApplicationRouter->generate('test_set_public', [
-            'canonical_url' => (string)$this->getTest()->getWebsite(),
-            'test_id' => $this->getTest()->getTestId()
+        $this->coreApplicationHttpClient->post('test_set_public', [
+            'canonical_url' => (string)$this->test->getWebsite(),
+            'test_id' => $this->test->getTestId()
         ]);
-
-        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
-
-        $this->addAuthorisationToRequest($request);
-        $this->webResourceService->get($request);
     }
 
     /**
      * @param int $limit
      *
      * @return TestList
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function getRecent($limit = 3)
     {
-        $requestUrl = $this->coreApplicationRouter->generate('tests_list', [
+        return $this->getList([
             'limit' => $limit,
             'offset' => 0,
             'exclude-states' => [
@@ -333,26 +299,6 @@ class RemoteTestService extends CoreApplicationService
                 'queued',
             ],
         ]);
-
-        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
-
-        return $this->getList($request);
-    }
-
-    /**
-     * @return TestList
-     */
-    public function getCurrent()
-    {
-        $requestUrl = $this->coreApplicationRouter->generate('tests_list', [
-            'limit' => 100,
-            'offset' => 0,
-            'exclude-finished' => 1,
-        ]);
-
-        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
-
-        return $this->getList($request);
     }
 
     /**
@@ -361,107 +307,104 @@ class RemoteTestService extends CoreApplicationService
      * @param string $filter
      *
      * @return TestList
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function getFinished($limit, $offset, $filter = null)
     {
-        $requestUrl = $this->coreApplicationRouter->generate('tests_list', [
+        return $this->getList([
             'limit' => $limit,
             'offset' => $offset,
             'exclude-states' => ['rejected'],
             'exclude-current' => 1,
             'url-filter' => $filter,
         ]);
-
-        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
-
-        return $this->getList($request);
     }
 
     /**
-     * @return array
+     * @return string[]
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function getFinishedWebsites()
     {
-        $requestUrl = $this->coreApplicationRouter->generate('tests_list_websites', [
-            'exclude-states' => [
-                'cancelled',
-                'rejected'
+        return $this->coreApplicationHttpClient->get(
+            'tests_list_websites',
+            [
+                'exclude-states' => [
+                    'cancelled',
+                    'rejected'
+                ],
+                'exclude-current' => 1,
             ],
-            'exclude-current' => 1,
-        ]);
-
-        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
-
-        $this->addAuthorisationToRequest($request);
-
-        try {
-            /* @var $responseDocument JsonDocument */
-            $responseDocument = $this->webResourceService->get($request);
-            $list = json_decode($responseDocument->getContent());
-        } catch (CurlException $curlException) {
-            return [];
-        } catch (WebResourceException $webResourceServiceException) {
-            return [];
-        }
-
-        return $list;
+            [
+                CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
+            ]
+        );
     }
 
     /**
-     * @param null $filter
+     * @param string|null $filter
      *
      * @return int
      */
     public function getFinishedCount($filter = null)
     {
-        $requestUrl = $this->coreApplicationRouter->generate('tests_list_count', [
-            'exclude-states' => ['rejected'],
-            'exclude-current' => 1,
-            'url-filter' => $filter,
-        ]);
-
-        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
-
-        $this->addAuthorisationToRequest($request);
+        $finishedCount = null;
 
         try {
-            /* @var $responseDocument JsonDocument */
-            $responseDocument = $this->webResourceService->get($request);
-            $count = json_decode($responseDocument->getContent());
-        } catch (CurlException $curlException) {
-            return null;
-        } catch (WebResourceException $webResourceServiceException) {
-            return null;
+            $finishedCount = $this->coreApplicationHttpClient->get(
+                'tests_list_count',
+                [
+                    'exclude-states' => ['rejected'],
+                    'exclude-current' => 1,
+                    'url-filter' => $filter,
+                ],
+                [
+                    CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
+                ]
+            );
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
+            // Don't care
+        } catch (InvalidContentTypeException $invalidContentTypeException) {
+            // Don't care
+        } catch (InvalidCredentialsException $invalidCredentialsException) {
+            // Don't care
         }
 
-        return $count;
+        return $finishedCount;
     }
 
     /**
-     * @param Request $request
+     * @param array $routeParameters
      *
      * @return TestList
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
-    private function getList(Request $request)
+    private function getList(array $routeParameters)
     {
-        $this->addAuthorisationToRequest($request);
-
         $list = new TestList();
 
-        try {
-            /* @var $responseDocument JsonDocument */
-            $responseDocument = $this->webResourceService->get($request);
-            $responseData = $responseDocument->getContentArray();
+        $responseData = $this->coreApplicationHttpClient->get(
+            'tests_list',
+            $routeParameters,
+            [
+                CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
+            ]
+        );
+        $list->setMaxResults($responseData['max_results']);
+        $list->setLimit($responseData['limit']);
+        $list->setOffset($responseData['offset']);
 
-            $list->setMaxResults($responseData['max_results']);
-            $list->setLimit($responseData['limit']);
-            $list->setOffset($responseData['offset']);
-
-            foreach ($responseData['jobs'] as $remoteTestData) {
-                $list->addRemoteTest(new RemoteTest($remoteTestData));
-            }
-        } catch (CurlException $curlException) {
-        } catch (WebResourceException $webResourceServiceException) {
+        foreach ($responseData['jobs'] as $remoteTestData) {
+            $list->addRemoteTest(new RemoteTest($remoteTestData));
         }
 
         return $list;
@@ -469,30 +412,33 @@ class RemoteTestService extends CoreApplicationService
 
     /**
      * @param $canonicalUrl
-     * @return bool|null|RemoteTest
+     *
+     * @return RemoteTest|null
      */
     public function retrieveLatest($canonicalUrl)
     {
-        $requestUrl = $this->coreApplicationRouter->generate('test_latest', [
-            'canonical_url' => $canonicalUrl,
-        ]);
-
-        $request = $this->webResourceService->getHttpClientService()->getRequest($requestUrl);
-
-        $this->addAuthorisationToRequest($request);
+        $remoteTest = null;
 
         try {
-            $remoteJsonDocument = $this->webResourceService->get($request);
+            $remoteTestData = $this->coreApplicationHttpClient->get(
+                'test_latest',
+                [
+                    'canonical_url' => $canonicalUrl,
+                ],
+                [
+                    CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
+                ]
+            );
 
-            if ($remoteJsonDocument instanceof JsonDocument) {
-                return new RemoteTest($remoteJsonDocument->getContentArray());
-            }
-        } catch (CurlException $curlException) {
-            // Intentionally swallow
-        } catch (WebResourceException $webResourceException) {
-            // Intentionally swallow
+            $remoteTest = new RemoteTest($remoteTestData);
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
+            // Don't care
+        } catch (InvalidContentTypeException $invalidContentTypeException) {
+            // Don't care
+        } catch (InvalidCredentialsException $invalidCredentialsException) {
+            // Don't care
         }
 
-        return null;
+        return $remoteTest;
     }
 }

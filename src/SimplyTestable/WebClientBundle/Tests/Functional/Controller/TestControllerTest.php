@@ -58,7 +58,7 @@ class TestControllerTest extends AbstractBaseTestCase
      */
     public function testLockUnlockActionGetRequest(array $httpFixtures, $routeName, array $routeParameters)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $router = $this->container->get('router');
         $requestUrl = $router->generate($routeName, $routeParameters);
@@ -84,6 +84,7 @@ class TestControllerTest extends AbstractBaseTestCase
             'lock action invalid owner' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createForbiddenResponse(),
+                    HttpResponseFactory::createForbiddenResponse(),
                 ],
                 'routeName' => 'app_test_lock',
                 'routeParameters' => [
@@ -93,6 +94,7 @@ class TestControllerTest extends AbstractBaseTestCase
             ],
             'unlock action invalid owner' => [
                 'httpFixtures' => [
+                    HttpResponseFactory::createForbiddenResponse(),
                     HttpResponseFactory::createForbiddenResponse(),
                 ],
                 'routeName' => 'app_test_unlock',
@@ -134,7 +136,7 @@ class TestControllerTest extends AbstractBaseTestCase
      */
     public function testCancelActionGetRequest(array $httpFixtures, $expectedRedirectUrl)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $router = $this->container->get('router');
         $requestUrl = $router->generate('test_cancel', [
@@ -160,24 +162,31 @@ class TestControllerTest extends AbstractBaseTestCase
     public function cancelActionGetRequestDataProvider()
     {
         return [
-//            'invalid owner' => [
-//                'httpFixtures' => [
-//                    HttpResponseFactory::createForbiddenResponse(),
-//                ],
-//                'expectedRedirectUrl' => 'http://localhost/',
-//            ],
-//            'HTTP 500' => [
-//                'httpFixtures' => [
-//                    HttpResponseFactory::createInternalServerErrorResponse(),
-//                ],
-//                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
-//            ],
-//            'CURL exception' => [
-//                'httpFixtures' => [
-//                    CurlExceptionFactory::create('Operation timed out', 28),
-//                ],
-//                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
-//            ],
+            'invalid owner' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createForbiddenResponse(),
+                    HttpResponseFactory::createForbiddenResponse(),
+                ],
+                'expectedRedirectUrl' => 'http://localhost/',
+            ],
+            'HTTP 500' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                ],
+                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+            ],
+            'CURL exception' => [
+                'httpFixtures' => [
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                ],
+                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+            ],
             'Success' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse($this->remoteTestData),
@@ -195,7 +204,7 @@ class TestControllerTest extends AbstractBaseTestCase
      */
     public function testCancelCrawlActionGetRequest(array $httpFixtures)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $router = $this->container->get('router');
         $requestUrl = $router->generate('test_cancel_crawl', [
@@ -224,15 +233,22 @@ class TestControllerTest extends AbstractBaseTestCase
             'invalid owner' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createForbiddenResponse(),
+                    HttpResponseFactory::createForbiddenResponse(),
                 ],
             ],
             'HTTP 500' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
             ],
             'CURL exception' => [
                 'httpFixtures' => [
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
                     CurlExceptionFactory::create('Operation timed out', 28),
                 ],
             ],
@@ -251,7 +267,7 @@ class TestControllerTest extends AbstractBaseTestCase
 
     public function testRetestActionGetRequest()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                 'id' => 2,
             ])),

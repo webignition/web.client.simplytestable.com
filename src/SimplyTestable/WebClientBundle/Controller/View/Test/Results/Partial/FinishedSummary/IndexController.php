@@ -3,7 +3,8 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results\Partial\FinishedSummary;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +19,8 @@ class IndexController extends BaseViewController implements RequiresValidUser, R
      *
      * @return Response
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function indexAction(Request $request, $website, $test_id)
     {
@@ -26,10 +28,6 @@ class IndexController extends BaseViewController implements RequiresValidUser, R
         $templating = $this->container->get('templating');
         $testService = $this->container->get('simplytestable.services.testservice');
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
-
-        $user = $userService->getUser();
-        $remoteTestService->setUser($user);
 
         $response = $cacheValidatorService->createResponse($request, [
             'website' => $website,

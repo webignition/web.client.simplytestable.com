@@ -3,7 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Controller;
 
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Repository\TestRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -42,14 +42,9 @@ class RedirectController extends Controller
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
         $logger = $this->container->get('logger');
         $router = $this->container->get('router');
-        $userService = $this->container->get('simplytestable.services.userservice');
-
-        $user = $userService->getUser();
 
         /* @var TestRepository $testRepository */
         $testRepository = $entityManager->getRepository(Test::class);
-
-        $remoteTestService->setUser($user);
 
         $isTaskResultsUrl = preg_match(self::TASK_RESULTS_URL_PATTERN, $website) > 0;
 
@@ -113,15 +108,17 @@ class RedirectController extends Controller
 
             try {
                 $test = $testService->get($normalisedWebsite, $normalisedTestId);
-            } catch (WebResourceException $webResourceException) {
-                $logger->error(sprintf(
-                    'RedirectController::webResourceException %s',
-                    $webResourceException->getResponse()->getStatusCode()
-                ));
-                $logger->error('[request]');
-                $logger->error($webResourceException->getRequest());
-                $logger->error('[response]');
-                $logger->error($webResourceException->getResponse());
+            } catch (CoreApplicationRequestException $coreApplicationRequestException) {
+                $logger->error(
+                    sprintf(
+                        'RedirectController::CoreApplicationRequestException %s',
+                        $coreApplicationRequestException->getCode()
+                    ),
+                    [
+                        'request' => $coreApplicationRequestException->getRequest(),
+                        'response' => $coreApplicationRequestException->getResponse(),
+                    ]
+                );
 
                 $redirectUrl = $this->generateUrl(
                     'app_website',
@@ -268,5 +265,4 @@ class RedirectController extends Controller
             'task_id' => $taskId
         ];
     }
-
 }

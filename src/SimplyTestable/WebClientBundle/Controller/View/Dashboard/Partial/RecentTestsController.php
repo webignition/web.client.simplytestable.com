@@ -5,10 +5,8 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Dashboard\Partial;
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
-use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,10 +18,8 @@ class RecentTestsController extends BaseViewController implements RequiresValidU
     /**
      * @return Response
      *
-     * @throws WebResourceException
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
@@ -32,9 +28,6 @@ class RecentTestsController extends BaseViewController implements RequiresValidU
         $testService = $this->container->get('simplytestable.services.testservice');
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
         $taskService = $this->container->get('simplytestable.services.taskservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
-
-        $remoteTestService->setUser($userService->getUser());
 
         $testList = $remoteTestService->getRecent(self::LIMIT);
 

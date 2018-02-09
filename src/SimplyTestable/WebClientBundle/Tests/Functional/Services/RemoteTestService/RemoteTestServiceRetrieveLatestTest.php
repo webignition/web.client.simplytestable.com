@@ -2,9 +2,9 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestService;
 
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 
 class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
 {
@@ -22,8 +22,7 @@ class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
         $expectedRequestUrl,
         $expectedLatestTest
     ) {
-        $this->setHttpFixtures($httpFixtures);
-        $this->remoteTestService->setUser($this->user);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $remoteTest = $this->remoteTestService->retrieveLatest(self::WEBSITE_URL);
 
@@ -49,7 +48,10 @@ class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
         return [
             'HTTP 404' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 404'),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/latest/',
                 'expectedLatestTest' => null,
@@ -58,22 +60,27 @@ class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
             'CURL 28' => [
                 'httpFixtures' => [
                     CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
                 ],
                 'expectedRequestUrl' => null,
                 'expectedLatestTest' => null,
             ],
             'Invalid response content' => [
                 'httpFixtures' => [
-                    Response::fromMessage("HTTP/1.1 200\nContent-type:text/plain\n\n"),
+                    HttpResponseFactory::createSuccessResponse([
+                        'content-type' => 'text/plain',
+                    ]),
                 ],
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/latest/',
                 'expectedLatestTest' => null,
             ],
             'Success' => [
                 'httpFixtures' => [
-                    Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode([
+                    HttpResponseFactory::createJsonResponse([
                         'id' => 1
-                    ])),
+                    ]),
                 ],
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/latest/',
                 'expectedLatestTest' => $remoteTest,

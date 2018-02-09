@@ -2,12 +2,13 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
-use Guzzle\Http\Exception\CurlException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use webignition\WebResource\JsonDocument\JsonDocument;
 
 class TestController extends Controller
 {
@@ -45,13 +46,9 @@ class TestController extends Controller
      */
     private function lockUnlock($website, $test_id, $action)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $testService = $this->container->get('simplytestable.services.testservice');
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
         $router = $this->container->get('router');
-
-        $user = $userService->getUser();
-        $remoteTestService->setUser($user);
 
         try {
             $testService->get($website, $test_id);
@@ -61,7 +58,6 @@ class TestController extends Controller
             } else {
                 $remoteTestService->unlock();
             }
-
         } catch (\Exception $e) {
             // We already redirect back to test results regardless of if this action succeeds
         }
@@ -83,16 +79,15 @@ class TestController extends Controller
      * @param int $test_id
      *
      * @return RedirectResponse
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws InvalidContentTypeException
      */
     public function cancelAction($website, $test_id)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $testService = $this->container->get('simplytestable.services.testservice');
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
         $router = $this->container->get('router');
-
-        $user = $userService->getUser();
-        $remoteTestService->setUser($user);
 
         $routeParameters = [
             'website' => $website,
@@ -102,25 +97,15 @@ class TestController extends Controller
         try {
             $testService->get($website, $test_id);
             $remoteTestService->cancel();
-        } catch (WebResourceException $webResourceException) {
-            if ($webResourceException->getResponse()->getStatusCode() === 403) {
-                $redirectUrl = $router->generate(
-                    'view_dashboard_index_index',
-                    [],
-                    UrlGeneratorInterface::ABSOLUTE_URL
-                );
-
-                return new RedirectResponse($redirectUrl);
-            }
-
+        } catch (InvalidCredentialsException $invalidCredentialsException) {
             $redirectUrl = $router->generate(
-                'view_test_progress_index_index',
-                $routeParameters,
+                'view_dashboard_index_index',
+                [],
                 UrlGeneratorInterface::ABSOLUTE_URL
             );
 
             return new RedirectResponse($redirectUrl);
-        } catch (CurlException $curlException) {
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             $redirectUrl = $router->generate(
                 'view_test_progress_index_index',
                 $routeParameters,
@@ -144,16 +129,15 @@ class TestController extends Controller
      * @param int $test_id
      *
      * @return RedirectResponse
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws InvalidContentTypeException
      */
     public function cancelCrawlAction($website, $test_id)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $testService = $this->container->get('simplytestable.services.testservice');
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
         $router = $this->container->get('router');
-
-        $user = $userService->getUser();
-        $remoteTestService->setUser($user);
 
         try {
             $test = $testService->get($website, $test_id);
@@ -161,9 +145,9 @@ class TestController extends Controller
             $crawlData = $remoteTest->getCrawl();
 
             $remoteTestService->cancelByTestProperties($crawlData['id'], $test->getWebsite());
-        } catch (WebResourceException $webResourceException) {
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             // Nothing happens, we redirect to the test progress page regardless
-        } catch (CurlException $curlException) {
+        } catch (InvalidCredentialsException $invalidCredentialsException) {
             // Nothing happens, we redirect to the test progress page regardless
         }
 
@@ -185,27 +169,23 @@ class TestController extends Controller
      *
      * @return RedirectResponse
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function retestAction($website, $test_id)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
         $router = $this->container->get('router');
 
-        $user = $userService->getUser();
-        $remoteTestService->setUser($user);
-
-        /* @var JsonDocument $response */
-        $response = $remoteTestService->retest($test_id, $website);
-
-        $responseData = $response->getContentArray();
+        $remoteTest = $remoteTestService->retest($test_id, $website);
 
         $redirectUrl = $router->generate(
             'view_test_progress_index_index',
             [
-                'website' => $responseData['website'],
-                'test_id' => $responseData['id'],
+                'website' => $remoteTest->getWebsite(),
+                'test_id' => $remoteTest->getId(),
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
         );

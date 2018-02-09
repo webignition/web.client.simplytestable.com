@@ -2,23 +2,19 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller;
 
-use SimplyTestable\WebClientBundle\Controller\TaskController;
-use SimplyTestable\WebClientBundle\Controller\TestController;
+use Guzzle\Http\Message\EntityEnclosingRequest;
+use Guzzle\Plugin\History\HistoryPlugin;
 use SimplyTestable\WebClientBundle\Controller\TestStartController;
-use SimplyTestable\WebClientBundle\Entity\Task\Task;
-use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Repository\TestRepository;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
-use SimplyTestable\WebClientBundle\Tests\Factory\HttpHistory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class TestStartControllerTest extends AbstractBaseTestCase
 {
@@ -32,23 +28,6 @@ class TestStartControllerTest extends AbstractBaseTestCase
     private $testStartController;
 
     /**
-     * @var array
-     */
-    private $remoteTestData = [
-        'id' => self::TEST_ID,
-        'website' => self::WEBSITE,
-        'task_types' => [
-            [
-                'name' => Task::TYPE_HTML_VALIDATION,
-            ],
-        ],
-        'user' => self::USER_EMAIL,
-        'state' => Test::STATE_COMPLETED,
-        'task_type_options' => [],
-        'task_count' => 12,
-    ];
-
-    /**
      * {@inheritdoc}
      */
     protected function setUp()
@@ -59,32 +38,6 @@ class TestStartControllerTest extends AbstractBaseTestCase
         $this->testStartController->setContainer($this->container);
     }
 
-//    public function testRetestActionGetRequest()
-//    {
-//        $this->setHttpFixtures([
-//            HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-//                'id' => 2,
-//            ])),
-//        ]);
-//
-//        $router = $this->container->get('router');
-//        $requestUrl = $router->generate('app_test_retest', [
-//            'website' => self::WEBSITE,
-//            'test_id' => self::TEST_ID,
-//        ]);
-//
-//        $this->client->request(
-//            'GET',
-//            $requestUrl
-//        );
-//
-//        /* @var RedirectResponse $response */
-//        $response = $this->client->getResponse();
-//
-//        $this->assertInstanceOf(RedirectResponse::class, $response);
-//        $this->assertEquals('http://localhost/http://example.com//2/progress/', $response->getTargetUrl());
-//    }
-
     /**
      * @dataProvider startNewActionDataProvider
      *
@@ -93,7 +46,11 @@ class TestStartControllerTest extends AbstractBaseTestCase
      * @param Request $request
      * @param string $expectedRedirectUrl
      * @param array $expectedFlashBagValues
-     * @param array $expectedRequestUrls
+     * @param string $expectedRequestUrl
+     * @param array $expectedPostData
+     *
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testStartNewAction(
         array $httpFixtures,
@@ -101,17 +58,20 @@ class TestStartControllerTest extends AbstractBaseTestCase
         Request $request,
         $expectedRedirectUrl,
         array $expectedFlashBagValues,
-        array $expectedRequestUrls
+        $expectedRequestUrl,
+        array $expectedPostData = []
     ) {
-        $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
-        $httpHistory = new HttpHistory($httpClientService);
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser($userService->getUser());
+
+        $httpHistoryPlugin = new HistoryPlugin();
+        $coreApplicationHttpClient->getHttpClient()->addSubscriber($httpHistoryPlugin);
 
         $userService = $this->container->get('simplytestable.services.userservice');
         $userService->setUser($user);
 
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
-        }
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $session = $this->container->get('session');
         $flashBag = $session->getFlashBag();
@@ -126,9 +86,15 @@ class TestStartControllerTest extends AbstractBaseTestCase
             $this->assertEquals($value, $flashBag->get($key));
         }
 
-        $this->assertEquals($expectedRequestUrls, $httpHistory->getRequestUrls());
+        $lastRequest = $httpHistoryPlugin->getLastRequest();
 
-//        echo $response;
+        if (empty($expectedRequestUrl)) {
+            $this->assertNull($lastRequest);
+        } else {
+            /* @var EntityEnclosingRequest $lastRequest */
+            $this->assertEquals($expectedRequestUrl, $lastRequest->getUrl());
+            $this->assertEquals($expectedPostData, $lastRequest->getPostFields()->toArray());
+        }
     }
 
     /**
@@ -153,7 +119,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
                         'website-blank',
                     ],
                 ],
-                'expectedRequestUrls' => [],
+                'expectedRequestUrl' => null,
             ],
             'website empty; empty string' => [
                 'httpFixtures' => [],
@@ -170,7 +136,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
                         'website-blank',
                     ],
                 ],
-                'expectedRequestUrls' => [],
+                'expectedRequestUrl' => null,
             ],
             'website empty; whitespace-only string' => [
                 'httpFixtures' => [],
@@ -187,7 +153,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
                         'website-blank',
                     ],
                 ],
-                'expectedRequestUrls' => [],
+                'expectedRequestUrl' => null,
             ],
             'no task types selected' => [
                 'httpFixtures' => [],
@@ -205,10 +171,13 @@ class TestStartControllerTest extends AbstractBaseTestCase
                         'no-test-types-selected',
                     ],
                 ],
-                'expectedRequestUrls' => [],
+                'expectedRequestUrl' => null,
             ],
             'curl exception' => [
                 'httpFixtures' => [
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
                     CurlExceptionFactory::create('Operation timed out', 28),
                 ],
                 'user' => $publicUser,
@@ -229,10 +198,13 @@ class TestStartControllerTest extends AbstractBaseTestCase
                         28,
                     ],
                 ],
-                'expectedRequestUrls' => [],
+                'expectedRequestUrl' => null,
             ],
             'HTTP 500' => [
                 'httpFixtures' => [
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
                     HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
                 'user' => $publicUser,
@@ -250,17 +222,19 @@ class TestStartControllerTest extends AbstractBaseTestCase
                         'web_resource_exception',
                     ],
                 ],
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/start/?' . http_build_query([
-                        'type' => 'full site',
-                        'test-types' => [
-                            'HTML validation',
-                        ]
-                    ], null, '&', PHP_QUERY_RFC3986),
+                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedPostData' => [
+                    'type' => 'full site',
+                    'test-types' => [
+                        'HTML validation',
+                    ],
                 ],
             ],
             'HTTP 500; with http auth' => [
                 'httpFixtures' => [
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
                     HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
                 'user' => $publicUser,
@@ -281,17 +255,16 @@ class TestStartControllerTest extends AbstractBaseTestCase
                         'web_resource_exception',
                     ],
                 ],
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/start/?' . http_build_query([
-                        'type' => 'full site',
-                        'test-types' => [
-                            'HTML validation',
-                        ],
-                        'parameters' => [
-                            'http-auth-username' => 'user',
-                            'http-auth-password' => 'pass',
-                        ],
-                    ], null, '&', PHP_QUERY_RFC3986),
+                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedPostData' => [
+                    'type' => 'full site',
+                    'test-types' => [
+                        'HTML validation',
+                    ],
+                    'parameters' => [
+                        'http-auth-username' => 'user',
+                        'http-auth-password' => 'pass',
+                    ],
                 ],
             ],
             'success; type=full site' => [
@@ -308,13 +281,12 @@ class TestStartControllerTest extends AbstractBaseTestCase
                 ]),
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
                 'expectedFlashBagValues' => [],
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/start/?' . http_build_query([
-                        'type' => 'full site',
-                        'test-types' => [
-                            'HTML validation',
-                        ]
-                    ], null, '&', PHP_QUERY_RFC3986),
+                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedPostData' => [
+                    'type' => 'full site',
+                    'test-types' => [
+                        'HTML validation',
+                    ],
                 ],
             ],
             'success; type=single' => [
@@ -332,13 +304,12 @@ class TestStartControllerTest extends AbstractBaseTestCase
                 ]),
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
                 'expectedFlashBagValues' => [],
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/start/?' . http_build_query([
-                        'type' => 'single url',
-                        'test-types' => [
-                            'HTML validation',
-                        ]
-                    ], null, '&', PHP_QUERY_RFC3986),
+                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedPostData' => [
+                    'type' => 'single url',
+                    'test-types' => [
+                        'HTML validation',
+                    ],
                 ],
             ],
             'success; private user' => [
@@ -355,34 +326,33 @@ class TestStartControllerTest extends AbstractBaseTestCase
                 ]),
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
                 'expectedFlashBagValues' => [],
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/start/?' . http_build_query([
-                        'type' => 'full site',
-                        'test-types' => [
-                            'HTML validation',
+                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedPostData' => [
+                    'type' => 'full site',
+                    'test-types' => [
+                        'HTML validation',
+                    ],
+                    'test-type-options' => [
+                        'JS static analysis' => [
+                            'jslint-option-bitwise' => 1,
+                            'jslint-option-continue' => 1,
+                            'jslint-option-debug' => 1,
+                            'jslint-option-evil' => 1,
+                            'jslint-option-eqeq' => 1,
+                            'jslint-option-forin' => 1,
+                            'jslint-option-newcap' => 1,
+                            'jslint-option-nomen' => 1,
+                            'jslint-option-plusplus' => 1,
+                            'jslint-option-regexp' => 1,
+                            'jslint-option-unparam' => 1,
+                            'jslint-option-sloppy' => 1,
+                            'jslint-option-stupid' => 1,
+                            'jslint-option-sub' => 1,
+                            'jslint-option-vars' => 1,
+                            'jslint-option-white' => 1,
+                            'jslint-option-anon' => 1,
                         ],
-                        'test-type-options' => [
-                            'JS+static+analysis' => [
-                                'jslint-option-bitwise' => 1,
-                                'jslint-option-continue' => 1,
-                                'jslint-option-debug' => 1,
-                                'jslint-option-evil' => 1,
-                                'jslint-option-eqeq' => 1,
-                                'jslint-option-forin' => 1,
-                                'jslint-option-newcap' => 1,
-                                'jslint-option-nomen' => 1,
-                                'jslint-option-plusplus' => 1,
-                                'jslint-option-regexp' => 1,
-                                'jslint-option-unparam' => 1,
-                                'jslint-option-sloppy' => 1,
-                                'jslint-option-stupid' => 1,
-                                'jslint-option-sub' => 1,
-                                'jslint-option-vars' => 1,
-                                'jslint-option-white' => 1,
-                                'jslint-option-anon' => 1,
-                            ],
-                        ],
-                    ], null, '&', PHP_QUERY_RFC3986),
+                    ],
                 ],
             ],
             'success; private user; link integrity' => [
@@ -399,39 +369,38 @@ class TestStartControllerTest extends AbstractBaseTestCase
                 ]),
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
                 'expectedFlashBagValues' => [],
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/start/?' . http_build_query([
-                        'type' => 'full site',
-                        'test-types' => [
-                            'Link integrity',
+                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedPostData' => [
+                    'type' => 'full site',
+                    'test-types' => [
+                        'Link integrity',
+                    ],
+                    'test-type-options' => [
+                        'JS static analysis' => [
+                            'jslint-option-bitwise' => 1,
+                            'jslint-option-continue' => 1,
+                            'jslint-option-debug' => 1,
+                            'jslint-option-evil' => 1,
+                            'jslint-option-eqeq' => 1,
+                            'jslint-option-forin' => 1,
+                            'jslint-option-newcap' => 1,
+                            'jslint-option-nomen' => 1,
+                            'jslint-option-plusplus' => 1,
+                            'jslint-option-regexp' => 1,
+                            'jslint-option-unparam' => 1,
+                            'jslint-option-sloppy' => 1,
+                            'jslint-option-stupid' => 1,
+                            'jslint-option-sub' => 1,
+                            'jslint-option-vars' => 1,
+                            'jslint-option-white' => 1,
+                            'jslint-option-anon' => 1,
                         ],
-                        'test-type-options' => [
-                            'JS+static+analysis' => [
-                                'jslint-option-bitwise' => 1,
-                                'jslint-option-continue' => 1,
-                                'jslint-option-debug' => 1,
-                                'jslint-option-evil' => 1,
-                                'jslint-option-eqeq' => 1,
-                                'jslint-option-forin' => 1,
-                                'jslint-option-newcap' => 1,
-                                'jslint-option-nomen' => 1,
-                                'jslint-option-plusplus' => 1,
-                                'jslint-option-regexp' => 1,
-                                'jslint-option-unparam' => 1,
-                                'jslint-option-sloppy' => 1,
-                                'jslint-option-stupid' => 1,
-                                'jslint-option-sub' => 1,
-                                'jslint-option-vars' => 1,
-                                'jslint-option-white' => 1,
-                                'jslint-option-anon' => 1,
-                            ],
-                            'Link+integrity' => [
-                                'excluded-domains' => [
-                                    'instagram.com',
-                                ],
+                        'Link integrity' => [
+                            'excluded-domains' => [
+                                'instagram.com',
                             ],
                         ],
-                    ], null, '&', PHP_QUERY_RFC3986),
+                    ],
                 ],
             ],
             'success; public user' => [
@@ -448,13 +417,12 @@ class TestStartControllerTest extends AbstractBaseTestCase
                 ]),
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
                 'expectedFlashBagValues' => [],
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/start/?' . http_build_query([
-                        'type' => 'full site',
-                        'test-types' => [
-                            'HTML validation',
-                        ],
-                    ], null, '&', PHP_QUERY_RFC3986),
+                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedPostData' => [
+                    'type' => 'full site',
+                    'test-types' => [
+                        'HTML validation',
+                    ],
                 ],
             ],
             'success; public user; schemeless website' => [
@@ -471,13 +439,12 @@ class TestStartControllerTest extends AbstractBaseTestCase
                 ]),
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
                 'expectedFlashBagValues' => [],
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/start/?' . http_build_query([
-                        'type' => 'full site',
-                        'test-types' => [
-                            'HTML validation',
-                        ],
-                    ], null, '&', PHP_QUERY_RFC3986),
+                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedPostData' => [
+                    'type' => 'full site',
+                    'test-types' => [
+                        'HTML validation',
+                    ],
                 ],
             ],
             'success; public user; http auth' => [
@@ -496,17 +463,16 @@ class TestStartControllerTest extends AbstractBaseTestCase
                 ]),
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
                 'expectedFlashBagValues' => [],
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/start/?' . http_build_query([
-                        'type' => 'full site',
-                        'test-types' => [
-                            'HTML validation',
-                        ],
-                        'parameters' => [
-                            'http-auth-username' => 'user',
-                            'http-auth-password' => 'pass',
-                        ],
-                    ], null, '&', PHP_QUERY_RFC3986),
+                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedPostData' => [
+                    'type' => 'full site',
+                    'test-types' => [
+                        'HTML validation',
+                    ],
+                    'parameters' => [
+                        'http-auth-username' => 'user',
+                        'http-auth-password' => 'pass',
+                    ],
                 ],
             ],
             'success; public user; empty http auth' => [
@@ -525,13 +491,12 @@ class TestStartControllerTest extends AbstractBaseTestCase
                 ]),
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
                 'expectedFlashBagValues' => [],
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/start/?' . http_build_query([
-                        'type' => 'full site',
-                        'test-types' => [
-                            'HTML validation',
-                        ],
-                    ], null, '&', PHP_QUERY_RFC3986),
+                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedPostData' => [
+                    'type' => 'full site',
+                    'test-types' => [
+                        'HTML validation',
+                    ],
                 ],
             ],
             'success; public user; cookies' => [
@@ -554,23 +519,22 @@ class TestStartControllerTest extends AbstractBaseTestCase
                 ]),
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
                 'expectedFlashBagValues' => [],
-                'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/start/?' . http_build_query([
-                        'type' => 'full site',
-                        'test-types' => [
-                            'HTML validation',
-                        ],
-                        'parameters' => [
-                            'cookies' => [
-                                [
-                                    'name' => 'cookie-name-1',
-                                    'value' => 'cookie-value-1',
-                                    'path' => '/',
-                                    'domain' => '.example.com',
-                                ],
+                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedPostData' => [
+                    'type' => 'full site',
+                    'test-types' => [
+                        'HTML validation',
+                    ],
+                    'parameters' => [
+                        'cookies' => [
+                            [
+                                'name' => 'cookie-name-1',
+                                'value' => 'cookie-value-1',
+                                'path' => '/',
+                                'domain' => '.example.com',
                             ],
                         ],
-                    ], null, '&', PHP_QUERY_RFC3986),
+                    ],
                 ],
             ],
         ];

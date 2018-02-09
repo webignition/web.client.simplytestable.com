@@ -4,7 +4,7 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results\FailedNoUr
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -21,12 +21,11 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
      *
      * @return RedirectResponse|Response
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
      */
     public function indexAction(Request $request, $website, $test_id)
     {
         $testService = $this->container->get('simplytestable.services.testservice');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
         $userService = $this->container->get('simplytestable.services.userservice');
         $router = $this->container->get('router');
         $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
@@ -53,7 +52,6 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
         }
 
         $user = $userService->getUser();
-        $remoteTestService->setUser($user);
 
         $test = $testService->get($website, $test_id);
 

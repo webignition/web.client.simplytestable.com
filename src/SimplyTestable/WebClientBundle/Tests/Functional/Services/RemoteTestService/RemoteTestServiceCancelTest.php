@@ -2,10 +2,9 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestService;
 
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use webignition\NormalisedUrl\NormalisedUrl;
-use webignition\WebResource\WebResource;
 
 class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
 {
@@ -26,33 +25,23 @@ class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
         $this->test->setWebsite(new NormalisedUrl('http://example.com/'));
 
         $this->setRemoteTestServiceTest($this->test);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
     }
 
     public function testCancel()
     {
-        $this->setHttpFixtures([
-           Response::fromMessage('HTTP/1.1 200'),
-        ]);
+        $this->remoteTestService->cancel();
 
-        $this->remoteTestService->setUser($this->user);
-
-        $response = $this->remoteTestService->cancel();
-
-        $this->assertInstanceOf(WebResource::class, $response);
         $this->assertEquals('http://null/job/http%3A%2F%2Fexample.com%2F/1/cancel/', $this->getLastRequest()->getUrl());
     }
 
     public function testCancelByTestProperties()
     {
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
-        ]);
+        $this->remoteTestService->cancelByTestProperties(2, 'http://foo.example.com');
 
-        $this->remoteTestService->setUser($this->user);
-
-        $response = $this->remoteTestService->cancelByTestProperties(2, 'http://foo.example.com');
-
-        $this->assertInstanceOf(WebResource::class, $response);
         $this->assertEquals(
             'http://null/job/http%3A%2F%2Ffoo.example.com/2/cancel/',
             $this->getLastRequest()->getUrl()

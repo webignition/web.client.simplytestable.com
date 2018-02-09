@@ -7,10 +7,8 @@ use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
-use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
@@ -76,7 +74,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionInvalidUserGetRequest()
     {
         $this->setHttpFixtures([
-            HttpResponseFactory::create(404),
+            HttpResponseFactory::createNotFoundResponse(),
         ]);
 
         $router = $this->container->get('router');
@@ -99,7 +97,10 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionInvalidOwnerGetRequest()
     {
         $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
@@ -124,10 +125,10 @@ class IndexControllerTest extends AbstractBaseTestCase
     {
         $this->setHttpFixtures([
             HttpResponseFactory::create(200),
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
         ]);
 
@@ -157,10 +158,8 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param array $httpFixtures
      * @param Request $request
      *
-     * @throws WebResourceException
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
@@ -172,8 +171,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $coreApplicationHttpClient->setUser($userService->getPublicUser());
 
-        $this->setHttpFixtures([$httpFixtures[0]]);
-        $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->indexController->setContainer($this->container);
 
@@ -233,10 +231,8 @@ class IndexControllerTest extends AbstractBaseTestCase
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
-     * @throws WebResourceException
      */
     public function testIndexActionRenderContent(
         array $httpFixtures,
@@ -247,8 +243,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $coreApplicationHttpClient->setUser($userService->getPublicUser());
 
-        $this->setHttpFixtures([$httpFixtures[0]]);
-        $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->indexController->setContainer($this->container);
 
@@ -298,7 +293,6 @@ class IndexControllerTest extends AbstractBaseTestCase
                 $warningLabel =  $task->filter('.label-primary');
                 if (is_null($expectedTask['warning_count'])) {
                     $this->assertEquals(0, $warningLabel->count());
-
                 } else {
                     $trimmedWarningLabel = preg_replace('!\s+!', ' ', trim($warningLabel->text()));
                     $this->assertEquals($expectedTask['warning_count'] . ' warnings', $trimmedWarningLabel);
@@ -462,11 +456,8 @@ class IndexControllerTest extends AbstractBaseTestCase
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $coreApplicationHttpClient->setUser($userService->getPublicUser());
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
         ]);
 

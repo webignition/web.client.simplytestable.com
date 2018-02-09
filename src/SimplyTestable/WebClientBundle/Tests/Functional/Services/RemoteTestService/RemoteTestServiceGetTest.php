@@ -2,12 +2,12 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestService;
 
-use Guzzle\Http\Exception\CurlException;
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use webignition\NormalisedUrl\NormalisedUrl;
 
 class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
@@ -39,7 +39,8 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
      * @param string $expectedExceptionMessage
      * @param string $expectedExceptionCode
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function testGetRemoteFailure(
         array $httpFixtures,
@@ -47,8 +48,7 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setHttpFixtures($httpFixtures);
-        $this->remoteTestService->setUser($this->user);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
         $this->remoteTestService->get();
@@ -62,37 +62,44 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
         return [
             'HTTP 404' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 404'),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'expectedException' => WebResourceException::class,
+                'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Not Found',
                 'expectedExceptionCode' => 404,
             ],
             'HTTP 500' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 500'),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
-                'expectedException' => WebResourceException::class,
+                'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Internal Server Error',
                 'expectedExceptionCode' => 500,
             ],
             'CURL 28' => [
                 'httpFixtures' => [
                     CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
                 ],
-                'expectedException' => CurlException::class,
-                'expectedExceptionMessage' => '',
-                'expectedExceptionCode' => 0,
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Operation timed out',
+                'expectedExceptionCode' => 28,
             ],
         ];
     }
 
     public function testGetRemoteTestNotJsonDocument()
     {
-        $this->setHttpFixtures([
-            Response::fromMessage("HTTP/1.1 200\nContent-type:text/plain\n\n"),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse([
+                'content-type' => 'text/plain',
+            ]),
         ]);
-        $this->remoteTestService->setUser($this->user);
 
         $test = new Test();
         $test->setTestId(1);
@@ -107,13 +114,11 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
 
     public function testGetSuccess()
     {
-        $this->setHttpFixtures([
-            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n" . json_encode([
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse([
                 'id' => 1,
-            ])),
+            ]),
         ]);
-
-        $this->remoteTestService->setUser($this->user);
 
         $test = new Test();
         $test->setTestId(1);

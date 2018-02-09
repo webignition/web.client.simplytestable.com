@@ -4,6 +4,9 @@ namespace SimplyTestable\WebClientBundle\Exception;
 
 use Guzzle\Http\Exception\BadResponseException;
 use Guzzle\Http\Exception\CurlException;
+use Guzzle\Http\Exception\RequestException;
+use Guzzle\Http\Message\RequestInterface;
+use Guzzle\Http\Message\Response;
 
 class CoreApplicationRequestException extends \Exception
 {
@@ -59,5 +62,35 @@ class CoreApplicationRequestException extends \Exception
     public function isCurlException()
     {
         return true === $this->isCurlException;
+    }
+
+    /**
+     * @return RequestInterface|null
+     */
+    public function getRequest()
+    {
+        $previousException = $this->getPrevious();
+
+        if ($previousException instanceof RequestException) {
+            /* @var RequestException $previousException */
+            return $previousException->getRequest();
+        }
+
+        return null;
+    }
+
+    /**
+     * @return Response|null
+     */
+    public function getResponse()
+    {
+        $previousException = $this->getPrevious();
+
+        if ($previousException instanceof RequestException) {
+            /* @var RequestException $previousException */
+            return $this->getRequest()->getResponse();
+        }
+
+        return null;
     }
 }

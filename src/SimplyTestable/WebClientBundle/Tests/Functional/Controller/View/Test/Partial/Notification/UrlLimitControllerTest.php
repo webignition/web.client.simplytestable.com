@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Test\P
 use SimplyTestable\WebClientBundle\Controller\View\Test\Partial\Notification\UrlLimitController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
@@ -41,7 +42,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionInvalidUserGetRequest()
     {
         $this->setHttpFixtures([
-            HttpResponseFactory::create(404),
+            HttpResponseFactory::createNotFoundResponse(),
         ]);
 
         $router = $this->container->get('router');
@@ -64,7 +65,10 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionInvalidOwnerGetRequest()
     {
         $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
@@ -104,7 +108,9 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $this->setHttpFixtures([
             HttpResponseFactory::create(200),
-            HttpResponseFactory::createJsonResponse($remoteTestData),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse($remoteTestData),
         ]);
 
@@ -231,6 +237,10 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionCachedResponse()
     {
+        $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser($userService->getUser());
+
         $remoteTestData = [
             'id' => self::TEST_ID,
             'website' => self::WEBSITE,
@@ -247,8 +257,7 @@ class IndexControllerTest extends AbstractBaseTestCase
             ],
         ];
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::createJsonResponse($remoteTestData),
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse($remoteTestData),
         ]);
 
