@@ -203,9 +203,8 @@ services:
   simplytestable.services.teaminviteservice:
     class:   SimplyTestable\WebClientBundle\Services\TeamInviteService
     arguments:
-        webResourceService: "@simplytestable.services.webresourceservice"
-        userService: "@simplytestable.services.userservice"
-        coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
+        coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
+        jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
   simplytestable.services.couponService:
     class:  SimplyTestable\WebClientBundle\Services\CouponService

@@ -1,105 +1,86 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Services;
 
-use Guzzle\Http\Exception\BadResponseException;
-use Guzzle\Http\Message\Request;
-use Guzzle\Http\Message\Response;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServiceException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
-use webignition\WebResource\JsonDocument\JsonDocument;
 
-class TeamInviteService extends CoreApplicationService
+class TeamInviteService
 {
     /**
-     * @var UserService
+     * @var CoreApplicationHttpClient
      */
-    private $userService;
+    private $coreApplicationHttpClient;
 
     /**
-     * @var Invite[]
+     * @var JsonResponseHandler
      */
-    private $inviteCache = [];
+    private $jsonResponseHandler;
 
     /**
-     * @var HttpClientService
-     */
-    private $httpClientService;
-
-    /**
-     * @var CoreApplicationRouter
-     */
-    private $coreApplicationRouter;
-
-    /**
-     * @param WebResourceService $webResourceService
-     * @param UserService $userService
-     * @param CoreApplicationRouter $coreApplicationRouter
+     * @param CoreApplicationHttpClient $coreApplicationHttpClient
+     * @param JsonResponseHandler $jsonResponseHandler
      */
     public function __construct(
-        WebResourceService $webResourceService,
-        UserService $userService,
-        CoreApplicationRouter $coreApplicationRouter
+        CoreApplicationHttpClient $coreApplicationHttpClient,
+        JsonResponseHandler $jsonResponseHandler
     ) {
-        parent::__construct($webResourceService);
-        $this->userService = $userService;
-        $this->httpClientService = $webResourceService->getHttpClientService();
-        $this->coreApplicationRouter = $coreApplicationRouter;
+        $this->coreApplicationHttpClient = $coreApplicationHttpClient;
+        $this->jsonResponseHandler = $jsonResponseHandler;
     }
 
     /**
      * @param $inviteeEmail
      * @return Invite
      *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      * @throws TeamServiceException
-     * @throws WebResourceException
      */
     public function get($inviteeEmail)
     {
-        $request = $this->httpClientService->getRequest(
-            $this->coreApplicationRouter->generate('teaminvite_get', [
-                'invitee_email' => $inviteeEmail
-            ])
-        );
-
-        $this->addAuthorisationToRequest($request);
-
         try {
-            /* @var JsonDocument $jsonDocument */
-            $jsonDocument = $this->webResourceService->get($request);
+            $response = $this->coreApplicationHttpClient->get('teaminvite_get', [
+                'invitee_email' => $inviteeEmail,
+            ]);
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
+            if (400 === $coreApplicationRequestException->getCode()) {
+                $response = $coreApplicationRequestException->getResponse();
 
-            return new Invite($jsonDocument->getContentObject());
-        } catch (WebResourceException $webResourceException) {
-            $response = $webResourceException->getResponse();
-
-            if ($response->getStatusCode() == 400 && $response->hasHeader('X-TeamInviteGet-Error-Code')) {
-                throw new TeamServiceException(
-                    (string)$response->getHeader('X-TeamInviteGet-Error-Message'),
-                    (int)(string)$response->getHeader('X-TeamInviteGet-Error-Code')
-                );
+                if ($response->getStatusCode() == 400 && $response->hasHeader('X-TeamInviteGet-Error-Code')) {
+                    throw new TeamServiceException(
+                        (string)$response->getHeader('X-TeamInviteGet-Error-Message'),
+                        (int)(string)$response->getHeader('X-TeamInviteGet-Error-Code')
+                    );
+                }
             }
 
-            throw $webResourceException;
+            throw $coreApplicationRequestException;
         }
+
+        $responseData = $this->jsonResponseHandler->handle($response);
+
+        return new Invite($responseData);
     }
 
     /**
      * @return Invite[]
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function getForUser()
     {
-        $request = $this->httpClientService->getRequest(
-            $this->coreApplicationRouter->generate('teaminvite_userlist')
-        );
+        $response = $this->coreApplicationHttpClient->get('teaminvite_userlist');
+        $inviteData = $this->jsonResponseHandler->handle($response);
 
-        $this->addAuthorisationToRequest($request);
-
-        /* @var JsonDocument $jsonDocument */
-        $jsonDocument = $this->webResourceService->get($request);
-        $inviteData = $jsonDocument->getContentObject();
         $invites = [];
 
         foreach ($inviteData as $rawInvite) {
@@ -113,22 +94,17 @@ class TeamInviteService extends CoreApplicationService
      * @param Invite $invite
      *
      * @return bool
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws InvalidCredentialsException
      */
     public function declineInvite(Invite $invite)
     {
-        $request = $this->httpClientService->postRequest(
-            $this->coreApplicationRouter->generate('teaminvite_decline'),
-            null,
-            [
-                'team' => $invite->getTeam()
-            ]
-        );
-
-        $this->addAuthorisationToRequest($request);
-
         try {
-            $this->webResourceService->get($request);
-        } catch (WebResourceException $webResourceException) {
+            $this->coreApplicationHttpClient->post('teaminvite_decline', [], [
+                'team' => $invite->getTeam()
+            ]);
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             return false;
         }
 
@@ -139,22 +115,17 @@ class TeamInviteService extends CoreApplicationService
      * @param Invite $invite
      *
      * @return bool
+     *
+     * @throws InvalidCredentialsException
+     * @throws CoreApplicationReadOnlyException
      */
     public function acceptInvite(Invite $invite)
     {
-        $request = $this->httpClientService->postRequest(
-            $this->coreApplicationRouter->generate('teaminvite_accept'),
-            null,
-            [
-                'team' => $invite->getTeam()
-            ]
-        );
-
-        $this->addAuthorisationToRequest($request);
-
         try {
-            $this->webResourceService->get($request);
-        } catch (WebResourceException $webResourceException) {
+            $this->coreApplicationHttpClient->post('teaminvite_accept', [], [
+                'team' => $invite->getTeam()
+            ]);
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             return false;
         }
 
@@ -164,19 +135,15 @@ class TeamInviteService extends CoreApplicationService
     /**
      * @return Invite[]
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function getForTeam()
     {
-        $request = $this->httpClientService->getRequest(
-            $this->coreApplicationRouter->generate('team_invites')
-        );
+        $response = $this->coreApplicationHttpClient->get('team_invites');
+        $inviteData = $this->jsonResponseHandler->handle($response);
 
-        $this->addAuthorisationToRequest($request);
-
-        /* @var JsonDocument $jsonDocument */
-        $jsonDocument = $this->webResourceService->get($request);
-        $inviteData = $jsonDocument->getContentObject();
         $invites = [];
 
         foreach ($inviteData as $rawInvite) {
@@ -190,20 +157,17 @@ class TeamInviteService extends CoreApplicationService
      * @param Invite $invite
      *
      * @return bool
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws InvalidCredentialsException
      */
     public function removeForUser(Invite $invite)
     {
-        $request = $this->httpClientService->postRequest(
-            $this->coreApplicationRouter->generate('teaminvite_remove', [
-                'invitee_email' => $invite->getUser()
-            ])
-        );
-
-        $this->addAuthorisationToRequest($request);
-
         try {
-            $this->webResourceService->get($request);
-        } catch (WebResourceException $webResourceException) {
+            $this->coreApplicationHttpClient->post('teaminvite_remove', [
+                'invitee_email' => $invite->getUser(),
+            ]);
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             return false;
         }
 
@@ -211,61 +175,25 @@ class TeamInviteService extends CoreApplicationService
     }
 
     /**
-     * @param string $token
+     * @param $token
+     * @return Invite|null
      *
-     * @return Invite
-     *
-     * @throws CoreApplicationAdminRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidAdminCredentialsException
      */
     public function getForToken($token)
     {
-        if (!isset($this->inviteCache[$token])) {
-            $requestUrl = $this->coreApplicationRouter->generate('teaminvite_getbytoken', [
-                'token' => $token
+        try {
+            $response = $this->coreApplicationHttpClient->getAsAdmin('teaminvite_getbytoken', [
+                'token' => $token,
             ]);
 
-            $decodedResponse = json_decode(
-                $this->getAdminResponse($this->httpClientService->getRequest($requestUrl))->getBody()
-            );
+            $responseData = $this->jsonResponseHandler->handle($response);
 
-            if ($decodedResponse instanceof \stdClass) {
-                $this->inviteCache[$token] = new Invite($decodedResponse);
-            } else {
-                $this->inviteCache[$token] = null;
-            }
+            return new Invite($responseData);
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
         }
 
-        return $this->inviteCache[$token];
-    }
-
-    /**
-     * @param Request $request
-     *
-     * @return bool|Response
-     *
-     * @throws CoreApplicationAdminRequestException
-     */
-    private function getAdminResponse(Request $request)
-    {
-        $currentUser = $this->getUser();
-
-        $this->setUser($this->userService->getAdminUser());
-        $this->addAuthorisationToRequest($request);
-
-        try {
-            $response = $request->send();
-        } catch (BadResponseException $badResponseException) {
-            $response = $badResponseException->getResponse();
-        }
-
-        if (!is_null($currentUser)) {
-            $this->setUser($currentUser);
-        }
-
-        if ($response->getStatusCode() == 401) {
-            throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
-        }
-
-        return $response;
+        return null;
     }
 }

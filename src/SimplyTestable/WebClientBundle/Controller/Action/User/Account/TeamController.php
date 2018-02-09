@@ -2,6 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServiceException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use Egulias\EmailValidator\EmailValidator;
@@ -11,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 
 class TeamController extends Controller implements RequiresPrivateUser
 {
@@ -90,9 +96,12 @@ class TeamController extends Controller implements RequiresPrivateUser
      * @param Request $request
      * @return RedirectResponse
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
-     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
+     * @throws CoreApplicationAdminRequestException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     * @throws MailConfigurationException
      */
     public function inviteMemberAction(Request $request)
     {
@@ -136,8 +145,6 @@ class TeamController extends Controller implements RequiresPrivateUser
 
             return $redirectResponse;
         }
-
-        $teamInviteService->setUser($user);
 
         try {
             $invite = $teamInviteService->get($invitee);
@@ -230,6 +237,14 @@ class TeamController extends Controller implements RequiresPrivateUser
      *
      * @return RedirectResponse
      */
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws InvalidCredentialsException
+     */
     public function respondInviteAction(Request $request)
     {
         $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
@@ -269,6 +284,9 @@ class TeamController extends Controller implements RequiresPrivateUser
      * @param Request $request
      *
      * @return RedirectResponse
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws InvalidCredentialsException
      */
     public function removeInviteAction(Request $request)
     {
@@ -315,9 +333,11 @@ class TeamController extends Controller implements RequiresPrivateUser
      *
      * @return RedirectResponse
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
-     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
+     * @throws CoreApplicationAdminRequestException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     * @throws MailConfigurationException
      */
     public function resendInviteAction(Request $request)
     {
@@ -387,7 +407,7 @@ class TeamController extends Controller implements RequiresPrivateUser
      * @param Invite $invite
      *
      * @throws PostmarkResponseException
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws MailConfigurationException
      */
     private function sendInviteEmail(Invite $invite)
     {
@@ -400,6 +420,7 @@ class TeamController extends Controller implements RequiresPrivateUser
         $viewName = 'SimplyTestableWebClientBundle:Email:user-team-invite-invitation.txt.twig';
 
         $message = $mailService->getNewMessage();
+
         $message->setFrom($sender['email'], $sender['name']);
         $message->addTo($invite->getUser());
         $message->setSubject(str_replace('{{team_name}}', $invite->getTeam(), $messageProperties['subject']));
@@ -415,7 +436,7 @@ class TeamController extends Controller implements RequiresPrivateUser
      * @param Invite $invite
      *
      * @throws PostmarkResponseException
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws MailConfigurationException
      */
     private function sendInviteActivationEmail(Invite $invite)
     {

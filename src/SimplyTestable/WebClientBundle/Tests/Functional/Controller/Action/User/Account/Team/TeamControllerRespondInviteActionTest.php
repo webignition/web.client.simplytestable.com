@@ -2,9 +2,12 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User\Account\Team;
 
-use Guzzle\Http\Message\Response;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,8 +35,11 @@ class TeamControllerRespondInviteActionTest extends AbstractTeamControllerTest
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
         $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
-            Response::fromMessage('HTTP/1.1 200'),
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $requestUrl = $router->generate(self::ROUTE_NAME);
@@ -74,11 +80,19 @@ class TeamControllerRespondInviteActionTest extends AbstractTeamControllerTest
      * @dataProvider respondInviteSuccessDataProvider
      *
      * @param Request $request
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws InvalidCredentialsException
      */
     public function testRespondInviteActionSuccess(Request $request)
     {
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+
+        $user = new User('user@example.com');
+        $coreApplicationHttpClient->setUser($user);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         /* @var RedirectResponse $response */
