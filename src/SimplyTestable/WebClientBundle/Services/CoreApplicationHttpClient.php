@@ -13,7 +13,6 @@ use Guzzle\Plugin\Backoff\BackoffPlugin;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
-use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 
@@ -100,7 +99,6 @@ class CoreApplicationHttpClient
      * @return Response|array|mixed|null
      *
      * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     public function get($routeName, array $routeParameters = [], array $options = [])
@@ -128,7 +126,6 @@ class CoreApplicationHttpClient
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
      */
     public function getAsAdmin($routeName, array $routeParameters = [], array $options = [])
     {
@@ -154,7 +151,6 @@ class CoreApplicationHttpClient
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     private function getAsUser(User $user, $routeName, array $routeParameters = [], array $options = [])
@@ -177,7 +173,6 @@ class CoreApplicationHttpClient
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
-     * @throws InvalidContentTypeException
      */
     public function post($routeName, array $routeParameters = [], array $postData = [], array $options = [])
     {
@@ -203,7 +198,6 @@ class CoreApplicationHttpClient
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
      */
     public function postAsAdmin($routeName, array $routeParameters = [], array $postData = [], array $options = [])
     {
@@ -230,7 +224,6 @@ class CoreApplicationHttpClient
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     private function postAsUser(
@@ -255,7 +248,6 @@ class CoreApplicationHttpClient
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     private function getResponse(RequestInterface $request, array $options, User $user)
@@ -306,14 +298,6 @@ class CoreApplicationHttpClient
             } catch (CurlException $curlException) {
                 throw new CoreApplicationRequestException($curlException);
             }
-        }
-
-        if ($this->isOptionTrue(self::OPT_EXPECT_JSON_RESPONSE, $options)) {
-            if (self::APPLICATION_JSON_CONTENT_TYPE !== $response->getContentType()) {
-                throw new InvalidContentTypeException($response->getContentType());
-            }
-
-            return json_decode($response->getBody(true), true);
         }
 
         return $response;

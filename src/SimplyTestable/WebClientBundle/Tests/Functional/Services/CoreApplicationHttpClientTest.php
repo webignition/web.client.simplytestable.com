@@ -8,7 +8,6 @@ use Guzzle\Plugin\History\HistoryPlugin;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
-use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
@@ -45,7 +44,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @param int $expectedExceptionCode
      *
      * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     public function testGetThrowsException(
@@ -75,7 +73,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
      */
     public function testGetAsAdminThrowsException(
         array $httpFixtures,
@@ -103,7 +100,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     public function testPostThrowsException(
@@ -133,7 +129,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
      */
     public function testPostAsAdminThrowsException(
         array $httpFixtures,
@@ -158,7 +153,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @param array $options
      *
      * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     public function testGetDoesNotThrowException(array $httpFixtures, $userName, array $options)
@@ -178,7 +172,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @param array $options
      *
      * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      * @throws CoreApplicationReadOnlyException
      */
@@ -200,7 +193,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @param mixed $expectedResponse
      *
      * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     public function testGetSuccess(array $httpFixtures, array $options, $expectedResponse)
@@ -226,7 +218,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
      */
     public function testGetAsAdminSuccess(array $httpFixtures, array $options, $expectedResponse)
     {
@@ -250,7 +241,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
     public function testPostSuccess(array $httpFixtures, array $options, $expectedResponse)
@@ -286,7 +276,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
      */
     public function testPostAsAdminSuccess(array $httpFixtures, array $options, $expectedResponse)
     {
@@ -316,9 +305,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
     public function requestSuccessDataProvider()
     {
         $emptyResponse = new Response(200);
-        $jsonData = [
-            'foo' => 'bar',
-        ];
 
         return [
             '200; empty body' => [
@@ -339,15 +325,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                     CoreApplicationHttpClient::OPT_TREAT_404_AS_EMPTY => true,
                 ],
                 'expectedResponse' => null,
-            ],
-            'json' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($jsonData),
-                ],
-                'options' => [
-                    CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
-                ],
-                'expectedResponse' => $jsonData,
             ],
         ];
     }
@@ -549,17 +526,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Operation timed out',
                 'expectedExceptionCode' => 28,
-            ],
-            'invalid content type for expected json response' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createSuccessResponse(),
-                ],
-                'options' => [
-                    CoreApplicationHttpClient::OPT_EXPECT_JSON_RESPONSE => true,
-                ],
-                'expectedException' => InvalidContentTypeException::class,
-                'expectedExceptionMessage' => '',
-                'expectedExceptionCode' => 0,
             ],
         ];
     }
