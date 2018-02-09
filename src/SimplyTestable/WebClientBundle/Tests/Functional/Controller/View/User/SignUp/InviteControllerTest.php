@@ -39,7 +39,7 @@ class InviteControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionGetRequest()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
                 'team' => 'Team Name',
                 'user' => self::INVITE_USERNAME,
@@ -84,9 +84,7 @@ class InviteControllerTest extends AbstractBaseTestCase
         array $flashBagValues,
         EngineInterface $templatingEngine
     ) {
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
-        }
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $session = $this->container->get('session');
 
@@ -176,7 +174,10 @@ class InviteControllerTest extends AbstractBaseTestCase
             ],
             'get invite failure' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 500'),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
                 'request' => new Request(),
                 'flashBagValues' => [
@@ -255,7 +256,7 @@ class InviteControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionCachedResponse()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
                 'team' => self::TEAM_NAME,
                 'user' => self::INVITE_USERNAME,
