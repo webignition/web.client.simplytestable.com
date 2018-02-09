@@ -2,7 +2,6 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
@@ -85,7 +84,6 @@ class TaskController extends BaseViewController implements RequiresValidOwner
      *
      * @return Response
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException

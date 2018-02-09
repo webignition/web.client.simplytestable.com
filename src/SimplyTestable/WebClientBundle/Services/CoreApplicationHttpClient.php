@@ -123,7 +123,6 @@ class CoreApplicationHttpClient
      *
      * @return Response|array|mixed|null
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
      */
@@ -133,6 +132,8 @@ class CoreApplicationHttpClient
 
         try {
             $response = $this->getAsUser($this->adminUser, $routeName, $routeParameters, $options);
+        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
+            // Not a write request, can't happen
         } catch (InvalidCredentialsException $invalidCredentialsException) {
             // Not a regular user request, can't happen
         }

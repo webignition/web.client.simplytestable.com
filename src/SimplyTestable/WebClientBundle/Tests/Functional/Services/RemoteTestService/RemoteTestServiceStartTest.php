@@ -98,13 +98,14 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
      *
      * @param TestOptions $testOptions
      * @param string $expectedRequestUrl
+     * @param array $expectedPostData
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function testStartSuccess(TestOptions $testOptions, $expectedRequestUrl, $expectedPostData)
+    public function testStartSuccess(TestOptions $testOptions, $expectedRequestUrl, array $expectedPostData)
     {
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([

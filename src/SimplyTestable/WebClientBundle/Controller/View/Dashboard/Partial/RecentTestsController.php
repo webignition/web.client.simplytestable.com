@@ -3,7 +3,6 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Dashboard\Partial;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
@@ -18,7 +17,6 @@ class RecentTestsController extends BaseViewController implements RequiresValidU
     /**
      * @return Response
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException

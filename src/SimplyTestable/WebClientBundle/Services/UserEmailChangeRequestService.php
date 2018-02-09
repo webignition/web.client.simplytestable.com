@@ -41,7 +41,6 @@ class UserEmailChangeRequestService
      * @return array
      *
      * @throws InvalidAdminCredentialsException
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      */

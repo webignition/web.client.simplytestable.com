@@ -4,7 +4,6 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\TaskService;
 
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
@@ -22,7 +21,6 @@ class TaskServiceGetTest extends AbstractTaskServiceTest
      * @param int $remoteTaskId
      * @param array $expectedTaskData
      *
-     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
