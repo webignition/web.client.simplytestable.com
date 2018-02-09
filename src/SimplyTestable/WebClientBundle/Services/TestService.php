@@ -127,6 +127,10 @@ class TestService
             return false;
         }
 
+        if (!$remoteTest instanceof RemoteTest) {
+            return false;
+        }
+
         $this->hydrateFromRemoteTest($test, $remoteTest);
 
         $this->entityManager->persist($test);

@@ -2,7 +2,8 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\EventListener\RequestListener\OnKernelRequest;
 
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,12 +25,12 @@ class OnKernelRequestRequiresValidTestOwnerTest extends AbstractOnKernelRequestT
      * @param array $testValues
      * @param bool $expectedHasResponse
      *
-     * @throws WebResourceException
      * @throws \Exception
      */
     public function testOnKernelRequest(array $httpFixtures, array $testValues, $expectedHasResponse)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setHttpFixtures([$httpFixtures[0]]);
+        $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);
@@ -67,7 +68,9 @@ class OnKernelRequestRequiresValidTestOwnerTest extends AbstractOnKernelRequestT
             'invalid test' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
-                    HttpResponseFactory::createSuccessResponse([], 'foo'),
+                    HttpResponseFactory::createSuccessResponse([
+                        'content-type' => 'text/plain',
+                    ], 'foo'),
                 ],
                 'testValues' => [],
                 'expectedHasResponse' => true,
@@ -86,7 +89,13 @@ class OnKernelRequestRequiresValidTestOwnerTest extends AbstractOnKernelRequestT
             'valid test owner' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
-                    HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createJsonResponse([
+                        'id' => self::TEST_ID,
+                        'website' => self::WEBSITE,
+                        'task_types' => [],
+                        'user' => 'user@example.com',
+                        'state' => Test::STATE_COMPLETED,
+                    ]),
                 ],
                 'testValues' => [
                     TestFactory::KEY_WEBSITE => self::WEBSITE,
@@ -97,10 +106,13 @@ class OnKernelRequestRequiresValidTestOwnerTest extends AbstractOnKernelRequestT
         ];
     }
 
-    public function testOnKernelRequestWebResourceException()
+    public function testOnKernelRequestCoreApplicationRequestException()
     {
         $this->setHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
@@ -121,7 +133,7 @@ class OnKernelRequestRequiresValidTestOwnerTest extends AbstractOnKernelRequestT
             self::CONTROLLER_ROUTE
         );
 
-        $this->setExpectedException(WebResourceException::class, 'Not Found', 404);
+        $this->setExpectedException(CoreApplicationRequestException::class, 'Not Found', 404);
 
         $this->requestListener->onKernelRequest($event);
     }

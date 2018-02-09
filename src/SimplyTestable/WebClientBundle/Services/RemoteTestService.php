@@ -184,6 +184,7 @@ class RemoteTestService
                     ]
                 );
             } catch (InvalidContentTypeException $invalidContentTypeException) {
+                return false;
             }
 
             if (is_array($remoteTestData)) {

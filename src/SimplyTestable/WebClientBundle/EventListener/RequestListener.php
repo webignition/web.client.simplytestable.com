@@ -17,7 +17,6 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser as Re
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner as RequiresValidTestOwnerController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresCompletedTest as RequiresCompletedTestController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered as IEFilteredController;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
