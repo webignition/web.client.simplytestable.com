@@ -51,8 +51,15 @@ class UserEmailChangeRequestService
             'user_email_change_request_get',
             [
                 'email' => $email
+            ],
+            [
+                CoreApplicationHttpClient::OPT_TREAT_404_AS_EMPTY => true,
             ]
         );
+
+        if (empty($response)) {
+            return null;
+        }
 
         return $this->jsonResponseHandler->handle($response);
     }

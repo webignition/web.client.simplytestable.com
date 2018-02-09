@@ -70,6 +70,7 @@ services:
     class:  SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService
     arguments:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
+        jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
   simplytestable.services.userserializerservice:
     class:  SimplyTestable\WebClientBundle\Services\UserSerializerService
