@@ -2,7 +2,9 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserStripeEventService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -56,68 +58,7 @@ class UserStripeEventServiceTest extends AbstractCoreApplicationServiceTest
         );
 
         $this->user = new User('user@example.com');
-    }
-
-    /**
-     * @dataProvider getListDataProvider
-     *
-     * @param array $httpFixtures
-     * @param int $expectedListLength
-     *
-     * @throws WebResourceException
-     */
-    public function testGetList(array $httpFixtures, $expectedListLength)
-    {
-        $this->setHttpFixtures($httpFixtures);
-
-        $this->userStripeEventService->setUser($this->user);
-        $list = $this->userStripeEventService->getList($this->user, 'customer.subscription.created');
-
-        $this->assertInternalType('array', $list);
-        $this->assertCount($expectedListLength, $list);
-
-        $this->assertEquals(
-            'http://null/user/user@example.com/stripe-events/customer.subscription.created/',
-            $this->getLastRequest()->getUrl()
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public function getListDataProvider()
-    {
-        return [
-            'empty' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([]),
-                ],
-                'expectedListLength' => 0,
-            ],
-            'single event' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([
-                        [
-                            'stripe_event_data' => json_encode($this->event1Data),
-                        ],
-                    ]),
-                ],
-                'expectedListLength' => 1,
-            ],
-            'two events' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([
-                        [
-                            'stripe_event_data' => json_encode($this->event2Data),
-                        ],
-                        [
-                            'stripe_event_data' => json_encode($this->event1Data),
-                        ],
-                    ]),
-                ],
-                'expectedListLength' => 2,
-            ],
-        ];
+        $this->coreApplicationHttpClient->setUser($this->user);
     }
 
     /**
@@ -126,13 +67,14 @@ class UserStripeEventServiceTest extends AbstractCoreApplicationServiceTest
      * @param array $httpFixtures
      * @param StripeEvent $expectedEvent
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testGetLatest(array $httpFixtures, $expectedEvent)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->userStripeEventService->setUser($this->user);
         $event = $this->userStripeEventService->getLatest($this->user, 'customer.subscription.created');
 
         $this->assertEquals($expectedEvent, $event);

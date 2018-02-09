@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -126,11 +127,11 @@ class IndexControllerTest extends AbstractBaseTestCase
                     'has_invite' => false,
                 ],
             ])),
-            HttpResponseFactory::createJsonResponse([]),
-            HttpResponseFactory::createJsonResponse([]),
         ]);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse([]),
+            HttpResponseFactory::createJsonResponse([]),
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
@@ -167,18 +168,31 @@ class IndexControllerTest extends AbstractBaseTestCase
         EngineInterface $templatingEngine
     ) {
         $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+
         $session = $this->container->get('session');
 
         $user = new User(self::USER_EMAIL);
 
         $userService->setUser($user);
+        $coreApplicationHttpClient->setUser($user);
 
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
-            $this->setCoreApplicationHttpClientHttpFixtures([
-                $httpFixtures[count($httpFixtures) - 1],
-            ]);
+        $userFixture = array_shift($httpFixtures);
+        $emailChangeRequestFixture = array_pop($httpFixtures);
+
+        $defaultHttpFixtures = [
+            $userFixture,
+        ];
+
+        if (count($httpFixtures) === 3) {
+            $teamFixture = array_pop($httpFixtures);
+            $defaultHttpFixtures[] = $teamFixture;
         }
+
+        $this->setHttpFixtures($defaultHttpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures(array_merge($httpFixtures, [
+            $emailChangeRequestFixture
+        ]));
 
         if (!empty($flashBagValues)) {
             foreach ($flashBagValues as $key => $value) {
@@ -813,13 +827,13 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         return $router->generate(self::ROUTE_NAME);
     }
-//
-//    /**
-//     * {@inheritdoc}
-//     */
-//    public function tearDown()
-//    {
-//        \Mockery::close();
-//        parent::tearDown();
-//    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function tearDown()
+    {
+        \Mockery::close();
+        parent::tearDown();
+    }
 }

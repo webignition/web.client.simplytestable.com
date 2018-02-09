@@ -3,7 +3,10 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\User\Account;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
@@ -120,6 +123,18 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
      * @return array
      *
      * @throws WebResourceException
+     */
+
+    /**
+     * @param User $user
+     * @param UserSummary $userSummary
+     * @param UserStripeEventService $userStripeEventService
+     *
+     * @return array
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     private function getUserStripeEvents(
         User $user,

@@ -1,62 +1,34 @@
 <?php
 namespace SimplyTestable\WebClientBundle\Services;
 
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use webignition\Model\Stripe\Event\Event as StripeEvent;
 use SimplyTestable\WebClientBundle\Model\User;
-use webignition\WebResource\JsonDocument\JsonDocument;
 
-class UserStripeEventService extends CoreApplicationService
+class UserStripeEventService
 {
     /**
-     * @var CoreApplicationRouter
+     * @var CoreApplicationHttpClient
      */
-    private $coreApplicationRouter;
+    private $coreApplicationHttpClient;
 
     /**
-     * @param WebResourceService $webResourceService
-     * @param CoreApplicationRouter $coreApplicationRouter
+     * @var JsonResponseHandler
+     */
+    private $jsonResponseHandler;
+
+    /**
+     * @param CoreApplicationHttpClient $coreApplicationHttpClient
+     * @param JsonResponseHandler $jsonResponseHandler
      */
     public function __construct(
-        WebResourceService $webResourceService,
-        CoreApplicationRouter $coreApplicationRouter
+        CoreApplicationHttpClient $coreApplicationHttpClient,
+        JsonResponseHandler $jsonResponseHandler
     ) {
-        parent::__construct($webResourceService);
-
-        $this->coreApplicationRouter = $coreApplicationRouter;
-    }
-
-    /**
-     * @param User $user
-     * @param string $type
-     *
-     * @return StripeEvent[]
-     *
-     * @throws WebResourceException
-     */
-    public function getList(User $user, $type)
-    {
-        $request = $this->webResourceService->getHttpClientService()->getRequest(
-            $this->coreApplicationRouter->generate('user_list_stripe_events', [
-                'email' => $user->getUsername(),
-                'type' => $type
-            ])
-        );
-
-        $this->addAuthorisationToRequest($request);
-
-        /* @var JsonDocument $jsonDocument */
-        $jsonDocument = $this->webResourceService->get($request);
-
-        $responseObject = $jsonDocument->getContentObject();
-
-        $list = [];
-
-        foreach ($responseObject as $eventData) {
-            $list[] = new StripeEvent($eventData->stripe_event_data);
-        };
-
-        return $list;
+        $this->coreApplicationHttpClient = $coreApplicationHttpClient;
+        $this->jsonResponseHandler = $jsonResponseHandler;
     }
 
     /**
@@ -65,7 +37,9 @@ class UserStripeEventService extends CoreApplicationService
      *
      * @return null|StripeEvent
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function getLatest(User $user, $type)
     {
@@ -76,5 +50,33 @@ class UserStripeEventService extends CoreApplicationService
         }
 
         return $list[0];
+    }
+
+    /**
+     * @param User $user
+     * @param string $type
+     *
+     * @return StripeEvent[]
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     */
+    private function getList(User $user, $type)
+    {
+        $response = $this->coreApplicationHttpClient->get('user_list_stripe_events', [
+            'email' => $user->getUsername(),
+            'type' => $type,
+        ]);
+
+        $responseData = $this->jsonResponseHandler->handle($response);
+
+        $list = [];
+
+        foreach ($responseData as $eventData) {
+            $list[] = new StripeEvent($eventData['stripe_event_data']);
+        };
+
+        return $list;
     }
 }
