@@ -3,7 +3,6 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\EventListener\RequestListener\OnKernelRequest;
 
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -26,7 +25,6 @@ class OnKernelRequestRequiresCompletedTestTest extends AbstractOnKernelRequestTe
      * @param bool $expectedHasRedirectResponse
      * @param string $expectedRedirectUrl
      *
-     * @throws WebResourceException
      * @throws \Exception
      */
     public function testOnKernelRequest(
@@ -36,6 +34,8 @@ class OnKernelRequestRequiresCompletedTestTest extends AbstractOnKernelRequestTe
         $expectedRedirectUrl = null
     ) {
         $this->setHttpFixtures($httpFixtures);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);
@@ -75,7 +75,13 @@ class OnKernelRequestRequiresCompletedTestTest extends AbstractOnKernelRequestTe
             'state: failed no sitemap' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
-                    HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createJsonResponse([
+                        'id' => self::TEST_ID,
+                        'website' => self::WEBSITE,
+                        'task_types' => [],
+                        'user' => 'user@example.com',
+                        'state' => Test::STATE_FAILED_NO_SITEMAP,
+                    ]),
                 ],
                 'testValues' => [
                     TestFactory::KEY_WEBSITE => self::WEBSITE,
@@ -88,7 +94,13 @@ class OnKernelRequestRequiresCompletedTestTest extends AbstractOnKernelRequestTe
             'state: rejected' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
-                    HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createJsonResponse([
+                        'id' => self::TEST_ID,
+                        'website' => self::WEBSITE,
+                        'task_types' => [],
+                        'user' => 'user@example.com',
+                        'state' => Test::STATE_REJECTED,
+                    ]),
                 ],
                 'testValues' => [
                     TestFactory::KEY_WEBSITE => self::WEBSITE,
@@ -101,7 +113,13 @@ class OnKernelRequestRequiresCompletedTestTest extends AbstractOnKernelRequestTe
             'state: in progress' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
-                    HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createJsonResponse([
+                        'id' => self::TEST_ID,
+                        'website' => self::WEBSITE,
+                        'task_types' => [],
+                        'user' => 'user@example.com',
+                        'state' => Test::STATE_IN_PROGRESS,
+                    ]),
                 ],
                 'testValues' => [
                     TestFactory::KEY_WEBSITE => self::WEBSITE,
