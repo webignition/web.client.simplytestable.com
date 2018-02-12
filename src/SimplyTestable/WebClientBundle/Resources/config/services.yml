@@ -199,6 +199,8 @@ services:
     arguments:
         webResourceService: "@simplytestable.services.webresourceservice"
         coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
+        coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
+        jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
   simplytestable.services.teaminviteservice:
     class:   SimplyTestable\WebClientBundle\Services\TeamInviteService

@@ -4,12 +4,12 @@ namespace SimplyTestable\WebClientBundle\Model\Team;
 use SimplyTestable\WebClientBundle\Model\Object;
 
 class Team extends Object {
-    
+
     /**
-     * 
+     *
      * @param \stdClass $data
      */
-    public function __construct(\stdClass $data) {
+    public function __construct($data) {
         parent::__construct($data);
         if (is_null($this->getDataProperty('people'))) {
             $this->setDataProperty('people', [
@@ -50,5 +50,5 @@ class Team extends Object {
     public function hasMembers() {
         return count($this->getMembers()) > 0;
     }
-    
+
 }

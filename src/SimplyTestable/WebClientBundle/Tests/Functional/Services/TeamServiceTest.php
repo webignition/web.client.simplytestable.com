@@ -2,19 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Guzzle\Http\Message\EntityEnclosingRequest;
-use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\History\HistoryPlugin;
-use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
-use SimplyTestable\WebClientBundle\Services\TaskTypeService;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
-use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
-use Symfony\Component\BrowserKit\History;
 
 class TeamServiceTest extends AbstractCoreApplicationServiceTest
 {
@@ -43,12 +35,13 @@ class TeamServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->user = new User('user@example.com');
         $this->teamService->setUser($this->user);
+        $this->coreApplicationHttpClient->setUser($this->user);
     }
 
     public function testCreate()
     {
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $this->teamService->create(self::TEAM_NAME);
@@ -71,7 +64,7 @@ class TeamServiceTest extends AbstractCoreApplicationServiceTest
             'members' => [],
         ];
 
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse($teamData),
         ]);
 
@@ -80,7 +73,6 @@ class TeamServiceTest extends AbstractCoreApplicationServiceTest
         $this->assertInstanceOf(Team::class, $team);
         $this->assertEquals(new Team($teamData), $team);
 
-        /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
 
         $this->assertEquals('GET', $lastRequest->getMethod());
@@ -91,13 +83,12 @@ class TeamServiceTest extends AbstractCoreApplicationServiceTest
     {
         $memberEmail = 'member@example.com';
 
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $this->teamService->removeFromTeam($memberEmail);
 
-        /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
 
         $this->assertEquals('POST', $lastRequest->getMethod());
@@ -106,13 +97,12 @@ class TeamServiceTest extends AbstractCoreApplicationServiceTest
 
     public function testLeave()
     {
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $this->teamService->leave();
 
-        /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
 
         $this->assertEquals('POST', $lastRequest->getMethod());
