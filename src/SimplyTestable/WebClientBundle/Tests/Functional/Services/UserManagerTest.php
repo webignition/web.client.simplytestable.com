@@ -16,11 +16,17 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
      * @dataProvider getUserDataProvider
      *
      * @param Request $request
-     * @param UserSerializerService $userSerializerService
+     * @param UserSerializerService|MockInterface $userSerializerService
      * @param User $expectedUser
      */
     public function testGetUser(Request $request, UserSerializerService $userSerializerService, User $expectedUser)
     {
+        $userSerializerService
+            ->shouldReceive('serialize')
+            ->withArgs(function (User $user) use ($expectedUser) {
+                return $expectedUser->equals($user);
+            });
+
         $userManager = $this->createUserManager($request, $userSerializerService);
 
         $user = $userManager->getUser();
@@ -59,6 +65,27 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
         ];
     }
 
+    public function testSetUser()
+    {
+        $session = $this->container->get('session');
+        $userManager = $this->container->get(UserManager::class);
+        $userSerializer = $this->container->get('simplytestable.services.userserializerservice');
+
+        $originalSerializedUser = $session->get(UserManager::SESSION_USER_KEY);
+
+        $user = new User('user@example.com');
+
+        $userManager->setUser($user);
+
+        $this->assertEquals($user, $userManager->getUser());
+
+        $currentSerializedUser = $session->get(UserManager::SESSION_USER_KEY);
+        $currentUser = $userSerializer->unserialize($currentSerializedUser);
+
+        $this->assertEquals($user, $currentUser);
+        $this->assertNotEquals($currentSerializedUser, $originalSerializedUser);
+    }
+
     /**
      * @param Request $request
      * @param UserSerializerService $userSerializerService
@@ -72,7 +99,8 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
 
         return new UserManager(
             $requestStack,
-            $userSerializerService
+            $userSerializerService,
+            $this->container->get('session')
         );
     }
 
