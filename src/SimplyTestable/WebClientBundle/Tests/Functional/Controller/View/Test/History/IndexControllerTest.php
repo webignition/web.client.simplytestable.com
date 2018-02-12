@@ -296,6 +296,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'simplytestable.services.userservice',
                 'simplytestable.services.taskservice',
                 'simplytestable.services.cachevalidator',
+                UserManager::class,
             ],
             [
                 'templating' => $templatingEngine,

@@ -222,6 +222,7 @@ class PlanControllerTest extends AbstractBaseTestCase
                 'simplytestable.services.teamservice',
                 'simplytestable.services.plansservice',
                 'simplytestable.services.flashbagvalues',
+                UserManager::class,
             ],
             [
                 'templating' => $templatingEngine,

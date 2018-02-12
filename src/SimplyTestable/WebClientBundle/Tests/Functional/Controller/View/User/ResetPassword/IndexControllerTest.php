@@ -3,7 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\User\ResetPassword;
 
 use SimplyTestable\WebClientBundle\Controller\View\User\ResetPassword\IndexController;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
@@ -53,8 +53,6 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param array $flashBagValues
      * @param Request $request
      * @param EngineInterface $templatingEngine
-     *
-     * @throws CoreApplicationAdminRequestException
      */
     public function testIndexActionRender(
         array $flashBagValues,
@@ -75,6 +73,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'simplytestable.services.cachevalidator',
                 'simplytestable.services.userservice',
                 'simplytestable.services.flashbagvalues',
+                UserManager::class,
             ],
             [
                 'templating' => $templatingEngine,

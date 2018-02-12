@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Controller\View\User\SignUp\InviteController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
@@ -102,6 +103,7 @@ class InviteControllerTest extends AbstractBaseTestCase
                 'simplytestable.services.userservice',
                 'simplytestable.services.flashbagvalues',
                 'simplytestable.services.cachevalidator',
+                UserManager::class,
             ],
             [
                 'templating' => $templatingEngine,
