@@ -10,6 +10,7 @@ use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\Coupon;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -45,6 +46,8 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         array $httpFixtures,
         $expectedReturnValue
     ) {
+        $this->userService->setUser(SystemUserService::getPublicUser());
+
         $this->setHttpFixtures($httpFixtures);
 
         $returnValue = $this->userService->resetPassword('token', 'password');
@@ -153,6 +156,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testAuthenticate(array $httpFixtures, $expectedAuthenticateReturnValue)
     {
+        $this->userService->setUser(SystemUserService::getPublicUser());
         $this->setHttpFixtures($httpFixtures);
 
         $this->assertEquals($expectedAuthenticateReturnValue, $this->userService->authenticate());
@@ -675,10 +679,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
     public function testGetSummarySuccess($user, $expectedRequestUrl)
     {
         $userService = $this->container->get('simplytestable.services.userservice');
-
-        if (!empty($user)) {
-            $this->userService->setUser($user);
-        }
+        $this->userService->setUser($user);
 
         $this->setHttpFixtures([
             HttpResponseFactory::createJsonResponse([
@@ -721,7 +722,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
                 'expectedRequestUrl' => 'http://null/user/user@example.com/',
             ],
             'no user' => [
-                'user' => null,
+                'user' => SystemUserService::getPublicUser(),
                 'expectedRequestUrl' => 'http://null/user/public/',
             ],
         ];
