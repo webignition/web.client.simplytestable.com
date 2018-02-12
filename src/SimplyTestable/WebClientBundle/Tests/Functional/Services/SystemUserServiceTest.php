@@ -51,7 +51,7 @@ class SystemUserServiceTest extends AbstractBaseTestCase
      */
     public function testIsPublicUser(User $user, $expectedIsPublicUser)
     {
-        $this->assertEquals($expectedIsPublicUser, $this->systemUserService->isPublicUser($user));
+        $this->assertEquals($expectedIsPublicUser, SystemUserService::isPublicUser($user));
     }
 
     /**

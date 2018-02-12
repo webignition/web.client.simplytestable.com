@@ -52,7 +52,7 @@ class SystemUserService
      *
      * @return bool
      */
-    public function isPublicUser(User $user)
+    public static function isPublicUser(User $user)
     {
         $comparatorUsername = strtolower($user->getUsername());
 
