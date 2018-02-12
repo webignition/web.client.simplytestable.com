@@ -279,8 +279,7 @@ services:
     arguments:
       - '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
       - '@SimplyTestable\WebClientBundle\Services\CoreApplicationResponseCache'
-      - '%admin_user_username%'
-      - '%admin_user_password%'
+      - '@SimplyTestable\WebClientBundle\Services\SystemUserService'
 
   SimplyTestable\WebClientBundle\Services\JsonResponseHandler:
     class: SimplyTestable\WebClientBundle\Services\JsonResponseHandler

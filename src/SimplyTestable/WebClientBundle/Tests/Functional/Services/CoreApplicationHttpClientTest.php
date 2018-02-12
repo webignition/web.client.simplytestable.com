@@ -537,14 +537,14 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      */
     private function getUserFromUserName($userName)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $systemUserService = $this->container->get(SystemUserService::class);
 
         $user = SystemUserService::getPublicUser();
 
         if ('private' === $userName) {
             $user = new User(self::USER_EMAIL);
         } elseif ('admin' === $userName) {
-            $user = $userService->getAdminUser();
+            $user = $systemUserService->getAdminUser();
         }
 
         return $user;

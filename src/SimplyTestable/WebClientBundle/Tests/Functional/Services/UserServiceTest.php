@@ -34,16 +34,6 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         );
     }
 
-    public function testGetAdminUser()
-    {
-        $expectedAdminUser = new User(
-            $this->container->getParameter('admin_user_username'),
-            $this->container->getParameter('admin_user_password')
-        );
-
-        $this->assertEquals($expectedAdminUser, $this->userService->getAdminUser());
-    }
-
     /**
      * @dataProvider isLoggedInDataProvider
      *

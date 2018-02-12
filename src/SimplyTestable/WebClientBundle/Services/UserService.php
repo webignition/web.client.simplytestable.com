@@ -76,12 +76,18 @@ class UserService extends CoreApplicationService
     protected $coreApplicationRouter;
 
     /**
+     * @var SystemUserService
+     */
+    private $systemUserService;
+
+    /**
      * @param WebResourceService $webResourceService
      * @param string $adminUserUsername
      * @param string $adminUserPassword
      * @param Session $session
      * @param UserSerializerService $userSerializerService
      * @param CoreApplicationRouter $coreApplicationRouter
+     * @param SystemUserService $systemUserService
      */
     public function __construct(
         WebResourceService $webResourceService,
@@ -89,7 +95,8 @@ class UserService extends CoreApplicationService
         $adminUserPassword,
         Session $session,
         UserSerializerService $userSerializerService,
-        CoreApplicationRouter $coreApplicationRouter
+        CoreApplicationRouter $coreApplicationRouter,
+        SystemUserService $systemUserService
     ) {
         parent::__construct($webResourceService);
         $this->adminUserUsername = $adminUserUsername;
@@ -99,17 +106,7 @@ class UserService extends CoreApplicationService
 
         $this->httpClientService = $webResourceService->getHttpClientService();
         $this->coreApplicationRouter = $coreApplicationRouter;
-    }
-
-    /**
-     * @return User
-     */
-    public function getAdminUser()
-    {
-        $user = new User();
-        $user->setUsername($this->adminUserUsername);
-        $user->setPassword($this->adminUserPassword);
-        return $user;
+        $this->systemUserService = $systemUserService;
     }
 
     /**
@@ -123,7 +120,7 @@ class UserService extends CoreApplicationService
             return false;
         }
 
-        if ($user->equals($this->getAdminUser())) {
+        if ($user->equals($this->systemUserService->getAdminUser())) {
             return false;
         }
 
@@ -255,7 +252,7 @@ class UserService extends CoreApplicationService
      */
     public function activate($token)
     {
-        $this->setUser($this->getAdminUser());
+        $this->setUser($this->systemUserService->getAdminUser());
 
         $request = $this->httpClientService->postRequest(
             $this->coreApplicationRouter->generate('user_activate', ['token' => $token])
@@ -360,7 +357,7 @@ class UserService extends CoreApplicationService
     {
         $currentUser = $this->getUser();
 
-        $this->setUser($this->getAdminUser());
+        $this->setUser($this->systemUserService->getAdminUser());
         $this->addAuthorisationToRequest($request);
 
         try {
