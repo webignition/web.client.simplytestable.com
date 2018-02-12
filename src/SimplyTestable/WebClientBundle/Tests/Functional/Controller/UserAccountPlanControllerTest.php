@@ -3,6 +3,9 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller;
 
 use SimplyTestable\WebClientBundle\Controller\UserAccountPlanController;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
@@ -120,7 +123,9 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
      * @param array $expectedFlashBagValues
      *
      * @throws WebResourceException
-     * @throws \Exception
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testSubscribeAction(
         array $httpFixtures,

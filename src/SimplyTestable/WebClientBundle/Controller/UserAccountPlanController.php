@@ -4,6 +4,8 @@ namespace SimplyTestable\WebClientBundle\Controller;
 
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
@@ -31,8 +33,10 @@ class UserAccountPlanController extends Controller implements RequiresPrivateUse
      *
      * @return RedirectResponse
      *
-     * @throws \Exception
+     * @throws CoreApplicationRequestException
      * @throws WebResourceException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function subscribeAction(Request $request)
     {
