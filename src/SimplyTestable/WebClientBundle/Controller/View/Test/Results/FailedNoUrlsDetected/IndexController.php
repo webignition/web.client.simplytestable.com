@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -69,9 +70,8 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
         }
 
         $testStateIsCorrect = Test::STATE_FAILED_NO_SITEMAP === $test->getState();
-        $isPublicUser = $userService->isPublicUser($user);
 
-        if (!$testStateIsCorrect || !$isPublicUser) {
+        if (!$testStateIsCorrect || !SystemUserService::isPublicUser($user)) {
             $redirectUrl = $router->generate(
                 'view_test_progress_index_index',
                 [

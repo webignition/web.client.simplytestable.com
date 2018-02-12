@@ -138,7 +138,7 @@ class UserController extends Controller
         $user->setUsername($email);
         $user->setPassword($password);
 
-        if ($userService->isPublicUser($user)) {
+        if (SystemUserService::isPublicUser($user)) {
             $flashBag->set(
                 self::FLASH_BAG_SIGN_IN_ERROR_KEY,
                 self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_PUBLIC_USER

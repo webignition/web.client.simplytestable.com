@@ -78,7 +78,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         }
 
         if ($testService->isFinished($test)) {
-            if ($test->getState() !== Test::STATE_FAILED_NO_SITEMAP || $userService->isPublicUser($user)) {
+            if ($test->getState() !== Test::STATE_FAILED_NO_SITEMAP || SystemUserService::isPublicUser($user)) {
                 $redirectUrl = $router->generate(
                     'view_test_results_index_index',
                     [
@@ -120,10 +120,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         }
 
         $taskTypeService->setUser($user);
-
-        $isAuthenticated = !$userService->isPublicUser($user);
-
-        if ($isAuthenticated) {
+        if (!SystemUserService::isPublicUser($user)) {
             $taskTypeService->setUserIsAuthenticated();
         }
 

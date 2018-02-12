@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\TestOptions;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,7 +42,8 @@ class TestStartController extends TestController
         $user = $userService->getUser();
 
         $taskTypeService->setUser($user);
-        if (!$userService->isPublicUser($user)) {
+
+        if (!SystemUserService::isPublicUser($user)) {
             $taskTypeService->setUserIsAuthenticated();
         }
 

@@ -121,30 +121,13 @@ class UserService extends CoreApplicationService
     }
 
     /**
-     * @param User $user
-     *
-     * @return bool
-     */
-    public function isPublicUser(User $user)
-    {
-        $comparatorUser = new User();
-        $comparatorUser->setUsername(strtolower($user->getUsername()));
-
-        if ($comparatorUser->getUsername() == 'public@simplytestable.com') {
-            return true;
-        }
-
-        return $this->getPublicUser()->equals($comparatorUser);
-    }
-
-    /**
      * @return bool
      */
     public function isLoggedIn()
     {
         $user = $this->getUser();
 
-        if ($this->isPublicUser($user)) {
+        if (SystemUserService::isPublicUser($user)) {
             return false;
         }
 
@@ -296,7 +279,7 @@ class UserService extends CoreApplicationService
             return $curlException->getErrorNo();
         }
 
-        $this->setUser($this->getPublicUser());
+        $this->setUser(SystemUserService::getPublicUser());
 
         if ($response->getStatusCode() == 401) {
             throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
@@ -478,7 +461,7 @@ class UserService extends CoreApplicationService
         }
 
         if (empty($user)) {
-            $user = $this->getPublicUser();
+            $user = SystemUserService::getPublicUser();
         }
 
         $this->setUser($user);
@@ -492,12 +475,12 @@ class UserService extends CoreApplicationService
         $sessionUser = $this->session->get(self::SESSION_USER_KEY);
 
         if (empty($sessionUser)) {
-            $user = $this->getPublicUser();
+            $user = SystemUserService::getPublicUser();
         } else {
             $user = $this->userSerializerService->unserialize($sessionUser);
 
-            if ($this->isPublicUser($user)) {
-                $user = $this->getPublicUser();
+            if (SystemUserService::isPublicUser($user)) {
+                $user = SystemUserService::getPublicUser();
             }
         }
 

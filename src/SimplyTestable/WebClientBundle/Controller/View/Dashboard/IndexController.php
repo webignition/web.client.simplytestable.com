@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Dashboard;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter as TestOptionsRequestAdapter;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
@@ -28,7 +29,7 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
         $templating = $this->container->get('templating');
 
         $user = $userService->getUser();
-        $isLoggedIn = !$userService->isPublicUser($user);
+        $isLoggedIn = !SystemUserService::isPublicUser($user);
 
         $taskTypeService->setUser($user);
         if ($isLoggedIn) {

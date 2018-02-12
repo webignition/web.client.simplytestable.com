@@ -84,7 +84,7 @@ class IndexController extends AbstractResultsController
         $remoteTest = $remoteTestService->get();
 
         $taskTypeService->setUser($user);
-        if (!$userService->isPublicUser($user)) {
+        if (!SystemUserService::isPublicUser($user)) {
             $taskTypeService->setUserIsAuthenticated();
         }
 
