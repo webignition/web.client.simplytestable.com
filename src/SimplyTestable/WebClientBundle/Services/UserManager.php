@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Services;
 
 use SimplyTestable\WebClientBundle\Model\User;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
@@ -10,6 +11,7 @@ class UserManager
 {
     const USER_COOKIE_KEY = 'simplytestable-user';
     const SESSION_USER_KEY = 'user';
+    const ONE_YEAR_IN_SECONDS = 31536000;
 
     /**
      * @var UserSerializerService
@@ -111,5 +113,21 @@ class UserManager
     public function clearUser()
     {
         $this->session->set(self::SESSION_USER_KEY, null);
+    }
+
+    /**
+     * @return Cookie
+     */
+    public function createUserCookie()
+    {
+        return new Cookie(
+            self::USER_COOKIE_KEY,
+            $this->userSerializer->serializeToString($this->user),
+            time() + self::ONE_YEAR_IN_SECONDS,
+            '/',
+            '.simplytestable.com',
+            false,
+            true
+        );
     }
 }
