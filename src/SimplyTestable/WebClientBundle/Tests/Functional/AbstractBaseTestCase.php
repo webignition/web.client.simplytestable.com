@@ -73,7 +73,7 @@ abstract class AbstractBaseTestCase extends WebTestCase
     /**
      * {@inheritdoc}
      */
-    public function tearDown()
+    protected function tearDown()
     {
         parent::tearDown();
 

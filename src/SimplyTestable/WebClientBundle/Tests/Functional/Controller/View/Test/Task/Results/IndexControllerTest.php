@@ -1365,7 +1365,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     /**
      * {@inheritdoc}
      */
-    public function tearDown()
+    protected function tearDown()
     {
         \Mockery::close();
         parent::tearDown();
