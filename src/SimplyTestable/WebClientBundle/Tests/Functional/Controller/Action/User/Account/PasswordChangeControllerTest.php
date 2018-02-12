@@ -7,7 +7,6 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestExceptio
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
@@ -93,7 +92,7 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
         $userManager->setUser($user);
 
         $this->client->getCookieJar()->set(
-            new Cookie(UserService::USER_COOKIE_KEY, $userSerializerService->serializeToString($user))
+            new Cookie(UserManager::USER_COOKIE_KEY, $userSerializerService->serializeToString($user))
         );
 
         $this->setHttpFixtures([
@@ -260,7 +259,7 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
                     'current-password' => self::USER_CURRENT_PASSWORD,
                     'new-password' => 'foo',
                 ], [], [
-                    UserService::USER_COOKIE_KEY => 'foo',
+                    UserManager::USER_COOKIE_KEY => 'foo',
                 ]),
                 'expectedFlashBagValues' => [
                     PasswordChangeController::FLASH_BAG_REQUEST_SUCCESS_MESSAGE,

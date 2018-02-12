@@ -107,7 +107,7 @@ class RequestListener
             return;
         }
 
-        if ($controller instanceof RequiresPrivateUserController && !$userService->isLoggedIn()) {
+        if ($controller instanceof RequiresPrivateUserController && !$userManager->isLoggedIn()) {
             $session = $this->container->get('session');
 
             $session->getFlashBag()->set('user_signin_error', 'account-not-logged-in');

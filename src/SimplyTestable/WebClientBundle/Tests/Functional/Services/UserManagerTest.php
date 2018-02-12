@@ -151,7 +151,7 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
         ];
     }
 
-    public function testClearUser()
+    public function testClearSessionUser()
     {
         $session = $this->container->get('session');
         $userSerializer = $this->container->get('simplytestable.services.userserializerservice');
@@ -170,7 +170,7 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
 
         $this->assertEquals($serializedUser, $session->get(UserManager::SESSION_USER_KEY));
 
-        $userManager->clearUser();
+        $userManager->clearSessionUser();
 
         $this->assertNull($session->get(UserManager::SESSION_USER_KEY));
     }

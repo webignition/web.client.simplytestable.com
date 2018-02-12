@@ -60,8 +60,6 @@ services:
     class:  SimplyTestable\WebClientBundle\Services\UserService
     arguments:
         webResourceService: "@simplytestable.services.webresourceservice"
-        session: "@session"
-        userSerializerService: "@simplytestable.services.userserializerservice"
         coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
         systemUserService: '@SimplyTestable\WebClientBundle\Services\SystemUserService'
 
@@ -225,7 +223,6 @@ services:
     class: SimplyTestable\WebClientBundle\Services\CacheValidatorService
     arguments:
       cacheValidatorHeadersService: '@simplytestable.services.cachevalidatorheadersservice'
-      userService: '@simplytestable.services.userservice'
       userManager: '@SimplyTestable\WebClientBundle\Services\UserManager'
 
   simplytestable.services.flashbagvalues:
@@ -295,3 +292,5 @@ services:
     arguments:
       - '@request_stack'
       - '@simplytestable.services.userserializerservice'
+      - '@session'
+      - '@SimplyTestable\WebClientBundle\Services\SystemUserService'

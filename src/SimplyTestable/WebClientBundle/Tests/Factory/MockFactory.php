@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Factory;
 use Mockery\MockInterface;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 
@@ -110,6 +111,30 @@ class MockFactory
     public static function createUserService($calls = [])
     {
         $userService = \Mockery::mock(UserService::class);
+
+        if (isset($calls['getUser'])) {
+            $userService
+                ->shouldReceive('getUser')
+                ->andReturn($calls['getUser']['return']);
+        }
+
+        if (isset($calls['isLoggedIn'])) {
+            $userService
+                ->shouldReceive('isLoggedIn')
+                ->andReturn($calls['isLoggedIn']['return']);
+        }
+
+        return $userService;
+    }
+
+    /**
+     * @param array $calls
+     *
+     * @return MockInterface|UserManager
+     */
+    public static function createUserManager($calls = [])
+    {
+        $userService = \Mockery::mock(UserManager::class);
 
         if (isset($calls['getUser'])) {
             $userService

@@ -14,7 +14,6 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
@@ -222,7 +221,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
         ]);
 
         $this->client->getCookieJar()->set(new Cookie(
-            UserService::USER_COOKIE_KEY,
+            UserManager::USER_COOKIE_KEY,
             $userSerializerService->serializeToString(new User(self::USER_EMAIL))
         ));
 
@@ -344,7 +343,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse($this->remoteTestData),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'taskType' => '',
                 'filter' => '',
@@ -355,7 +354,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse($this->remoteTestData),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'taskType' => 'foo',
                 'filter' => '',
@@ -366,7 +365,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse($this->remoteTestData),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => '',
@@ -377,7 +376,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse($this->remoteTestData),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => 'foo',
@@ -390,7 +389,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                         'task_count' => 1000,
                     ])),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
@@ -481,7 +480,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                     HttpResponseFactory::createJsonResponse([]),
                     HttpResponseFactory::createJsonResponse([]),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'testValues' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
@@ -509,12 +508,12 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
             'public user, public test, no tasks' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'user' => SystemUserService::PUBLIC_USER_USERNAME,
                     ])),
                     HttpResponseFactory::createJsonResponse([]),
                     HttpResponseFactory::createJsonResponse([]),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'testValues' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
@@ -575,7 +574,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
             'public user, public test, has tasks, no errors' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'user' => SystemUserService::PUBLIC_USER_USERNAME,
                     ])),
                     HttpResponseFactory::createJsonResponse([1, 2, 3,]),
                     HttpResponseFactory::createJsonResponse([
@@ -594,7 +593,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                         ],
                     ]),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'testValues' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
@@ -622,12 +621,12 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
             'public user, public test, has tasks, has errors, html validation' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'user' => SystemUserService::PUBLIC_USER_USERNAME,
                     ])),
                     HttpResponseFactory::createJsonResponse([1, 2, 3, 4,]),
                     HttpResponseFactory::createJsonResponse($this->remoteTasksData),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'testValues' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
@@ -655,12 +654,12 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
             'public user, public test, has tasks, has errors, css validation' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'user' => SystemUserService::PUBLIC_USER_USERNAME,
                     ])),
                     HttpResponseFactory::createJsonResponse([1, 2, 3, 4,]),
                     HttpResponseFactory::createJsonResponse($this->remoteTasksData),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'testValues' => [],
                 'taskType' => Task::TYPE_CSS_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,

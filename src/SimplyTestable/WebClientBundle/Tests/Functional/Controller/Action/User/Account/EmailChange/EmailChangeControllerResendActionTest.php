@@ -9,7 +9,6 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockPostmarkMessageFactory;
 use Symfony\Component\BrowserKit\Cookie;
@@ -80,7 +79,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
         $user = new User('user@example.com', 'password');
 
         $this->client->getCookieJar()->set(
-            new Cookie(UserService::USER_COOKIE_KEY, $userSerializerService->serializeToString($user))
+            new Cookie(UserManager::USER_COOKIE_KEY, $userSerializerService->serializeToString($user))
         );
 
         $this->client->request(

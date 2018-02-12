@@ -12,7 +12,6 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
@@ -124,7 +123,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         ]);
 
         $this->client->getCookieJar()->set(new Cookie(
-            UserService::USER_COOKIE_KEY,
+            UserManager::USER_COOKIE_KEY,
             $userSerializerService->serializeToString(new User(self::USER_EMAIL))
         ));
 
@@ -253,7 +252,7 @@ class IndexControllerTest extends AbstractBaseTestCase
      */
     public function indexActionRedirectDataProvider()
     {
-        $publicUser = new User(UserService::PUBLIC_USER_USERNAME);
+        $publicUser = SystemUserService::getPublicUser();
         $privateUser = new User('user@example.com');
 
         return [
@@ -283,7 +282,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'state' => Test::STATE_FAILED_NO_SITEMAP,
-                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'user' => SystemUserService::PUBLIC_USER_USERNAME,
                     ])),
                 ],
                 'user' => $publicUser,
@@ -296,7 +295,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'state' => Test::STATE_FAILED_NO_SITEMAP,
-                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'user' => SystemUserService::PUBLIC_USER_USERNAME,
                     ])),
                 ],
                 'user' => $privateUser,
@@ -376,10 +375,10 @@ class IndexControllerTest extends AbstractBaseTestCase
                         'task_count_by_state' => [
                             'completed' => 79,
                         ],
-                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'user' => SystemUserService::PUBLIC_USER_USERNAME,
                     ])),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'templatingEngine' => MockFactory::createTemplatingEngine([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -407,10 +406,10 @@ class IndexControllerTest extends AbstractBaseTestCase
                         'state' => Test::STATE_QUEUED,
                         'task_count' => 44,
                         'url_count' => 11,
-                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'user' => SystemUserService::PUBLIC_USER_USERNAME,
                     ])),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'templatingEngine' => MockFactory::createTemplatingEngine([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -547,10 +546,10 @@ class IndexControllerTest extends AbstractBaseTestCase
                         'task_count_by_state' => [
                             'completed' => 79,
                         ],
-                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'user' => SystemUserService::PUBLIC_USER_USERNAME,
                     ])),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'expectedStateLabel' => '50 urls, 100 tests; 79% done',
             ],
             'public user, queued, 0% done' => [
@@ -559,10 +558,10 @@ class IndexControllerTest extends AbstractBaseTestCase
                         'state' => Test::STATE_QUEUED,
                         'task_count' => 44,
                         'url_count' => 11,
-                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'user' => SystemUserService::PUBLIC_USER_USERNAME,
                     ])),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'expectedStateLabel' => '11 urls, 44 tests; waiting for first test to begin',
             ],
             'private user, crawling' => [

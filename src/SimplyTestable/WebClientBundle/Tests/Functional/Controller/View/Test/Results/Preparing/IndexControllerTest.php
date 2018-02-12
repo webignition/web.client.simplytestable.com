@@ -13,7 +13,6 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
@@ -183,7 +182,6 @@ class IndexControllerTest extends AbstractBaseTestCase
         $expectedRedirectUrl,
         $expectedRequestUrl
     ) {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
 
@@ -214,7 +212,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse($this->remoteTestData),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'website' => 'http://foo.example.com/',
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/',
@@ -226,7 +224,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                         'state' => Test::STATE_IN_PROGRESS,
                     ])),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'website' => self::WEBSITE,
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',

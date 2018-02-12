@@ -10,6 +10,9 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 class UserManager
 {
     const USER_COOKIE_KEY = 'simplytestable-user';
+    const USER_COOKIE_DOMAIN = '.simplytestable.com';
+    const USER_COOKIE_PATH = '/';
+
     const SESSION_USER_KEY = 'user';
     const ONE_YEAR_IN_SECONDS = 31536000;
 
@@ -110,7 +113,7 @@ class UserManager
         return true;
     }
 
-    public function clearUser()
+    public function clearSessionUser()
     {
         $this->session->set(self::SESSION_USER_KEY, null);
     }
@@ -124,8 +127,8 @@ class UserManager
             self::USER_COOKIE_KEY,
             $this->userSerializer->serializeToString($this->user),
             time() + self::ONE_YEAR_IN_SECONDS,
-            '/',
-            '.simplytestable.com',
+            self::USER_COOKIE_PATH,
+            self::USER_COOKIE_DOMAIN,
             false,
             true
         );

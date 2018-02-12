@@ -5,8 +5,8 @@ namespace SimplyTestable\WebClientBundle\Controller\Action\SignUp\Team;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -39,7 +39,7 @@ class InviteController extends Controller
         $userService = $this->container->get('simplytestable.services.userservice');
         $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
         $resqueJobFactory = $this->container->get('simplytestable.services.resque.jobfactoryservice');
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userManager = $this->container->get(UserManager::class);
 
         $requestData = $request->request;
 
@@ -120,7 +120,7 @@ class InviteController extends Controller
         );
 
         $user = new User($invite->getUser(), $password);
-        $userService->setUser($user);
+        $userManager->setUser($user);
 
         $staySignedIn = !empty(trim($requestData->get('stay-signed-in')));
 
@@ -131,19 +131,7 @@ class InviteController extends Controller
         ));
 
         if ($staySignedIn) {
-            $serializedUser = $userSerializerService->serializeToString($user);
-
-            $cookie = new Cookie(
-                'simplytestable-user',
-                $serializedUser,
-                time() + self::ONE_YEAR_IN_SECONDS,
-                '/',
-                '.simplytestable.com',
-                false,
-                true
-            );
-
-            $response->headers->setCookie($cookie);
+            $response->headers->setCookie($userManager->createUserCookie());
         }
 
         return $response;

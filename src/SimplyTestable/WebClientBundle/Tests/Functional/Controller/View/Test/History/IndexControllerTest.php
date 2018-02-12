@@ -15,7 +15,6 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
@@ -118,7 +117,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
         $userManager = $this->container->get(UserManager::class);
 
-        $user = new User(UserService::PUBLIC_USER_USERNAME);
+        $user = SystemUserService::getPublicUser();
         $userManager->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
@@ -328,7 +327,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                         'jobs' => [],
                     ]),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'request' => new Request([], [], [
                     'page_number' => 1,
                 ]),
@@ -367,7 +366,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                         'jobs' => [],
                     ]),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'request' => new Request([
                     'filter' => 'foo',
                 ], [], [
@@ -408,7 +407,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                         'jobs' => [],
                     ]),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'request' => new Request([], [], [
                     'page_number' => 3,
                 ]),
@@ -454,7 +453,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                         ],
                     ]),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'request' => new Request([], [], [
                     'page_number' => 11,
                 ]),

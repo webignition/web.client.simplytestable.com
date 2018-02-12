@@ -7,7 +7,6 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -50,7 +49,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $user = new User('user@example.com', 'password');
 
         $this->client->getCookieJar()->set(
-            new Cookie(UserService::USER_COOKIE_KEY, $userSerializerService->serializeToString($user))
+            new Cookie(UserManager::USER_COOKIE_KEY, $userSerializerService->serializeToString($user))
         );
 
         $this->client->request(
@@ -188,7 +187,6 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
     public function testConfirmActionSuccess()
     {
         $session = $this->container->get('session');
-        $userService = $this->container->get('simplytestable.services.userservice');
         $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
@@ -229,7 +227,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
             ]
         ], $session->getFlashBag()->peekAll());
 
-        $updatedUser = $userService->getUser();
+        $updatedUser = $userManager->getUser();
         $this->assertEquals($userNewEmail, $updatedUser->getUsername());
 
         $this->assertTrue($resqueQueueService->contains(

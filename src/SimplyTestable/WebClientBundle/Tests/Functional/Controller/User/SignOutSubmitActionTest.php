@@ -4,7 +4,6 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\User;
 
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -49,7 +48,7 @@ class SignOutSubmitActionTest extends AbstractUserControllerTest
 
         $responseCookie = $responseCookies[0];
 
-        $this->assertEquals(UserService::USER_COOKIE_KEY, $responseCookie->getName());
+        $this->assertEquals(UserManager::USER_COOKIE_KEY, $responseCookie->getName());
         $this->assertNull($responseCookie->getValue());
         $this->assertEquals(1, $responseCookie->getExpiresTime());
     }

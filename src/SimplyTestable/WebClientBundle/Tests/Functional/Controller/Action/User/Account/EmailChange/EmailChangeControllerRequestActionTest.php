@@ -2,7 +2,6 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User\Account\EmailChange;
 
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\EmailChangeController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
@@ -11,7 +10,6 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockPostmarkMessageFactory;
 use Symfony\Component\BrowserKit\Cookie;
@@ -83,7 +81,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         $user = new User('user@example.com', 'password');
 
         $this->client->getCookieJar()->set(
-            new Cookie(UserService::USER_COOKIE_KEY, $userSerializerService->serializeToString($user))
+            new Cookie(UserManager::USER_COOKIE_KEY, $userSerializerService->serializeToString($user))
         );
 
         $this->client->request(

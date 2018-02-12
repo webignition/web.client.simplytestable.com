@@ -3,7 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User\Account\Team;
 
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -43,7 +43,7 @@ class TeamControllerRemoveInviteActionTest extends AbstractTeamControllerTest
         $user = new User('user@example.com');
 
         $this->client->getCookieJar()->set(
-            new Cookie(UserService::USER_COOKIE_KEY, $userSerializerService->serializeToString($user))
+            new Cookie(UserManager::USER_COOKIE_KEY, $userSerializerService->serializeToString($user))
         );
 
         $this->client->request(

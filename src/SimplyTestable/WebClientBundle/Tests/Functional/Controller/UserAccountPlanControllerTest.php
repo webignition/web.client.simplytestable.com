@@ -10,7 +10,6 @@ use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
@@ -87,7 +86,7 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
         $this->client->getCookieJar()->set(new Cookie(
-            UserService::USER_COOKIE_KEY,
+            UserManager::USER_COOKIE_KEY,
             $userSerializerService->serializeToString(new User(self::USER_EMAIL))
         ));
 

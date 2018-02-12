@@ -4,12 +4,11 @@ namespace SimplyTestable\WebClientBundle\Controller;
 
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
-use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use SimplyTestable\WebClientBundle\Model\User;
-use Symfony\Component\HttpFoundation\Cookie;
 use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -60,14 +59,14 @@ class UserController extends Controller
      */
     public function signOutSubmitAction()
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');
 
-        $userService->clearUser();
+        $userManager->clearSessionUser();
 
         $response = $this->createDashboardRedirectResponse($router);
 
-        $response->headers->clearCookie(UserService::USER_COOKIE_KEY, '/', '.simplytestable.com');
+        $response->headers->clearCookie(UserManager::USER_COOKIE_KEY, '/', '.simplytestable.com');
 
         return $response;
     }
@@ -85,7 +84,7 @@ class UserController extends Controller
         $session = $this->container->get('session');
         $userService = $this->container->get('simplytestable.services.userservice');
         $router = $this->container->get('router');
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userManager = $this->container->get(UserManager::class);
 
         $requestData = $request->request;
 
@@ -134,9 +133,7 @@ class UserController extends Controller
             ]);
         }
 
-        $user = new User();
-        $user->setUsername($email);
-        $user->setPassword($password);
+        $user = new User($email, $password);
 
         if (SystemUserService::isPublicUser($user)) {
             $flashBag->set(
@@ -151,11 +148,12 @@ class UserController extends Controller
             ]);
         }
 
+        $userManager->setUser($user);
         $userService->setUser($user);
 
         if (!$userService->authenticate()) {
             if (!$userService->exists()) {
-                $userService->clearUser();
+                $userManager->clearSessionUser();
                 $flashBag->set(
                     self::FLASH_BAG_SIGN_IN_ERROR_KEY,
                     self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_INVALID_USER
@@ -169,7 +167,7 @@ class UserController extends Controller
             }
 
             if ($userService->isEnabled()) {
-                $userService->clearUser();
+                $userManager->clearSessionUser();
                 $flashBag->set(
                     self::FLASH_BAG_SIGN_IN_ERROR_KEY,
                     self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_AUTHENTICATION_FAILURE
@@ -182,7 +180,7 @@ class UserController extends Controller
                 ]);
             }
 
-            $userService->clearUser();
+            $userManager->clearSessionUser();
             $token = $userService->getConfirmationToken($email);
 
             $this->sendConfirmationToken($email, $token);
@@ -200,7 +198,7 @@ class UserController extends Controller
         }
 
         if (!$userService->isEnabled()) {
-            $userService->clearUser();
+            $userManager->clearSessionUser();
             $token = $userService->getConfirmationToken($email);
             $this->sendConfirmationToken($email, $token);
 
@@ -219,19 +217,7 @@ class UserController extends Controller
         $response = $this->createPostSignInRedirectResponse($router, $redirect);
 
         if ($staySignedIn) {
-            $stringifiedUser = $userSerializerService->serializeToString($user);
-
-            $cookie = new Cookie(
-                'simplytestable-user',
-                $stringifiedUser,
-                time() + self::ONE_YEAR_IN_SECONDS,
-                '/',
-                '.simplytestable.com',
-                false,
-                true
-            );
-
-            $response->headers->setCookie($cookie);
+            $response->headers->setCookie($userManager->createUserCookie());
         }
 
         return $response;
@@ -280,7 +266,7 @@ class UserController extends Controller
         $userService = $this->container->get('simplytestable.services.userservice');
         $router = $this->container->get('router');
         $session = $this->container->get('session');
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userManager = $this->container->get(UserManager::class);
 
         $requestData = $request->request;
         $flashBag = $session->getFlashBag();
@@ -339,27 +325,13 @@ class UserController extends Controller
             return $failureRedirectResponse;
         }
 
-        $user = new User();
-        $user->setUsername($email);
-        $user->setPassword($password);
-        $userService->setUser($user);
+        $user = new User($email, $password);
+        $userManager->setUser($user);
 
         $response = $this->createDashboardRedirectResponse($router);
 
         if ($staySignedIn) {
-            $serializedUser = $userSerializerService->serializeToString($user);
-
-            $cookie = new Cookie(
-                UserService::USER_COOKIE_KEY,
-                $serializedUser,
-                time() + self::ONE_YEAR_IN_SECONDS,
-                '/',
-                '.simplytestable.com',
-                false,
-                true
-            );
-
-            $response->headers->setCookie($cookie);
+            $response->headers->setCookie($userManager->createUserCookie());
         }
 
         return $response;

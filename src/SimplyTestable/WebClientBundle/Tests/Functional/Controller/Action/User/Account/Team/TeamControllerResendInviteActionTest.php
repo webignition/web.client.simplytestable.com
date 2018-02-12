@@ -8,7 +8,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestExceptio
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
-use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockPostmarkMessageFactory;
 use Symfony\Component\BrowserKit\Cookie;
@@ -80,7 +80,7 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
         $requestUrl = $router->generate(self::ROUTE_NAME);
 
         $this->client->getCookieJar()->set(
-            new Cookie(UserService::USER_COOKIE_KEY, $userSerializerService->serializeToString($this->user))
+            new Cookie(UserManager::USER_COOKIE_KEY, $userSerializerService->serializeToString($this->user))
         );
 
         $this->client->request(

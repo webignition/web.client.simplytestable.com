@@ -238,7 +238,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         ]);
 
         $this->client->getCookieJar()->set(new Cookie(
-            UserService::USER_COOKIE_KEY,
+            UserManager::USER_COOKIE_KEY,
             $userSerializerService->serializeToString(new User(self::USER_EMAIL))
         ));
 
@@ -356,7 +356,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                         'task_count' => 1000,
                     ])),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/preparing/',
                 'expectedRequestUrls' => [
@@ -369,7 +369,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                     HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
                     HttpResponseFactory::createJsonResponse($this->remoteTasksData),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'request' => new Request([
                     'filter' => 'foo',
                 ]),
@@ -400,7 +400,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                         ],
                     ]),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'request' => new Request([
                     'filter' => IndexController::FILTER_WITH_ERRORS,
                 ]),
@@ -431,7 +431,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                         ],
                     ]),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'request' => new Request([
                     'filter' => IndexController::FILTER_WITH_ERRORS,
                 ]),
@@ -529,14 +529,14 @@ class IndexControllerTest extends AbstractBaseTestCase
             'public user, public test, html validation, with errors, null domain test count' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'user' => SystemUserService::PUBLIC_USER_USERNAME,
                         'is_public' => true,
                     ])),
                     HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
                     HttpResponseFactory::createJsonResponse($this->remoteTasksData),
                     HttpResponseFactory::createSuccessResponse(),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'testValues' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => IndexController::FILTER_WITH_ERRORS,
@@ -581,14 +581,14 @@ class IndexControllerTest extends AbstractBaseTestCase
             'public user, public test, html validation, with errors, has domain test count' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'user' => SystemUserService::PUBLIC_USER_USERNAME,
                         'is_public' => true,
                     ])),
                     HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
                     HttpResponseFactory::createJsonResponse($this->remoteTasksData),
                     HttpResponseFactory::createJsonResponse(99),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'testValues' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => IndexController::FILTER_WITH_ERRORS,
@@ -633,14 +633,14 @@ class IndexControllerTest extends AbstractBaseTestCase
             'public user, public test, no task type, all' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'user' => SystemUserService::PUBLIC_USER_USERNAME,
                         'is_public' => true,
                     ])),
                     HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
                     HttpResponseFactory::createJsonResponse($this->remoteTasksData),
                     HttpResponseFactory::createJsonResponse(99),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'testValues' => [],
                 'taskType' => null,
                 'filter' => IndexController::FILTER_ALL,
@@ -685,7 +685,7 @@ class IndexControllerTest extends AbstractBaseTestCase
             'private user, public test' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'user' => SystemUserService::PUBLIC_USER_USERNAME,
                         'is_public' => true,
                     ])),
                     HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
