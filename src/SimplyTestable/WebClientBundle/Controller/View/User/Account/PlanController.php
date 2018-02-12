@@ -51,7 +51,6 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
         $router = $this->container->get('router');
         $flashBagValuesService = $this->container->get('simplytestable.services.flashbagvalues');
 
-        $user = $userService->getUser();
         $userSummary = $userService->getSummary();
         $team = null;
 

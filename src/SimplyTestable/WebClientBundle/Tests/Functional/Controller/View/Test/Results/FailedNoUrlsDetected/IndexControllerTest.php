@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -123,10 +124,10 @@ class IndexControllerTest extends AbstractBaseTestCase
         $expectedRedirectUrl,
         $expectedRequestUrl
     ) {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $userManager = $this->container->get(UserManager::class);
 
-        $userService->setUser($user);
+        $userManager->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
         $httpHistoryPlugin = new HistoryPlugin();
@@ -211,6 +212,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'simplytestable.services.userservice',
                 'simplytestable.services.cachevalidator',
                 'simplytestable.services.urlviewvalues',
+                UserManager::class,
             ],
             [
                 'templating' => $templatingEngine,

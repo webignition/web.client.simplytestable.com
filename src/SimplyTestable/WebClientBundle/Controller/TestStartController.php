@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\TestOptions;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,13 +34,13 @@ class TestStartController extends TestController
     public function startNewAction(Request $request)
     {
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
         $testOptionsAdapterFactory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
         $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
         $session = $this->container->get('session');
         $router = $this->container->get('router');
+        $userManager = $this->container->get(UserManager::class);
 
-        $user = $userService->getUser();
+        $user = $userManager->getUser();
 
         $taskTypeService->setUser($user);
 

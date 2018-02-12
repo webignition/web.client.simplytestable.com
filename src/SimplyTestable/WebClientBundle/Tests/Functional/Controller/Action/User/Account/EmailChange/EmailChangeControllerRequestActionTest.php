@@ -4,10 +4,13 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User
 
 use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\EmailChangeController;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockPostmarkMessageFactory;
@@ -106,13 +109,15 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
      * @throws InvalidAdminCredentialsException
      * @throws InvalidCredentialsException
      * @throws MailConfigurationException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
      */
     public function testRequestActionBadRequest(Request $request, array $expectedFlashBagValues)
     {
         $session = $this->container->get('session');
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userManager = $this->container->get(UserManager::class);
 
-        $userService->setUser($this->user);
+        $userManager->setUser($this->user);
 
         /* @var RedirectResponse $response */
         $response = $this->emailChangeController->requestAction($request);
@@ -168,17 +173,19 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
      * @param array $httpFixtures
      * @param array $expectedFlashBagValues
      *
+     * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      * @throws MailConfigurationException
      */
     public function testRequestActionCreateFailure(array $httpFixtures, array $expectedFlashBagValues)
     {
         $session = $this->container->get('session');
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $userManager = $this->container->get(UserManager::class);
 
-        $userService->setUser($this->user);
+        $userManager->setUser($this->user);
         $coreApplicationHttpClient->setUser($this->user);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
@@ -239,7 +246,9 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
      * @param PostmarkMessage $postmarkMessage
      * @param array $expectedFlashBagValues
      *
+     * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      * @throws MailConfigurationException
      */
@@ -248,11 +257,11 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $userService = $this->container->get('simplytestable.services.userservice');
         $mailService = $this->container->get('simplytestable.services.mail.service');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $userManager = $this->container->get(UserManager::class);
 
-        $userService->setUser($this->user);
+        $userManager->setUser($this->user);
         $mailService->setPostmarkMessage($postmarkMessage);
         $coreApplicationHttpClient->setUser($this->user);
 
@@ -357,11 +366,11 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
     public function testRequestActionSuccess()
     {
         $session = $this->container->get('session');
-        $userService = $this->container->get('simplytestable.services.userservice');
         $mailService = $this->container->get('simplytestable.services.mail.service');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $userManager = $this->container->get(UserManager::class);
 
-        $userService->setUser($this->user);
+        $userManager->setUser($this->user);
         $mailService->setPostmarkMessage(MockPostmarkMessageFactory::createMockConfirmEmailAddressPostmarkMessage(
             self::NEW_EMAIL,
             [

@@ -14,6 +14,7 @@ use SimplyTestable\WebClientBundle\Model\TestList;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -113,12 +114,12 @@ class IndexControllerTest extends AbstractBaseTestCase
         $expectedRedirectUrl,
         $expectedRequestUrls
     ) {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
+        $userManager = $this->container->get(UserManager::class);
 
         $user = new User(UserService::PUBLIC_USER_USERNAME);
-        $userService->setUser($user);
+        $userManager->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
         $httpHistoryPlugin = new HistoryPlugin();
@@ -278,10 +279,10 @@ class IndexControllerTest extends AbstractBaseTestCase
         Request $request,
         EngineInterface $templatingEngine
     ) {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $userManager = $this->container->get(UserManager::class);
 
-        $userService->setUser($user);
+        $userManager->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);

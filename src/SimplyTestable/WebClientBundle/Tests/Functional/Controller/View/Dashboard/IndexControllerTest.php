@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Dashbo
 
 use SimplyTestable\WebClientBundle\Controller\View\Dashboard\IndexController;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -121,10 +122,10 @@ class IndexControllerTest extends AbstractBaseTestCase
         Request $request,
         EngineInterface $templatingEngine
     ) {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $session = $this->container->get('session');
+        $userManager = $this->container->get(UserManager::class);
 
-        $userService->setUser($user);
+        $userManager->setUser($user);
 
         if (!empty($httpFixtures)) {
             $this->setHttpFixtures($httpFixtures);
@@ -146,6 +147,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'simplytestable.services.urlviewvalues',
                 'simplytestable.services.cachevalidator',
                 'simplytestable.services.flashbagvalues',
+                UserManager::class,
             ],
             [
                 'templating' => $templatingEngine,

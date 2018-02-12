@@ -12,6 +12,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -184,9 +185,10 @@ class IndexControllerTest extends AbstractBaseTestCase
     ) {
         $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $userManager = $this->container->get(UserManager::class);
 
         $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
-        $userService->setUser($user);
+        $userManager->setUser($user);
 
         $httpHistoryPlugin = new HistoryPlugin();
         $coreApplicationHttpClient->getHttpClient()->addSubscriber($httpHistoryPlugin);

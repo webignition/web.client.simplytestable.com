@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -69,7 +70,6 @@ class IndexController extends AbstractResultsController
         $router = $this->container->get('router');
         $testService = $this->container->get('simplytestable.services.testservice');
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
         $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
         $taskService = $this->container->get('simplytestable.services.taskservice');
         $taskCollectionFilterService = $this->container->get('simplytestable.services.taskcollectionfilterservice');
@@ -77,8 +77,9 @@ class IndexController extends AbstractResultsController
         $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
         $templating = $this->container->get('templating');
         $testOptionsAdapterFactory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
+        $userManager = $this->container->get(UserManager::class);
 
-        $user = $userService->getUser();
+        $user = $userManager->getUser();
 
         $test = $testService->get($website, $test_id);
         $remoteTest = $remoteTestService->get();

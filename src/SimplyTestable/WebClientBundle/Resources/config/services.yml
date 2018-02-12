@@ -288,3 +288,9 @@ services:
     arguments:
       - %admin_user_username%
       - %admin_user_password%
+
+  SimplyTestable\WebClientBundle\Services\UserManager:
+    class:  SimplyTestable\WebClientBundle\Services\UserManager
+    arguments:
+      - '@request_stack'
+      - '@simplytestable.services.userserializerservice'

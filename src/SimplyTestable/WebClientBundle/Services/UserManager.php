@@ -30,14 +30,15 @@ class UserManager
     ) {
         $this->userSerializer = $userSerializer;
 
+        $user = null;
         $request = $requestStack->getCurrentRequest();
 
-        $user = null;
+        if (!empty($request)) {
+            if ($request->cookies->has(self::USER_COOKIE_KEY)) {
+                $serializedUser = $request->cookies->get(self::USER_COOKIE_KEY);
 
-        if ($request->cookies->has(self::USER_COOKIE_KEY)) {
-            $serializedUser = $request->cookies->get(self::USER_COOKIE_KEY);
-
-            $user = $this->userSerializer->unserializedFromString($serializedUser);
+                $user = $this->userSerializer->unserializedFromString($serializedUser);
+            }
         }
 
         if (empty($user)) {

@@ -12,6 +12,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -214,11 +215,11 @@ class IndexControllerTest extends AbstractBaseTestCase
         $expectedRedirectUrl,
         $expectedRequestUrls
     ) {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
+        $userManager = $this->container->get(UserManager::class);
 
-        $userService->setUser($user);
+        $userManager->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
         $httpHistoryPlugin = new HistoryPlugin();
@@ -343,9 +344,10 @@ class IndexControllerTest extends AbstractBaseTestCase
         User $user,
         EngineInterface $templatingEngine
     ) {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $userService->setUser($user);
+        $userManager = $this->container->get(UserManager::class);
+
+        $userManager->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
@@ -367,6 +369,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'simplytestable.services.taskservice',
                 'simplytestable.services.documentationurlcheckerservice',
                 'kernel',
+                UserManager::class,
             ],
             [
                 'templating' => $templatingEngine,

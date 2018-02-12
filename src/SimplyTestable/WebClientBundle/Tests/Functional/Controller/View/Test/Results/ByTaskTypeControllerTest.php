@@ -13,6 +13,7 @@ use SimplyTestable\WebClientBundle\Model\Test\Task\ErrorTaskMapCollection;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -299,10 +300,10 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
         $expectedRedirectUrl,
         $expectedRequestUrl
     ) {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $userManager = $this->container->get(UserManager::class);
 
-        $userService->setUser($user);
+        $userManager->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
         $httpHistoryPlugin = new HistoryPlugin();
@@ -421,9 +422,10 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
         $filter,
         EngineInterface $templatingEngine
     ) {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $userService->setUser($user);
+        $userManager = $this->container->get(UserManager::class);
+
+        $userManager->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
@@ -444,6 +446,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                 'simplytestable.services.urlviewvalues',
                 'simplytestable.services.taskservice',
                 'simplytestable.services.taskcollectionfilterservice',
+                UserManager::class,
             ],
             [
                 'templating' => $templatingEngine,

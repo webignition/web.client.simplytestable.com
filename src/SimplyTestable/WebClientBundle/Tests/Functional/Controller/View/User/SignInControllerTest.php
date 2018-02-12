@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\User;
 
 use SimplyTestable\WebClientBundle\Controller\View\User\SignInController;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
@@ -48,10 +49,10 @@ class SignInControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionIsLoggedIn()
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userManager = $this->container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL);
-        $userService->setUser($user);
+        $userManager->setUser($user);
 
         $this->signInController->setContainer($this->container);
 
@@ -89,6 +90,7 @@ class SignInControllerTest extends AbstractBaseTestCase
                 'simplytestable.services.userservice',
                 'simplytestable.services.flashbagvalues',
                 'router',
+                UserManager::class,
             ],
             [
                 'templating' => $templatingEngine,

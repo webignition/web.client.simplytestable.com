@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Dashboard;
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter as TestOptionsRequestAdapter;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
@@ -21,14 +22,14 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
     public function indexAction(Request $request)
     {
         $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
         $testOptionsAdapterFactory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
         $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
         $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
         $flashBagValuesService = $this->container->get('simplytestable.services.flashbagvalues');
         $templating = $this->container->get('templating');
+        $userManager = $this->container->get(UserManager::class);
 
-        $user = $userService->getUser();
+        $user = $userManager->getUser();
         $isLoggedIn = !SystemUserService::isPublicUser($user);
 
         $taskTypeService->setUser($user);

@@ -8,7 +8,7 @@ use Guzzle\Plugin\Mock\MockPlugin;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\NewsSubscriptionsController;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -53,9 +53,6 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
 
     public function testUpdateActionNotPrivateUserPostRequest()
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
-        $userService->setUser(SystemUserService::getPublicUser());
-
         $this->setHttpFixtures([
             Response::fromMessage('HTTP/1.1 200 OK'),
         ]);
@@ -96,9 +93,9 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
         $expectedAnnouncementsListRecipientsContains,
         $expectedUpdatesListRecipientsContains
     ) {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $mailChimpListRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
         $session = $this->container->get('session');
+        $userManager = $this->container->get(UserManager::class);
 
         /* @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
@@ -108,7 +105,7 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
         $mailChimpClient = $this->container->get('simplytestable.services.mailchimp.client');
         $mailChimpClient->addSubscriber($httpMockPlugin);
 
-        $userService->setUser($user);
+        $userManager->setUser($user);
 
         /* @var ListRecipients[] $listRecipientsCollection */
         $listRecipientsCollection = [];

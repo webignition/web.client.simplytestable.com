@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Controller\Action\User\Account\EmailChangeCon
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\BrowserKit\Cookie;
@@ -191,21 +192,25 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $userManager = $this->container->get(UserManager::class);
 
-        $user = new User('user@example.com', 'password');
+        $userEmail = 'user@example.com';
+        $userNewEmail = 'new-email@example.com';
+
+        $user = new User($userEmail, 'password');
         $serializerUser = $userSerializerService->serializeToString($user);
-        $newEmail = 'new-email@example.com';
+
         $coreApplicationHttpClient->setUser($user);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
                 'token' => 'token-value',
-                'new_email' => $newEmail,
+                'new_email' => $userNewEmail,
             ]),
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $userService->setUser($user);
+        $userManager->setUser($user);
 
         $request = new Request([], [
             'token' => 'token-value',
@@ -225,13 +230,13 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         ], $session->getFlashBag()->peekAll());
 
         $updatedUser = $userService->getUser();
-        $this->assertEquals($newEmail, $updatedUser->getUsername());
+        $this->assertEquals($userNewEmail, $updatedUser->getUsername());
 
         $this->assertTrue($resqueQueueService->contains(
             'email-list-subscribe',
             [
                 'listId' => 'announcements',
-                'email' => $newEmail,
+                'email' => $userNewEmail,
             ]
         ));
 
@@ -239,7 +244,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
             'email-list-unsubscribe',
             [
                 'listId' => 'announcements',
-                'email' => $user->getUsername(),
+                'email' => $userEmail,
             ]
         ));
 

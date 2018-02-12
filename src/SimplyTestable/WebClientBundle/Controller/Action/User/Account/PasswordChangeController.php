@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,6 +30,7 @@ class PasswordChangeController extends AccountCredentialsChangeController
         $session = $this->container->get('session');
         $userService = $this->container->get('simplytestable.services.userservice');
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userManager = $this->container->get(UserManager::class);
 
         $requestData = $request->request;
 
@@ -50,7 +52,7 @@ class PasswordChangeController extends AccountCredentialsChangeController
             return $redirectResponse;
         }
 
-        $user = $userService->getUser();
+        $user = $userManager->getUser();
 
         if ($currentPassword != $user->getPassword()) {
             $session->getFlashBag()->set(
