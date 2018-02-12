@@ -44,9 +44,17 @@ class UserManager
 
         if (!empty($request)) {
             if ($request->cookies->has(self::USER_COOKIE_KEY)) {
-                $serializedUser = $request->cookies->get(self::USER_COOKIE_KEY);
+                $user = $this->userSerializer->unserializedFromString(
+                    $request->cookies->get(self::USER_COOKIE_KEY)
+                );
+            }
+        }
 
-                $user = $this->userSerializer->unserializedFromString($serializedUser);
+        if (empty($user)) {
+            $sessionUser = $this->session->get(self::SESSION_USER_KEY);
+
+            if (!empty($sessionUser)) {
+                $user = $this->userSerializer->unserialize($sessionUser);
             }
         }
 

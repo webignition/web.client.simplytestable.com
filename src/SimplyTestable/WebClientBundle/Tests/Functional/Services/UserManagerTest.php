@@ -2,32 +2,50 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
-use Mockery\MockInterface;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 class UserManagerTest extends AbstractCoreApplicationServiceTest
 {
+    const USER_EMAIL = 'user@example.com';
+
     /**
      * @dataProvider getUserDataProvider
      *
      * @param Request $request
-     * @param UserSerializerService|MockInterface $userSerializerService
+     * @param User|null $sessionUser
      * @param User $expectedUser
      */
-    public function testGetUser(Request $request, UserSerializerService $userSerializerService, User $expectedUser)
-    {
-        $userSerializerService
-            ->shouldReceive('serialize')
-            ->withArgs(function (User $user) use ($expectedUser) {
-                return $expectedUser->equals($user);
-            });
+    public function testGetUser(
+        Request $request,
+        $sessionUser,
+        User $expectedUser
+    ) {
+        $requestStack = $this->container->get('request_stack');
+        $session = $this->container->get('session');
+        $userSerializer = $this->container->get('simplytestable.services.userserializerservice');
 
-        $userManager = $this->createUserManager($request, $userSerializerService);
+        $privateUser = new User(self::USER_EMAIL);
+
+        $cookieUser = $request->cookies->get(UserManager::USER_COOKIE_KEY);
+
+        if ($cookieUser) {
+            $request->cookies->set(UserManager::USER_COOKIE_KEY, $userSerializer->serializeToString($privateUser));
+        }
+
+        $requestStack->push($request);
+
+        if (!empty($sessionUser)) {
+            $session->set(UserManager::SESSION_USER_KEY, $userSerializer->serialize($sessionUser));
+        }
+
+        $userManager = new UserManager(
+            $requestStack,
+            $userSerializer,
+            $session
+        );
 
         $user = $userManager->getUser();
 
@@ -39,27 +57,31 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
      */
     public function getUserDataProvider()
     {
-        $user = new User('user@example.com');
-        $serializedUser = 'foo';
+        $user = new User(self::USER_EMAIL);
 
         return [
             'no user in request' => [
                 'request' => new Request(),
-                'userSerializerService' => $this->createUserSerializerService('', null),
+                'sessionUser' => null,
                 'expectedUser' => SystemUserService::getPublicUser(),
             ],
-            'invalid user in request' => [
+            'invalid user in request, no user in session' => [
                 'request' => new Request([], [], [], [
-                    UserManager::USER_COOKIE_KEY => $serializedUser,
+                    UserManager::USER_COOKIE_KEY => false,
                 ]),
-                'userSerializerService' => $this->createUserSerializerService($serializedUser, null),
+                'sessionUser' => null,
                 'expectedUser' => SystemUserService::getPublicUser(),
             ],
-            'valid user in request' => [
+            'valid user in session' => [
+                'request' => new Request(),
+                'sessionUser' => $user,
+                'expectedUser' => $user,
+            ],
+            'valid user in request, no user in session' => [
                 'request' => new Request([], [], [], [
-                    UserManager::USER_COOKIE_KEY => $serializedUser,
+                    UserManager::USER_COOKIE_KEY => true,
                 ]),
-                'userSerializerService' => $this->createUserSerializerService($serializedUser, $user),
+                'sessionUser' => null,
                 'expectedUser' => $user,
             ],
         ];
@@ -84,51 +106,5 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
 
         $this->assertEquals($user, $currentUser);
         $this->assertNotEquals($currentSerializedUser, $originalSerializedUser);
-    }
-
-    /**
-     * @param Request $request
-     * @param UserSerializerService $userSerializerService
-     *
-     * @return UserManager
-     */
-    private function createUserManager(Request $request, UserSerializerService $userSerializerService)
-    {
-        $requestStack = new RequestStack();
-        $requestStack->push($request);
-
-        return new UserManager(
-            $requestStack,
-            $userSerializerService,
-            $this->container->get('session')
-        );
-    }
-
-    /**
-     * @param string $serializedUser
-     * @param User|null $user
-     *
-     * @return MockInterface|UserSerializerService
-     */
-    private function createUserSerializerService($serializedUser, $user = null)
-    {
-        $userSerializerService = \Mockery::mock(UserSerializerService::class);
-
-        $userSerializerService
-            ->shouldReceive('unserializedFromString')
-            ->with($serializedUser)
-            ->andReturn($user);
-
-        return $userSerializerService;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        parent::tearDown();
-
-        \Mockery::close();
     }
 }
