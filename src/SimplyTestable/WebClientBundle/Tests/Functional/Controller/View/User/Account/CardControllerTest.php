@@ -3,10 +3,14 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\User\Account;
 
 use SimplyTestable\WebClientBundle\Controller\View\User\Account\CardController;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -139,9 +143,11 @@ class CardControllerTest extends AbstractBaseTestCase
     public function testIndexActionInTeamNotLeader()
     {
         $userService = $this->container->get('simplytestable.services.userservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $user = new User(self::USER_EMAIL);
         $userService->setUser($user);
+        $coreApplicationHttpClient->setUser($user);
 
         $this->setHttpFixtures([
             HttpResponseFactory::createJsonResponse(array_merge($this->userData, [
@@ -150,6 +156,9 @@ class CardControllerTest extends AbstractBaseTestCase
                     'has_invite' => false,
                 ],
             ])),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
                 'team' => [
                     'leader' => 'leader@example.com',
@@ -176,8 +185,10 @@ class CardControllerTest extends AbstractBaseTestCase
      * @param array $httpFixtures
      * @param EngineInterface $templatingEngine
      *
-     * @throws \Exception
      * @throws WebResourceException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testIndexActionRender(
         array $httpFixtures,
@@ -185,14 +196,19 @@ class CardControllerTest extends AbstractBaseTestCase
     ) {
         $userService = $this->container->get('simplytestable.services.userservice');
         $session = $this->container->get('session');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $user = new User(self::USER_EMAIL);
 
         $userService->setUser($user);
+        $coreApplicationHttpClient->setUser($user);
 
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
+        $this->setHttpFixtures($httpFixtures);
+
+        if (count($httpFixtures) > 1) {
+            $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
         }
+
 
         if (!empty($flashBagValues)) {
             foreach ($flashBagValues as $key => $value) {
