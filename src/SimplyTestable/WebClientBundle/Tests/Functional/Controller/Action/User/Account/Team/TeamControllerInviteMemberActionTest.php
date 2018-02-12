@@ -44,8 +44,8 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
 
         $this->user = new User(self::USER_USERNAME);
 
-        $userManager = $this->container->get(UserManager::class);
-        $userManager->setUser($this->user);
+//        $userManager = $this->container->get(UserManager::class);
+//        $userManager->setUser($this->user);
     }
 
     /**
@@ -125,6 +125,9 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
     public function testInviteMemberActionBadRequest(Request $request, array $expectedFlashBagValues)
     {
         $session = $this->container->get('session');
+        $userManager = $this->container->get(UserManager::class);
+
+        $userManager->setUser($this->user);
 
         /* @var RedirectResponse $response */
         $response = $this->teamController->inviteMemberAction($request);

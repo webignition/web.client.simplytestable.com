@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\EventListener\RequestListener\OnKernelRequest;
 
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -23,7 +24,6 @@ class OnKernelRequestRequiresPrivateUserTest extends AbstractOnKernelRequestTest
      * @param string $expectedRedirectUrl
      *
      * @throws \Exception
-     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
      */
     public function testOnKernelRequest(
         array $httpFixtures,
@@ -31,6 +31,9 @@ class OnKernelRequestRequiresPrivateUserTest extends AbstractOnKernelRequestTest
         $expectedIsRedirectResponse,
         $expectedRedirectUrl = null
     ) {
+        $userManager = $this->container->get(UserManager::class);
+        $userManager->setUser($user);
+
         $this->setHttpFixtures($httpFixtures);
 
         $request = new Request();

@@ -8,7 +8,6 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestExceptio
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
-use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockPostmarkMessageFactory;
@@ -38,9 +37,6 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
         parent::setUp();
 
         $this->user = new User(self::USER_USERNAME);
-
-        $userManager = $this->container->get(UserManager::class);
-        $userManager->setUser($this->user);
     }
 
     /**
