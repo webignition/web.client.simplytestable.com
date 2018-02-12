@@ -284,3 +284,9 @@ services:
 
   SimplyTestable\WebClientBundle\Services\JsonResponseHandler:
     class: SimplyTestable\WebClientBundle\Services\JsonResponseHandler
+
+  SimplyTestable\WebClientBundle\Services\SystemUserService:
+    class:  SimplyTestable\WebClientBundle\Services\SystemUserService
+    arguments:
+      - %admin_user_username%
+      - %admin_user_password%
