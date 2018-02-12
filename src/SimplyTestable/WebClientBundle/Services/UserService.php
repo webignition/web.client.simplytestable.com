@@ -104,14 +104,6 @@ class UserService extends CoreApplicationService
     /**
      * @return User
      */
-    public function getPublicUser()
-    {
-        return new User(static::PUBLIC_USER_USERNAME, static::PUBLIC_USER_PASSWORD);
-    }
-
-    /**
-     * @return User
-     */
     public function getAdminUser()
     {
         $user = new User();
