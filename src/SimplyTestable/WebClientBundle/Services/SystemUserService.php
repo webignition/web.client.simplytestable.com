@@ -33,9 +33,9 @@ class SystemUserService
     /**
      * @return User
      */
-    public function getPublicUser()
+    public static function getPublicUser()
     {
-        return new User(static::PUBLIC_USER_USERNAME, static::PUBLIC_USER_PASSWORD);
+        return new User(self::PUBLIC_USER_USERNAME, self::PUBLIC_USER_PASSWORD);
     }
 
     /**

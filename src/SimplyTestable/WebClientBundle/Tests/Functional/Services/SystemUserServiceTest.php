@@ -30,7 +30,7 @@ class SystemUserServiceTest extends AbstractBaseTestCase
             SystemUserService::PUBLIC_USER_PASSWORD
         );
 
-        $this->assertEquals($expectedPublicUser, $this->systemUserService->getPublicUser());
+        $this->assertEquals($expectedPublicUser, SystemUserService::getPublicUser());
     }
 
     public function testGetAdminUser()
