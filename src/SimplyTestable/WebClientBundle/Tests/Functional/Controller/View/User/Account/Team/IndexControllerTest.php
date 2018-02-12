@@ -4,6 +4,9 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\User\A
 
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
 use SimplyTestable\WebClientBundle\Controller\View\User\Account\Team\IndexController;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
@@ -18,7 +21,6 @@ use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class IndexControllerTest extends AbstractBaseTestCase
@@ -148,8 +150,10 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param array $flashBagValues
      * @param EngineInterface $templatingEngine
      *
-     * @throws \Exception
      * @throws WebResourceException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testIndexActionRender(
         array $httpFixtures,
@@ -166,10 +170,10 @@ class IndexControllerTest extends AbstractBaseTestCase
         $userService->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
-        $this->setHttpFixtures($httpFixtures);
+        $userFixture = array_shift($httpFixtures);
 
-        $invitesFixture = array_pop($httpFixtures);
-        $this->setCoreApplicationHttpClientHttpFixtures([$invitesFixture]);
+        $this->setHttpFixtures([$userFixture]);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($flashBagValues)) {
             foreach ($flashBagValues as $key => $value) {
@@ -196,7 +200,7 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $this->indexController->setContainer($container);
 
-        $response = $this->indexController->indexAction(new Request());
+        $response = $this->indexController->indexAction();
         $this->assertInstanceOf(Response::class, $response);
     }
 
