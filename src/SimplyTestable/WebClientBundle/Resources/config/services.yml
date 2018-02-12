@@ -60,11 +60,10 @@ services:
     class:  SimplyTestable\WebClientBundle\Services\UserService
     arguments:
         webResourceService: "@simplytestable.services.webresourceservice"
-        adminUserUsername: %admin_user_username%
-        adminUserPassword: %admin_user_password%
         session: "@session"
         userSerializerService: "@simplytestable.services.userserializerservice"
         coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
+        systemUserService: '@SimplyTestable\WebClientBundle\Services\SystemUserService'
 
   simplytestable.services.useremailchangerequestservice:
     class:  SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService
