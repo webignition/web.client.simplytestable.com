@@ -314,6 +314,10 @@ class TeamController extends Controller implements RequiresPrivateUser
      * @param Request $request
      *
      * @return RedirectResponse
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function removeMemberAction(Request $request)
     {
