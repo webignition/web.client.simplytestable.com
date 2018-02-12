@@ -3,11 +3,15 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\User\Account;
 
 use SimplyTestable\WebClientBundle\Controller\View\User\Account\PlanController;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Plan;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -179,7 +183,9 @@ class PlanControllerTest extends AbstractBaseTestCase
      * @param EngineInterface $templatingEngine
      *
      * @throws WebResourceException
-     * @throws \Exception
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testIndexActionRender(
         array $httpFixtures,
@@ -188,13 +194,17 @@ class PlanControllerTest extends AbstractBaseTestCase
     ) {
         $userService = $this->container->get('simplytestable.services.userservice');
         $session = $this->container->get('session');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $user = new User(self::USER_EMAIL);
 
         $userService->setUser($user);
+        $coreApplicationHttpClient->setUser($user);
 
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
+        $this->setHttpFixtures([$httpFixtures[0]]);
+
+        if (count($httpFixtures) > 1) {
+            $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
         }
 
         if (!empty($flashBagValues)) {
