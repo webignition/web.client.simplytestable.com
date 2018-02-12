@@ -8,6 +8,7 @@ use Guzzle\Plugin\Mock\MockPlugin;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\NewsSubscriptionsController;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -53,7 +54,7 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
     public function testUpdateActionNotPrivateUserPostRequest()
     {
         $userService = $this->container->get('simplytestable.services.userservice');
-        $userService->setUser($userService->getPublicUser());
+        $userService->setUser(SystemUserService::getPublicUser());
 
         $this->setHttpFixtures([
             Response::fromMessage('HTTP/1.1 200 OK'),

@@ -11,6 +11,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
@@ -536,14 +537,14 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      */
     private function getUserFromUserName($userName)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $systemUserService = $this->container->get(SystemUserService::class);
 
-        $user = $userService->getPublicUser();
+        $user = SystemUserService::getPublicUser();
 
         if ('private' === $userName) {
             $user = new User(self::USER_EMAIL);
         } elseif ('admin' === $userName) {
-            $user = $userService->getAdminUser();
+            $user = $systemUserService->getAdminUser();
         }
 
         return $user;

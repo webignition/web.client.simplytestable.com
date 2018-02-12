@@ -31,16 +31,6 @@ class UserService extends CoreApplicationService
     private $summaries = array();
 
     /**
-     * @var string
-     */
-    private $adminUserUsername;
-
-    /**
-     * @var string
-     */
-    private $adminUserPassword;
-
-    /**
      * @var Session
      */
     private $session;
@@ -76,65 +66,31 @@ class UserService extends CoreApplicationService
     protected $coreApplicationRouter;
 
     /**
+     * @var SystemUserService
+     */
+    private $systemUserService;
+
+    /**
      * @param WebResourceService $webResourceService
-     * @param string $adminUserUsername
-     * @param string $adminUserPassword
      * @param Session $session
      * @param UserSerializerService $userSerializerService
      * @param CoreApplicationRouter $coreApplicationRouter
+     * @param SystemUserService $systemUserService
      */
     public function __construct(
         WebResourceService $webResourceService,
-        $adminUserUsername,
-        $adminUserPassword,
         Session $session,
         UserSerializerService $userSerializerService,
-        CoreApplicationRouter $coreApplicationRouter
+        CoreApplicationRouter $coreApplicationRouter,
+        SystemUserService $systemUserService
     ) {
         parent::__construct($webResourceService);
-        $this->adminUserUsername = $adminUserUsername;
-        $this->adminUserPassword = $adminUserPassword;
         $this->session = $session;
         $this->userSerializerService = $userSerializerService;
 
         $this->httpClientService = $webResourceService->getHttpClientService();
         $this->coreApplicationRouter = $coreApplicationRouter;
-    }
-
-    /**
-     * @return User
-     */
-    public function getPublicUser()
-    {
-        return new User(static::PUBLIC_USER_USERNAME, static::PUBLIC_USER_PASSWORD);
-    }
-
-    /**
-     * @return User
-     */
-    public function getAdminUser()
-    {
-        $user = new User();
-        $user->setUsername($this->adminUserUsername);
-        $user->setPassword($this->adminUserPassword);
-        return $user;
-    }
-
-    /**
-     * @param User $user
-     *
-     * @return bool
-     */
-    public function isPublicUser(User $user)
-    {
-        $comparatorUser = new User();
-        $comparatorUser->setUsername(strtolower($user->getUsername()));
-
-        if ($comparatorUser->getUsername() == 'public@simplytestable.com') {
-            return true;
-        }
-
-        return $this->getPublicUser()->equals($comparatorUser);
+        $this->systemUserService = $systemUserService;
     }
 
     /**
@@ -144,11 +100,11 @@ class UserService extends CoreApplicationService
     {
         $user = $this->getUser();
 
-        if ($this->isPublicUser($user)) {
+        if (SystemUserService::isPublicUser($user)) {
             return false;
         }
 
-        if ($user->equals($this->getAdminUser())) {
+        if ($user->equals($this->systemUserService->getAdminUser())) {
             return false;
         }
 
@@ -280,7 +236,7 @@ class UserService extends CoreApplicationService
      */
     public function activate($token)
     {
-        $this->setUser($this->getAdminUser());
+        $this->setUser($this->systemUserService->getAdminUser());
 
         $request = $this->httpClientService->postRequest(
             $this->coreApplicationRouter->generate('user_activate', ['token' => $token])
@@ -296,7 +252,7 @@ class UserService extends CoreApplicationService
             return $curlException->getErrorNo();
         }
 
-        $this->setUser($this->getPublicUser());
+        $this->setUser(SystemUserService::getPublicUser());
 
         if ($response->getStatusCode() == 401) {
             throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
@@ -385,7 +341,7 @@ class UserService extends CoreApplicationService
     {
         $currentUser = $this->getUser();
 
-        $this->setUser($this->getAdminUser());
+        $this->setUser($this->systemUserService->getAdminUser());
         $this->addAuthorisationToRequest($request);
 
         try {
@@ -478,7 +434,7 @@ class UserService extends CoreApplicationService
         }
 
         if (empty($user)) {
-            $user = $this->getPublicUser();
+            $user = SystemUserService::getPublicUser();
         }
 
         $this->setUser($user);
@@ -492,12 +448,12 @@ class UserService extends CoreApplicationService
         $sessionUser = $this->session->get(self::SESSION_USER_KEY);
 
         if (empty($sessionUser)) {
-            $user = $this->getPublicUser();
+            $user = SystemUserService::getPublicUser();
         } else {
             $user = $this->userSerializerService->unserialize($sessionUser);
 
-            if ($this->isPublicUser($user)) {
-                $user = $this->getPublicUser();
+            if (SystemUserService::isPublicUser($user)) {
+                $user = SystemUserService::getPublicUser();
             }
         }
 

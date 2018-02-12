@@ -2,10 +2,10 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User\Account\EmailChange;
 
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\EmailChangeController;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\BrowserKit\Cookie;
@@ -126,10 +126,9 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
-        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
 
         $this->setCoreApplicationHttpClientHttpFixtures(array_merge([
             HttpResponseFactory::createJsonResponse([

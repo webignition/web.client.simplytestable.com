@@ -53,19 +53,17 @@ class CoreApplicationHttpClient
     /**
      * @param CoreApplicationRouter $coreApplicationRouter
      * @param CoreApplicationResponseCache $coreApplicationResponseCache
-     * @param string $adminUsername
-     * @param string $adminPassword
+     * @param SystemUserService $systemUserService
      */
     public function __construct(
         CoreApplicationRouter $coreApplicationRouter,
         CoreApplicationResponseCache $coreApplicationResponseCache,
-        $adminUsername,
-        $adminPassword
+        SystemUserService $systemUserService
     ) {
         $this->router = $coreApplicationRouter;
         $this->responseCache = $coreApplicationResponseCache;
 
-        $this->adminUser = new User($adminUsername, $adminPassword);
+        $this->adminUser = $systemUserService->getAdminUser();
 
         $this->httpClient = new HttpClient();
         $this->httpClient->addSubscriber(BackoffPlugin::getExponentialBackoff(

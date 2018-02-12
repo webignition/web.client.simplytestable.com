@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\Test\Task\ErrorTaskMapCollection;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -131,7 +132,7 @@ class ByTaskTypeController extends AbstractResultsController
 
         $viewData = [
             'is_owner' => $remoteTestService->owns($user),
-            'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
+            'is_public_user_test' => $test->getUser() === SystemUserService::getPublicUser()->getUsername(),
             'website' => $urlViewValuesService->create($website),
             'test' => $test,
             'task_type' => $selectedTaskType,

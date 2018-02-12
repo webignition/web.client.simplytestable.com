@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\Controller\View\User;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,9 +26,8 @@ class SignInController extends BaseViewController implements IEFiltered
         $router = $this->container->get('router');
 
         $user = $userService->getUser();
-        $isLoggedIn = !$userService->isPublicUser($user);
 
-        if ($isLoggedIn) {
+        if (!SystemUserService::isPublicUser($user)) {
             $redirectUrl = $router->generate(
                 'view_dashboard_index_index',
                 [],

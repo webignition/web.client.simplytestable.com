@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -26,7 +27,6 @@ class UrlLimitController extends BaseViewController implements RequiresValidUser
     {
         $testService = $this->container->get('simplytestable.services.testservice');
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
         $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
         $templating = $this->container->get('templating');
 
@@ -40,9 +40,11 @@ class UrlLimitController extends BaseViewController implements RequiresValidUser
             return new Response();
         }
 
+        $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
+
         $response = $cacheValidatorService->createResponse($request, [
             'test_id' => $test_id,
-            'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
+            'is_public_user_test' => $isPublicUserTest,
         ]);
 
         if ($cacheValidatorService->isNotModified($response)) {
@@ -51,7 +53,7 @@ class UrlLimitController extends BaseViewController implements RequiresValidUser
 
         $viewData = [
             'remote_test' => $remoteTest,
-            'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
+            'is_public_user_test' => $isPublicUserTest,
         ];
 
         $content = $templating->render(

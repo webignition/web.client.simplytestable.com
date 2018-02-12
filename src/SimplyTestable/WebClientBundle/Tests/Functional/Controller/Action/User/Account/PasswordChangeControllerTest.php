@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\PasswordChangeController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -59,7 +60,7 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
     public function testRequestActionNotPrivateUserPostRequest()
     {
         $userService = $this->container->get('simplytestable.services.userservice');
-        $userService->setUser($userService->getPublicUser());
+        $userService->setUser(SystemUserService::getPublicUser());
 
         $this->setHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),

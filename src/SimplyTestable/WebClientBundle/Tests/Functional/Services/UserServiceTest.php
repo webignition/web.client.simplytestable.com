@@ -34,57 +34,6 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         );
     }
 
-    public function testGetPublicUser()
-    {
-        $expectedPublicUser = new User(UserService::PUBLIC_USER_USERNAME, UserService::PUBLIC_USER_PASSWORD);
-
-        $this->assertEquals($expectedPublicUser, $this->userService->getPublicUser());
-    }
-
-    public function testGetAdminUser()
-    {
-        $expectedAdminUser = new User(
-            $this->container->getParameter('admin_user_username'),
-            $this->container->getParameter('admin_user_password')
-        );
-
-        $this->assertEquals($expectedAdminUser, $this->userService->getAdminUser());
-    }
-
-    /**
-     * @dataProvider isPublicUserDataProvider
-     *
-     * @param User $user
-     * @param bool $expectedIsPublicUser
-     */
-    public function testIsPublicUser(User $user, $expectedIsPublicUser)
-    {
-        $isPublicUser = $this->userService->isPublicUser($user);
-
-        $this->assertEquals($expectedIsPublicUser, $isPublicUser);
-    }
-
-    /**
-     * @return array
-     */
-    public function isPublicUserDataProvider()
-    {
-        return [
-            'standard public user' => [
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
-                'expectedIsPublicUser' => true,
-            ],
-            'email-variant public user' => [
-                'user' => new User(UserService::PUBLIC_USER_EMAIL),
-                'expectedIsPublicUser' => true,
-            ],
-            'private user' => [
-                'user' => new User('user@example.com'),
-                'expectedIsPublicUser' => false,
-            ],
-        ];
-    }
-
     /**
      * @dataProvider isLoggedInDataProvider
      *

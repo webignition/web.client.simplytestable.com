@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -83,7 +84,7 @@ class IndexController extends AbstractResultsController
         $remoteTest = $remoteTestService->get();
 
         $taskTypeService->setUser($user);
-        if (!$userService->isPublicUser($user)) {
+        if (!SystemUserService::isPublicUser($user)) {
             $taskTypeService->setUserIsAuthenticated();
         }
 
@@ -125,11 +126,13 @@ class IndexController extends AbstractResultsController
             return new RedirectResponse($redirectUrl);
         }
 
+        $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
+
         $response = $cacheValidatorService->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,
             'is_public' => $remoteTest->getIsPublic(),
-            'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
+            'is_public_user_test' => $isPublicUserTest,
             'type' => $taskType,
             'filter' => $filter,
         ]);
@@ -156,7 +159,7 @@ class IndexController extends AbstractResultsController
             'website' => $urlViewValuesService->create($website),
             'test' => $test,
             'is_public' => $remoteTest->getIsPublic(),
-            'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
+            'is_public_user_test' => $isPublicUserTest,
             'remote_test' => $remoteTest,
             'is_owner' => $isOwner,
             'type' => $taskType,
