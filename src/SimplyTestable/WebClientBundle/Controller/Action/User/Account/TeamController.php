@@ -397,6 +397,10 @@ class TeamController extends Controller implements RequiresPrivateUser
 
     /**
      * @return RedirectResponse
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function leaveAction()
     {
