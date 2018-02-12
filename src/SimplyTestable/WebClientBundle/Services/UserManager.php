@@ -107,4 +107,9 @@ class UserManager
 
         return true;
     }
+
+    public function clearUser()
+    {
+        $this->session->set(self::SESSION_USER_KEY, null);
+    }
 }
