@@ -215,8 +215,6 @@ class UserController extends Controller
             ]);
         }
 
-        $userService->setUser($user);
-
         $response = $this->createPostSignInRedirectResponse($router, $redirect);
 
         if ($staySignedIn) {

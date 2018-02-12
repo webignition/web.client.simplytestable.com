@@ -116,8 +116,6 @@ class EmailChangeController extends AccountCredentialsChangeController
             return $redirectResponse;
         }
 
-        $userService->setUser($user);
-
         try {
             $emailChangeRequestService->createEmailChangeRequest($newEmail);
             $this->sendEmailChangeConfirmationToken();
