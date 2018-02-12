@@ -176,6 +176,8 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
                             'has_invite' => false,
                         ],
                     ])),
+                ],
+                'coreApplicationHttpClientFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         'team' => [
                             'leader' => 'leader@example.com',
@@ -186,7 +188,6 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
                         ],
                     ]),
                 ],
-                'coreApplicationHttpClientFixtures' => [],
                 'request' => new Request([], [
                     'plan' => 'personal',
                 ]),
@@ -280,6 +281,8 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
                             'has_invite' => false,
                         ],
                     ])),
+                ],
+                'coreApplicationHttpClientFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         'team' => [
                             'leader' => self::USER_EMAIL,
@@ -289,8 +292,6 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
                             self::USER_EMAIL,
                         ],
                     ]),
-                ],
-                'coreApplicationHttpClientFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                 ],
                 'request' => new Request([], [
