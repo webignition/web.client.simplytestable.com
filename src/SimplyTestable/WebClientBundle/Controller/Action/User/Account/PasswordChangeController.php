@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +21,8 @@ class PasswordChangeController extends AccountCredentialsChangeController
      * @param Request $request
      *
      * @return RedirectResponse
+     *
+     * @throws CoreApplicationAdminRequestException
      */
     public function requestAction(Request $request)
     {
@@ -29,8 +32,8 @@ class PasswordChangeController extends AccountCredentialsChangeController
 
         $requestData = $request->request;
 
-        $currentPassword = strtolower(trim($requestData->get('current-password')));
-        $newPassword = strtolower(trim($requestData->get('new-password')));
+        $currentPassword = trim($requestData->get('current-password'));
+        $newPassword = trim($requestData->get('new-password'));
 
         $redirectResponse = $this->redirect($this->generateUrl(
             'view_user_account_index_index',
@@ -78,7 +81,6 @@ class PasswordChangeController extends AccountCredentialsChangeController
                 self::FLASH_BAG_REQUEST_KEY,
                 self::FLASH_BAG_REQUEST_SUCCESS_MESSAGE
             );
-
         } else {
             if ($passwordResetResponse === 503) {
                 $session->getFlashBag()->set(
