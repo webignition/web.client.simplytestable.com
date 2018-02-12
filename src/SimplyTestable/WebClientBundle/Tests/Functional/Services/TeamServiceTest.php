@@ -34,7 +34,6 @@ class TeamServiceTest extends AbstractCoreApplicationServiceTest
         );
 
         $this->user = new User('user@example.com');
-        $this->teamService->setUser($this->user);
         $this->coreApplicationHttpClient->setUser($this->user);
     }
 

@@ -56,7 +56,6 @@ class CardController extends BaseViewController implements RequiresPrivateUser, 
         $team = null;
 
         if ($userSummary->getTeamSummary()->isInTeam()) {
-            $teamService->setUser($user);
             $team = $teamService->getTeam();
 
             if ($team->getLeader() !== $user->getUsername()) {

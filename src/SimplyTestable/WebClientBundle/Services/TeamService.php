@@ -7,13 +7,8 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
 
-class TeamService extends CoreApplicationService
+class TeamService
 {
-    /**
-     * @var CoreApplicationRouter
-     */
-    private $coreApplicationRouter;
-
     /**
      * @var CoreApplicationHttpClient
      */
@@ -25,20 +20,13 @@ class TeamService extends CoreApplicationService
     private $jsonResponseHandler;
 
     /**
-     * @param WebResourceService $webResourceService
-     * @param CoreApplicationRouter $coreApplicationRouter
      * @param CoreApplicationHttpClient $coreApplicationHttpClient
      * @param JsonResponseHandler $jsonResponseHandler
      */
     public function __construct(
-        WebResourceService $webResourceService,
-        CoreApplicationRouter $coreApplicationRouter,
         CoreApplicationHttpClient $coreApplicationHttpClient,
         JsonResponseHandler $jsonResponseHandler
     ) {
-        parent::__construct($webResourceService);
-
-        $this->coreApplicationRouter = $coreApplicationRouter;
         $this->coreApplicationHttpClient = $coreApplicationHttpClient;
         $this->jsonResponseHandler = $jsonResponseHandler;
     }

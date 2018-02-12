@@ -89,7 +89,6 @@ class TeamController extends Controller implements RequiresPrivateUser
             return $redirectResponse;
         }
 
-        $teamService->setUser($userService->getUser());
         $teamService->create($name);
 
         return $redirectResponse;

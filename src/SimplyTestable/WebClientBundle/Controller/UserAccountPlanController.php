@@ -67,7 +67,6 @@ class UserAccountPlanController extends Controller implements RequiresPrivateUse
         }
 
         if ($userSummary->getTeamSummary()->isInTeam()) {
-            $teamService->setUser($user);
             $team = $teamService->getTeam();
 
             if ($team->getLeader() != $user->getUsername()) {
