@@ -8,6 +8,7 @@ class SystemUserService
 {
     const PUBLIC_USER_USERNAME = 'public';
     const PUBLIC_USER_PASSWORD = 'public';
+    const PUBLIC_USER_EMAIL = 'public@simplytestable.com';
 
     /**
      * @var string
@@ -44,5 +45,17 @@ class SystemUserService
     public function getAdminUser()
     {
         return new User($this->adminUserUsername, $this->adminUserPassword);
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return bool
+     */
+    public function isPublicUser(User $user)
+    {
+        $comparatorUsername = strtolower($user->getUsername());
+
+        return in_array($comparatorUsername, [self::PUBLIC_USER_USERNAME, self::PUBLIC_USER_EMAIL]);
     }
 }
