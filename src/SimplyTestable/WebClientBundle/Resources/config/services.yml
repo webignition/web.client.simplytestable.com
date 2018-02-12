@@ -181,13 +181,6 @@ services:
           updates: "%mailchimp_updates_list_id%"
           introduction: "%mailchimp_introduction_list_id%"
 
-  simplytestable.services.responseFormatService:
-    class:   SimplyTestable\WebClientBundle\Services\ResponseFormatService
-    calls:
-      - [setRequest, [@request]]
-    public: true
-    scope: request
-
   simplytestable.services.tasktypeservice:
     class:  SimplyTestable\WebClientBundle\Services\TaskTypeService
     calls:
