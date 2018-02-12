@@ -10,6 +10,7 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -103,12 +104,13 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         }
 
         $requestTimeStamp = $request->query->get('timestamp');
+        $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
 
         $response = $cacheValidatorService->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,
             'is_public' => $remoteTest->getIsPublic(),
-            'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
+            'is_public_user_test' => $isPublicUserTest,
             'timestamp' => empty($requestTimeStamp) ? '' : $requestTimeStamp,
             'state' => $test->getState()
         ]);
@@ -158,7 +160,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
                 'available_task_types' => $taskTypeService->getAvailable(),
                 'task_types' => $taskTypeService->get(),
                 'test_options' => $testOptionsAdapter->getTestOptions()->__toKeyArray(),
-                'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
+                'is_public_user_test' => $isPublicUserTest,
                 'css_validation_ignore_common_cdns' => $this->container->getParameter(
                     'css-validation-ignore-common-cdns'
                 ),

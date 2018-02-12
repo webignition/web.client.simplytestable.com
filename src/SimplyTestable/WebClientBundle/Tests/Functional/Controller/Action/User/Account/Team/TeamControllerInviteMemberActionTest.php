@@ -11,6 +11,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockPostmarkMessageFactory;
@@ -192,10 +193,9 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
      */
     public function testInviteMemberActionGetInviteFailure(array $httpFixtures, array $expectedFlashBagValues)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
-        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
 
         $session = $this->container->get('session');
 
@@ -303,10 +303,9 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
     ) {
         $session = $this->container->get('session');
         $mailService = $this->container->get('simplytestable.services.mail.service');
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
-        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
 
         $inviteData = [
             'team' => self::TEAM_NAME,
@@ -434,10 +433,9 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
     ) {
         $session = $this->container->get('session');
         $mailService = $this->container->get('simplytestable.services.mail.service');
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
-        $coreApplicationHttpClient->setUser($userService->getPublicUser());
+        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
 
         $inviteData = [
             'team' => self::TEAM_NAME,

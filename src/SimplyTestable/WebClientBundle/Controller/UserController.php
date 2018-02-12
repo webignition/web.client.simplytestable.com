@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Controller;
 
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -431,7 +432,7 @@ class UserController extends Controller
             }
         }
 
-        $userService->setUser($userService->getPublicUser());
+        $userService->setUser(SystemUserService::getPublicUser());
         $createResponse = $userService->create($email, $password, $plan, $coupon);
 
         if (302 === $createResponse) {

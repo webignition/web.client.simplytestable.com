@@ -12,6 +12,7 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\LinkIntegrityMessage;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -83,11 +84,13 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
             return new RedirectResponse($redirectUrl);
         }
 
+        $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
+
         $response = $cacheValidatorService->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,
             'task_id' => $task_id,
-            'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
+            'is_public_user_test' => $isPublicUserTest,
         ]);
 
         if ($cacheValidatorService->isNotModified($response)) {
@@ -100,7 +103,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
             'task' => $task,
             'task_url' => $urlViewValuesService->create($task->getUrl()),
             'is_owner' => $isOwner,
-            'is_public_user_test' => $test->getUser() == $userService->getPublicUser()->getUsername(),
+            'is_public_user_test' => $isPublicUserTest,
         );
 
         if (Task::TYPE_HTML_VALIDATION === $task->getType()) {
