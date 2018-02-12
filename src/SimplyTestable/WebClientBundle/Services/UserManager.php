@@ -22,6 +22,11 @@ class UserManager
     private $session;
 
     /**
+     * @var SystemUserService
+     */
+    private $systemUserService;
+
+    /**
      * @var User
      */
     private $user;
@@ -30,14 +35,17 @@ class UserManager
      * @param RequestStack $requestStack
      * @param UserSerializerService $userSerializer
      * @param SessionInterface $session
+     * @param SystemUserService $systemUserService
      */
     public function __construct(
         RequestStack $requestStack,
         UserSerializerService $userSerializer,
-        SessionInterface $session
+        SessionInterface $session,
+        SystemUserService $systemUserService
     ) {
         $this->userSerializer = $userSerializer;
         $this->session = $session;
+        $this->systemUserService = $systemUserService;
 
         $user = null;
         $request = $requestStack->getCurrentRequest();
@@ -80,5 +88,23 @@ class UserManager
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLoggedIn()
+    {
+        $user = $this->user;
+
+        if (SystemUserService::isPublicUser($user)) {
+            return false;
+        }
+
+        if ($user->equals($this->systemUserService->getAdminUser())) {
+            return false;
+        }
+
+        return true;
     }
 }

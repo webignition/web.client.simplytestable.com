@@ -6,6 +6,8 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class UserManagerTest extends AbstractCoreApplicationServiceTest
 {
@@ -44,7 +46,8 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
         $userManager = new UserManager(
             $requestStack,
             $userSerializer,
-            $session
+            $session,
+            $this->container->get(SystemUserService::class)
         );
 
         $user = $userManager->getUser();
@@ -106,5 +109,46 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
 
         $this->assertEquals($user, $currentUser);
         $this->assertNotEquals($currentSerializedUser, $originalSerializedUser);
+    }
+
+    /**
+     * @dataProvider isLoggedInDataProvider
+     *
+     * @param User|null $user
+     * @param bool $expectedIsLoggedIn
+     */
+    public function testIsLoggedIn(User $user, $expectedIsLoggedIn)
+    {
+        $userManager = new UserManager(
+            $this->container->get('request_stack'),
+            $this->container->get('simplytestable.services.userserializerservice'),
+            $this->container->get('session'),
+            $this->container->get(SystemUserService::class)
+        );
+
+        $userManager->setUser($user);
+
+        $this->assertEquals($expectedIsLoggedIn, $userManager->isLoggedIn());
+    }
+
+    /**
+     * @return array
+     */
+    public function isLoggedInDataProvider()
+    {
+        return [
+            'public user' => [
+                'user' => SystemUserService::getPublicUser(),
+                'expectedIsLoggedIn' => false,
+            ],
+            'admin user' => [
+                'user' => new User('admin'),
+                'expectedIsLoggedIn' => false,
+            ],
+            'private user' => [
+                'user' => new User('user@example.com'),
+                'expectedIsLoggedIn' => true,
+            ],
+        ];
     }
 }
