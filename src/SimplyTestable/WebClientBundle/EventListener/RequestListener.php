@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\EventListener;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -78,6 +79,8 @@ class RequestListener
 
         $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $userManager = $this->container->get(UserManager::class);
+
         $controller = $this->createController();
 
         if ($controller instanceof IEFilteredController && $this->isUsingOldIE()) {
@@ -88,10 +91,9 @@ class RequestListener
             return;
         }
 
-        $userService->setUserFromRequest($this->request);
-
-        $user = $userService->getUser();
+        $user = $userManager->getUser();
         $coreApplicationHttpClient->setUser($user);
+        $userService->setUser($user);
 
         $requiresValidUserController =
             $controller instanceof RequiresValidUserController || $controller instanceof RequiresPrivateUserController;

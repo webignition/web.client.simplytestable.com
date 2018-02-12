@@ -18,15 +18,23 @@ class CacheValidatorService
     private $userService;
 
     /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
      * @param CacheValidatorHeadersService $cacheValidatorHeadersService
      * @param UserService $userService
+     * @param UserManager $userManager
      */
     public function __construct(
         CacheValidatorHeadersService $cacheValidatorHeadersService,
-        UserService $userService
+        UserService $userService,
+        UserManager $userManager
     ) {
         $this->cacheValidatorHeadersService = $cacheValidatorHeadersService;
         $this->userService = $userService;
+        $this->userManager = $userManager;
     }
 
     /**
@@ -74,7 +82,7 @@ class CacheValidatorService
      */
     private function createCacheValidatorIdentifier(Request $request, array $parameters = [])
     {
-        $user = $this->userService->getUser();
+        $user = $this->userManager->getUser();
 
         $identifier = new CacheValidatorIdentifier();
         $identifier->setParameter('route', $request->attributes->get('_route'));

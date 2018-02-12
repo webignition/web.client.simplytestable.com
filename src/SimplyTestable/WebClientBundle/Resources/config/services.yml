@@ -226,6 +226,7 @@ services:
     arguments:
       cacheValidatorHeadersService: '@simplytestable.services.cachevalidatorheadersservice'
       userService: '@simplytestable.services.userservice'
+      userManager: '@SimplyTestable\WebClientBundle\Services\UserManager'
 
   simplytestable.services.flashbagvalues:
     class: SimplyTestable\WebClientBundle\Services\FlashBagValues
