@@ -1,98 +1,87 @@
 <?php
 namespace SimplyTestable\WebClientBundle\Services;
 
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
-use webignition\WebResource\JsonDocument\JsonDocument;
 
-class TeamService extends CoreApplicationService
+class TeamService
 {
     /**
-     * @var CoreApplicationRouter
+     * @var CoreApplicationHttpClient
      */
-    private $coreApplicationRouter;
+    private $coreApplicationHttpClient;
 
     /**
-     * @var Team[]
+     * @var JsonResponseHandler
      */
-    private $teams = [];
+    private $jsonResponseHandler;
 
     /**
-     * @param WebResourceService $webResourceService
-     * @param CoreApplicationRouter $coreApplicationRouter
+     * @param CoreApplicationHttpClient $coreApplicationHttpClient
+     * @param JsonResponseHandler $jsonResponseHandler
      */
     public function __construct(
-        WebResourceService $webResourceService,
-        CoreApplicationRouter $coreApplicationRouter
+        CoreApplicationHttpClient $coreApplicationHttpClient,
+        JsonResponseHandler $jsonResponseHandler
     ) {
-        parent::__construct($webResourceService);
-
-        $this->coreApplicationRouter = $coreApplicationRouter;
+        $this->coreApplicationHttpClient = $coreApplicationHttpClient;
+        $this->jsonResponseHandler = $jsonResponseHandler;
     }
 
     /**
      * @param string $name
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function create($name)
     {
-        $request = $this->webResourceService->getHttpClientService()->postRequest(
-            $this->coreApplicationRouter->generate('team_create'),
-            null,
-            [
-                'name' => $name,
-            ]
-        );
-
-        $this->addAuthorisationToRequest($request);
-        $request->send();
+        $this->coreApplicationHttpClient->post('team_create', [], [
+            'name' => $name,
+        ]);
     }
 
     /**
      * @return Team
-     * @throws \Exception
-     * @throws \Guzzle\Http\Exception\CurlException
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
+     * @throws InvalidContentTypeException
      */
     public function getTeam()
     {
-        $username = $this->getUser()->getUsername();
+        $response = $this->coreApplicationHttpClient->get('team_get');
 
-        if (!isset($this->teams[$username])) {
-            $request = $this->webResourceService->getHttpClientService()->getRequest(
-                $this->coreApplicationRouter->generate('team_get')
-            );
+        $responseData = $this->jsonResponseHandler->handle($response);
 
-            $this->addAuthorisationToRequest($request);
-
-            /* @var JsonDocument $jsonDocument */
-            $jsonDocument = $this->webResourceService->get($request);
-            $this->teams[$username] = new Team($jsonDocument->getContentObject());
-        }
-
-        return $this->teams[$this->getUser()->getUsername()];
+        return new Team($responseData);
     }
 
     /**
      * @param string $member
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function removeFromTeam($member)
     {
-        $request = $this->webResourceService->getHttpClientService()->postRequest(
-            $this->coreApplicationRouter->generate('team_remove', [
-                'member_email' => $member
-            ])
-        );
-
-        $this->addAuthorisationToRequest($request);
-
-        $request->send();
+        $this->coreApplicationHttpClient->post('team_remove', [
+            'member_email' => $member,
+        ]);
     }
 
+    /**
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
+     */
     public function leave()
     {
-        $request = $this->webResourceService->getHttpClientService()->postRequest(
-            $this->coreApplicationRouter->generate('team_leave')
-        );
-
-        $this->addAuthorisationToRequest($request);
-        $request->send();
+        $this->coreApplicationHttpClient->post('team_leave');
     }
 }

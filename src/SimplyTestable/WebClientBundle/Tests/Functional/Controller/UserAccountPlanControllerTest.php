@@ -3,6 +3,9 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller;
 
 use SimplyTestable\WebClientBundle\Controller\UserAccountPlanController;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
@@ -120,7 +123,9 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
      * @param array $expectedFlashBagValues
      *
      * @throws WebResourceException
-     * @throws \Exception
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testSubscribeAction(
         array $httpFixtures,
@@ -176,6 +181,8 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
                             'has_invite' => false,
                         ],
                     ])),
+                ],
+                'coreApplicationHttpClientFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         'team' => [
                             'leader' => 'leader@example.com',
@@ -186,7 +193,6 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
                         ],
                     ]),
                 ],
-                'coreApplicationHttpClientFixtures' => [],
                 'request' => new Request([], [
                     'plan' => 'personal',
                 ]),
@@ -280,6 +286,8 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
                             'has_invite' => false,
                         ],
                     ])),
+                ],
+                'coreApplicationHttpClientFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         'team' => [
                             'leader' => self::USER_EMAIL,
@@ -289,8 +297,6 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
                             self::USER_EMAIL,
                         ],
                     ]),
-                ],
-                'coreApplicationHttpClientFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                 ],
                 'request' => new Request([], [

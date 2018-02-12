@@ -58,8 +58,11 @@ class TeamController extends Controller implements RequiresPrivateUser
 
     /**
      * @param Request $request
-     *
      * @return RedirectResponse
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function createAction(Request $request)
     {
@@ -86,7 +89,6 @@ class TeamController extends Controller implements RequiresPrivateUser
             return $redirectResponse;
         }
 
-        $teamService->setUser($userService->getUser());
         $teamService->create($name);
 
         return $redirectResponse;
@@ -311,6 +313,10 @@ class TeamController extends Controller implements RequiresPrivateUser
      * @param Request $request
      *
      * @return RedirectResponse
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function removeMemberAction(Request $request)
     {
@@ -390,6 +396,10 @@ class TeamController extends Controller implements RequiresPrivateUser
 
     /**
      * @return RedirectResponse
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function leaveAction()
     {

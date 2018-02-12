@@ -2,9 +2,9 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User\Account\Team;
 
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -31,8 +31,11 @@ class TeamControllerLeaveActionTest extends AbstractTeamControllerTest
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
         $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
-            Response::fromMessage('HTTP/1.1 200'),
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $requestUrl = $router->generate(self::ROUTE_NAME);

@@ -3,6 +3,10 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\User\Account;
 
 use SimplyTestable\WebClientBundle\Controller\View\User\Account\IndexController;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
@@ -160,7 +164,10 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param EngineInterface $templatingEngine
      *
      * @throws WebResourceException
-     * @throws \Exception
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testIndexActionRender(
         array $httpFixtures,
@@ -178,21 +185,9 @@ class IndexControllerTest extends AbstractBaseTestCase
         $coreApplicationHttpClient->setUser($user);
 
         $userFixture = array_shift($httpFixtures);
-        $emailChangeRequestFixture = array_pop($httpFixtures);
 
-        $defaultHttpFixtures = [
-            $userFixture,
-        ];
-
-        if (count($httpFixtures) === 3) {
-            $teamFixture = array_pop($httpFixtures);
-            $defaultHttpFixtures[] = $teamFixture;
-        }
-
-        $this->setHttpFixtures($defaultHttpFixtures);
-        $this->setCoreApplicationHttpClientHttpFixtures(array_merge($httpFixtures, [
-            $emailChangeRequestFixture
-        ]));
+        $this->setHttpFixtures([$userFixture]);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($flashBagValues)) {
             foreach ($flashBagValues as $key => $value) {

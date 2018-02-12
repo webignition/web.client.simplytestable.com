@@ -44,9 +44,11 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
      * @param Request $request
      * @return Response
      *
-     * @throws WebResourceException
-     * @throws \Exception
+     * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     * @throws WebResourceException
      */
     public function indexAction(Request $request)
     {
@@ -96,7 +98,6 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
         );
 
         if ($userSummary->getTeamSummary()->isInTeam()) {
-            $teamService->setUser($user);
             $viewData['team'] = $teamService->getTeam();
         }
 

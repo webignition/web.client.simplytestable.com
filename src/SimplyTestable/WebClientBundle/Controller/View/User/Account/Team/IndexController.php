@@ -29,17 +29,14 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
     }
 
     /**
-     * @param Request $request
-     *
      * @return Response
      *
      * @throws WebResourceException
-     * @throws \Exception
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
         $userService = $this->container->get('simplytestable.services.userservice');
         $session = $this->get('session');
