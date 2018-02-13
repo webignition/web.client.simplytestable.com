@@ -24,7 +24,6 @@ class OnKernelRequestIeFilteredTest extends AbstractOnKernelRequestTest
      * @param string $expectedRedirectUrl
      *
      * @throws \Exception
-     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
      */
     public function testOnKernelRequest($userAgent, $expectedIsRedirectResponse, $expectedRedirectUrl = null)
     {

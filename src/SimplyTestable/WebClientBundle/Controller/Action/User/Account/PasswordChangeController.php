@@ -2,7 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +26,10 @@ class PasswordChangeController extends AccountCredentialsChangeController
      *
      * @return RedirectResponse
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function requestAction(Request $request)
     {
@@ -61,10 +68,11 @@ class PasswordChangeController extends AccountCredentialsChangeController
             return $redirectResponse;
         }
 
-        $userService->setUser($user);
-        $passwordResetResponse = $userService->resetLoggedInUserPassword($newPassword);
+        $token = $userService->getConfirmationToken($user->getUsername());
 
-        if ($passwordResetResponse === true) {
+        try {
+            $userService->resetPassword($token, $newPassword);
+
             $user->setPassword($newPassword);
             $userManager->setUser($user);
 
@@ -78,18 +86,16 @@ class PasswordChangeController extends AccountCredentialsChangeController
                 self::FLASH_BAG_REQUEST_KEY,
                 self::FLASH_BAG_REQUEST_SUCCESS_MESSAGE
             );
-        } else {
-            if ($passwordResetResponse === 503) {
-                $session->getFlashBag()->set(
-                    self::FLASH_BAG_REQUEST_KEY,
-                    self::FLASH_BAG_REQUEST_ERROR_MESSAGE_FAILED_READ_ONLY
-                );
-            } else {
-                $session->getFlashBag()->set(
-                    self::FLASH_BAG_REQUEST_KEY,
-                    self::FLASH_BAG_REQUEST_ERROR_MESSAGE_FAILED_UNKNOWN
-                );
-            }
+        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_REQUEST_KEY,
+                self::FLASH_BAG_REQUEST_ERROR_MESSAGE_FAILED_READ_ONLY
+            );
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
+            $session->getFlashBag()->set(
+                self::FLASH_BAG_REQUEST_KEY,
+                self::FLASH_BAG_REQUEST_ERROR_MESSAGE_FAILED_UNKNOWN
+            );
         }
 
         return $redirectResponse;

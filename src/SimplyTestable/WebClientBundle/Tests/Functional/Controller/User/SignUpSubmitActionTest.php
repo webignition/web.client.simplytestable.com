@@ -3,9 +3,13 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\User;
 
 use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\Mock\MockPlugin;
 use SimplyTestable\WebClientBundle\Controller\UserController;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use SimplyTestable\WebClientBundle\Services\CouponService;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,9 +40,9 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
-            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n\"confirmation-token-here\""),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse('confirmation-token-here'),
         ]);
 
         $router = $this->container->get('router');
@@ -69,6 +73,11 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
      * @param Request $request
      * @param string $expectedRedirectLocation
      * @param array $expectedFlashBagValues
+     *
+     * @throws CoreApplicationRequestException
+     * @throws MailConfigurationException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      */
     public function testSignUpSubmitActionBadRequest(
         Request $request,
@@ -139,6 +148,11 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
      * @param Response[] $httpFixtures
      * @param string $expectedRedirectLocation
      * @param array $expectedFlashBagValues
+     *
+     * @throws CoreApplicationRequestException
+     * @throws MailConfigurationException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      */
     public function testSignUpSubmitActionUserCreationFailure(
         array $httpFixtures,
@@ -146,12 +160,8 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
 
-        $httpClient = $httpClientService->get();
-
-        $httpMockPlugin = new MockPlugin($httpFixtures);
-        $httpClient->addSubscriber($httpMockPlugin);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $request = new Request([], [
             'plan' => 'basic',
@@ -176,7 +186,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         return [
             'user already exists' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 302'),
+                    HttpResponseFactory::createRedirectResponse(),
                 ],
                 'expectedRedirectLocation' => 'http://localhost/signup/?email=user%40example.com',
                 'expectedFlashBagValues' => [
@@ -187,7 +197,10 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             ],
             'failed due to read-only' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 503'),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
                 ],
                 'expectedRedirectLocation' => 'http://localhost/signup/?email=user%40example.com&plan=basic',
                 'expectedFlashBagValues' => [
@@ -198,7 +211,10 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             ],
             'failed, unknown' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 500'),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
                 'expectedRedirectLocation' => 'http://localhost/signup/?email=user%40example.com&plan=basic',
                 'expectedFlashBagValues' => [
@@ -215,25 +231,24 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
      *
      * @param PostmarkMessage $postmarkMessage
      * @param array $expectedFlashBagValues
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws MailConfigurationException
      */
     public function testSignUpSubmitActionSendConfirmationTokenFailure(
         PostmarkMessage $postmarkMessage,
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
         $mailService = $this->container->get('simplytestable.services.mail.service');
         $postmarkSender = $this->container->get('simplytestable.services.postmark.sender');
 
-        $httpClient = $httpClientService->get();
-
-        $httpFixtures = [
-            Response::fromMessage('HTTP/1.1 200'),
-            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n\"confirmation-token-here\""),
-        ];
-
-        $httpMockPlugin = new MockPlugin($httpFixtures);
-        $httpClient->addSubscriber($httpMockPlugin);
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse('confirmation-token-here'),
+        ]);
 
         $request = new Request([], [
             'plan' => 'basic',
@@ -342,24 +357,23 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
      *
      * @param Request $request
      * @param array $couponData
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws MailConfigurationException
      */
     public function testSignUpSubmitActionSuccess(Request $request, array $couponData)
     {
         $session = $this->container->get('session');
-        $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
         $mailService = $this->container->get('simplytestable.services.mail.service');
         $postmarkSender = $this->container->get('simplytestable.services.postmark.sender');
         $couponService = $this->container->get('simplytestable.services.couponservice');
 
-        $httpClient = $httpClientService->get();
-
-        $httpFixtures = [
-            Response::fromMessage('HTTP/1.1 200'),
-            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n\"confirmation-token-here\""),
-        ];
-
-        $httpMockPlugin = new MockPlugin($httpFixtures);
-        $httpClient->addSubscriber($httpMockPlugin);
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse('confirmation-token-here'),
+        ]);
 
         $postmarkMessage = MockFactory::createPostmarkMessage([
             'setFrom' => true,

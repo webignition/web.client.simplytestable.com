@@ -2,10 +2,10 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\User\SignUp;
 
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\SignUp\Team\InviteController as ActionInviteController;
 use SimplyTestable\WebClientBundle\Controller\View\User\SignUp\InviteController;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
@@ -77,7 +77,8 @@ class InviteControllerTest extends AbstractBaseTestCase
      * @param array $flashBagValues
      * @param EngineInterface $templatingEngine
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      */
     public function testIndexActionRender(
         array $httpFixtures,

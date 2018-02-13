@@ -102,11 +102,7 @@ class IndexControllerTest extends AbstractBaseTestCase
      */
     public function testIndexActionInvalidGetRequest(array $httpFixtures, $expectedRedirectUrl)
     {
-        $this->setHttpFixtures([$httpFixtures[0]]);
-
-        if (count($httpFixtures) > 1) {
-            $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
-        }
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->client->request(
             'GET',
@@ -149,11 +145,8 @@ class IndexControllerTest extends AbstractBaseTestCase
     {
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
@@ -176,11 +169,8 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionPublicUserGetRequest()
     {
-        $this->setHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
         ]);
@@ -216,7 +206,6 @@ class IndexControllerTest extends AbstractBaseTestCase
         $expectedRequestUrls
     ) {
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
         $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser($user);
@@ -224,10 +213,7 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $httpHistoryPlugin = new HistoryPlugin();
 
-        $httpClient = $httpClientService->get();
         $coreApplicationHttpClientHttpClient = $coreApplicationHttpClient->getHttpClient();
-
-        $httpClient->addSubscriber($httpHistoryPlugin);
         $coreApplicationHttpClientHttpClient->addSubscriber($httpHistoryPlugin);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
@@ -979,11 +965,8 @@ class IndexControllerTest extends AbstractBaseTestCase
      */
     public function testIndexActionFailedTask(array $outputContent, $expectedHeadingContent)
     {
-        $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([
                 array_merge($this->remoteTaskData, [

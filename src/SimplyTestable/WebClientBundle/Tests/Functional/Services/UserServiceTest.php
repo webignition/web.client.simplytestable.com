@@ -2,11 +2,13 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
-use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Message\EntityEnclosingRequest;
-use Guzzle\Http\Message\Response;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\UserAlreadyExistsException;
 use SimplyTestable\WebClientBundle\Model\Coupon;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\User;
@@ -23,6 +25,11 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
     private $userService;
 
     /**
+     * @var User
+     */
+    private $user;
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp()
@@ -32,27 +39,35 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $this->userService = $this->container->get(
             'simplytestable.services.userservice'
         );
+
+        $this->user = new User('user@example.com');
     }
 
     /**
      * @dataProvider resetPasswordFailureDataProvider
      *
      * @param array $httpFixtures
-     * @param int $expectedReturnValue
+     * @param string $expectedException
+     * @param string $expectedExceptionMessage
+     * @param int $expectedExceptionCode
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
     public function testResetPasswordFailure(
         array $httpFixtures,
-        $expectedReturnValue
+        $expectedException,
+        $expectedExceptionMessage,
+        $expectedExceptionCode
     ) {
-        $this->userService->setUser(SystemUserService::getPublicUser());
+        $this->coreApplicationHttpClient->setUser($this->user);
 
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $returnValue = $this->userService->resetPassword('token', 'password');
+        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
 
-        $this->assertEquals($expectedReturnValue, $returnValue);
+        $this->userService->resetPassword('token', 'password');
     }
 
     /**
@@ -63,47 +78,57 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         return [
             'HTTP 404 (invalid token)' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 404'),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'expectedReturnValue' => 404,
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Not Found',
+                'expectedExceptionCode' => 404,
             ],
-            'HTTP 503 (down for maintenance)' => [
+            'read only' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 503'),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
                 ],
-                'expectedReturnValue' => 503,
+                'expectedException' => CoreApplicationReadOnlyException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
+            ],
+            'invalid credentials' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createForbiddenResponse(),
+                ],
+                'expectedException' => InvalidCredentialsException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
             ],
             'CURL 28' => [
                 'httpFixtures' => [
                     CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
                 ],
-                'expectedReturnValue' => 28,
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Operation timed out',
+                'expectedExceptionCode' => 28,
             ],
         ];
     }
 
-    public function testResetPasswordInvalidAdminCredentials()
-    {
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 401'),
-        ]);
-
-        $this->setExpectedException(
-            CoreApplicationAdminRequestException::class,
-            'Invalid admin user credentials',
-            401
-        );
-
-        $this->userService->resetPassword('token', 'password');
-    }
-
     public function testResetPasswordSuccess()
     {
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
+        $this->coreApplicationHttpClient->setUser($this->user);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $this->assertTrue($this->userService->resetPassword('token', 'password value'));
+        $this->userService->resetPassword('token', 'password value');
 
         /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
@@ -117,37 +142,6 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         );
     }
 
-    public function testResetLoggedInUserPasswordSuccess()
-    {
-        $this->setHttpFixtures([
-            HttpResponseFactory::createJsonResponse('token'),
-            Response::fromMessage('HTTP/1.1 200'),
-        ]);
-
-        $this->userService->setUser(new User('user@example.com'));
-
-        $this->assertTrue($this->userService->resetLoggedInUserPassword('password@value'));
-
-        $this->assertEquals(
-            [
-                'http://null/user/user@example.com/token/',
-                'http://null/user/reset-password/token/',
-            ],
-            $this->getRequestedUrls()
-        );
-
-        /* @var EntityEnclosingRequest $lastRequest */
-        $lastRequest = $this->getLastRequest();
-
-        $this->assertEquals('http://null/user/reset-password/token/', $lastRequest->getUrl());
-        $this->assertEquals(
-            [
-                'password' => 'password%40value',
-            ],
-            $lastRequest->getPostFields()->toArray()
-        );
-    }
-
     /**
      * @dataProvider authenticateDataProvider
      *
@@ -156,11 +150,11 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testAuthenticate(array $httpFixtures, $expectedAuthenticateReturnValue)
     {
-        $this->userService->setUser(SystemUserService::getPublicUser());
-        $this->setHttpFixtures($httpFixtures);
+        $this->coreApplicationHttpClient->setUser($this->user);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->assertEquals($expectedAuthenticateReturnValue, $this->userService->authenticate());
-        $this->assertEquals('http://null/user/public/authenticate/', $this->getLastRequest()->getUrl());
+        $this->assertEquals('http://null/user/user@example.com/authenticate/', $this->getLastRequest()->getUrl());
     }
 
     /**
@@ -171,13 +165,19 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         return [
             'authenticated' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 200'),
+                    HttpResponseFactory::createSuccessResponse(),
                 ],
                 'expectedAuthenticateReturnValue' => true,
             ],
-            'not authenticated' => [
+            'not authenticated; not found' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 404'),
+                    HttpResponseFactory::createNotFoundResponse(),
+                ],
+                'expectedAuthenticateReturnValue' => false,
+            ],
+            'not authenticated; invalid credentials' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createForbiddenResponse(),
                 ],
                 'expectedAuthenticateReturnValue' => false,
             ],
@@ -188,23 +188,31 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      * @dataProvider createFailureDataProvider
      *
      * @param array $httpFixtures
-     * @param int $expectedCreateReturnValue
+     * @param string $expectedException
+     * @param string $expectedExceptionMessage
+     * @param int $expectedExceptionCode
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws UserAlreadyExistsException
      */
     public function testCreateFailure(
         array $httpFixtures,
-        $expectedCreateReturnValue
+        $expectedException,
+        $expectedExceptionMessage,
+        $expectedExceptionCode
     ) {
-        $this->setHttpFixtures($httpFixtures);
+        $this->coreApplicationHttpClient->setUser($this->user);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $createReturnValue = $this->userService->create(
+        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+
+        $this->userService->create(
             'user@example.com',
             'password',
             'basic'
         );
-
-        $this->assertEquals($expectedCreateReturnValue, $createReturnValue);
     }
 
     /**
@@ -215,42 +223,35 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         return [
             'user already exists' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 302'),
+                    HttpResponseFactory::createRedirectResponse(),
                 ],
-                'expectedCreateResponse' => 302,
+                'expectedException' => UserAlreadyExistsException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
             ],
             'maintenance mode' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 503'),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
                 ],
-                'expectedCreateResponse' => 503,
+                'expectedException' => CoreApplicationReadOnlyException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
             ],
             'CURL 6' => [
                 'httpFixtures' => [
-                    CurlExceptionFactory::create('Unable to resolve host', 6)
+                    CurlExceptionFactory::create('Unable to resolve host', 6),
+                    CurlExceptionFactory::create('Unable to resolve host', 6),
+                    CurlExceptionFactory::create('Unable to resolve host', 6),
+                    CurlExceptionFactory::create('Unable to resolve host', 6),
                 ],
-                'expectedCreateResponse' => 6,
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Unable to resolve host',
+                'expectedExceptionCode' => 6,
             ],
         ];
-    }
-
-    public function testCreateInvalidAdminCredentials()
-    {
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 401'),
-        ]);
-
-        $this->setExpectedException(
-            CoreApplicationAdminRequestException::class,
-            'Invalid admin user credentials',
-            401
-        );
-
-        $this->userService->create(
-            'user@example.com',
-            'password',
-            'basic'
-        );
     }
 
     /**
@@ -262,7 +263,10 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      * @param string|null $coupon
      * @param array $expectedPostFields
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws UserAlreadyExistsException
      */
     public function testCreateSuccess(
         $email,
@@ -271,18 +275,16 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $coupon,
         array $expectedPostFields
     ) {
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $createReturnValue = $this->userService->create(
+        $this->userService->create(
             $email,
             $password,
             $plan,
             $coupon
         );
-
-        $this->assertEquals(true, $createReturnValue);
 
         /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
@@ -330,19 +332,25 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      * @dataProvider activateFailureDataProvider
      *
      * @param array $httpFixtures
-     * @param int|bool $expectedActivateReturnValue
+     * @param string $expectedException
+     * @param string $expectedExceptionMessage
+     * @param int $expectedExceptionCode
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
      */
     public function testActivateFailure(
         array $httpFixtures,
-        $expectedActivateReturnValue
+        $expectedException,
+        $expectedExceptionMessage,
+        $expectedExceptionCode
     ) {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $createReturnValue = $this->userService->activate('token-value');
+        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
 
-        $this->assertEquals($expectedActivateReturnValue, $createReturnValue);
+        $this->userService->activate('token-value');
     }
 
     /**
@@ -353,49 +361,58 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         return [
             'invalid token' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 400'),
+                    HttpResponseFactory::createBadRequestResponse(),
+                    HttpResponseFactory::createBadRequestResponse(),
+                    HttpResponseFactory::createBadRequestResponse(),
+                    HttpResponseFactory::createBadRequestResponse(),
                 ],
-                'expectedActivateReturnValue' => false,
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Bad Request',
+                'expectedExceptionCode' => 400,
+            ],
+            'invalid admin credentials' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createForbiddenResponse(),
+                    HttpResponseFactory::createForbiddenResponse(),
+                    HttpResponseFactory::createForbiddenResponse(),
+                    HttpResponseFactory::createForbiddenResponse(),
+                ],
+                'expectedException' => InvalidAdminCredentialsException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
             ],
             'maintenance mode' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 503'),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
                 ],
-                'expectedActivateReturnValue' => 503,
+                'expectedException' => CoreApplicationReadOnlyException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
             ],
             'CURL 6' => [
                 'httpFixtures' => [
-                    CurlExceptionFactory::create('Unable to resolve host', 6)
+                    CurlExceptionFactory::create('Unable to resolve host', 6),
+                    CurlExceptionFactory::create('Unable to resolve host', 6),
+                    CurlExceptionFactory::create('Unable to resolve host', 6),
+                    CurlExceptionFactory::create('Unable to resolve host', 6),
                 ],
-                'expectedActivateReturnValue' => 6,
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Unable to resolve host',
+                'expectedExceptionCode' => 6,
             ],
         ];
     }
 
-    public function testActivateInvalidAdminCredentials()
-    {
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 401'),
-        ]);
-
-        $this->setExpectedException(
-            CoreApplicationAdminRequestException::class,
-            'Invalid admin user credentials',
-            401
-        );
-
-        $this->userService->activate('token-value');
-    }
-
     public function testActivateSuccess()
     {
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $activateReturnValue = $this->userService->activate('token-value');
-
-        $this->assertEquals(true, $activateReturnValue);
+        $this->userService->activate('token-value');
 
         /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
@@ -404,84 +421,115 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
     }
 
     /**
-     * @dataProvider activateAndAcceptDataProvider
+     * @dataProvider activateAndAcceptFailureDataProvider
      *
      * @param array $httpFixtures
-     * @param int|bool $expectedReturnValue
-     * @param bool $expectedRequestIsMade
+     * @param string $expectedException
+     * @param string $expectedExceptionMessage
+     * @param int $expectedExceptionCode
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
      */
-    public function testActivateAndAccept(
+    public function testActivateAndAcceptFailure(
         array $httpFixtures,
-        $expectedReturnValue,
-        $expectedRequestIsMade
+        $expectedException,
+        $expectedExceptionMessage,
+        $expectedExceptionCode
     ) {
-        $this->setHttpFixtures($httpFixtures);
+        $this->coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
+
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $invite = new Invite([
             'token' => 'token-value',
         ]);
 
-        $returnValue = $this->userService->activateAndAccept($invite, 'password-value');
+        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
 
-        $this->assertEquals($expectedReturnValue, $returnValue);
-
-        /* @var EntityEnclosingRequest $lastRequest */
-        $lastRequest = $this->getLastRequest();
-
-        if (!$expectedRequestIsMade) {
-            $this->assertNull($lastRequest);
-        } else {
-            $this->assertEquals('http://null/team/invite/activate/accept/', $lastRequest->getUrl());
-            $this->assertEquals(
-                [
-                    'token' => 'token-value',
-                    'password' => 'password-value',
-                ],
-                $lastRequest->getPostFields()->toArray()
-            );
-        }
+        $this->userService->activateAndAccept($invite, 'password-value');
     }
 
     /**
      * @return array
      */
-    public function activateAndAcceptDataProvider()
+    public function activateAndAcceptFailureDataProvider()
     {
         return [
-            'HTTP 400' => [
+            'no invite for token' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 400'),
+                    HttpResponseFactory::createBadRequestResponse([
+                        'X-TeamInviteActivateAndAccept-Error-Code' => 1,
+                        'X-TeamInviteActivateAndAccept-Error-Message' => 'No invite for token',
+                    ]),
                 ],
-                'expectedReturnValue' => 400,
-                'expectedRequestIsMade' => true,
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Bad Request',
+                'expectedExceptionCode' => 400,
             ],
-            'CURL 28' => [
+            'maintenance mode' => [
                 'httpFixtures' => [
-                    CurlExceptionFactory::create('Operation timed out', 28),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
                 ],
-                'expectedReturnValue' => 28,
-                'expectedRequestIsMade' => false,
+                'expectedException' => CoreApplicationReadOnlyException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
             ],
-            'Success' => [
+            'CURL 6' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 200'),
+                    CurlExceptionFactory::create('Unable to resolve host', 6),
+                    CurlExceptionFactory::create('Unable to resolve host', 6),
+                    CurlExceptionFactory::create('Unable to resolve host', 6),
+                    CurlExceptionFactory::create('Unable to resolve host', 6),
                 ],
-                'expectedReturnValue' => true,
-                'expectedRequestIsMade' => true,
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Unable to resolve host',
+                'expectedExceptionCode' => 6,
             ],
         ];
     }
 
+    public function testActivateAndAcceptSuccess()
+    {
+        $this->coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $invite = new Invite([
+            'token' => 'token-value',
+        ]);
+
+        $this->userService->activateAndAccept($invite, 'password-value');
+
+        /* @var EntityEnclosingRequest $lastRequest */
+        $lastRequest = $this->getLastRequest();
+
+        $this->assertEquals('http://null/team/invite/activate/accept/', $lastRequest->getUrl());
+        $this->assertEquals(
+            [
+                'token' => 'token-value',
+                'password' => 'password-value',
+            ],
+            $lastRequest->getPostFields()->toArray()
+        );
+    }
+
     public function testExistsInvalidAdminCredentials()
     {
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 401'),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createForbiddenResponse(),
         ]);
 
         $this->setExpectedException(
-            CoreApplicationAdminRequestException::class,
-            'Invalid admin user credentials',
-            401
+            InvalidAdminCredentialsException::class,
+            '',
+            0
         );
 
         $this->userService->exists('user@example.com');
@@ -496,7 +544,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      * @param int|bool $expectedReturnValue
      * @param string $expectedRequestUrl
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws InvalidAdminCredentialsException
      */
     public function testExistsSuccess(
         array $httpFixtures,
@@ -505,15 +553,14 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $expectedReturnValue,
         $expectedRequestUrl
     ) {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($user)) {
-            $this->userService->setUser($user);
+            $this->coreApplicationHttpClient->setUser($user);
         }
 
-        $returnValue = $this->userService->exists($email);
-
-        $this->assertEquals($expectedReturnValue, $returnValue);
+        $this->assertEquals($expectedReturnValue, $this->userService->exists($email));
+        $this->assertEquals($expectedReturnValue, $this->userService->exists($email));
 
         /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
@@ -529,7 +576,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         return [
             'not exists' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 404'),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'user' => null,
                 'userEmail' => 'user@example.com',
@@ -538,7 +585,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             ],
             'exists' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 200'),
+                    HttpResponseFactory::createSuccessResponse(),
                 ],
                 'user' => null,
                 'userEmail' => 'user@example.com',
@@ -547,7 +594,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             ],
             'exists; user is set' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 200'),
+                    HttpResponseFactory::createSuccessResponse(),
                 ],
                 'user' => new User('user-foo@example.com'),
                 'userEmail' => null,
@@ -564,11 +611,11 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      * @param bool $expectedIsEnabled
      * @param string$expectedLastRequestUrl
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws InvalidAdminCredentialsException
      */
     public function testIsEnabled(array $httpFixtures, $expectedIsEnabled, $expectedLastRequestUrl)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->assertEquals($expectedIsEnabled, $this->userService->isEnabled('user@example.com'));
         $this->assertEquals($expectedLastRequestUrl, $this->getLastRequest()->getUrl());
@@ -582,23 +629,29 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         return [
             'not enabled; does not exist' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 404'),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'expectedIsEnabled' => false,
                 'expectedLastRequestUrl' => 'http://null/user/user@example.com/exists/',
             ],
             'not enabled' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 200'),
-                    Response::fromMessage('HTTP/1.1 404'),
+                    HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'expectedIsEnabled' => false,
                 'expectedLastRequestUrl' => 'http://null/user/user@example.com/enabled/',
             ],
             'enabled' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 200'),
-                    Response::fromMessage('HTTP/1.1 200'),
+                    HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createSuccessResponse(),
                 ],
                 'expectedIsEnabled' => true,
                 'expectedLastRequestUrl' => 'http://null/user/user@example.com/enabled/',
@@ -606,11 +659,11 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         ];
     }
 
-    public function testGetConfirmationToken()
+    public function testGetConfirmationTokenSuccess()
     {
         $token = 'token-value';
 
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse($token),
         ]);
 
@@ -628,7 +681,9 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      * @param string $expectedExceptionMessage
      * @param int $expectedExceptionCode
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
+     * @throws InvalidContentTypeException
      */
     public function testGetSummaryFailure(
         array $httpFixtures,
@@ -636,7 +691,9 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setHttpFixtures($httpFixtures);
+        $this->coreApplicationHttpClient->setUser($this->user);
+
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
 
@@ -651,19 +708,25 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         return [
             'HTTP 500' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 500'),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
-                'expectedException' => WebResourceException::class,
+                'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Internal Server Error',
                 'expectedExceptionCode' => 500,
             ],
             'CURL 28' => [
                 'httpFixtures' => [
                     CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
                 ],
-                'expectedException' => CurlException::class,
-                'expectedExceptionMessage' => '',
-                'expectedExceptionCode' => 0,
+                'expectedException' => CoreApplicationRequestException::class,
+                'expectedExceptionMessage' => 'Operation timed out',
+                'expectedExceptionCode' => 28,
             ],
         ];
     }
@@ -674,14 +737,15 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      * @param User|null $user
      * @param string $expectedRequestUrl
      *
-     * @throws WebResourceException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testGetSummarySuccess($user, $expectedRequestUrl)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
-        $this->userService->setUser($user);
+        $this->coreApplicationHttpClient->setUser($user);
 
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
                 'email' => 'basic-not-in-team@example.com',
                 'user_plan' => [
@@ -705,7 +769,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             ]),
         ]);
 
-        $userSummary = $userService->getSummary();
+        $userSummary = $this->userService->getSummary();
 
         $this->assertInstanceOf(User\Summary::class, $userSummary);
         $this->assertEquals($expectedRequestUrl, $this->getLastRequest()->getUrl());

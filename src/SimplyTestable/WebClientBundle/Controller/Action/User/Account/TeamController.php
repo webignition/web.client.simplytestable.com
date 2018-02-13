@@ -2,9 +2,9 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServiceException;
@@ -96,14 +96,15 @@ class TeamController extends Controller implements RequiresPrivateUser
 
     /**
      * @param Request $request
+     *
      * @return RedirectResponse
      *
-     * @throws CoreApplicationAdminRequestException
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      * @throws MailConfigurationException
+     * @throws InvalidAdminCredentialsException
      */
     public function inviteMemberAction(Request $request)
     {
@@ -340,8 +341,8 @@ class TeamController extends Controller implements RequiresPrivateUser
      *
      * @return RedirectResponse
      *
-     * @throws CoreApplicationAdminRequestException
      * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      * @throws MailConfigurationException

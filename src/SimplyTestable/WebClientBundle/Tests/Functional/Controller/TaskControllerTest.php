@@ -126,11 +126,8 @@ class TaskControllerTest extends AbstractBaseTestCase
      */
     public function testInvalidOwnerRequest($method, $routeName, array $routeParameters)
     {
-        $this->setHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 

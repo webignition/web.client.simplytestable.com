@@ -3,8 +3,12 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User\Account;
 
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\PasswordChangeController;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
@@ -39,7 +43,7 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
 
     public function testRequestActionInvalidUserPostRequest()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
@@ -63,7 +67,7 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
 
         $userManager->setUser(SystemUserService::getPublicUser());
 
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
@@ -95,7 +99,7 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
             new Cookie(UserManager::USER_COOKIE_KEY, $userSerializerService->serializeToString($user))
         );
 
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse('token-value'),
             HttpResponseFactory::createSuccessResponse(),
@@ -127,9 +131,12 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
      * @param array $expectedFlashBagValues
      * @param string $expectedUserPassword
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
-    public function testRequestAction(
+    public function testRequestActionSuccess(
         array $httpFixtures,
         Request $request,
         array $expectedFlashBagValues,
@@ -137,13 +144,13 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
     ) {
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $user = new User(self::USER_EMAIL, self::USER_CURRENT_PASSWORD);
         $userManager->setUser($user);
+        $coreApplicationHttpClient->setUser($user);
 
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
-        }
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         /* @var RedirectResponse $response */
         $response = $this->passwordChangeController->requestAction($request);
@@ -198,6 +205,9 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse('token-value'),
                     HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
                 ],
                 'request' => new Request([], [
                     'current-password' => self::USER_CURRENT_PASSWORD,
@@ -211,7 +221,10 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
             'failed; core application HTTP 404' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse('token-value'),
-                    HttpResponseFactory::createNotFoundResponse()
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'request' => new Request([], [
                     'current-password' => self::USER_CURRENT_PASSWORD,
@@ -225,6 +238,9 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
             'failed; CURL 28' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse('token-value'),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
                     CurlExceptionFactory::create('Operation timed out', 28),
                 ],
                 'request' => new Request([], [

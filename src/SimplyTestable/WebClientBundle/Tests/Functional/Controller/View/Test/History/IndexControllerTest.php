@@ -48,7 +48,7 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionInvalidUserGetRequest()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
@@ -68,11 +68,8 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionPublicUserGetRequest()
     {
-        $this->setHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse([
                 'max_results' => 90,
                 'limit' => IndexController::TEST_LIST_LIMIT,
@@ -114,7 +111,6 @@ class IndexControllerTest extends AbstractBaseTestCase
         $expectedRequestUrls
     ) {
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
         $userManager = $this->container->get(UserManager::class);
 
         $user = SystemUserService::getPublicUser();
@@ -123,10 +119,7 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $httpHistoryPlugin = new HistoryPlugin();
 
-        $httpClient = $httpClientService->get();
         $coreApplicationHttpClientHttpClient = $coreApplicationHttpClient->getHttpClient();
-
-        $httpClient->addSubscriber($httpHistoryPlugin);
         $coreApplicationHttpClientHttpClient->addSubscriber($httpHistoryPlugin);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);

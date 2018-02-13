@@ -2,15 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\User;
 
-use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\Mock\MockPlugin;
 use SimplyTestable\WebClientBundle\Controller\UserController;
-use SimplyTestable\WebClientBundle\Services\CouponService;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
-use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 
 class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
 {
@@ -20,9 +16,9 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
 
     public function testSignUpConfirmSubmitActionPostRequest()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
-            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n\"confirmation-token-here\""),
+            HttpResponseFactory::createJsonResponse('confirmation-token-here'),
         ]);
 
         $router = $this->container->get('router');
@@ -54,6 +50,10 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
      * @param $email
      * @param string $expectedRedirectLocation
      * @param array $expectedFlashBagValues
+     *
+     * @throws InvalidAdminCredentialsException
+     * @throws \CredisException
+     * @throws \Exception
      */
     public function testSignUpConfirmSubmitActionFailure(
         array $httpFixtures,
@@ -64,7 +64,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
     ) {
         $session = $this->container->get('session');
 
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->userController->setContainer($this->container);
 
@@ -80,14 +80,12 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
      */
     public function signUpConfirmSubmitActionFailureDataProvider()
     {
-        /**
-        self::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_KEY,
-        self::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_MESSAGE_TOKEN_BLANK
-         */
-
         return [
             'invalid user' => [
                 'httpFixtures' => [
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'request' => new Request(),
@@ -118,6 +116,9 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
                 ],
                 'request' => new Request([], [
                     'token' => self::TOKEN,
@@ -133,6 +134,9 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
             'failed, invalid token' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createBadRequestResponse(),
+                    HttpResponseFactory::createBadRequestResponse(),
+                    HttpResponseFactory::createBadRequestResponse(),
                     HttpResponseFactory::createBadRequestResponse(),
                 ],
                 'request' => new Request([], [
@@ -154,12 +158,15 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
      *
      * @param array $requestCookies
      * @param string $expectedRedirectUrl
+     *
+     * @throws \CredisException
+     * @throws \Exception
      */
     public function testSignUpConfirmSubmitActionSuccess(array $requestCookies, $expectedRedirectUrl)
     {
         $session = $this->container->get('session');
 
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
         ]);

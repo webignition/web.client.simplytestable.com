@@ -22,7 +22,7 @@ class WebsiteListController extends BaseViewController implements RequiresValidU
 
         try {
             $finishedWebsites = $remoteTestService->getFinishedWebsites();
-        } catch (CoreApplicationRequestException $coreApplicationAdminRequestException) {
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             // Don't care
         } catch (InvalidContentTypeException $invalidContentTypeException) {
             // Don't care

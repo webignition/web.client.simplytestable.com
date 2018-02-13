@@ -16,7 +16,6 @@ class OnKernelRequestTest extends AbstractOnKernelRequestTest
      * @param string $requestType
      *
      * @throws \Exception
-     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
      */
     public function testOnKernelRequest($requestType)
     {

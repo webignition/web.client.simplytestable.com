@@ -28,10 +28,6 @@ abstract class AbstractCoreApplicationServiceTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->httpHistoryPlugin = new HistoryPlugin();
-
-        $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
-        $httpClientService->get()->addSubscriber($this->httpHistoryPlugin);
-
         $this->coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $httpClient = $this->coreApplicationHttpClient->getHttpClient();

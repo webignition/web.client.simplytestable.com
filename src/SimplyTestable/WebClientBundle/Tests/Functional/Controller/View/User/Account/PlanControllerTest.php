@@ -6,7 +6,6 @@ use SimplyTestable\WebClientBundle\Controller\View\User\Account\PlanController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Plan;
@@ -81,7 +80,7 @@ class PlanControllerTest extends AbstractBaseTestCase
      */
     public function testIndexActionInvalidGetRequest(array $httpFixtures, $expectedRedirectUrl)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->client->request(
             'GET',
@@ -102,13 +101,13 @@ class PlanControllerTest extends AbstractBaseTestCase
         return [
             'invalid user' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::create(404),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'expectedRedirectUrl' => 'http://localhost/signout/',
             ],
             'public user' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::create(200),
+                    HttpResponseFactory::createSuccessResponse(),
                 ],
                 'expectedRedirectUrl' =>
                     'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X3BsYW5faW5kZXgifQ%3D%3D'
@@ -121,8 +120,8 @@ class PlanControllerTest extends AbstractBaseTestCase
         $user = new User(self::USER_EMAIL);
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(array_merge($this->userData, [
                 'team_summary' => [
                     'in' => false,
@@ -150,11 +149,13 @@ class PlanControllerTest extends AbstractBaseTestCase
     public function testIndexActionCustomPlan()
     {
         $userManager = $this->container->get(UserManager::class);
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $user = new User(self::USER_EMAIL);
         $userManager->setUser($user);
+        $coreApplicationHttpClient->setUser($user);
 
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse(array_merge($this->userData, [
                 'user_plan' => [
                     'plan' => [
@@ -182,7 +183,6 @@ class PlanControllerTest extends AbstractBaseTestCase
      * @param array $flashBagValues
      * @param EngineInterface $templatingEngine
      *
-     * @throws WebResourceException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
@@ -201,11 +201,7 @@ class PlanControllerTest extends AbstractBaseTestCase
         $userManager->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
-        $this->setHttpFixtures([$httpFixtures[0]]);
-
-        if (count($httpFixtures) > 1) {
-            $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
-        }
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($flashBagValues)) {
             foreach ($flashBagValues as $key => $value) {

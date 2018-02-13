@@ -2,16 +2,18 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User\ResetPassword;
 
-use Guzzle\Http\Message\Response;
-use Mockery\Mock;
-use SimplyTestable\WebClientBundle\Controller\Action\SignUp\User\ConfirmController;
 use SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword\IndexController;
-use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockPostmarkMessageFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use Symfony\Component\HttpFoundation\Request;
+use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 
 class IndexControllerTest extends AbstractBaseTestCase
 {
@@ -48,9 +50,9 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
-            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n\"confirmation-token-here\""),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse('confirmation-token-here'),
         ]);
 
         $router = $this->container->get('router');
@@ -80,9 +82,11 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param array $expectedFlashBagValues
      * @param string $expectedRedirectUrl
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
-     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
+     * @throws MailConfigurationException
+     * @throws PostmarkResponseException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      */
     public function testRequestActionBadRequest(Request $request, array $expectedFlashBagValues, $expectedRedirectUrl)
     {
@@ -126,9 +130,11 @@ class IndexControllerTest extends AbstractBaseTestCase
     }
 
     /**
-     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
-     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws MailConfigurationException
+     * @throws PostmarkResponseException
      */
     public function testRequestActionUserDoesNotExist()
     {
@@ -138,8 +144,8 @@ class IndexControllerTest extends AbstractBaseTestCase
             'email' => self::EMAIL,
         ]);
 
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 404'),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createNotFoundResponse(),
         ]);
 
         /* @var RedirectResponse $response */
@@ -158,9 +164,11 @@ class IndexControllerTest extends AbstractBaseTestCase
     }
 
     /**
-     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
-     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws MailConfigurationException
+     * @throws PostmarkResponseException
      */
     public function testRequestActionInvalidAdminCredentials()
     {
@@ -171,8 +179,8 @@ class IndexControllerTest extends AbstractBaseTestCase
             'email' => self::EMAIL,
         ]);
 
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 401'),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createForbiddenResponse(),
         ]);
 
         $mailService->setPostmarkMessage(MockPostmarkMessageFactory::createMockPostmarkMessage(
@@ -206,9 +214,11 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param PostmarkMessage $postmarkMessage
      * @param array $expectedFlashBagValues
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
-     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws MailConfigurationException
+     * @throws PostmarkResponseException
      */
     public function testRequestActionSendConfirmationTokenFailure(
         PostmarkMessage $postmarkMessage,
@@ -218,9 +228,9 @@ class IndexControllerTest extends AbstractBaseTestCase
         $mailService = $this->container->get('simplytestable.services.mail.service');
         $postmarkSender = $this->container->get('simplytestable.services.postmark.sender');
 
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
-            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n\"confirmation-token-here\""),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse('confirmation-token-here'),
         ]);
 
         $mailService->setPostmarkMessage($postmarkMessage);
@@ -311,9 +321,9 @@ class IndexControllerTest extends AbstractBaseTestCase
         $mailService = $this->container->get('simplytestable.services.mail.service');
         $postmarkSender = $this->container->get('simplytestable.services.postmark.sender');
 
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
-            Response::fromMessage("HTTP/1.1 200\nContent-type:application/json\n\n\"confirmation-token-here\""),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse('confirmation-token-here'),
         ]);
 
         $mailService->setPostmarkMessage(MockPostmarkMessageFactory::createMockResetPasswordPostmarkMessage(

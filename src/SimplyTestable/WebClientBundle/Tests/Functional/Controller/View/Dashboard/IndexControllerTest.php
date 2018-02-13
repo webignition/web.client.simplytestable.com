@@ -40,8 +40,8 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionInvalidUserGetRequest()
     {
-        $this->setHttpFixtures([
-            HttpResponseFactory::create(404),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createNotFoundResponse(),
         ]);
 
         $router = $this->container->get('router');
@@ -60,8 +60,8 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionPublicUserGetRequest()
     {
-        $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $router = $this->container->get('router');
@@ -83,8 +83,8 @@ class IndexControllerTest extends AbstractBaseTestCase
         $user = new User(self::USER_EMAIL);
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $router = $this->container->get('router');
@@ -127,9 +127,7 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $userManager->setUser($user);
 
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
-        }
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($flashBagValues)) {
             foreach ($flashBagValues as $key => $value) {

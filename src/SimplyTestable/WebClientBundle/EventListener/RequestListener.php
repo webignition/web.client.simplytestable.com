@@ -93,7 +93,6 @@ class RequestListener
 
         $user = $userManager->getUser();
         $coreApplicationHttpClient->setUser($user);
-        $userService->setUser($user);
 
         $requiresValidUserController =
             $controller instanceof RequiresValidUserController || $controller instanceof RequiresPrivateUserController;

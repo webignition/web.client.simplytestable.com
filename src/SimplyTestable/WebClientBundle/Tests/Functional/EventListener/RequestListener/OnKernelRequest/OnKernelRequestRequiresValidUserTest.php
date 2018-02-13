@@ -20,11 +20,10 @@ class OnKernelRequestRequiresValidUserTest extends AbstractOnKernelRequestTest
      * @param string null $expectedRedirectUrl
      *
      * @throws \Exception
-     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
      */
     public function testOnKernelRequest(array $httpFixtures, $expectedIsRedirectResponse, $expectedRedirectUrl = null)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $request = new Request();
 

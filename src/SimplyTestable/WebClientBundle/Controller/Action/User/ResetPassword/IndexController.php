@@ -3,12 +3,15 @@
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword;
 
 use Egulias\EmailValidator\EmailValidator;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 
 class IndexController extends Controller
 {
@@ -31,9 +34,11 @@ class IndexController extends Controller
      *
      * @return RedirectResponse
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws InvalidAdminCredentialsException
      * @throws PostmarkResponseException
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws MailConfigurationException
      */
     public function requestAction(Request $request)
     {
@@ -84,7 +89,7 @@ class IndexController extends Controller
 
                 return $redirectResponse;
             }
-        } catch (CoreApplicationAdminRequestException $coreApplicationAdminRequestException) {
+        } catch (InvalidAdminCredentialsException $invalidAdminCredentialsException) {
             $session->getFlashBag()->set(
                 self::FLASH_BAG_REQUEST_ERROR_KEY,
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_INVALID_ADMIN_CREDENTIALS
@@ -135,7 +140,7 @@ class IndexController extends Controller
      * @param string $token
      *
      * @throws PostmarkResponseException
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws MailConfigurationException
      */
     private function sendPasswordResetConfirmationToken($email, $token)
     {
@@ -170,7 +175,7 @@ class IndexController extends Controller
 
     /**
      * @throws PostmarkResponseException
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws MailConfigurationException
      */
     private function sendInvalidAdminCredentialsNotification()
     {

@@ -30,11 +30,8 @@ class TeamControllerRemoveInviteActionTest extends AbstractTeamControllerTest
         $router = $this->container->get('router');
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
         ]);
 

@@ -42,7 +42,7 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionInvalidUserGetRequest()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
@@ -65,11 +65,8 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionInvalidOwnerGetRequest()
     {
-        $this->setHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
@@ -107,11 +104,8 @@ class IndexControllerTest extends AbstractBaseTestCase
     ) {
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($remoteTestData),
         ]);
 

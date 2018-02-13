@@ -55,7 +55,7 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionInvalidUserGetRequest()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
@@ -78,11 +78,8 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionInvalidOwnerGetRequest()
     {
-        $this->setHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
@@ -117,11 +114,8 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionPublicUserGetRequest()
     {
-        $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 

@@ -3,6 +3,12 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\User;
 
 use SimplyTestable\WebClientBundle\Controller\UserController;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -17,7 +23,7 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
 
     public function testResetPasswordChooseSubmitActionPostRequest()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::TOKEN),
             HttpResponseFactory::createSuccessResponse(),
@@ -51,6 +57,11 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
      * @param string $expectedRedirectLocation
      * @param array $expectedFlashBagValues
      * @param bool $expectedResponseHasUserCookie
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testResetPasswordChooseSubmitAction(
         array $httpFixtures,
@@ -59,9 +70,12 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
         array $expectedFlashBagValues,
         $expectedResponseHasUserCookie
     ) {
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
+
         $session = $this->container->get('session');
 
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->userController->setContainer($this->container);
 
@@ -183,6 +197,9 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createJsonResponse(self::TOKEN),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
                     HttpResponseFactory::createServiceUnavailableResponse(),
                 ],
                 'request' => new Request([], [

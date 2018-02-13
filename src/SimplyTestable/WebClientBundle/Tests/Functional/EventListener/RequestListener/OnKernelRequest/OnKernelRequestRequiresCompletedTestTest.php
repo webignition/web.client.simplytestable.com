@@ -33,9 +33,7 @@ class OnKernelRequestRequiresCompletedTestTest extends AbstractOnKernelRequestTe
         $expectedHasRedirectResponse,
         $expectedRedirectUrl = null
     ) {
-        $this->setHttpFixtures($httpFixtures);
-
-        $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);

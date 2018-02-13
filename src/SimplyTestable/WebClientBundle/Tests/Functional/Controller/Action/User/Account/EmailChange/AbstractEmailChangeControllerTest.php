@@ -2,8 +2,8 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User\Account\EmailChange;
 
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\EmailChangeController;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -40,8 +40,8 @@ abstract class AbstractEmailChangeControllerTest extends AbstractBaseTestCase
         $router = $this->container->get('router');
         $requestUrl = $router->generate($routeName);
 
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200'),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $this->client->request(

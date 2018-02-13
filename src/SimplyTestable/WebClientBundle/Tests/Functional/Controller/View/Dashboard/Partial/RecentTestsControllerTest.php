@@ -44,7 +44,7 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionInvalidUserGetRequest()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
@@ -64,11 +64,8 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionGetRequest()
     {
-        $this->setHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse([
                 'max_results' => 0,
                 'limit' => 100,

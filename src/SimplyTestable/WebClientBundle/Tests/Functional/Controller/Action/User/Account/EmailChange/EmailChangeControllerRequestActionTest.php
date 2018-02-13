@@ -67,15 +67,12 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
             ]
         ));
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
                 'token' => 'email-change-request-token',
                 'new_email' => self::NEW_EMAIL,
             ]),
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $user = new User('user@example.com', 'password');

@@ -35,7 +35,7 @@ class UserAccountCardControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionPublicUserPostRequest()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
@@ -61,8 +61,7 @@ class UserAccountCardControllerTest extends AbstractBaseTestCase
     {
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
-        $this->setHttpFixtures([$httpFixtures[0]]);
-        $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->client->getCookieJar()->set(new Cookie(
             UserManager::USER_COOKIE_KEY,

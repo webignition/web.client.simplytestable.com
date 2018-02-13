@@ -2,12 +2,16 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\SignUp\User;
 
-use SimplyTestable\WebClientBundle\Controller\BaseController;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 
 class ConfirmController extends Controller
 {
@@ -22,6 +26,17 @@ class ConfirmController extends Controller
     const FLASH_BAG_TOKEN_RESEND_SUCCESS_KEY = 'token_resend_confirmation';
     const FLASH_BAG_TOKEN_RESEND_SUCCESS_MESSAGE = 'sent';
 
+    /**
+     * @param string $email
+     *
+     * @return RedirectResponse
+     *
+     * @throws PostmarkResponseException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws MailConfigurationException
+     */
     public function resendAction($email)
     {
         $userService = $this->container->get('simplytestable.services.userservice');
@@ -43,7 +58,7 @@ class ConfirmController extends Controller
 
                 return $redirectResponse;
             }
-        } catch (CoreApplicationAdminRequestException $coreApplicationAdminRequestException) {
+        } catch (InvalidAdminCredentialsException $invalidAdminCredentialsException) {
             $session->getFlashBag()->set(
                 self::FLASH_BAG_TOKEN_RESEND_ERROR_KEY,
                 self::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_CORE_APP_ADMIN_CREDENTIALS_INVALID
@@ -93,7 +108,7 @@ class ConfirmController extends Controller
      * @param string $token
      *
      * @throws PostmarkResponseException
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws Exception
      */
     private function sendConfirmationToken(MailService $mailService, $email, $token)
     {
@@ -128,7 +143,7 @@ class ConfirmController extends Controller
      * @param MailService $mailService
      *
      * @throws PostmarkResponseException
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws Exception
      */
     private function sendInvalidAdminCredentialsNotification(MailService $mailService)
     {

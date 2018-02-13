@@ -3,6 +3,8 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\SignUp\Team;
 
 use SimplyTestable\WebClientBundle\Controller\Action\SignUp\Team\InviteController;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
@@ -40,9 +42,6 @@ class InviteControllerTest extends AbstractBaseTestCase
                 'user' => self::USERNAME,
                 'token' => self::TOKEN,
             ]),
-        ]);
-
-        $this->setHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
@@ -87,14 +86,11 @@ class InviteControllerTest extends AbstractBaseTestCase
         array $expectedFailureFlashBagValues
     ) {
         $session = $this->container->get('session');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
-        if (!empty($httpFixtures)) {
-            $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[0]]);
+        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
 
-            if (count($httpFixtures) > 1) {
-                $this->setHttpFixtures([$httpFixtures[1]]);
-            }
-        }
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         /* @var RedirectResponse $response */
         $response = $this->inviteController->acceptAction($request, $token);
@@ -136,6 +132,9 @@ class InviteControllerTest extends AbstractBaseTestCase
             'invalid token' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'token' => 'invalid token',
                 'request' => new Request(),
@@ -159,6 +158,9 @@ class InviteControllerTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     $inviteHttpResponse,
                     HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
                 'token' => self::TOKEN,
                 'request' => new Request([], [
@@ -175,6 +177,9 @@ class InviteControllerTest extends AbstractBaseTestCase
             'activateAndAccept failure; CURL 28' => [
                 'httpFixtures' => [
                     $inviteHttpResponse,
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
+                    CurlExceptionFactory::create('Operation timed out', 28),
                     CurlExceptionFactory::create('Operation timed out', 28),
                 ],
                 'token' => self::TOKEN,
@@ -207,6 +212,9 @@ class InviteControllerTest extends AbstractBaseTestCase
     ) {
         $session = $this->container->get('session');
         $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+
+        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
@@ -214,9 +222,6 @@ class InviteControllerTest extends AbstractBaseTestCase
                 'user' => self::USERNAME,
                 'token' => self::TOKEN,
             ]),
-        ]);
-
-        $this->setHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 

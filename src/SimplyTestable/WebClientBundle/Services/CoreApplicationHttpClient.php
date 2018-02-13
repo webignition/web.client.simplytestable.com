@@ -22,6 +22,7 @@ class CoreApplicationHttpClient
 
     const OPT_TREAT_404_AS_EMPTY = 'treat-404-as-empty';
     const OPT_EXPECT_JSON_RESPONSE = 'expect-json-response';
+    const OPT_DISABLE_REDIRECT = 'disable-redirect';
 
     const ROUTE_PARAMETER_USER_PLACEHOLDER = '{{ user }}';
 
@@ -251,6 +252,10 @@ class CoreApplicationHttpClient
      */
     private function getResponse(RequestInterface $request, array $options, User $user)
     {
+        if ($this->isOptionTrue(self::OPT_DISABLE_REDIRECT, $options)) {
+            $request->getParams()->set('redirect.disable', true);
+        }
+
         $this->addAuthorizationToRequest($request, $user);
 
         $response = $this->responseCache->get($request);

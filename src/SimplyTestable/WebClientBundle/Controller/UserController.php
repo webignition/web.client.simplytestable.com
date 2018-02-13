@@ -2,7 +2,13 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\UserAlreadyExistsException;
+use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -75,9 +81,11 @@ class UserController extends Controller
      * @param Request $request
      * @return RedirectResponse
      *
-     * @throws PostmarkResponseException
-     * @throws CoreApplicationAdminRequestException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      * @throws MailConfigurationException
+     * @throws PostmarkResponseException
      */
     public function signInSubmitAction(Request $request)
     {
@@ -85,6 +93,7 @@ class UserController extends Controller
         $userService = $this->container->get('simplytestable.services.userservice');
         $router = $this->container->get('router');
         $userManager = $this->container->get(UserManager::class);
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $requestData = $request->request;
 
@@ -148,12 +157,10 @@ class UserController extends Controller
             ]);
         }
 
-        $userManager->setUser($user);
-        $userService->setUser($user);
+        $coreApplicationHttpClient->setUser($user);
 
         if (!$userService->authenticate()) {
             if (!$userService->exists()) {
-                $userManager->clearSessionUser();
                 $flashBag->set(
                     self::FLASH_BAG_SIGN_IN_ERROR_KEY,
                     self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_INVALID_USER
@@ -167,7 +174,6 @@ class UserController extends Controller
             }
 
             if ($userService->isEnabled()) {
-                $userManager->clearSessionUser();
                 $flashBag->set(
                     self::FLASH_BAG_SIGN_IN_ERROR_KEY,
                     self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_AUTHENTICATION_FAILURE
@@ -180,7 +186,6 @@ class UserController extends Controller
                 ]);
             }
 
-            $userManager->clearSessionUser();
             $token = $userService->getConfirmationToken($email);
 
             $this->sendConfirmationToken($email, $token);
@@ -198,7 +203,6 @@ class UserController extends Controller
         }
 
         if (!$userService->isEnabled()) {
-            $userManager->clearSessionUser();
             $token = $userService->getConfirmationToken($email);
             $this->sendConfirmationToken($email, $token);
 
@@ -213,6 +217,8 @@ class UserController extends Controller
                 'stay-signed-in' => $staySignedIn,
             ]);
         }
+
+        $userManager->setUser($user);
 
         $response = $this->createPostSignInRedirectResponse($router, $redirect);
 
@@ -259,7 +265,10 @@ class UserController extends Controller
      *
      * @return RedirectResponse
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function resetPasswordChooseSubmitAction(Request $request)
     {
@@ -314,9 +323,9 @@ class UserController extends Controller
             return $failureRedirectResponse;
         }
 
-        $passwordResetResponse = $userService->resetPassword($token, $password);
-
-        if (503 === $passwordResetResponse) {
+        try {
+            $userService->resetPassword($token, $password);
+        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
             $flashBag->set(
                 self::FLASH_BAG_RESET_PASSWORD_ERROR_KEY,
                 self::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_FAILED_READ_ONLY
@@ -342,7 +351,9 @@ class UserController extends Controller
      *
      * @return RedirectResponse
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      * @throws MailConfigurationException
      */
     public function signUpSubmitAction(Request $request)
@@ -404,10 +415,16 @@ class UserController extends Controller
             }
         }
 
-        $userService->setUser(SystemUserService::getPublicUser());
-        $createResponse = $userService->create($email, $password, $plan, $coupon);
+        try {
+            $userService->create($email, $password, $plan, $coupon);
+        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
+            $flashBag->set(
+                self::FLASH_BAG_SIGN_UP_ERROR_KEY,
+                self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_READ_ONLY
+            );
 
-        if (302 === $createResponse) {
+            return $failureRedirectResponse;
+        } catch (UserAlreadyExistsException $userAlreadyExistsException) {
             $flashBag->set(
                 self::FLASH_BAG_SIGN_UP_SUCCESS_KEY,
                 self::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS
@@ -416,18 +433,7 @@ class UserController extends Controller
             return $this->createSignUpRedirectResponse($router, [
                 'email' => $email,
             ]);
-        }
-
-        if (503 === $createResponse) {
-            $flashBag->set(
-                self::FLASH_BAG_SIGN_UP_ERROR_KEY,
-                self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_READ_ONLY
-            );
-
-            return $failureRedirectResponse;
-        }
-
-        if ($createResponse !== true) {
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             $flashBag->set(
                 self::FLASH_BAG_SIGN_UP_ERROR_KEY,
                 self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_UNKNOWN
@@ -517,7 +523,7 @@ class UserController extends Controller
      *
      * @return RedirectResponse
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws InvalidAdminCredentialsException
      * @throws \CredisException
      * @throws \Exception
      */
@@ -560,18 +566,16 @@ class UserController extends Controller
             return $failureRedirect;
         }
 
-        $activationResponse = $userService->activate($token);
-
-        if (503 === $activationResponse) {
+        try {
+            $userService->activate($token);
+        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
             $flashBag->set(
                 self::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_KEY,
                 self::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_MESSAGE_FAILED_READ_ONLY
             );
 
             return $failureRedirect;
-        }
-
-        if (!$activationResponse) {
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             $flashBag->set(
                 self::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_KEY,
                 self::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_MESSAGE_TOKEN_INVALID

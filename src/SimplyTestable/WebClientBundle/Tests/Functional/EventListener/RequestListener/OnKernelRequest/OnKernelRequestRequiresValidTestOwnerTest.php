@@ -29,8 +29,7 @@ class OnKernelRequestRequiresValidTestOwnerTest extends AbstractOnKernelRequestT
      */
     public function testOnKernelRequest(array $httpFixtures, array $testValues, $expectedHasResponse)
     {
-        $this->setHttpFixtures([$httpFixtures[0]]);
-        $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);
@@ -108,11 +107,8 @@ class OnKernelRequestRequiresValidTestOwnerTest extends AbstractOnKernelRequestT
 
     public function testOnKernelRequestCoreApplicationRequestException()
     {
-        $this->setHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 

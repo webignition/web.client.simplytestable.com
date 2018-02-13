@@ -2,15 +2,6 @@ imports:
     - { resource: services/commands.yml }
 
 services:
-  simplytestable.services.httpClientService:
-    class:  SimplyTestable\WebClientBundle\Services\HttpClientService
-
-  simplytestable.services.webresourceservice:
-    class:   SimplyTestable\WebClientBundle\Services\WebResourceService
-    arguments:
-        httpClientService: "@simplytestable.services.httpClientService"
-        contentTypeWebResourceMap: %content_type_web_resource_map%
-
   simplytestable.services.testservice:
     class:   SimplyTestable\WebClientBundle\Services\TestService
     arguments:
@@ -59,9 +50,8 @@ services:
   simplytestable.services.userservice:
     class:  SimplyTestable\WebClientBundle\Services\UserService
     arguments:
-        webResourceService: "@simplytestable.services.webresourceservice"
-        coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
-        systemUserService: '@SimplyTestable\WebClientBundle\Services\SystemUserService'
+        coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
+        jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
   simplytestable.services.useremailchangerequestservice:
     class:  SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService

@@ -138,4 +138,12 @@ class HttpResponseFactory
             'data' => $memberRecords,
         ]);
     }
+
+    /**
+     * @return Response
+     */
+    public static function createRedirectResponse()
+    {
+        return self::create(302);
+    }
 }

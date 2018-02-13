@@ -7,7 +7,6 @@ use SimplyTestable\WebClientBundle\Controller\View\User\Account\Team\IndexContro
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
@@ -77,7 +76,7 @@ class IndexControllerTest extends AbstractBaseTestCase
      */
     public function testIndexActionInvalidGetRequest(array $httpFixtures, $expectedRedirectUrl)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->client->request(
             'GET',
@@ -118,7 +117,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $user = new User(self::USER_EMAIL);
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(array_merge($this->userData, [
                 'team_summary' => [
@@ -150,7 +149,6 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param array $flashBagValues
      * @param EngineInterface $templatingEngine
      *
-     * @throws WebResourceException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
@@ -170,9 +168,6 @@ class IndexControllerTest extends AbstractBaseTestCase
         $userManager->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
-        $userFixture = array_shift($httpFixtures);
-
-        $this->setHttpFixtures([$userFixture]);
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($flashBagValues)) {
