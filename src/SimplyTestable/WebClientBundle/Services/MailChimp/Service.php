@@ -1,20 +1,15 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Services\MailChimp;
 
 use SimplyTestable\WebClientBundle\Exception\MailChimp\MemberExistsException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\ResourceNotFoundException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\UnknownException;
-use ZfrMailChimp\Client\MailChimpClient;
-use SimplyTestable\WebClientBundle\Services\MailChimp\Client as FooMailChimpClient;
+use SimplyTestable\WebClientBundle\Services\MailChimp\Client as MailChimpClient;
 
 class Service
 {
     const LIST_MEMBERS_MAX_LIMIT = 100;
-
-    /**
-     * @var MailChimpClient
-     */
-    private $client;
 
     /**
      *
@@ -23,32 +18,19 @@ class Service
     private $listRecipientsService;
 
     /**
-     * @var FooMailChimpClient
+     * @var MailChimpClient
      */
     private $fooClient;
 
     /**
-     * @param MailChimpClient $mailChimpClient
+     * @param MailChimpClient $fooMailChimpClient
      * @param ListRecipientsService $listRecipientsService
-     * @param Client $fooMailChimpClient
      */
-    public function __construct(
-        MailChimpClient $mailChimpClient,
-        ListRecipientsService $listRecipientsService,
-        FooMailChimpClient $fooMailChimpClient
-    ) {
-        $this->client = $mailChimpClient;
-        $this->listRecipientsService = $listRecipientsService;
+    public function __construct(MailChimpClient $fooMailChimpClient, ListRecipientsService $listRecipientsService)
+    {
         $this->fooClient = $fooMailChimpClient;
+        $this->listRecipientsService = $listRecipientsService;
     }
-
-    /**
-     *
-     * @param string $listName
-     * @param string $email
-     *
-     * @return bool
-     */
 
     /**
      * @param string $listName

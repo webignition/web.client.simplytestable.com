@@ -86,7 +86,7 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
      * @param bool $expectedAnnouncementsListRecipientsContains
      * @param bool $expectedUpdatesListRecipientsContains
      */
-    public function testUpdateActionFoo(
+    public function testUpdateAction(
         array $httpFixtures,
         User $user,
         array $existingListRecipients,
