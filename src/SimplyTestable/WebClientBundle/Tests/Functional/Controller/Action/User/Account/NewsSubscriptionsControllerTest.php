@@ -272,13 +272,13 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
                 'expectedAnnouncementsListRecipientsContains' => false,
                 'expectedUpdatesListRecipientsContains' => false,
             ],
-            'request to subscribe to both, not found and unknown exceptions, no existing recipients' => [
+            'request to subscribe to both, member exists and unknown exceptions, no existing recipients' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createBadRequestResponse([], json_encode([
-                        'title' => 'foo',
+                        'title' => ApiError::TITLE_MEMBER_EXISTS,
                         'detail' => 'foo'
                     ])),
-                    HttpResponseFactory::createBadRequestResponse([], json_encode([
+                    HttpResponseFactory::createNotFoundResponse([], json_encode([
                         'title' => ApiError::TITLE_RESOURCE_NOT_FOUND,
                         'detail' => 'The requested resource could not be found.'
                     ])),
@@ -295,6 +295,37 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
                 'expectedFlashBagValues' => [
                     'announcements' => 'subscribe-failed-unknown',
                     'updates' => 'subscribe-failed-unknown',
+                ],
+                'expectedAnnouncementsListRecipientsContains' => false,
+                'expectedUpdatesListRecipientsContains' => false,
+            ],
+            'request to unsubscribe from both, not found and unknown exception' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createNotFoundResponse([], json_encode([
+                        'title' => 'foo',
+                        'detail' => 'foo'
+                    ])),
+                    HttpResponseFactory::createNotFoundResponse([], json_encode([
+                        'title' => ApiError::TITLE_RESOURCE_NOT_FOUND,
+                        'detail' => 'The requested resource could not be found.'
+                    ])),
+                ],
+                'user' => new User('user@example.com', 'password'),
+                'existingListRecipients' => [
+                    'announcements' => [
+                        'user@example.com'
+                    ],
+                    'updates' => [
+                        'user@example.com'
+                    ],
+                ],
+                'request' => new Request([], [
+                    'announcements' => false,
+                    'updates' => false,
+                ]),
+                'expectedFlashBagValues' => [
+                    'announcements' => 'unsubscribed',
+                    'updates' => 'unsubscribed',
                 ],
                 'expectedAnnouncementsListRecipientsContains' => false,
                 'expectedUpdatesListRecipientsContains' => false,
