@@ -5,12 +5,6 @@ services:
   simplytestable.services.httpClientService:
     class:  SimplyTestable\WebClientBundle\Services\HttpClientService
 
-  simplytestable.services.webresourceservice:
-    class:   SimplyTestable\WebClientBundle\Services\WebResourceService
-    arguments:
-        httpClientService: "@simplytestable.services.httpClientService"
-        contentTypeWebResourceMap: %content_type_web_resource_map%
-
   simplytestable.services.testservice:
     class:   SimplyTestable\WebClientBundle\Services\TestService
     arguments:
