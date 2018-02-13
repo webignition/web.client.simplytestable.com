@@ -2,7 +2,6 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional;
 
-use Guzzle\Http\Exception\CurlException;
 use Guzzle\Plugin\Mock\MockPlugin;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use Symfony\Bundle\FrameworkBundle\Client;
@@ -30,31 +29,6 @@ abstract class AbstractBaseTestCase extends WebTestCase
         $this->container = $this->client->getKernel()->getContainer();
 
         $this->container->get('doctrine')->getConnection()->beginTransaction();
-    }
-
-    /**
-     * @param array $fixtures
-     */
-    protected function setHttpFixtures(array $fixtures)
-    {
-        $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
-        $client =  $httpClientService->get();
-
-        $plugin = new MockPlugin();
-
-        foreach ($fixtures as $fixture) {
-            if (empty($fixture)) {
-                continue;
-            }
-
-            if ($fixture instanceof CurlException) {
-                $plugin->addException($fixture);
-            } else {
-                $plugin->addResponse($fixture);
-            }
-        }
-
-        $client->addSubscriber($plugin);
     }
 
     /**

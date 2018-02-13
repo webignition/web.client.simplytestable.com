@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Controller\Action\User\Account\NewsSubscripti
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,8 +34,8 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
 
     public function testUpdateActionInvalidUserPostRequest()
     {
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 404 Not Found'),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createNotFoundResponse(),
         ]);
 
         $router = $this->container->get('router');
@@ -53,8 +54,8 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
 
     public function testUpdateActionNotPrivateUserPostRequest()
     {
-        $this->setHttpFixtures([
-            Response::fromMessage('HTTP/1.1 200 OK'),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $router = $this->container->get('router');

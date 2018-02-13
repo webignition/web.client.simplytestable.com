@@ -34,7 +34,7 @@ class OnKernelRequestRequiresPrivateUserTest extends AbstractOnKernelRequestTest
         $userManager = $this->container->get(UserManager::class);
         $userManager->setUser($user);
 
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $request = new Request();
 

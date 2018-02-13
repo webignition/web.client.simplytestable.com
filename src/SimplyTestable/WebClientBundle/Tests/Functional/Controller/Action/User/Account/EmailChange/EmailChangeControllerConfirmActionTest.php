@@ -36,13 +36,10 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
 
         $requestUrl = $router->generate(self::ROUTE_NAME);
 
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
                 'token' => 'token-value',
             ]),
-        ]);
-
-        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 

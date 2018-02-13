@@ -34,11 +34,8 @@ class EmailChangeControllerCancelActionTest extends AbstractEmailChangeControlle
 
         $requestUrl = $router->generate(self::ROUTE_NAME);
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
         ]);
 

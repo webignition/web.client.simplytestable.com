@@ -133,11 +133,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
      */
     public function testIndexActionInvalidGetRequest(array $httpFixtures, $expectedRedirectUrl)
     {
-        $this->setHttpFixtures([$httpFixtures[0]]);
-
-        if (count($httpFixtures) > 1) {
-            $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
-        }
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $router = $this->container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME_DEFAULT, [
@@ -205,11 +201,8 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
     {
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
@@ -239,11 +232,8 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionPublicUserGetRequest()
     {
-        $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([1,]),
             HttpResponseFactory::createJsonResponse([
