@@ -2,9 +2,6 @@ imports:
     - { resource: services/commands.yml }
 
 services:
-  simplytestable.services.httpClientService:
-    class:  SimplyTestable\WebClientBundle\Services\HttpClientService
-
   simplytestable.services.testservice:
     class:   SimplyTestable\WebClientBundle\Services\TestService
     arguments:

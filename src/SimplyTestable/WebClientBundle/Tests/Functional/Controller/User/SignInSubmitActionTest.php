@@ -210,14 +210,8 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
     public function testSignInSubmitActionResendConfirmationToken(array $httpFixtures)
     {
         $session = $this->container->get('session');
-//        $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
         $mailService = $this->container->get('simplytestable.services.mail.service');
         $postmarkSender = $this->container->get('simplytestable.services.postmark.sender');
-
-//        $httpClient = $httpClientService->get();
-
-//        $httpMockPlugin = new MockPlugin($httpFixtures);
-//        $httpClient->addSubscriber($httpMockPlugin);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 

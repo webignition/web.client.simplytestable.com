@@ -111,7 +111,6 @@ class IndexControllerTest extends AbstractBaseTestCase
         $expectedRequestUrls
     ) {
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
         $userManager = $this->container->get(UserManager::class);
 
         $user = SystemUserService::getPublicUser();
@@ -120,10 +119,7 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $httpHistoryPlugin = new HistoryPlugin();
 
-        $httpClient = $httpClientService->get();
         $coreApplicationHttpClientHttpClient = $coreApplicationHttpClient->getHttpClient();
-
-        $httpClient->addSubscriber($httpHistoryPlugin);
         $coreApplicationHttpClientHttpClient->addSubscriber($httpHistoryPlugin);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
