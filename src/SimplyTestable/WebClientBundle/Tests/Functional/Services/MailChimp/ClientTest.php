@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Exception\MailChimp\MemberExistsException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\ResourceNotFoundException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\UnknownException;
 use SimplyTestable\WebClientBundle\Model\MailChimp\ApiError;
+use SimplyTestable\WebClientBundle\Model\MailChimp\ListMembers;
 use SimplyTestable\WebClientBundle\Services\MailChimp\Client as MailChimpClient;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
@@ -32,19 +33,21 @@ class ClientTest extends AbstractBaseTestCase
      * @dataProvider getListMembersDataProvider
      *
      * @param array $httpFixtures
-     * @param array $expectedResponseData
+     * @param array $expectedMemberEmails
      */
-    public function testGetListMembers(array $httpFixtures, array $expectedResponseData)
+    public function testGetListMembers(array $httpFixtures, array $expectedMemberEmails)
     {
         $this->setHttpFixtures($httpFixtures);
 
-        $responseData = $this->mailChimpClient->getListMembers(
+        $listMembers = $this->mailChimpClient->getListMembers(
             $this->container->getParameter('mailchimp_updates_list_id'),
             100,
             0
         );
 
-        $this->assertEquals($expectedResponseData, $responseData);
+        $this->assertInstanceOf(ListMembers::class, $listMembers);
+
+        $this->assertEquals($expectedMemberEmails, $listMembers->getMemberEmails());
     }
 
     /**
@@ -63,7 +66,7 @@ class ClientTest extends AbstractBaseTestCase
                         ],
                     ]),
                 ],
-                'expectedResponseData' => [
+                'expectedMemberEmails' => [
                     'user@example.com',
                 ],
             ],

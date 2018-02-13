@@ -10,6 +10,7 @@ use SimplyTestable\WebClientBundle\Exception\MailChimp\MemberExistsException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\ResourceNotFoundException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\UnknownException;
 use SimplyTestable\WebClientBundle\Model\MailChimp\ApiError;
+use SimplyTestable\WebClientBundle\Model\MailChimp\ListMembers;
 
 class Client
 {
@@ -55,7 +56,7 @@ class Client
      * @param int $count
      * @param int $offset
      *
-     * @return string[]
+     * @return ListMembers
      */
     public function getListMembers($listId, $count, $offset)
     {
@@ -71,17 +72,7 @@ class Client
         $request = $this->createRequest('GET', $endpointUrl);
         $response = $request->send();
 
-        $responseData = json_decode($response->getBody(), true);
-
-        $members = $responseData['members'];
-
-        $emails = [];
-
-        foreach ($members as $member) {
-            $emails[] = $member['email_address'];
-        }
-
-        return $emails;
+        return new ListMembers(json_decode($response->getBody(), true));
     }
 
     /**
