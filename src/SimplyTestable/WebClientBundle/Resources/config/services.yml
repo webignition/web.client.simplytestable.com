@@ -108,6 +108,7 @@ services:
     arguments:
         mailChimpClient: '@simplytestable.services.mailchimp.client'
         listRecipientsService: "@simplytestable.services.mailchimp.listRecipients"
+        fooMailChimpClient: '@SimplyTestable\WebClientBundle\Services\MailChimp\Client'
 
   simplytestable.services.mail.configuration:
     class:   SimplyTestable\WebClientBundle\Services\Mail\Configuration

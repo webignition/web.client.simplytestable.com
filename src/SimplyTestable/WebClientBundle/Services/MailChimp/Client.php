@@ -63,7 +63,7 @@ class Client
         $queryStringParameters = [
             'count' => $count,
             'offset' => $offset,
-            'fields' => 'members.email_address',
+            'fields' => 'members.email_address,total_items',
         ];
 
         $endpointUrl = sprintf(self::PATH_LIST_MEMBERS, $listId);

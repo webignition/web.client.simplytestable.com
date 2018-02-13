@@ -130,13 +130,13 @@ class HttpResponseFactory
 
         foreach ($memberEmails as $memberEmail) {
             $memberRecords[] = [
-                'email' => $memberEmail,
+                'email_address' => $memberEmail,
             ];
         }
 
         return self::createJsonResponse([
-            'total' => $total,
-            'data' => $memberRecords,
+            'total_items' => $total,
+            'members' => $memberRecords,
         ]);
     }
 

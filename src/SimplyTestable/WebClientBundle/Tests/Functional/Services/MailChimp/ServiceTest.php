@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\Mock\MockPlugin;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
+use SimplyTestable\WebClientBundle\Services\MailChimp\Client;
 use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
 use SimplyTestable\WebClientBundle\Services\MailChimp\Service as MailChimpService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -103,18 +104,18 @@ class ServiceTest extends AbstractBaseTestCase
      * @dataProvider retrieveMembersDataProvider
      *
      * @param Response[] $httpFixtures
-     * @param string[] $expectedResponseData
+     * @param string[] $expectedMemberEmails
      */
-    public function testRetrieveMembers($httpFixtures, $expectedResponseData)
+    public function testRetrieveMembers($httpFixtures, $expectedMemberEmails)
     {
         $mockHttpPlugin = new MockPlugin($httpFixtures);
 
-        $mailChimpClient = $this->container->get('simplytestable.services.mailchimp.client');
-        $mailChimpClient->addSubscriber($mockHttpPlugin);
+        $fooMailChimpClient = $this->container->get(Client::class);
+        $fooMailChimpClient->getHttpClient()->addSubscriber($mockHttpPlugin);
 
-        $responseData = $this->mailChimpService->retrieveMembers(self::LIST_NAME);
+        $memberEmails = $this->mailChimpService->retrieveMemberEmails(self::LIST_NAME);
 
-        $this->assertEquals($expectedResponseData, $responseData);
+        $this->assertEquals($expectedMemberEmails, $memberEmails);
     }
 
     /**
@@ -127,10 +128,8 @@ class ServiceTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createMailChimpListMembersResponse(1, ['user@example.com']),
                 ],
-                'expectedResponseData' => [
-                    [
-                        'email' => 'user@example.com',
-                    ],
+                'expectedMemberEmails' => [
+                    'user@example.com',
                 ],
             ],
             'many members in single response' => [
@@ -143,22 +142,12 @@ class ServiceTest extends AbstractBaseTestCase
                         'user5@example.com',
                     ]),
                 ],
-                'expectedResponseData' => [
-                    [
-                        'email' => 'user1@example.com',
-                    ],
-                    [
-                        'email' => 'user2@example.com',
-                    ],
-                    [
-                        'email' => 'user3@example.com',
-                    ],
-                    [
-                        'email' => 'user4@example.com',
-                    ],
-                    [
-                        'email' => 'user5@example.com',
-                    ],
+                'expectedMemberEmails' => [
+                    'user1@example.com',
+                    'user2@example.com',
+                    'user3@example.com',
+                    'user4@example.com',
+                    'user5@example.com',
                 ],
             ],
             'many members in many responses' => [
@@ -173,22 +162,12 @@ class ServiceTest extends AbstractBaseTestCase
                         'user5@example.com',
                     ]),
                 ],
-                'expectedResponseData' => [
-                    [
-                        'email' => 'user1@example.com',
-                    ],
-                    [
-                        'email' => 'user2@example.com',
-                    ],
-                    [
-                        'email' => 'user3@example.com',
-                    ],
-                    [
-                        'email' => 'user4@example.com',
-                    ],
-                    [
-                        'email' => 'user5@example.com',
-                    ],
+                'expectedMemberEmails' => [
+                    'user1@example.com',
+                    'user2@example.com',
+                    'user3@example.com',
+                    'user4@example.com',
+                    'user5@example.com',
                 ],
             ],
         ];
