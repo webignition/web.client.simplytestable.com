@@ -48,11 +48,14 @@ class HttpResponseFactory
     }
 
     /**
+     * @param array $headers
+     * @param string $body
+     *
      * @return Response
      */
-    public static function createNotFoundResponse()
+    public static function createNotFoundResponse($headers = [], $body = '')
     {
-        return self::create(404);
+        return self::create(404, $headers, $body);
     }
 
     /**

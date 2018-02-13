@@ -2,6 +2,7 @@
 namespace SimplyTestable\WebClientBundle\Services\MailChimp;
 
 use SimplyTestable\WebClientBundle\Exception\MailChimp\MemberExistsException;
+use SimplyTestable\WebClientBundle\Exception\MailChimp\ResourceNotFoundException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\UnknownException;
 use ZfrMailChimp\Client\MailChimpClient;
 use SimplyTestable\WebClientBundle\Services\MailChimp\Client as FooMailChimpClient;
@@ -78,6 +79,9 @@ class Service
      * @param string $email
      *
      * @return bool
+     *
+     * @throws UnknownException
+     * @throws ResourceNotFoundException
      */
     public function unsubscribe($listName, $email)
     {
@@ -86,13 +90,10 @@ class Service
             return true;
         }
 
-        $this->client->unsubscribe([
-            'id' => $this->listRecipientsService->getListId($listName),
-            'email' => [
-                'email' => $email
-            ],
-            'delete_member' => false
-        ]);
+        $this->fooClient->removeListMember(
+            $this->listRecipientsService->getListId($listName),
+            $email
+        );
 
         return true;
     }

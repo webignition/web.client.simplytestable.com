@@ -7,6 +7,7 @@ use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\Mock\MockPlugin;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\MemberExistsException;
+use SimplyTestable\WebClientBundle\Exception\MailChimp\ResourceNotFoundException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\UnknownException;
 use SimplyTestable\WebClientBundle\Model\MailChimp\ApiError;
 use SimplyTestable\WebClientBundle\Services\MailChimp\Client;
@@ -137,14 +138,82 @@ class ServiceTest extends AbstractBaseTestCase
         $this->assertTrue($result);
     }
 
+    /**
+     * @dataProvider unsubscribeFailureDataProvider
+     *
+     * @param array $httpFixtures
+     * @param string $expectedException
+     * @param string $expectedExceptionMessage
+     * @param int $expectedExceptionCode
+     *
+     * @throws ResourceNotFoundException
+     * @throws UnknownException
+     */
+    public function testUnsubscribeFailure(
+        array $httpFixtures,
+        $expectedException,
+        $expectedExceptionMessage,
+        $expectedExceptionCode
+    ) {
+        $httpMockPlugin = new MockPlugin($httpFixtures);
+
+        $mailChimpClient = $this->container->get(Client::class);
+        $mailChimpClient->getHttpClient()->addSubscriber($httpMockPlugin);
+
+        /* @var EntityManagerInterface $entityManager */
+        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+
+        $listRecipients = new ListRecipients();
+        $listRecipients->setListId($this->listRecipientsService->getListId(self::LIST_NAME));
+        $listRecipients->addRecipient(self::USER_EMAIL);
+
+        $entityManager->persist($listRecipients);
+        $entityManager->flush();
+
+        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+
+        $this->mailChimpService->unsubscribe(self::LIST_NAME, self::USER_EMAIL);
+    }
+
+    /**
+     * @return array
+     */
+    public function unsubscribeFailureDataProvider()
+    {
+        return [
+            'not found' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createNotFoundResponse([], json_encode([
+                        'title' => ApiError::TITLE_RESOURCE_NOT_FOUND,
+                        'detail' => ''
+                    ])),
+                ],
+                'expectedException' => ResourceNotFoundException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
+            ],
+            'unknown error' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createBadRequestResponse([], json_encode([
+                        'title' => 'foo',
+                        'detail' => 'foo'
+                    ])),
+                ],
+                'expectedException' => UnknownException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
+            ],
+        ];
+    }
+
     public function testUnsubscribeSuccess()
     {
         $httpMockPlugin = new MockPlugin([
-            Response::fromMessage('HTTP/1.1 200 OK')
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $mailChimpClient = $this->container->get('simplytestable.services.mailchimp.client');
-        $mailChimpClient->addSubscriber($httpMockPlugin);
+        $mailChimpClient = $this->container->get(Client::class);
+        $mailChimpClient->getHttpClient()->addSubscriber($httpMockPlugin);
 
         /* @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
