@@ -3,10 +3,10 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User\Account;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\Mock\MockPlugin;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\NewsSubscriptionsController;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
+use SimplyTestable\WebClientBundle\Model\MailChimp\ApiError;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\MailChimp\Client;
 use SimplyTestable\WebClientBundle\Services\UserManager;
@@ -272,18 +272,16 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
                 'expectedAnnouncementsListRecipientsContains' => false,
                 'expectedUpdatesListRecipientsContains' => false,
             ],
-            'request to subscribe to both, import exceptions, no existing recipients' => [
+            'request to subscribe to both, not found and unknown exceptions, no existing recipients' => [
                 'httpFixtures' => [
-                    Response::fromMessage("HTTP/1.1 400 Bad Request\nContent-Type:application/json\n\n" . json_encode([
-                            'name' => 'List_InvalidImport',
-                            'code' => 220,
-                            'error' => '',
-                        ])),
-                    Response::fromMessage("HTTP/1.1 400 Bad Request\nContent-Type:application/json\n\n" . json_encode([
-                            'name' => 'List_InvalidImport',
-                            'code' => 100,
-                            'error' => '',
-                        ])),
+                    HttpResponseFactory::createBadRequestResponse([], json_encode([
+                        'title' => 'foo',
+                        'detail' => 'foo'
+                    ])),
+                    HttpResponseFactory::createBadRequestResponse([], json_encode([
+                        'title' => ApiError::TITLE_RESOURCE_NOT_FOUND,
+                        'detail' => 'The requested resource could not be found.'
+                    ])),
                 ],
                 'user' => new User('user@example.com', 'password'),
                 'existingListRecipients' => [
@@ -295,7 +293,7 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
                     'updates' => true,
                 ]),
                 'expectedFlashBagValues' => [
-                    'announcements' => 'subscribe-failed-banned',
+                    'announcements' => 'subscribe-failed-unknown',
                     'updates' => 'subscribe-failed-unknown',
                 ],
                 'expectedAnnouncementsListRecipientsContains' => false,
