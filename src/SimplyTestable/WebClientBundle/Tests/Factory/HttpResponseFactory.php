@@ -48,11 +48,14 @@ class HttpResponseFactory
     }
 
     /**
+     * @param array $headers
+     * @param string $body
+     *
      * @return Response
      */
-    public static function createNotFoundResponse()
+    public static function createNotFoundResponse($headers = [], $body = '')
     {
-        return self::create(404);
+        return self::create(404, $headers, $body);
     }
 
     /**
@@ -101,12 +104,13 @@ class HttpResponseFactory
 
     /**
      * @param array $headers
+     * @param string $body
      *
      * @return Response
      */
-    public static function createBadRequestResponse(array $headers = [])
+    public static function createBadRequestResponse(array $headers = [], $body = '')
     {
-        return self::create(400, $headers);
+        return self::create(400, $headers, $body);
     }
 
     /**
@@ -129,13 +133,13 @@ class HttpResponseFactory
 
         foreach ($memberEmails as $memberEmail) {
             $memberRecords[] = [
-                'email' => $memberEmail,
+                'email_address' => $memberEmail,
             ];
         }
 
         return self::createJsonResponse([
-            'total' => $total,
-            'data' => $memberRecords,
+            'total_items' => $total,
+            'members' => $memberRecords,
         ]);
     }
 

@@ -69,12 +69,12 @@ class RetrieveRecipientsCommand extends AbstractEmailListCommand
         $listRecipients = $this->listRecipientsService->get($listName);
         $listRecipients->setRecipients([]);
 
-        $members = $this->mailChimpService->retrieveMembers($listName);
+        $memberEmails = $this->mailChimpService->retrieveMemberEmails($listName);
 
-        $output->writeln(count($members) . ' recipients retrieved');
+        $output->writeln(count($memberEmails) . ' recipients retrieved');
 
-        foreach ($members as $member) {
-            $listRecipients->addRecipient($member['email']);
+        foreach ($memberEmails as $memberEmail) {
+            $listRecipients->addRecipient($memberEmail);
         }
 
         $this->entityManager->persist($listRecipients);

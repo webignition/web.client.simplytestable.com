@@ -98,15 +98,10 @@ services:
   simplytestable.services.documentationurlcheckerservice:
     class:  SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService
 
-  simplytestable.services.mailchimp.client:
-    class: ZfrMailChimp\Client\MailChimpClient
-    arguments:
-      apiKey: "%mailchimp_api_key%"
-
   simplytestable.services.mailchimpservice:
     class:   SimplyTestable\WebClientBundle\Services\MailChimp\Service
     arguments:
-        mailChimpClient: '@simplytestable.services.mailchimp.client'
+        mailChimpClient: '@SimplyTestable\WebClientBundle\Services\MailChimp\Client'
         listRecipientsService: "@simplytestable.services.mailchimp.listRecipients"
 
   simplytestable.services.mail.configuration:
@@ -284,3 +279,8 @@ services:
       - '@simplytestable.services.userserializerservice'
       - '@session'
       - '@SimplyTestable\WebClientBundle\Services\SystemUserService'
+
+  SimplyTestable\WebClientBundle\Services\MailChimp\Client:
+    class:  SimplyTestable\WebClientBundle\Services\MailChimp\Client
+    arguments:
+      - '%mailchimp_api_key%'

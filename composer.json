@@ -22,7 +22,6 @@
         "guzzle/guzzle":"~3.8.0",
         "webignition/html-validation-error-normaliser":"dev-master",
         "webignition/html-validation-error-linkifier":"dev-master",
-        "zfr/zfr-mailchimp":"2.0.5",
         "mlpz/postmark-bundle": "dev-master#95a84ae0e48677e0f9da37e50bc93be624451d21",
         "egulias/email-validator":"1.1.1",
         "doctrine/collections":"~1.2",

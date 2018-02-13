@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Command\EmailList;
 
 use Guzzle\Plugin\Mock\MockPlugin;
 use SimplyTestable\WebClientBundle\Command\EmailList\SubscribeCommand;
+use SimplyTestable\WebClientBundle\Services\MailChimp\Client;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -28,8 +29,8 @@ class SubscribeCommandTest extends AbstractBaseTestCase
 
     public function testRun()
     {
-        $mailChimpClient = $this->container->get('simplytestable.services.mailchimp.client');
-        $mailChimpClient->addSubscriber(new MockPlugin([
+        $mailChimpClient = $this->container->get(Client::class);
+        $mailChimpClient->getHttpClient()->addSubscriber(new MockPlugin([
             HttpResponseFactory::createSuccessResponse(),
         ]));
 
