@@ -7,7 +7,6 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -35,7 +34,6 @@ class UserAccountPlanController extends Controller implements RequiresPrivateUse
      * @return RedirectResponse
      *
      * @throws CoreApplicationRequestException
-     * @throws WebResourceException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */

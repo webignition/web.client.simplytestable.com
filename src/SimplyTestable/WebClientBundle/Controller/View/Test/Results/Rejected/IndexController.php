@@ -5,8 +5,8 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results\Rejected;
 use SimplyTestable\WebClientBundle\Controller\View\Test\AbstractRequiresValidOwnerController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
@@ -24,9 +24,9 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
      *
      * @return RedirectResponse|Response
      *
-     * @throws WebResourceException
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
+     * @throws InvalidContentTypeException
      */
     public function indexAction(Request $request, $website, $test_id)
     {

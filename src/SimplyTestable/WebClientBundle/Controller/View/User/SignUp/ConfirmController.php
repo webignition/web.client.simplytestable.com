@@ -3,7 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\User\SignUp;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +16,8 @@ class ConfirmController extends BaseViewController implements IEFiltered
      *
      * @return Response
      *
-     * @throws CoreApplicationAdminRequestException
+     *
+     * @throws InvalidAdminCredentialsException
      */
     public function indexAction(Request $request, $email)
     {

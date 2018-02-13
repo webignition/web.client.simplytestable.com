@@ -4,9 +4,9 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User
 
 use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
@@ -42,9 +42,6 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         parent::setUp();
 
         $this->user = new User(self::USER_USERNAME);
-
-//        $userManager = $this->container->get(UserManager::class);
-//        $userManager->setUser($this->user);
     }
 
     /**
@@ -71,14 +68,11 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
             'token' => 'invite-token',
         ];
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($inviteData),
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $mailService->setPostmarkMessage(MockPostmarkMessageFactory::createMockTeamInviteSuccessPostmarkMessage(
@@ -102,10 +96,7 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
-        $this->assertEquals(
-            self::EXPECTED_REDIRECT_URL,
-            $response->getTargetUrl()
-        );
+        $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
     }
 
     /**
@@ -114,12 +105,12 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
      * @param Request $request
      * @param array $expectedFlashBagValues
      *
-     * @throws CoreApplicationAdminRequestException
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      * @throws MailConfigurationException
+     * @throws InvalidAdminCredentialsException
      */
     public function testInviteMemberActionBadRequest(Request $request, array $expectedFlashBagValues)
     {
@@ -187,9 +178,9 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
      * @param array $httpFixtures
      * @param array $expectedFlashBagValues
      *
-     * @throws CoreApplicationAdminRequestException
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      * @throws MailConfigurationException
@@ -197,10 +188,9 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
     public function testInviteMemberActionGetInviteFailure(array $httpFixtures, array $expectedFlashBagValues)
     {
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-
-        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
-
         $session = $this->container->get('session');
+
+        $coreApplicationHttpClient->setUser($this->user);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
@@ -293,9 +283,9 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
      * @param PostmarkMessage $postmarkMessage
      * @param array $expectedFlashBagValues
      *
-     * @throws CoreApplicationAdminRequestException
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      * @throws MailConfigurationException
@@ -316,13 +306,10 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
             'token' => 'invite-token',
         ];
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse($inviteData),
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
@@ -422,9 +409,9 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
      * @param PostmarkMessage $postmarkMessage
      * @param array $expectedFlashBagValues
      *
-     * @throws CoreApplicationAdminRequestException
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      * @throws MailConfigurationException
@@ -446,11 +433,9 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
             'token' => 'invite-token',
         ];
 
-        $this->setHttpFixtures($httpFixtures);
-
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures(array_merge([
             HttpResponseFactory::createJsonResponse($inviteData),
-        ]);
+        ], $httpFixtures));
 
         $mailService->setPostmarkMessage($postmarkMessage);
 

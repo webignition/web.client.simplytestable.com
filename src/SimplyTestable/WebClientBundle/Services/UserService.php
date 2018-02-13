@@ -26,6 +26,11 @@ class UserService
     private $jsonResponseHandler;
 
     /**
+     * @var array
+     */
+    private $userExistsCache = [];
+
+    /**
      * @param CoreApplicationHttpClient $coreApplicationHttpClient
      * @param JsonResponseHandler $jsonResponseHandler
      */
@@ -152,17 +157,25 @@ class UserService
             ? CoreApplicationHttpClient::ROUTE_PARAMETER_USER_PLACEHOLDER
             : $email;
 
+        if (isset($this->userExistsCache[$email])) {
+            return $this->userExistsCache[$email];
+        }
+
+        $exists = false;
+
         try {
             $this->coreApplicationHttpClient->postAsAdmin('user_exists', [
                 'email' => $email,
             ]);
+
+            $exists = true;
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
-            return false;
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
-            return false;
         }
 
-        return true;
+        $this->userExistsCache[$email] = $exists;
+
+        return $exists;
     }
 
     /**
@@ -173,6 +186,10 @@ class UserService
      */
     public function isEnabled($email = null)
     {
+        $email = empty($email)
+            ? CoreApplicationHttpClient::ROUTE_PARAMETER_USER_PLACEHOLDER
+            : $email;
+
         if (!$this->exists($email)) {
             return false;
         }

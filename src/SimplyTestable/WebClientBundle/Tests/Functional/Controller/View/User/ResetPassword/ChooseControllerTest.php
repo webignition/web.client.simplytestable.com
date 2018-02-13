@@ -4,7 +4,9 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\User\R
 
 use SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword\IndexController;
 use SimplyTestable\WebClientBundle\Controller\View\User\ResetPassword\ChooseController;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
@@ -40,9 +42,9 @@ class ChooseControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionPublicUserGetRequest()
     {
-        $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse(self::TOKEN),
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $this->client->request(
@@ -52,6 +54,7 @@ class ChooseControllerTest extends AbstractBaseTestCase
 
         /* @var Response $response */
         $response = $this->client->getResponse();
+
         $this->assertTrue($response->isSuccessful());
     }
 
@@ -64,7 +67,9 @@ class ChooseControllerTest extends AbstractBaseTestCase
      * @param string $token
      * @param EngineInterface $templatingEngine
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      */
     public function testIndexActionRender(
         array $httpFixtures,
@@ -77,12 +82,9 @@ class ChooseControllerTest extends AbstractBaseTestCase
         $userManager = $this->container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL);
-
         $userManager->setUser($user);
 
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
-        }
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($flashBagValues)) {
             foreach ($flashBagValues as $key => $value) {
@@ -244,7 +246,7 @@ class ChooseControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionCachedResponse()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse(self::TOKEN),
         ]);
 

@@ -2,9 +2,10 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\User;
 
-use Guzzle\Plugin\Mock\MockPlugin;
 use SimplyTestable\WebClientBundle\Controller\UserController;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -17,7 +18,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
 {
     public function testSignInSubmitActionPostRequest()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
@@ -48,9 +49,11 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      * @param $expectedRedirectLocation
      * @param array $expectedFlashBagValues
      *
-     * @throws CoreApplicationAdminRequestException
      * @throws MailConfigurationException
      * @throws PostmarkResponseException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      */
     public function testSignInSubmitActionBadRequest(
         Request $request,
@@ -128,7 +131,9 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      * @param array $httpFixtures
      * @param array $expectedFlashBagValues
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      * @throws MailConfigurationException
      * @throws PostmarkResponseException
      */
@@ -137,12 +142,8 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
 
-        $httpClient = $httpClientService->get();
-
-        $httpMockPlugin = new MockPlugin($httpFixtures);
-        $httpClient->addSubscriber($httpMockPlugin);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $request = new Request([], [
             'email' => 'user@example.com',
@@ -171,6 +172,8 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                     HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_IN_ERROR_KEY => [
@@ -197,21 +200,26 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      * @dataProvider signInSubmitActionResendConfirmationTokenDataProvider
      *
      * @param array $httpFixtures
-     * @throws CoreApplicationAdminRequestException
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      * @throws MailConfigurationException
      * @throws PostmarkResponseException
      */
     public function testSignInSubmitActionResendConfirmationToken(array $httpFixtures)
     {
         $session = $this->container->get('session');
-        $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
+//        $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
         $mailService = $this->container->get('simplytestable.services.mail.service');
         $postmarkSender = $this->container->get('simplytestable.services.postmark.sender');
 
-        $httpClient = $httpClientService->get();
+//        $httpClient = $httpClientService->get();
 
-        $httpMockPlugin = new MockPlugin($httpFixtures);
-        $httpClient->addSubscriber($httpMockPlugin);
+//        $httpMockPlugin = new MockPlugin($httpFixtures);
+//        $httpClient->addSubscriber($httpMockPlugin);
+
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $request = new Request([], [
             'email' => 'user@example.com',
@@ -291,7 +299,9 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      * @param $expectedResponseHasUserCookie
      * @param string $expectedRedirectUrl
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      * @throws MailConfigurationException
      * @throws PostmarkResponseException
      */
@@ -300,18 +310,11 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         $expectedResponseHasUserCookie,
         $expectedRedirectUrl
     ) {
-        $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
-
-        $httpClient = $httpClientService->get();
-
-        $httpFixtures = [
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
-        ];
-
-        $httpMockPlugin = new MockPlugin($httpFixtures);
-        $httpClient->addSubscriber($httpMockPlugin);
+        ]);
 
         $this->userController->setContainer($this->container);
 

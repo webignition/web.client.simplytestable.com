@@ -6,7 +6,6 @@ use SimplyTestable\WebClientBundle\Controller\View\User\Account\CardController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
@@ -75,7 +74,7 @@ class CardControllerTest extends AbstractBaseTestCase
      */
     public function testIndexActionInvalidGetRequest(array $httpFixtures, $expectedRedirectUrl)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->client->request(
             'GET',
@@ -96,13 +95,13 @@ class CardControllerTest extends AbstractBaseTestCase
         return [
             'invalid user' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::create(404),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'expectedRedirectUrl' => 'http://localhost/signout/',
             ],
             'public user' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::create(200),
+                    HttpResponseFactory::createSuccessResponse()
                 ],
                 'expectedRedirectUrl' =>
                     'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2NhcmRfaW5kZXgifQ%3D%3D'
@@ -115,8 +114,8 @@ class CardControllerTest extends AbstractBaseTestCase
         $user = new User(self::USER_EMAIL);
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::create(200),
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(array_merge($this->userData, [
                 'team_summary' => [
                     'in' => false,
@@ -149,16 +148,13 @@ class CardControllerTest extends AbstractBaseTestCase
         $userManager->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse(array_merge($this->userData, [
                 'team_summary' => [
                     'in' => true,
                     'has_invite' => false,
                 ],
             ])),
-        ]);
-
-        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
                 'team' => [
                     'leader' => 'leader@example.com',
@@ -185,7 +181,6 @@ class CardControllerTest extends AbstractBaseTestCase
      * @param array $httpFixtures
      * @param EngineInterface $templatingEngine
      *
-     * @throws WebResourceException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
@@ -203,12 +198,7 @@ class CardControllerTest extends AbstractBaseTestCase
         $userManager->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
-        $this->setHttpFixtures($httpFixtures);
-
-        if (count($httpFixtures) > 1) {
-            $this->setCoreApplicationHttpClientHttpFixtures([$httpFixtures[1]]);
-        }
-
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($flashBagValues)) {
             foreach ($flashBagValues as $key => $value) {

@@ -4,7 +4,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\User\S
 
 use SimplyTestable\WebClientBundle\Controller\UserController;
 use SimplyTestable\WebClientBundle\Controller\View\User\SignUp\ConfirmController;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
@@ -40,7 +40,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionPublicUserGetRequest()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
@@ -62,7 +62,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
      * @param Request $request
      * @param EngineInterface $templatingEngine
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws InvalidAdminCredentialsException
      */
     public function testIndexActionRender(
         array $httpFixtures,
@@ -77,9 +77,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
 
         $userManager->setUser($user);
 
-        if (!empty($httpFixtures)) {
-            $this->setHttpFixtures($httpFixtures);
-        }
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($flashBagValues)) {
             foreach ($flashBagValues as $key => $value) {
@@ -116,7 +114,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
     public function indexActionRenderDataProvider()
     {
         return [
-            'user doesn\' exist' => [
+            'user does not exist' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
@@ -323,7 +321,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionCachedResponse()
     {
-        $this->setHttpFixtures([
+        $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 

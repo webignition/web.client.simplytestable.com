@@ -4,8 +4,11 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User
 
 use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
-use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserManager;
@@ -63,14 +66,11 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
             'token' => 'invite-token',
         ];
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($inviteData),
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $mailService->setPostmarkMessage(MockPostmarkMessageFactory::createMockTeamInviteSuccessPostmarkMessage(
@@ -106,11 +106,11 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
      * @param array $httpFixtures
      * @param array $expectedFlashBagValues
      *
-     * @throws CoreApplicationAdminRequestException
-     * @throws Exception
-     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException
+     * @throws MailConfigurationException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testResendInviteActionGetInviteFailure(array $httpFixtures, array $expectedFlashBagValues)
     {
@@ -163,11 +163,11 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
      * @param PostmarkMessage $postmarkMessage
      * @param array $expectedFlashBagValues
      *
-     * @throws CoreApplicationAdminRequestException
-     * @throws Exception
-     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException
+     * @throws CoreApplicationRequestException
+     * @throws MailConfigurationException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function testResendInviteActionSendInviteFailure(
         PostmarkMessage $postmarkMessage,
@@ -185,14 +185,11 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
             'token' => 'invite-token',
         ];
 
-        $this->setHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse($inviteData),
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $mailService->setPostmarkMessage($postmarkMessage);
@@ -240,11 +237,11 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
      * @param PostmarkMessage $postmarkMessage
      * @param array $expectedFlashBagValues
      *
-     * @throws CoreApplicationAdminRequestException
-     * @throws Exception
-     * @throws \SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     * @throws MailConfigurationException
      */
     public function testResendInviteActionSuccess(
         array $httpFixtures,
@@ -263,11 +260,12 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
             'token' => 'invite-token',
         ];
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
-            HttpResponseFactory::createJsonResponse($inviteData),
-        ]);
-
-        $this->setHttpFixtures($httpFixtures);
+        $this->setCoreApplicationHttpClientHttpFixtures(array_merge(
+            [
+                HttpResponseFactory::createJsonResponse($inviteData),
+            ],
+            $httpFixtures
+        ));
 
         $mailService->setPostmarkMessage($postmarkMessage);
 

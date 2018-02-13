@@ -5,7 +5,9 @@ namespace SimplyTestable\WebClientBundle\Controller\View\User\ResetPassword;
 use SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword\IndexController
     as ResetPasswordActionController;
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +21,9 @@ class ChooseController extends BaseViewController implements IEFiltered
      *
      * @return Response
      *
-     * @throws CoreApplicationAdminRequestException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      */
     public function indexAction(Request $request, $email, $token)
     {

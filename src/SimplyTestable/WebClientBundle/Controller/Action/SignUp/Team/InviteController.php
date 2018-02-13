@@ -2,6 +2,8 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\SignUp\Team;
 
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Model\User;
@@ -77,9 +79,19 @@ class InviteController extends Controller
             ));
         }
 
-        $acceptAndActivateReturnValue = $userService->activateAndAccept($invite, $password);
+        $activateAndAcceptIsSuccessful = false;
+        $activateAndAcceptFailureCode = null;
 
-        if ($acceptAndActivateReturnValue !== true) {
+        try {
+            $userService->activateAndAccept($invite, $password);
+            $activateAndAcceptIsSuccessful = true;
+        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
+            $activateAndAcceptFailureCode = 503;
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
+            $activateAndAcceptFailureCode = $coreApplicationRequestException->getCode();
+        }
+
+        if (false === $activateAndAcceptIsSuccessful) {
             $session->getFlashBag()->set(
                 self::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY,
                 self::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_FAILURE
@@ -87,7 +99,7 @@ class InviteController extends Controller
 
             $session->getFlashBag()->set(
                 self::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY,
-                $acceptAndActivateReturnValue
+                $activateAndAcceptFailureCode
             );
 
             return $this->redirect($this->generateUrl(
