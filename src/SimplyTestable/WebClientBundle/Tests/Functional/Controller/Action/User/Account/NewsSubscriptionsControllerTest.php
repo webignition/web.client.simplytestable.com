@@ -8,6 +8,7 @@ use Guzzle\Plugin\Mock\MockPlugin;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\NewsSubscriptionsController;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\MailChimp\Client;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
@@ -85,7 +86,7 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
      * @param bool $expectedAnnouncementsListRecipientsContains
      * @param bool $expectedUpdatesListRecipientsContains
      */
-    public function testUpdateAction(
+    public function testUpdateActionFoo(
         array $httpFixtures,
         User $user,
         array $existingListRecipients,
@@ -103,8 +104,8 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
 
         $httpMockPlugin = new MockPlugin($httpFixtures);
 
-        $mailChimpClient = $this->container->get('simplytestable.services.mailchimp.client');
-        $mailChimpClient->addSubscriber($httpMockPlugin);
+        $mailChimpClient = $this->container->get(Client::class);
+        $mailChimpClient->getHttpClient()->addSubscriber($httpMockPlugin);
 
         $userManager->setUser($user);
 
@@ -189,7 +190,7 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
             ],
             'no request data, is existing announcements recipient' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 200 OK'),
+                    HttpResponseFactory::createSuccessResponse(),
                 ],
                 'user' => new User('user@example.com', 'password'),
                 'existingListRecipients' => [
@@ -208,7 +209,7 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
             ],
             'no request data, is existing updates recipient' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 200 OK'),
+                    HttpResponseFactory::createSuccessResponse(),
                 ],
                 'user' => new User('user@example.com', 'password'),
                 'existingListRecipients' => [
@@ -227,8 +228,8 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
             ],
             'request to subscribe to both, no existing recipients' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 200 OK'),
-                    Response::fromMessage('HTTP/1.1 200 OK'),
+                    HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createSuccessResponse(),
                 ],
                 'user' => new User('user@example.com', 'password'),
                 'existingListRecipients' => [
@@ -248,8 +249,8 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
             ],
             'request to unsubscribe from both, is existing recipient of both' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 200 OK'),
-                    Response::fromMessage('HTTP/1.1 200 OK'),
+                    HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createSuccessResponse(),
                 ],
                 'user' => new User('user@example.com', 'password'),
                 'existingListRecipients' => [

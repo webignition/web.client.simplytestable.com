@@ -3,12 +3,14 @@
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
 use Doctrine\ORM\EntityManagerInterface;
+use SimplyTestable\WebClientBundle\Exception\MailChimp\MemberExistsException;
+use SimplyTestable\WebClientBundle\Exception\MailChimp\ResourceNotFoundException;
+use SimplyTestable\WebClientBundle\Exception\MailChimp\UnknownException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use ZfrMailChimp\Exception\Ls\InvalidImportException;
 
 class NewsSubscriptionsController extends Controller implements RequiresPrivateUser
 {
@@ -60,15 +62,18 @@ class NewsSubscriptionsController extends Controller implements RequiresPrivateU
                     $mailChimpService->subscribe($listName, $username);
                     $flashData[$listName] = 'subscribed';
                     $listRecipients->addRecipient($username);
-                } catch (InvalidImportException $invalidImportException) {
-                    if ($invalidImportException->getCode() == 220) {
-                        $flashData[$listName] = 'subscribe-failed-banned';
-                    } else {
-                        $flashData[$listName] = 'subscribe-failed-unknown';
-                    }
+                } catch (MemberExistsException $memberExistsException) {
+                    $flashData[$listName] = 'subscribe-failed-unknown';
+                } catch (UnknownException $unknownException) {
+                    $flashData[$listName] = 'subscribe-failed-unknown';
                 }
             } else {
-                $mailChimpService->unsubscribe($listName, $username);
+                try {
+                    $mailChimpService->unsubscribe($listName, $username);
+                } catch (ResourceNotFoundException $resourceNotFoundException) {
+                } catch (UnknownException $unknownException) {
+                }
+
                 $flashData[$listName] = 'unsubscribed';
                 $listRecipients->removeRecipient($username);
             }
