@@ -195,11 +195,9 @@ class UserService
         }
 
         try {
-            $this->coreApplicationHttpClient->postAsAdmin('user_is_enabled', [
+            $this->coreApplicationHttpClient->getAsAdmin('user_is_enabled', [
                 'email' => $email,
             ]);
-        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
-            return false;
         } catch (CoreApplicationRequestException $applicationRequestException) {
             return false;
         }

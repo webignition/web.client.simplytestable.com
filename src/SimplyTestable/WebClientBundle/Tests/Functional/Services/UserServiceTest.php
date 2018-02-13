@@ -169,9 +169,15 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
                 ],
                 'expectedAuthenticateReturnValue' => true,
             ],
-            'not authenticated' => [
+            'not authenticated; not found' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
+                ],
+                'expectedAuthenticateReturnValue' => false,
+            ],
+            'not authenticated; invalid credentials' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createForbiddenResponse(),
                 ],
                 'expectedAuthenticateReturnValue' => false,
             ],
@@ -553,9 +559,8 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             $this->coreApplicationHttpClient->setUser($user);
         }
 
-        $returnValue = $this->userService->exists($email);
-
-        $this->assertEquals($expectedReturnValue, $returnValue);
+        $this->assertEquals($expectedReturnValue, $this->userService->exists($email));
+        $this->assertEquals($expectedReturnValue, $this->userService->exists($email));
 
         /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
