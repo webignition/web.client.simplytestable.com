@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "4e8b1000687424b80f24a80beaab1de2",
+    "content-hash": "910b2d9ba356dbb182a0c33aa1e347ee",
     "packages": [
         {
             "name": "bcc/resque-bundle",
@@ -2603,43 +2603,6 @@
                 "media-type"
             ],
             "time": "2015-02-20T16:52:30+00:00"
-        },
-        {
-            "name": "webignition/is-http-status-code",
-            "version": "0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/webignition/is-http-status-code.git",
-                "reference": "738957e960124b5e7308ac9e626facdf09104d01"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/webignition/is-http-status-code/zipball/738957e960124b5e7308ac9e626facdf09104d01",
-                "reference": "738957e960124b5e7308ac9e626facdf09104d01",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jon Cram",
-                    "email": "jon@webignition.net"
-                }
-            ],
-            "description": "DSimple small library to check if a given number is an HTTP status code",
-            "homepage": "https://github.com/webignition/is-http-status-code",
-            "time": "2013-03-14T15:36:16+00:00"
         },
         {
             "name": "webignition/php-stripe-models",
