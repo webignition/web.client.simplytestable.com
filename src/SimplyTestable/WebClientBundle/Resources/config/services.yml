@@ -284,3 +284,8 @@ services:
       - '@simplytestable.services.userserializerservice'
       - '@session'
       - '@SimplyTestable\WebClientBundle\Services\SystemUserService'
+
+  SimplyTestable\WebClientBundle\Services\MailChimp\Client:
+    class:  SimplyTestable\WebClientBundle\Services\MailChimp\Client
+    arguments:
+      - '%mailchimp_api_key%'

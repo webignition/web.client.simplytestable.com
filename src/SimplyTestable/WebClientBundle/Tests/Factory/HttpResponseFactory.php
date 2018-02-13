@@ -101,12 +101,13 @@ class HttpResponseFactory
 
     /**
      * @param array $headers
+     * @param string $body
      *
      * @return Response
      */
-    public static function createBadRequestResponse(array $headers = [])
+    public static function createBadRequestResponse(array $headers = [], $body = '')
     {
-        return self::create(400, $headers);
+        return self::create(400, $headers, $body);
     }
 
     /**
