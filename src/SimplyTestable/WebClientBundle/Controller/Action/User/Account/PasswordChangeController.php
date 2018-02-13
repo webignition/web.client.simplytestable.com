@@ -3,7 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
-use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -28,7 +28,7 @@ class PasswordChangeController extends AccountCredentialsChangeController
     {
         $session = $this->container->get('session');
         $userService = $this->container->get('simplytestable.services.userservice');
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userManager = $this->container->get(UserManager::class);
 
         $requestData = $request->request;
 
@@ -50,7 +50,7 @@ class PasswordChangeController extends AccountCredentialsChangeController
             return $redirectResponse;
         }
 
-        $user = $userService->getUser();
+        $user = $userManager->getUser();
 
         if ($currentPassword != $user->getPassword()) {
             $session->getFlashBag()->set(
@@ -66,15 +66,12 @@ class PasswordChangeController extends AccountCredentialsChangeController
 
         if ($passwordResetResponse === true) {
             $user->setPassword($newPassword);
-            $userService->setUser($user);
+            $userManager->setUser($user);
 
-            $cookieSerializedUser = $request->cookies->get(UserService::USER_COOKIE_KEY);
+            $cookieUser = $request->cookies->get(UserManager::USER_COOKIE_KEY);
 
-            if (!empty($cookieSerializedUser)) {
-                $serializedUser = $userSerializerService->serializeToString($user);
-                $userCookie = $this->createUserAuthenticationCookie($serializedUser);
-
-                $redirectResponse->headers->setCookie($userCookie);
+            if (!empty($cookieUser)) {
+                $redirectResponse->headers->setCookie($userManager->createUserCookie());
             }
 
             $session->getFlashBag()->set(

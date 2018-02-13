@@ -12,7 +12,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
-use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockPostmarkMessageFactory;
 use Symfony\Component\BrowserKit\Cookie;
@@ -43,8 +43,8 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
 
         $this->user = new User(self::USER_USERNAME);
 
-        $userService = $this->container->get('simplytestable.services.userservice');
-        $userService->setUser($this->user);
+//        $userManager = $this->container->get(UserManager::class);
+//        $userManager->setUser($this->user);
     }
 
     /**
@@ -88,7 +88,7 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         $requestUrl = $router->generate(self::ROUTE_NAME);
 
         $this->client->getCookieJar()->set(
-            new Cookie(UserService::USER_COOKIE_KEY, $userSerializerService->serializeToString($this->user))
+            new Cookie(UserManager::USER_COOKIE_KEY, $userSerializerService->serializeToString($this->user))
         );
 
         $this->client->request(
@@ -124,6 +124,9 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
     public function testInviteMemberActionBadRequest(Request $request, array $expectedFlashBagValues)
     {
         $session = $this->container->get('session');
+        $userManager = $this->container->get(UserManager::class);
+
+        $userManager->setUser($this->user);
 
         /* @var RedirectResponse $response */
         $response = $this->teamController->inviteMemberAction($request);

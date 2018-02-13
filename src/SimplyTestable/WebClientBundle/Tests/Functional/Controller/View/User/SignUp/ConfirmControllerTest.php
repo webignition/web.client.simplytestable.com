@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Controller\UserController;
 use SimplyTestable\WebClientBundle\Controller\View\User\SignUp\ConfirmController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
@@ -69,12 +70,12 @@ class ConfirmControllerTest extends AbstractBaseTestCase
         Request $request,
         EngineInterface $templatingEngine
     ) {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $session = $this->container->get('session');
+        $userManager = $this->container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL);
 
-        $userService->setUser($user);
+        $userManager->setUser($user);
 
         if (!empty($httpFixtures)) {
             $this->setHttpFixtures($httpFixtures);
@@ -92,6 +93,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
                 'simplytestable.services.cachevalidator',
                 'simplytestable.services.userservice',
                 'simplytestable.services.flashbagvalues',
+                UserManager::class,
             ],
             [
                 'templating' => $templatingEngine,

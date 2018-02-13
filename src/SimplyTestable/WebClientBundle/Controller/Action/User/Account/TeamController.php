@@ -12,6 +12,7 @@ use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -68,7 +69,6 @@ class TeamController extends Controller implements RequiresPrivateUser
     {
         $session = $this->container->get('session');
         $teamService = $this->container->get('simplytestable.services.teamservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
 
         $requestData = $request->request;
 
@@ -110,6 +110,7 @@ class TeamController extends Controller implements RequiresPrivateUser
         $session = $this->container->get('session');
         $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
         $userService = $this->container->get('simplytestable.services.userservice');
+        $userManager = $this->container->get(UserManager::class);
 
         $requestData = $request->request;
 
@@ -121,7 +122,7 @@ class TeamController extends Controller implements RequiresPrivateUser
 
         $invitee = trim($requestData->get('email'));
 
-        $user = $userService->getUser();
+        $user = $userManager->getUser();
         $username = $user->getUsername();
 
         $emailValidator = new EmailValidator;
@@ -250,7 +251,7 @@ class TeamController extends Controller implements RequiresPrivateUser
     public function respondInviteAction(Request $request)
     {
         $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userManager = $this->container->get(UserManager::class);
 
         $requestData = $request->request;
 
@@ -264,7 +265,7 @@ class TeamController extends Controller implements RequiresPrivateUser
 
         if (in_array($response, ['accept', 'decline'])) {
             $team = trim($requestData->get('team'));
-            $user = $userService->getUser();
+            $user = $userManager->getUser();
             $username = $user->getUsername();
 
             $invite = new Invite([

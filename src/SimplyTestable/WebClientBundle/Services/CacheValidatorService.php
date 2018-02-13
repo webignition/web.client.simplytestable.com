@@ -1,4 +1,5 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Services;
 
 use SimplyTestable\WebClientBundle\Model\CacheValidatorIdentifier;
@@ -13,20 +14,20 @@ class CacheValidatorService
     private $cacheValidatorHeadersService;
 
     /**
-     * @var UserService
+     * @var UserManager
      */
-    private $userService;
+    private $userManager;
 
     /**
      * @param CacheValidatorHeadersService $cacheValidatorHeadersService
-     * @param UserService $userService
+     * @param UserManager $userManager
      */
     public function __construct(
         CacheValidatorHeadersService $cacheValidatorHeadersService,
-        UserService $userService
+        UserManager $userManager
     ) {
         $this->cacheValidatorHeadersService = $cacheValidatorHeadersService;
-        $this->userService = $userService;
+        $this->userManager = $userManager;
     }
 
     /**
@@ -74,12 +75,12 @@ class CacheValidatorService
      */
     private function createCacheValidatorIdentifier(Request $request, array $parameters = [])
     {
-        $user = $this->userService->getUser();
+        $user = $this->userManager->getUser();
 
         $identifier = new CacheValidatorIdentifier();
         $identifier->setParameter('route', $request->attributes->get('_route'));
         $identifier->setParameter('user', $user->getUsername());
-        $identifier->setParameter('is_logged_in', $this->userService->isLoggedIn());
+        $identifier->setParameter('is_logged_in', $this->userManager->isLoggedIn());
 
         if ($request->headers->has('accept')) {
             $identifier->setParameter('http-header-accept', $request->headers->get('accept'));

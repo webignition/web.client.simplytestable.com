@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -50,8 +51,9 @@ class CardController extends BaseViewController implements RequiresPrivateUser, 
         $teamService = $this->container->get('simplytestable.services.teamservice');
         $router = $this->container->get('router');
         $templating = $this->container->get('templating');
+        $userManager = $this->container->get(UserManager::class);
 
-        $user = $userService->getUser();
+        $user = $userManager->getUser();
         $userSummary = $userService->getSummary();
         $team = null;
 

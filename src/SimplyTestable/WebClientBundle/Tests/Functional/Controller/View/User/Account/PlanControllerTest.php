@@ -12,7 +12,7 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Plan;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
-use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
@@ -132,7 +132,7 @@ class PlanControllerTest extends AbstractBaseTestCase
         ]);
 
         $this->client->getCookieJar()->set(new Cookie(
-            UserService::USER_COOKIE_KEY,
+            UserManager::USER_COOKIE_KEY,
             $userSerializerService->serializeToString($user)
         ));
 
@@ -149,10 +149,10 @@ class PlanControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionCustomPlan()
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userManager = $this->container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL);
-        $userService->setUser($user);
+        $userManager->setUser($user);
 
         $this->setHttpFixtures([
             HttpResponseFactory::createJsonResponse(array_merge($this->userData, [
@@ -192,13 +192,13 @@ class PlanControllerTest extends AbstractBaseTestCase
         array $flashBagValues,
         EngineInterface $templatingEngine
     ) {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $session = $this->container->get('session');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $userManager = $this->container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL);
 
-        $userService->setUser($user);
+        $userManager->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
         $this->setHttpFixtures([$httpFixtures[0]]);
@@ -221,6 +221,7 @@ class PlanControllerTest extends AbstractBaseTestCase
                 'simplytestable.services.teamservice',
                 'simplytestable.services.plansservice',
                 'simplytestable.services.flashbagvalues',
+                UserManager::class,
             ],
             [
                 'templating' => $templatingEngine,

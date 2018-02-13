@@ -6,7 +6,8 @@ use SimplyTestable\WebClientBundle\Controller\View\Test\Partial\Notification\Url
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
-use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\BrowserKit\Cookie;
@@ -115,7 +116,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         ]);
 
         $this->client->getCookieJar()->set(new Cookie(
-            UserService::USER_COOKIE_KEY,
+            UserManager::USER_COOKIE_KEY,
             $userSerializerService->serializeToString($user)
         ));
 
@@ -152,7 +153,7 @@ class IndexControllerTest extends AbstractBaseTestCase
      */
     public function indexActionGetRequestDataProvider()
     {
-        $publicUser = new User(UserService::PUBLIC_USER_USERNAME);
+        $publicUser = SystemUserService::getPublicUser();
         $privateUser = new User(self::USER_EMAIL);
 
         $remoteTestData = [
@@ -237,9 +238,8 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionCachedResponse()
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser($userService->getUser());
+        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
 
         $remoteTestData = [
             'id' => self::TEST_ID,

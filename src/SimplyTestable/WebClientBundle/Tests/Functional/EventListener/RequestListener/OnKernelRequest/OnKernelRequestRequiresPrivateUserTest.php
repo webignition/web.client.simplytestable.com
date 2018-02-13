@@ -3,7 +3,8 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\EventListener\RequestListener\OnKernelRequest;
 
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +24,6 @@ class OnKernelRequestRequiresPrivateUserTest extends AbstractOnKernelRequestTest
      * @param string $expectedRedirectUrl
      *
      * @throws \Exception
-     * @throws \SimplyTestable\WebClientBundle\Exception\WebResourceException
      */
     public function testOnKernelRequest(
         array $httpFixtures,
@@ -31,6 +31,9 @@ class OnKernelRequestRequiresPrivateUserTest extends AbstractOnKernelRequestTest
         $expectedIsRedirectResponse,
         $expectedRedirectUrl = null
     ) {
+        $userManager = $this->container->get(UserManager::class);
+        $userManager->setUser($user);
+
         $this->setHttpFixtures($httpFixtures);
 
         $request = new Request();
@@ -65,7 +68,7 @@ class OnKernelRequestRequiresPrivateUserTest extends AbstractOnKernelRequestTest
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'expectedIsRedirectResponse' => true,
                 'expectedRedirectUrl' =>
                     'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2luZGV4X2luZGV4In0%3D',

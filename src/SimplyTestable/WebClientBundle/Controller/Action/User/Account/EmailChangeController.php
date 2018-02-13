@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Exception\UserEmailChangeException;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -66,7 +67,7 @@ class EmailChangeController extends AccountCredentialsChangeController
     {
         $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
         $session = $this->container->get('session');
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userManager = $this->container->get(UserManager::class);
 
         $requestData = $request->request;
 
@@ -76,7 +77,7 @@ class EmailChangeController extends AccountCredentialsChangeController
             UrlGeneratorInterface::ABSOLUTE_URL
         ));
 
-        $user = $userService->getUser();
+        $user = $userManager->getUser();
         $username = $user->getUsername();
 
         $newEmail = strtolower(trim($requestData->get('email')));
@@ -228,8 +229,7 @@ class EmailChangeController extends AccountCredentialsChangeController
         $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
         $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
         $resqueJobFactory = $this->container->get('simplytestable.services.resque.jobfactoryservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userManager = $this->container->get(UserManager::class);
 
         $requestData = $request->request;
 
@@ -250,7 +250,7 @@ class EmailChangeController extends AccountCredentialsChangeController
             return $redirectResponse;
         }
 
-        $user = $userService->getUser();
+        $user = $userManager->getUser();
         $username = $user->getUsername();
 
         $emailChangeRequest = $emailChangeRequestService->getEmailChangeRequest($username);
@@ -309,13 +309,10 @@ class EmailChangeController extends AccountCredentialsChangeController
         );
 
         $user->setUsername($emailChangeRequest['new_email']);
-        $userService->setUser($user);
+        $userManager->setUser($user);
 
         if (!is_null($request->cookies->get('simplytestable-user'))) {
-            $serializedUser = $userSerializerService->serializeToString($user);
-            $userCookie = $this->createUserAuthenticationCookie($serializedUser);
-
-            $redirectResponse->headers->setCookie($userCookie);
+            $redirectResponse->headers->setCookie($userManager->createUserCookie());
         }
 
         $this->get('session')->getFlashBag()->set(
@@ -358,10 +355,10 @@ class EmailChangeController extends AccountCredentialsChangeController
     {
         $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
         $mailService = $this->container->get('simplytestable.services.mail.service');
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userManager = $this->container->get(UserManager::class);
 
         $mailServiceConfiguration = $mailService->getConfiguration();
-        $user = $userService->getUser();
+        $user = $userManager->getUser();
         $userName = $user->getUsername();
 
         $emailChangeRequest = $emailChangeRequestService->getEmailChangeRequest($userName);

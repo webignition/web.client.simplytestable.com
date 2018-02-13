@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
 use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,12 +31,12 @@ class NewsSubscriptionsController extends Controller implements RequiresPrivateU
     {
         $mailChimpListRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
         $mailChimpService = $this->container->get('simplytestable.services.mailchimpservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userManager = $this->container->get(UserManager::class);
 
         /* @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
 
-        $user = $userService->getUser();
+        $user = $userManager->getUser();
         $username = $user->getUsername();
 
         $flashData = [];

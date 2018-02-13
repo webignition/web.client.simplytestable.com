@@ -6,7 +6,8 @@ use SimplyTestable\WebClientBundle\Model\CacheValidatorIdentifier;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
-use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\ModelFactory;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,7 +21,7 @@ class CacheValidatorServiceTest extends \PHPUnit_Framework_TestCase
      * @param array $requestHeaders
      * @param array $cacheValidatorParameters
      * @param CacheValidatorHeadersService $cacheValidatorHeadersService
-     * @param UserService $userService
+     * @param UserManager $userManager
      * @param string $expectedResponseEtag
      * @param \DateTime $expectedResponseLastModified
      * @param int $expectedResponseStatusCode
@@ -31,7 +32,7 @@ class CacheValidatorServiceTest extends \PHPUnit_Framework_TestCase
         array $requestHeaders,
         array $cacheValidatorParameters,
         CacheValidatorHeadersService $cacheValidatorHeadersService,
-        UserService $userService,
+        UserManager $userManager,
         $expectedResponseEtag,
         $expectedResponseLastModified,
         $expectedResponseStatusCode,
@@ -42,7 +43,7 @@ class CacheValidatorServiceTest extends \PHPUnit_Framework_TestCase
         $request->attributes->replace($requestAttributes);
         $request->headers->replace($requestHeaders);
 
-        $cacheValidatorService = new CacheValidatorService($cacheValidatorHeadersService, $userService);
+        $cacheValidatorService = new CacheValidatorService($cacheValidatorHeadersService, $userManager);
 
         $response = $cacheValidatorService->createResponse($request, $cacheValidatorParameters);
 
@@ -87,7 +88,7 @@ class CacheValidatorServiceTest extends \PHPUnit_Framework_TestCase
                         ]),
                     ],
                 ]),
-                'userService' => MockFactory::createUserService([
+                'userManager' => MockFactory::createUserManager([
                     'getUser' => [
                         'return' => new User('user@example.com'),
                     ],
@@ -135,7 +136,7 @@ class CacheValidatorServiceTest extends \PHPUnit_Framework_TestCase
                         ]),
                     ],
                 ]),
-                'userService' => MockFactory::createUserService([
+                'userManager' => MockFactory::createUserManager([
                     'getUser' => [
                         'return' => new User('user@example.com'),
                     ],
@@ -181,9 +182,9 @@ class CacheValidatorServiceTest extends \PHPUnit_Framework_TestCase
                         ]),
                     ],
                 ]),
-                'userService' => MockFactory::createUserService([
+                'userManager' => MockFactory::createUserManager([
                     'getUser' => [
-                        'return' => new User(UserService::PUBLIC_USER_USERNAME),
+                        'return' => SystemUserService::getPublicUser(),
                     ],
                     'isLoggedIn' => [
                         'return' => false,
@@ -226,7 +227,7 @@ class CacheValidatorServiceTest extends \PHPUnit_Framework_TestCase
                         ]),
                     ],
                 ]),
-                'userService' => MockFactory::createUserService([
+                'userManager' => MockFactory::createUserManager([
                     'getUser' => [
                         'return' => new User('user@example.com'),
                     ],

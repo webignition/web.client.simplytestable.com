@@ -4,7 +4,8 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Dashbo
 
 use SimplyTestable\WebClientBundle\Controller\View\Dashboard\IndexController;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
@@ -90,7 +91,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $requestUrl = $router->generate(self::VIEW_NAME);
 
         $this->client->getCookieJar()->set(new Cookie(
-            UserService::USER_COOKIE_KEY,
+            UserManager::USER_COOKIE_KEY,
             $userSerializerService->serializeToString($user)
         ));
 
@@ -121,10 +122,10 @@ class IndexControllerTest extends AbstractBaseTestCase
         Request $request,
         EngineInterface $templatingEngine
     ) {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $session = $this->container->get('session');
+        $userManager = $this->container->get(UserManager::class);
 
-        $userService->setUser($user);
+        $userManager->setUser($user);
 
         if (!empty($httpFixtures)) {
             $this->setHttpFixtures($httpFixtures);
@@ -146,6 +147,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'simplytestable.services.urlviewvalues',
                 'simplytestable.services.cachevalidator',
                 'simplytestable.services.flashbagvalues',
+                UserManager::class,
             ],
             [
                 'templating' => $templatingEngine,
@@ -173,7 +175,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         return [
             'public user' => [
                 'httpFixtures' => [],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'flashBagValues' => [],
                 'request' => new Request(),
                 'templatingEngine' => MockFactory::createTemplatingEngine([

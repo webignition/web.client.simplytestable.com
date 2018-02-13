@@ -12,7 +12,8 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
-use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\ContainerFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\MockFactory;
@@ -157,7 +158,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         ]);
 
         $this->client->getCookieJar()->set(new Cookie(
-            UserService::USER_COOKIE_KEY,
+            UserManager::USER_COOKIE_KEY,
             $userSerializerService->serializeToString(new User(self::USER_EMAIL))
         ));
 
@@ -214,11 +215,11 @@ class IndexControllerTest extends AbstractBaseTestCase
         $expectedRedirectUrl,
         $expectedRequestUrls
     ) {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $httpClientService = $this->container->get('simplytestable.services.httpclientservice');
+        $userManager = $this->container->get(UserManager::class);
 
-        $userService->setUser($user);
+        $userManager->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
         $httpHistoryPlugin = new HistoryPlugin();
@@ -275,7 +276,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                         ]),
                     ]),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/',
                 'expectedRequestUrls' => [
@@ -297,7 +298,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                         ]),
                     ]),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/',
                 'expectedRequestUrls' => [
@@ -316,7 +317,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                         ]),
                     ]),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/',
                 'expectedRequestUrls' => [
@@ -343,9 +344,10 @@ class IndexControllerTest extends AbstractBaseTestCase
         User $user,
         EngineInterface $templatingEngine
     ) {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $userService->setUser($user);
+        $userManager = $this->container->get(UserManager::class);
+
+        $userManager->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
@@ -367,6 +369,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'simplytestable.services.taskservice',
                 'simplytestable.services.documentationurlcheckerservice',
                 'kernel',
+                UserManager::class,
             ],
             [
                 'templating' => $templatingEngine,
@@ -399,11 +402,11 @@ class IndexControllerTest extends AbstractBaseTestCase
             'public user, public test' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'user' => SystemUserService::PUBLIC_USER_USERNAME,
                     ])),
                     HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
                 ],
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
+                'user' => SystemUserService::getPublicUser(),
                 'templatingEngine' => MockFactory::createTemplatingEngine([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -426,7 +429,7 @@ class IndexControllerTest extends AbstractBaseTestCase
             'private user, public test' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'user' => UserService::PUBLIC_USER_USERNAME,
+                        'user' => SystemUserService::PUBLIC_USER_USERNAME,
                     ])),
                     HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
                 ],
@@ -935,7 +938,7 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser($userService->getUser());
+        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
 
         $request = new Request();
 

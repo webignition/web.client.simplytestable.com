@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Controller\Action\User\Account\PasswordChange
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
-use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
@@ -59,8 +59,9 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
 
     public function testRequestActionNotPrivateUserPostRequest()
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
-        $userService->setUser(SystemUserService::getPublicUser());
+        $userManager = $this->container->get(UserManager::class);
+
+        $userManager->setUser(SystemUserService::getPublicUser());
 
         $this->setHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -84,14 +85,14 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
 
     public function testRequestActionPostRequest()
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userManager = $this->container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL, self::USER_CURRENT_PASSWORD);
-        $userService->setUser($user);
+        $userManager->setUser($user);
 
         $this->client->getCookieJar()->set(
-            new Cookie(UserService::USER_COOKIE_KEY, $userSerializerService->serializeToString($user))
+            new Cookie(UserManager::USER_COOKIE_KEY, $userSerializerService->serializeToString($user))
         );
 
         $this->setHttpFixtures([
@@ -135,10 +136,10 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
         $expectedUserPassword
     ) {
         $session = $this->container->get('session');
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userManager = $this->container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL, self::USER_CURRENT_PASSWORD);
-        $userService->setUser($user);
+        $userManager->setUser($user);
 
         if (!empty($httpFixtures)) {
             $this->setHttpFixtures($httpFixtures);
@@ -155,7 +156,7 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
             $session->getFlashBag()->get(PasswordChangeController::FLASH_BAG_REQUEST_KEY)
         );
 
-        $this->assertEquals($expectedUserPassword, $userService->getUser()->getPassword());
+        $this->assertEquals($expectedUserPassword, $user->getPassword());
     }
 
     /**
@@ -258,7 +259,7 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
                     'current-password' => self::USER_CURRENT_PASSWORD,
                     'new-password' => 'foo',
                 ], [], [
-                    UserService::USER_COOKIE_KEY => 'foo',
+                    UserManager::USER_COOKIE_KEY => 'foo',
                 ]),
                 'expectedFlashBagValues' => [
                     PasswordChangeController::FLASH_BAG_REQUEST_SUCCESS_MESSAGE,

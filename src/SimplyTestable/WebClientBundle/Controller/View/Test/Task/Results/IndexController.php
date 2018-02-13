@@ -13,6 +13,7 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\LinkIntegrityMessage;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,13 +44,13 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         $router = $this->container->get('router');
         $testService = $this->container->get('simplytestable.services.testservice');
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
         $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
         $taskService = $this->container->get('simplytestable.services.taskservice');
         $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
         $templating = $this->container->get('templating');
+        $userManager = $this->container->get(UserManager::class);
 
-        $user = $userService->getUser();
+        $user = $userManager->getUser();
         $test = $testService->get($website, $test_id);
         $isOwner = $remoteTestService->owns($user);
 

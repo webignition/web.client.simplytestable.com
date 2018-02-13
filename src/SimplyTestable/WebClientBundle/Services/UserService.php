@@ -9,36 +9,16 @@ use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationAdminRequestException;
-use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
-use Symfony\Component\HttpFoundation\Session\Session;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\Coupon;
 use webignition\WebResource\JsonDocument\JsonDocument;
 
 class UserService extends CoreApplicationService
 {
-    const USER_COOKIE_KEY = 'simplytestable-user';
-
-    const PUBLIC_USER_USERNAME = 'public';
-    const PUBLIC_USER_PASSWORD = 'public';
-    const PUBLIC_USER_EMAIL = 'public@simplytestable.com';
-
-    const SESSION_USER_KEY = 'user';
-
     /**
      * @var UserSummary[]
      */
     private $summaries = array();
-
-    /**
-     * @var Session
-     */
-    private $session;
-
-    /**
-     * @var UserSerializerService
-     */
-    private $userSerializerService;
 
     /**
      * @var array
@@ -72,43 +52,19 @@ class UserService extends CoreApplicationService
 
     /**
      * @param WebResourceService $webResourceService
-     * @param Session $session
-     * @param UserSerializerService $userSerializerService
      * @param CoreApplicationRouter $coreApplicationRouter
      * @param SystemUserService $systemUserService
      */
     public function __construct(
         WebResourceService $webResourceService,
-        Session $session,
-        UserSerializerService $userSerializerService,
         CoreApplicationRouter $coreApplicationRouter,
         SystemUserService $systemUserService
     ) {
         parent::__construct($webResourceService);
-        $this->session = $session;
-        $this->userSerializerService = $userSerializerService;
 
         $this->httpClientService = $webResourceService->getHttpClientService();
         $this->coreApplicationRouter = $coreApplicationRouter;
         $this->systemUserService = $systemUserService;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isLoggedIn()
-    {
-        $user = $this->getUser();
-
-        if (SystemUserService::isPublicUser($user)) {
-            return false;
-        }
-
-        if ($user->equals($this->systemUserService->getAdminUser())) {
-            return false;
-        }
-
-        return true;
     }
 
     /**
@@ -153,7 +109,7 @@ class UserService extends CoreApplicationService
      */
     public function resetLoggedInUserPassword($password)
     {
-        $token = $this->getConfirmationToken($this->getUser()->getUsername());
+        $token = $this->getConfirmationToken(parent::getUser()->getUsername());
 
         return $this->resetPassword($token, $password);
     }
@@ -163,7 +119,7 @@ class UserService extends CoreApplicationService
      */
     public function authenticate()
     {
-        $user = $this->getUser();
+        $user = parent::getUser();
 
         $requestUrl = $this->coreApplicationRouter->generate('user_authenticate', [
             'email' => $user->getUsername(),
@@ -236,7 +192,7 @@ class UserService extends CoreApplicationService
      */
     public function activate($token)
     {
-        $this->setUser($this->systemUserService->getAdminUser());
+        parent::setUser($this->systemUserService->getAdminUser());
 
         $request = $this->httpClientService->postRequest(
             $this->coreApplicationRouter->generate('user_activate', ['token' => $token])
@@ -252,7 +208,7 @@ class UserService extends CoreApplicationService
             return $curlException->getErrorNo();
         }
 
-        $this->setUser(SystemUserService::getPublicUser());
+        parent::setUser(SystemUserService::getPublicUser());
 
         if ($response->getStatusCode() == 401) {
             throw new CoreApplicationAdminRequestException('Invalid admin user credentials', 401);
@@ -302,7 +258,7 @@ class UserService extends CoreApplicationService
     public function exists($email = null)
     {
         $email = empty($email)
-            ? $this->getUser()->getUsername()
+            ? parent::getUser()->getUsername()
             : $email;
 
         if (!isset($this->existsResultCache[$email])) {
@@ -339,9 +295,9 @@ class UserService extends CoreApplicationService
      */
     protected function getAdminResponse(Request $request)
     {
-        $currentUser = $this->getUser();
+        $currentUser = parent::getUser();
 
-        $this->setUser($this->systemUserService->getAdminUser());
+        parent::setUser($this->systemUserService->getAdminUser());
         $this->addAuthorisationToRequest($request);
 
         try {
@@ -351,7 +307,7 @@ class UserService extends CoreApplicationService
         }
 
         if (!is_null($currentUser)) {
-            $this->setUser($currentUser);
+            parent::setUser($currentUser);
         }
 
         if ($response->getStatusCode() == 401) {
@@ -374,7 +330,7 @@ class UserService extends CoreApplicationService
             return false;
         }
 
-        $email = (is_null($email)) ? $this->getUser()->getUsername() : $email;
+        $email = (is_null($email)) ? parent::getUser()->getUsername() : $email;
 
         if (!isset($this->enabledResultsCache[$email])) {
             $requestUrl = $this->coreApplicationRouter->generate('user_is_enabled', [
@@ -412,62 +368,6 @@ class UserService extends CoreApplicationService
     }
 
     /**
-     * @param User $user
-     */
-    public function setUser(User $user)
-    {
-        $this->session->set(self::SESSION_USER_KEY, $this->userSerializerService->serialize($user));
-        parent::setUser($user);
-    }
-
-    /**
-     * @param SymfonyRequest $request
-     */
-    public function setUserFromRequest(SymfonyRequest $request)
-    {
-        $user = null;
-
-        if ($request->cookies->has(self::USER_COOKIE_KEY)) {
-            $serializedUser = $request->cookies->get(self::USER_COOKIE_KEY);
-
-            $user = $this->userSerializerService->unserializedFromString($serializedUser);
-        }
-
-        if (empty($user)) {
-            $user = SystemUserService::getPublicUser();
-        }
-
-        $this->setUser($user);
-    }
-
-    /**
-     * @return User
-     */
-    public function getUser()
-    {
-        $sessionUser = $this->session->get(self::SESSION_USER_KEY);
-
-        if (empty($sessionUser)) {
-            $user = SystemUserService::getPublicUser();
-        } else {
-            $user = $this->userSerializerService->unserialize($sessionUser);
-
-            if (SystemUserService::isPublicUser($user)) {
-                $user = SystemUserService::getPublicUser();
-            }
-        }
-
-        parent::setUser($user);
-
-        return parent::getUser();
-    }
-
-    public function clearUser()
-    {
-        $this->session->set(self::SESSION_USER_KEY, null);
-    }
-
-    /**
      * @param User|null $user
      *
      * @return UserSummary
@@ -478,7 +378,7 @@ class UserService extends CoreApplicationService
     public function getSummary(User $user = null)
     {
         if (is_null($user)) {
-            $user = $this->getUser();
+            $user = parent::getUser();
         }
 
         $username = $user->getUsername();

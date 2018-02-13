@@ -3,7 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\User;
 
 use SimplyTestable\WebClientBundle\Controller\UserController;
-use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -78,7 +78,7 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
             $this->assertCount(1, $responseCookies);
 
             $responseCookie = $responseCookies[0];
-            $this->assertEquals(UserService::USER_COOKIE_KEY, $responseCookie->getName());
+            $this->assertEquals(UserManager::USER_COOKIE_KEY, $responseCookie->getName());
         } else {
             $this->assertEmpty($responseCookies);
         }

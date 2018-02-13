@@ -11,6 +11,7 @@ use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserStripeEventService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -59,8 +60,9 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
         $templating = $this->container->get('templating');
         $userStripeEventService = $this->container->get('simplytestable.services.userstripeeventservice');
         $flashBagValuesService = $this->container->get('simplytestable.services.flashbagvalues');
+        $userManager = $this->container->get(UserManager::class);
 
-        $user = $userService->getUser();
+        $user = $userManager->getUser();
         $username = $user->getUsername();
         $userSummary = $userService->getSummary();
 

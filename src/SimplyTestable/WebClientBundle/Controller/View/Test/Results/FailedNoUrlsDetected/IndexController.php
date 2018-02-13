@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,11 +28,11 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
     public function indexAction(Request $request, $website, $test_id)
     {
         $testService = $this->container->get('simplytestable.services.testservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
         $router = $this->container->get('router');
         $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
         $templating = $this->container->get('templating');
         $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
+        $userManager = $this->container->get(UserManager::class);
 
         $viewRedirectParameters = [
             'route' => 'view_test_progress_index_index',
@@ -52,7 +53,7 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
             return $response;
         }
 
-        $user = $userService->getUser();
+        $user = $userManager->getUser();
 
         $test = $testService->get($website, $test_id);
 

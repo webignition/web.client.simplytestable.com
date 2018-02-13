@@ -10,10 +10,10 @@ use SimplyTestable\WebClientBundle\Exception\WebResourceException;
 use SimplyTestable\WebClientBundle\Model\Coupon;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
-use Symfony\Component\HttpFoundation\Request;
 
 class UserServiceTest extends AbstractCoreApplicationServiceTest
 {
@@ -35,49 +35,6 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
     }
 
     /**
-     * @dataProvider isLoggedInDataProvider
-     *
-     * @param User|null $user
-     * @param bool $expectedIsLoggedIn
-     */
-    public function testIsLoggedIn($user, $expectedIsLoggedIn)
-    {
-        if (!empty($user)) {
-            $session = $this->container->get('session');
-            $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
-
-            $session->set(UserService::SESSION_USER_KEY, $userSerializerService->serialize($user));
-        }
-
-        $this->assertEquals($expectedIsLoggedIn, $this->userService->isLoggedIn());
-    }
-
-    /**
-     * @return array
-     */
-    public function isLoggedInDataProvider()
-    {
-        return [
-            'no user' => [
-                'user' => null,
-                'expectedIsLoggedIn' => false,
-            ],
-            'public user' => [
-                'user' => new User(UserService::PUBLIC_USER_USERNAME),
-                'expectedIsLoggedIn' => false,
-            ],
-            'admin user' => [
-                'user' => new User('admin'),
-                'expectedIsLoggedIn' => false,
-            ],
-            'private user' => [
-                'user' => new User('user@example.com'),
-                'expectedIsLoggedIn' => true,
-            ],
-        ];
-    }
-
-    /**
      * @dataProvider resetPasswordFailureDataProvider
      *
      * @param array $httpFixtures
@@ -89,6 +46,8 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         array $httpFixtures,
         $expectedReturnValue
     ) {
+        $this->userService->setUser(SystemUserService::getPublicUser());
+
         $this->setHttpFixtures($httpFixtures);
 
         $returnValue = $this->userService->resetPassword('token', 'password');
@@ -197,6 +156,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testAuthenticate(array $httpFixtures, $expectedAuthenticateReturnValue)
     {
+        $this->userService->setUser(SystemUserService::getPublicUser());
         $this->setHttpFixtures($httpFixtures);
 
         $this->assertEquals($expectedAuthenticateReturnValue, $this->userService->authenticate());
@@ -660,136 +620,6 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $this->assertEquals('http://null/user/user@example.com/token/', $this->getLastRequest()->getUrl());
     }
 
-    public function testSetUser()
-    {
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
-        $session = $this->container->get('session');
-
-        $user = new User('user@example.com', 'password-value');
-        $serializedUser = $userSerializerService->serialize($user);
-
-        $this->userService->setUser($user);
-
-        $this->assertEquals($serializedUser, $session->get(UserService::SESSION_USER_KEY));
-        $this->assertEquals($user, $this->userService->getUser());
-    }
-
-    /**
-     * @dataProvider setUserFromRequestDataProvider
-     *
-     * @param Request $request
-     * @param User $expectedUser
-     */
-    public function testSetUserFromRequest(Request $request, User $expectedUser)
-    {
-        if ($request->cookies->has(UserService::USER_COOKIE_KEY)) {
-            $cookieUser = $request->cookies->get(UserService::USER_COOKIE_KEY);
-
-            if ($cookieUser instanceof User) {
-                $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
-                $request->cookies->set(
-                    UserService::USER_COOKIE_KEY,
-                    $userSerializerService->serializeToString($cookieUser)
-                );
-            }
-        }
-
-        $this->userService->setUserFromRequest($request);
-
-        $this->assertEquals($expectedUser, $this->userService->getUser());
-    }
-
-    /**
-     * @return array
-     */
-    public function setUserFromRequestDataProvider()
-    {
-        $publicUser = new User(UserService::PUBLIC_USER_USERNAME, UserService::PUBLIC_USER_PASSWORD);
-        $privateUser = new User('user@example.com');
-
-        return [
-            'no user in request cookie' => [
-                'request' => new Request(),
-                'expectedUser' => $publicUser,
-            ],
-            'invalid user in request cookie' => [
-                'request' => new Request([], [], [], [
-                    UserService::USER_COOKIE_KEY => 'foo',
-                ]),
-                'expectedUser' => $publicUser,
-            ],
-            'valid user in request cookie' => [
-                'request' => new Request([], [], [], [
-                    UserService::USER_COOKIE_KEY => $privateUser,
-                ]),
-                'expectedUser' => $privateUser,
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider getUserDataProvider
-     *
-     * @param User|null $sessionUser
-     * @param User $expectedUser
-     */
-    public function testGetUser($sessionUser, User $expectedUser)
-    {
-        if (!empty($sessionUser)) {
-            $session = $this->container->get('session');
-            $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
-
-            $session->set(UserService::SESSION_USER_KEY, $userSerializerService->serialize($sessionUser));
-        }
-
-        $user = $this->userService->getUser();
-
-        $this->assertEquals($expectedUser, $user);
-    }
-
-    /**
-     * @return array
-     */
-    public function getUserDataProvider()
-    {
-        $publicUser = new User(UserService::PUBLIC_USER_USERNAME, UserService::PUBLIC_USER_PASSWORD);
-        $publicUserEmailVariant = new User(UserService::PUBLIC_USER_EMAIL, UserService::PUBLIC_USER_PASSWORD);
-        $privateUser = new User('user@example.com');
-
-        return [
-            'no user in session' => [
-                'sessionUser' => null,
-                'expectedUser' => $publicUser
-            ],
-            'has public user in session' => [
-                'sessionUser' => $publicUser,
-                'expectedUser' => $publicUser
-            ],
-            'has public user email variant in session' => [
-                'sessionUser' => $publicUserEmailVariant,
-                'expectedUser' => $publicUser
-            ],
-            'has private user in session' => [
-                'sessionUser' => $privateUser,
-                'expectedUser' => $privateUser
-            ],
-        ];
-    }
-
-    public function testClearUser()
-    {
-        $session = $this->container->get('session');
-        $user = 'foo';
-
-        $session->set(UserService::SESSION_USER_KEY, $user);
-
-        $this->assertEquals($user, $session->get(UserService::SESSION_USER_KEY));
-
-        $this->userService->clearUser();
-
-        $this->assertNull($session->get(UserService::SESSION_USER_KEY));
-    }
-
     /**
      * @dataProvider getSummaryFailureDataProvider
      *
@@ -849,10 +679,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
     public function testGetSummarySuccess($user, $expectedRequestUrl)
     {
         $userService = $this->container->get('simplytestable.services.userservice');
-
-        if (!empty($user)) {
-            $this->userService->setUser($user);
-        }
+        $this->userService->setUser($user);
 
         $this->setHttpFixtures([
             HttpResponseFactory::createJsonResponse([
@@ -895,7 +722,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
                 'expectedRequestUrl' => 'http://null/user/user@example.com/',
             ],
             'no user' => [
-                'user' => null,
+                'user' => SystemUserService::getPublicUser(),
                 'expectedRequestUrl' => 'http://null/user/public/',
             ],
         ];

@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\Test\Task\ErrorTaskMapCollection;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,14 +47,14 @@ class ByTaskTypeController extends AbstractResultsController
         $router = $this->container->get('router');
         $testService = $this->container->get('simplytestable.services.testservice');
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
         $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
         $taskService = $this->container->get('simplytestable.services.taskservice');
         $taskCollectionFilterService = $this->container->get('simplytestable.services.taskcollectionfilterservice');
         $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
         $templating = $this->container->get('templating');
+        $userManager = $this->container->get(UserManager::class);
 
-        $user = $userService->getUser();
+        $user = $userManager->getUser();
 
         $test = $testService->get($website, $test_id);
         $remoteTest = $remoteTestService->get();

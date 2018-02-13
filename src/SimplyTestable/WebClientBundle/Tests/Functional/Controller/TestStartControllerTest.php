@@ -9,7 +9,8 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
-use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
@@ -61,15 +62,14 @@ class TestStartControllerTest extends AbstractBaseTestCase
         $expectedRequestUrl,
         array $expectedPostData = []
     ) {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser($userService->getUser());
+        $userManager = $this->container->get(UserManager::class);
+
+        $coreApplicationHttpClient->setUser($user);
+        $userManager->setUser($user);
 
         $httpHistoryPlugin = new HistoryPlugin();
         $coreApplicationHttpClient->getHttpClient()->addSubscriber($httpHistoryPlugin);
-
-        $userService = $this->container->get('simplytestable.services.userservice');
-        $userService->setUser($user);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
@@ -102,7 +102,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
      */
     public function startNewActionDataProvider()
     {
-        $publicUser = new User(UserService::PUBLIC_USER_USERNAME);
+        $publicUser = SystemUserService::getPublicUser();
         $privateUser = new User(self::USER_EMAIL);
 
         return [

@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\TimePeriod;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\TestFactory;
@@ -45,9 +46,8 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testHas($httpFixtures, $testValues, $canonicalUrl, $testId, $expectedHas)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser($userService->getUser());
+        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
@@ -117,9 +117,8 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testGet($httpFixtures, $testValues, $canonicalUrl, $testId, $expectedTestValues)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser($userService->getUser());
+        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
