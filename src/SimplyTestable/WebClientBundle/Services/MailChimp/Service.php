@@ -1,8 +1,9 @@
 <?php
 namespace SimplyTestable\WebClientBundle\Services\MailChimp;
 
+use SimplyTestable\WebClientBundle\Exception\MailChimp\MemberExistsException;
+use SimplyTestable\WebClientBundle\Exception\MailChimp\UnknownException;
 use ZfrMailChimp\Client\MailChimpClient;
-use ZfrMailChimp\Exception\Ls\AlreadySubscribedException;
 use SimplyTestable\WebClientBundle\Services\MailChimp\Client as FooMailChimpClient;
 
 class Service
@@ -47,6 +48,16 @@ class Service
      *
      * @return bool
      */
+
+    /**
+     * @param string $listName
+     * @param string $email
+     *
+     * @return bool
+     *
+     * @throws MemberExistsException
+     * @throws UnknownException
+     */
     public function subscribe($listName, $email)
     {
         $listRecipients = $this->listRecipientsService->get($listName);
@@ -54,16 +65,10 @@ class Service
             return true;
         }
 
-        try {
-            $this->client->subscribe([
-                'id' => $this->listRecipientsService->getListId($listName),
-                'email' => [
-                    'email' => $email
-                ],
-                'double_optin' => false
-            ]);
-        } catch (AlreadySubscribedException $alreadySubscribedException) {
-        }
+        $this->fooClient->addListMember(
+            $this->listRecipientsService->getListId($listName),
+            $email
+        );
 
         return true;
     }

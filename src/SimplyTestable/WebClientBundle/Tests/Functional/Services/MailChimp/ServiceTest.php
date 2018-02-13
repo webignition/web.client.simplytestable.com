@@ -6,6 +6,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\Mock\MockPlugin;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
+use SimplyTestable\WebClientBundle\Exception\MailChimp\MemberExistsException;
+use SimplyTestable\WebClientBundle\Exception\MailChimp\UnknownException;
+use SimplyTestable\WebClientBundle\Model\MailChimp\ApiError;
 use SimplyTestable\WebClientBundle\Services\MailChimp\Client;
 use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
 use SimplyTestable\WebClientBundle\Services\MailChimp\Service as MailChimpService;
@@ -55,14 +58,72 @@ class ServiceTest extends AbstractBaseTestCase
         $this->assertTrue($result);
     }
 
+    /**
+     * @dataProvider subscribeFailureDataProvider
+     *
+     * @param array $httpFixtures
+     * @param string $expectedException
+     * @param string $expectedExceptionMessage
+     * @param int $expectedExceptionCode
+     *
+     * @throws MemberExistsException
+     * @throws UnknownException
+     */
+    public function testSubscribeFailure(
+        array $httpFixtures,
+        $expectedException,
+        $expectedExceptionMessage,
+        $expectedExceptionCode
+    ) {
+        $httpMockPlugin = new MockPlugin($httpFixtures);
+
+        $mailChimpClient = $this->container->get(Client::class);
+        $mailChimpClient->getHttpClient()->addSubscriber($httpMockPlugin);
+
+        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+
+        $this->mailChimpService->subscribe(self::LIST_NAME, self::USER_EMAIL);
+    }
+
+    /**
+     * @return array
+     */
+    public function subscribeFailureDataProvider()
+    {
+        return [
+            'member exists' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createBadRequestResponse([], json_encode([
+                        'title' => ApiError::TITLE_MEMBER_EXISTS,
+                        'detail' => 'user@example.com is already a list member.'
+                    ])),
+                ],
+                'expectedException' => MemberExistsException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
+            ],
+            'unknown error' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createBadRequestResponse([], json_encode([
+                        'title' => 'foo',
+                        'detail' => 'foo'
+                    ])),
+                ],
+                'expectedException' => UnknownException::class,
+                'expectedExceptionMessage' => '',
+                'expectedExceptionCode' => 0,
+            ],
+        ];
+    }
+
     public function testSubscribeSuccess()
     {
         $httpMockPlugin = new MockPlugin([
-            Response::fromMessage('HTTP/1.1 200 OK')
+            HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $mailChimpClient = $this->container->get('simplytestable.services.mailchimp.client');
-        $mailChimpClient->addSubscriber($httpMockPlugin);
+        $mailChimpClient = $this->container->get(Client::class);
+        $mailChimpClient->getHttpClient()->addSubscriber($httpMockPlugin);
 
         $result = $this->mailChimpService->subscribe(self::LIST_NAME, self::USER_EMAIL);
 
