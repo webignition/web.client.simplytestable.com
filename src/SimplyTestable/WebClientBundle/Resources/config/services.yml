@@ -59,9 +59,8 @@ services:
   simplytestable.services.userservice:
     class:  SimplyTestable\WebClientBundle\Services\UserService
     arguments:
-        webResourceService: "@simplytestable.services.webresourceservice"
-        coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
-        systemUserService: '@SimplyTestable\WebClientBundle\Services\SystemUserService'
+        coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
+        jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
   simplytestable.services.useremailchangerequestservice:
     class:  SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService
