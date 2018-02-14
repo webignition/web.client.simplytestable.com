@@ -20,6 +20,7 @@
         "doctrine/doctrine-migrations-bundle": "~1.2",
         "webignition/url":">=1.9.10,<2.0",
         "guzzle/guzzle":"~3.8.0",
+        "guzzlehttp/guzzle": "~5",
         "webignition/html-validation-error-normaliser":"dev-master",
         "webignition/html-validation-error-linkifier":"dev-master",
         "mlpz/postmark-bundle": "dev-master#95a84ae0e48677e0f9da37e50bc93be624451d21",
