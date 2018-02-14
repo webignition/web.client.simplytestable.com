@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\MailChimp;
 
-use Guzzle\Plugin\Mock\MockPlugin;
+use GuzzleHttp\Subscriber\Mock as HttpMockSubscriber;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\MemberExistsException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\ResourceNotFoundException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\UnknownException;
@@ -218,7 +218,7 @@ class ClientTest extends AbstractBaseTestCase
      */
     private function setHttpFixtures($httpFixtures = [])
     {
-        $mockPlugin = new MockPlugin($httpFixtures);
-        $this->mailChimpClient->getHttpClient()->getEventDispatcher()->addSubscriber($mockPlugin);
+        $mockSubscriber = new HttpMockSubscriber($httpFixtures);
+        $this->mailChimpClient->getHttpClient()->getEmitter()->attach($mockSubscriber);
     }
 }

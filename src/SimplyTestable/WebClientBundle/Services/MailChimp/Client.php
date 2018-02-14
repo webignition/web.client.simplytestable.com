@@ -2,10 +2,10 @@
 
 namespace SimplyTestable\WebClientBundle\Services\MailChimp;
 
-use Guzzle\Http\Client as GuzzleClient;
-use Guzzle\Http\ClientInterface;
-use Guzzle\Http\Exception\ClientErrorResponseException;
-use Guzzle\Http\Message\RequestInterface;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Message\RequestInterface;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\MemberExistsException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\ResourceNotFoundException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\UnknownException;
@@ -40,7 +40,9 @@ class Client
         $apiKeyParts = explode('-', $apiKey);
         $dataCenterName = $apiKeyParts[1];
 
-        $this->httpClient = new GuzzleClient(sprintf(self::BASE_URL, $dataCenterName));
+        $this->httpClient = new GuzzleClient([
+            'base_url' => sprintf(self::BASE_URL, $dataCenterName),
+        ]);
     }
 
     /**
@@ -70,9 +72,10 @@ class Client
         $endpointUrl .= '?' . http_build_query($queryStringParameters);
 
         $request = $this->createRequest('GET', $endpointUrl);
-        $response = $request->send();
 
-        return new ListMembers(json_decode($response->getBody(), true));
+        $response = $this->getHttpClient()->send($request);
+
+        return new ListMembers($response->json());
     }
 
     /**
@@ -96,10 +99,10 @@ class Client
         ], json_encode($postData));
 
         try {
-            $request->send();
-        } catch (ClientErrorResponseException $clientErrorResponseException) {
-            $response = $clientErrorResponseException->getResponse();
-            $errorData = json_decode($response->getBody(), true);
+            $this->getHttpClient()->send($request);
+        } catch (ClientException $clientException) {
+            $response = $clientException->getResponse();
+            $errorData = $response->json();
 
             $error = new ApiError($errorData);
 
@@ -125,10 +128,10 @@ class Client
         $request = $this->createRequest('DELETE', $endpointUrl);
 
         try {
-            $request->send();
-        } catch (ClientErrorResponseException $clientErrorResponseException) {
+            $this->getHttpClient()->send($request);
+        } catch (ClientException $clientErrorResponseException) {
             $response = $clientErrorResponseException->getResponse();
-            $errorData = json_decode($response->getBody(), true);
+            $errorData = $response->json();
 
             $error = new ApiError($errorData);
 
@@ -150,18 +153,23 @@ class Client
      */
     private function createRequest($method, $endpointUrl, $headers = [], $body = null)
     {
-        return $this->httpClient->createRequest(
+        $request = $this->httpClient->createRequest(
             $method,
             $this->createRequestUrl($endpointUrl),
-            array_merge([
-                'Authorization' => 'Basic ' . base64_encode(sprintf(
-                    '%s:%s',
-                    'anystring',
-                    $this->apiKey
-                )),
-            ], $headers),
-            $body
+            [
+                'body' => $body,
+            ]
         );
+
+        $request->setHeaders(array_merge([
+            'Authorization' => 'Basic ' . base64_encode(sprintf(
+                '%s:%s',
+                'anystring',
+                $this->apiKey
+            )),
+        ], $headers));
+
+        return $request;
     }
 
     /**
