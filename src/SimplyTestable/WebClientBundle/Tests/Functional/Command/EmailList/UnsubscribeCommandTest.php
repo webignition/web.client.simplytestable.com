@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Command\EmailList;
 
-use Guzzle\Plugin\Mock\MockPlugin;
+use GuzzleHttp\Subscriber\Mock as MockSubscriber;
 use SimplyTestable\WebClientBundle\Command\EmailList\SubscribeCommand;
 use SimplyTestable\WebClientBundle\Command\EmailList\UnsubscribeCommand;
 use SimplyTestable\WebClientBundle\Services\MailChimp\Client;
@@ -31,9 +31,11 @@ class UnsubscribeCommandTest extends AbstractBaseTestCase
     public function testRun()
     {
         $mailChimpClient = $this->container->get(Client::class);
-        $mailChimpClient->getHttpClient()->addSubscriber(new MockPlugin([
+
+        $mockSubscriber = new MockSubscriber([
             HttpResponseFactory::createSuccessResponse(),
-        ]));
+        ]);
+        $mailChimpClient->getHttpClient()->getEmitter()->attach($mockSubscriber);
 
         $input = new ArrayInput([
             SubscribeCommand::ARG_LIST_ID => 'announcements',

@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Command\EmailList;
 
-use Guzzle\Plugin\Mock\MockPlugin;
+use GuzzleHttp\Subscriber\Mock as MockSubscriber;
 use SimplyTestable\WebClientBundle\Command\EmailList\RetrieveRecipientsCommand;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 use SimplyTestable\WebClientBundle\Services\MailChimp\Client;
@@ -49,7 +49,9 @@ class RetrieveRecipientsCommandTest extends AbstractBaseTestCase
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
         $listRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
         $mailChimpClient = $this->container->get(Client::class);
-        $mailChimpClient->getHttpClient()->addSubscriber(new MockPlugin($httpFixtures));
+
+        $mockSubscriber = new MockSubscriber($httpFixtures);
+        $mailChimpClient->getHttpClient()->getEmitter()->attach($mockSubscriber);
 
         $input = new ArrayInput([
             RetrieveRecipientsCommand::ARG_LIST_NAME => $listName,
