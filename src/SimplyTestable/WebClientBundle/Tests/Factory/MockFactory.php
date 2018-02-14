@@ -6,6 +6,7 @@ use Mockery\MockInterface;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use SimplyTestable\WebClientBundle\Repository\TaskOutputRepository;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
+use SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
@@ -169,5 +170,24 @@ class MockFactory
         }
 
         return $taskOutputRepository;
+    }
+
+    /**
+     * @param array $calls
+     *
+     * @return MockInterface|TaskOutputFactory
+     */
+    public static function createTaskOutputFactory($calls = [])
+    {
+        $taskOutputFactory = \Mockery::mock(TaskOutputFactory::class);
+
+        if (isset($calls['create'])) {
+            $taskOutputFactory
+                ->shouldReceive('create')
+                ->withArgs($calls['create']['withArgs'])
+                ->andReturn($calls['create']['return']);
+        }
+
+        return $taskOutputFactory;
     }
 }
