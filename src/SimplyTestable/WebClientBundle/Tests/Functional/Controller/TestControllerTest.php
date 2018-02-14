@@ -5,7 +5,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller;
 use SimplyTestable\WebClientBundle\Controller\TestController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
+use SimplyTestable\WebClientBundle\Tests\Factory\ConnectExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -161,29 +161,37 @@ class TestControllerTest extends AbstractBaseTestCase
      */
     public function cancelActionGetRequestDataProvider()
     {
+        $forbiddenResponse = HttpResponseFactory::createForbiddenResponse();
+        $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
+        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+
         return [
             'invalid owner' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createForbiddenResponse(),
-                    HttpResponseFactory::createForbiddenResponse(),
+                    $forbiddenResponse,
+                    $forbiddenResponse,
                 ],
                 'expectedRedirectUrl' => 'http://localhost/',
             ],
             'HTTP 500' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
                 ],
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
             ],
             'CURL exception' => [
                 'httpFixtures' => [
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
                 ],
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
             ],
@@ -229,27 +237,35 @@ class TestControllerTest extends AbstractBaseTestCase
      */
     public function cancelCrawlActionGetRequestDataProvider()
     {
+        $forbiddenResponse = HttpResponseFactory::createForbiddenResponse();
+        $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
+        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+
         return [
             'invalid owner' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createForbiddenResponse(),
-                    HttpResponseFactory::createForbiddenResponse(),
+                    $forbiddenResponse,
+                    $forbiddenResponse,
                 ],
             ],
             'HTTP 500' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
                 ],
             ],
             'CURL exception' => [
                 'httpFixtures' => [
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
                 ],
             ],
             'Success' => [
