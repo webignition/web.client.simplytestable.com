@@ -4,7 +4,6 @@ namespace SimplyTestable\WebClientBundle\Tests\Unit\Services;
 
 use GuzzleHttp\Message\Request;
 use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Message\Response;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationResponseCache;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 
@@ -29,16 +28,13 @@ class CoreApplicationResponseCacheTest extends \PHPUnit_Framework_TestCase
      * @dataProvider setDataProvider
      *
      * @param RequestInterface $request
-     * @param bool $expectedReturnValue
      */
-    public function testSet(RequestInterface $request, $expectedReturnValue)
+    public function testSet(RequestInterface $request)
     {
-        $setReturnValue = $this->coreApplicationResponseCache->set(
+        $this->coreApplicationResponseCache->set(
             $request,
             HttpResponseFactory::createSuccessResponse()
         );
-
-        $this->assertEquals($expectedReturnValue, $setReturnValue);
     }
 
     /**
@@ -49,11 +45,9 @@ class CoreApplicationResponseCacheTest extends \PHPUnit_Framework_TestCase
         return [
             'GET request' => [
                 'request' => new Request('GET', 'http://example.com'),
-                'expectedReturnValue' => true,
             ],
             'POST request' => [
                 'request' => new Request('POST', 'http://example.com'),
-                'expectedReturnValue' => false,
             ],
         ];
     }
@@ -91,9 +85,9 @@ class CoreApplicationResponseCacheTest extends \PHPUnit_Framework_TestCase
      * @param array $cacheContents
      * @param RequestInterface $request
      *
-     * @param Response|null $expectedResponse
+     * @param string $expectedResponseContent
      */
-    public function testGetSet(array $cacheContents, RequestInterface $request, $expectedResponse)
+    public function testGetSet(array $cacheContents, RequestInterface $request, $expectedResponseContent)
     {
         foreach ($cacheContents as $httpTransaction) {
             $this->coreApplicationResponseCache->set($httpTransaction['request'], $httpTransaction['response']);
@@ -101,7 +95,11 @@ class CoreApplicationResponseCacheTest extends \PHPUnit_Framework_TestCase
 
         $cacheResponse = $this->coreApplicationResponseCache->get($request);
 
-        $this->assertEquals($expectedResponse, $cacheResponse);
+        if (empty($expectedResponseContent)) {
+            $this->assertNull($cacheResponse);
+        } else {
+            $this->assertEquals($expectedResponseContent, (string)$cacheResponse->getBody());
+        }
     }
 
     /**
@@ -117,9 +115,13 @@ class CoreApplicationResponseCacheTest extends \PHPUnit_Framework_TestCase
 
         $postRequest = new Request('POST', 'http://example.com');
 
-        $response1 = HttpResponseFactory::createSuccessResponse();
-        $response2 = HttpResponseFactory::createSuccessResponse();
-        $response3 = HttpResponseFactory::createSuccessResponse();
+        $response1Content = 'foo1';
+        $response2Content = 'foo2';
+        $response3Content = 'foo3';
+
+        $response1 = HttpResponseFactory::createSuccessResponse([], $response1Content);
+        $response2 = HttpResponseFactory::createSuccessResponse([], $response2Content);
+        $response3 = HttpResponseFactory::createSuccessResponse([], $response3Content);
 
         $cacheContents = [
             [
@@ -140,22 +142,22 @@ class CoreApplicationResponseCacheTest extends \PHPUnit_Framework_TestCase
             'POST request' => [
                 'cacheContents' => $cacheContents,
                 'request' => $postRequest,
-                'expectedResponse' => null,
+                'expectedResponseContent' => null,
             ],
             'GET request1' => [
                 'cacheContents' => $cacheContents,
                 'request' => $getRequest1,
-                'expectedResponse' => $response1,
+                'expectedResponseContent' => $response1Content,
             ],
             'GET request2' => [
                 'cacheContents' => $cacheContents,
                 'request' => $getRequest2,
-                'expectedResponse' => $response2,
+                'expectedResponseContent' => $response2Content,
             ],
             'GET request3' => [
                 'cacheContents' => $cacheContents,
                 'request' => $getRequest3,
-                'expectedResponse' => $response3,
+                'expectedResponseContent' => $response3Content,
             ],
         ];
     }

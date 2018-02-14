@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Services;
 
+use GuzzleHttp\Message\MessageFactory;
 use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Message\ResponseInterface;
 
@@ -25,28 +26,36 @@ class CoreApplicationResponseCache
             return null;
         }
 
-        return isset($this->cache[$requestHash])
-            ? $this->cache[$requestHash]
-            : null;
+        if (!isset($this->cache[$requestHash])) {
+            return null;
+        }
+
+        $serializedResponse = $this->cache[$requestHash];
+
+        $messageFactory = new MessageFactory();
+
+        return $messageFactory->fromMessage($serializedResponse);
     }
 
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response
      *
-     * @return bool
+     * @return ResponseInterface|bool
      */
     public function set(RequestInterface $request, ResponseInterface $response)
     {
-        if ('GET' !== $request->getMethod()) {
-            return false;
+        if ('GET' === $request->getMethod()) {
+            $requestHash = $this->createRequestHash($request);
+
+            $this->cache[$requestHash] = (string)$response;
+
+            $messageFactory = new MessageFactory();
+
+            $response = $messageFactory->fromMessage($this->cache[$requestHash]);
         }
 
-        $requestHash = $this->createRequestHash($request);
-
-        $this->cache[$requestHash] = $response;
-
-        return true;
+        return $response;
     }
 
     /**
