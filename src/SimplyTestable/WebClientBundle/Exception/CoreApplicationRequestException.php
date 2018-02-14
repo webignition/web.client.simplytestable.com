@@ -2,11 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Exception;
 
-use Guzzle\Http\Exception\BadResponseException;
-use Guzzle\Http\Exception\CurlException;
+use GuzzleHttp\Exception\BadResponseException;
 use Guzzle\Http\Exception\RequestException;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
+use webignition\GuzzleHttp\Exception\CurlException\Exception as CurlException;
 
 class CoreApplicationRequestException extends \Exception
 {
@@ -31,8 +31,8 @@ class CoreApplicationRequestException extends \Exception
         if ($previous instanceof CurlException) {
             /* @var CurlException $previous */
 
-            $message = $previous->getError();
-            $code = $previous->getErrorNo();
+            $message = $previous->getMessage();
+            $code = $previous->getCurlCode();
             $this->isCurlException = true;
         }
 

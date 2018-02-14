@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional;
 
-use Guzzle\Plugin\Mock\MockPlugin;
+use GuzzleHttp\Subscriber\Mock as HttpMockSubscriber;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -37,10 +37,10 @@ abstract class AbstractBaseTestCase extends WebTestCase
     protected function setCoreApplicationHttpClientHttpFixtures(array $httpFixtures = [])
     {
         if (!empty($httpFixtures)) {
-            $mockPlugin = new MockPlugin($httpFixtures);
-
             $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-            $coreApplicationHttpClient->getHttpClient()->addSubscriber($mockPlugin);
+            $coreApplicationHttpClient->getHttpClient()->getEmitter()->attach(
+                new HttpMockSubscriber($httpFixtures)
+            );
         }
     }
 

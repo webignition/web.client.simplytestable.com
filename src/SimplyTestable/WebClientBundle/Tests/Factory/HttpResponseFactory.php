@@ -2,7 +2,9 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Factory;
 
-use Guzzle\Http\Message\Response;
+use GuzzleHttp\Message\Response;
+use GuzzleHttp\Message\ResponseInterface;
+use GuzzleHttp\Stream\Stream;
 
 class HttpResponseFactory
 {
@@ -11,31 +13,33 @@ class HttpResponseFactory
      * @param array $headers
      * @param string $body
      *
-     * @return Response
+     * @return ResponseInterface
      */
     public static function create($statusCode, $headers = [], $body = '')
     {
-        $headersStringParts = [];
-        foreach ($headers as $key => $value) {
-            $headersStringParts[] = $key . ':' . $value;
-        }
-
-        $headersString = implode("\n", $headersStringParts);
-
-        $message = trim(sprintf(
-            "HTTP/1.1 %s\n%s\n\n%s",
-            $statusCode,
-            $headersString,
-            $body
-        ));
-
-        return Response::fromMessage($message);
+        return new Response($statusCode, $headers, Stream::factory($body));
+//
+//        $headersStringParts = [];
+//        foreach ($headers as $key => $value) {
+//            $headersStringParts[] = $key . ':' . $value;
+//        }
+//
+//        $headersString = implode("\n", $headersStringParts);
+//
+//        $message = trim(sprintf(
+//            "HTTP/1.1 %s\n%s\n\n%s",
+//            $statusCode,
+//            $headersString,
+//            $body
+//        ));
+//
+//        return Response::fromMessage($message);
     }
 
     /**
      * @param mixed $data
      *
-     * @return Response
+     * @return ResponseInterface
      */
     public static function createJsonResponse($data)
     {
@@ -51,7 +55,7 @@ class HttpResponseFactory
      * @param array $headers
      * @param string $body
      *
-     * @return Response
+     * @return ResponseInterface
      */
     public static function createNotFoundResponse($headers = [], $body = '')
     {
@@ -62,7 +66,7 @@ class HttpResponseFactory
      * @param array $headers
      * @param string $body
      *
-     * @return Response
+     * @return ResponseInterface
      */
     public static function createSuccessResponse($headers = [], $body = '')
     {
@@ -70,7 +74,7 @@ class HttpResponseFactory
     }
 
     /**
-     * @return Response
+     * @return ResponseInterface
      */
     public static function createUnauthorisedResponse()
     {
@@ -79,7 +83,7 @@ class HttpResponseFactory
 
 
     /**
-     * @return Response
+     * @return ResponseInterface
      */
     public static function createForbiddenResponse()
     {
@@ -87,7 +91,7 @@ class HttpResponseFactory
     }
 
     /**
-     * @return Response
+     * @return ResponseInterface
      */
     public static function createInternalServerErrorResponse()
     {
@@ -95,7 +99,7 @@ class HttpResponseFactory
     }
 
     /**
-     * @return Response
+     * @return ResponseInterface
      */
     public static function createServiceUnavailableResponse()
     {
@@ -106,7 +110,7 @@ class HttpResponseFactory
      * @param array $headers
      * @param string $body
      *
-     * @return Response
+     * @return ResponseInterface
      */
     public static function createBadRequestResponse(array $headers = [], $body = '')
     {
@@ -114,7 +118,7 @@ class HttpResponseFactory
     }
 
     /**
-     * @return Response
+     * @return ResponseInterface
      */
     public static function createConflictResponse()
     {
@@ -125,7 +129,7 @@ class HttpResponseFactory
      * @param int $total
      * @param string[] $memberEmails
      *
-     * @return Response
+     * @return ResponseInterface
      */
     public static function createMailChimpListMembersResponse($total, $memberEmails)
     {
@@ -144,7 +148,7 @@ class HttpResponseFactory
     }
 
     /**
-     * @return Response
+     * @return ResponseInterface
      */
     public static function createRedirectResponse()
     {
