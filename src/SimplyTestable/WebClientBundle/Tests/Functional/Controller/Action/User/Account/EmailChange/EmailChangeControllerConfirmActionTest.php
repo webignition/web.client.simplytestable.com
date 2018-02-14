@@ -168,9 +168,6 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
             'unknown error' => [
                 'confirmEmailChangeRequestHttpFixtures' => [
                     HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
                 'expectedFlashBagValues' => [
                     EmailChangeController::FLASH_BAG_CONFIRM_KEY => [

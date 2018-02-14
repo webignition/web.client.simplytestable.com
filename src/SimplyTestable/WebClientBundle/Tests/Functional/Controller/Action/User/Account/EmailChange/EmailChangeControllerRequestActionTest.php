@@ -219,9 +219,6 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
             'unknown' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
                 'expectedFlashBagValues' => [
                     EmailChangeController::FLASH_BAG_REQUEST_KEY => [

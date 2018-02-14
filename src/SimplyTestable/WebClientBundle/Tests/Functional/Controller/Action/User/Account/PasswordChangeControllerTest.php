@@ -11,6 +11,7 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Tests\Factory\ConnectExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
@@ -205,9 +206,6 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse('token-value'),
                     HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
                 ],
                 'request' => new Request([], [
                     'current-password' => self::USER_CURRENT_PASSWORD,
@@ -222,9 +220,6 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse('token-value'),
                     HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'request' => new Request([], [
                     'current-password' => self::USER_CURRENT_PASSWORD,
@@ -238,10 +233,7 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
             'failed; CURL 28' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse('token-value'),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
+                    ConnectExceptionFactory::create('CURL/28 Operation timed out'),
                 ],
                 'request' => new Request([], [
                     'current-password' => self::USER_CURRENT_PASSWORD,

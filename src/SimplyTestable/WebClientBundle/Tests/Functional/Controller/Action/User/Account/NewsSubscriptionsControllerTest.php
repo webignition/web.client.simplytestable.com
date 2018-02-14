@@ -3,7 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User\Account;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Guzzle\Plugin\Mock\MockPlugin;
+use GuzzleHttp\Subscriber\Mock as MockSubscriber;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\NewsSubscriptionsController;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 use SimplyTestable\WebClientBundle\Model\MailChimp\ApiError;
@@ -102,10 +102,10 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
         /* @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
 
-        $httpMockPlugin = new MockPlugin($httpFixtures);
+        $mockSubscriber = new MockSubscriber($httpFixtures);
 
         $mailChimpClient = $this->container->get(Client::class);
-        $mailChimpClient->getHttpClient()->addSubscriber($httpMockPlugin);
+        $mailChimpClient->getHttpClient()->getEmitter()->attach($mockSubscriber);
 
         $userManager->setUser($user);
 
