@@ -2,9 +2,9 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Unit\Services;
 
-use Guzzle\Http\Message\Request;
-use Guzzle\Http\Message\RequestInterface;
-use Guzzle\Http\Message\Response;
+use GuzzleHttp\Message\Request;
+use GuzzleHttp\Message\RequestInterface;
+use GuzzleHttp\Message\Response;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationResponseCache;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 

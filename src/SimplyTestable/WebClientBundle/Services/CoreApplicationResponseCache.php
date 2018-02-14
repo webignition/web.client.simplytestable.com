@@ -1,20 +1,21 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Services;
 
-use Guzzle\Http\Message\RequestInterface;
-use Guzzle\Http\Message\Response;
+use GuzzleHttp\Message\RequestInterface;
+use GuzzleHttp\Message\ResponseInterface;
 
 class CoreApplicationResponseCache
 {
     /**
-     * @var Response[]
+     * @var ResponseInterface[]
      */
     private $cache;
 
     /**
      * @param RequestInterface $request
      *
-     * @return Response|null
+     * @return ResponseInterface|null
      */
     public function get(RequestInterface $request)
     {
@@ -31,11 +32,11 @@ class CoreApplicationResponseCache
 
     /**
      * @param RequestInterface $request
-     * @param Response $response
+     * @param ResponseInterface $response
      *
      * @return bool
      */
-    public function set(RequestInterface $request, Response $response)
+    public function set(RequestInterface $request, ResponseInterface $response)
     {
         if ('GET' !== $request->getMethod()) {
             return false;
@@ -61,7 +62,7 @@ class CoreApplicationResponseCache
 
         return md5(json_encode([
             'url' => $request->getUrl(),
-            'headers' => $request->getHeaders()->getAll(),
+            'headers' => $request->getHeaders(),
         ]));
     }
 }
