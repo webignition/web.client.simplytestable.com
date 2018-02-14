@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Test\Task\Results;
 
-use Guzzle\Http\Message\RequestInterface;
+use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Subscriber\History as HttpHistorySubscriber;
 use SimplyTestable\WebClientBundle\Controller\View\Test\Task\Results\IndexController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
