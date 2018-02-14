@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
-use Guzzle\Http\Message\EntityEnclosingRequest;
+use GuzzleHttp\Post\PostBody;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
@@ -130,15 +130,17 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->userService->resetPassword('token', 'password value');
 
-        /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
+
+        /* @var PostBody $requestBody */
+        $requestBody = $lastRequest->getBody();
 
         $this->assertEquals('http://null/user/reset-password/token/', $lastRequest->getUrl());
         $this->assertEquals(
             [
                 'password' => 'password%20value',
             ],
-            $lastRequest->getPostFields()->toArray()
+            $requestBody->getFields()
         );
     }
 
@@ -286,11 +288,13 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             $coupon
         );
 
-        /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
 
+        /* @var PostBody $requestBody */
+        $requestBody = $lastRequest->getBody();
+
         $this->assertEquals('http://null/user/create/', $lastRequest->getUrl());
-        $this->assertEquals($expectedPostFields, $lastRequest->getPostFields()->toArray());
+        $this->assertEquals($expectedPostFields, $requestBody->getFields());
     }
 
     /**
@@ -414,7 +418,6 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->userService->activate('token-value');
 
-        /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
 
         $this->assertEquals('http://null/user/activate/token-value/', $lastRequest->getUrl());
@@ -507,8 +510,10 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->userService->activateAndAccept($invite, 'password-value');
 
-        /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
+
+        /* @var PostBody $requestBody */
+        $requestBody = $lastRequest->getBody();
 
         $this->assertEquals('http://null/team/invite/activate/accept/', $lastRequest->getUrl());
         $this->assertEquals(
@@ -516,7 +521,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
                 'token' => 'token-value',
                 'password' => 'password-value',
             ],
-            $lastRequest->getPostFields()->toArray()
+            $requestBody->getFields()
         );
     }
 
@@ -562,7 +567,6 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $this->assertEquals($expectedReturnValue, $this->userService->exists($email));
         $this->assertEquals($expectedReturnValue, $this->userService->exists($email));
 
-        /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
 
         $this->assertEquals($expectedRequestUrl, $lastRequest->getUrl());
