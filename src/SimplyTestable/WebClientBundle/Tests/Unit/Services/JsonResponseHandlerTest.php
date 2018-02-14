@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Unit\Services;
 
-use Guzzle\Http\Message\Response;
+use GuzzleHttp\Message\ResponseInterface;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Services\JsonResponseHandler;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -34,12 +34,12 @@ class JsonResponseHandlerTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider handleSuccessDataProvider
      *
-     * @param Response $response
+     * @param ResponseInterface $response
      * @param mixed $expectedResponseData
      *
      * @throws InvalidContentTypeException
      */
-    public function testHandleSuccess(Response $response, $expectedResponseData)
+    public function testHandleSuccess(ResponseInterface $response, $expectedResponseData)
     {
         $responseData = $this->jsonResponseHandler->handle($response);
 
