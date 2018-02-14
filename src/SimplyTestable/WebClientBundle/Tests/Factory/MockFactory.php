@@ -4,7 +4,9 @@ namespace SimplyTestable\WebClientBundle\Tests\Factory;
 
 use Mockery\MockInterface;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
+use SimplyTestable\WebClientBundle\Repository\TaskOutputRepository;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
+use SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
@@ -149,5 +151,43 @@ class MockFactory
         }
 
         return $userService;
+    }
+
+    /**
+     * @param array $calls
+     *
+     * @return MockInterface|TaskOutputRepository
+     */
+    public static function createTaskOutputRepository($calls = [])
+    {
+        $taskOutputRepository = \Mockery::mock(TaskOutputRepository::class);
+
+        if (isset($calls['findOneBy'])) {
+            $taskOutputRepository
+                ->shouldReceive('findOneBy')
+                ->with($calls['findOneBy']['with'])
+                ->andReturn($calls['findOneBy']['return']);
+        }
+
+        return $taskOutputRepository;
+    }
+
+    /**
+     * @param array $calls
+     *
+     * @return MockInterface|TaskOutputFactory
+     */
+    public static function createTaskOutputFactory($calls = [])
+    {
+        $taskOutputFactory = \Mockery::mock(TaskOutputFactory::class);
+
+        if (isset($calls['create'])) {
+            $taskOutputFactory
+                ->shouldReceive('create')
+                ->withArgs($calls['create']['withArgs'])
+                ->andReturn($calls['create']['return']);
+        }
+
+        return $taskOutputFactory;
     }
 }

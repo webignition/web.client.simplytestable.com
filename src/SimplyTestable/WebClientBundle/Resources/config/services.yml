@@ -23,6 +23,8 @@ services:
         taskOutputResultParserService: "@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory"
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
         jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
+        taskFactory: '@SimplyTestable\WebClientBundle\Services\Factory\TaskFactory'
+        taskOutputFactory: '@SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory'
 
   simplytestable.services.taskcollectionfilterservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService
@@ -284,3 +286,13 @@ services:
     class:  SimplyTestable\WebClientBundle\Services\MailChimp\Client
     arguments:
       - '%mailchimp_api_key%'
+
+  SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory:
+    class:  SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory
+    arguments:
+      - '@doctrine.orm.entity_manager'
+
+  SimplyTestable\WebClientBundle\Services\Factory\TaskFactory:
+    class:  SimplyTestable\WebClientBundle\Services\Factory\TaskFactory
+    arguments:
+      - '@SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory'

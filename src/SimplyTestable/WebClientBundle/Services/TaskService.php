@@ -12,6 +12,8 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Repository\TaskOutputRepository;
 use SimplyTestable\WebClientBundle\Repository\TaskRepository;
+use SimplyTestable\WebClientBundle\Services\Factory\TaskFactory;
+use SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory;
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory as TaskOutputResultParserFactory;
 
 class TaskService
@@ -85,16 +87,30 @@ class TaskService
     private $jsonResponseHandler;
 
     /**
+     * @var TaskFactory
+     */
+    private $taskFactory;
+
+    /**
+     * @var TaskOutputFactory
+     */
+    private $taskOutputFactory;
+
+    /**
      * @param EntityManagerInterface $entityManager
      * @param TaskOutputResultParserFactory $taskOutputResultParserFactory
      * @param CoreApplicationHttpClient $coreApplicationHttpClient
      * @param JsonResponseHandler $jsonResponseHandler
+     * @param TaskFactory $taskFactory
+     * @param TaskOutputFactory $taskOutputFactory
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         TaskOutputResultParserFactory $taskOutputResultParserFactory,
         CoreApplicationHttpClient $coreApplicationHttpClient,
-        JsonResponseHandler $jsonResponseHandler
+        JsonResponseHandler $jsonResponseHandler,
+        TaskFactory $taskFactory,
+        TaskOutputFactory $taskOutputFactory
     ) {
         $this->entityManager = $entityManager;
         $this->taskOutputResultParserService = $taskOutputResultParserFactory;
@@ -104,6 +120,8 @@ class TaskService
 
         $this->coreApplicationHttpClient = $coreApplicationHttpClient;
         $this->jsonResponseHandler = $jsonResponseHandler;
+        $this->taskFactory = $taskFactory;
+        $this->taskOutputFactory = $taskOutputFactory;
     }
 
     /**
@@ -158,28 +176,22 @@ class TaskService
 
             foreach ($remoteTaskDataCollection as $remoteTaskData) {
                 if (array_key_exists('output', $remoteTaskData)) {
-                    $outputs[] = $this->populateOutputFromRemoteTaskData($remoteTaskData);
-                }
-            }
-
-            if (count($outputs)) {
-                $outputs = $this->minimiseOutputCollection($outputs);
-
-                if (count($outputs)) {
-                    foreach ($outputs as $output) {
-                        $this->entityManager->persist($output);
-                    }
-
+                    $output = $this->taskOutputFactory->create($remoteTaskData['type'], $remoteTaskData['output']);
+                    $this->entityManager->persist($output);
                     $this->entityManager->flush();
-                };
+
+                    $outputs[] = $output;
+                }
             }
 
             foreach ($remoteTaskDataCollection as $remoteTaskData) {
                 $remoteTaskId = $remoteTaskData['id'];
 
-                $task = (isset($tasks[$remoteTaskId])) ? $tasks[$remoteTaskId] : new Task();
-                $task->setTest($test);
-                $this->populateFromRemoteTaskData($task, $remoteTaskData);
+                $task = isset($tasks[$remoteTaskId])
+                    ? $tasks[$remoteTaskId]
+                    : $this->taskFactory->create($test);
+
+                $this->taskFactory->hydrate($task, $remoteTaskData);
                 $tasks[$task->getTaskId()] = $task;
             }
         }
@@ -210,26 +222,6 @@ class TaskService
         }
 
         return $tasks;
-    }
-
-    /**
-     * @param Output[] $outputs
-     *
-     * @return Output[]
-     */
-    private function minimiseOutputCollection($outputs)
-    {
-        $processedHashes = [];
-
-        foreach ($outputs as $outputIndex => $output) {
-            if (in_array($output->getHash(), $processedHashes) || $output->hasId()) {
-                unset($outputs[$outputIndex]);
-            } else {
-                $processedHashes[] = $output->getHash();
-            }
-        }
-
-        return $outputs;
     }
 
     /**
@@ -278,65 +270,6 @@ class TaskService
         }
 
         return $taskStates;
-    }
-
-    /**
-     * @param Task $task
-     *
-     * @param array $remoteTaskData
-     */
-    private function populateFromRemoteTaskData(Task $task, array $remoteTaskData)
-    {
-        $task->setTaskId($remoteTaskData['id']);
-        $task->setUrl($remoteTaskData['url']);
-        $task->setState($remoteTaskData['state']);
-        $task->setWorker($remoteTaskData['worker']);
-        $task->setType($remoteTaskData['type']);
-
-        if (array_key_exists('time_period', $remoteTaskData)) {
-            $timePeriodData = $remoteTaskData['time_period'];
-
-            if (array_key_exists('start_date_time', $timePeriodData)) {
-                $task->getTimePeriod()->setStartDateTime(new \DateTime($timePeriodData['start_date_time']));
-            }
-
-            if (array_key_exists('end_date_time', $timePeriodData)) {
-                $task->getTimePeriod()->setEndDateTime(new \DateTime($timePeriodData['end_date_time']));
-            }
-        }
-
-        if (array_key_exists('output', $remoteTaskData)) {
-            if (!$task->hasOutput()) {
-                $task->setOutput($this->populateOutputFromRemoteTaskData($remoteTaskData));
-            }
-        }
-    }
-
-    /**
-     * @param array $remoteTaskData
-     *
-     * @return Output
-     */
-    private function populateOutputFromRemoteTaskData(array $remoteTaskData)
-    {
-        $remoteOutputData = $remoteTaskData['output'];
-
-        $output = new Output();
-        $output->setContent($remoteOutputData['output']);
-        $output->setType($remoteTaskData['type']);
-        $output->setErrorCount($remoteOutputData['error_count']);
-        $output->setWarningCount($remoteOutputData['warning_count']);
-        $output->generateHash();
-
-        $existingOutput = $this->taskOutputRepository->findOneBy([
-            'hash' => $output->getHash(),
-        ]);
-
-        if (!empty($existingOutput)) {
-            $output = $existingOutput;
-        }
-
-        return $output;
     }
 
     /**
