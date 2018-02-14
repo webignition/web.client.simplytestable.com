@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestService;
 
-use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
+use SimplyTestable\WebClientBundle\Tests\Factory\ConnectExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 
 class RemoteTestServiceGetFinishedCountTest extends AbstractRemoteTestServiceTest
@@ -23,13 +23,7 @@ class RemoteTestServiceGetFinishedCountTest extends AbstractRemoteTestServiceTes
 
         $this->assertEquals($expectedResponse, $response);
 
-        $lastRequest = $this->getLastRequest();
-
-        if (is_null($expectedRequestUrl)) {
-            $this->assertNull($lastRequest);
-        } else {
-            $this->assertEquals($expectedRequestUrl, $lastRequest->getUrl());
-        }
+        $this->assertEquals($expectedRequestUrl, $this->getLastRequest()->getUrl());
     }
 
     /**
@@ -37,15 +31,20 @@ class RemoteTestServiceGetFinishedCountTest extends AbstractRemoteTestServiceTes
      */
     public function getFinishedCountDataProvider()
     {
+        $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
+        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+
         $successfulRequestUrl = 'http://null/jobs/list/count/?exclude-states%5B0%5D=rejected&exclude-current=1';
 
         return [
             'HTTP 500' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
                 ],
                 'urlFilter' => null,
                 'expectedResponse' => null,
@@ -53,14 +52,16 @@ class RemoteTestServiceGetFinishedCountTest extends AbstractRemoteTestServiceTes
             ],
             'CURL 28' => [
                 'httpFixtures' => [
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
                 ],
                 'urlFilter' => null,
                 'expectedResponse' => null,
-                'expectedRequestUrl' => null,
+                'expectedRequestUrl' => $successfulRequestUrl,
             ],
             'success' => [
                 'httpFixtures' => [

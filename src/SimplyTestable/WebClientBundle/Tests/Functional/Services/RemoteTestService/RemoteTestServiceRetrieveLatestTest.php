@@ -3,7 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestService;
 
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
-use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
+use SimplyTestable\WebClientBundle\Tests\Factory\ConnectExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 
 class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
@@ -45,12 +45,11 @@ class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
             'id' => 1,
         ]);
 
+        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+
         return [
             'HTTP 404' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/latest/',
@@ -59,10 +58,12 @@ class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
 
             'CURL 28' => [
                 'httpFixtures' => [
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
                 ],
                 'expectedRequestUrl' => null,
                 'expectedLatestTest' => null,

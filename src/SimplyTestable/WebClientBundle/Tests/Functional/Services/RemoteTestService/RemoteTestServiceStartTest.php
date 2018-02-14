@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestService;
 
-use Guzzle\Http\Message\EntityEnclosingRequest;
+use GuzzleHttp\Post\PostBody;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
@@ -49,13 +49,18 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
      */
     public function startFailureDataProvider()
     {
+        $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
+        $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
+
         return [
             'read only' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
                 ],
                 'expectedException' => CoreApplicationReadOnlyException::class,
                 'expectedExceptionMessage' => '',
@@ -63,10 +68,12 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
             ],
             'http 500' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
                 ],
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Internal Server Error',
@@ -120,11 +127,13 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
 
         $this->assertInstanceOf(RemoteTest::class, $remoteTest);
 
-        /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
 
+        /* @var PostBody $requestBody */
+        $requestBody = $lastRequest->getBody();
+
         $this->assertEquals($expectedRequestUrl, $lastRequest->getUrl());
-        $this->assertEquals($expectedPostData, $lastRequest->getPostFields()->toArray());
+        $this->assertEquals($expectedPostData, $requestBody->getFields());
     }
 
     /**

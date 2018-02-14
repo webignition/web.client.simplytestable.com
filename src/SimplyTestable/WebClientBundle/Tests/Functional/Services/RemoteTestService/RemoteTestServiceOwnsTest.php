@@ -63,13 +63,17 @@ class RemoteTestServiceOwnsTest extends AbstractRemoteTestServiceTest
      */
     public function ownsRemoteExceptionDataProvider()
     {
+        $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
+
         return [
             'http 500' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
                 ],
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Internal Server Error',

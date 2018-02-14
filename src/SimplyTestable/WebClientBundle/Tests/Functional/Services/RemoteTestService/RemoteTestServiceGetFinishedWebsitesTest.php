@@ -5,7 +5,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\RemoteTestSer
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
+use SimplyTestable\WebClientBundle\Tests\Factory\ConnectExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 
 class RemoteTestServiceGetFinishedWebsitesTest extends AbstractRemoteTestServiceTest
@@ -40,13 +40,18 @@ class RemoteTestServiceGetFinishedWebsitesTest extends AbstractRemoteTestService
      */
     public function getFinishedWebsitesFailureDataProvider()
     {
+        $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
+        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+
         return [
             'HTTP 500' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
                 ],
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Internal Server Error',
@@ -54,10 +59,12 @@ class RemoteTestServiceGetFinishedWebsitesTest extends AbstractRemoteTestService
             ],
             'CURL 28' => [
                 'httpFixtures' => [
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
                 ],
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Operation timed out',
@@ -85,13 +92,7 @@ class RemoteTestServiceGetFinishedWebsitesTest extends AbstractRemoteTestService
 
         $this->assertEquals($expectedResponse, $response);
 
-        $lastRequest = $this->getLastRequest();
-
-        if (is_null($expectedRequestUrl)) {
-            $this->assertNull($lastRequest);
-        } else {
-            $this->assertEquals($expectedRequestUrl, $lastRequest->getUrl());
-        }
+        $this->assertEquals($expectedRequestUrl, $this->getLastRequest()->getUrl());
     }
 
     /**
