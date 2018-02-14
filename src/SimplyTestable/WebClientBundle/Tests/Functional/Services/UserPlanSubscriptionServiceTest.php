@@ -9,7 +9,7 @@ use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService;
-use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
+use SimplyTestable\WebClientBundle\Tests\Factory\ConnectExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 
 class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
@@ -77,14 +77,11 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
         return [
             'invalid address zip' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::create(
-                        400,
-                        [
-                            'X-Stripe-Error-Message' => 'The zip code you supplied failed validation.',
-                            'X-Stripe-Error-Param' => 'address_zip',
-                            'X-Stripe-Error-Code' => 'incorrect_zip'
-                        ]
-                    ),
+                    HttpResponseFactory::createBadRequestResponse([
+                        'X-Stripe-Error-Message' => 'The zip code you supplied failed validation.',
+                        'X-Stripe-Error-Param' => 'address_zip',
+                        'X-Stripe-Error-Code' => 'incorrect_zip'
+                    ]),
                 ],
                 'expectedExceptionParam' => 'address_zip',
                 'expectedExceptionStripeCode' => 'incorrect_zip',
@@ -123,6 +120,8 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function subscribeFailureDataProvider()
     {
+        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+
         return [
             'HTTP 400' => [
                 'httpFixtures' => [
@@ -142,10 +141,12 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
             ],
             'CURL 28' => [
                 'httpFixtures' => [
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
                 ],
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Operation timed out',
