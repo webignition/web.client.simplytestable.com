@@ -166,7 +166,7 @@ class CoreApplicationHttpClient
     {
         $requestUrl = $this->createRequestUrl($routeName, $routeParameters);
 
-        $request = $this->httpClient->createRequest('GET', $requestUrl);
+        $request = $this->httpClient->createRequest('GET', $requestUrl, $this->createRequestOptions($options));
 
         return $this->getResponse($request, $options, $user);
     }
@@ -243,11 +243,34 @@ class CoreApplicationHttpClient
         array $options = []
     ) {
         $requestUrl = $this->createRequestUrl($routeName, $routeParameters);
-        $request = $this->httpClient->createRequest('POST', $requestUrl, [
-            'body' => $postData,
-        ]);
+        $request = $this->httpClient->createRequest(
+            'POST',
+            $requestUrl,
+            $this->createRequestOptions($options, $postData)
+        );
 
         return $this->getResponse($request, $options, $user);
+    }
+
+    /**
+     * @param array $options
+     * @param array|null $requestBody
+     *
+     * @return array
+     */
+    private function createRequestOptions(array $options, $requestBody = null)
+    {
+        $requestOptions = [];
+
+        if ($this->isOptionTrue(self::OPT_DISABLE_REDIRECT, $options)) {
+            $requestOptions['allow_redirects'] = false;
+        }
+
+        if (!empty($requestBody)) {
+            $requestOptions['body'] = $requestBody;
+        }
+
+        return $requestOptions;
     }
 
     /**
@@ -263,10 +286,6 @@ class CoreApplicationHttpClient
      */
     private function getResponse(RequestInterface $request, array $options, User $user)
     {
-//        if ($this->isOptionTrue(self::OPT_DISABLE_REDIRECT, $options)) {
-//            $request->getParams()->set('redirect.disable', true);
-//        }
-
         $this->addAuthorizationToRequest($request, $user);
 
         $response = $this->responseCache->get($request);

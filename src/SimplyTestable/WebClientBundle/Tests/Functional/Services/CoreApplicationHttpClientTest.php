@@ -333,6 +333,15 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 'options' => [],
                 'expectedResponse' => HttpResponseFactory::createSuccessResponse([], 'foo'),
             ],
+            '302 with redirects disallowed' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createRedirectResponse(),
+                ],
+                'options' => [
+                    CoreApplicationHttpClient::OPT_DISABLE_REDIRECT => true,
+                ],
+                'expectedResponse' => HttpResponseFactory::createRedirectResponse(),
+            ],
             '404 treated as empty' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
