@@ -2,7 +2,6 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User\Account\Team;
 
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
@@ -232,7 +231,7 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
     /**
      * @dataProvider resendInviteActionSuccessDataProvider
      *
-     * @param Response[] $httpFixtures
+     * @param array $httpFixtures
      * @param PostmarkMessage $postmarkMessage
      * @param array $expectedFlashBagValues
      *

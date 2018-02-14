@@ -3,7 +3,6 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\MailChimp;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\Mock\MockPlugin;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\MemberExistsException;
@@ -233,7 +232,7 @@ class ServiceTest extends AbstractBaseTestCase
     /**
      * @dataProvider retrieveMembersDataProvider
      *
-     * @param Response[] $httpFixtures
+     * @param array[] $httpFixtures
      * @param string[] $expectedMemberEmails
      */
     public function testRetrieveMembers($httpFixtures, $expectedMemberEmails)

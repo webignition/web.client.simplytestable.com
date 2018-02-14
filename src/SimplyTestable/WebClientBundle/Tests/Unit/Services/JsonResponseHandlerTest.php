@@ -28,7 +28,7 @@ class JsonResponseHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(InvalidContentTypeException::class);
 
-        $this->jsonResponseHandler->handle(new Response(200));
+        $this->jsonResponseHandler->handle(HttpResponseFactory::createSuccessResponse());
     }
 
     /**

@@ -3,7 +3,6 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
 use Guzzle\Http\Message\EntityEnclosingRequest;
-use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\History\HistoryPlugin;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
@@ -303,7 +302,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      */
     public function requestSuccessDataProvider()
     {
-        $emptyResponse = new Response(200);
+        $emptyResponse = HttpResponseFactory::createSuccessResponse();
 
         return [
             '200; empty body' => [

@@ -6,6 +6,7 @@ use Guzzle\Http\Message\Request;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationResponseCache;
+use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 
 class CoreApplicationResponseCacheTest extends \PHPUnit_Framework_TestCase
 {
@@ -32,7 +33,10 @@ class CoreApplicationResponseCacheTest extends \PHPUnit_Framework_TestCase
      */
     public function testSet(RequestInterface $request, $expectedReturnValue)
     {
-        $setReturnValue = $this->coreApplicationResponseCache->set($request, new Response(200));
+        $setReturnValue = $this->coreApplicationResponseCache->set(
+            $request,
+            HttpResponseFactory::createSuccessResponse()
+        );
 
         $this->assertEquals($expectedReturnValue, $setReturnValue);
     }
@@ -113,9 +117,9 @@ class CoreApplicationResponseCacheTest extends \PHPUnit_Framework_TestCase
 
         $postRequest = new Request('POST', 'http://example.com');
 
-        $response1 = new Response(200);
-        $response2 = new Response(200);
-        $response3 = new Response(200);
+        $response1 = HttpResponseFactory::createSuccessResponse();
+        $response2 = HttpResponseFactory::createSuccessResponse();
+        $response3 = HttpResponseFactory::createSuccessResponse();
 
         $cacheContents = [
             [
