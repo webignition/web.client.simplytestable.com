@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Test\Results\Preparing;
 
-use Guzzle\Plugin\History\HistoryPlugin;
+use GuzzleHttp\Subscriber\History as HttpHistorySubscriber;
 use SimplyTestable\WebClientBundle\Controller\View\Test\Results\Preparing\IndexController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
@@ -182,8 +182,8 @@ class IndexControllerTest extends AbstractBaseTestCase
         $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
         $userManager->setUser($user);
 
-        $httpHistoryPlugin = new HistoryPlugin();
-        $coreApplicationHttpClient->getHttpClient()->addSubscriber($httpHistoryPlugin);
+        $httpHistory = new HttpHistorySubscriber();
+        $coreApplicationHttpClient->getHttpClient()->getEmitter()->attach($httpHistory);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
@@ -193,7 +193,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $this->assertInstanceOf(RedirectResponse::class, $response);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
-        $this->assertEquals($expectedRequestUrl, $httpHistoryPlugin->getLastRequest()->getUrl());
+        $this->assertEquals($expectedRequestUrl, $httpHistory->getLastRequest()->getUrl());
     }
 
     /**
