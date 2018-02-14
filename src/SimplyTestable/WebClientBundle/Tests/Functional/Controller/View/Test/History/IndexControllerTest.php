@@ -2,8 +2,8 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Test\History;
 
-use Guzzle\Http\Message\RequestInterface;
-use Guzzle\Plugin\History\HistoryPlugin;
+use GuzzleHttp\Message\RequestInterface;
+use GuzzleHttp\Subscriber\History as HttpHistorySubscriber;
 use SimplyTestable\WebClientBundle\Controller\View\Test\History\IndexController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
@@ -117,10 +117,8 @@ class IndexControllerTest extends AbstractBaseTestCase
         $userManager->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
-        $httpHistoryPlugin = new HistoryPlugin();
-
-        $coreApplicationHttpClientHttpClient = $coreApplicationHttpClient->getHttpClient();
-        $coreApplicationHttpClientHttpClient->addSubscriber($httpHistoryPlugin);
+        $httpHistory = new HttpHistorySubscriber();
+        $coreApplicationHttpClient->getHttpClient()->getEmitter()->attach($httpHistory);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
@@ -132,11 +130,11 @@ class IndexControllerTest extends AbstractBaseTestCase
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
 
         if (empty($expectedRequestUrls)) {
-            $this->assertEmpty($httpHistoryPlugin->count());
+            $this->assertEmpty($httpHistory->count());
         } else {
             $requestedUrls = [];
 
-            foreach ($httpHistoryPlugin->getAll() as $httpTransaction) {
+            foreach ($httpHistory as $httpTransaction) {
                 /* @var RequestInterface $guzzleRequest */
                 $guzzleRequest = $httpTransaction['request'];
 
