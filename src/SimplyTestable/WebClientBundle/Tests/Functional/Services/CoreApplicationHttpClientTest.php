@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
+use GuzzleHttp\Message\ResponseInterface;
 use GuzzleHttp\Post\PostBody;
 use GuzzleHttp\Subscriber\History as HttpHistorySubscriber;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
@@ -189,7 +190,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @param array $httpFixtures
      * @param array $options
      *
-     * @param mixed $expectedResponse
+     * @param ResponseInterface|null $expectedResponse
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
@@ -202,8 +203,13 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $response1 = $this->coreApplicationHttpClient->get('team_get', [], $options);
         $response2 = $this->coreApplicationHttpClient->get('team_get', [], $options);
 
-        $this->assertEquals($response1, $response2);
-        $this->assertEquals($expectedResponse, $response1);
+        if (empty($expectedResponse)) {
+            $this->assertNull($response1);
+            $this->assertNull($response2);
+        } else {
+            $this->assertEquals((string)$expectedResponse, (string)$response1);
+            $this->assertEquals((string)$expectedResponse, (string)$response2);
+        }
     }
 
     /**
@@ -212,7 +218,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @param array $httpFixtures
      * @param array $options
      *
-     * @param mixed $expectedResponse
+     * @param ResponseInterface|null $expectedResponse
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
@@ -225,8 +231,13 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $response1 = $this->coreApplicationHttpClient->getAsAdmin('team_get', [], $options);
         $response2 = $this->coreApplicationHttpClient->getAsAdmin('team_get', [], $options);
 
-        $this->assertEquals($response1, $response2);
-        $this->assertEquals($expectedResponse, $response1);
+        if (empty($expectedResponse)) {
+            $this->assertNull($response1);
+            $this->assertNull($response2);
+        } else {
+            $this->assertEquals((string)$expectedResponse, (string)$response1);
+            $this->assertEquals((string)$expectedResponse, (string)$response2);
+        }
     }
 
     /**
@@ -235,7 +246,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @param array $httpFixtures
      * @param array $options
      *
-     * @param mixed $expectedResponse
+     * @param ResponseInterface|null $expectedResponse
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
@@ -255,7 +266,11 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
         $response = $this->coreApplicationHttpClient->post('team_get', [], $postData, $options);
 
-        $this->assertEquals($expectedResponse, $response);
+        if (empty($expectedResponse)) {
+            $this->assertNull($response);
+        } else {
+            $this->assertEquals((string)$expectedResponse, (string)$response);
+        }
 
         $lastRequest = $httpHistory->getLastRequest();
 
@@ -291,7 +306,11 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
         $response = $this->coreApplicationHttpClient->postAsAdmin('team_get', [], $postData, $options);
 
-        $this->assertEquals($expectedResponse, $response);
+        if (empty($expectedResponse)) {
+            $this->assertNull($response);
+        } else {
+            $this->assertEquals((string)$expectedResponse, (string)$response);
+        }
 
         $lastRequest = $httpHistory->getLastRequest();
 
@@ -306,15 +325,13 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      */
     public function requestSuccessDataProvider()
     {
-        $emptyResponse = HttpResponseFactory::createSuccessResponse();
-
         return [
             '200; empty body' => [
                 'httpFixtures' => [
-                    $emptyResponse,
+                    HttpResponseFactory::createSuccessResponse([], 'foo'),
                 ],
                 'options' => [],
-                'expectedResponse' => $emptyResponse,
+                'expectedResponse' => HttpResponseFactory::createSuccessResponse([], 'foo'),
             ],
             '404 treated as empty' => [
                 'httpFixtures' => [

@@ -274,8 +274,7 @@ class CoreApplicationHttpClient
         if (empty($response)) {
             try {
                 $response = $this->getHttpClient()->send($request);
-
-                $this->responseCache->set($request, $response);
+                $response = $this->responseCache->set($request, $response);
             } catch (TooManyRedirectsException $tooManyRedirectsException) {
                 // not sure if we really need to handle these
             } catch (ClientException $clientException) {
