@@ -19,7 +19,6 @@
         "doctrine/migrations": "~1.2",
         "doctrine/doctrine-migrations-bundle": "~1.2",
         "webignition/url":">=1.9.10,<2.0",
-        "guzzle/guzzle":"~3.8.0",
         "guzzlehttp/guzzle": "~5.2",
         "guzzlehttp/retry-subscriber":">=2.0.2,<3",
         "webignition/guzzle-curl-exception":">=0.1.4,<1",
