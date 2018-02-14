@@ -107,7 +107,10 @@ class UserService
         $response = $this->coreApplicationHttpClient->postAsAdmin(
             'user_create',
             [],
-            $requestData
+            $requestData,
+            [
+                CoreApplicationHttpClient::OPT_DISABLE_REDIRECT => true,
+            ]
         );
 
         if ($response->isRedirect()) {
