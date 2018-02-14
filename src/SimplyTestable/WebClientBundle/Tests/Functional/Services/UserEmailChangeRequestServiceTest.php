@@ -9,7 +9,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserEmailChangeException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService;
-use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
+use SimplyTestable\WebClientBundle\Tests\Factory\ConnectExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 
 class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTest
@@ -78,7 +78,7 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
         return [
             'not found' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::create(404),
+                    HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'expectedEmailChangeRequest' => null,
             ],
@@ -157,7 +157,7 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
      * @throws InvalidCredentialsException
      * @throws UserEmailChangeException
      */
-    public function testConfirmEmailChangeRequest(array $httpFixtures, $expectedRequestIsMade)
+    public function testConfirmEmailChangeRequestFoo(array $httpFixtures, $expectedRequestIsMade)
     {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
@@ -239,24 +239,31 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
      */
     public function modifyEmailChangeRequestSuccessDataProvider()
     {
+        $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
+        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+
         return [
             'HTTP 503' => [
                 'httpFixture' => [
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
                 ],
                 'expectedRequestIsMade' => true,
             ],
             'CURL 28' => [
                 'httpFixture' => [
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
                 ],
-                'expectedRequestIsMade' => false,
+                'expectedRequestIsMade' => true,
             ],
             'Success' => [
                 'httpFixture' => [
