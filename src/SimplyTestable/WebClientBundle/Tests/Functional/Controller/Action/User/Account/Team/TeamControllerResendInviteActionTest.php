@@ -139,11 +139,10 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
         return [
             'invitee is a team leader' => [
                 'httpFixtures' => [
-                    Response::fromMessage(sprintf(
-                        "HTTP/1.1 400 Bad Request\nX-TeamInviteGet-Error-Code:%s\nX-TeamInviteGet-Error-Message:%s",
-                        2,
-                        'Invitee is a team leader'
-                    )),
+                    HttpResponseFactory::createBadRequestResponse([
+                        'X-TeamInviteGet-Error-Code' => 2,
+                        'X-TeamInviteGet-Error-Message' => 'Invitee is a team leader',
+                    ]),
                 ],
                 'expectedFlashBagValues' => [
                     TeamController::FLASH_BAG_TEAM_RESEND_INVITE_KEY => [

@@ -3,7 +3,6 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\TeamInvite;
 
 use Guzzle\Http\Message\EntityEnclosingRequest;
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
@@ -334,13 +333,13 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
         return [
             'failure' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 400'),
+                    HttpResponseFactory::createBadRequestResponse(),
                 ],
                 'expectedReturnValue' => false,
             ],
             'success' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 200'),
+                    HttpResponseFactory::createSuccessResponse(),
                 ],
                 'expectedReturnValue' => true,
             ],
