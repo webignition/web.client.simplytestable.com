@@ -24,9 +24,7 @@
 {% endmacro %}
 
 {% macro labelled_radio_group(options, name, test_options, is_disabled) %}
-    {% import _self as form %}
-
     {% for option in options %}
-        {{ form.labelled_radio(option.label, name, option.value, test_options, (option.title is defined) ? option.title : '', is_disabled) }}
+        {{ _self.labelled_radio(option.label, name, option.value, test_options, (option.title is defined) ? option.title : '', is_disabled) }}
     {% endfor %}
 {% endmacro %}
