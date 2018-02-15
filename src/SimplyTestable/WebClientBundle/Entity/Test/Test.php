@@ -20,7 +20,6 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
  *         @ORM\Index(name="testId_idx", columns={"testId"})
  *     }
  * )
- * @ORM\Entity(repositoryClass="SimplyTestable\WebClientBundle\Repository\TestRepository")
  */
 class Test implements \JsonSerializable
 {

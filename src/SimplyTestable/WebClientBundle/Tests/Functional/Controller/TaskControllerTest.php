@@ -8,7 +8,6 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Repository\TestRepository;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
@@ -262,9 +261,9 @@ class TaskControllerTest extends AbstractBaseTestCase
     {
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
 
-        /* @var TestRepository $testRepository */
         $testRepository = $entityManager->getRepository(Test::class);
 
+        /* @var Test $test */
         $test = $testRepository->findOneBy([
             'testId' => self::TEST_ID,
         ]);

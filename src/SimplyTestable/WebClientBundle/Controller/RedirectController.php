@@ -5,7 +5,6 @@ namespace SimplyTestable\WebClientBundle\Controller;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
-use SimplyTestable\WebClientBundle\Repository\TestRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,7 +42,6 @@ class RedirectController extends Controller
         $logger = $this->container->get('logger');
         $router = $this->container->get('router');
 
-        /* @var TestRepository $testRepository */
         $testRepository = $entityManager->getRepository(Test::class);
 
         $isTaskResultsUrl = preg_match(self::TASK_RESULTS_URL_PATTERN, $website) > 0;
@@ -81,14 +79,19 @@ class RedirectController extends Controller
                 ));
             }
 
-            if ($testRepository->hasForWebsite($normalisedWebsite)) {
-                $testId = $testRepository->getLatestId($normalisedWebsite);
+            /* @var Test $latestTest */
+            $latestTest = $testRepository->findOneBy([
+                'website' => (string)$normalisedWebsite,
+            ], [
+                'testId' => 'DESC',
+            ]);
 
+            if (!empty($latestTest)) {
                 $redirectUrl = $this->generateUrl(
                     'app_test_redirector',
                     [
                         'website' => $normalisedWebsite,
-                        'test_id' => $testId
+                        'test_id' => $latestTest->getTestId(),
                     ],
                     UrlGeneratorInterface::ABSOLUTE_URL
                 );

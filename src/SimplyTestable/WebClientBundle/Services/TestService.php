@@ -3,12 +3,12 @@ namespace SimplyTestable\WebClientBundle\Services;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Psr\Log\LoggerInterface;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
-use SimplyTestable\WebClientBundle\Repository\TestRepository;
 use webignition\NormalisedUrl\NormalisedUrl;
 
 class TestService
@@ -35,9 +35,9 @@ class TestService
     private $entityManager;
 
     /**
-     * @var TestRepository
+     * @var EntityRepository
      */
-    private $entityRepository;
+    private $testRepository;
 
     /**
      * @var TaskService
@@ -76,7 +76,7 @@ class TestService
         $this->taskService = $taskService;
         $this->remoteTestService = $remoteTestService;
 
-        $this->entityRepository = $this->entityManager->getRepository(Test::class);
+        $this->testRepository = $this->entityManager->getRepository(Test::class);
     }
 
     /**
@@ -89,7 +89,7 @@ class TestService
      */
     public function has($canonicalUrl, $testId)
     {
-        $test = $this->entityRepository->findOneBy([
+        $test = $this->testRepository->findOneBy([
             'testId' => $testId
         ]);
 
@@ -110,7 +110,7 @@ class TestService
      */
     public function get($canonicalUrl, $testId)
     {
-        $test = $this->entityRepository->findOneBy([
+        $test = $this->testRepository->findOneBy([
             'testId' => $testId
         ]);
 
