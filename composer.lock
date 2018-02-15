@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "70ef4012a7426916b9ee7dfb93c8968d",
+    "content-hash": "fd817233708712b1938e8ae3775ff157",
     "packages": [
         {
             "name": "bcc/resque-bundle",
