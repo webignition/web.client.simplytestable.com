@@ -1,43 +1,50 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
 class TaskOutputRepository extends EntityRepository
 {
-    public function findHashlessOutputIds($limit = null) {
+    /**
+     * @param int|null $limit
+     *
+     * @return int[]
+     */
+    public function findHashlessOutputIds($limit = null)
+    {
         $queryBuilder = $this->createQueryBuilder('TaskOutput');
-
-        if(is_int($limit) && $limit > 0) {
-            $queryBuilder->setMaxResults($limit);
-        }
-
         $queryBuilder->select('TaskOutput.id');
         $queryBuilder->where('TaskOutput.hash IS NULL');
 
-        $result = $queryBuilder->getQuery()->getResult();
-
-        if (count($result) === 0) {
-            return array();
+        if (!empty($limit)) {
+            $queryBuilder->setMaxResults($limit);
         }
+
+        $result = $queryBuilder->getQuery()->getResult();
 
         return $this->getSingleFieldCollectionFromResult($result, 'id');
     }
 
-
-    public function findDuplicateHashes($limit = null) {
+    /**
+     * @param int|null $limit
+     *
+     * @return string[]
+     */
+    public function findDuplicateHashes($limit = null)
+    {
         $queryBuilder = $this->createQueryBuilder('TaskOutput');
-
-        if(is_int($limit) && $limit > 0) {
-            $queryBuilder->setMaxResults($limit);
-        }
 
         $queryBuilder->select('TaskOutput.id');
         $queryBuilder->select('TaskOutput.hash');
         $queryBuilder->groupBy('TaskOutput.hash');
         $queryBuilder->having('COUNT(TaskOutput.id) > 1');
 
-        $duplicateHashes = array();
+        if (!empty($limit)) {
+            $queryBuilder->setMaxResults($limit);
+        }
+
+        $duplicateHashes = [];
 
         $result = $queryBuilder->getQuery()->getResult();
 
@@ -48,19 +55,24 @@ class TaskOutputRepository extends EntityRepository
         return $duplicateHashes;
     }
 
-
-    public function findIdsNotIn($excludeIds) {
+    /**
+     * @param int[] $excludeIds
+     *
+     * @return int[]
+     */
+    public function findIdsNotIn($excludeIds)
+    {
         $queryBuilder = $this->createQueryBuilder('TaskOutput');
         $queryBuilder->select('TaskOutput.id');
-        $queryBuilder->where('TaskOutput.id NOT IN ('.  implode(',', $excludeIds).')');
+
+        if (!empty($excludeIds)) {
+            $queryBuilder->where('TaskOutput.id NOT IN (:ExcludeIds)');
+            $queryBuilder->setParameter('ExcludeIds', $excludeIds);
+        }
 
         $result = $queryBuilder->getQuery()->getResult();
 
-        if (count($result) === 0) {
-            return array();
-        }
-
-        $ids = array();
+        $ids = [];
 
         foreach ($result as $taskOutputIdResult) {
             $ids[] = $taskOutputIdResult['id'];
@@ -71,9 +83,15 @@ class TaskOutputRepository extends EntityRepository
         return $ids;
     }
 
-
-    private function getSingleFieldCollectionFromResult($result, $fieldName) {
-        $collection = array();
+    /**
+     * @param array $result
+     * @param string $fieldName
+     *
+     * @return array
+     */
+    private function getSingleFieldCollectionFromResult($result, $fieldName)
+    {
+        $collection = [];
 
         foreach ($result as $resultItem) {
             $collection[] = $resultItem[$fieldName];
@@ -81,6 +99,4 @@ class TaskOutputRepository extends EntityRepository
 
         return $collection;
     }
-
-
 }
