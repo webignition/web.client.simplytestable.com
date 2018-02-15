@@ -2,19 +2,21 @@
 
 namespace SimplyTestable\WebClientBundle\Services;
 
-use Guzzle\Http\Client as HttpClient;
-use Guzzle\Http\Exception\ClientErrorResponseException;
-use Guzzle\Http\Exception\CurlException;
-use Guzzle\Http\Exception\ServerErrorResponseException;
-use Guzzle\Http\Exception\TooManyRedirectsException;
-use Guzzle\Http\Message\RequestInterface;
-use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\Backoff\BackoffPlugin;
+use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\ClientInterface as HttpClientInterface;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Exception\TooManyRedirectsException;
+use GuzzleHttp\Message\RequestInterface;
+use GuzzleHttp\Message\ResponseInterface;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
+use GuzzleHttp\Subscriber\Retry\RetrySubscriber as HttpRetrySubscriber;
+use webignition\GuzzleHttp\Exception\CurlException\Factory as CurlExceptionFactory;
 
 class CoreApplicationHttpClient
 {
@@ -32,7 +34,7 @@ class CoreApplicationHttpClient
     private $router;
 
     /**
-     * @var HttpClient
+     * @var HttpClientInterface
      */
     private $httpClient;
 
@@ -67,15 +69,22 @@ class CoreApplicationHttpClient
         $this->adminUser = $systemUserService->getAdminUser();
 
         $this->httpClient = new HttpClient();
-        $this->httpClient->addSubscriber(BackoffPlugin::getExponentialBackoff(
-            3,
-            array(500, 503, 504)
-        ));
+
+        $filter = HttpRetrySubscriber::createChainFilter([
+            // Does early filter to force non-idempotent methods to NOT be retried.
+            HttpRetrySubscriber::createIdempotentFilter(),
+            // Retry curl-level errors
+            HttpRetrySubscriber::createCurlFilter(),
+            // Performs the last check, returning ``true`` or ``false`` based on
+            // if the response received a 500 or 503 status code.
+            HttpRetrySubscriber::createStatusFilter([500, 503])
+        ]);
+
+        $this->httpClient->getEmitter()->attach(new HttpRetrySubscriber(['filter' => $filter]));
     }
 
-
     /**
-     * @return HttpClient
+     * @return HttpClientInterface
      */
     public function getHttpClient()
     {
@@ -95,7 +104,7 @@ class CoreApplicationHttpClient
      * @param array $routeParameters
      * @param array $options
      *
-     * @return Response|array|mixed|null
+     * @return ResponseInterface|array|mixed|null
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
@@ -120,7 +129,7 @@ class CoreApplicationHttpClient
      * @param array $routeParameters
      * @param array $options
      *
-     * @return Response|array|mixed|null
+     * @return ResponseInterface|array|mixed|null
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
@@ -146,7 +155,7 @@ class CoreApplicationHttpClient
      * @param array $routeParameters
      * @param array $options
      *
-     * @return Response|array|mixed|null
+     * @return ResponseInterface|array|mixed|null
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
@@ -157,7 +166,7 @@ class CoreApplicationHttpClient
     {
         $requestUrl = $this->createRequestUrl($routeName, $routeParameters);
 
-        $request = $this->httpClient->createRequest('GET', $requestUrl);
+        $request = $this->httpClient->createRequest('GET', $requestUrl, $this->createRequestOptions($options));
 
         return $this->getResponse($request, $options, $user);
     }
@@ -168,7 +177,7 @@ class CoreApplicationHttpClient
      * @param array $postData
      * @param array $options
      *
-     * @return Response|array|mixed|null
+     * @return ResponseInterface|array|mixed|null
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
@@ -193,7 +202,7 @@ class CoreApplicationHttpClient
      * @param array $postData
      * @param array $options
      *
-     * @return Response|array|mixed|null
+     * @return ResponseInterface|array|mixed|null
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
@@ -219,7 +228,7 @@ class CoreApplicationHttpClient
      * @param array $postData
      * @param array $options
      *
-     * @return Response|array|mixed|null
+     * @return ResponseInterface|array|mixed|null
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
@@ -234,16 +243,41 @@ class CoreApplicationHttpClient
         array $options = []
     ) {
         $requestUrl = $this->createRequestUrl($routeName, $routeParameters);
-        $request = $this->httpClient->createRequest('POST', $requestUrl, [], $postData);
+        $request = $this->httpClient->createRequest(
+            'POST',
+            $requestUrl,
+            $this->createRequestOptions($options, $postData)
+        );
 
         return $this->getResponse($request, $options, $user);
+    }
+
+    /**
+     * @param array $options
+     * @param array|null $requestBody
+     *
+     * @return array
+     */
+    private function createRequestOptions(array $options, $requestBody = null)
+    {
+        $requestOptions = [];
+
+        if ($this->isOptionTrue(self::OPT_DISABLE_REDIRECT, $options)) {
+            $requestOptions['allow_redirects'] = false;
+        }
+
+        if (!empty($requestBody)) {
+            $requestOptions['body'] = $requestBody;
+        }
+
+        return $requestOptions;
     }
 
     /**
      * @param RequestInterface $request
      * @param array $options
      * @param User $user
-     * @return Response|null
+     * @return ResponseInterface|null
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
@@ -252,26 +286,21 @@ class CoreApplicationHttpClient
      */
     private function getResponse(RequestInterface $request, array $options, User $user)
     {
-        if ($this->isOptionTrue(self::OPT_DISABLE_REDIRECT, $options)) {
-            $request->getParams()->set('redirect.disable', true);
-        }
-
         $this->addAuthorizationToRequest($request, $user);
 
         $response = $this->responseCache->get($request);
 
         if (empty($response)) {
             try {
-                $response = $request->send();
-                $this->responseCache->set($request, $response);
+                $response = $this->getHttpClient()->send($request);
+                $response = $this->responseCache->set($request, $response);
             } catch (TooManyRedirectsException $tooManyRedirectsException) {
                 // not sure if we really need to handle these
-            } catch (ClientErrorResponseException $clientErrorResponseException) {
+            } catch (ClientException $clientException) {
                 // 400 bad request: check for x-foo-error-code and x-foo-error message headers
                 // 401: invalid auth
                 // 404: often core app way of saying 'no'
-
-                $response = $clientErrorResponseException->getResponse();
+                $response = $clientException->getResponse();
                 $responseStatusCode = $response->getStatusCode();
 
                 if (in_array($responseStatusCode, [401, 403])) {
@@ -288,18 +317,19 @@ class CoreApplicationHttpClient
                     }
                 }
 
-                throw new CoreApplicationRequestException($clientErrorResponseException);
-            } catch (ServerErrorResponseException $serverErrorResponseException) {
-                // 500: boom
-                // 503: read only
-                $response = $serverErrorResponseException->getResponse();
+                throw new CoreApplicationRequestException($clientException);
+            } catch (ServerException $serverException) {
+                $response = $serverException->getResponse();
+                $responseStatusCode = $response->getStatusCode();
 
-                if (503 === $response->getStatusCode()) {
+                if (503 === $responseStatusCode) {
                     throw new CoreApplicationReadOnlyException();
                 }
 
-                throw new CoreApplicationRequestException($serverErrorResponseException);
-            } catch (CurlException $curlException) {
+                throw new CoreApplicationRequestException($serverException);
+            } catch (ConnectException $connectException) {
+                $curlException = CurlExceptionFactory::fromConnectException($connectException);
+
                 throw new CoreApplicationRequestException($curlException);
             }
         }

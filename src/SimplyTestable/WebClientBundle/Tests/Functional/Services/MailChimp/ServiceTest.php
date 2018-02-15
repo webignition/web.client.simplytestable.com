@@ -3,8 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\MailChimp;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\Mock\MockPlugin;
+use GuzzleHttp\Subscriber\Mock as HttpMockSubscriber;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\MemberExistsException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\ResourceNotFoundException;
@@ -76,10 +75,7 @@ class ServiceTest extends AbstractBaseTestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $httpMockPlugin = new MockPlugin($httpFixtures);
-
-        $mailChimpClient = $this->container->get(Client::class);
-        $mailChimpClient->getHttpClient()->addSubscriber($httpMockPlugin);
+        $this->setHttpFixtures($httpFixtures);
 
         $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
 
@@ -119,12 +115,9 @@ class ServiceTest extends AbstractBaseTestCase
 
     public function testSubscribeSuccess()
     {
-        $httpMockPlugin = new MockPlugin([
+        $this->setHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
-
-        $mailChimpClient = $this->container->get(Client::class);
-        $mailChimpClient->getHttpClient()->addSubscriber($httpMockPlugin);
 
         $result = $this->mailChimpService->subscribe(self::LIST_NAME, self::USER_EMAIL);
 
@@ -155,10 +148,7 @@ class ServiceTest extends AbstractBaseTestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $httpMockPlugin = new MockPlugin($httpFixtures);
-
-        $mailChimpClient = $this->container->get(Client::class);
-        $mailChimpClient->getHttpClient()->addSubscriber($httpMockPlugin);
+        $this->setHttpFixtures($httpFixtures);
 
         /* @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
@@ -208,12 +198,9 @@ class ServiceTest extends AbstractBaseTestCase
 
     public function testUnsubscribeSuccess()
     {
-        $httpMockPlugin = new MockPlugin([
+        $this->setHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
-
-        $mailChimpClient = $this->container->get(Client::class);
-        $mailChimpClient->getHttpClient()->addSubscriber($httpMockPlugin);
 
         /* @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
@@ -233,15 +220,12 @@ class ServiceTest extends AbstractBaseTestCase
     /**
      * @dataProvider retrieveMembersDataProvider
      *
-     * @param Response[] $httpFixtures
+     * @param array[] $httpFixtures
      * @param string[] $expectedMemberEmails
      */
     public function testRetrieveMembers($httpFixtures, $expectedMemberEmails)
     {
-        $mockHttpPlugin = new MockPlugin($httpFixtures);
-
-        $fooMailChimpClient = $this->container->get(Client::class);
-        $fooMailChimpClient->getHttpClient()->addSubscriber($mockHttpPlugin);
+        $this->setHttpFixtures($httpFixtures);
 
         $memberEmails = $this->mailChimpService->retrieveMemberEmails(self::LIST_NAME);
 
@@ -301,5 +285,16 @@ class ServiceTest extends AbstractBaseTestCase
                 ],
             ],
         ];
+    }
+
+    /**
+     * @param array $httpFixtures
+     */
+    private function setHttpFixtures($httpFixtures = [])
+    {
+        $mockSubscriber = new HttpMockSubscriber($httpFixtures);
+
+        $mailChimpClient = $this->container->get(Client::class);
+        $mailChimpClient->getHttpClient()->getEmitter()->attach($mockSubscriber);
     }
 }

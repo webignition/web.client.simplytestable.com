@@ -1,7 +1,8 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Services;
 
-use Guzzle\Http\Message\Response;
+use GuzzleHttp\Message\ResponseInterface;
 use SimplyTestable\WebClientBundle\Model\StripeError;
 
 class StripeErrorFactory
@@ -12,11 +13,11 @@ class StripeErrorFactory
     const STRIPE_ERROR_KEY_CODE = 'code';
 
     /**
-     * @param Response $response
+     * @param ResponseInterface $response
      *
      * @return StripeError
      */
-    public function createFromHttpResponse(Response $response)
+    public function createFromHttpResponse(ResponseInterface $response)
     {
         $stripeErrorHeaderKeys = [
             self::STRIPE_ERROR_HEADER_PREFIX . self::STRIPE_ERROR_KEY_MESSAGE,
@@ -30,10 +31,10 @@ class StripeErrorFactory
             $errorValue = '';
 
             if ($response->hasHeader($headerKey)) {
-                $headerValues = $response->getHeader($headerKey)->toArray();
+                $headerValue = $response->getHeader($headerKey);
 
-                if (count($headerValues)) {
-                    $errorValue = $headerValues[0];
+                if (!empty($headerValue)) {
+                    $errorValue = $headerValue;
                 }
             }
 

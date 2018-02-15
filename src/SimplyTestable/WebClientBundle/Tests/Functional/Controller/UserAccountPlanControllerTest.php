@@ -9,7 +9,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
+use SimplyTestable\WebClientBundle\Tests\Factory\ConnectExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\BrowserKit\Cookie;
@@ -150,6 +150,9 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
      */
     public function subscribeActionDataProvider()
     {
+        $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
+        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+
         return [
             'already on plan' => [
                 'httpFixtures' => [
@@ -190,10 +193,12 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
             'HTTP 503 failure' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse($this->userData),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
                 ],
                 'request' => new Request([], [
                     'plan' => 'personal',
@@ -207,10 +212,12 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
             'CURL 28 failure' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse($this->userData),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
                 ],
                 'request' => new Request([], [
                     'plan' => 'personal',

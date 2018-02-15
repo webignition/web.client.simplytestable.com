@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
-use Guzzle\Http\Message\EntityEnclosingRequest;
+use GuzzleHttp\Post\PostBody;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\TeamService;
@@ -45,12 +45,14 @@ class TeamServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->teamService->create(self::TEAM_NAME);
 
-        /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
+
+        /* @var PostBody $requestBody */
+        $requestBody = $lastRequest->getBody();
 
         $this->assertEquals('POST', $lastRequest->getMethod());
         $this->assertEquals('http://null/team/create/', $lastRequest->getUrl());
-        $this->assertEquals(self::TEAM_NAME, $lastRequest->getPostField('name'));
+        $this->assertEquals(self::TEAM_NAME, $requestBody->getField('name'));
     }
 
     public function testGetTeam()

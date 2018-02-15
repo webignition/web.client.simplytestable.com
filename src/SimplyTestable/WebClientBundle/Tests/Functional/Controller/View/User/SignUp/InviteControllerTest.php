@@ -133,6 +133,8 @@ class InviteControllerTest extends AbstractBaseTestCase
 
         $invite = new Invite($inviteData);
 
+        $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
+
         return [
             'password blank' => [
                 'httpFixtures' => [
@@ -177,10 +179,12 @@ class InviteControllerTest extends AbstractBaseTestCase
             ],
             'get invite failure' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
                 ],
                 'request' => new Request(),
                 'flashBagValues' => [

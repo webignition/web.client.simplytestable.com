@@ -2,8 +2,8 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller;
 
-use Guzzle\Http\Message\EntityEnclosingRequest;
-use Guzzle\Plugin\History\HistoryPlugin;
+use GuzzleHttp\Post\PostBody;
+use GuzzleHttp\Subscriber\History as HttpHistorySubscriber;
 use SimplyTestable\WebClientBundle\Controller\TestStartController;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
@@ -11,7 +11,7 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
+use SimplyTestable\WebClientBundle\Tests\Factory\ConnectExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -68,8 +68,8 @@ class TestStartControllerTest extends AbstractBaseTestCase
         $coreApplicationHttpClient->setUser($user);
         $userManager->setUser($user);
 
-        $httpHistoryPlugin = new HistoryPlugin();
-        $coreApplicationHttpClient->getHttpClient()->addSubscriber($httpHistoryPlugin);
+        $httpHistory = new HttpHistorySubscriber();
+        $coreApplicationHttpClient->getHttpClient()->getEmitter()->attach($httpHistory);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
@@ -86,14 +86,17 @@ class TestStartControllerTest extends AbstractBaseTestCase
             $this->assertEquals($value, $flashBag->get($key));
         }
 
-        $lastRequest = $httpHistoryPlugin->getLastRequest();
+        $lastRequest = $httpHistory->getLastRequest();
 
         if (empty($expectedRequestUrl)) {
             $this->assertNull($lastRequest);
         } else {
-            /* @var EntityEnclosingRequest $lastRequest */
             $this->assertEquals($expectedRequestUrl, $lastRequest->getUrl());
-            $this->assertEquals($expectedPostData, $lastRequest->getPostFields()->toArray());
+
+            /* @var PostBody $requestBody */
+            $requestBody = $lastRequest->getBody();
+
+            $this->assertEquals($expectedPostData, $requestBody->getFields());
         }
     }
 
@@ -104,6 +107,9 @@ class TestStartControllerTest extends AbstractBaseTestCase
     {
         $publicUser = SystemUserService::getPublicUser();
         $privateUser = new User(self::USER_EMAIL);
+
+        $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
+        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
 
         return [
             'website missing' => [
@@ -175,10 +181,12 @@ class TestStartControllerTest extends AbstractBaseTestCase
             ],
             'curl exception' => [
                 'httpFixtures' => [
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
                 ],
                 'user' => $publicUser,
                 'request' => new Request([], [
@@ -198,14 +206,27 @@ class TestStartControllerTest extends AbstractBaseTestCase
                         28,
                     ],
                 ],
-                'expectedRequestUrl' => null,
+                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedPostData' => [
+                    'type' => 'full site',
+                    'test-types' => [
+                        'HTML validation',
+                    ],
+                    'test-type-options' => [
+                        'HTML validation' => [],
+                        'CSS validation' => [],
+                    ],
+                    'parameters' => [],
+                ],
             ],
             'HTTP 500' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
                 ],
                 'user' => $publicUser,
                 'request' => new Request([], [
@@ -237,10 +258,12 @@ class TestStartControllerTest extends AbstractBaseTestCase
             ],
             'HTTP 500; with http auth' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
                 ],
                 'user' => $publicUser,
                 'request' => new Request([], [

@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\View\Test\Progress;
 
-use Guzzle\Plugin\History\HistoryPlugin;
+use GuzzleHttp\Subscriber\History as HttpHistorySubscriber;
 use SimplyTestable\WebClientBundle\Controller\View\Test\Progress\IndexController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
@@ -177,8 +177,8 @@ class IndexControllerTest extends AbstractBaseTestCase
         $userManager->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
-        $httpHistoryPlugin = new HistoryPlugin();
-        $coreApplicationHttpClient->getHttpClient()->addSubscriber($httpHistoryPlugin);
+        $httpHistory = new HttpHistorySubscriber();
+        $coreApplicationHttpClient->getHttpClient()->getEmitter()->attach($httpHistory);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
@@ -188,7 +188,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $this->assertInstanceOf(RedirectResponse::class, $response);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
-        $this->assertEquals($expectedRequestUrl, $httpHistoryPlugin->getLastRequest()->getUrl());
+        $this->assertEquals($expectedRequestUrl, $httpHistory->getLastRequest()->getUrl());
     }
 
     /**
@@ -218,8 +218,8 @@ class IndexControllerTest extends AbstractBaseTestCase
         $userManager->setUser($user);
         $coreApplicationHttpClient->setUser($user);
 
-        $httpHistoryPlugin = new HistoryPlugin();
-        $coreApplicationHttpClient->getHttpClient()->addSubscriber($httpHistoryPlugin);
+        $httpHistory = new HttpHistorySubscriber();
+        $coreApplicationHttpClient->getHttpClient()->getEmitter()->attach($httpHistory);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
@@ -234,7 +234,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $responseData = json_decode($response->getContent());
 
         $this->assertEquals($expectedRedirectUrl, $responseData->this_url);
-        $this->assertEquals($expectedRequestUrl, $httpHistoryPlugin->getLastRequest()->getUrl());
+        $this->assertEquals($expectedRequestUrl, $httpHistory->getLastRequest()->getUrl());
     }
 
     /**

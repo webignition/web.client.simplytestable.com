@@ -2,7 +2,6 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\User;
 
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\UserController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
@@ -145,7 +144,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
     /**
      * @dataProvider signUpSubmitActionUserCreationFailureDataProvider
      *
-     * @param Response[] $httpFixtures
+     * @param array $httpFixtures
      * @param string $expectedRedirectLocation
      * @param array $expectedFlashBagValues
      *

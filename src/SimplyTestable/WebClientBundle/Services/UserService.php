@@ -113,7 +113,7 @@ class UserService
             ]
         );
 
-        if ($response->isRedirect()) {
+        if (302 === $response->getStatusCode()) {
             throw new UserAlreadyExistsException();
         }
     }

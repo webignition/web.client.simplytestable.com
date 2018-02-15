@@ -2,18 +2,17 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
-use Guzzle\Http\Message\Request;
-use Guzzle\Http\Message\RequestInterface;
-use Guzzle\Plugin\History\HistoryPlugin;
+use GuzzleHttp\Message\RequestInterface;
+use GuzzleHttp\Subscriber\History as HttpHistorySubscriber;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 
 abstract class AbstractCoreApplicationServiceTest extends AbstractBaseTestCase
 {
     /**
-     * @var HistoryPlugin
+     * @var HttpHistorySubscriber
      */
-    private $httpHistoryPlugin;
+    private $httpHistory;
 
     /**
      * @var CoreApplicationHttpClient
@@ -27,11 +26,12 @@ abstract class AbstractCoreApplicationServiceTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->httpHistoryPlugin = new HistoryPlugin();
+        $this->httpHistory = new HttpHistorySubscriber();
+
         $this->coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $httpClient = $this->coreApplicationHttpClient->getHttpClient();
-        $httpClient->addSubscriber($this->httpHistoryPlugin);
+        $httpClient->getEmitter()->attach($this->httpHistory);
     }
 
     /**
@@ -39,7 +39,7 @@ abstract class AbstractCoreApplicationServiceTest extends AbstractBaseTestCase
      */
     protected function getLastRequest()
     {
-        return $this->httpHistoryPlugin->getLastRequest();
+        return $this->httpHistory->getLastRequest();
     }
 
     /**
@@ -49,8 +49,8 @@ abstract class AbstractCoreApplicationServiceTest extends AbstractBaseTestCase
     {
         $requestedUrls = [];
 
-        foreach ($this->httpHistoryPlugin->getAll() as $httpTransaction) {
-            /* @var Request $request */
+        foreach ($this->httpHistory as $httpTransaction) {
+            /* @var RequestInterface $request */
             $request = $httpTransaction['request'];
 
             $requestedUrls[] = $request->getUrl();

@@ -2,8 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services\TeamInvite;
 
-use Guzzle\Http\Message\EntityEnclosingRequest;
-use Guzzle\Http\Message\Response;
+use GuzzleHttp\Post\PostBody;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
@@ -12,7 +11,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\TeamInviteService;
-use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
+use SimplyTestable\WebClientBundle\Tests\Factory\ConnectExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServiceException;
 use SimplyTestable\WebClientBundle\Tests\Functional\Services\AbstractCoreApplicationServiceTest;
@@ -73,6 +72,9 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function getRemoteFailureDataProvider()
     {
+        $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
+        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+
         return [
             'HTTP 404' => [
                 'httpFixtures' => [
@@ -84,10 +86,12 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
             ],
             'HTTP 500' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
                 ],
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Internal Server Error',
@@ -95,10 +99,12 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
             ],
             'CURL 28' => [
                 'httpFixtures' => [
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
                 ],
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Operation timed out',
@@ -184,11 +190,13 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->assertEquals($expectedReturnValue, $returnValue);
 
-        /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
 
+        /* @var PostBody $requestBody */
+        $requestBody = $lastRequest->getBody();
+
         $this->assertEquals('http://null/team/invite/decline/', $lastRequest->getUrl());
-        $this->assertEquals(self::TEAM_NAME, $lastRequest->getPostField('team'));
+        $this->assertEquals(self::TEAM_NAME, $requestBody->getField('team'));
     }
 
     /**
@@ -212,11 +220,13 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->assertEquals($expectedReturnValue, $returnValue);
 
-        /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
 
+        /* @var PostBody $requestBody */
+        $requestBody = $lastRequest->getBody();
+
         $this->assertEquals('http://null/team/invite/accept/', $lastRequest->getUrl());
-        $this->assertEquals(self::TEAM_NAME, $lastRequest->getPostField('team'));
+        $this->assertEquals(self::TEAM_NAME, $requestBody->getField('team'));
     }
 
     public function testGetForTeamSuccess()
@@ -334,13 +344,13 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
         return [
             'failure' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 400'),
+                    HttpResponseFactory::createBadRequestResponse(),
                 ],
                 'expectedReturnValue' => false,
             ],
             'success' => [
                 'httpFixtures' => [
-                    Response::fromMessage('HTTP/1.1 200'),
+                    HttpResponseFactory::createSuccessResponse(),
                 ],
                 'expectedReturnValue' => true,
             ],

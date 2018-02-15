@@ -2,7 +2,6 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User\Account\Team;
 
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
@@ -139,11 +138,10 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
         return [
             'invitee is a team leader' => [
                 'httpFixtures' => [
-                    Response::fromMessage(sprintf(
-                        "HTTP/1.1 400 Bad Request\nX-TeamInviteGet-Error-Code:%s\nX-TeamInviteGet-Error-Message:%s",
-                        2,
-                        'Invitee is a team leader'
-                    )),
+                    HttpResponseFactory::createBadRequestResponse([
+                        'X-TeamInviteGet-Error-Code' => 2,
+                        'X-TeamInviteGet-Error-Message' => 'Invitee is a team leader',
+                    ]),
                 ],
                 'expectedFlashBagValues' => [
                     TeamController::FLASH_BAG_TEAM_RESEND_INVITE_KEY => [
@@ -233,7 +231,7 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
     /**
      * @dataProvider resendInviteActionSuccessDataProvider
      *
-     * @param Response[] $httpFixtures
+     * @param array $httpFixtures
      * @param PostmarkMessage $postmarkMessage
      * @param array $expectedFlashBagValues
      *

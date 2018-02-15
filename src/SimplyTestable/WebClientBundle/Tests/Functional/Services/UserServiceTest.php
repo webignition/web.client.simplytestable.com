@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Services;
 
-use Guzzle\Http\Message\EntityEnclosingRequest;
+use GuzzleHttp\Post\PostBody;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
@@ -14,6 +14,7 @@ use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Tests\Factory\ConnectExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 
@@ -75,13 +76,14 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function resetPasswordFailureDataProvider()
     {
+        $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
+        $notFoundResponse = HttpResponseFactory::createNotFoundResponse();
+        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+
         return [
             'HTTP 404 (invalid token)' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
+                    $notFoundResponse,
                 ],
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Not Found',
@@ -89,10 +91,12 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             ],
             'read only' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
                 ],
                 'expectedException' => CoreApplicationReadOnlyException::class,
                 'expectedExceptionMessage' => '',
@@ -108,10 +112,12 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             ],
             'CURL 28' => [
                 'httpFixtures' => [
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
                 ],
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Operation timed out',
@@ -130,15 +136,17 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->userService->resetPassword('token', 'password value');
 
-        /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
+
+        /* @var PostBody $requestBody */
+        $requestBody = $lastRequest->getBody();
 
         $this->assertEquals('http://null/user/reset-password/token/', $lastRequest->getUrl());
         $this->assertEquals(
             [
                 'password' => 'password%20value',
             ],
-            $lastRequest->getPostFields()->toArray()
+            $requestBody->getFields()
         );
     }
 
@@ -220,6 +228,9 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function createFailureDataProvider()
     {
+        $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
+        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+
         return [
             'user already exists' => [
                 'httpFixtures' => [
@@ -231,25 +242,29 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             ],
             'maintenance mode' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
                 ],
                 'expectedException' => CoreApplicationReadOnlyException::class,
                 'expectedExceptionMessage' => '',
                 'expectedExceptionCode' => 0,
             ],
-            'CURL 6' => [
+            'CURL 28' => [
                 'httpFixtures' => [
-                    CurlExceptionFactory::create('Unable to resolve host', 6),
-                    CurlExceptionFactory::create('Unable to resolve host', 6),
-                    CurlExceptionFactory::create('Unable to resolve host', 6),
-                    CurlExceptionFactory::create('Unable to resolve host', 6),
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
                 ],
                 'expectedException' => CoreApplicationRequestException::class,
-                'expectedExceptionMessage' => 'Unable to resolve host',
-                'expectedExceptionCode' => 6,
+                'expectedExceptionMessage' => 'Operation timed out',
+                'expectedExceptionCode' => 28,
             ],
         ];
     }
@@ -286,11 +301,13 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             $coupon
         );
 
-        /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
 
+        /* @var PostBody $requestBody */
+        $requestBody = $lastRequest->getBody();
+
         $this->assertEquals('http://null/user/create/', $lastRequest->getUrl());
-        $this->assertEquals($expectedPostFields, $lastRequest->getPostFields()->toArray());
+        $this->assertEquals($expectedPostFields, $requestBody->getFields());
     }
 
     /**
@@ -358,12 +375,12 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function activateFailureDataProvider()
     {
+        $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
+        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+
         return [
             'invalid token' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createBadRequestResponse(),
-                    HttpResponseFactory::createBadRequestResponse(),
-                    HttpResponseFactory::createBadRequestResponse(),
                     HttpResponseFactory::createBadRequestResponse(),
                 ],
                 'expectedException' => CoreApplicationRequestException::class,
@@ -373,9 +390,6 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             'invalid admin credentials' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createForbiddenResponse(),
-                    HttpResponseFactory::createForbiddenResponse(),
-                    HttpResponseFactory::createForbiddenResponse(),
-                    HttpResponseFactory::createForbiddenResponse(),
                 ],
                 'expectedException' => InvalidAdminCredentialsException::class,
                 'expectedExceptionMessage' => '',
@@ -383,25 +397,29 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             ],
             'maintenance mode' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
                 ],
                 'expectedException' => CoreApplicationReadOnlyException::class,
                 'expectedExceptionMessage' => '',
                 'expectedExceptionCode' => 0,
             ],
-            'CURL 6' => [
+            'CURL 28' => [
                 'httpFixtures' => [
-                    CurlExceptionFactory::create('Unable to resolve host', 6),
-                    CurlExceptionFactory::create('Unable to resolve host', 6),
-                    CurlExceptionFactory::create('Unable to resolve host', 6),
-                    CurlExceptionFactory::create('Unable to resolve host', 6),
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
                 ],
                 'expectedException' => CoreApplicationRequestException::class,
-                'expectedExceptionMessage' => 'Unable to resolve host',
-                'expectedExceptionCode' => 6,
+                'expectedExceptionMessage' => 'Operation timed out',
+                'expectedExceptionCode' => 28,
             ],
         ];
     }
@@ -414,7 +432,6 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->userService->activate('token-value');
 
-        /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
 
         $this->assertEquals('http://null/user/activate/token-value/', $lastRequest->getUrl());
@@ -456,6 +473,9 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function activateAndAcceptFailureDataProvider()
     {
+        $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
+        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+
         return [
             'no invite for token' => [
                 'httpFixtures' => [
@@ -470,25 +490,29 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             ],
             'maintenance mode' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
+                    $serviceUnavailableResponse,
                 ],
                 'expectedException' => CoreApplicationReadOnlyException::class,
                 'expectedExceptionMessage' => '',
                 'expectedExceptionCode' => 0,
             ],
-            'CURL 6' => [
+            'CURL 28' => [
                 'httpFixtures' => [
-                    CurlExceptionFactory::create('Unable to resolve host', 6),
-                    CurlExceptionFactory::create('Unable to resolve host', 6),
-                    CurlExceptionFactory::create('Unable to resolve host', 6),
-                    CurlExceptionFactory::create('Unable to resolve host', 6),
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
                 ],
                 'expectedException' => CoreApplicationRequestException::class,
-                'expectedExceptionMessage' => 'Unable to resolve host',
-                'expectedExceptionCode' => 6,
+                'expectedExceptionMessage' => 'Operation timed out',
+                'expectedExceptionCode' => 28,
             ],
         ];
     }
@@ -507,8 +531,10 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->userService->activateAndAccept($invite, 'password-value');
 
-        /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
+
+        /* @var PostBody $requestBody */
+        $requestBody = $lastRequest->getBody();
 
         $this->assertEquals('http://null/team/invite/activate/accept/', $lastRequest->getUrl());
         $this->assertEquals(
@@ -516,7 +542,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
                 'token' => 'token-value',
                 'password' => 'password-value',
             ],
-            $lastRequest->getPostFields()->toArray()
+            $requestBody->getFields()
         );
     }
 
@@ -562,7 +588,6 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $this->assertEquals($expectedReturnValue, $this->userService->exists($email));
         $this->assertEquals($expectedReturnValue, $this->userService->exists($email));
 
-        /* @var EntityEnclosingRequest $lastRequest */
         $lastRequest = $this->getLastRequest();
 
         $this->assertEquals($expectedRequestUrl, $lastRequest->getUrl());
@@ -626,32 +651,29 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function isEnabledDataProvider()
     {
+        $notFoundResponse = HttpResponseFactory::createNotFoundResponse();
+        $successResponse = HttpResponseFactory::createSuccessResponse();
+
         return [
             'not enabled; does not exist' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
+                    $notFoundResponse,
                 ],
                 'expectedIsEnabled' => false,
                 'expectedLastRequestUrl' => 'http://null/user/user@example.com/exists/',
             ],
             'not enabled' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createSuccessResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
+                    $successResponse,
+                    $notFoundResponse,
                 ],
                 'expectedIsEnabled' => false,
                 'expectedLastRequestUrl' => 'http://null/user/user@example.com/enabled/',
             ],
             'enabled' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createSuccessResponse(),
-                    HttpResponseFactory::createSuccessResponse(),
+                    $successResponse,
+                    $successResponse,
                 ],
                 'expectedIsEnabled' => true,
                 'expectedLastRequestUrl' => 'http://null/user/user@example.com/enabled/',
@@ -705,13 +727,18 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function getSummaryFailureDataProvider()
     {
+        $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
+        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+
         return [
             'HTTP 500' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
                 ],
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Internal Server Error',
@@ -719,10 +746,12 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             ],
             'CURL 28' => [
                 'httpFixtures' => [
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
                 ],
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Operation timed out',

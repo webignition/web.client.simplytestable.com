@@ -5,7 +5,7 @@ namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\Sign
 use SimplyTestable\WebClientBundle\Controller\Action\SignUp\Team\InviteController;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
-use SimplyTestable\WebClientBundle\Tests\Factory\CurlExceptionFactory;
+use SimplyTestable\WebClientBundle\Tests\Factory\ConnectExceptionFactory;
 use SimplyTestable\WebClientBundle\Tests\Factory\HttpResponseFactory;
 use SimplyTestable\WebClientBundle\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -114,6 +114,10 @@ class InviteControllerTest extends AbstractBaseTestCase
      */
     public function acceptActionFailureDataProvider()
     {
+        $notFoundResponse = HttpResponseFactory::createNotFoundResponse();
+        $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
+        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+
         $inviteHttpResponse = HttpResponseFactory::createJsonResponse([
             'team' => 'Team Name',
             'user' => self::USERNAME,
@@ -131,10 +135,7 @@ class InviteControllerTest extends AbstractBaseTestCase
             ],
             'invalid token' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
+                    $notFoundResponse,
                 ],
                 'token' => 'invalid token',
                 'request' => new Request(),
@@ -157,10 +158,12 @@ class InviteControllerTest extends AbstractBaseTestCase
             'activateAndAccept failure; HTTP 500' => [
                 'httpFixtures' => [
                     $inviteHttpResponse,
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
+                    $internalServerErrorResponse,
                 ],
                 'token' => self::TOKEN,
                 'request' => new Request([], [
@@ -177,10 +180,12 @@ class InviteControllerTest extends AbstractBaseTestCase
             'activateAndAccept failure; CURL 28' => [
                 'httpFixtures' => [
                     $inviteHttpResponse,
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
-                    CurlExceptionFactory::create('Operation timed out', 28),
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
+                    $curlTimeoutConnectException,
                 ],
                 'token' => self::TOKEN,
                 'request' => new Request([], [

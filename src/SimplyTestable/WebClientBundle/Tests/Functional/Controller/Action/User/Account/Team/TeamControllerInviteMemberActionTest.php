@@ -2,7 +2,6 @@
 
 namespace SimplyTestable\WebClientBundle\Tests\Functional\Controller\Action\User\Account\Team;
 
-use Guzzle\Http\Message\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
@@ -405,7 +404,7 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
     /**
      * @dataProvider inviteMemberActionSuccessDataProvider
      *
-     * @param Response[] $httpFixtures
+     * @param array $httpFixtures
      * @param PostmarkMessage $postmarkMessage
      * @param array $expectedFlashBagValues
      *
