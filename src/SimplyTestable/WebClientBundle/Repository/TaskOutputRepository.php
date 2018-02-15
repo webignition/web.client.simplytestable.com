@@ -5,23 +5,6 @@ use Doctrine\ORM\EntityRepository;
 
 class TaskOutputRepository extends EntityRepository
 {
-    public function findIdsBy($hash) {
-        $queryBuilder = $this->createQueryBuilder('TaskOutput');
-        $queryBuilder->select('TaskOutput.id');
-        $queryBuilder->where('TaskOutput.hash = :Hash');
-        $queryBuilder->setParameter('Hash', $hash);
-
-        $ids = array();
-
-        $result = $queryBuilder->getQuery()->getResult();
-
-        foreach ($result as $idResult) {
-            $ids[] = $idResult['id'];
-        }
-
-        return $ids;
-    }
-
     public function findHashlessOutput($limit = null) {
         $queryBuilder = $this->createQueryBuilder('TaskOutput');
 
