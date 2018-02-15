@@ -1,174 +1,174 @@
 stripe_event:
-  pattern: /stripe/event/
+  path: /stripe/event/
   defaults: { _controller: SimplyTestableWebClientBundle:Stripe\Event:index, _format: json }
 
 mailchimp_event:
-  pattern: /mailchimp/event/
+  path: /mailchimp/event/
   defaults: { _controller: SimplyTestableWebClientBundle:MailChimp\Event:index, _format: json }
 
 sign_out_submit:
-    pattern:  /signout/
+    path: /signout/
     defaults: { _controller: SimplyTestableWebClientBundle:User:signOutSubmit }
 
 view_user_signin_index:
-    pattern:  /signin/
+    path: /signin/
     defaults: { _controller: SimplyTestableWebClientBundle:View/User/SignIn:index }
 
 sign_in_submit:
-    pattern:  /signin/submit/
+    path: /signin/submit/
     defaults: { _controller: SimplyTestableWebClientBundle:User:signInSubmit }
 
 view_user_resetpassword_index_index:
-    pattern:  /reset-password/
+    path: /reset-password/
     defaults: { _controller: SimplyTestableWebClientBundle:View/User/ResetPassword/Index:index }
 
 action_user_resetpassword_index_request:
-    pattern:  /reset-password/submit/
+    path: /reset-password/submit/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/ResetPassword/Index:request }
 
 reset_password_choose_submit:
-    pattern:  /reset-password/choose/submit/
+    path: /reset-password/choose/submit/
     defaults: { _controller: SimplyTestableWebClientBundle:User:resetPasswordChooseSubmit }
 
 view_user_resetpassword_choose_index:
-    pattern:  /reset-password/{email}/{token}/
+    path: /reset-password/{email}/{token}/
     defaults: { _controller: SimplyTestableWebClientBundle:View/User/ResetPassword/Choose:index }
 
 view_user_signup_index_index:
-    pattern:  /signup/
+    path: /signup/
     defaults: { _controller: SimplyTestableWebClientBundle:View/User/SignUp/Index:index }
 
 sign_up_submit:
-    pattern:  /signup/submit/
+    path: /signup/submit/
     defaults: { _controller: SimplyTestableWebClientBundle:User:signUpSubmit }
 
 view_user_signup_confirm_index:
-    pattern:  /signup/confirm/{email}/
+    path: /signup/confirm/{email}/
     defaults: { _controller: SimplyTestableWebClientBundle:View/User/SignUp/Confirm:index }
 
 view_user_signup_invite_index:
-    pattern:  /signup/invite/{token}/
+    path: /signup/invite/{token}/
     defaults: { _controller: SimplyTestableWebClientBundle:View/User/SignUp/Invite:index }
 
 sign_up_confirm_submit:
-    pattern:  /signup/confirm/{email}/submit/
+    path: /signup/confirm/{email}/submit/
     defaults: { _controller: SimplyTestableWebClientBundle:User:signUpConfirmSubmit }
 
 action_signup_team_invite_accept:
-    pattern: /signup/invite/{token}/accept/
+    path: /signup/invite/{token}/accept/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/SignUp/Team/Invite:accept }
 
 action_signup_user_confirm_resend:
-    pattern:  /signup/confirm/{email}/resend/
+    path: /signup/confirm/{email}/resend/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/SignUp/User/Confirm:resend }
 
 action_user_account_newssubscriptions_update:
-    pattern:  /account/news-subscriptions/update/
+    path: /account/news-subscriptions/update/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/NewsSubscriptions:update }
 
 action_user_account_emailchange_request:
-    pattern:  /account/details/update/email/request/
+    path: /account/details/update/email/request/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/EmailChange:request }
 
 action_user_account_emailchange_resend:
-    pattern:  /account/details/update/email/resend/
+    path: /account/details/update/email/resend/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/EmailChange:resend }
 
 action_user_account_emailchange_confirm:
-    pattern:  /account/details/update/email/confirm/
+    path: /account/details/update/email/confirm/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/EmailChange:confirm }
 
 action_user_account_emailchange_cancel:
-    pattern:  /account/details/update/email/cancel/
+    path: /account/details/update/email/cancel/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/EmailChange:cancel }
 
 action_user_account_passwordchange_request:
-    pattern:  /account/details/update/password/request/
+    path: /account/details/update/password/request/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/PasswordChange:request }
 
 view_user_account_index_index:
-    pattern:  /account/
+    path: /account/
     defaults: { _controller: SimplyTestableWebClientBundle:View/User/Account/Index:index }
 
 view_user_account_card_index:
-    pattern:  /account/card/
+    path: /account/card/
     defaults: { _controller: SimplyTestableWebClientBundle:View/User/Account/Card:index }
 
 view_user_account_team_index_index:
-    pattern:  /account/team/
+    path: /account/team/
     defaults: { _controller: SimplyTestableWebClientBundle:View/User/Account/Team/Index:index }
 
 action_user_account_team_create:
-    pattern: /account/team/create/
+    path: /account/team/create/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:create }
 
 action_user_account_team_invitemember:
-    pattern: /account/team/invite-member/
+    path: /account/team/invite-member/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:inviteMember }
 
 action_user_account_team_respondinvite:
-    pattern: /account/team/invite/respond/
+    path: /account/team/invite/respond/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:respondInvite }
 
 action_user_account_team_removeinvite:
-    pattern: /account/team/invite/remove/
+    path: /account/team/invite/remove/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:removeInvite }
 
 action_user_account_team_resendinvite:
-    pattern: /account/team/invite/resend/
+    path: /account/team/invite/resend/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:resendInvite }
 
 action_user_account_team_removemember:
-    pattern: /account/team/member/remove/
+    path: /account/team/member/remove/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:removeMember }
 
 action_user_account_team_leave:
-    pattern: /account/team/leave/
+    path: /account/team/leave/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:leave }
 
 view_user_account_plan_index:
-    pattern:  /account/plan/
+    path: /account/plan/
     defaults: { _controller: SimplyTestableWebClientBundle:View/User/Account/Plan:index }
 
 user_account_card_associate:
-    pattern:  /account/card/{stripe_card_token}/associate/
+    path: /account/card/{stripe_card_token}/associate/
     defaults: { _controller: SimplyTestableWebClientBundle:UserAccountCard:associate }
 
 user_account_plan_subscribe:
-    pattern:  /account/plan/subscribe/
+    path: /account/plan/subscribe/
     defaults: { _controller: SimplyTestableWebClientBundle:UserAccountPlan:subscribe }
 
 view_dashboard_index_index:
-    pattern:  /
+    path: /
     defaults: { _controller: SimplyTestableWebClientBundle:View/Dashboard/Index:index }
 
 view_dashboard_partial_recenttests_index:
-    pattern:  /recent-tests/
+    path: /recent-tests/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Dashboard/Partial/RecentTests:index }
 
 view_test_history_index_index:
-    pattern:  /history/
+    path: /history/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/History/Index:index, page_number: 1 }
 
 app_history:
-    pattern:  /history/{page_number}/
+    path: /history/{page_number}/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/History/Index:index }
     requirements:
         page_number: "\d+"
 
 view_test_history_websitelist_index:
-    pattern:  /history/websites/
+    path: /history/websites/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/History/WebsiteList:index, _format: json }
 
 view_test_results_partial_finishedsummary_index:
-    pattern:  /{website}/{test_id}/finished-summary/
+    path: /{website}/{test_id}/finished-summary/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Partial/FinishedSummary/Index:index }
     requirements:
         website: ".+"
         test_id: "\d+"
 
 view_test_task_results_index_index_verbose:
-    pattern:  /website/{website}/test_id/{test_id}/task_id/{task_id}/results/
+    path: /website/{website}/test_id/{test_id}/task_id/{task_id}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Task/Results/Index:index }
     requirements:
         website: ".+"
@@ -176,7 +176,7 @@ view_test_task_results_index_index_verbose:
         task_id: "\d+"
 
 view_test_task_results_index_index:
-    pattern:  /{website}/{test_id}/{task_id}/results/
+    path: /{website}/{test_id}/{task_id}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Task/Results/Index:index }
     requirements:
         website: ".+"
@@ -184,7 +184,7 @@ view_test_task_results_index_index:
         task_id: "\d+"
 
 action_test_task_results_byurl_index:
-    pattern:  /{website}/{test_id}/{task_url}/{task_type}/results/
+    path: /{website}/{test_id}/{task_url}/{task_type}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:Action/Test/Task/Results/ByUrl:index }
     requirements:
         website: ".+"
@@ -192,14 +192,14 @@ action_test_task_results_byurl_index:
         task_url: ".+"
 
 view_test_partial_notification_urlimit_index:
-    pattern:  /{website}/{test_id}/url-limit-notification/
+    path: /{website}/{test_id}/url-limit-notification/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Partial/Notification/UrlLimit:index }
     requirements:
         website: ".+"
         test_id: "\d+"
 
 app_task_results_redirector:
-    pattern:  /{website}/{test_id}/{task_id}/
+    path: /{website}/{test_id}/{task_id}/
     defaults: { _controller: SimplyTestableWebClientBundle:Redirect:task }
     requirements:
         website: ".+"
@@ -207,130 +207,130 @@ app_task_results_redirector:
         task_id: "\d+"
 
 view_test_progress_index_index:
-    pattern:  /{website}/{test_id}/progress/
+    path: /{website}/{test_id}/progress/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Progress/Index:index }
     requirements:
         website: ".+"
 
 view_test_results_index_index_verbose:
-    pattern:  /website/{website}/test_id/{test_id}/results/
+    path: /website/{website}/test_id/{test_id}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Index:index }
     requirements:
        website: ".+"
        test_id: "\d+"
 
 view_test_results_index_index:
-    pattern:  /{website}/{test_id}/results/
+    path: /{website}/{test_id}/results/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Index:index }
     requirements:
        website: ".+"
        test_id: "\d+"
 
 app_test_lock:
-    pattern:  /{website}/{test_id}/lock/
+    path: /{website}/{test_id}/lock/
     defaults: { _controller: SimplyTestableWebClientBundle:Test:lock }
     requirements:
        website: ".+"
 
 app_test_unlock:
-    pattern:  /{website}/{test_id}/unlock/
+    path: /{website}/{test_id}/unlock/
     defaults: { _controller: SimplyTestableWebClientBundle:Test:unlock }
     requirements:
        website: ".+"
 
 app_test_retest:
-    pattern:  /{website}/{test_id}/re-test/
+    path: /{website}/{test_id}/re-test/
     defaults: { _controller: SimplyTestableWebClientBundle:Test:retest }
     requirements:
        website: ".+"
 
 view_test_results_failednourlsdetected_index_index:
-    pattern:  /{website}/{test_id}/results/failed/no-urls-detected/
+    path: /{website}/{test_id}/results/failed/no-urls-detected/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/FailedNoUrlsDetected/Index:index }
     requirements:
        website: ".+"
 
 view_test_results_rejected_index_index:
-    pattern:  /{website}/{test_id}/results/rejected/
+    path: /{website}/{test_id}/results/rejected/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Rejected/Index:index }
     requirements:
        website: ".+"
 
 view_test_results_preparing_index_index:
-    pattern:  /{website}/{test_id}/results/preparing/
+    path: /{website}/{test_id}/results/preparing/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Preparing/Index:index }
     requirements:
        website: ".+"
 
 view_test_results_preparingstats_index:
-    pattern:  /{website}/{test_id}/results/preparing/stats/
+    path: /{website}/{test_id}/results/preparing/stats/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/PreparingStats:index, _format: json }
     requirements:
        website: ".+"
 
 task_results_retrieve:
-    pattern:  /{website}/{test_id}/results/retrieve/
+    path: /{website}/{test_id}/results/retrieve/
     defaults: { _controller: SimplyTestableWebClientBundle:Task:retrieve }
     requirements:
        website: ".+"
 
 view_test_results_bytasktype_index_default:
-    pattern:  /{website}/{test_id}/results/{task_type}/
+    path: /{website}/{test_id}/results/{task_type}/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/ByTaskType:index }
     requirements:
        website: ".+"
        test_id: "\d+"
 
 view_test_results_bytasktype_index:
-    pattern:  /{website}/{test_id}/results/{task_type}/{filter}/
+    path: /{website}/{test_id}/results/{task_type}/{filter}/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/ByTaskType:index }
     requirements:
        website: ".+"
        test_id: "\d+"
 
 view_test_task_tasklist_index_index:
-    pattern:  /{website}/{test_id}/tasklist/
+    path: /{website}/{test_id}/tasklist/
     defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Task/TaskList/Index:index }
     requirements:
         website: ".+"
         test_id: "\d+"
 
 app_task_ids:
-    pattern:  /{website}/{test_id}/tasks/ids/
+    path: /{website}/{test_id}/tasks/ids/
     defaults: { _controller: SimplyTestableWebClientBundle:Task:idCollection, _format: json }
     requirements:
         website: ".+"
 
 app_unretrieved_task_ids:
-    pattern:  /{website}/{test_id}/tasks/ids/unretrieved/{limit}/
+    path: /{website}/{test_id}/tasks/ids/unretrieved/{limit}/
     defaults: { _controller: SimplyTestableWebClientBundle:Task:unretrievedIdCollection, _format: json }
     requirements:
         website: ".+"
 
 test_start:
-    pattern:  /test/start/
+    path: /test/start/
     defaults: { _controller: SimplyTestableWebClientBundle:TestStart:startNew }
 
 test_cancel:
-    pattern:  /test/{website}/{test_id}/cancel/
+    path: /test/{website}/{test_id}/cancel/
     defaults: { _controller: SimplyTestableWebClientBundle:Test:cancel }
     requirements:
         website: ".+"
 
 test_cancel_crawl:
-    pattern:  /test/{website}/{test_id}/cancel-crawl/
+    path: /test/{website}/{test_id}/cancel-crawl/
     defaults: { _controller: SimplyTestableWebClientBundle:Test:cancelCrawl }
     requirements:
         website: ".+"
 
 app_test_redirector:
-    pattern:  /{website}/{test_id}/
+    path: /{website}/{test_id}/
     defaults: { _controller: SimplyTestableWebClientBundle:Redirect:test }
     requirements:
         website: ".+"
 
 app_website:
-    pattern:  /{website}/
+    path: /{website}/
     defaults: { _controller: SimplyTestableWebClientBundle:Redirect:test }
     requirements:
         website: ".+"
