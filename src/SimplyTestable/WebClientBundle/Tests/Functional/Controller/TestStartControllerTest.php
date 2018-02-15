@@ -80,7 +80,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
         $response = $this->testStartController->startNewAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
+        $this->assertEquals(urldecode($expectedRedirectUrl), urldecode($response->getTargetUrl()));
 
         foreach ($expectedFlashBagValues as $key => $value) {
             $this->assertEquals($value, $flashBag->get($key));
@@ -111,12 +111,14 @@ class TestStartControllerTest extends AbstractBaseTestCase
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
         $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
 
+        $expectedProgressRedirectUrl = 'http://localhost/http://example.com//1/progress/';
+
         return [
             'website missing' => [
                 'httpFixtures' => [],
                 'user' => $publicUser,
                 'request' => new Request(),
-                'expectedRedirectUrl' => 'http://localhost/?' . http_build_query([
+                'expectedRedirectUrl' => $this->createExpectedStartFailureRedirectUrl([
                     'html-validation' => 0,
                     'css-validation' => 0,
                 ]),
@@ -133,7 +135,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
                 'request' => new Request([], [
                     'website' => '',
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/?' . http_build_query([
+                'expectedRedirectUrl' => $this->createExpectedStartFailureRedirectUrl([
                     'html-validation' => 0,
                     'css-validation' => 0,
                 ]),
@@ -150,7 +152,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
                 'request' => new Request([], [
                     'website' => '   ',
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/?' . http_build_query([
+                'expectedRedirectUrl' => $this->createExpectedStartFailureRedirectUrl([
                     'html-validation' => 0,
                     'css-validation' => 0,
                 ]),
@@ -167,7 +169,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
                 'request' => new Request([], [
                     'website' => self::WEBSITE,
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/?' . http_build_query([
+                'expectedRedirectUrl' => $this->createExpectedStartFailureRedirectUrl([
                     'website' => self::WEBSITE,
                     'html-validation' => 0,
                     'css-validation' => 0,
@@ -193,7 +195,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'website' => self::WEBSITE,
                     'html-validation' => 1,
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/?' . http_build_query([
+                'expectedRedirectUrl' => $this->createExpectedStartFailureRedirectUrl([
                     'website' => self::WEBSITE,
                     'html-validation' => 1,
                     'css-validation' => 0,
@@ -233,11 +235,11 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'website' => self::WEBSITE,
                     'html-validation' => 1,
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/?' . http_build_query([
-                        'website' => self::WEBSITE,
-                        'html-validation' => 1,
-                        'css-validation' => 0,
-                    ]),
+                'expectedRedirectUrl' => $this->createExpectedStartFailureRedirectUrl([
+                    'website' => self::WEBSITE,
+                    'html-validation' => 1,
+                    'css-validation' => 0,
+                ]),
                 'expectedFlashBagValues' => [
                     'test_start_error' => [
                         'web_resource_exception',
@@ -272,7 +274,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'http-auth-username' => 'user',
                     'http-auth-password' => 'pass',
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/?' . http_build_query([
+                'expectedRedirectUrl' => $this->createExpectedStartFailureRedirectUrl([
                     'website' => self::WEBSITE,
                     'html-validation' => 1,
                     'css-validation' => 0,
@@ -311,7 +313,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'website' => self::WEBSITE,
                     'html-validation' => 1,
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
                 'expectedPostData' => [
@@ -339,7 +341,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'html-validation' => 1,
                     'full-single' => 'single',
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
                 'expectedPostData' => [
@@ -366,7 +368,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'website' => self::WEBSITE,
                     'html-validation' => 1,
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
                 'expectedPostData' => [
@@ -413,7 +415,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'website' => self::WEBSITE,
                     'link-integrity' => 1,
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
                 'expectedPostData' => [
@@ -464,7 +466,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'website' => self::WEBSITE,
                     'html-validation' => 1,
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
                 'expectedPostData' => [
@@ -491,7 +493,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'website' => 'example.com/',
                     'html-validation' => 1,
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
                 'expectedPostData' => [
@@ -520,7 +522,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'http-auth-username' => 'user',
                     'http-auth-password' => 'pass',
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
                 'expectedPostData' => [
@@ -552,7 +554,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
                     'http-auth-username' => '',
                     'http-auth-password' => '',
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
                 'expectedPostData' => [
@@ -585,7 +587,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
                         ],
                     ],
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
                 'expectedPostData' => [
@@ -610,5 +612,15 @@ class TestStartControllerTest extends AbstractBaseTestCase
                 ],
             ],
         ];
+    }
+
+    /**
+     * @param array $queryStringParameters
+     *
+     * @return string
+     */
+    private function createExpectedStartFailureRedirectUrl(array $queryStringParameters)
+    {
+        return 'http://localhost/?' . http_build_query($queryStringParameters);
     }
 }
