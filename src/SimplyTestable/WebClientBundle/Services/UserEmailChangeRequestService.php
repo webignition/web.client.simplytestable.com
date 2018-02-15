@@ -60,7 +60,13 @@ class UserEmailChangeRequestService
             return null;
         }
 
-        return $this->jsonResponseHandler->handle($response);
+        $responseData = $this->jsonResponseHandler->handle($response);
+
+        if (empty($responseData)) {
+            return null;
+        }
+
+        return $responseData;
     }
 
     /**

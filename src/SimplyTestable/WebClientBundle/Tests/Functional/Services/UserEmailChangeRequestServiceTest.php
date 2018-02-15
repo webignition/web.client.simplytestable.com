@@ -82,7 +82,13 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
                 ],
                 'expectedEmailChangeRequest' => null,
             ],
-            'found' => [
+            'empty' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createJsonResponse([]),
+                ],
+                'expectedEmailChangeRequest' => null,
+            ],
+            'non-empty' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse($emailChangeRequestValues),
                 ],

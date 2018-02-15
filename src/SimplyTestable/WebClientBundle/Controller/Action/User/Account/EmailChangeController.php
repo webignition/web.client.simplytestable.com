@@ -254,6 +254,10 @@ class EmailChangeController extends AccountCredentialsChangeController
         $username = $user->getUsername();
 
         $emailChangeRequest = $emailChangeRequestService->getEmailChangeRequest($username);
+        if (empty($emailChangeRequest)) {
+            return $redirectResponse;
+        }
+
         if ($token !== $emailChangeRequest['token']) {
             $session->getFlashBag()->set(
                 self::FLASH_BAG_CONFIRM_KEY,

@@ -107,6 +107,26 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         ], $session->getFlashBag()->peekAll());
     }
 
+    public function testConfirmActionNoEmailChangeRequest()
+    {
+        $session = $this->container->get('session');
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createJsonResponse([]),
+        ]);
+
+        $request = new Request([], [
+            'token' => 'foo',
+        ]);
+
+        /* @var RedirectResponse $response */
+        $response = $this->emailChangeController->confirmAction($request);
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals('http://localhost/account/', $response->getTargetUrl());
+        $this->assertEquals([], $session->getFlashBag()->peekAll());
+    }
+
     /**
      * @dataProvider confirmActionChangeFailureDataProvider
      *
