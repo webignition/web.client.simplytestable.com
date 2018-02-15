@@ -335,6 +335,13 @@ class RemoteTestTest extends \PHPUnit_Framework_TestCase
                 'key' => 'foo',
                 'expectedValue' => null,
             ],
+            'empty parameters' => [
+                'remoteTestData' => [
+                    'parameters' => '',
+                ],
+                'key' => 'foo',
+                'expectedValue' => null,
+            ],
             'has parameters' => [
                 'remoteTestData' => [
                     'parameters' => json_encode([
