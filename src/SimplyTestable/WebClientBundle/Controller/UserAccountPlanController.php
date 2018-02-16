@@ -13,19 +13,20 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 class UserAccountPlanController extends Controller implements RequiresPrivateUser
 {
     /**
      * {@inheritdoc}
      */
-    public function getUserSignInRedirectResponse(Request $request)
+    public function getUserSignInRedirectResponse(RouterInterface $router, Request $request)
     {
-        $router = $this->container->get('router');
-
-        $redirectUrl = $router->generate('view_user_signin_index', [], UrlGeneratorInterface::ABSOLUTE_URL);
-
-        return new RedirectResponse($redirectUrl);
+        return new RedirectResponse($router->generate(
+            'view_user_signin_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
     }
 
     /**

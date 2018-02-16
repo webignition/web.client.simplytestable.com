@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
+use Symfony\Component\Routing\RouterInterface;
 
 class IndexController extends BaseViewController implements RequiresPrivateUser, IEFiltered
 {
@@ -25,19 +26,15 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
     /**
      * {@inheritdoc}
      */
-    public function getUserSignInRedirectResponse(Request $request)
+    public function getUserSignInRedirectResponse(RouterInterface $router, Request $request)
     {
-        $router = $this->container->get('router');
-
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'view_user_signin_index',
             [
                 'redirect' => base64_encode(json_encode(['route' => 'view_user_account_index_index']))
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 
     /**
