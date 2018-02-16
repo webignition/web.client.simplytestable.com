@@ -22,7 +22,6 @@ class CoreApplicationHttpClient
 {
     const APPLICATION_JSON_CONTENT_TYPE = 'application/json';
 
-    const OPT_EXPECT_JSON_RESPONSE = 'expect-json-response';
     const OPT_DISABLE_REDIRECT = 'disable-redirect';
 
     const ROUTE_PARAMETER_USER_PLACEHOLDER = '{{ user }}';
