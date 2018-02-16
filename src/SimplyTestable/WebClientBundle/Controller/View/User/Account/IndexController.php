@@ -76,7 +76,6 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
                     $userSummary->getPlan()->getAccountPlan()->getName()
                 ),
                 'stripe_event_data' => $this->getUserStripeEvents($user, $userSummary, $userStripeEventService),
-                'stripe' => $this->container->getParameter('stripe'),
                 'mailchimp_updates_subscribed' => $updatesListRecipients->contains($username),
                 'mailchimp_announcements_subscribed' => $announcementsListRecipients->contains($username),
                 'card_expiry_month' => $this->getCardExpiryMonth($userSummary),
