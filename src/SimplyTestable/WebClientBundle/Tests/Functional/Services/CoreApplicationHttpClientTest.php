@@ -342,18 +342,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 ],
                 'expectedResponse' => HttpResponseFactory::createRedirectResponse(),
             ],
-            '404 treated as empty' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createNotFoundResponse(),
-                ],
-                'options' => [
-                    CoreApplicationHttpClient::OPT_TREAT_404_AS_EMPTY => true,
-                ],
-                'expectedResponse' => null,
-            ],
         ];
     }
 
