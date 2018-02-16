@@ -27,6 +27,7 @@ class SimplyTestableWebClientExtension extends Extension
         'documentation_site.yml',
         'test_options.yml',
         'link-integrity-excluded-domains.yml',
+        'coupons.yml',
     ];
 
     /**
