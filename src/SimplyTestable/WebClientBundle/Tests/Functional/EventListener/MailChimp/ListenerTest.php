@@ -23,7 +23,7 @@ abstract class ListenerTest extends AbstractBaseTestCase {
      * @return \SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener
      */
     protected function getListener() {
-        return $this->container->get('simplytestable.listener.mailchimpEvent');
+        return $this->container->get('simplytestable.listener.mailchimpevent');
     }
 
 
@@ -32,7 +32,7 @@ abstract class ListenerTest extends AbstractBaseTestCase {
      * @return \SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService
      */
     protected function getMailChimpListRecipientsService() {
-        return $this->container->get('simplytestable.services.mailchimp.listRecipients');
+        return $this->container->get('simplytestable.services.mailchimp.listrecipients');
     }
 
 }
