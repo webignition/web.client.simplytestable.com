@@ -139,62 +139,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
                 'curl' => 'Network-Level (curl)',
                 'http' => 'HTTP'
             ];
-            $viewData['link_state_descriptions'] = [
-                'curl' => [
-                    3 => [
-                        'The URL was not properly formatted',
-                        'These URLs (or ones these redirect to) are not formed correctly.'
-                    ],
-                    6 => [
-                        'Couldn\'t resolve host',
-                        'Are the domain names in the given links still valid and working?'
-                    ],
-                    7 => [
-                        'Failed to connect() to host or proxy',
-                        'This could be temporary issue.'
-                    ],
-                    35 => [
-                        'A problem occurred somewhere in the SSL/TLS handshake'
-                    ],
-                    52 => [
-                        'Nothing was returned from the server',
-                        'Under the circumstances, getting nothing is considered an error.'
-                    ],
-                    56 => [
-                        'Failure with receiving network data.',
-                        'Whatever lives at the given domains isn\'t talking back.'
-                    ],
-                    60 => [
-                        'Peer certificate cannot be authenticated with known CA certificates',
-                        'There is a problem with the SSL certificates these domains are using.'
-                    ]
-                ],
-                'http' => [
-                    302 => [
-                        'Too many redirects',
-                    ],
-                    403 => [
-                        "Access denied",
-                        "Are these a password-protected pages?"
-                    ],
-                    404 => [
-                        "Not found",
-                        "These resources appear to no longer exist at the given URLs."
-                    ],
-                    410 => [
-                        "Gone",
-                        "These resources are no longer at the given URLs."
-                    ],
-                    500 => [
-                        "Internal server error",
-                        "The application serving the given content failed."
-                    ],
-                    503 => [
-                        "Service Unavailable",
-                        "The application serving the content is not available right now."
-                    ]
-                ]
-            ];
+            $viewData['link_state_descriptions'] = $this->container->getParameter('link_integrity_error_code_map');
         }
 
         $content = $templating->render(
