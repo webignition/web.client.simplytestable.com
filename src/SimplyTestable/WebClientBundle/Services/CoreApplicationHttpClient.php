@@ -260,7 +260,7 @@ class CoreApplicationHttpClient
     {
         $requestOptions = [];
 
-        if ($this->isOptionTrue(self::OPT_DISABLE_REDIRECT, $options)) {
+        if (in_array(self::OPT_DISABLE_REDIRECT, $options)) {
             $requestOptions['allow_redirects'] = false;
         }
 
