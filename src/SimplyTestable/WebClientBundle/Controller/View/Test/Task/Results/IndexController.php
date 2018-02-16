@@ -57,32 +57,28 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         $task = $taskService->get($test, $task_id);
 
         if (empty($task)) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'app_test_redirector',
                 [
                     'website' => $website,
                     'test_id' => $test_id
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         $taskOutput = $task->getOutput();
         $taskHasErrorsOrWarnings = $taskOutput->getErrorCount() > 0 || $taskOutput->getWarningCount() > 0;
 
         if (!$taskHasErrorsOrWarnings || $taskService->isIncomplete($task)) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'app_test_redirector',
                 [
                     'website' => $website,
                     'test_id' => $test_id
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();

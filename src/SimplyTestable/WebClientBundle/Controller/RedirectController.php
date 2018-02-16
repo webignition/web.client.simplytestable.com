@@ -87,16 +87,14 @@ class RedirectController extends Controller
             ]);
 
             if (!empty($latestTest)) {
-                $redirectUrl = $router->generate(
+                return new RedirectResponse($router->generate(
                     'app_test_redirector',
                     [
                         'website' => $normalisedWebsite,
                         'test_id' => $latestTest->getTestId(),
                     ],
                     UrlGeneratorInterface::ABSOLUTE_URL
-                );
-
-                return new RedirectResponse($redirectUrl);
+                ));
             }
 
             return new RedirectResponse($router->generate(
@@ -123,31 +121,27 @@ class RedirectController extends Controller
                     ]
                 );
 
-                $redirectUrl = $router->generate(
+                return new RedirectResponse($router->generate(
                     'app_website',
                     [
                         'website' => $website
                     ],
                     UrlGeneratorInterface::ABSOLUTE_URL
-                );
-
-                return new RedirectResponse($redirectUrl);
+                ));
             }
 
             $routeName = in_array($test->getState(), $this->testFinishedStates)
                 ? 'view_test_results_index_index'
                 : 'view_test_progress_index_index';
 
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 $routeName,
                 [
                     'website' => $normalisedWebsite,
                     'test_id' => $normalisedTestId
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         return new RedirectResponse($router->generate(
@@ -167,7 +161,8 @@ class RedirectController extends Controller
     public function taskAction($website, $test_id, $task_id)
     {
         $router = $this->container->get('router');
-        $redirectUrl = $router->generate(
+
+        return new RedirectResponse($router->generate(
             'view_test_task_results_index_index',
             [
                 'website' => $website,
@@ -175,9 +170,7 @@ class RedirectController extends Controller
                 'task_id' => $task_id
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 
     /**

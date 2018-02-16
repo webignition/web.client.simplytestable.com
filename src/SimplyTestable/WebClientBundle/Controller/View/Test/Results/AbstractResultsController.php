@@ -28,16 +28,14 @@ abstract class AbstractResultsController extends AbstractRequiresValidOwnerContr
     {
         $router = $this->container->get('router');
 
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'view_test_results_failednourlsdetected_index_index',
             [
                 'website' => $request->attributes->get('website'),
                 'test_id' => $request->attributes->get('test_id')
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 
     /**
@@ -47,16 +45,14 @@ abstract class AbstractResultsController extends AbstractRequiresValidOwnerContr
     {
         $router = $this->container->get('router');
 
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'view_test_results_rejected_index_index',
             [
                 'website' => $request->attributes->get('website'),
                 'test_id' => $request->attributes->get('test_id')
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 
     /**
@@ -66,16 +62,14 @@ abstract class AbstractResultsController extends AbstractRequiresValidOwnerContr
     {
         $router = $this->container->get('router');
 
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'view_test_progress_index_index',
             [
                 'website' => $request->attributes->get('website'),
                 'test_id' => $request->attributes->get('test_id')
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 
     /**

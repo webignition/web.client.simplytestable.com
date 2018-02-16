@@ -50,13 +50,11 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
         $team = null;
 
         if ($userSummary->getPlan()->getAccountPlan()->getIsCustom()) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'view_user_account_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         $stripeCustomer = $userSummary->getStripeCustomer();

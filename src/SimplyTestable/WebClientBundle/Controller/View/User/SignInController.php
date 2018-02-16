@@ -29,13 +29,11 @@ class SignInController extends BaseViewController implements IEFiltered
         $user = $userManager->getUser();
 
         if (!SystemUserService::isPublicUser($user)) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'view_dashboard_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         $requestData = $request->query;

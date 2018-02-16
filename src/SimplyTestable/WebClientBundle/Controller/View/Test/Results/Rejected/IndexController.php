@@ -65,29 +65,25 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         }
 
         if ($test->getWebsite() != $website) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'app_test_redirector',
                 [
                     'website' => $test->getWebsite(),
                     'test_id' => $test_id
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         if (Test::STATE_REJECTED !== $test->getState()) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'view_test_progress_index_index',
                 [
                     'website' => $website,
                     'test_id' => $test_id
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         $viewData = [

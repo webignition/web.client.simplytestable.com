@@ -247,13 +247,11 @@ class UserController extends Controller
         $routeParameters = isset($redirectValues['parameters']) ? $redirectValues['parameters'] : [];
 
         try {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 $routeName,
                 $routeParameters,
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         } catch (\Exception $exception) {
         }
 
@@ -286,13 +284,11 @@ class UserController extends Controller
         $userExists = $userService->exists($email);
 
         if (!$this->isEmailValid($email) || empty($requestToken) || !$userExists) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'view_user_resetpassword_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         $failureRedirectResponse = $this->createPasswordChooseRedirectResponse($router, [
@@ -648,13 +644,11 @@ class UserController extends Controller
      */
     private function createSignInRedirectResponse(RouterInterface $router, array $routeParameters)
     {
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'view_user_signin_index',
             $routeParameters,
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 
     /**
@@ -664,13 +658,11 @@ class UserController extends Controller
      */
     private function createDashboardRedirectResponse(RouterInterface $router)
     {
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'view_dashboard_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 
     /**
@@ -681,13 +673,11 @@ class UserController extends Controller
      */
     private function createPasswordChooseRedirectResponse(RouterInterface $router, array $routeParameters)
     {
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'view_user_resetpassword_choose_index',
             $routeParameters,
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 
     /**
@@ -698,12 +688,10 @@ class UserController extends Controller
      */
     private function createSignUpRedirectResponse(RouterInterface $router, array $routeParameters = [])
     {
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'view_user_signup_index_index',
             $routeParameters,
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 }

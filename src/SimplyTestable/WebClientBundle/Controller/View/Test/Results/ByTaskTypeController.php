@@ -63,22 +63,20 @@ class ByTaskTypeController extends AbstractResultsController
         $selectedTaskType = $this->getSelectedTaskType($remoteTest, $requestTaskType);
 
         if (empty($selectedTaskType)) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'view_test_results_index_index',
                 [
                     'website' => $website,
                     'test_id' => $test_id
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         $hasValidFilter = in_array($filter, $this->allowedFilters);
 
         if (!$hasValidFilter) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'view_test_results_bytasktype_index',
                 [
                     'website' => $website,
@@ -87,9 +85,7 @@ class ByTaskTypeController extends AbstractResultsController
                     'filter' => self::DEFAULT_FILTER
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         $response = $cacheValidatorService->createResponse($request, [
@@ -104,16 +100,14 @@ class ByTaskTypeController extends AbstractResultsController
         }
 
         if ($this->requiresPreparation($remoteTest, $test)) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'view_test_results_preparing_index_index',
                 [
                     'website' => $website,
                     'test_id' => $test_id,
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         $taskCollectionFilterService->setTest($test);
@@ -209,7 +203,7 @@ class ByTaskTypeController extends AbstractResultsController
         $filter = trim($request->attributes->get('filter'));
         $hasValidFilter = in_array($filter, $this->allowedFilters);
 
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'view_test_results_bytasktype_index',
             [
                 'website' => $remoteTest->getWebsite(),
@@ -218,8 +212,6 @@ class ByTaskTypeController extends AbstractResultsController
                 'filter' => $hasValidFilter ? $filter : self::DEFAULT_FILTER
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 }

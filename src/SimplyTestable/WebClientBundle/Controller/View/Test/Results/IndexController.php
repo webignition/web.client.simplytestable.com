@@ -42,16 +42,14 @@ class IndexController extends AbstractResultsController
     {
         $router = $this->container->get('router');
 
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'app_test_redirector',
             [
                 'website' => $request->attributes->get('website'),
                 'test_id' => $request->attributes->get('test_id')
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 
     /**
@@ -90,16 +88,14 @@ class IndexController extends AbstractResultsController
         }
 
         if ($this->requiresPreparation($remoteTest, $test)) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'view_test_results_preparing_index_index',
                 [
                     'website' => $website,
                     'test_id' => $test_id,
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         $taskService->getCollection($test);
@@ -114,7 +110,7 @@ class IndexController extends AbstractResultsController
         $filteredTaskCounts = $this->createFilteredTaskCounts($taskCollectionFilterService);
 
         if (!$this->isFilterValid($filter, $filteredTaskCounts)) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'view_test_results_index_index',
                 [
                     'website' => $website,
@@ -122,9 +118,7 @@ class IndexController extends AbstractResultsController
                     'filter' => $defaultFilter
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
