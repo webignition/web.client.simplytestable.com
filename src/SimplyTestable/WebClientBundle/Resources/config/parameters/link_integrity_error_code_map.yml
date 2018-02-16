@@ -19,7 +19,7 @@ curl:
     description: Under the circumstances, getting nothing is considered an error.
   56:
     label: Failure with receiving network data.
-    description: "Whatever lives at the given domains isn\'t talking back."
+    description: "Whatever lives at the given domains isn\\'t talking back."
   60:
     label: Peer certificate cannot be authenticated with known CA certificates
     description: There is a problem with the SSL certificates these domains are using.
