@@ -25,6 +25,7 @@ class SimplyTestableWebClientExtension extends Extension
         'js-static-analysis-ignore-common-cdns.yml',
         'plans.yml',
         'documentation_site.yml',
+        'test_options.yml',
     ];
 
     /**
