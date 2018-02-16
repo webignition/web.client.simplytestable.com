@@ -46,27 +46,24 @@ class UserEmailChangeRequestService
      */
     public function getEmailChangeRequest($email)
     {
-        $response = $this->coreApplicationHttpClient->getAsAdmin(
-            'user_email_change_request_get',
-            [
-                'email' => $email
-            ],
-            [
-                CoreApplicationHttpClient::OPT_TREAT_404_AS_EMPTY => true,
-            ]
-        );
+        $response = null;
 
-        if (empty($response)) {
-            return null;
+        try {
+            $response = $this->coreApplicationHttpClient->getAsAdmin(
+                'user_email_change_request_get',
+                [
+                    'email' => $email
+                ]
+            );
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
+            if (404 === $coreApplicationRequestException->getCode()) {
+                return null;
+            }
+
+            throw $coreApplicationRequestException;
         }
 
-        $responseData = $this->jsonResponseHandler->handle($response);
-
-        if (empty($responseData)) {
-            return null;
-        }
-
-        return $responseData;
+        return $this->jsonResponseHandler->handle($response);
     }
 
     /**
