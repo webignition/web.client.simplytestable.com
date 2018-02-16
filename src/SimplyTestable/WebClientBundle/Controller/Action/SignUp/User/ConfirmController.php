@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use Symfony\Component\Routing\RouterInterface;
 
 class ConfirmController extends Controller
 {
@@ -42,8 +43,9 @@ class ConfirmController extends Controller
         $userService = $this->container->get('simplytestable.services.userservice');
         $session = $this->container->get('session');
         $mailService = $this->container->get('simplytestable.services.mail.service');
+        $router = $this->container->get('router');
 
-        $redirectResponse = $this->redirect($this->generateUrl(
+        $redirectResponse = new RedirectResponse($router->generate(
             'view_user_signup_confirm_index',
             ['email' => $email],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -72,7 +74,7 @@ class ConfirmController extends Controller
         $token = $userService->getConfirmationToken($email);
 
         try {
-            $this->sendConfirmationToken($mailService, $email, $token);
+            $this->sendConfirmationToken($router, $mailService, $email, $token);
         } catch (PostmarkResponseException $postmarkResponseException) {
             if ($postmarkResponseException->isNotAllowedToSendException()) {
                 $session->getFlashBag()->set(
@@ -103,27 +105,29 @@ class ConfirmController extends Controller
     }
 
     /**
+     * @param RouterInterface $router
      * @param MailService $mailService
      * @param string $email
      * @param string $token
      *
+     * @throws MailConfigurationException
      * @throws PostmarkResponseException
-     * @throws Exception
      */
-    private function sendConfirmationToken(MailService $mailService, $email, $token)
+    private function sendConfirmationToken(RouterInterface $router, MailService $mailService, $email, $token)
     {
         $mailConfiguration = $mailService->getConfiguration();
 
         $sender = $mailConfiguration->getSender('default');
         $messageProperties = $mailConfiguration->getMessageProperties('user_creation_confirmation');
 
-        $confirmationUrl = $this->generateUrl(
+        $confirmationUrl = $router->generate(
             'view_user_signup_confirm_index',
             [
-                'email' => $email
+                'email' => $email,
+                'token' => $token,
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
-        ) . '?token=' . $token;
+        );
 
         $viewName = 'SimplyTestableWebClientBundle:Email:user-creation-confirmation.txt.twig';
 

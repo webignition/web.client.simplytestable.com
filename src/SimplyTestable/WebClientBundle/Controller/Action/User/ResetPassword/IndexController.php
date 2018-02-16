@@ -44,6 +44,7 @@ class IndexController extends Controller
     {
         $session = $this->container->get('session');
         $userService = $this->container->get('simplytestable.services.userservice');
+        $router = $this->container->get('router');
 
         $requestData = $request->request;
 
@@ -55,14 +56,14 @@ class IndexController extends Controller
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_BLANK
             );
 
-            return $this->redirect($this->generateUrl(
+            return new RedirectResponse($router->generate(
                 'view_user_resetpassword_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
             ));
         }
 
-        $redirectResponse = $this->redirect($this->generateUrl(
+        $redirectResponse = new RedirectResponse($router->generate(
             'view_user_resetpassword_index_index',
             [
                 'email' => $email
@@ -145,12 +146,14 @@ class IndexController extends Controller
     private function sendPasswordResetConfirmationToken($email, $token)
     {
         $mailService = $this->container->get('simplytestable.services.mail.service');
+        $router = $this->container->get('router');
+
         $mailServiceConfiguration = $mailService->getConfiguration();
 
         $sender = $mailServiceConfiguration->getSender('default');
         $messageProperties = $mailServiceConfiguration->getMessageProperties('user_reset_password');
 
-        $confirmationUrl = $this->generateUrl(
+        $confirmationUrl = $router->generate(
             'view_user_resetpassword_choose_index',
             [
                 'email' => $email,

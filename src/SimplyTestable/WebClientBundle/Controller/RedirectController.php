@@ -49,7 +49,7 @@ class RedirectController extends Controller
         if ($isTaskResultsUrl) {
             $routeParameters = $this->getWebsiteAndTestIdAndTaskIdFromWebsite($website);
 
-            return $this->redirect($this->generateUrl(
+            return $this->redirect($router->generate(
                 'view_test_task_results_index_index_verbose',
                 $routeParameters,
                 UrlGeneratorInterface::ABSOLUTE_URL
@@ -69,7 +69,7 @@ class RedirectController extends Controller
             $latestRemoteTest = $remoteTestService->retrieveLatest($normalisedWebsite);
 
             if ($latestRemoteTest instanceof RemoteTest) {
-                return $this->redirect($this->generateUrl(
+                return $this->redirect($router->generate(
                     'app_test_redirector',
                     [
                         'website' => $latestRemoteTest->getWebsite(),
@@ -87,7 +87,7 @@ class RedirectController extends Controller
             ]);
 
             if (!empty($latestTest)) {
-                $redirectUrl = $this->generateUrl(
+                $redirectUrl = $router->generate(
                     'app_test_redirector',
                     [
                         'website' => $normalisedWebsite,
@@ -99,7 +99,7 @@ class RedirectController extends Controller
                 return $this->redirect($redirectUrl);
             }
 
-            return $this->redirect($this->generateUrl(
+            return $this->redirect($router->generate(
                 'view_dashboard_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
@@ -123,7 +123,7 @@ class RedirectController extends Controller
                     ]
                 );
 
-                $redirectUrl = $this->generateUrl(
+                $redirectUrl = $router->generate(
                     'app_website',
                     [
                         'website' => $website
@@ -150,7 +150,7 @@ class RedirectController extends Controller
             return new RedirectResponse($redirectUrl);
         }
 
-        return $this->redirect($this->generateUrl(
+        return $this->redirect($router->generate(
             'view_dashboard_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL

@@ -24,6 +24,7 @@ class ByUrlController extends Controller
     {
         /* @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
+        $router = $this->container->get('router');
 
         $testRepository = $entityManager->getRepository(Test::class);
         $taskRepository = $entityManager->getRepository(Task::class);
@@ -33,7 +34,7 @@ class ByUrlController extends Controller
         ]);
 
         if (empty($test)) {
-            return $this->redirect($this->generateUrl(
+            return new RedirectResponse($router->generate(
                 'view_dashboard_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
@@ -47,7 +48,7 @@ class ByUrlController extends Controller
         ]);
 
         if (empty($task)) {
-            return $this->redirect($this->generateUrl(
+            return new RedirectResponse($router->generate(
                 'app_test_redirector',
                 [
                     'website' => $website,
@@ -57,7 +58,7 @@ class ByUrlController extends Controller
             ));
         }
 
-        return $this->redirect($this->generateUrl(
+        return new RedirectResponse($router->generate(
             'view_test_task_results_index_index',
             [
                 'website' => $website,
