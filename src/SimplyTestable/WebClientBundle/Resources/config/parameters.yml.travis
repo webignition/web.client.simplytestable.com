@@ -7,6 +7,3 @@ parameters:
     "email-list-unsubscribe": "SimplyTestable\WebClientBundle\Resque\Job\EmailListUnsubscribeJob"
   early_access_users:
     - "jon@webignition.net"
-  currency_map:
-     gbp: "&#163;"
-     usd: "&#36;"
