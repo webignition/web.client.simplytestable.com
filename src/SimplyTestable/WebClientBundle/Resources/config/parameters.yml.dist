@@ -7,11 +7,6 @@ parameters:
     "email-list-unsubscribe": "SimplyTestable\WebClientBundle\Resque\Job\EmailListUnsubscribeJob"
   early_access_users:
     - "jon@webignition.net"
-  documentation_site:
-    urls:
-      home: http://help.simplytestable.com/
-      errors: errors/
-      html-validation: html-validation/
   test_options:
     features:
         http-authentication:
