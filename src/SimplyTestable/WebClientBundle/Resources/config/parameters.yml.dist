@@ -7,8 +7,6 @@ parameters:
     "email-list-unsubscribe": "SimplyTestable\WebClientBundle\Resque\Job\EmailListUnsubscribeJob"
   early_access_users:
     - "jon@webignition.net"
-  link-integrity-exclude-domains:
-   - instagram.com
   coupons:
    TMS:
      percent_off: 20
