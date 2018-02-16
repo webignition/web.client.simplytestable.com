@@ -108,13 +108,14 @@ class RequestListener
 
         if ($controller instanceof RequiresPrivateUserController && !$userManager->isLoggedIn()) {
             $session = $this->container->get('session');
+            $router = $this->container->get('router');
 
             $session->getFlashBag()->set('user_signin_error', 'account-not-logged-in');
 
             /* @var RequiresPrivateUserController $controller */
             $controller = $this->createController();
 
-            $this->event->setResponse($controller->getUserSignInRedirectResponse($this->request));
+            $this->event->setResponse($controller->getUserSignInRedirectResponse($router, $this->request));
 
             return;
         }
