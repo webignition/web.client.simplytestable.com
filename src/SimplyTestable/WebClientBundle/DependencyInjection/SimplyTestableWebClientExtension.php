@@ -21,6 +21,8 @@ class SimplyTestableWebClientExtension extends Extension
     private $parameterFiles = [
         'task_types.yml',
         'mail.yml',
+        'css-validation-ignore-common-cdns',
+        'js-static-analysis-ignore-common-cdns',
     ];
 
     /**
