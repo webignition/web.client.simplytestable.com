@@ -7,10 +7,6 @@ parameters:
     "email-list-unsubscribe": "SimplyTestable\WebClientBundle\Resque\Job\EmailListUnsubscribeJob"
   early_access_users:
     - "jon@webignition.net"
-  stripe:
-   payment_retry_limit: 3,
-   payment_retry_periods:
-     [1,1,1]
   plans:
     basic:
       name: Basic

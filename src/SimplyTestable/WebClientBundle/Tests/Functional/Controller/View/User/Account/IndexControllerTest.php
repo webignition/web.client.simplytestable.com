@@ -202,7 +202,6 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'templating' => $templatingEngine,
             ],
             [
-                'stripe',
                 'currency_map',
             ]
         );
@@ -773,7 +772,6 @@ class IndexControllerTest extends AbstractBaseTestCase
         $this->assertViewParameterKeys($parameters);
 
         $this->assertInstanceOf(UserSummary::class, $parameters['user_summary']);
-        $this->assertInternalType('array', $parameters['stripe']);
         $this->assertInternalType('array', $parameters['currency_map']);
     }
 
@@ -789,7 +787,6 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'user_summary',
                 'plan_presentation_name',
                 'stripe_event_data',
-                'stripe',
                 'mailchimp_updates_subscribed',
                 'mailchimp_announcements_subscribed',
                 'card_expiry_month',
