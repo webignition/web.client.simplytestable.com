@@ -7,16 +7,16 @@ imports:
 framework:
     #esi:             ~
     #translator:      { fallback: %locale% }
-    secret:          %secret%
+    secret:          '%secret%'
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
-        strict_requirements: %kernel.debug%
+        strict_requirements: '%kernel.debug%'
         #strict_parameters: %kernel.debug%
     form:            true
     csrf_protection: true
     validation:      { enable_annotations: true }
     templating:      { engines: ['twig'] } #assets_version: SomeVersionScheme
-    default_locale:  %locale%
+    default_locale:  '%locale%'
     #trust_proxy_headers: false # Whether or not the Request object should trust proxy headers (X_FORWARDED_FOR/HTTP_CLIENT_IP)
     trusted_proxies:  [127.0.0.1]
     session:
@@ -25,8 +25,8 @@ framework:
 
 # Twig Configuration
 twig:
-    debug:            %kernel.debug%
-    strict_variables: %kernel.debug%
+    debug:            '%kernel.debug%'
+    strict_variables: '%kernel.debug%'
     exception_controller:  SimplyTestable\WebClientBundle\Controller\ExceptionController::showAction
     globals:
       public_site:
@@ -43,7 +43,7 @@ twig:
 
 # Assetic Configuration
 assetic:
-    debug:          %kernel.debug%
+    debug:          '%kernel.debug%'
     use_controller: false
     bundles:        [ SimplyTestableWebClientBundle ]
     #java: /usr/bin/java
@@ -57,30 +57,30 @@ assetic:
 # Doctrine Configuration
 doctrine:
     dbal:
-        driver:   %database_driver%
-        host:     %database_host%
-        port:     %database_port%
-        dbname:   %database_name%
-        user:     %database_user%
-        password: %database_password%
+        driver:   '%database_driver%'
+        host:     '%database_host%'
+        port:     '%database_port%'
+        dbname:   '%database_name%'
+        user:     '%database_user%'
+        password: '%database_password%'
         charset:  UTF8
 
     orm:
-        auto_generate_proxy_classes: %kernel.debug%
+        auto_generate_proxy_classes: '%kernel.debug%'
         auto_mapping: true
 
 mz_postmark:
-    api_key:    %postmark_api_key%
-    from_email: %postmark_from_email%
-    from_name:  %postmark_from_name%
-    use_ssl:    %postmark_use_ssl%
-    timeout:    %postmark_timeout%
+    api_key:    '%postmark_api_key%'
+    from_email: '%postmark_from_email%'
+    from_name:  '%postmark_from_name%'
+    use_ssl:    '%postmark_use_ssl%'
+    timeout:    '%postmark_timeout%'
 
 # BCCResqueBundle Configuration
 bcc_resque:
     #class: BCC\ResqueBundle\Resque           # the resque class if different from default
     #vendor_dir: %kernel.root_dir%/../vendor  # the vendor dir if different from default
-    prefix: %bcc_resque_prefix%                # optional prefix to separate Resque data per site/app
+    prefix: '%bcc_resque_prefix%'             # optional prefix to separate Resque data per site/app
     #redis:
     #    host: localhost                      # the redis host
     #    port: 6379                           # the redis port
