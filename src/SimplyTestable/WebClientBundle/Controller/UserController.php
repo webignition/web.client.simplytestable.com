@@ -188,7 +188,7 @@ class UserController extends Controller
 
             $token = $userService->getConfirmationToken($email);
 
-            $this->sendConfirmationToken($email, $token);
+            $this->sendConfirmationToken($router, $email, $token);
 
             $flashBag->set(
                 self::FLASH_BAG_SIGN_IN_ERROR_KEY,
@@ -204,7 +204,7 @@ class UserController extends Controller
 
         if (!$userService->isEnabled()) {
             $token = $userService->getConfirmationToken($email);
-            $this->sendConfirmationToken($email, $token);
+            $this->sendConfirmationToken($router, $email, $token);
 
             $flashBag->set(
                 self::FLASH_BAG_SIGN_IN_ERROR_KEY,
@@ -247,13 +247,11 @@ class UserController extends Controller
         $routeParameters = isset($redirectValues['parameters']) ? $redirectValues['parameters'] : [];
 
         try {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 $routeName,
                 $routeParameters,
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         } catch (\Exception $exception) {
         }
 
@@ -286,13 +284,11 @@ class UserController extends Controller
         $userExists = $userService->exists($email);
 
         if (!$this->isEmailValid($email) || empty($requestToken) || !$userExists) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'view_user_resetpassword_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         $failureRedirectResponse = $this->createPasswordChooseRedirectResponse($router, [
@@ -445,7 +441,7 @@ class UserController extends Controller
         $token = $userService->getConfirmationToken($email);
 
         try {
-            $this->sendConfirmationToken($email, $token);
+            $this->sendConfirmationToken($router, $email, $token);
         } catch (PostmarkResponseException $postmarkResponseException) {
             if ($postmarkResponseException->isNotAllowedToSendException()) {
                 $flashBag->set(
@@ -484,13 +480,14 @@ class UserController extends Controller
     }
 
     /**
+     * @param RouterInterface $router
      * @param string $email
      * @param string $token
      *
      * @throws MailConfigurationException
      * @throws PostmarkResponseException
      */
-    private function sendConfirmationToken($email, $token)
+    private function sendConfirmationToken(RouterInterface $router, $email, $token)
     {
         $mailConfiguration = $this->container->get('simplytestable.services.mail.configuration');
         $mailService = $this->container->get('simplytestable.services.mail.service');
@@ -498,9 +495,14 @@ class UserController extends Controller
         $sender = $mailConfiguration->getSender('default');
         $messageProperties = $mailConfiguration->getMessageProperties('user_creation_confirmation');
 
-        $confirmationUrl = $this->generateUrl('view_user_signup_confirm_index', array(
-            'email' => $email
-        ), true).'?token=' . $token;
+        $confirmationUrl = $router->generate(
+            'view_user_signup_confirm_index',
+            [
+                'email' => $email,
+                'token' => $token,
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
 
         $message = $mailService->getNewMessage();
         $message->setFrom($sender['email'], $sender['name']);
@@ -642,13 +644,11 @@ class UserController extends Controller
      */
     private function createSignInRedirectResponse(RouterInterface $router, array $routeParameters)
     {
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'view_user_signin_index',
             $routeParameters,
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 
     /**
@@ -658,13 +658,11 @@ class UserController extends Controller
      */
     private function createDashboardRedirectResponse(RouterInterface $router)
     {
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'view_dashboard_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 
     /**
@@ -675,13 +673,11 @@ class UserController extends Controller
      */
     private function createPasswordChooseRedirectResponse(RouterInterface $router, array $routeParameters)
     {
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'view_user_resetpassword_choose_index',
             $routeParameters,
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 
     /**
@@ -692,12 +688,10 @@ class UserController extends Controller
      */
     private function createSignUpRedirectResponse(RouterInterface $router, array $routeParameters = [])
     {
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'view_user_signup_index_index',
             $routeParameters,
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 }

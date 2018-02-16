@@ -49,7 +49,7 @@ class RedirectController extends Controller
         if ($isTaskResultsUrl) {
             $routeParameters = $this->getWebsiteAndTestIdAndTaskIdFromWebsite($website);
 
-            return $this->redirect($this->generateUrl(
+            return new RedirectResponse($router->generate(
                 'view_test_task_results_index_index_verbose',
                 $routeParameters,
                 UrlGeneratorInterface::ABSOLUTE_URL
@@ -69,7 +69,7 @@ class RedirectController extends Controller
             $latestRemoteTest = $remoteTestService->retrieveLatest($normalisedWebsite);
 
             if ($latestRemoteTest instanceof RemoteTest) {
-                return $this->redirect($this->generateUrl(
+                return new RedirectResponse($router->generate(
                     'app_test_redirector',
                     [
                         'website' => $latestRemoteTest->getWebsite(),
@@ -87,19 +87,17 @@ class RedirectController extends Controller
             ]);
 
             if (!empty($latestTest)) {
-                $redirectUrl = $this->generateUrl(
+                return new RedirectResponse($router->generate(
                     'app_test_redirector',
                     [
                         'website' => $normalisedWebsite,
                         'test_id' => $latestTest->getTestId(),
                     ],
                     UrlGeneratorInterface::ABSOLUTE_URL
-                );
-
-                return $this->redirect($redirectUrl);
+                ));
             }
 
-            return $this->redirect($this->generateUrl(
+            return new RedirectResponse($router->generate(
                 'view_dashboard_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
@@ -123,34 +121,30 @@ class RedirectController extends Controller
                     ]
                 );
 
-                $redirectUrl = $this->generateUrl(
+                return new RedirectResponse($router->generate(
                     'app_website',
                     [
                         'website' => $website
                     ],
                     UrlGeneratorInterface::ABSOLUTE_URL
-                );
-
-                return $this->redirect($redirectUrl);
+                ));
             }
 
             $routeName = in_array($test->getState(), $this->testFinishedStates)
                 ? 'view_test_results_index_index'
                 : 'view_test_progress_index_index';
 
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 $routeName,
                 [
                     'website' => $normalisedWebsite,
                     'test_id' => $normalisedTestId
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
-        return $this->redirect($this->generateUrl(
+        return new RedirectResponse($router->generate(
             'view_dashboard_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -167,7 +161,8 @@ class RedirectController extends Controller
     public function taskAction($website, $test_id, $task_id)
     {
         $router = $this->container->get('router');
-        $redirectUrl = $router->generate(
+
+        return new RedirectResponse($router->generate(
             'view_test_task_results_index_index',
             [
                 'website' => $website,
@@ -175,9 +170,7 @@ class RedirectController extends Controller
                 'task_id' => $task_id
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 
     /**

@@ -44,16 +44,14 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
         $remoteTaskCount = $remoteTest->getTaskCount();
 
         if (0 === $remoteTaskCount) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'app_test_redirector',
                 [
                     'website' => $test->getWebsite(),
                     'test_id' => $test_id,
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         $completionPercent = (int)round(($localTaskCount / $remoteTaskCount) * 100);
@@ -71,29 +69,25 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
         }
 
         if (!$testService->isFinished($test)) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'view_test_progress_index_index',
                 [
                     'website' => $website,
                     'test_id' => $test_id,
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         if ($test->getWebsite() != $website) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'app_test_redirector',
                 [
                     'website' => $test->getWebsite(),
                     'test_id' => $test_id,
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         if (!$test->hasTaskIds()) {

@@ -40,6 +40,7 @@ class NewsSubscriptionsController extends Controller implements RequiresPrivateU
         $mailChimpListRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
         $mailChimpService = $this->container->get('simplytestable.services.mailchimpservice');
         $userManager = $this->container->get(UserManager::class);
+        $router = $this->container->get('router');
 
         /* @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
@@ -90,12 +91,10 @@ class NewsSubscriptionsController extends Controller implements RequiresPrivateU
 
         $this->get('session')->getFlashBag()->set('user_account_newssubscriptions_update', $flashData);
 
-        $redirectUrl = $this->generateUrl(
+        return new RedirectResponse($router->generate(
             'view_user_account_index_index',
             [],
             true
-        );
-
-        return $this->redirect($redirectUrl . '#news-subscriptions');
+        ) . '#news-subscriptions');
     }
 }

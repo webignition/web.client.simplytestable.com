@@ -36,13 +36,14 @@ class PasswordChangeController extends AccountCredentialsChangeController
         $session = $this->container->get('session');
         $userService = $this->container->get('simplytestable.services.userservice');
         $userManager = $this->container->get(UserManager::class);
+        $router = $this->container->get('router');
 
         $requestData = $request->request;
 
         $currentPassword = trim($requestData->get('current-password'));
         $newPassword = trim($requestData->get('new-password'));
 
-        $redirectResponse = $this->redirect($this->generateUrl(
+        $redirectResponse = new RedirectResponse($router->generate(
             'view_user_account_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL

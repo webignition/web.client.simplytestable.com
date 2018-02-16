@@ -74,10 +74,11 @@ class TeamController extends Controller implements RequiresPrivateUser
     {
         $session = $this->container->get('session');
         $teamService = $this->container->get('simplytestable.services.teamservice');
+        $router = $this->container->get('router');
 
         $requestData = $request->request;
 
-        $redirectResponse = $this->redirect($this->generateUrl(
+        $redirectResponse = new RedirectResponse($router->generate(
             'view_user_account_team_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -117,10 +118,11 @@ class TeamController extends Controller implements RequiresPrivateUser
         $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
         $userService = $this->container->get('simplytestable.services.userservice');
         $userManager = $this->container->get(UserManager::class);
+        $router = $this->container->get('router');
 
         $requestData = $request->request;
 
-        $redirectResponse = $this->redirect($this->generateUrl(
+        $redirectResponse = new RedirectResponse($router->generate(
             'view_user_account_team_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -258,10 +260,11 @@ class TeamController extends Controller implements RequiresPrivateUser
     {
         $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
         $userManager = $this->container->get(UserManager::class);
+        $router = $this->container->get('router');
 
         $requestData = $request->request;
 
-        $redirectResponse = $this->redirect($this->generateUrl(
+        $redirectResponse = new RedirectResponse($router->generate(
             'view_user_account_team_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -300,6 +303,7 @@ class TeamController extends Controller implements RequiresPrivateUser
     public function removeInviteAction(Request $request)
     {
         $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
+        $router = $this->container->get('router');
 
         $requestData = $request->request;
 
@@ -309,7 +313,7 @@ class TeamController extends Controller implements RequiresPrivateUser
             'user' => $invitee
         ]));
 
-        return $this->redirect($this->generateUrl(
+        return new RedirectResponse($router->generate(
             'view_user_account_team_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -328,13 +332,14 @@ class TeamController extends Controller implements RequiresPrivateUser
     public function removeMemberAction(Request $request)
     {
         $teamService = $this->container->get('simplytestable.services.teamservice');
+        $router = $this->container->get('router');
 
         $requestData = $request->request;
         $member = trim($requestData->get('user'));
 
         $teamService->removeFromTeam($member);
 
-        return $this->redirect($this->generateUrl(
+        return new RedirectResponse($router->generate(
             'view_user_account_team_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -357,6 +362,7 @@ class TeamController extends Controller implements RequiresPrivateUser
         $session = $this->container->get('session');
         $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
         $userService = $this->container->get('simplytestable.services.userservice');
+        $router = $this->container->get('router');
 
         $requestData = $request->request;
 
@@ -394,7 +400,7 @@ class TeamController extends Controller implements RequiresPrivateUser
 
         $session->getFlashBag()->set(self::FLASH_BAG_TEAM_RESEND_INVITE_KEY, $flashData);
 
-        return $this->redirect($this->generateUrl(
+        return new RedirectResponse($router->generate(
             'view_user_account_team_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -411,9 +417,11 @@ class TeamController extends Controller implements RequiresPrivateUser
     public function leaveAction()
     {
         $teamService = $this->container->get('simplytestable.services.teamservice');
+        $router = $this->container->get('router');
+
         $teamService->leave();
 
-        return $this->redirect($this->generateUrl(
+        return new RedirectResponse($router->generate(
             'view_user_account_team_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -430,6 +438,7 @@ class TeamController extends Controller implements RequiresPrivateUser
     {
         $mailService = $this->container->get('simplytestable.services.mail.service');
         $mailServiceConfiguration = $mailService->getConfiguration();
+        $router = $this->container->get('router');
 
         $sender = $mailServiceConfiguration->getSender('default');
         $messageProperties = $mailServiceConfiguration->getMessageProperties('user_team_invite_invitation');
@@ -443,7 +452,7 @@ class TeamController extends Controller implements RequiresPrivateUser
         $message->setSubject(str_replace('{{team_name}}', $invite->getTeam(), $messageProperties['subject']));
         $message->setTextMessage($this->renderView($viewName, [
             'team_name' => $invite->getTeam(),
-            'account_team_page_url' => $this->generateUrl('view_user_account_team_index_index', [], true)
+            'account_team_page_url' => $router->generate('view_user_account_team_index_index', [], true)
         ]));
 
         $mailService->getSender()->send($message);
@@ -458,12 +467,14 @@ class TeamController extends Controller implements RequiresPrivateUser
     private function sendInviteActivationEmail(Invite $invite)
     {
         $mailService = $this->container->get('simplytestable.services.mail.service');
+        $router = $this->container->get('router');
+
         $mailServiceConfiguration = $mailService->getConfiguration();
 
         $sender = $mailServiceConfiguration->getSender('default');
         $messageProperties = $mailServiceConfiguration->getMessageProperties('user_team_invite_newuser_invitation');
 
-        $confirmationUrl = $this->generateUrl(
+        $confirmationUrl = $router->generate(
             'view_user_signup_invite_index',
             [
                 'token' => $invite->getToken()

@@ -42,11 +42,12 @@ class InviteController extends Controller
         $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
         $resqueJobFactory = $this->container->get('simplytestable.services.resque.jobfactoryservice');
         $userManager = $this->container->get(UserManager::class);
+        $router = $this->container->get('router');
 
         $requestData = $request->request;
 
         if (empty($token)) {
-            return $this->redirect($this->generateUrl(
+            return new RedirectResponse($router->generate(
                 'view_user_signup_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
@@ -56,7 +57,7 @@ class InviteController extends Controller
         $invite = $teamInviteService->getForToken($token);
 
         if (empty($invite)) {
-            return $this->redirect($this->generateUrl(
+            return new RedirectResponse($router->generate(
                 'view_user_signup_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
@@ -70,7 +71,7 @@ class InviteController extends Controller
                 self::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_PASSWORD_BLANK
             );
 
-            return $this->redirect($this->generateUrl(
+            return new RedirectResponse($router->generate(
                 'view_user_signup_invite_index',
                 [
                     'token' => $token
@@ -102,7 +103,7 @@ class InviteController extends Controller
                 $activateAndAcceptFailureCode
             );
 
-            return $this->redirect($this->generateUrl(
+            return new RedirectResponse($router->generate(
                 'view_user_signup_invite_index',
                 [
                     'token' => $token
@@ -136,7 +137,7 @@ class InviteController extends Controller
 
         $staySignedIn = !empty(trim($requestData->get('stay-signed-in')));
 
-        $response = $this->redirect($this->generateUrl(
+        $response = new RedirectResponse($router->generate(
             'view_dashboard_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL

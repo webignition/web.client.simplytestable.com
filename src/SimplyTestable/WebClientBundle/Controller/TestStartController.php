@@ -97,16 +97,14 @@ class TestStartController extends TestController
         try {
             $remoteTest = $remoteTestService->start($urlToTest, $testOptions, $testType);
 
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'view_test_progress_index_index',
                 [
                     'website' => $remoteTest->getWebsite(),
                     'test_id' => $remoteTest->getId(),
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
             $flashBag->set('test_start_error', 'web_resource_exception');
 

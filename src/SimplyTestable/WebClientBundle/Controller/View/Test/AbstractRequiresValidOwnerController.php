@@ -41,14 +41,12 @@ abstract class AbstractRequiresValidOwnerController extends BaseViewController i
 
         $session->getFlashBag()->set('user_signin_error', 'test-not-logged-in');
 
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'view_user_signin_index',
             [
                 'redirect' => base64_encode($redirectParameters)
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 }

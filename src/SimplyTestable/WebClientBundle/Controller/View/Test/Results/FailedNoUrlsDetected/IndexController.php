@@ -58,31 +58,27 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
         $test = $testService->get($website, $test_id);
 
         if ($test->getWebsite() != $website) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'app_test_redirector',
                 [
                     'website' => $test->getWebsite(),
                     'test_id' => $test_id
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         $testStateIsCorrect = Test::STATE_FAILED_NO_SITEMAP === $test->getState();
 
         if (!$testStateIsCorrect || !SystemUserService::isPublicUser($user)) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'view_test_progress_index_index',
                 [
                     'website' => $website,
                     'test_id' => $test_id
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
         $viewData = [

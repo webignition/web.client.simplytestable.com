@@ -56,13 +56,11 @@ class CardController extends BaseViewController implements RequiresPrivateUser, 
             $team = $teamService->getTeam();
 
             if ($team->getLeader() !== $user->getUsername()) {
-                $redirectUrl = $router->generate(
+                return new RedirectResponse($router->generate(
                     'view_user_account_index_index',
                     [],
                     UrlGeneratorInterface::ABSOLUTE_URL
-                );
-
-                return new RedirectResponse($redirectUrl);
+                ));
             }
         }
 

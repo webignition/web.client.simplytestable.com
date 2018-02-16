@@ -73,10 +73,11 @@ class EmailChangeController extends AccountCredentialsChangeController
         $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
+        $router = $this->container->get('router');
 
         $requestData = $request->request;
 
-        $redirectResponse = $this->redirect($this->generateUrl(
+        $redirectResponse = new RedirectResponse($router->generate(
             'view_user_account_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -181,6 +182,7 @@ class EmailChangeController extends AccountCredentialsChangeController
     public function resendAction()
     {
         $session = $this->container->get('session');
+        $router = $this->container->get('router');
 
         try {
             $this->sendEmailChangeConfirmationToken();
@@ -212,7 +214,7 @@ class EmailChangeController extends AccountCredentialsChangeController
             }
         }
 
-        return $this->redirect($this->generateUrl(
+        return new RedirectResponse($router->generate(
             'view_user_account_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -235,10 +237,11 @@ class EmailChangeController extends AccountCredentialsChangeController
         $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
         $resqueJobFactory = $this->container->get('simplytestable.services.resque.jobfactoryservice');
         $userManager = $this->container->get(UserManager::class);
+        $router = $this->container->get('router');
 
         $requestData = $request->request;
 
-        $redirectResponse =  $this->redirect($this->generateUrl(
+        $redirectResponse =  new RedirectResponse($router->generate(
             'view_user_account_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -342,11 +345,12 @@ class EmailChangeController extends AccountCredentialsChangeController
     {
         $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
         $session = $this->container->get('session');
+        $router = $this->container->get('router');
 
         $emailChangeRequestService->cancelEmailChangeRequest();
         $session->getFlashBag()->set('user_account_details_cancel_email_change_notice', 'cancelled');
 
-        return $this->redirect($this->generateUrl(
+        return new RedirectResponse($router->generate(
             'view_user_account_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -365,6 +369,7 @@ class EmailChangeController extends AccountCredentialsChangeController
         $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
         $mailService = $this->container->get('simplytestable.services.mail.service');
         $userManager = $this->container->get(UserManager::class);
+        $router = $this->container->get('router');
 
         $mailServiceConfiguration = $mailService->getConfiguration();
         $user = $userManager->getUser();
@@ -375,7 +380,7 @@ class EmailChangeController extends AccountCredentialsChangeController
         $sender = $mailServiceConfiguration->getSender('default');
         $messageProperties = $mailServiceConfiguration->getMessageProperties('user_email_change_request_confirmation');
 
-        $confirmationUrl = $this->generateUrl(
+        $confirmationUrl = $router->generate(
             'view_user_account_index_index',
             [
                 'token' => $emailChangeRequest['token'],

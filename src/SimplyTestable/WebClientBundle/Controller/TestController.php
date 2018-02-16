@@ -62,16 +62,14 @@ class TestController extends Controller
             // We already redirect back to test results regardless of if this action succeeds
         }
 
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'view_test_results_index_index',
             [
                 'website' => $website,
                 'test_id' => $test_id,
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 
     /**
@@ -97,30 +95,24 @@ class TestController extends Controller
             $testService->get($website, $test_id);
             $remoteTestService->cancel();
         } catch (InvalidCredentialsException $invalidCredentialsException) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'view_dashboard_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
-            $redirectUrl = $router->generate(
+            return new RedirectResponse($router->generate(
                 'view_test_progress_index_index',
                 $routeParameters,
                 UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
-            return new RedirectResponse($redirectUrl);
+            ));
         }
 
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'view_test_results_index_index',
             $routeParameters,
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 
     /**
@@ -149,16 +141,14 @@ class TestController extends Controller
             // Nothing happens, we redirect to the test progress page regardless
         }
 
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'view_test_progress_index_index',
             [
                 'website' => $website,
                 'test_id' => $test_id,
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 
     /**
@@ -179,15 +169,13 @@ class TestController extends Controller
 
         $remoteTest = $remoteTestService->retest($test_id, $website);
 
-        $redirectUrl = $router->generate(
+        return new RedirectResponse($router->generate(
             'view_test_progress_index_index',
             [
                 'website' => $remoteTest->getWebsite(),
                 'test_id' => $remoteTest->getId(),
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 }
