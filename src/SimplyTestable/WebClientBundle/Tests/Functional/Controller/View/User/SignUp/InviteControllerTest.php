@@ -299,8 +299,6 @@ class InviteControllerTest extends AbstractBaseTestCase
     {
         $publicUser = new User('public', 'public');
 
-        $this->assertInternalType('array', $parameters['public_site']);
-        $this->assertInternalType('array', $parameters['external_links']);
         $this->assertEquals(self::TOKEN, $parameters['token']);
         $this->assertEquals($publicUser, $parameters['user']);
         $this->assertFalse($parameters['is_logged_in']);

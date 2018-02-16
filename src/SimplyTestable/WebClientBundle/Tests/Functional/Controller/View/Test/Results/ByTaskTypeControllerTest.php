@@ -775,8 +775,6 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
             [
                 'user',
                 'is_logged_in',
-                'public_site',
-                'external_links',
                 'is_owner',
                 'is_public_user_test',
                 'website',

@@ -1,6 +1,6 @@
 imports:
     - { resource: parameters.yml }
-    - { resource: "@SimplyTestableWebClientBundle/Resources/config/parameters.yml" }    
+    - { resource: "@SimplyTestableWebClientBundle/Resources/config/parameters.yml" }
     - { resource: security.yml }
     - { resource: "@SimplyTestableWebClientBundle/Resources/config/services.yml" }
 
@@ -27,7 +27,10 @@ framework:
 twig:
     debug:            %kernel.debug%
     strict_variables: %kernel.debug%
-    exception_controller:  SimplyTestable\WebClientBundle\Controller\ExceptionController::showAction      
+    exception_controller:  SimplyTestable\WebClientBundle\Controller\ExceptionController::showAction
+    globals:
+      public_site: '%public_site%'
+      external_links: '%external_links%'
 
 # Assetic Configuration
 assetic:
@@ -56,7 +59,7 @@ doctrine:
     orm:
         auto_generate_proxy_classes: %kernel.debug%
         auto_mapping: true
-        
+
 mz_postmark:
     api_key:    %postmark_api_key%
     from_email: %postmark_from_email%

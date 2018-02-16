@@ -17,8 +17,6 @@ abstract class BaseViewController extends Controller
         return [
             'user' => $userManager->getUser(),
             'is_logged_in' => $userManager->isLoggedIn(),
-            'public_site' => $this->container->getParameter('public_site'),
-            'external_links' => $this->container->getParameter('external_links')
         ];
     }
 }

@@ -250,8 +250,6 @@ class IndexControllerTest extends AbstractBaseTestCase
             [
                 'user',
                 'is_logged_in',
-                'public_site',
-                'external_links',
                 'test',
             ],
             array_keys($parameters)

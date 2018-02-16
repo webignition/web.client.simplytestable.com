@@ -373,8 +373,6 @@ class ConfirmControllerTest extends AbstractBaseTestCase
             [
                 'user',
                 'is_logged_in',
-                'public_site',
-                'external_links',
                 'email',
                 'token',
             ],
