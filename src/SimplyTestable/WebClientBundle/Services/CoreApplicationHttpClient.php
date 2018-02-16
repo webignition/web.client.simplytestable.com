@@ -22,7 +22,6 @@ class CoreApplicationHttpClient
 {
     const APPLICATION_JSON_CONTENT_TYPE = 'application/json';
 
-    const OPT_TREAT_404_AS_EMPTY = 'treat-404-as-empty';
     const OPT_EXPECT_JSON_RESPONSE = 'expect-json-response';
     const OPT_DISABLE_REDIRECT = 'disable-redirect';
 
@@ -309,12 +308,6 @@ class CoreApplicationHttpClient
                     }
 
                     throw new InvalidCredentialsException();
-                }
-
-                if (404 === $response->getStatusCode()) {
-                    if ($this->isOptionTrue(self::OPT_TREAT_404_AS_EMPTY, $options)) {
-                        return null;
-                    }
                 }
 
                 throw new CoreApplicationRequestException($clientException);
