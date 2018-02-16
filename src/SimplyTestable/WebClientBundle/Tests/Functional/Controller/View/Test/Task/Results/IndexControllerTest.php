@@ -360,6 +360,7 @@ class IndexControllerTest extends AbstractBaseTestCase
             ],
             [
                 'documentation_site',
+                'link_integrity_error_code_map',
             ]
         );
 
