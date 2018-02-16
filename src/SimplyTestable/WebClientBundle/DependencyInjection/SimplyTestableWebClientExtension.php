@@ -23,6 +23,7 @@ class SimplyTestableWebClientExtension extends Extension
         'mail.yml',
         'css-validation-ignore-common-cdns.yml',
         'js-static-analysis-ignore-common-cdns.yml',
+        'plans.yml',
     ];
 
     /**
