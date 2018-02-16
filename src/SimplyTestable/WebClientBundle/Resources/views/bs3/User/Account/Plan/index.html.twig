@@ -57,15 +57,6 @@
 
             {% if user_summary.plan.accountplan.name == 'basic' %}
                 {% if user_summary.plan.startTrialPeriod > 0  %}
-                    {% if user_summary.plan.startTrialPeriod == 365 %}
-                        <div class="alert alert-success">
-                            <p><strong>Special offer!</strong></p>
-                            <p>
-                                Upgrade before {{ premium_plan_launch_offer_end }} to get a 12 month trial (usually 30 days).
-                            </p>
-                        </div>
-                    {% endif %}
-
                     <p>
                         Try any premium plan free for <strong>{{ user_summary.plan.startTrialPeriod }}</strong> day{% if user_summary.plan.startTrialPeriod != 1%}s{% endif %}.
                     </p>
