@@ -6,15 +6,16 @@
     },
     "require": {
         "php": ">=5.6.0",
+
         "doctrine/doctrine-bundle": "~1.4",
         "doctrine/orm": "^2.4.8",
         "incenteev/composer-parameter-handler": "~2.0",
         "sensio/distribution-bundle": "~4.0",
         "sensio/framework-extra-bundle": "^3.0.2",
-        "symfony/assetic-bundle": "~2.3",
         "symfony/monolog-bundle": "^3.0.2",
-        "symfony/symfony": "2.7.*",
+        "symfony/symfony": "2.8.*",
         "twig/twig": "^1.0||^2.0",
+        "symfony/assetic-bundle": "~2.3",
         "doctrine/migrations": "~1.2",
         "doctrine/doctrine-migrations-bundle": "~1.2",
         "webignition/url":">=1.9.10,<2.0",
@@ -34,7 +35,7 @@
         "bcc/resque-bundle": "dev-master#eab84a526b6c2b303de04ab2b38114389e62ff7b"
     },
     "require-dev": {
-        "sensio/generator-bundle": "~2.3",
+        "sensio/generator-bundle": "~3.0",
         "symfony/phpunit-bridge": "~2.7",
         "phpunit/phpunit": "~4.0",
         "mockery/mockery": "1.0"
@@ -79,7 +80,7 @@
             "file": "app/config/parameters.yml"
         },
         "branch-alias": {
-            "dev-master": "2.7-dev"
+            "dev-master": "2.8-dev"
         }
     }
 }
