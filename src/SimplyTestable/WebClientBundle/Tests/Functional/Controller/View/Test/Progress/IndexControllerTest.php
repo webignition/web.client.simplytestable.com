@@ -337,8 +337,6 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'templating' => $templatingEngine,
             ],
             [
-                'public_site',
-                'external_links',
                 'css-validation-ignore-common-cdns',
                 'js-static-analysis-ignore-common-cdns',
             ]

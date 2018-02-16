@@ -218,8 +218,6 @@ class CardControllerTest extends AbstractBaseTestCase
                 'templating' => $templatingEngine,
             ],
             [
-                'public_site',
-                'external_links',
                 'stripe_publishable_key',
             ]
         );

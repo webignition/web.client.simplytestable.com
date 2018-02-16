@@ -202,8 +202,6 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'templating' => $templatingEngine,
             ],
             [
-                'public_site',
-                'external_links',
                 'stripe',
                 'premium_plan_launch_offer_end',
                 'currency_map',

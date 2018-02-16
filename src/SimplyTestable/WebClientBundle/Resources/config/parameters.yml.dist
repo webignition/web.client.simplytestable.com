@@ -1,22 +1,12 @@
 parameters:
   core_url: http://app.simplytestable.com
+  marketing_site: https://simplytestable.com/
   bcc_resque_prefix: web.client.simplytestable.com
   resque-job-class-map:
     "email-list-subscribe": "SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob"
     "email-list-unsubscribe": "SimplyTestable\WebClientBundle\Resque\Job\EmailListUnsubscribeJob"
   early_access_users:
     - "jon@webignition.net"
-  public_site:
-    urls:
-      home: http://simplytestable.com/
-      plans_and_pricing: plans/
-      features: features/
-      account_benefits: account-benefits/
-      plans_demo: plans/demo/
-  external_links:
-      terms: http://help.simplytestable.com/legal/terms-of-service/
-      privacy: http://help.simplytestable.com/legal/privacy/
-      contact_email: "&#115;&#117;&#112;&#112;&#111;&#114;&#116;&#64;&#115;&#105;&#109;&#112;&#108;&#121;&#116;&#101;&#115;&#116;&#97;&#98;&#108;&#101;&#46;&#99;&#111;&#109;"
   css-validation-ignore-common-cdns:
    - ajax.aspnetcdn.com
    - ajax.googleapis.com
