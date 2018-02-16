@@ -139,7 +139,7 @@ services:
   simplytestable.controller.action_listener:
     class: SimplyTestable\WebClientBundle\EventListener\RequestListener
     arguments:
-        kernel: @kernel
+        kernel: '@kernel'
     tags:
       - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
 

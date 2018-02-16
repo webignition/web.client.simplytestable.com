@@ -452,7 +452,11 @@ class TeamController extends Controller implements RequiresPrivateUser
         $message->setSubject(str_replace('{{team_name}}', $invite->getTeam(), $messageProperties['subject']));
         $message->setTextMessage($this->renderView($viewName, [
             'team_name' => $invite->getTeam(),
-            'account_team_page_url' => $router->generate('view_user_account_team_index_index', [], true)
+            'account_team_page_url' => $router->generate(
+                'view_user_account_team_index_index',
+                [],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            )
         ]));
 
         $mailService->getSender()->send($message);

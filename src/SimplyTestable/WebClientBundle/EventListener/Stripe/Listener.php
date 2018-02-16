@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\EventListener\Stripe;
 use Psr\Log\LoggerInterface;
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
 use Symfony\Bundle\TwigBundle\TwigEngine;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
@@ -117,7 +118,7 @@ class Listener
             'trial_period_days' => $eventData->get('trial_period_days'),
             'trial_end' => $this->getFormattedDateString($eventData->get('trial_end')),
             'amount' => $this->getFormattedAmount($eventData->get('amount')),
-            'account_url' => $this->router->generate('view_user_account_index_index', [], true),
+            'account_url' => $this->generateAccountUrl(),
             'currency_symbol' => $this->getCurrencySymbol($eventData->get('currency'))
         ];
 
@@ -158,7 +159,7 @@ class Listener
         $viewParameters = [
             'plan_name' => strtolower($eventData->get('plan_name')),
             'plan_amount' => $this->getFormattedAmount($eventData->get('plan_amount')),
-            'account_url' => $this->router->generate('view_user_account_index_index', [], true),
+            'account_url' => $this->generateAccountUrl(),
             'currency_symbol' => $this->getCurrencySymbol($eventData->get('plan_currency'))
         ];
 
@@ -235,7 +236,7 @@ class Listener
             $viewParameters = [
                 'plan_name' => strtolower($eventData->get('plan_name')),
                 'plan_amount' => $this->getFormattedAmount($eventData->get('plan_amount')),
-                'account_url' => $this->router->generate('view_user_account_index_index', [], true),
+                'account_url' => $this->generateAccountUrl(),
                 'currency_symbol' => $this->getCurrencySymbol($eventData->get('currency'))
             ];
 
@@ -269,7 +270,7 @@ class Listener
 
         $viewParameters = [
             'invoice_id' => $this->getFormattedInvoiceId($eventData->get('invoice_id')),
-            'account_url' => $this->router->generate('view_user_account_index_index', [], true),
+            'account_url' => $this->generateAccountUrl(),
             'invoice_lines' => $this->getInvoiceLinesContent($eventData->get('lines'), $eventData->get('currency')),
         ];
 
@@ -290,7 +291,7 @@ class Listener
 
         $viewParameters = [
             'plan_name' => strtolower($eventData->get('plan_name')),
-            'account_url' => $this->router->generate('view_user_account_index_index', [], true),
+            'account_url' => $this->generateAccountUrl(),
             'invoice_lines' => $this->getInvoiceLinesContent($eventData->get('lines'), $eventData->get('currency')),
             'invoice_id' => $this->getFormattedInvoiceId($eventData->get('invoice_id')),
             'subtotal' => (int)$eventData->get('subtotal'),
@@ -347,7 +348,7 @@ class Listener
         $viewParameters = [
             'trial_days_remaining' => $eventData->get('trial_days_remaining'),
             'trial_days_remaining_pluralisation' => ($eventData->get('trial_days_remaining') == 1 ? '' : 's'),
-            'account_url' => $this->router->generate('view_user_account_index_index', [], true),
+            'account_url' => $this->generateAccountUrl(),
             'plan_name' => strtolower($eventData->get('plan_name'))
         ];
 
@@ -523,5 +524,17 @@ class Listener
         }
 
         return $this->currencySymbolMap[$currency];
+    }
+
+    /**
+     * @return string
+     */
+    private function generateAccountUrl()
+    {
+        return $this->router->generate(
+            'view_user_account_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
     }
 }
