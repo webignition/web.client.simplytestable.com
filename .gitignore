@@ -16,3 +16,5 @@ phpcpd.phar
 /src/SimplyTestable/WebClientBundle/Resources/assets/vendor/
 src/SimplyTestable/WebClientBundle/Resources/config/parameters.yml
 data/queue/test/*
+var/cache/*
+var/logs/*
