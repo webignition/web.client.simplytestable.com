@@ -20,6 +20,7 @@ class SimplyTestableWebClientExtension extends Extension
      */
     private $parameterFiles = [
         'task_types.yml',
+        'mail.yml',
     ];
 
     /**

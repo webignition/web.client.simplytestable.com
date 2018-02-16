@@ -17,47 +17,6 @@ parameters:
       terms: http://help.simplytestable.com/legal/terms-of-service/
       privacy: http://help.simplytestable.com/legal/privacy/
       contact_email: "&#115;&#117;&#112;&#112;&#111;&#114;&#116;&#64;&#115;&#105;&#109;&#112;&#108;&#121;&#116;&#101;&#115;&#116;&#97;&#98;&#108;&#101;&#46;&#99;&#111;&#109;"
-  mail:
-    senders:
-      default:
-        email: robot@simplytestable.com
-        name: Simply Testable Robot
-      notifications:
-        email: jon@simplytestable.com
-        name: Jon Cram (Simply Testable)
-    message_properties:
-      user_creation_confirmation:
-        subject: "[Simply Testable] Activate your account"
-      user_reset_password:
-        subject: "[Simply Testable] Reset your password"
-      user_email_change_request_confirmation:
-        subject: "[Simply Testable] Confirm your email address change"
-      stripe.customer.subscription.created:
-        subject: "[Simply Testable] You've signed up to the {{plan_name}} plan"
-      stripe.invoice.created:
-        subject: "[Simply Testable] Invoice {{invoice_id}} created, payment details needed"
-      stripe.invoice.payment_succeeded:
-        subject: "[Simply Testable] Invoice {{invoice_id}} paid, thanks!"
-      stripe.customer.subscription.trial_will_end:
-        subject: "[Simply Testable] Your {{plan_name}} account trial ends in 3 days{{payment_details_needed_suffix}}"
-      stripe.invoice.payment_failed:
-        subject: "[Simply Testable] Invoice {{invoice_id}} payment failed"
-      stripe.customer.subscription.updated-plan_change=1:
-        subject: "[Simply Testable] You've changed to the {{new_plan}} plan"
-      stripe.customer.subscription.updated-transition=trialing_to_active-has_card=0:
-        subject: "[Simply Testable] Premium trial has ended, you've been dropped down to our free plan"
-      stripe.customer.subscription.updated-transition=trialing_to_active-has_card=1:
-        subject: "[Simply Testable] Premium trial has ended, payment for the next month will be taken soon"
-      stripe.customer.subscription.deleted-actioned_by=user-is_during_trial=1:
-        subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled"
-      stripe.customer.subscription.deleted-actioned_by=user-is_during_trial=0:
-        subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled"
-      stripe.customer.subscription.deleted-actioned_by=system:
-        subject: "[Simply Testable] Premium subscription to {{plan_name}} cancelled, you've been dropped down to our free plan"
-      user_team_invite_invitation:
-        subject: "[Simply Testable] You have been invited to join the {{team_name}} team"
-      user_team_invite_newuser_invitation:
-        subject: "[Simply Testable] You have been invited to join the {{team_name}} team"
   css-validation-ignore-common-cdns:
    - ajax.aspnetcdn.com
    - ajax.googleapis.com
