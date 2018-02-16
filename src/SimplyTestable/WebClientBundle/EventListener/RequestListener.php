@@ -85,7 +85,7 @@ class RequestListener
 
         if ($controller instanceof IEFilteredController && $this->isUsingOldIE()) {
             $this->event->setResponse(
-                new RedirectResponse($this->container->getParameter('public_site')['urls']['home'])
+                new RedirectResponse($this->container->getParameter('marketing_site'))
             );
 
             return;
