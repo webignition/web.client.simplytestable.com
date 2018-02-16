@@ -5,10 +5,10 @@ services:
   simplytestable.services.testservice:
     class:   SimplyTestable\WebClientBundle\Services\TestService
     arguments:
-        entityManager: "@doctrine.orm.entity_manager"
-        logger: "@logger"
-        taskService: "@simplytestable.services.taskservice"
-        remoteTestService: "@simplytestable.services.remotetestservice"
+        entityManager: '@doctrine.orm.entity_manager'
+        logger: '@logger'
+        taskService: '@simplytestable.services.taskservice'
+        remoteTestService: '@simplytestable.services.remotetestservice'
 
   simplytestable.services.remotetestservice:
     class:   SimplyTestable\WebClientBundle\Services\RemoteTestService
@@ -19,8 +19,8 @@ services:
   simplytestable.services.taskservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskService
     arguments:
-        entityManager: "@doctrine.orm.entity_manager"
-        taskOutputResultParserService: "@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory"
+        entityManager: '@doctrine.orm.entity_manager'
+        taskOutputResultParserService: '@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory'
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
         jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
         taskFactory: '@SimplyTestable\WebClientBundle\Services\Factory\TaskFactory'
@@ -29,25 +29,25 @@ services:
   simplytestable.services.taskcollectionfilterservice:
     class:   SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService
     arguments:
-        entityManager: "@doctrine.orm.entity_manager"
+        entityManager: '@doctrine.orm.entity_manager'
 
   simplytestable.services.cachevalidatorheadersservice:
     class:   SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService
     arguments:
-        entityManager: "@doctrine.orm.entity_manager"
+        entityManager: '@doctrine.orm.entity_manager'
 
   simplytestable.services.resque.queueService:
     class:   SimplyTestable\WebClientBundle\Services\Resque\QueueService
     arguments:
-      resque: "@bcc_resque.resque"
-      environment: "%kernel.environment%"
-      logger: "@logger"
-      jobFactoryService: "@simplytestable.services.resque.jobFactoryService"
+      resque: '@bcc_resque.resque'
+      environment: '%kernel.environment%'
+      logger: '@logger'
+      jobFactoryService: '@simplytestable.services.resque.jobFactoryService'
 
   simplytestable.services.resque.jobFactoryService:
     class:  SimplyTestable\WebClientBundle\Services\Resque\JobFactoryService
     arguments:
-      jobClassMap: "%resque-job-class-map%"
+      jobClassMap: '%resque-job-class-map%'
 
   simplytestable.services.userservice:
     class:  SimplyTestable\WebClientBundle\Services\UserService
@@ -75,8 +75,8 @@ services:
   simplytestable.services.testoptions.adapter.request:
     class:  SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
     calls:
-      - [addFeatureOptionsParser, ["@simplytestable.services.testoptions.adapter.request.featureOptionsParser"]]
-      - [addFeatureOptionsParser, ["@simplytestable.services.testoptions.adapter.request.cookieOptionsParser", "cookies"]]
+      - [addFeatureOptionsParser, ['@simplytestable.services.testoptions.adapter.request.featureOptionsParser']]
+      - [addFeatureOptionsParser, ['@simplytestable.services.testoptions.adapter.request.cookieOptionsParser', 'cookies']]
 
   simplytestable.services.userplansubscriptionservice:
     class:  SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService
@@ -104,12 +104,12 @@ services:
     class:   SimplyTestable\WebClientBundle\Services\MailChimp\Service
     arguments:
         mailChimpClient: '@SimplyTestable\WebClientBundle\Services\MailChimp\Client'
-        listRecipientsService: "@simplytestable.services.mailchimp.listRecipients"
+        listRecipientsService: '@simplytestable.services.mailchimp.listRecipients'
 
   simplytestable.services.mail.configuration:
     class:   SimplyTestable\WebClientBundle\Services\Mail\Configuration
     arguments:
-        configuration: "%mail%"
+        configuration: '%mail%'
 
   simplytestable.services.postmark.sender:
     class:   SimplyTestable\WebClientBundle\Services\Postmark\Sender
@@ -117,17 +117,17 @@ services:
   simplytestable.services.mail.service:
     class:   SimplyTestable\WebClientBundle\Services\Mail\Service
     arguments:
-        mailConfiguration: "@simplytestable.services.mail.configuration"
-        postmarkMessage: "@postmark.message"
-        postmarkSender: "@simplytestable.services.postmark.sender"
+        mailConfiguration: '@simplytestable.services.mail.configuration'
+        postmarkMessage: '@postmark.message'
+        postmarkSender: '@simplytestable.services.postmark.sender'
 
   simplytestable.listener.stripeEvent:
     class:   SimplyTestable\WebClientBundle\EventListener\Stripe\Listener
     arguments:
-        logger: "@logger"
-        templating: "@templating"
-        router: "@router"
-        mailService: "@simplytestable.services.mail.service"
+        logger: '@logger'
+        templating: '@templating'
+        router: '@router'
+        mailService: '@simplytestable.services.mail.service'
     tags:
       - { name: kernel.event_listener, event: stripe.customer.subscription.created, method: onCustomerSubscriptionCreated }
       - { name: kernel.event_listener, event: stripe.customer.subscription.deleted, method: onCustomerSubscriptionDeleted }
@@ -146,8 +146,8 @@ services:
   simplytestable.listener.mailchimpEvent:
     class:   SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener
     arguments:
-        logger: "@logger"
-        mailchimpListRecipientsService: "@simplytestable.services.mailchimp.listRecipients"
+        logger: '@logger'
+        mailchimpListRecipientsService: '@simplytestable.services.mailchimp.listRecipients'
         entityManager: '@doctrine.orm.entity_manager'
     tags:
       - { name: kernel.event_listener, event: mailchimp.subscribe, method: onSubscribe }
@@ -158,12 +158,12 @@ services:
   simplytestable.services.mailchimp.listRecipients:
     class:   SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService
     arguments:
-        entityManager: "@doctrine.orm.entity_manager"
-        logger: "@logger"
+        entityManager: '@doctrine.orm.entity_manager'
+        logger: '@logger'
         listIdentifiers:
-          announcements: "%mailchimp_announcements_list_id%"
-          updates: "%mailchimp_updates_list_id%"
-          introduction: "%mailchimp_introduction_list_id%"
+          announcements: '%mailchimp_announcements_list_id%'
+          updates: '%mailchimp_updates_list_id%'
+          introduction: '%mailchimp_introduction_list_id%'
 
   simplytestable.services.tasktypeservice:
     class:  SimplyTestable\WebClientBundle\Services\TaskTypeService
@@ -245,8 +245,8 @@ services:
   SimplyTestable\WebClientBundle\Services\ApplicationConfigurationService:
     class: SimplyTestable\WebClientBundle\Services\ApplicationConfigurationService
     arguments:
-      - "@=service('kernel').getRootDir()"
-      - "@=service('kernel').getCacheDir()"
+      - '@=service('kernel').getRootDir()'
+      - '@=service('kernel').getCacheDir()'
 
   SimplyTestable\WebClientBundle\Services\CoreApplicationRouter:
     class: SimplyTestable\WebClientBundle\Services\CoreApplicationRouter
