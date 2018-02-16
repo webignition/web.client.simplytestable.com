@@ -293,8 +293,6 @@ class IndexControllerTest extends AbstractBaseTestCase
             [
                 'user',
                 'is_logged_in',
-                'public_site',
-                'external_links',
                 'website',
                 'redirect',
             ],

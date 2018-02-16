@@ -225,8 +225,6 @@ class SignInControllerTest extends AbstractBaseTestCase
             [
                 'user',
                 'is_logged_in',
-                'public_site',
-                'external_links',
                 'email',
                 'user_signin_error',
                 'user_signin_confirmation',

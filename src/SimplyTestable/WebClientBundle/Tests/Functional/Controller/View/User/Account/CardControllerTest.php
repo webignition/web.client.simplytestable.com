@@ -322,8 +322,6 @@ class CardControllerTest extends AbstractBaseTestCase
             [
                 'user',
                 'is_logged_in',
-                'public_site',
-                'external_links',
                 'stripe_publishable_key',
                 'plan_presentation_name',
                 'user_summary',
