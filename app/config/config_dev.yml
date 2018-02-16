@@ -1,7 +1,7 @@
 imports:
     - { resource: config.yml }
-    - { resource: "@SimplyTestableWebClientBundle/Resources/config/parameters.yml" }   
-    - { resource: "@SimplyTestableWebClientBundle/Resources/config/services_dev.yml" }                 
+    - { resource: "@SimplyTestableWebClientBundle/Resources/config/parameters.yml" }
+    - { resource: "@SimplyTestableWebClientBundle/Resources/config/services_dev.yml" }
 
 framework:
     router:   { resource: "%kernel.root_dir%/config/routing_dev.yml" }
@@ -15,7 +15,7 @@ monolog:
     handlers:
         main:
             type:  stream
-            path:  %kernel.logs_dir%/%kernel.environment%.log
+            path:  '%kernel.logs_dir%/%kernel.environment%.log'
             level: debug
         firephp:
             type:  firephp
