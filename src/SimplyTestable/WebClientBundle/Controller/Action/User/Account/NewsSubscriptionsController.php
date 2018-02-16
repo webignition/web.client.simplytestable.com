@@ -94,7 +94,7 @@ class NewsSubscriptionsController extends Controller implements RequiresPrivateU
         return new RedirectResponse($router->generate(
             'view_user_account_index_index',
             [],
-            true
+            UrlGeneratorInterface::ABSOLUTE_URL
         ) . '#news-subscriptions');
     }
 }
