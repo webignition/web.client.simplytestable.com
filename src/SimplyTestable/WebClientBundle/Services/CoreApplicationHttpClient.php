@@ -22,7 +22,6 @@ class CoreApplicationHttpClient
 {
     const APPLICATION_JSON_CONTENT_TYPE = 'application/json';
 
-    const OPT_EXPECT_JSON_RESPONSE = 'expect-json-response';
     const OPT_DISABLE_REDIRECT = 'disable-redirect';
 
     const ROUTE_PARAMETER_USER_PLACEHOLDER = '{{ user }}';
@@ -167,7 +166,7 @@ class CoreApplicationHttpClient
 
         $request = $this->httpClient->createRequest('GET', $requestUrl, $this->createRequestOptions($options));
 
-        return $this->getResponse($request, $options, $user);
+        return $this->getResponse($request, $user);
     }
 
     /**
@@ -248,7 +247,7 @@ class CoreApplicationHttpClient
             $this->createRequestOptions($options, $postData)
         );
 
-        return $this->getResponse($request, $options, $user);
+        return $this->getResponse($request, $user);
     }
 
     /**
@@ -261,7 +260,7 @@ class CoreApplicationHttpClient
     {
         $requestOptions = [];
 
-        if ($this->isOptionTrue(self::OPT_DISABLE_REDIRECT, $options)) {
+        if (in_array(self::OPT_DISABLE_REDIRECT, $options)) {
             $requestOptions['allow_redirects'] = false;
         }
 
@@ -274,7 +273,6 @@ class CoreApplicationHttpClient
 
     /**
      * @param RequestInterface $request
-     * @param array $options
      * @param User $user
      * @return ResponseInterface|null
      *
@@ -283,7 +281,7 @@ class CoreApplicationHttpClient
      * @throws InvalidAdminCredentialsException
      * @throws InvalidCredentialsException
      */
-    private function getResponse(RequestInterface $request, array $options, User $user)
+    private function getResponse(RequestInterface $request, User $user)
     {
         $this->addAuthorizationToRequest($request, $user);
 
@@ -343,17 +341,6 @@ class CoreApplicationHttpClient
                 $user->getPassword()
             ))
         ]);
-    }
-
-    /**
-     * @param string $name
-     * @param array $options
-     *
-     * @return bool
-     */
-    private function isOptionTrue($name, array $options)
-    {
-        return isset($options[$name]) && $options[$name];
     }
 
     /**

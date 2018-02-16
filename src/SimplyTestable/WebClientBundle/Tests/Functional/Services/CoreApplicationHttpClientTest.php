@@ -338,7 +338,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                     HttpResponseFactory::createRedirectResponse(),
                 ],
                 'options' => [
-                    CoreApplicationHttpClient::OPT_DISABLE_REDIRECT => true,
+                    CoreApplicationHttpClient::OPT_DISABLE_REDIRECT,
                 ],
                 'expectedResponse' => HttpResponseFactory::createRedirectResponse(),
             ],

@@ -109,7 +109,7 @@ class UserService
             [],
             $requestData,
             [
-                CoreApplicationHttpClient::OPT_DISABLE_REDIRECT => true,
+                CoreApplicationHttpClient::OPT_DISABLE_REDIRECT,
             ]
         );
 
