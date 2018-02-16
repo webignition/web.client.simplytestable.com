@@ -49,7 +49,7 @@ class RedirectController extends Controller
         if ($isTaskResultsUrl) {
             $routeParameters = $this->getWebsiteAndTestIdAndTaskIdFromWebsite($website);
 
-            return $this->redirect($router->generate(
+            return new RedirectResponse($router->generate(
                 'view_test_task_results_index_index_verbose',
                 $routeParameters,
                 UrlGeneratorInterface::ABSOLUTE_URL
@@ -69,7 +69,7 @@ class RedirectController extends Controller
             $latestRemoteTest = $remoteTestService->retrieveLatest($normalisedWebsite);
 
             if ($latestRemoteTest instanceof RemoteTest) {
-                return $this->redirect($router->generate(
+                return new RedirectResponse($router->generate(
                     'app_test_redirector',
                     [
                         'website' => $latestRemoteTest->getWebsite(),
@@ -96,10 +96,10 @@ class RedirectController extends Controller
                     UrlGeneratorInterface::ABSOLUTE_URL
                 );
 
-                return $this->redirect($redirectUrl);
+                return new RedirectResponse($redirectUrl);
             }
 
-            return $this->redirect($router->generate(
+            return new RedirectResponse($router->generate(
                 'view_dashboard_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
@@ -131,7 +131,7 @@ class RedirectController extends Controller
                     UrlGeneratorInterface::ABSOLUTE_URL
                 );
 
-                return $this->redirect($redirectUrl);
+                return new RedirectResponse($redirectUrl);
             }
 
             $routeName = in_array($test->getState(), $this->testFinishedStates)
@@ -150,7 +150,7 @@ class RedirectController extends Controller
             return new RedirectResponse($redirectUrl);
         }
 
-        return $this->redirect($router->generate(
+        return new RedirectResponse($router->generate(
             'view_dashboard_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
