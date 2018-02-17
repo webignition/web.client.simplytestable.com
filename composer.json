@@ -61,15 +61,12 @@
         "post-update-cmd": [
             "@symfony-scripts"
         ],
-        "test-unit": "./bin/phpunit --colors src/SimplyTestable/WebClientBundle/Tests/Unit/",
-        "test-functional": "./bin/phpunit -c app --colors src/SimplyTestable/WebClientBundle/Tests/Functional/",
+        "test-unit": "./vendor/bin/phpunit --colors src/SimplyTestable/WebClientBundle/Tests/Unit/",
+        "test-functional": "./vendor/bin/phpunit -c app --colors src/SimplyTestable/WebClientBundle/Tests/Functional/",
         "test": [
             "@composer test-unit",
             "@composer test-functional"
         ]
-    },
-    "config": {
-        "bin-dir": "bin"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
