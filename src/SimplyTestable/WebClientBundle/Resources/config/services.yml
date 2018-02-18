@@ -146,7 +146,6 @@ services:
   simplytestable.listener.mailchimpevent:
     class:   SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener
     arguments:
-        logger: '@logger'
         mailchimpListRecipientsService: '@simplytestable.services.mailchimp.listrecipients'
         entityManager: '@doctrine.orm.entity_manager'
     tags:

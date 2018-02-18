@@ -3,63 +3,46 @@
 namespace SimplyTestable\WebClientBundle\EventListener\MailChimp;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpKernel\Log\LoggerInterface as Logger;
+use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
+use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
+use SimplyTestable\WebClientBundle\Event\MailChimp\Event as MailChimpEvent;
 
-class Listener {
-
+class Listener
+{
     /**
-     *
-     * @var Logger
+     * @var ListRecipientsService
      */
-    private $logger;
-
-
-    /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService
-     */
-    private $mailchimpListRecipientsService;
-
+    private $mailChimpListRecipientsService;
 
     /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients
+     * @var ListRecipients
      */
     private $listRecipients;
-
-
-    /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Event\MailChimp\Event
-     */
-    private $event;
 
     /**
      * @var EntityManagerInterface
      */
     private $entityManager;
 
-
     /**
-     *
-     * @param Logger $logger
+     * @param ListRecipientsService $mailChimpListRecipientsService
+     * @param EntityManagerInterface $entityManager
      */
     public function __construct(
-        Logger $logger,
-        \SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService $mailchimpListRecipientsService,
+        ListRecipientsService $mailChimpListRecipientsService,
         EntityManagerInterface $entityManager
     ) {
-        $this->logger = $logger;
-        $this->mailchimpListRecipientsService = $mailchimpListRecipientsService;
+        $this->mailChimpListRecipientsService = $mailChimpListRecipientsService;
         $this->entityManager = $entityManager;
     }
 
-    // \DomainException
-    public function onSubscribe(\SimplyTestable\WebClientBundle\Event\MailChimp\Event $event) {
-        $this->event = $event;
-
+    /**
+     * @param MailChimpEvent $event
+     */
+    public function onSubscribe(MailChimpEvent $event)
+    {
         if (array_key_exists('email', $event->getData())) {
-            $listRecipients = $this->getListRecipients();
+            $listRecipients = $this->getListRecipients($event);
             $listRecipients->addRecipient($event->getData()['email']);
 
             $this->entityManager->persist($listRecipients);
@@ -67,16 +50,21 @@ class Listener {
         }
     }
 
-    public function onUnsubscribe(\SimplyTestable\WebClientBundle\Event\MailChimp\Event $event) {
-        $this->event = $event;
-        $this->handleRemoveRecipientEvent();
+    /**
+     * @param MailChimpEvent $event
+     */
+    public function onUnsubscribe(MailChimpEvent $event)
+    {
+        $this->handleRemoveRecipientEvent($event);
     }
 
-    public function onUpEmail(\SimplyTestable\WebClientBundle\Event\MailChimp\Event $event) {
-        $this->event = $event;
-
+    /**
+     * @param MailChimpEvent $event
+     */
+    public function onUpEmail(MailChimpEvent $event)
+    {
         if (array_key_exists('old_email', $event->getData()) && array_key_exists('new_email', $event->getData())) {
-            $listRecipients = $this->getListRecipients();
+            $listRecipients = $this->getListRecipients($event);
             $listRecipients->removeRecipient($event->getData()['old_email']);
             $listRecipients->addRecipient($event->getData()['new_email']);
 
@@ -85,31 +73,41 @@ class Listener {
         }
     }
 
-    public function onCleaned(\SimplyTestable\WebClientBundle\Event\MailChimp\Event $event) {
-        $this->event = $event;
-        $this->handleRemoveRecipientEvent();
+    /**
+     * @param MailChimpEvent $event
+     */
+    public function onCleaned(MailChimpEvent $event)
+    {
+        $this->handleRemoveRecipientEvent($event);
     }
 
-
-    private function handleRemoveRecipientEvent() {
-        if (array_key_exists('email', $this->event->getData())) {
-            $listRecipients = $this->getListRecipients();
-            $listRecipients->removeRecipient($this->event->getData()['email']);
+    /**
+     * @param MailChimpEvent $event
+     */
+    private function handleRemoveRecipientEvent(MailChimpEvent $event)
+    {
+        if (array_key_exists('email', $event->getData())) {
+            $listRecipients = $this->getListRecipients($event);
+            $listRecipients->removeRecipient($event->getData()['email']);
 
             $this->entityManager->persist($listRecipients);
             $this->entityManager->flush();
         }
     }
 
-
-    private function getListRecipients() {
+    /**
+     * @param MailChimpEvent $event
+     *
+     * @return null|ListRecipients
+     */
+    private function getListRecipients(MailChimpEvent $event)
+    {
         if (is_null($this->listRecipients)) {
-            $this->listRecipients = $this->mailchimpListRecipientsService->get(
-                $this->mailchimpListRecipientsService->getListName($this->event->getListId())
+            $this->listRecipients = $this->mailChimpListRecipientsService->get(
+                $this->mailChimpListRecipientsService->getListName($event->getListId())
             );
         }
 
         return $this->listRecipients;
     }
-
 }
