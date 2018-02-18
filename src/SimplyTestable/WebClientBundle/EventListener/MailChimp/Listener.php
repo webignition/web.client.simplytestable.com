@@ -3,18 +3,12 @@
 namespace SimplyTestable\WebClientBundle\EventListener\MailChimp;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
 use SimplyTestable\WebClientBundle\Event\MailChimp\Event as MailChimpEvent;
 
 class Listener
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
     /**
      * @var ListRecipientsService
      */
@@ -31,16 +25,13 @@ class Listener
     private $entityManager;
 
     /**
-     * @param LoggerInterface $logger
      * @param ListRecipientsService $mailChimpListRecipientsService
      * @param EntityManagerInterface $entityManager
      */
     public function __construct(
-        LoggerInterface $logger,
         ListRecipientsService $mailChimpListRecipientsService,
         EntityManagerInterface $entityManager
     ) {
-        $this->logger = $logger;
         $this->mailChimpListRecipientsService = $mailChimpListRecipientsService;
         $this->entityManager = $entityManager;
     }
