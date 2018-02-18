@@ -116,7 +116,7 @@ class ClientTest extends AbstractBaseTestCase
                     ])),
                 ],
                 'expectedException' => MemberExistsException::class,
-                'expectedExceptionMessage' => '',
+                'expectedExceptionMessage' => 'user@example.com is already a list member.',
                 'expectedExceptionCode' => 0,
             ],
             'unknown error' => [
@@ -127,7 +127,7 @@ class ClientTest extends AbstractBaseTestCase
                     ])),
                 ],
                 'expectedException' => UnknownException::class,
-                'expectedExceptionMessage' => '',
+                'expectedExceptionMessage' => 'foo',
                 'expectedExceptionCode' => 0,
             ],
         ];
@@ -188,7 +188,7 @@ class ClientTest extends AbstractBaseTestCase
                     ])),
                 ],
                 'expectedException' => ResourceNotFoundException::class,
-                'expectedExceptionMessage' => '',
+                'expectedExceptionMessage' => 'The requested resource could not be found.',
                 'expectedExceptionCode' => 0,
             ],
             'unknown error' => [
@@ -199,7 +199,7 @@ class ClientTest extends AbstractBaseTestCase
                     ])),
                 ],
                 'expectedException' => UnknownException::class,
-                'expectedExceptionMessage' => '',
+                'expectedExceptionMessage' => 'foo',
                 'expectedExceptionCode' => 0,
             ],
         ];

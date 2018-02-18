@@ -525,7 +525,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 ],
                 'options' => [],
                 'expectedException' => CoreApplicationRequestException::class,
-                'expectedExceptionMessage' => '',
+                'expectedExceptionMessage' => 'Not Found',
                 'expectedExceptionCode' => 404,
             ],
             '500' => [
@@ -539,7 +539,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 ],
                 'options' => [],
                 'expectedException' => CoreApplicationRequestException::class,
-                'expectedExceptionMessage' => '',
+                'expectedExceptionMessage' => 'Internal Server Error',
                 'expectedExceptionCode' => 500,
             ],
             'curl exception' => [

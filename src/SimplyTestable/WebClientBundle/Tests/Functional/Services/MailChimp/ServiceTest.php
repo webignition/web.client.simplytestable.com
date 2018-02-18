@@ -98,7 +98,7 @@ class ServiceTest extends AbstractBaseTestCase
                     ])),
                 ],
                 'expectedException' => MemberExistsException::class,
-                'expectedExceptionMessage' => '',
+                'expectedExceptionMessage' => 'user@example.com is already a list member.',
                 'expectedExceptionCode' => 0,
             ],
             'unknown error' => [
@@ -109,7 +109,7 @@ class ServiceTest extends AbstractBaseTestCase
                     ])),
                 ],
                 'expectedException' => UnknownException::class,
-                'expectedExceptionMessage' => '',
+                'expectedExceptionMessage' => 'foo',
                 'expectedExceptionCode' => 0,
             ],
         ];
@@ -194,7 +194,7 @@ class ServiceTest extends AbstractBaseTestCase
                     ])),
                 ],
                 'expectedException' => UnknownException::class,
-                'expectedExceptionMessage' => '',
+                'expectedExceptionMessage' => 'foo',
                 'expectedExceptionCode' => 0,
             ],
         ];
