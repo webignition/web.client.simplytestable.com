@@ -57,7 +57,9 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->coreApplicationHttpClient->get('team_get', [], $options);
     }
@@ -84,7 +86,9 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->coreApplicationHttpClient->getAsAdmin('team_get', [], $options);
     }
@@ -112,7 +116,9 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->coreApplicationHttpClient->post('team_get', [], [], $options);
     }
@@ -140,7 +146,9 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->coreApplicationHttpClient->postAsAdmin('team_get', [], [], $options);
     }
@@ -517,7 +525,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 ],
                 'options' => [],
                 'expectedException' => CoreApplicationRequestException::class,
-                'expectedExceptionMessage' => '',
+                'expectedExceptionMessage' => 'Not Found',
                 'expectedExceptionCode' => 404,
             ],
             '500' => [
@@ -531,7 +539,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 ],
                 'options' => [],
                 'expectedException' => CoreApplicationRequestException::class,
-                'expectedExceptionMessage' => '',
+                'expectedExceptionMessage' => 'Internal Server Error',
                 'expectedExceptionCode' => 500,
             ],
             'curl exception' => [

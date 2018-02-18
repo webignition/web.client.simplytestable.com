@@ -77,7 +77,9 @@ class ServiceTest extends AbstractBaseTestCase
     ) {
         $this->setHttpFixtures($httpFixtures);
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->mailChimpService->subscribe(self::LIST_NAME, self::USER_EMAIL);
     }
@@ -96,7 +98,7 @@ class ServiceTest extends AbstractBaseTestCase
                     ])),
                 ],
                 'expectedException' => MemberExistsException::class,
-                'expectedExceptionMessage' => '',
+                'expectedExceptionMessage' => 'user@example.com is already a list member.',
                 'expectedExceptionCode' => 0,
             ],
             'unknown error' => [
@@ -107,7 +109,7 @@ class ServiceTest extends AbstractBaseTestCase
                     ])),
                 ],
                 'expectedException' => UnknownException::class,
-                'expectedExceptionMessage' => '',
+                'expectedExceptionMessage' => 'foo',
                 'expectedExceptionCode' => 0,
             ],
         ];
@@ -160,7 +162,9 @@ class ServiceTest extends AbstractBaseTestCase
         $entityManager->persist($listRecipients);
         $entityManager->flush();
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->mailChimpService->unsubscribe(self::LIST_NAME, self::USER_EMAIL);
     }
@@ -190,7 +194,7 @@ class ServiceTest extends AbstractBaseTestCase
                     ])),
                 ],
                 'expectedException' => UnknownException::class,
-                'expectedExceptionMessage' => '',
+                'expectedExceptionMessage' => 'foo',
                 'expectedExceptionCode' => 0,
             ],
         ];

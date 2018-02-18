@@ -63,7 +63,10 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
     ) {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
+
         $this->teamInviteService->get(self::USERNAME);
     }
 
@@ -331,7 +334,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $this->setExpectedException(InvalidAdminCredentialsException::class, '', 0);
+        $this->expectException(InvalidAdminCredentialsException::class);
 
         $this->teamInviteService->getForToken(self::TOKEN);
     }

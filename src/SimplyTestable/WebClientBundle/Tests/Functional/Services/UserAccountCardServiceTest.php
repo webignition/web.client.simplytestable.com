@@ -108,7 +108,9 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
     ) {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->userAccountCardService->associate($this->user, self::STRIPE_CARD_TOKEN);
     }

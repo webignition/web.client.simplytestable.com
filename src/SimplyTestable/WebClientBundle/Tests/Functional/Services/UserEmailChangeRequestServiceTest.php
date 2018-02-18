@@ -135,11 +135,9 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
     ) {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->setExpectedException(
-            UserEmailChangeException::class,
-            $expectedExceptionMessage,
-            $expectedExceptionCode
-        );
+        $this->expectException(UserEmailChangeException::class);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->coreApplicationHttpClient->setUser($this->user);
         $this->userEmailChangeRequestService->confirmEmailChangeRequest([
@@ -196,11 +194,9 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
     ) {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->setExpectedException(
-            UserEmailChangeException::class,
-            $expectedExceptionMessage,
-            $expectedExceptionCode
-        );
+        $this->expectException(UserEmailChangeException::class);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->coreApplicationHttpClient->setUser($this->user);
         $this->userEmailChangeRequestService->createEmailChangeRequest('foo@example.com');

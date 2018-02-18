@@ -248,7 +248,8 @@ class JsStaticAnalysisResultParserTest extends \PHPUnit_Framework_TestCase
 
     public function testGetResultErrorReportUnexpectedFailureCondition()
     {
-        $this->setExpectedException(\RuntimeException::class, 'Unexpected failure condition');
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Unexpected failure condition');
 
         $output = ModelFactory::createTaskOutput([
             ModelFactory::TASK_OUTPUT_CONTENT => json_encode([
