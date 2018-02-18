@@ -2,19 +2,17 @@
 namespace SimplyTestable\WebClientBundle\Services\Resque;
 
 use BCC\ResqueBundle\Resque;
+use Psr\Log\LoggerInterface;
 use SimplyTestable\WebClientBundle\Resque\Job\Job;
-use Symfony\Component\HttpKernel\Log\LoggerInterface;
-use SimplyTestable\WebClientBundle\Services\Resque\JobFactoryService;
-
 
 /**
  * Wrapper for \BCC\ResqueBundle\Resque that handles exceptions
  * when trying to interact with queues.
- * 
+ *
  * Exceptions generally occur when trying to establish a socket connection to
  * a redis server that does not exist. This can happen as in some environments
  * where the integration with redis is optional.
- * 
+ *
  */
 class QueueService {
 
@@ -155,5 +153,5 @@ class QueueService {
             $this->logger->warn('ResqueQueueService::enqueue: Redis error ['.$credisException->getMessage().']');
         }
     }
-    
+
 }
