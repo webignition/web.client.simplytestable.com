@@ -53,7 +53,9 @@ class RemoteTestServiceOwnsTest extends AbstractRemoteTestServiceTest
     ) {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->remoteTestService->owns($this->user);
     }

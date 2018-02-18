@@ -110,7 +110,9 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
     ) {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->userPlanSubscriptionService->subscribe($this->user, self::PLAN);
     }

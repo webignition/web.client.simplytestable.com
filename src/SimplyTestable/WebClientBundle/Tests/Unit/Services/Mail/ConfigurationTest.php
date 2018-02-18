@@ -40,11 +40,9 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setExpectedException(
-            MailConfigurationException::class,
-            $expectedExceptionMessage,
-            $expectedExceptionCode
-        );
+        $this->expectException(MailConfigurationException::class);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $configuration = new Configuration($configurationValues);
 
@@ -107,11 +105,9 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setExpectedException(
-            MailConfigurationException::class,
-            $expectedExceptionMessage,
-            $expectedExceptionCode
-        );
+        $this->expectException(MailConfigurationException::class);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $configuration = new Configuration($configurationValues);
 

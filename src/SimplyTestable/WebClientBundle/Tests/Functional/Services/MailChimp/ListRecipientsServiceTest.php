@@ -65,11 +65,9 @@ class ListRecipientsServiceTest extends AbstractBaseTestCase
 
     public function testGetListIdException()
     {
-        $this->setExpectedException(
-            \DomainException::class,
-            'List "foo" is not known',
-            ListRecipientsService::EXCEPTION_LIST_NOT_KNOWN_CODE
-        );
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('List "foo" is not known');
+        $this->expectExceptionCode(ListRecipientsService::EXCEPTION_LIST_NOT_KNOWN_CODE);
 
         $this->listRecipientsService->getListId('foo');
     }
@@ -108,11 +106,9 @@ class ListRecipientsServiceTest extends AbstractBaseTestCase
 
     public function testGetListNameException()
     {
-        $this->setExpectedException(
-            \DomainException::class,
-            'List id "foo" is not known',
-            ListRecipientsService::EXCEPTION_LIST_ID_NOT_KNOWN_CODE
-        );
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('List id "foo" is not known');
+        $this->expectExceptionCode(ListRecipientsService::EXCEPTION_LIST_ID_NOT_KNOWN_CODE);
 
         $this->listRecipientsService->getListName('foo');
     }
@@ -151,11 +147,9 @@ class ListRecipientsServiceTest extends AbstractBaseTestCase
 
     public function testGetException()
     {
-        $this->setExpectedException(
-            \DomainException::class,
-            'List "foo" is not known',
-            ListRecipientsService::EXCEPTION_LIST_NOT_KNOWN_CODE
-        );
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('List "foo" is not known');
+        $this->expectExceptionCode(ListRecipientsService::EXCEPTION_LIST_NOT_KNOWN_CODE);
 
         $this->listRecipientsService->get('foo');
     }

@@ -66,7 +66,9 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->userService->resetPassword('token', 'password');
     }
@@ -214,7 +216,9 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $this->coreApplicationHttpClient->setUser($this->user);
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->userService->create(
             'user@example.com',
@@ -365,7 +369,9 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
     ) {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->userService->activate('token-value');
     }
@@ -463,7 +469,9 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             'token' => 'token-value',
         ]);
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->userService->activateAndAccept($invite, 'password-value');
     }
@@ -552,11 +560,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $this->setExpectedException(
-            InvalidAdminCredentialsException::class,
-            '',
-            0
-        );
+        $this->expectException(InvalidAdminCredentialsException::class);
 
         $this->userService->exists('user@example.com');
     }
@@ -717,7 +721,9 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->userService->getSummary();
     }

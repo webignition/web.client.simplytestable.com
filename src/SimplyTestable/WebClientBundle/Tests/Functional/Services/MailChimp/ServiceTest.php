@@ -77,7 +77,9 @@ class ServiceTest extends AbstractBaseTestCase
     ) {
         $this->setHttpFixtures($httpFixtures);
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->mailChimpService->subscribe(self::LIST_NAME, self::USER_EMAIL);
     }
@@ -160,7 +162,9 @@ class ServiceTest extends AbstractBaseTestCase
         $entityManager->persist($listRecipients);
         $entityManager->flush();
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->mailChimpService->unsubscribe(self::LIST_NAME, self::USER_EMAIL);
     }

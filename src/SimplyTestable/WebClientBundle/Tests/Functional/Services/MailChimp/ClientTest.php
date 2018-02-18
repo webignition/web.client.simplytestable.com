@@ -92,7 +92,9 @@ class ClientTest extends AbstractBaseTestCase
     ) {
         $this->setHttpFixtures($httpFixtures);
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->mailChimpClient->addListMember(
             $this->container->getParameter('mailchimp_updates_list_id'),
@@ -162,7 +164,9 @@ class ClientTest extends AbstractBaseTestCase
     ) {
         $this->setHttpFixtures($httpFixtures);
 
-        $this->setExpectedException($expectedException, $expectedExceptionMessage, $expectedExceptionCode);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectExceptionCode($expectedExceptionCode);
 
         $this->mailChimpClient->removeListMember(
             $this->container->getParameter('mailchimp_updates_list_id'),

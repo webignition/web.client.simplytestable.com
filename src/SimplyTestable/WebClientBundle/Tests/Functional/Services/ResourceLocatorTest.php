@@ -33,7 +33,7 @@ class ResourceLocatorTest extends AbstractBaseTestCase
 
     public function testLocateFailure()
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         $this->resourceLocator->locate(self::BUNDLE_CONFIG_PATH . '/foo.yml');
     }

@@ -129,7 +129,9 @@ class OnKernelRequestRequiresValidTestOwnerTest extends AbstractOnKernelRequestT
             self::CONTROLLER_ROUTE
         );
 
-        $this->setExpectedException(CoreApplicationRequestException::class, 'Not Found', 404);
+        $this->expectException(CoreApplicationRequestException::class);
+        $this->expectExceptionMessage('Not Found');
+        $this->expectExceptionCode(404);
 
         $this->requestListener->onKernelRequest($event);
     }
