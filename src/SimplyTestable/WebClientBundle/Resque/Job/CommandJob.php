@@ -36,10 +36,6 @@ abstract class CommandJob extends Job
         $application = new Application($kernel);
         $application->setAutoExit(false);
 
-        if ('test' === $this->args['kernel.environment'] && isset($this->args['command'])) {
-            $application->add($this->args['command']);
-        }
-
         $input = new ArrayInput(array_merge([
             'command' => $this->getCommandName(),
         ], $this->getCommandArgs()));
