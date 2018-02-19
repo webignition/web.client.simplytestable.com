@@ -2,7 +2,8 @@
     "name": "simplytestable/webclient",
     "description": "web client to interface with app.simplytestable.com",
     "autoload": {
-        "psr-0": { "": "src/" }
+        "psr-4": { "": "src/" },
+        "files": ["app/AppKernel.php", "app/AppCache.php"]
     },
     "require": {
         "php": ">=5.6.0",
