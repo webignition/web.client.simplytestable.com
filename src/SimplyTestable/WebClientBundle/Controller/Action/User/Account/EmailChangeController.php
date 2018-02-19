@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\RouterInterface;
+use webignition\ResqueJobFactory\ResqueJobFactory;
 
 class EmailChangeController extends AccountCredentialsChangeController
 {
@@ -235,7 +236,7 @@ class EmailChangeController extends AccountCredentialsChangeController
         $session = $this->container->get('session');
         $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
         $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
-        $resqueJobFactory = $this->container->get('simplytestable.services.resque.jobfactoryservice');
+        $resqueJobFactory = $this->container->get(ResqueJobFactory::class);
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');
 

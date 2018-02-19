@@ -20,6 +20,7 @@ use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as Post
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\RouterInterface;
+use webignition\ResqueJobFactory\ResqueJobFactory;
 
 class UserController extends Controller
 {
@@ -535,7 +536,7 @@ class UserController extends Controller
         $session = $this->container->get('session');
         $router = $this->container->get('router');
         $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
-        $resqueJobFactory = $this->container->get('simplytestable.services.resque.jobfactoryservice');
+        $resqueJobFactory = $this->container->get(ResqueJobFactory::class);
 
         $userExists = $userService->exists($email);
         $flashBag = $session->getFlashBag();
