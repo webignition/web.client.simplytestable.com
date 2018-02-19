@@ -2,16 +2,16 @@
 
 namespace SimplyTestable\WebClientBundle\Resque\Job;
 
-use Symfony\Component\Console\Command\Command;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 abstract class CommandJob extends Job
 {
     /**
-     * @return Command
+     * @return string
      */
-    abstract protected function getCommand();
+    abstract protected function getCommandName();
 
     /**
      * Get the arguments required by the to-be-run command.
@@ -23,34 +23,61 @@ abstract class CommandJob extends Job
      */
     abstract protected function getCommandArgs();
 
+    /**
+     * @return string
+     */
+    abstract protected function getIdentifier();
+
     public function run($args)
     {
-        $command = $this->getCommand();
+        $kernel = $this->createKernel();
+        $kernel->boot();
 
-        $input = new ArrayInput($this->getCommandArgs());
+        $application = new Application($kernel);
+        $application->setAutoExit(false);
+
+        if ('test' === $this->args['kernel.environment'] && isset($this->args['command'])) {
+            $application->add($this->args['command']);
+        }
+
+        $input = new ArrayInput(array_merge([
+            'command' => $this->getCommandName(),
+        ], $this->getCommandArgs()));
+
         $output = new BufferedOutput();
-
-        $returnCode = ($this->isTestEnvironment()) ? $this->args['returnCode'] : $command->run($input, $output);
+        $returnCode = $application->run($input, $output);
 
         if ($returnCode === 0) {
             return true;
         }
 
-        $logger = $this->getContainer()->get('logger');
-
-        $logger->error(get_class($this) . ': task [' . $args['id'] . '] returned ' . $returnCode);
-        $logger->error(get_class($this) . ': task [' . $args['id'] . '] output ' . trim($output->fetch()));
+        return $this->handleNonZeroReturnCode($returnCode, $output);
     }
 
     /**
-     * @return bool
+     * @param int $returnCode
+     * @param BufferedOutput $output
+     *
+     * @return int
      */
-    private function isTestEnvironment()
+    private function handleNonZeroReturnCode($returnCode, $output)
     {
-        if (!isset($this->args['kernel.environment'])) {
-            return false;
-        }
+        $logger = $this->getContainer()->get('logger');
 
-        return $this->args['kernel.environment'] == 'test';
+        $logger->error(sprintf(
+            '%s: task [%s] returned %s',
+            get_class($this),
+            $this->getIdentifier(),
+            $returnCode
+        ));
+
+        $logger->error(sprintf(
+            '%s: task [%s] output %s',
+            get_class($this),
+            $this->getIdentifier(),
+            trim($output->fetch())
+        ));
+
+        return $returnCode;
     }
 }
