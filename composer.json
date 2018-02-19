@@ -27,7 +27,7 @@
         "webignition/guzzle-curl-exception":">=0.1.4,<1",
         "webignition/html-validation-error-normaliser":"dev-master",
         "webignition/html-validation-error-linkifier":"dev-master",
-        "mlpz/postmark-bundle": "dev-master#95a84ae0e48677e0f9da37e50bc93be624451d21",
+        "stephenfarrell/postmark-bundle": "dev-master#09eb492d79e823ee256f75b2d2f16df01dc5d146",
         "egulias/email-validator":"1.1.1",
         "doctrine/collections":"~1.2",
         "webignition/php-stripe-models":">=0.2.5,<1.0",
