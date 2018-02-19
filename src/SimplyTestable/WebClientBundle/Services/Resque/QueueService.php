@@ -3,7 +3,8 @@ namespace SimplyTestable\WebClientBundle\Services\Resque;
 
 use ResqueBundle\Resque\Resque;
 use Psr\Log\LoggerInterface;
-use SimplyTestable\WebClientBundle\Resque\Job\Job;
+use ResqueBundle\Resque\Job;
+use webignition\ResqueJobFactory\ResqueJobFactory;
 
 /**
  * Wrapper for \ResqueBundle\Resque that handles exceptions
@@ -14,16 +15,14 @@ use SimplyTestable\WebClientBundle\Resque\Job\Job;
  * where the integration with redis is optional.
  *
  */
-class QueueService {
-
+class QueueService
+{
     const QUEUE_KEY = 'queue';
 
     /**
-     *
      * @var Resque
      */
     private $resque;
-
 
     /**
      * @var string
@@ -31,34 +30,41 @@ class QueueService {
     private $environment = 'prod';
 
     /**
-     *
      * @var LoggerInterface
      */
     private $logger;
 
+    /**
+     * @var ResqueJobFactory
+     */
+    private $jobFactory;
 
     /**
-     *
-     * @var \SimplyTestable\WebClientBundle\Services\Resque\JobFactoryService
+     * @param Resque $resque
+     * @param string $environment
+     * @param LoggerInterface $logger
+     * @param ResqueJobFactory $jobFactoryService
      */
-    private $jobFactoryService;
-
-
-    public function __construct(Resque $resque, $environment = 'prod', LoggerInterface $logger, JobFactoryService $jobFactoryService) {
+    public function __construct(
+        Resque $resque,
+        LoggerInterface $logger,
+        ResqueJobFactory $jobFactoryService,
+        $environment = 'prod'
+    ) {
         $this->resque = $resque;
-        $this->environment = $environment;
         $this->logger = $logger;
-        $this->jobFactoryService = $jobFactoryService;
+        $this->jobFactory = $jobFactoryService;
+        $this->environment = $environment;
     }
 
-
     /**
-     *
      * @param string $queue_name
      * @param array $args
-     * @return boolean
+     *
+     * @return bool
      */
-    public function contains($queue_name, $args = null) {
+    public function contains($queue_name, $args = null)
+    {
         try {
             return !is_null($this->findRedisValue($queue_name, $args));
         } catch (\CredisException $credisException) {
@@ -68,15 +74,14 @@ class QueueService {
         return false;
     }
 
-
-
     /**
-     *
      * @param string $queue
      * @param array $args
+     *
      * @return string
      */
-    private function findRedisValue($queue, $args) {
+    private function findRedisValue($queue, $args)
+    {
         $queueLength = $this->getQueueLength($queue);
 
         for ($queueIndex = 0; $queueIndex < $queueLength; $queueIndex++) {
@@ -90,20 +95,20 @@ class QueueService {
         return null;
     }
 
-
     /**
-     *
      * @param string $jobDetails
      * @param string $queue
      * @param array $args
-     * @return boolean
+     *
+     * @return bool
      */
-    private function match($jobDetails, $queue, $args) {
+    private function match($jobDetails, $queue, $args)
+    {
         if (!isset($jobDetails->class)) {
             return false;
         }
 
-        if ($jobDetails->class != $this->jobFactoryService->getJobClassName($queue)) {
+        if ($jobDetails->class != $this->jobFactory->getJobClassName($queue)) {
             return false;
         }
 
@@ -128,30 +133,31 @@ class QueueService {
         return true;
     }
 
-
     /**
-     *
      * @param string $queue
+     *
      * @return int
      */
-    private function getQueueLength($queue) {
+    private function getQueueLength($queue)
+    {
         return \Resque::redis()->llen(self::QUEUE_KEY . ':' . $queue);
     }
-
 
     /**
      * @param Job $job
      * @param bool $trackStatus
+     *
      * @return null|\Resque_Job_Status
+     *
      * @throws \CredisException
      * @throws \Exception
      */
-    public function enqueue(Job $job, $trackStatus = false) {
+    public function enqueue(Job $job, $trackStatus = false)
+    {
         try {
             return $this->resque->enqueue($job, $trackStatus);
         } catch (\CredisException $credisException) {
             $this->logger->warn('ResqueQueueService::enqueue: Redis error ['.$credisException->getMessage().']');
         }
     }
-
 }
