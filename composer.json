@@ -5,6 +5,9 @@
         "psr-4": { "": "src/" },
         "files": ["app/AppKernel.php", "app/AppCache.php"]
     },
+    "autoload-dev": {
+        "psr-4": { "Tests\\": "tests/" }
+    },
     "require": {
         "php": ">=5.6.0",
         "doctrine/doctrine-bundle": "~1.4",
@@ -61,8 +64,8 @@
         "post-update-cmd": [
             "@symfony-scripts"
         ],
-        "test-unit": "./vendor/bin/phpunit --colors src/SimplyTestable/WebClientBundle/Tests/Unit/",
-        "test-functional": "./vendor/bin/phpunit -c app --colors src/SimplyTestable/WebClientBundle/Tests/Functional/",
+        "test-unit": "./vendor/bin/phpunit --colors tests/WebClientBundle/Unit/",
+        "test-functional": "./vendor/bin/phpunit --colors tests/WebClientBundle/Functional/",
         "test": [
             "@composer test-unit",
             "@composer test-functional"
