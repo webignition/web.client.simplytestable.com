@@ -22,6 +22,7 @@ framework:
     session:
       cookie_domain: .simplytestable.com
       save_path: "%simplytestable_session_savepath%"
+    assets: ~
 
 # Twig Configuration
 twig:
