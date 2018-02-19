@@ -39,7 +39,7 @@ services:
   simplytestable.services.resque.queueservice:
     class:   SimplyTestable\WebClientBundle\Services\Resque\QueueService
     arguments:
-      resque: '@bcc_resque.resque'
+      resque: '@resque'
       environment: '%kernel.environment%'
       logger: '@logger'
       jobFactoryService: '@simplytestable.services.resque.jobfactoryservice'

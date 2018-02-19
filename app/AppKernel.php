@@ -18,7 +18,7 @@ class AppKernel extends Kernel
             new SimplyTestable\WebClientBundle\SimplyTestableWebClientBundle(),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             new MZ\PostmarkBundle\MZPostmarkBundle(),
-            new BCC\ResqueBundle\BCCResqueBundle(),
+            new ResqueBundle\Resque\ResqueBundle,
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
