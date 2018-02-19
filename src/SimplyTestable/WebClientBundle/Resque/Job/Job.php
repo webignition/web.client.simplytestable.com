@@ -4,18 +4,27 @@ namespace SimplyTestable\WebClientBundle\Resque\Job;
 
 use BCC\ResqueBundle\ContainerAwareJob as BaseJob;
 
-abstract class Job extends BaseJob {
-
+abstract class Job extends BaseJob
+{
+    /**
+     * @return string
+     */
     abstract protected function getQueueName();
 
-    public function __construct($args = []) {
+    /**
+     * @param array $args
+     */
+    public function __construct($args = [])
+    {
         $this->args = $args;
         $this->setQueue($this->getQueueName());
     }
 
-
-    public function setQueue($queue) {
+    /**
+     * @param string $queue
+     */
+    public function setQueue($queue)
+    {
         $this->queue = $queue;
     }
-
 }
