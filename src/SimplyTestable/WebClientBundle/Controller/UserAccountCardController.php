@@ -29,7 +29,7 @@ class UserAccountCardController extends Controller implements RequiresPrivateUse
     public function associateAction($stripe_card_token)
     {
         $router = $this->container->get('router');
-        $userAccountCardService = $this->get('simplytestable.services.useraccountcardservice');
+        $userAccountCardService = $this->get('SimplyTestable\WebClientBundle\Services\UserAccountCardService');
         $userManager = $this->container->get(UserManager::class);
 
         $user = $userManager->getUser();

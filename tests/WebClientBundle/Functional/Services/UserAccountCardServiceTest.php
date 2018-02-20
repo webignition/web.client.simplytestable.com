@@ -33,7 +33,7 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
         parent::setUp();
 
         $this->userAccountCardService = $this->container->get(
-            'simplytestable.services.useraccountcardservice'
+            'SimplyTestable\WebClientBundle\Services\UserAccountCardService'
         );
 
         $this->user = new User('user@example.com');

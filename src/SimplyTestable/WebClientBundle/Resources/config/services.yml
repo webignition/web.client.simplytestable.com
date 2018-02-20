@@ -80,7 +80,7 @@ services:
         stripeErrorFactory: '@simplytestable.services.stripeerrorfactory'
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
 
-  simplytestable.services.useraccountcardservice:
+  SimplyTestable\WebClientBundle\Services\UserAccountCardService:
     class:  SimplyTestable\WebClientBundle\Services\UserAccountCardService
     arguments:
         stripeErrorFactory: '@simplytestable.services.stripeerrorfactory'
