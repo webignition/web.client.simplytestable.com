@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use SimplyTestable\WebClientBundle\Event\MailChimp\Event as MailChimpEvent;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener as MailChimpListener;
 
 class ListenerTest extends AbstractBaseTestCase
 {
@@ -32,7 +33,7 @@ class ListenerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->listener = $this->container->get('SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener');
+        $this->listener = $this->container->get(MailChimpListener::class);
         $this->listRecipientsService = $this->container->get('SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService');
     }
 
