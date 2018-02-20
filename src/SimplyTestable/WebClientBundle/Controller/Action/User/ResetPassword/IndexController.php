@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
 class IndexController extends Controller
 {
@@ -146,7 +147,7 @@ class IndexController extends Controller
      */
     private function sendPasswordResetConfirmationToken($email, $token)
     {
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
         $router = $this->container->get('router');
 
         $mailServiceConfiguration = $mailService->getConfiguration();
@@ -183,7 +184,7 @@ class IndexController extends Controller
      */
     private function sendInvalidAdminCredentialsNotification()
     {
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
         $mailServiceConfiguration = $mailService->getConfiguration();
 
         $sender = $mailServiceConfiguration->getSender('default');

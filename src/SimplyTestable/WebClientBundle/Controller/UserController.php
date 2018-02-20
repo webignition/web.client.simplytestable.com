@@ -24,6 +24,7 @@ use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as Mai
 use Symfony\Component\Routing\RouterInterface;
 use webignition\ResqueJobFactory\ResqueJobFactory;
 use SimplyTestable\WebClientBundle\Services\Mail\Configuration as MailConfiguration;
+use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
 class UserController extends Controller
 {
@@ -494,7 +495,7 @@ class UserController extends Controller
     private function sendConfirmationToken(RouterInterface $router, $email, $token)
     {
         $mailConfiguration = $this->container->get(MailConfiguration::class);
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
 
         $sender = $mailConfiguration->getSender('default');
         $messageProperties = $mailConfiguration->getMessageProperties('user_creation_confirmation');

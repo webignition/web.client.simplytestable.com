@@ -14,12 +14,13 @@ use Tests\WebClientBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
+use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
 class SignUpSubmitActionTest extends AbstractUserControllerTest
 {
     public function testSignUpSubmitActionPostRequest()
     {
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
 
         $postmarkMessage = MockFactory::createPostmarkMessage([
             'setFrom' => true,
@@ -242,7 +243,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
         $postmarkSender = $this->container->get(PostmarkSender::class);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
@@ -366,7 +367,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
     public function testSignUpSubmitActionSuccess(Request $request, array $couponData)
     {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
         $postmarkSender = $this->container->get(PostmarkSender::class);
         $couponService = $this->container->get('SimplyTestable\WebClientBundle\Services\CouponService');
 

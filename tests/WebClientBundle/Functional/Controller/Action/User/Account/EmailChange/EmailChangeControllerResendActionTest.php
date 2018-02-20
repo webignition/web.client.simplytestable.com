@@ -15,7 +15,8 @@ use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
-use \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
 class EmailChangeControllerResendActionTest extends AbstractEmailChangeControllerTest
 {
@@ -54,7 +55,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
     {
         $router = $this->container->get('router');
         $userSerializerService = $this->container->get(UserSerializerService::class);
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
 
         $requestUrl = $router->generate(self::ROUTE_NAME);
 
@@ -110,7 +111,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
         $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser($this->user);
@@ -199,7 +200,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
     public function testRequestActionSuccess()
     {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
 

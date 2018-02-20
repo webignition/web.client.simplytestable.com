@@ -15,6 +15,7 @@ use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use Symfony\Component\HttpFoundation\Request;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
+use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
 class IndexControllerTest extends AbstractBaseTestCase
 {
@@ -39,7 +40,7 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testRequestActionPostRequest()
     {
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
 
         $postmarkMessage = MockPostmarkMessageFactory::createMockResetPasswordPostmarkMessage(
             self::EMAIL,
@@ -174,7 +175,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testRequestActionInvalidAdminCredentials()
     {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
 
         $request = new Request([], [
             'email' => self::EMAIL,
@@ -226,7 +227,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
         $postmarkSender = $this->container->get(PostmarkSender::class);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
@@ -319,7 +320,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testResendActionSuccess()
     {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
         $postmarkSender = $this->container->get(PostmarkSender::class);
 
         $this->setCoreApplicationHttpClientHttpFixtures([

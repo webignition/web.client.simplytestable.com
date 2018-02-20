@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\RouterInterface;
+use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
 class TeamController extends Controller implements RequiresPrivateUser
 {
@@ -437,7 +438,7 @@ class TeamController extends Controller implements RequiresPrivateUser
      */
     private function sendInviteEmail(Invite $invite)
     {
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
         $mailServiceConfiguration = $mailService->getConfiguration();
         $router = $this->container->get('router');
 
@@ -471,7 +472,7 @@ class TeamController extends Controller implements RequiresPrivateUser
      */
     private function sendInviteActivationEmail(Invite $invite)
     {
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
         $router = $this->container->get('router');
 
         $mailServiceConfiguration = $mailService->getConfiguration();

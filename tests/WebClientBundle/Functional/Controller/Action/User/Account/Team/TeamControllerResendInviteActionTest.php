@@ -18,6 +18,7 @@ use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
+use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
 class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
 {
@@ -58,7 +59,7 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
     {
         $router = $this->container->get('router');
         $userSerializerService = $this->container->get(UserSerializerService::class);
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
 
         $inviteData = [
             'team' => self::TEAM_NAME,
@@ -173,7 +174,7 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $coreApplicationHttpClient->setUser($this->user);
@@ -248,7 +249,7 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $coreApplicationHttpClient->setUser($this->user);

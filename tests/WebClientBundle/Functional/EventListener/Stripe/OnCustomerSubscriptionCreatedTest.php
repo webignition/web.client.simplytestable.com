@@ -8,6 +8,7 @@ use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
 use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
+use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
 class OnCustomerSubscriptionCreatedTest extends AbstractListenerTest
 {
@@ -31,7 +32,7 @@ class OnCustomerSubscriptionCreatedTest extends AbstractListenerTest
      */
     public function testOnCustomerSubscriptionCreated(StripeEvent $event, PostmarkMessage $postmarkMessage)
     {
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
         $postmarkSender = $this->container->get(PostmarkSender::class);
 
         $mailService->setPostmarkMessage($postmarkMessage);

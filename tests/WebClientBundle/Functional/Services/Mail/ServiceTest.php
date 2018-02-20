@@ -20,7 +20,7 @@ class ServiceTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $this->mailService = $this->container->get(MailService::class);
     }
 
     public function testGetConfiguration()

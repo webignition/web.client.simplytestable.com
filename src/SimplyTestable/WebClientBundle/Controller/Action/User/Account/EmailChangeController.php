@@ -18,6 +18,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\RouterInterface;
 use webignition\ResqueJobFactory\ResqueJobFactory;
+use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
 class EmailChangeController extends AccountCredentialsChangeController
 {
@@ -370,7 +371,7 @@ class EmailChangeController extends AccountCredentialsChangeController
     private function sendEmailChangeConfirmationToken()
     {
         $emailChangeRequestService = $this->get(UserEmailChangeRequestService::class);
-        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
+        $mailService = $this->container->get(MailService::class);
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');
 
