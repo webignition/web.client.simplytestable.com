@@ -25,7 +25,7 @@ abstract class AbstractOnKernelRequestTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->requestListener = $this->container->get('SimplyTestable\WebClientBundle\EventListener\RequestListener');
+        $this->requestListener = $this->container->get(RequestListener::class);
     }
 
     /**
