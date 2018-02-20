@@ -100,6 +100,8 @@ class UserController extends Controller
         $router = $this->container->get('router');
         $userManager = $this->container->get(UserManager::class);
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $mailConfiguration = $this->container->get(MailConfiguration::class);
+        $mailService = $this->container->get(MailService::class);
 
         $requestData = $request->request;
 
@@ -194,7 +196,7 @@ class UserController extends Controller
 
             $token = $userService->getConfirmationToken($email);
 
-            $this->sendConfirmationToken($router, $email, $token);
+            $this->sendConfirmationToken($mailConfiguration, $mailService, $router, $email, $token);
 
             $flashBag->set(
                 self::FLASH_BAG_SIGN_IN_ERROR_KEY,
@@ -210,7 +212,7 @@ class UserController extends Controller
 
         if (!$userService->isEnabled()) {
             $token = $userService->getConfirmationToken($email);
-            $this->sendConfirmationToken($router, $email, $token);
+            $this->sendConfirmationToken($mailConfiguration, $mailService, $router, $email, $token);
 
             $flashBag->set(
                 self::FLASH_BAG_SIGN_IN_ERROR_KEY,
@@ -364,6 +366,8 @@ class UserController extends Controller
         $userService = $this->container->get(UserService::class);
         $couponService = $this->container->get(CouponService::class);
         $router = $this->container->get('router');
+        $mailConfiguration = $this->container->get(MailConfiguration::class);
+        $mailService = $this->container->get(MailService::class);
 
         $requestData = $request->request;
         $flashBag = $session->getFlashBag();
@@ -447,7 +451,7 @@ class UserController extends Controller
         $token = $userService->getConfirmationToken($email);
 
         try {
-            $this->sendConfirmationToken($router, $email, $token);
+            $this->sendConfirmationToken($mailConfiguration, $mailService, $router, $email, $token);
         } catch (PostmarkResponseException $postmarkResponseException) {
             if ($postmarkResponseException->isNotAllowedToSendException()) {
                 $flashBag->set(
@@ -486,6 +490,8 @@ class UserController extends Controller
     }
 
     /**
+     * @param MailConfiguration $mailConfiguration
+     * @param MailService $mailService
      * @param RouterInterface $router
      * @param string $email
      * @param string $token
@@ -493,11 +499,13 @@ class UserController extends Controller
      * @throws MailConfigurationException
      * @throws PostmarkResponseException
      */
-    private function sendConfirmationToken(RouterInterface $router, $email, $token)
-    {
-        $mailConfiguration = $this->container->get(MailConfiguration::class);
-        $mailService = $this->container->get(MailService::class);
-
+    private function sendConfirmationToken(
+        MailConfiguration $mailConfiguration,
+        MailService $mailService,
+        RouterInterface $router,
+        $email,
+        $token
+    ) {
         $sender = $mailConfiguration->getSender('default');
         $messageProperties = $mailConfiguration->getMessageProperties('user_creation_confirmation');
 
