@@ -21,6 +21,6 @@ abstract class AbstractListenerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->listener = $this->container->get('simplytestable.listener.stripeevent');
+        $this->listener = $this->container->get('SimplyTestable\WebClientBundle\EventListener\Stripe\Listener');
     }
 }

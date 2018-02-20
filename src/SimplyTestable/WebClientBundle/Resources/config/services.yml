@@ -117,7 +117,7 @@ services:
         postmarkMessage: '@postmark.message'
         postmarkSender: '@SimplyTestable\WebClientBundle\Services\Postmark\Sender'
 
-  simplytestable.listener.stripeevent:
+  SimplyTestable\WebClientBundle\EventListener\Stripe\Listener:
     class:   SimplyTestable\WebClientBundle\EventListener\Stripe\Listener
     arguments:
         logger: '@logger'
