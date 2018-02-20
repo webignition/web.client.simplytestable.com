@@ -57,7 +57,7 @@ class CoreApplicationRouterTest extends AbstractBaseTestCase
                     'canonical_url' => 'http://example.com',
                     'type' => strtolower(Test::TYPE_FULL_SITE),
                 ],
-                'expectedUrl' => 'http://null/job/http%3A%2F%2Fexample.com/start/?' . http_build_query([
+                'expectedUrl' => 'http://null/job/http%3A%2F%2Fexample.com/start/?' . $this->createHttpQuery([
                     'type' => strtolower(Test::TYPE_FULL_SITE),
                 ]),
             ],
@@ -71,7 +71,7 @@ class CoreApplicationRouterTest extends AbstractBaseTestCase
                         Task::TYPE_CSS_VALIDATION,
                     ],
                 ],
-                'expectedUrl' => 'http://null/job/http%3A%2F%2Fexample.com/start/?' . http_build_query([
+                'expectedUrl' => 'http://null/job/http%3A%2F%2Fexample.com/start/?' . $this->createHttpQuery([
                     'type' => strtolower(Test::TYPE_FULL_SITE),
                     'test_types' => [
                         Task::TYPE_HTML_VALIDATION,
@@ -145,5 +145,15 @@ class CoreApplicationRouterTest extends AbstractBaseTestCase
                 'expectedUrl' => 'http://null/job/http%3A%2F%2Fexample.com/latest/',
             ],
         ];
+    }
+
+    /**
+     * @param array $parameters
+     *
+     * @return string
+     */
+    private function createHttpQuery(array $parameters)
+    {
+        return http_build_query($parameters, null, '&', PHP_QUERY_RFC3986);
     }
 }
