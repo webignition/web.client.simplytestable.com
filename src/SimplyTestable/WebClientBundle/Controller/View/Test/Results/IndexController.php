@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService;
+use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -66,7 +67,7 @@ class IndexController extends AbstractResultsController
     public function indexAction(Request $request, $website, $test_id)
     {
         $router = $this->container->get('router');
-        $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
+        $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $urlViewValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\UrlViewValuesService');
         $taskService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskService');

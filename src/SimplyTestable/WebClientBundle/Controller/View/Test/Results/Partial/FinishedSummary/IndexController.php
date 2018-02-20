@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
+use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -26,7 +27,7 @@ class IndexController extends BaseViewController implements RequiresValidUser, R
     {
         $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
         $templating = $this->container->get('templating');
-        $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
+        $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
 
         $response = $cacheValidatorService->createResponse($request, [

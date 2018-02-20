@@ -13,6 +13,7 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\LinkIntegrityMessage;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,7 +43,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
     public function indexAction(Request $request, $website, $test_id, $task_id)
     {
         $router = $this->container->get('router');
-        $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
+        $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $urlViewValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\UrlViewValuesService');
         $taskService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskService');

@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
@@ -146,7 +147,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $containerFactory = new ContainerFactory($this->container);
         $container = $containerFactory->create(
             [
-                'SimplyTestable\WebClientBundle\Services\TestService',
+                TestService::class,
                 'SimplyTestable\WebClientBundle\Services\RemoteTestService',
                 'SimplyTestable\WebClientBundle\Services\UserService',
                 'SimplyTestable\WebClientBundle\Services\CacheValidatorService',

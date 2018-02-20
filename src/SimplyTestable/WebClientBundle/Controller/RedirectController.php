@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Controller;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
+use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,7 +37,7 @@ class RedirectController extends Controller
      */
     public function testAction(Request $request, $website, $test_id = null)
     {
-        $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
+        $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
         $logger = $this->container->get('logger');

@@ -13,6 +13,7 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
@@ -237,7 +238,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 'router',
-                'SimplyTestable\WebClientBundle\Services\TestService',
+                TestService::class,
                 'SimplyTestable\WebClientBundle\Services\RemoteTestService',
                 'SimplyTestable\WebClientBundle\Services\UserService',
                 'SimplyTestable\WebClientBundle\Services\CacheValidatorService',

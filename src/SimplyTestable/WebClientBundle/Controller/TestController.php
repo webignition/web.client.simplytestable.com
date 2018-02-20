@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
+use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -46,7 +47,7 @@ class TestController extends Controller
      */
     private function lockUnlock($website, $test_id, $action)
     {
-        $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
+        $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $router = $this->container->get('router');
 
@@ -82,7 +83,7 @@ class TestController extends Controller
      */
     public function cancelAction($website, $test_id)
     {
-        $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
+        $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $router = $this->container->get('router');
 
@@ -125,7 +126,7 @@ class TestController extends Controller
      */
     public function cancelCrawlAction($website, $test_id)
     {
-        $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
+        $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $router = $this->container->get('router');
 

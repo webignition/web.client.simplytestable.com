@@ -10,6 +10,7 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\TestList;
+use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -118,7 +119,7 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
      */
     private function getFinishedTests($limit, $offset, $filter = null)
     {
-        $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
+        $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $taskService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskService');
 

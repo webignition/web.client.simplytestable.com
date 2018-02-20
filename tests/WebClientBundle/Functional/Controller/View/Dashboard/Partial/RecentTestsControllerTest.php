@@ -12,6 +12,7 @@ use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\TestList;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\TestService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
@@ -110,7 +111,7 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
         $containerFactory = new ContainerFactory($this->container);
         $container = $containerFactory->create(
             [
-                'SimplyTestable\WebClientBundle\Services\TestService',
+                TestService::class,
                 'SimplyTestable\WebClientBundle\Services\RemoteTestService',
                 'SimplyTestable\WebClientBundle\Services\TaskService',
                 'SimplyTestable\WebClientBundle\Services\UserService',

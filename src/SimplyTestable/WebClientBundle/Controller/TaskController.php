@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
+use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,7 +36,7 @@ class TaskController extends BaseViewController implements RequiresValidOwner
      */
     public function idCollectionAction($website, $test_id)
     {
-        $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
+        $testService = $this->container->get(TestService::class);
         $taskService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskService');
 
         $test = $testService->get($website, $test_id);
@@ -58,7 +59,7 @@ class TaskController extends BaseViewController implements RequiresValidOwner
      */
     public function unretrievedIdCollectionAction($website, $test_id, $limit = null)
     {
-        $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
+        $testService = $this->container->get(TestService::class);
         $taskService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskService');
 
         $test = $testService->get($website, $test_id);
@@ -90,7 +91,7 @@ class TaskController extends BaseViewController implements RequiresValidOwner
      */
     public function retrieveAction(Request $request, $website, $test_id)
     {
-        $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
+        $testService = $this->container->get(TestService::class);
         $taskService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskService');
 
         $test = $testService->get($website, $test_id);
