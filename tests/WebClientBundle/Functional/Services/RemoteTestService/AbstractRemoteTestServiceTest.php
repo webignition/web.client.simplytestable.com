@@ -30,7 +30,7 @@ abstract class AbstractRemoteTestServiceTest extends AbstractCoreApplicationServ
         parent::setUp();
 
         $this->remoteTestService = $this->container->get(
-            'simplytestable.services.remotetestservice'
+            'SimplyTestable\WebClientBundle\Services\RemoteTestService'
         );
 
         $this->user = new User('user@example.com');

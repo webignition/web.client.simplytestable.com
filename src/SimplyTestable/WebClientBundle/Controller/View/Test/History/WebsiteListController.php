@@ -16,7 +16,7 @@ class WebsiteListController extends BaseViewController implements RequiresValidU
      */
     public function indexAction()
     {
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
 
         $finishedWebsites = [];
 

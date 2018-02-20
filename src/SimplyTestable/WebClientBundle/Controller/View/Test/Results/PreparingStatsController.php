@@ -32,7 +32,7 @@ class PreparingStatsController extends BaseViewController implements RequiresVal
     public function indexAction($website, $test_id)
     {
         $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
 
         $test = $testService->get($website, $test_id);
         $remoteTest = $remoteTestService->get();

@@ -37,7 +37,7 @@ class RedirectController extends Controller
     public function testAction(Request $request, $website, $test_id = null)
     {
         $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
         $logger = $this->container->get('logger');
         $router = $this->container->get('router');

@@ -147,7 +147,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 'SimplyTestable\WebClientBundle\Services\TestService',
-                'simplytestable.services.remotetestservice',
+                'SimplyTestable\WebClientBundle\Services\RemoteTestService',
                 'simplytestable.services.userservice',
                 'simplytestable.services.cachevalidator',
                 UserManager::class,

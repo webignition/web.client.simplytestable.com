@@ -47,7 +47,7 @@ class TestController extends Controller
     private function lockUnlock($website, $test_id, $action)
     {
         $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $router = $this->container->get('router');
 
         try {
@@ -83,7 +83,7 @@ class TestController extends Controller
     public function cancelAction($website, $test_id)
     {
         $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $router = $this->container->get('router');
 
         $routeParameters = [
@@ -126,7 +126,7 @@ class TestController extends Controller
     public function cancelCrawlAction($website, $test_id)
     {
         $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $router = $this->container->get('router');
 
         try {
@@ -164,7 +164,7 @@ class TestController extends Controller
      */
     public function retestAction($website, $test_id)
     {
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $router = $this->container->get('router');
 
         $remoteTest = $remoteTestService->retest($test_id, $website);

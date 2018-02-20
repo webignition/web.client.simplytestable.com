@@ -24,7 +24,7 @@ class RecentTestsController extends BaseViewController implements RequiresValidU
     public function indexAction()
     {
         $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $taskService = $this->container->get('simplytestable.services.taskservice');
 
         $testList = $remoteTestService->getRecent(self::LIMIT);

@@ -46,7 +46,7 @@ class ByTaskTypeController extends AbstractResultsController
     {
         $router = $this->container->get('router');
         $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
         $taskService = $this->container->get('simplytestable.services.taskservice');
         $taskCollectionFilterService = $this->container->get('simplytestable.services.taskcollectionfilterservice');
@@ -197,7 +197,7 @@ class ByTaskTypeController extends AbstractResultsController
     public function getRequestWebsiteMismatchResponse(Request $request)
     {
         $router = $this->container->get('router');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
 
         $remoteTest = $remoteTestService->get();
         $filter = trim($request->attributes->get('filter'));

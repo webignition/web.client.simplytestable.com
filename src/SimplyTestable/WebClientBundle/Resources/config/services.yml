@@ -9,9 +9,9 @@ services:
         entityManager: '@doctrine.orm.entity_manager'
         logger: '@logger'
         taskService: '@simplytestable.services.taskservice'
-        remoteTestService: '@simplytestable.services.remotetestservice'
+        remoteTestService: '@SimplyTestable\WebClientBundle\Services\RemoteTestService'
 
-  simplytestable.services.remotetestservice:
+  SimplyTestable\WebClientBundle\Services\RemoteTestService:
     class:   SimplyTestable\WebClientBundle\Services\RemoteTestService
     arguments:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'

@@ -67,7 +67,7 @@ class IndexController extends AbstractResultsController
     {
         $router = $this->container->get('router');
         $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
         $taskService = $this->container->get('simplytestable.services.taskservice');
         $taskCollectionFilterService = $this->container->get('simplytestable.services.taskcollectionfilterservice');
@@ -310,7 +310,7 @@ class IndexController extends AbstractResultsController
      */
     private function getAvailableTaskTypes($isOwner)
     {
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
 
         $remoteTest = $remoteTestService->get();

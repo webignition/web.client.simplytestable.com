@@ -111,7 +111,7 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 'SimplyTestable\WebClientBundle\Services\TestService',
-                'simplytestable.services.remotetestservice',
+                'SimplyTestable\WebClientBundle\Services\RemoteTestService',
                 'simplytestable.services.taskservice',
                 'simplytestable.services.userservice',
             ],
