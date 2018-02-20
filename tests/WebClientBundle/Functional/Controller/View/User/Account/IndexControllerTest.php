@@ -193,7 +193,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'SimplyTestable\WebClientBundle\Services\UserService',
                 'simplytestable.services.mailchimp.listrecipients',
                 'simplytestable.services.teamservice',
-                'simplytestable.services.useremailchangerequestservice',
+                'SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService',
                 'simplytestable.services.userstripeeventservice',
                 'simplytestable.services.flashbagvalues',
                 UserManager::class,

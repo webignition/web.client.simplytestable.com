@@ -71,7 +71,7 @@ class EmailChangeController extends AccountCredentialsChangeController
      */
     public function requestAction(Request $request)
     {
-        $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
+        $emailChangeRequestService = $this->get('SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService');
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');
@@ -234,7 +234,7 @@ class EmailChangeController extends AccountCredentialsChangeController
     public function confirmAction(Request $request)
     {
         $session = $this->container->get('session');
-        $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
+        $emailChangeRequestService = $this->get('SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService');
         $resqueQueueService = $this->container->get('SimplyTestable\WebClientBundle\Services\Resque\QueueService');
         $resqueJobFactory = $this->container->get(ResqueJobFactory::class);
         $userManager = $this->container->get(UserManager::class);
@@ -344,7 +344,7 @@ class EmailChangeController extends AccountCredentialsChangeController
      */
     public function cancelAction()
     {
-        $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
+        $emailChangeRequestService = $this->get('SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService');
         $session = $this->container->get('session');
         $router = $this->container->get('router');
 
@@ -367,7 +367,7 @@ class EmailChangeController extends AccountCredentialsChangeController
      */
     private function sendEmailChangeConfirmationToken()
     {
-        $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
+        $emailChangeRequestService = $this->get('SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService');
         $mailService = $this->container->get('simplytestable.services.mail.service');
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');
