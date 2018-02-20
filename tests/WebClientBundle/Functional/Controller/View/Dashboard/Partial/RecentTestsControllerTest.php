@@ -13,6 +13,7 @@ use SimplyTestable\WebClientBundle\Model\TestList;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
@@ -114,7 +115,7 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
             [
                 TestService::class,
                 RemoteTestService::class,
-                'SimplyTestable\WebClientBundle\Services\TaskService',
+                TaskService::class,
                 'SimplyTestable\WebClientBundle\Services\UserService',
             ],
             [

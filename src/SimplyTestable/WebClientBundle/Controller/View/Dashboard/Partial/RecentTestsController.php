@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
+use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -27,7 +28,7 @@ class RecentTestsController extends BaseViewController implements RequiresValidU
     {
         $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get(RemoteTestService::class);
-        $taskService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskService');
+        $taskService = $this->container->get(TaskService::class);
 
         $testList = $remoteTestService->getRecent(self::LIMIT);
 
