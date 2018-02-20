@@ -10,6 +10,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Exception\UserEmailChangeException;
 use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
+use SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -72,7 +73,7 @@ class EmailChangeController extends AccountCredentialsChangeController
      */
     public function requestAction(Request $request)
     {
-        $emailChangeRequestService = $this->get('SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService');
+        $emailChangeRequestService = $this->get(UserEmailChangeRequestService::class);
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');
@@ -235,7 +236,7 @@ class EmailChangeController extends AccountCredentialsChangeController
     public function confirmAction(Request $request)
     {
         $session = $this->container->get('session');
-        $emailChangeRequestService = $this->get('SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService');
+        $emailChangeRequestService = $this->get(UserEmailChangeRequestService::class);
         $resqueQueueService = $this->container->get(ResqueQueueService::class);
         $resqueJobFactory = $this->container->get(ResqueJobFactory::class);
         $userManager = $this->container->get(UserManager::class);
@@ -345,7 +346,7 @@ class EmailChangeController extends AccountCredentialsChangeController
      */
     public function cancelAction()
     {
-        $emailChangeRequestService = $this->get('SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService');
+        $emailChangeRequestService = $this->get(UserEmailChangeRequestService::class);
         $session = $this->container->get('session');
         $router = $this->container->get('router');
 
@@ -368,7 +369,7 @@ class EmailChangeController extends AccountCredentialsChangeController
      */
     private function sendEmailChangeConfirmationToken()
     {
-        $emailChangeRequestService = $this->get('SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService');
+        $emailChangeRequestService = $this->get(UserEmailChangeRequestService::class);
         $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');

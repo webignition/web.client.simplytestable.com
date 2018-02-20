@@ -10,6 +10,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Services\UserStripeEventService;
@@ -53,7 +54,7 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
         $userService = $this->container->get(UserService::class);
         $mailChimpListRecipientsService = $this->container->get('SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService');
         $teamService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamService');
-        $emailChangeRequestService = $this->get('SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService');
+        $emailChangeRequestService = $this->get(UserEmailChangeRequestService::class);
         $templating = $this->container->get('templating');
         $userStripeEventService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserStripeEventService');
         $flashBagValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\FlashBagValues');
