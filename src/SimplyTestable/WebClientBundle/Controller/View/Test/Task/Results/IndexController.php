@@ -23,6 +23,7 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use webignition\HtmlValidationErrorLinkifier\HtmlValidationErrorLinkifier;
 use webignition\HtmlValidationErrorNormaliser\HtmlValidationErrorNormaliser;
@@ -55,6 +56,8 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         $cacheValidatorService = $this->container->get(CacheValidatorService::class);
         $templating = $this->container->get('templating');
         $userManager = $this->container->get(UserManager::class);
+        $documentationUrlLinkChecker = $this->container->get(DocumentationUrlCheckerService::class);
+        $kernel = $this->container->get('kernel');
 
         $user = $userManager->getUser();
         $test = $testService->get($website, $test_id);
@@ -110,7 +113,11 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         );
 
         if (Task::TYPE_HTML_VALIDATION === $task->getType()) {
-            $documentationUrls = $this->getHtmlValidationErrorDocumentationUrls($task);
+            $documentationUrls = $this->getHtmlValidationErrorDocumentationUrls(
+                $documentationUrlLinkChecker,
+                $kernel,
+                $task
+            );
             $fixes = $this->getHtmlValidationErrorFixes($task, $documentationUrls);
 
             $viewData['documentation_urls'] = $documentationUrls;
@@ -156,15 +163,17 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
     }
 
     /**
+     * @param DocumentationUrlCheckerService $documentationUrlChecker
+     * @param KernelInterface $kernel
      * @param Task $task
      *
      * @return array
      */
-    private function getHtmlValidationErrorDocumentationUrls(Task $task)
-    {
-        $documentationUrlChecker = $this->container->get(DocumentationUrlCheckerService::class);
-        $kernel = $this->container->get('kernel');
-
+    private function getHtmlValidationErrorDocumentationUrls(
+        DocumentationUrlCheckerService $documentationUrlChecker,
+        KernelInterface $kernel,
+        Task $task
+    ) {
         $documentationUrls = [];
 
         if (0 === $task->getOutput()->getErrorCount()) {

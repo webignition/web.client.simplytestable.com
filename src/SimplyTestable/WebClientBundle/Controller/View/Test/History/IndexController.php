@@ -9,7 +9,6 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
-use SimplyTestable\WebClientBundle\Model\TestList;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\TaskService;
@@ -38,6 +37,9 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
     {
         $router = $this->container->get('router');
         $cacheValidatorService = $this->container->get(CacheValidatorService::class);
+        $testService = $this->container->get(TestService::class);
+        $remoteTestService = $this->container->get(RemoteTestService::class);
+        $taskService = $this->container->get(TaskService::class);
 
         $pageNumber = (int)$request->attributes->get('page_number');
 
@@ -54,11 +56,23 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
             $filter = null;
         }
 
-        $testList = $this->getFinishedTests(
-            self::TEST_LIST_LIMIT,
-            ($pageNumber - 1) * self::TEST_LIST_LIMIT,
-            $filter
-        );
+        $testListOffset = ($pageNumber - 1) * self::TEST_LIST_LIMIT;
+
+        $testList = $remoteTestService->getFinished(self::TEST_LIST_LIMIT, $testListOffset, $filter);
+
+        foreach ($testList->get() as $testObject) {
+            /* @var RemoteTest $remoteTest */
+            $remoteTest = $testObject['remote_test'];
+
+            $remoteTestService->set($remoteTest);
+            $test = $testService->get($remoteTest->getWebsite(), $remoteTest->getId());
+
+            $testList->addTest($test);
+
+            if ($testList->requiresResults($test) && $remoteTest->isSingleUrl()) {
+                $taskService->getCollection($test);
+            }
+        }
 
         $isPageNumberAboveRange = $pageNumber > $testList->getPageCount() && $testList->getPageCount() > 0;
 
@@ -107,41 +121,5 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
         $response->headers->set('content-type', 'text/html');
 
         return $response;
-    }
-
-    /**
-     * @param int $limit
-     * @param int $offset
-     * @param string $filter
-     *
-     * @return TestList
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
-     */
-    private function getFinishedTests($limit, $offset, $filter = null)
-    {
-        $testService = $this->container->get(TestService::class);
-        $remoteTestService = $this->container->get(RemoteTestService::class);
-        $taskService = $this->container->get(TaskService::class);
-
-        $testList = $remoteTestService->getFinished($limit, $offset, $filter);
-
-        foreach ($testList->get() as $testObject) {
-            /* @var RemoteTest $remoteTest */
-            $remoteTest = $testObject['remote_test'];
-
-            $remoteTestService->set($remoteTest);
-            $test = $testService->get($remoteTest->getWebsite(), $remoteTest->getId());
-
-            $testList->addTest($test);
-
-            if ($testList->requiresResults($test) && $remoteTest->isSingleUrl()) {
-                $taskService->getCollection($test);
-            }
-        }
-
-        return $testList;
     }
 }
