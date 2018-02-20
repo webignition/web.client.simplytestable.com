@@ -37,7 +37,7 @@ services:
     arguments:
         entityManager: '@doctrine.orm.entity_manager'
 
-  simplytestable.services.resque.queueservice:
+  SimplyTestable\WebClientBundle\Services\Resque\QueueService:
     class:   SimplyTestable\WebClientBundle\Services\Resque\QueueService
     arguments:
       resque: '@resque'

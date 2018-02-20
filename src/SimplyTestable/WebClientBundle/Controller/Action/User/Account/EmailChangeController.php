@@ -235,7 +235,7 @@ class EmailChangeController extends AccountCredentialsChangeController
     {
         $session = $this->container->get('session');
         $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
-        $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
+        $resqueQueueService = $this->container->get('SimplyTestable\WebClientBundle\Services\Resque\QueueService');
         $resqueJobFactory = $this->container->get(ResqueJobFactory::class);
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');

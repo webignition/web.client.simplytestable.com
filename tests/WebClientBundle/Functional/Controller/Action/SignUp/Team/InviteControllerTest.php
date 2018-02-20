@@ -216,7 +216,7 @@ class InviteControllerTest extends AbstractBaseTestCase
         $expectedHasUserCookie
     ) {
         $session = $this->container->get('session');
-        $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
+        $resqueQueueService = $this->container->get('SimplyTestable\WebClientBundle\Services\Resque\QueueService');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
