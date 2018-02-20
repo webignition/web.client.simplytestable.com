@@ -12,6 +12,7 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\LinkIntegrityMessage;
+use SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskService;
@@ -159,7 +160,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
      */
     private function getHtmlValidationErrorDocumentationUrls(Task $task)
     {
-        $documentationUrlChecker = $this->container->get('SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService');
+        $documentationUrlChecker = $this->container->get(DocumentationUrlCheckerService::class);
         $kernel = $this->container->get('kernel');
 
         $documentationUrls = [];
