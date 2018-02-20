@@ -490,7 +490,7 @@ class UserController extends Controller
      */
     private function sendConfirmationToken(RouterInterface $router, $email, $token)
     {
-        $mailConfiguration = $this->container->get('simplytestable.services.mail.configuration');
+        $mailConfiguration = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Configuration');
         $mailService = $this->container->get('simplytestable.services.mail.service');
 
         $sender = $mailConfiguration->getSender('default');

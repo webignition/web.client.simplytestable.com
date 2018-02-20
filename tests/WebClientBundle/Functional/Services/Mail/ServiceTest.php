@@ -24,7 +24,7 @@ class ServiceTest extends AbstractBaseTestCase
     public function testGetConfiguration()
     {
         $this->assertEquals(
-            $this->container->get('simplytestable.services.mail.configuration'),
+            $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Configuration'),
             $this->mailService->getConfiguration()
         );
     }

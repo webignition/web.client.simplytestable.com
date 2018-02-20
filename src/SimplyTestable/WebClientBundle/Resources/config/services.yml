@@ -102,7 +102,7 @@ services:
         mailChimpClient: '@SimplyTestable\WebClientBundle\Services\MailChimp\Client'
         listRecipientsService: '@simplytestable.services.mailchimp.listrecipients'
 
-  simplytestable.services.mail.configuration:
+  SimplyTestable\WebClientBundle\Services\Mail\Configuration:
     class:   SimplyTestable\WebClientBundle\Services\Mail\Configuration
     arguments:
         configuration: '%mail%'
@@ -113,7 +113,7 @@ services:
   simplytestable.services.mail.service:
     class:   SimplyTestable\WebClientBundle\Services\Mail\Service
     arguments:
-        mailConfiguration: '@simplytestable.services.mail.configuration'
+        mailConfiguration: '@SimplyTestable\WebClientBundle\Services\Mail\Configuration'
         postmarkMessage: '@postmark.message'
         postmarkSender: '@simplytestable.services.postmark.sender'
 
