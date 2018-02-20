@@ -77,13 +77,13 @@ services:
   SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService:
     class:  SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService
     arguments:
-        stripeErrorFactory: '@simplytestable.services.stripeerrorfactory'
+        stripeErrorFactory: '@SimplyTestable\WebClientBundle\Services\StripeErrorFactory'
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
 
   SimplyTestable\WebClientBundle\Services\UserAccountCardService:
     class:  SimplyTestable\WebClientBundle\Services\UserAccountCardService
     arguments:
-        stripeErrorFactory: '@simplytestable.services.stripeerrorfactory'
+        stripeErrorFactory: '@SimplyTestable\WebClientBundle\Services\StripeErrorFactory'
         coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
 
@@ -188,7 +188,7 @@ services:
     calls:
       - [setPlansData, ['%plans%']]
 
-  simplytestable.services.stripeerrorfactory:
+  SimplyTestable\WebClientBundle\Services\StripeErrorFactory:
     class: SimplyTestable\WebClientBundle\Services\StripeErrorFactory
 
   simplytestable.services.testoptions.adapter.factory:
