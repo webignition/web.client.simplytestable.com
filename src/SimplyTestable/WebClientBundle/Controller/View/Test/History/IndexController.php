@@ -41,7 +41,6 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
         $remoteTestService = $this->container->get(RemoteTestService::class);
         $taskService = $this->container->get(TaskService::class);
 
-
         $pageNumber = (int)$request->attributes->get('page_number');
 
         if ($pageNumber < self::DEFAULT_PAGE_NUMBER) {
