@@ -118,7 +118,7 @@ class EventControllerTest extends AbstractBaseTestCase
         array $existingListRecipients,
         array $expectedListRecipients
     ) {
-        $mailChimpListRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
+        $mailChimpListRecipientsService = $this->container->get('SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService');
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
 
         $listName = $mailChimpListRecipientsService->getListName($listId);

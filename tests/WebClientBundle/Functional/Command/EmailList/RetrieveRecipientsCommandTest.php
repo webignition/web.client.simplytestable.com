@@ -47,7 +47,7 @@ class RetrieveRecipientsCommandTest extends AbstractBaseTestCase
         array $expectedRetrievedEmails
     ) {
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
-        $listRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
+        $listRecipientsService = $this->container->get('SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService');
         $mailChimpClient = $this->container->get(Client::class);
 
         $mockSubscriber = new MockSubscriber($httpFixtures);

@@ -100,7 +100,7 @@ services:
     class:   SimplyTestable\WebClientBundle\Services\MailChimp\Service
     arguments:
         mailChimpClient: '@SimplyTestable\WebClientBundle\Services\MailChimp\Client'
-        listRecipientsService: '@simplytestable.services.mailchimp.listrecipients'
+        listRecipientsService: '@SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService'
 
   SimplyTestable\WebClientBundle\Services\Mail\Configuration:
     class:   SimplyTestable\WebClientBundle\Services\Mail\Configuration
@@ -142,7 +142,7 @@ services:
   SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener:
     class:   SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener
     arguments:
-        mailchimpListRecipientsService: '@simplytestable.services.mailchimp.listrecipients'
+        mailchimpListRecipientsService: '@SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService'
         entityManager: '@doctrine.orm.entity_manager'
     tags:
       - { name: kernel.event_listener, event: mailchimp.subscribe, method: onSubscribe }
@@ -150,7 +150,7 @@ services:
       - { name: kernel.event_listener, event: mailchimp.upemail, method: onUpEmail }
       - { name: kernel.event_listener, event: mailchimp.cleaned, method: onCleaned }
 
-  simplytestable.services.mailchimp.listrecipients:
+  SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService:
     class:   SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService
     arguments:
         entityManager: '@doctrine.orm.entity_manager'

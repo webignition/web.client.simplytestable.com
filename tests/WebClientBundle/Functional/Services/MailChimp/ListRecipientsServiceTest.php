@@ -21,7 +21,7 @@ class ListRecipientsServiceTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->listRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
+        $this->listRecipientsService = $this->container->get('SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService');
     }
 
     /**

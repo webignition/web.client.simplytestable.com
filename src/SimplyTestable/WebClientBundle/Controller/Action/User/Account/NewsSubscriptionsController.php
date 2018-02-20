@@ -37,7 +37,7 @@ class NewsSubscriptionsController extends Controller implements RequiresPrivateU
      */
     public function updateAction(Request $request)
     {
-        $mailChimpListRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
+        $mailChimpListRecipientsService = $this->container->get('SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService');
         $mailChimpService = $this->container->get('SimplyTestable\WebClientBundle\Services\MailChimp\Service');
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');

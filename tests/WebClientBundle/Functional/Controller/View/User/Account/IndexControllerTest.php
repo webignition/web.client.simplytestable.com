@@ -191,7 +191,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 'SimplyTestable\WebClientBundle\Services\UserService',
-                'simplytestable.services.mailchimp.listrecipients',
+                'SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService',
                 'simplytestable.services.teamservice',
                 'SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService',
                 'SimplyTestable\WebClientBundle\Services\UserStripeEventService',

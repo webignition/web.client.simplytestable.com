@@ -33,7 +33,7 @@ class ListenerTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->listener = $this->container->get('SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener');
-        $this->listRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
+        $this->listRecipientsService = $this->container->get('SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService');
     }
 
     /**
@@ -95,7 +95,7 @@ class ListenerTest extends AbstractBaseTestCase
     ) {
         $this->createExistingListRecipients($existingListRecipients);
 
-        $listRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
+        $listRecipientsService = $this->container->get('SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService');
 
         $listName = $listRecipientsService->getListName($event->getListId());
 
@@ -165,7 +165,7 @@ class ListenerTest extends AbstractBaseTestCase
     ) {
         $this->createExistingListRecipients($existingListRecipients);
 
-        $listRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
+        $listRecipientsService = $this->container->get('SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService');
 
         $listName = $listRecipientsService->getListName($event->getListId());
 
@@ -258,7 +258,7 @@ class ListenerTest extends AbstractBaseTestCase
     ) {
         $this->createExistingListRecipients($existingListRecipients);
 
-        $listRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
+        $listRecipientsService = $this->container->get('SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService');
 
         $listName = $listRecipientsService->getListName($event->getListId());
 

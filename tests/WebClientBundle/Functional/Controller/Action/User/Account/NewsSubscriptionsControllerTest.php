@@ -95,7 +95,7 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
         $expectedAnnouncementsListRecipientsContains,
         $expectedUpdatesListRecipientsContains
     ) {
-        $mailChimpListRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
+        $mailChimpListRecipientsService = $this->container->get('SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService');
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
 
