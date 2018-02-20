@@ -11,6 +11,7 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
+use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
@@ -54,7 +55,7 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
     {
         $userService = $this->container->get(UserService::class);
         $mailChimpListRecipientsService = $this->container->get(ListRecipientsService::class);
-        $teamService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamService');
+        $teamService = $this->container->get(TeamService::class);
         $emailChangeRequestService = $this->get(UserEmailChangeRequestService::class);
         $templating = $this->container->get('templating');
         $userStripeEventService = $this->container->get(UserStripeEventService::class);

@@ -10,6 +10,7 @@ use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use SimplyTestable\WebClientBundle\Services\UserService;
@@ -213,7 +214,7 @@ class CardControllerTest extends AbstractBaseTestCase
             [
                 'router',
                 UserService::class,
-                'SimplyTestable\WebClientBundle\Services\TeamService',
+                TeamService::class,
                 UserManager::class,
             ],
             [
