@@ -3,6 +3,7 @@
 namespace Tests\WebClientBundle\Functional\EventListener\Stripe;
 
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
+use SimplyTestable\WebClientBundle\Services\PostmarkSender;
 use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
 use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -30,7 +31,7 @@ class OnCustomerSubscriptionUpdatedTest extends AbstractListenerTest
     public function testOnCustomerSubscriptionUpdated(StripeEvent $event, PostmarkMessage $postmarkMessage)
     {
         $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
-        $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\PostmarkSender');
+        $postmarkSender = $this->container->get(PostmarkSender::class);
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
@@ -218,7 +219,7 @@ class OnCustomerSubscriptionUpdatedTest extends AbstractListenerTest
 
     public function testOnCustomerSubscriptionUpdatedNoPlanChangeNoTransitionChange()
     {
-        $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\PostmarkSender');
+        $postmarkSender = $this->container->get(PostmarkSender::class);
 
         $event = new StripeEvent(new ParameterBag(
             $this->eventData

@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Controller\UserController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Services\PostmarkSender;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -211,7 +212,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
     {
         $session = $this->container->get('session');
         $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
-        $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\PostmarkSender');
+        $postmarkSender = $this->container->get(PostmarkSender::class);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 

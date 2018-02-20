@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use SimplyTestable\WebClientBundle\Services\CouponService;
+use SimplyTestable\WebClientBundle\Services\PostmarkSender;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -242,7 +243,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
     ) {
         $session = $this->container->get('session');
         $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
-        $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\PostmarkSender');
+        $postmarkSender = $this->container->get(PostmarkSender::class);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -366,7 +367,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
     {
         $session = $this->container->get('session');
         $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
-        $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\PostmarkSender');
+        $postmarkSender = $this->container->get(PostmarkSender::class);
         $couponService = $this->container->get('SimplyTestable\WebClientBundle\Services\CouponService');
 
         $this->setCoreApplicationHttpClientHttpFixtures([

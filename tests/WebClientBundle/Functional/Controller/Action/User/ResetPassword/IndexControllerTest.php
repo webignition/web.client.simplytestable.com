@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword\IndexCon
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Services\PostmarkSender;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
@@ -226,7 +227,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     ) {
         $session = $this->container->get('session');
         $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
-        $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\PostmarkSender');
+        $postmarkSender = $this->container->get(PostmarkSender::class);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -319,7 +320,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     {
         $session = $this->container->get('session');
         $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
-        $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\PostmarkSender');
+        $postmarkSender = $this->container->get(PostmarkSender::class);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
