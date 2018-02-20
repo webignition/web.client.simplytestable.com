@@ -242,7 +242,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
     ) {
         $session = $this->container->get('session');
         $mailService = $this->container->get('simplytestable.services.mail.service');
-        $postmarkSender = $this->container->get('simplytestable.services.postmark.sender');
+        $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\Postmark\Sender');
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -366,7 +366,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
     {
         $session = $this->container->get('session');
         $mailService = $this->container->get('simplytestable.services.mail.service');
-        $postmarkSender = $this->container->get('simplytestable.services.postmark.sender');
+        $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\Postmark\Sender');
         $couponService = $this->container->get('simplytestable.services.couponservice');
 
         $this->setCoreApplicationHttpClientHttpFixtures([

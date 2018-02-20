@@ -34,7 +34,7 @@ class SenderTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->postmarkSender = $this->container->get('simplytestable.services.postmark.sender');
+        $this->postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\Postmark\Sender');
     }
 
     /**

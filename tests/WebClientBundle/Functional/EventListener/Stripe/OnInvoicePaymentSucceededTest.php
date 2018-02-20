@@ -30,7 +30,7 @@ class OnInvoicePaymentSucceededTest extends AbstractListenerTest
     public function testOnInvoicePaymentSucceeded(StripeEvent $event, PostmarkMessage $postmarkMessage)
     {
         $mailService = $this->container->get('simplytestable.services.mail.service');
-        $postmarkSender = $this->container->get('simplytestable.services.postmark.sender');
+        $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\Postmark\Sender');
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
