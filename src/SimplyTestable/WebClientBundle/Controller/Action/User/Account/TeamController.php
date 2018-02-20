@@ -115,7 +115,7 @@ class TeamController extends Controller implements RequiresPrivateUser
     public function inviteMemberAction(Request $request)
     {
         $session = $this->container->get('session');
-        $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
+        $teamInviteService = $this->get('SimplyTestable\WebClientBundle\Services\TeamInviteService');
         $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');
@@ -258,7 +258,7 @@ class TeamController extends Controller implements RequiresPrivateUser
      */
     public function respondInviteAction(Request $request)
     {
-        $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
+        $teamInviteService = $this->get('SimplyTestable\WebClientBundle\Services\TeamInviteService');
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');
 
@@ -302,7 +302,7 @@ class TeamController extends Controller implements RequiresPrivateUser
      */
     public function removeInviteAction(Request $request)
     {
-        $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
+        $teamInviteService = $this->get('SimplyTestable\WebClientBundle\Services\TeamInviteService');
         $router = $this->container->get('router');
 
         $requestData = $request->request;
@@ -360,7 +360,7 @@ class TeamController extends Controller implements RequiresPrivateUser
     public function resendInviteAction(Request $request)
     {
         $session = $this->container->get('session');
-        $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
+        $teamInviteService = $this->get('SimplyTestable\WebClientBundle\Services\TeamInviteService');
         $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $router = $this->container->get('router');
 

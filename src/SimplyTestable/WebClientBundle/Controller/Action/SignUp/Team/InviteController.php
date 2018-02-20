@@ -37,7 +37,7 @@ class InviteController extends Controller
      */
     public function acceptAction(Request $request, $token)
     {
-        $teamInviteService = $this->container->get('simplytestable.services.teaminviteservice');
+        $teamInviteService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamInviteService');
         $session = $this->container->get('session');
         $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $resqueQueueService = $this->container->get('SimplyTestable\WebClientBundle\Services\Resque\QueueService');

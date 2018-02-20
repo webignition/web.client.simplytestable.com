@@ -46,7 +46,7 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
         $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $session = $this->get('session');
         $teamService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamService');
-        $teamInviteService = $this->container->get('simplytestable.services.teaminviteservice');
+        $teamInviteService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamInviteService');
         $templating = $this->container->get('templating');
         $userManager = $this->container->get(UserManager::class);
 

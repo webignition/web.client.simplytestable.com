@@ -182,7 +182,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'session',
                 'SimplyTestable\WebClientBundle\Services\UserService',
                 'SimplyTestable\WebClientBundle\Services\TeamService',
-                'simplytestable.services.teaminviteservice',
+                'SimplyTestable\WebClientBundle\Services\TeamInviteService',
                 UserManager::class,
             ],
             [

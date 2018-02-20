@@ -172,7 +172,7 @@ services:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
         jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
-  simplytestable.services.teaminviteservice:
+  SimplyTestable\WebClientBundle\Services\TeamInviteService:
     class:   SimplyTestable\WebClientBundle\Services\TeamInviteService
     arguments:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'

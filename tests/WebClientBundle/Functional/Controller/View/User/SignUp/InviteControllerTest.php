@@ -100,7 +100,7 @@ class InviteControllerTest extends AbstractBaseTestCase
 
         $container = $containerFactory->create(
             [
-                'simplytestable.services.teaminviteservice',
+                'SimplyTestable\WebClientBundle\Services\TeamInviteService',
                 'SimplyTestable\WebClientBundle\Services\UserService',
                 'simplytestable.services.flashbagvalues',
                 'simplytestable.services.cachevalidator',

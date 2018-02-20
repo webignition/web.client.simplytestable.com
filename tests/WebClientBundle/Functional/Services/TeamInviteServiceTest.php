@@ -35,7 +35,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
         parent::setUp();
 
         $this->teamInviteService = $this->container->get(
-            'simplytestable.services.teaminviteservice'
+            'SimplyTestable\WebClientBundle\Services\TeamInviteService'
         );
 
         $user = new User(self::USERNAME);
