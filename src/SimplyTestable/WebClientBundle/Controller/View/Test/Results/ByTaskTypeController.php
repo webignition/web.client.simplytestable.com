@@ -10,6 +10,7 @@ use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\Test\Task\ErrorTaskMapCollection;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService;
 use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
@@ -52,7 +53,7 @@ class ByTaskTypeController extends AbstractResultsController
         $remoteTestService = $this->container->get(RemoteTestService::class);
         $urlViewValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\UrlViewValuesService');
         $taskService = $this->container->get(TaskService::class);
-        $taskCollectionFilterService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService');
+        $taskCollectionFilterService = $this->container->get(TaskCollectionFilterService::class);
         $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
         $templating = $this->container->get('templating');
         $userManager = $this->container->get(UserManager::class);
