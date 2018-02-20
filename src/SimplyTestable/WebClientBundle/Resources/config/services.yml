@@ -32,7 +32,7 @@ services:
     arguments:
         entityManager: '@doctrine.orm.entity_manager'
 
-  simplytestable.services.cachevalidatorheadersservice:
+  SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService:
     class:   SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService
     arguments:
         entityManager: '@doctrine.orm.entity_manager'
@@ -204,7 +204,7 @@ services:
   simplytestable.services.cachevalidator:
     class: SimplyTestable\WebClientBundle\Services\CacheValidatorService
     arguments:
-      cacheValidatorHeadersService: '@simplytestable.services.cachevalidatorheadersservice'
+      cacheValidatorHeadersService: '@SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService'
       userManager: '@SimplyTestable\WebClientBundle\Services\UserManager'
 
   simplytestable.services.flashbagvalues:

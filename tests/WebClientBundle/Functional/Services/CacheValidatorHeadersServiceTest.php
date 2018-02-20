@@ -22,7 +22,7 @@ class CacheValidatorHeadersServiceTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->cacheValidatorHeadersService = $this->container->get(
-            'simplytestable.services.cachevalidatorheadersservice'
+            'SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService'
         );
     }
 

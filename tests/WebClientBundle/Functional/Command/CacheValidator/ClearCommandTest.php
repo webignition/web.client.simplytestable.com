@@ -27,7 +27,7 @@ class ClearCommandTest extends AbstractBaseTestCase
 
     public function testRun()
     {
-        $cacheValidatorHeadersService = $this->container->get('simplytestable.services.cachevalidatorheadersservice');
+        $cacheValidatorHeadersService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService');
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
         $cacheValidatorHeadersRepository = $entityManager->getRepository(CacheValidatorHeaders::class);
 

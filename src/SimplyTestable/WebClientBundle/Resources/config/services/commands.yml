@@ -2,7 +2,7 @@ services:
   SimplyTestable\WebClientBundle\Command\CacheValidator\ClearCommand:
     class: SimplyTestable\WebClientBundle\Command\CacheValidator\ClearCommand
     arguments:
-      - '@simplytestable.services.cachevalidatorheadersservice'
+      - '@SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService'
     tags:
       - { name: console.command }
 
