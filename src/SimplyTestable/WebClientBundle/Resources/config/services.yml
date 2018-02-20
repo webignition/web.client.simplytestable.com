@@ -254,6 +254,7 @@ services:
       - '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
       - '@SimplyTestable\WebClientBundle\Services\CoreApplicationResponseCache'
       - '@SimplyTestable\WebClientBundle\Services\SystemUserService'
+      - '@SimplyTestable\WebClientBundle\Services\UserManager'
 
   SimplyTestable\WebClientBundle\Services\JsonResponseHandler:
     class: SimplyTestable\WebClientBundle\Services\JsonResponseHandler
