@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
+use SimplyTestable\WebClientBundle\Services\MailChimp\Service as MailChimpService;
 
 class NewsSubscriptionsController extends Controller implements RequiresPrivateUser
 {
@@ -38,7 +39,7 @@ class NewsSubscriptionsController extends Controller implements RequiresPrivateU
     public function updateAction(Request $request)
     {
         $mailChimpListRecipientsService = $this->container->get('SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService');
-        $mailChimpService = $this->container->get('SimplyTestable\WebClientBundle\Services\MailChimp\Service');
+        $mailChimpService = $this->container->get(MailChimpService::class);
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');
 
