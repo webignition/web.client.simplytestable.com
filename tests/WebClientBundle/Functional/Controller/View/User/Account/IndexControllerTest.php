@@ -195,7 +195,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'SimplyTestable\WebClientBundle\Services\TeamService',
                 'SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService',
                 'SimplyTestable\WebClientBundle\Services\UserStripeEventService',
-                'simplytestable.services.flashbagvalues',
+                'SimplyTestable\WebClientBundle\Services\FlashBagValues',
                 UserManager::class,
             ],
             [

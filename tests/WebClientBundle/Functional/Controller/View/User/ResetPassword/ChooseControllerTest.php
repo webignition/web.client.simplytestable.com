@@ -97,7 +97,7 @@ class ChooseControllerTest extends AbstractBaseTestCase
             [
                 'SimplyTestable\WebClientBundle\Services\CacheValidatorService',
                 'SimplyTestable\WebClientBundle\Services\UserService',
-                'simplytestable.services.flashbagvalues',
+                'SimplyTestable\WebClientBundle\Services\FlashBagValues',
                 UserManager::class,
             ],
             [

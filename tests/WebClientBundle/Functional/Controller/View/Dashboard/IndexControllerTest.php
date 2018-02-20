@@ -144,7 +144,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'SimplyTestable\WebClientBundle\Services\UserSerializerService',
                 'SimplyTestable\WebClientBundle\Services\UrlViewValuesService',
                 'SimplyTestable\WebClientBundle\Services\CacheValidatorService',
-                'simplytestable.services.flashbagvalues',
+                'SimplyTestable\WebClientBundle\Services\FlashBagValues',
                 UserManager::class,
             ],
             [

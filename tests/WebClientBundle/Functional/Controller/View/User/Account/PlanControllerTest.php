@@ -216,7 +216,7 @@ class PlanControllerTest extends AbstractBaseTestCase
                 'SimplyTestable\WebClientBundle\Services\UserService',
                 'SimplyTestable\WebClientBundle\Services\TeamService',
                 'SimplyTestable\WebClientBundle\Services\PlansService',
-                'simplytestable.services.flashbagvalues',
+                'SimplyTestable\WebClientBundle\Services\FlashBagValues',
                 UserManager::class,
             ],
             [
