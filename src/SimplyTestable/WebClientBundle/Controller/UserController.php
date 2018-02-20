@@ -535,7 +535,7 @@ class UserController extends Controller
         $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $session = $this->container->get('session');
         $router = $this->container->get('router');
-        $resqueQueueService = $this->container->get('SimplyTestable\WebClientBundle\Services\Resque\QueueService');
+        $resqueQueueService = $this->container->get('SimplyTestable\WebClientBundle\Services\ResqueQueueService');
         $resqueJobFactory = $this->container->get(ResqueJobFactory::class);
 
         $userExists = $userService->exists($email);

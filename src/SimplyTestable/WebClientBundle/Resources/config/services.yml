@@ -37,8 +37,8 @@ services:
     arguments:
         entityManager: '@doctrine.orm.entity_manager'
 
-  SimplyTestable\WebClientBundle\Services\Resque\QueueService:
-    class:   SimplyTestable\WebClientBundle\Services\Resque\QueueService
+  SimplyTestable\WebClientBundle\Services\ResqueQueueService:
+    class:   SimplyTestable\WebClientBundle\Services\ResqueQueueService
     arguments:
       resque: '@resque'
       logger: '@logger'

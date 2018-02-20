@@ -201,7 +201,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
     public function testConfirmActionSuccess()
     {
         $session = $this->container->get('session');
-        $resqueQueueService = $this->container->get('SimplyTestable\WebClientBundle\Services\Resque\QueueService');
+        $resqueQueueService = $this->container->get('SimplyTestable\WebClientBundle\Services\ResqueQueueService');
         $userSerializerService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
