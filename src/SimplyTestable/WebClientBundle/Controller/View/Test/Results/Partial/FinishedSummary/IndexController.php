@@ -24,7 +24,7 @@ class IndexController extends BaseViewController implements RequiresValidUser, R
      */
     public function indexAction(Request $request, $website, $test_id)
     {
-        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
+        $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
         $templating = $this->container->get('templating');
         $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
         $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');

@@ -103,7 +103,7 @@ class InviteControllerTest extends AbstractBaseTestCase
                 'SimplyTestable\WebClientBundle\Services\TeamInviteService',
                 'SimplyTestable\WebClientBundle\Services\UserService',
                 'simplytestable.services.flashbagvalues',
-                'simplytestable.services.cachevalidator',
+                'SimplyTestable\WebClientBundle\Services\CacheValidatorService',
                 UserManager::class,
             ],
             [

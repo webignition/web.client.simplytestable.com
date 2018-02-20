@@ -46,7 +46,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $urlViewValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\UrlViewValuesService');
         $taskService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskService');
-        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
+        $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
         $templating = $this->container->get('templating');
         $userManager = $this->container->get(UserManager::class);
 

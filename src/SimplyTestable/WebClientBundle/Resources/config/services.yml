@@ -201,7 +201,7 @@ services:
   SimplyTestable\WebClientBundle\Services\UrlViewValuesService:
     class: SimplyTestable\WebClientBundle\Services\UrlViewValuesService
 
-  simplytestable.services.cachevalidator:
+  SimplyTestable\WebClientBundle\Services\CacheValidatorService:
     class: SimplyTestable\WebClientBundle\Services\CacheValidatorService
     arguments:
       cacheValidatorHeadersService: '@SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService'

@@ -31,7 +31,7 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
     {
         $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
         $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
-        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
+        $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
         $router = $this->container->get('router');
         $taskService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskService');
         $templating = $this->container->get('templating');

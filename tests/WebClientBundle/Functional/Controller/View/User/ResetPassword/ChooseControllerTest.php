@@ -95,7 +95,7 @@ class ChooseControllerTest extends AbstractBaseTestCase
         $containerFactory = new ContainerFactory($this->container);
         $container = $containerFactory->create(
             [
-                'simplytestable.services.cachevalidator',
+                'SimplyTestable\WebClientBundle\Services\CacheValidatorService',
                 'SimplyTestable\WebClientBundle\Services\UserService',
                 'simplytestable.services.flashbagvalues',
                 UserManager::class,

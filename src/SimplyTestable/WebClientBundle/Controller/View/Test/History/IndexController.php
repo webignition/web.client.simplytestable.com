@@ -33,7 +33,7 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
     public function indexAction(Request $request)
     {
         $router = $this->container->get('router');
-        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
+        $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
 
         $pageNumber = (int)$request->attributes->get('page_number');
 

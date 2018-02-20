@@ -25,7 +25,7 @@ class InviteController extends BaseViewController implements IEFiltered
     {
         $teamInviteService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamInviteService');
         $flashBagValuesService = $this->container->get('simplytestable.services.flashbagvalues');
-        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
+        $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
         $templating = $this->container->get('templating');
 
         $staySignedIn = $request->query->get('stay-signed-in');
