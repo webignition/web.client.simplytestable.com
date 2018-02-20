@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Controller\View\User\SignUp\IndexController;
 use SimplyTestable\WebClientBundle\Model\Coupon;
 use SimplyTestable\WebClientBundle\Model\User\Plan;
 use SimplyTestable\WebClientBundle\Services\CouponService;
+use SimplyTestable\WebClientBundle\Services\PlansService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
@@ -79,7 +80,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'SimplyTestable\WebClientBundle\Services\CacheValidatorService',
                 CouponService::class,
                 'SimplyTestable\WebClientBundle\Services\FlashBagValues',
-                'SimplyTestable\WebClientBundle\Services\PlansService',
+                PlansService::class,
                 UserService::class,
                 UserManager::class,
             ],

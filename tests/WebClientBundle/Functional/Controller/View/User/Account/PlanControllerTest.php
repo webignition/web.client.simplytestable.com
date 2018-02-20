@@ -11,6 +11,7 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Plan;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\PlansService;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserSerializerService;
@@ -218,7 +219,7 @@ class PlanControllerTest extends AbstractBaseTestCase
                 'router',
                 UserService::class,
                 TeamService::class,
-                'SimplyTestable\WebClientBundle\Services\PlansService',
+                PlansService::class,
                 'SimplyTestable\WebClientBundle\Services\FlashBagValues',
                 UserManager::class,
             ],

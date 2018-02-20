@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+use SimplyTestable\WebClientBundle\Services\PlansService;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -44,7 +45,7 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
         $userService = $this->container->get(UserService::class);
         $teamService = $this->container->get(TeamService::class);
         $templating = $this->container->get('templating');
-        $planService = $this->container->get('SimplyTestable\WebClientBundle\Services\PlansService');
+        $planService = $this->container->get(PlansService::class);
         $router = $this->container->get('router');
         $flashBagValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\FlashBagValues');
 
