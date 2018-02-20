@@ -74,7 +74,7 @@ services:
       - [addFeatureOptionsParser, ['@SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser\OptionsParser']]
       - [addFeatureOptionsParser, ['@SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser\CookieOptionsParser', 'cookies']]
 
-  simplytestable.services.userplansubscriptionservice:
+  SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService:
     class:  SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService
     arguments:
         stripeErrorFactory: '@simplytestable.services.stripeerrorfactory'

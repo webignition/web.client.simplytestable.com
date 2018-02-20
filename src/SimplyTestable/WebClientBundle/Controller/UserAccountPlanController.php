@@ -44,7 +44,7 @@ class UserAccountPlanController extends Controller implements RequiresPrivateUse
         $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $session = $this->container->get('session');
         $teamService = $this->container->get('simplytestable.services.teamservice');
-        $userAccountPlanSubscriptionService = $this->get('simplytestable.services.userplansubscriptionservice');
+        $userAccountPlanSubscriptionService = $this->get('SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService');
         $logger = $this->container->get('logger');
         $userManager = $this->container->get(UserManager::class);
 

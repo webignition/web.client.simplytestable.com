@@ -34,7 +34,7 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
         parent::setUp();
 
         $this->userPlanSubscriptionService = $this->container->get(
-            'simplytestable.services.userplansubscriptionservice'
+            'SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService'
         );
 
         $this->user = new User('user@example.com');
