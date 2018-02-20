@@ -10,7 +10,13 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\TaskTypeService;
+use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory;
+use SimplyTestable\WebClientBundle\Services\TestService;
+use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -48,13 +54,13 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
      */
     public function indexAction(Request $request, $website, $test_id)
     {
-        $testService = $this->container->get('simplytestable.services.testservice');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $testService = $this->container->get(TestService::class);
+        $remoteTestService = $this->container->get(RemoteTestService::class);
         $router = $this->container->get('router');
-        $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
-        $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
-        $testOptionsAdapterFactory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
-        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
+        $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
+        $taskTypeService = $this->container->get(TaskTypeService::class);
+        $testOptionsAdapterFactory = $this->container->get(RequestAdapterFactory::class);
+        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
         $templating = $this->container->get('templating');
         $userManager = $this->container->get(UserManager::class);
 

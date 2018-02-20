@@ -3,21 +3,21 @@ imports:
     - { resource: services/resque-job-factory.yml }
 
 services:
-  simplytestable.services.testservice:
+  SimplyTestable\WebClientBundle\Services\TestService:
     class:   SimplyTestable\WebClientBundle\Services\TestService
     arguments:
         entityManager: '@doctrine.orm.entity_manager'
         logger: '@logger'
-        taskService: '@simplytestable.services.taskservice'
-        remoteTestService: '@simplytestable.services.remotetestservice'
+        taskService: '@SimplyTestable\WebClientBundle\Services\TaskService'
+        remoteTestService: '@SimplyTestable\WebClientBundle\Services\RemoteTestService'
 
-  simplytestable.services.remotetestservice:
+  SimplyTestable\WebClientBundle\Services\RemoteTestService:
     class:   SimplyTestable\WebClientBundle\Services\RemoteTestService
     arguments:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
         jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
-  simplytestable.services.taskservice:
+  SimplyTestable\WebClientBundle\Services\TaskService:
     class:   SimplyTestable\WebClientBundle\Services\TaskService
     arguments:
         entityManager: '@doctrine.orm.entity_manager'
@@ -27,103 +27,103 @@ services:
         taskFactory: '@SimplyTestable\WebClientBundle\Services\Factory\TaskFactory'
         taskOutputFactory: '@SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory'
 
-  simplytestable.services.taskcollectionfilterservice:
+  SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService:
     class:   SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService
     arguments:
         entityManager: '@doctrine.orm.entity_manager'
 
-  simplytestable.services.cachevalidatorheadersservice:
+  SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService:
     class:   SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService
     arguments:
         entityManager: '@doctrine.orm.entity_manager'
 
-  simplytestable.services.resque.queueservice:
-    class:   SimplyTestable\WebClientBundle\Services\Resque\QueueService
+  SimplyTestable\WebClientBundle\Services\ResqueQueueService:
+    class:   SimplyTestable\WebClientBundle\Services\ResqueQueueService
     arguments:
       resque: '@resque'
       logger: '@logger'
       jobFactoryService: '@webignition\ResqueJobFactory\ResqueJobFactory'
       environment: '%kernel.environment%'
 
-  simplytestable.services.userservice:
+  SimplyTestable\WebClientBundle\Services\UserService:
     class:  SimplyTestable\WebClientBundle\Services\UserService
     arguments:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
         jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
-  simplytestable.services.useremailchangerequestservice:
+  SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService:
     class:  SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService
     arguments:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
         jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
-  simplytestable.services.userserializerservice:
+  SimplyTestable\WebClientBundle\Services\UserSerializerService:
     class:  SimplyTestable\WebClientBundle\Services\UserSerializerService
     arguments:
         key: '%secret%'
 
-  simplytestable.services.testoptions.adapter.request.featureoptionsparser:
-    class:  SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser\OptionsParser
+  SimplyTestable\WebClientBundle\Services\TestOptions\OptionsParser:
+    class:  SimplyTestable\WebClientBundle\Services\TestOptions\OptionsParser
 
-  simplytestable.services.testoptions.adapter.request.cookieoptionsparser:
-    class:  SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser\CookieOptionsParser
+  SimplyTestable\WebClientBundle\Services\TestOptions\CookieOptionsParser:
+    class:  SimplyTestable\WebClientBundle\Services\TestOptions\CookieOptionsParser
 
-  simplytestable.services.testoptions.adapter.request:
-    class:  SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
+  SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter:
+    class:  SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter
     calls:
-      - [addFeatureOptionsParser, ['@simplytestable.services.testoptions.adapter.request.featureoptionsparser']]
-      - [addFeatureOptionsParser, ['@simplytestable.services.testoptions.adapter.request.cookieoptionsparser', 'cookies']]
+      - [addFeatureOptionsParser, ['@SimplyTestable\WebClientBundle\Services\TestOptions\OptionsParser']]
+      - [addFeatureOptionsParser, ['@SimplyTestable\WebClientBundle\Services\TestOptions\CookieOptionsParser', 'cookies']]
 
-  simplytestable.services.userplansubscriptionservice:
+  SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService:
     class:  SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService
     arguments:
-        stripeErrorFactory: '@simplytestable.services.stripeerrorfactory'
+        stripeErrorFactory: '@SimplyTestable\WebClientBundle\Services\StripeErrorFactory'
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
 
-  simplytestable.services.useraccountcardservice:
+  SimplyTestable\WebClientBundle\Services\UserAccountCardService:
     class:  SimplyTestable\WebClientBundle\Services\UserAccountCardService
     arguments:
-        stripeErrorFactory: '@simplytestable.services.stripeerrorfactory'
+        stripeErrorFactory: '@SimplyTestable\WebClientBundle\Services\StripeErrorFactory'
         coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
 
-  simplytestable.services.userstripeeventservice:
+  SimplyTestable\WebClientBundle\Services\UserStripeEventService:
     class:  SimplyTestable\WebClientBundle\Services\UserStripeEventService
     arguments:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
         jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
-  simplytestable.services.documentationurlcheckerservice:
+  SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService:
     class:  SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService
 
-  simplytestable.services.mailchimpservice:
+  SimplyTestable\WebClientBundle\Services\MailChimp\Service:
     class:   SimplyTestable\WebClientBundle\Services\MailChimp\Service
     arguments:
         mailChimpClient: '@SimplyTestable\WebClientBundle\Services\MailChimp\Client'
-        listRecipientsService: '@simplytestable.services.mailchimp.listrecipients'
+        listRecipientsService: '@SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService'
 
-  simplytestable.services.mail.configuration:
+  SimplyTestable\WebClientBundle\Services\Mail\Configuration:
     class:   SimplyTestable\WebClientBundle\Services\Mail\Configuration
     arguments:
         configuration: '%mail%'
 
-  simplytestable.services.postmark.sender:
-    class:   SimplyTestable\WebClientBundle\Services\Postmark\Sender
+  SimplyTestable\WebClientBundle\Services\PostmarkSender:
+    class:   SimplyTestable\WebClientBundle\Services\PostmarkSender
 
-  simplytestable.services.mail.service:
+  SimplyTestable\WebClientBundle\Services\Mail\Service:
     class:   SimplyTestable\WebClientBundle\Services\Mail\Service
     arguments:
-        mailConfiguration: '@simplytestable.services.mail.configuration'
+        mailConfiguration: '@SimplyTestable\WebClientBundle\Services\Mail\Configuration'
         postmarkMessage: '@postmark.message'
-        postmarkSender: '@simplytestable.services.postmark.sender'
+        postmarkSender: '@SimplyTestable\WebClientBundle\Services\PostmarkSender'
 
-  simplytestable.listener.stripeevent:
+  SimplyTestable\WebClientBundle\EventListener\Stripe\Listener:
     class:   SimplyTestable\WebClientBundle\EventListener\Stripe\Listener
     arguments:
         logger: '@logger'
         templating: '@templating'
         router: '@router'
-        mailService: '@simplytestable.services.mail.service'
+        mailService: '@SimplyTestable\WebClientBundle\Services\Mail\Service'
     tags:
       - { name: kernel.event_listener, event: stripe.customer.subscription.created, method: onCustomerSubscriptionCreated }
       - { name: kernel.event_listener, event: stripe.customer.subscription.deleted, method: onCustomerSubscriptionDeleted }
@@ -132,17 +132,17 @@ services:
       - { name: kernel.event_listener, event: stripe.invoice.payment_succeeded, method: onInvoicePaymentSucceeded }
       - { name: kernel.event_listener, event: stripe.invoice.payment_failed, method: onInvoicePaymentFailed }
 
-  simplytestable.controller.action_listener:
+  SimplyTestable\WebClientBundle\EventListener\RequestListener:
     class: SimplyTestable\WebClientBundle\EventListener\RequestListener
     arguments:
         kernel: '@kernel'
     tags:
       - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
 
-  simplytestable.listener.mailchimpevent:
+  SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener:
     class:   SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener
     arguments:
-        mailchimpListRecipientsService: '@simplytestable.services.mailchimp.listrecipients'
+        mailchimpListRecipientsService: '@SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService'
         entityManager: '@doctrine.orm.entity_manager'
     tags:
       - { name: kernel.event_listener, event: mailchimp.subscribe, method: onSubscribe }
@@ -150,7 +150,7 @@ services:
       - { name: kernel.event_listener, event: mailchimp.upemail, method: onUpEmail }
       - { name: kernel.event_listener, event: mailchimp.cleaned, method: onCleaned }
 
-  simplytestable.services.mailchimp.listrecipients:
+  SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService:
     class:   SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService
     arguments:
         entityManager: '@doctrine.orm.entity_manager'
@@ -160,54 +160,54 @@ services:
           updates: '%mailchimp_updates_list_id%'
           introduction: '%mailchimp_introduction_list_id%'
 
-  simplytestable.services.tasktypeservice:
+  SimplyTestable\WebClientBundle\Services\TaskTypeService:
     class:  SimplyTestable\WebClientBundle\Services\TaskTypeService
     calls:
       - [setTaskTypes, ['%task_types%']]
       - [setEarlyAccessUsers, ['%early_access_users%']]
 
-  simplytestable.services.teamservice:
+  SimplyTestable\WebClientBundle\Services\TeamService:
     class:   SimplyTestable\WebClientBundle\Services\TeamService
     arguments:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
         jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
-  simplytestable.services.teaminviteservice:
+  SimplyTestable\WebClientBundle\Services\TeamInviteService:
     class:   SimplyTestable\WebClientBundle\Services\TeamInviteService
     arguments:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
         jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
-  simplytestable.services.couponservice:
+  SimplyTestable\WebClientBundle\Services\CouponService:
     class:  SimplyTestable\WebClientBundle\Services\CouponService
     calls:
       - [setCouponData, ['%coupons%']]
 
-  simplytestable.services.plansservice:
+  SimplyTestable\WebClientBundle\Services\PlansService:
     class:  SimplyTestable\WebClientBundle\Services\PlansService
     calls:
       - [setPlansData, ['%plans%']]
 
-  simplytestable.services.stripeerrorfactory:
+  SimplyTestable\WebClientBundle\Services\StripeErrorFactory:
     class: SimplyTestable\WebClientBundle\Services\StripeErrorFactory
 
-  simplytestable.services.testoptions.adapter.factory:
-    class: SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Factory
+  SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory:
+    class: SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory
     arguments:
-      adapter: '@simplytestable.services.testoptions.adapter.request'
-      taskTypeService: '@simplytestable.services.tasktypeservice'
+      adapter: '@SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter'
+      taskTypeService: '@SimplyTestable\WebClientBundle\Services\TaskTypeService'
       parameters: '%test_options%'
 
-  simplytestable.services.urlviewvalues:
+  SimplyTestable\WebClientBundle\Services\UrlViewValuesService:
     class: SimplyTestable\WebClientBundle\Services\UrlViewValuesService
 
-  simplytestable.services.cachevalidator:
+  SimplyTestable\WebClientBundle\Services\CacheValidatorService:
     class: SimplyTestable\WebClientBundle\Services\CacheValidatorService
     arguments:
-      cacheValidatorHeadersService: '@simplytestable.services.cachevalidatorheadersservice'
+      cacheValidatorHeadersService: '@SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService'
       userManager: '@SimplyTestable\WebClientBundle\Services\UserManager'
 
-  simplytestable.services.flashbagvalues:
+  SimplyTestable\WebClientBundle\Services\FlashBagValues:
     class: SimplyTestable\WebClientBundle\Services\FlashBagValues
     arguments:
       session: '@session'
@@ -273,7 +273,7 @@ services:
     class:  SimplyTestable\WebClientBundle\Services\UserManager
     arguments:
       - '@request_stack'
-      - '@simplytestable.services.userserializerservice'
+      - '@SimplyTestable\WebClientBundle\Services\UserSerializerService'
       - '@session'
       - '@SimplyTestable\WebClientBundle\Services\SystemUserService'
 

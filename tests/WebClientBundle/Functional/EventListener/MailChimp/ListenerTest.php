@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use SimplyTestable\WebClientBundle\Event\MailChimp\Event as MailChimpEvent;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener as MailChimpListener;
 
 class ListenerTest extends AbstractBaseTestCase
 {
@@ -32,8 +33,8 @@ class ListenerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->listener = $this->container->get('simplytestable.listener.mailchimpevent');
-        $this->listRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
+        $this->listener = $this->container->get(MailChimpListener::class);
+        $this->listRecipientsService = $this->container->get(ListRecipientsService::class);
     }
 
     /**
@@ -95,7 +96,7 @@ class ListenerTest extends AbstractBaseTestCase
     ) {
         $this->createExistingListRecipients($existingListRecipients);
 
-        $listRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
+        $listRecipientsService = $this->container->get(ListRecipientsService::class);
 
         $listName = $listRecipientsService->getListName($event->getListId());
 
@@ -165,7 +166,7 @@ class ListenerTest extends AbstractBaseTestCase
     ) {
         $this->createExistingListRecipients($existingListRecipients);
 
-        $listRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
+        $listRecipientsService = $this->container->get(ListRecipientsService::class);
 
         $listName = $listRecipientsService->getListName($event->getListId());
 
@@ -258,7 +259,7 @@ class ListenerTest extends AbstractBaseTestCase
     ) {
         $this->createExistingListRecipients($existingListRecipients);
 
-        $listRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
+        $listRecipientsService = $this->container->get(ListRecipientsService::class);
 
         $listName = $listRecipientsService->getListName($event->getListId());
 

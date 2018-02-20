@@ -10,7 +10,12 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\FlashBagValues;
+use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
+use SimplyTestable\WebClientBundle\Services\TeamService;
+use SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Services\UserStripeEventService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,13 +54,13 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
      */
     public function indexAction(Request $request)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
-        $mailChimpListRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
-        $teamService = $this->container->get('simplytestable.services.teamservice');
-        $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');
+        $userService = $this->container->get(UserService::class);
+        $mailChimpListRecipientsService = $this->container->get(ListRecipientsService::class);
+        $teamService = $this->container->get(TeamService::class);
+        $emailChangeRequestService = $this->get(UserEmailChangeRequestService::class);
         $templating = $this->container->get('templating');
-        $userStripeEventService = $this->container->get('simplytestable.services.userstripeeventservice');
-        $flashBagValuesService = $this->container->get('simplytestable.services.flashbagvalues');
+        $userStripeEventService = $this->container->get(UserStripeEventService::class);
+        $flashBagValuesService = $this->container->get(FlashBagValues::class);
         $userManager = $this->container->get(UserManager::class);
 
         $user = $userManager->getUser();

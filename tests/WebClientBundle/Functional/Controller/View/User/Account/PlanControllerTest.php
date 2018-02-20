@@ -11,7 +11,12 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Plan;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\FlashBagValues;
+use SimplyTestable\WebClientBundle\Services\PlansService;
+use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserSerializerService;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
@@ -118,7 +123,7 @@ class PlanControllerTest extends AbstractBaseTestCase
     public function testIndexActionPrivateUserGetRequest()
     {
         $user = new User(self::USER_EMAIL);
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userSerializerService = $this->container->get(UserSerializerService::class);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -213,10 +218,10 @@ class PlanControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 'router',
-                'simplytestable.services.userservice',
-                'simplytestable.services.teamservice',
-                'simplytestable.services.plansservice',
-                'simplytestable.services.flashbagvalues',
+                UserService::class,
+                TeamService::class,
+                PlansService::class,
+                FlashBagValues::class,
                 UserManager::class,
             ],
             [

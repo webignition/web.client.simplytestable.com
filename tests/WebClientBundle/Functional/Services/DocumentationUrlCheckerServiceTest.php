@@ -2,9 +2,6 @@
 
 namespace Tests\WebClientBundle\Functional\Services;
 
-use Doctrine\ORM\EntityManagerInterface;
-use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
 use SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 
@@ -22,9 +19,7 @@ class DocumentationUrlCheckerServiceTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->documentationUrlCheckerService = $this->container->get(
-            'simplytestable.services.documentationurlcheckerservice'
-        );
+        $this->documentationUrlCheckerService = $this->container->get(DocumentationUrlCheckerService::class);
 
         $this->documentationUrlCheckerService->setDocumentationSitemapPath(
             $this->container->get('kernel')->locateResource(

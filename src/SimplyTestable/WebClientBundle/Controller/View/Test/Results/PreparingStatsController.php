@@ -7,6 +7,8 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
+use SimplyTestable\WebClientBundle\Services\RemoteTestService;
+use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -31,8 +33,8 @@ class PreparingStatsController extends BaseViewController implements RequiresVal
      */
     public function indexAction($website, $test_id)
     {
-        $testService = $this->container->get('simplytestable.services.testservice');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
+        $testService = $this->container->get(TestService::class);
+        $remoteTestService = $this->container->get(RemoteTestService::class);
 
         $test = $testService->get($website, $test_id);
         $remoteTest = $remoteTestService->get();

@@ -11,9 +11,17 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\Test\Task\ErrorTaskMapCollection;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService;
+use SimplyTestable\WebClientBundle\Services\TaskService;
+use SimplyTestable\WebClientBundle\Services\TestService;
+use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserSerializerService;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
@@ -199,7 +207,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionInvalidTestOwnerIsLoggedIn()
     {
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userSerializerService = $this->container->get(UserSerializerService::class);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -428,13 +436,13 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 'router',
-                'simplytestable.services.testservice',
-                'simplytestable.services.remotetestservice',
-                'simplytestable.services.userservice',
-                'simplytestable.services.cachevalidator',
-                'simplytestable.services.urlviewvalues',
-                'simplytestable.services.taskservice',
-                'simplytestable.services.taskcollectionfilterservice',
+                TestService::class,
+                RemoteTestService::class,
+                UserService::class,
+                CacheValidatorService::class,
+                UrlViewValuesService::class,
+                TaskService::class,
+                TaskCollectionFilterService::class,
                 UserManager::class,
             ],
             [

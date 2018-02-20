@@ -11,7 +11,14 @@ use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\FlashBagValues;
+use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
+use SimplyTestable\WebClientBundle\Services\TeamService;
+use SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserSerializerService;
+use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Services\UserStripeEventService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
@@ -120,7 +127,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionPrivateUserGetRequest()
     {
         $user = new User(self::USER_EMAIL);
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userSerializerService = $this->container->get(UserSerializerService::class);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::create(200),
@@ -190,12 +197,12 @@ class IndexControllerTest extends AbstractBaseTestCase
         $containerFactory = new ContainerFactory($this->container);
         $container = $containerFactory->create(
             [
-                'simplytestable.services.userservice',
-                'simplytestable.services.mailchimp.listrecipients',
-                'simplytestable.services.teamservice',
-                'simplytestable.services.useremailchangerequestservice',
-                'simplytestable.services.userstripeeventservice',
-                'simplytestable.services.flashbagvalues',
+                UserService::class,
+                ListRecipientsService::class,
+                TeamService::class,
+                UserEmailChangeRequestService::class,
+                UserStripeEventService::class,
+                FlashBagValues::class,
                 UserManager::class,
             ],
             [

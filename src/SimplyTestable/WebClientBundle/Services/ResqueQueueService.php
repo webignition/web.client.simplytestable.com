@@ -1,5 +1,5 @@
 <?php
-namespace SimplyTestable\WebClientBundle\Services\Resque;
+namespace SimplyTestable\WebClientBundle\Services;
 
 use ResqueBundle\Resque\Resque;
 use Psr\Log\LoggerInterface;
@@ -15,7 +15,7 @@ use webignition\ResqueJobFactory\ResqueJobFactory;
  * where the integration with redis is optional.
  *
  */
-class QueueService
+class ResqueQueueService
 {
     const QUEUE_KEY = 'queue';
 

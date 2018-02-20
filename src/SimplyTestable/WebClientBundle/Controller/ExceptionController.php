@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+use SimplyTestable\WebClientBundle\Services\PostmarkSender;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\TemplateReference;
@@ -123,7 +124,7 @@ class ExceptionController extends Controller
             'request' => (string)$request,
         ]));
 
-        $postmarkSenderService = $this->container->get('simplytestable.services.postmark.sender');
+        $postmarkSenderService = $this->container->get(PostmarkSender::class);
 
         $postmarkSenderService->send($message);
     }

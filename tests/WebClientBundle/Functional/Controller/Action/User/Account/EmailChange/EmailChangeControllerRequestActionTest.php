@@ -10,13 +10,15 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
-use \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
 class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControllerTest
 {
@@ -54,8 +56,8 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
     public function testRequestActionPostRequestPrivateUser()
     {
         $router = $this->container->get('router');
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $userSerializerService = $this->container->get(UserSerializerService::class);
+        $mailService = $this->container->get(MailService::class);
 
         $requestUrl = $router->generate(self::ROUTE_NAME);
 
@@ -249,7 +251,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get(MailService::class);
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
 
@@ -358,7 +360,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
     public function testRequestActionSuccess()
     {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get(MailService::class);
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
 

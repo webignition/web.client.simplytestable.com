@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -32,7 +33,7 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
     public function testCreateActionPostRequestPrivateUser()
     {
         $router = $this->container->get('router');
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userSerializerService = $this->container->get(UserSerializerService::class);
 
         $requestUrl = $router->generate(self::ROUTE_NAME);
 

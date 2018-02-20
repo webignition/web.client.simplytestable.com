@@ -3,7 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Services\Mail;
 
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
-use SimplyTestable\WebClientBundle\Services\Postmark\Sender as PostmarkSender;
+use SimplyTestable\WebClientBundle\Services\PostmarkSender;
 
 class Service
 {

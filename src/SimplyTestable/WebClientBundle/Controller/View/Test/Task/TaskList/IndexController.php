@@ -9,6 +9,9 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\Task\Collection as TaskCollection;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\TaskService;
+use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -35,9 +38,9 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
      */
     public function indexAction(Request $request, $website, $test_id)
     {
-        $testService = $this->container->get('simplytestable.services.testservice');
-        $taskService = $this->container->get('simplytestable.services.taskservice');
-        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
+        $testService = $this->container->get(TestService::class);
+        $taskService = $this->container->get(TaskService::class);
+        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
         $templating = $this->container->get('templating');
 
         $test = $testService->get($website, $test_id);

@@ -1,12 +1,12 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Services\Postmark;
+namespace SimplyTestable\WebClientBundle\Services;
 
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use SimplyTestable\WebClientBundle\Model\Postmark\Response as PostmarkResponse;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 
-class Sender
+class PostmarkSender
 {
     /**
      * @var PostmarkMessage

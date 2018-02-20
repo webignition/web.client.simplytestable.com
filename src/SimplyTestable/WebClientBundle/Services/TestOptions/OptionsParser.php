@@ -1,5 +1,5 @@
 <?php
-namespace SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser;
+namespace SimplyTestable\WebClientBundle\Services\TestOptions;
 
 use Symfony\Component\HttpFoundation\ParameterBag;
 

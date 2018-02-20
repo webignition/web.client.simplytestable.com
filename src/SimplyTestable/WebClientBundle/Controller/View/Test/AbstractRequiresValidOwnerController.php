@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Test;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
+use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +17,7 @@ abstract class AbstractRequiresValidOwnerController extends BaseViewController i
      */
     public function getInvalidOwnerResponse(Request $request)
     {
-        $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
+        $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
         $session = $this->container->get('session');
         $router = $this->container->get('router');
         $userManager = $this->container->get(UserManager::class);

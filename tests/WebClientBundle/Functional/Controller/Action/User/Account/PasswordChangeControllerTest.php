@@ -11,8 +11,8 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
-use Tests\WebClientBundle\Factory\CurlExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\BrowserKit\Cookie;
@@ -90,7 +90,7 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
 
     public function testRequestActionPostRequest()
     {
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userSerializerService = $this->container->get(UserSerializerService::class);
         $userManager = $this->container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL, self::USER_CURRENT_PASSWORD);

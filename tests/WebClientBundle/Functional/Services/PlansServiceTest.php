@@ -2,9 +2,6 @@
 
 namespace Tests\WebClientBundle\Functional\Services;
 
-use Doctrine\ORM\EntityManagerInterface;
-use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
 use SimplyTestable\WebClientBundle\Services\PlansService;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 
@@ -22,7 +19,7 @@ class PlansServiceTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->plansService = $this->container->get('simplytestable.services.plansservice');
+        $this->plansService = $this->container->get(PlansService::class);
     }
 
     /**

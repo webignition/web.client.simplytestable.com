@@ -4,6 +4,7 @@ namespace Tests\WebClientBundle\Functional\Controller\Action\SignUp\Team;
 
 use SimplyTestable\WebClientBundle\Controller\Action\SignUp\Team\InviteController;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
@@ -216,7 +217,7 @@ class InviteControllerTest extends AbstractBaseTestCase
         $expectedHasUserCookie
     ) {
         $session = $this->container->get('session');
-        $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
+        $resqueQueueService = $this->container->get(ResqueQueueService::class);
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());

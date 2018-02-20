@@ -5,7 +5,9 @@ namespace SimplyTestable\WebClientBundle\EventListener;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -77,7 +79,7 @@ class RequestListener
             return;
         }
 
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get(UserService::class);
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
 
@@ -121,7 +123,7 @@ class RequestListener
         }
 
         if ($controller instanceof RequiresValidTestOwnerController) {
-            $testService = $this->container->get('simplytestable.services.testservice');
+            $testService = $this->container->get(TestService::class);
             $requestAttributes = $this->request->attributes;
 
             $website = $requestAttributes->get('website');
@@ -150,7 +152,7 @@ class RequestListener
         }
 
         if ($controller instanceof RequiresCompletedTestController) {
-            $testService = $this->container->get('simplytestable.services.testservice');
+            $testService = $this->container->get(TestService::class);
             $requestAttributes = $this->request->attributes;
 
             $website = $requestAttributes->get('website');

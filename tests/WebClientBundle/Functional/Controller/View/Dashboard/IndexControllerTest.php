@@ -4,8 +4,15 @@ namespace Tests\WebClientBundle\Functional\Controller\View\Dashboard;
 
 use SimplyTestable\WebClientBundle\Controller\View\Dashboard\IndexController;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\TaskTypeService;
+use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory;
+use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserSerializerService;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
@@ -81,7 +88,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionPrivateUserGetRequest()
     {
         $user = new User(self::USER_EMAIL);
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userSerializerService = $this->container->get(UserSerializerService::class);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -138,13 +145,13 @@ class IndexControllerTest extends AbstractBaseTestCase
         $containerFactory = new ContainerFactory($this->container);
         $container = $containerFactory->create(
             [
-                'simplytestable.services.tasktypeservice',
-                'simplytestable.services.userservice',
-                'simplytestable.services.testoptions.adapter.factory',
-                'simplytestable.services.userserializerservice',
-                'simplytestable.services.urlviewvalues',
-                'simplytestable.services.cachevalidator',
-                'simplytestable.services.flashbagvalues',
+                TaskTypeService::class,
+                UserService::class,
+                RequestAdapterFactory::class,
+                UserSerializerService::class,
+                UrlViewValuesService::class,
+                CacheValidatorService::class,
+                FlashBagValues::class,
                 UserManager::class,
             ],
             [

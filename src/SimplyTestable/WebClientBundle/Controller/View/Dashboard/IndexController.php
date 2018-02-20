@@ -3,8 +3,13 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Dashboard;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
-use SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter as TestOptionsRequestAdapter;
+use SimplyTestable\WebClientBundle\Services\TaskTypeService;
+use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter as TestOptionsRequestAdapter;
+use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory;
+use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
@@ -21,11 +26,11 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
      */
     public function indexAction(Request $request)
     {
-        $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
-        $testOptionsAdapterFactory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
-        $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
-        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
-        $flashBagValuesService = $this->container->get('simplytestable.services.flashbagvalues');
+        $taskTypeService = $this->container->get(TaskTypeService::class);
+        $testOptionsAdapterFactory = $this->container->get(RequestAdapterFactory::class);
+        $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
+        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
+        $flashBagValuesService = $this->container->get(FlashBagValues::class);
         $templating = $this->container->get('templating');
         $userManager = $this->container->get(UserManager::class);
 

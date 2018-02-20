@@ -12,6 +12,7 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
 use Symfony\Component\BrowserKit\Cookie;
@@ -19,6 +20,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
 class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
 {
@@ -58,8 +60,8 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
     public function testInviteMemberActionPostRequestPrivateUser()
     {
         $router = $this->container->get('router');
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $userSerializerService = $this->container->get(UserSerializerService::class);
+        $mailService = $this->container->get(MailService::class);
 
         $inviteData = [
             'team' => self::TEAM_NAME,
@@ -294,7 +296,7 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get(MailService::class);
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
@@ -421,7 +423,7 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get(MailService::class);
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());

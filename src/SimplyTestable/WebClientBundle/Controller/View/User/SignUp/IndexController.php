@@ -6,6 +6,10 @@ use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Controller\UserController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Model\User\Plan;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\CouponService;
+use SimplyTestable\WebClientBundle\Services\FlashBagValues;
+use SimplyTestable\WebClientBundle\Services\PlansService;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,11 +25,11 @@ class IndexController extends BaseViewController implements IEFiltered
      */
     public function indexAction(Request $request)
     {
-        $couponService = $this->container->get('simplytestable.services.couponservice');
-        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
-        $flashBagValuesService = $this->container->get('simplytestable.services.flashbagvalues');
+        $couponService = $this->container->get(CouponService::class);
+        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
+        $flashBagValuesService = $this->container->get(FlashBagValues::class);
         $templating = $this->container->get('templating');
-        $plansService = $this->container->get('simplytestable.services.plansservice');
+        $plansService = $this->container->get(PlansService::class);
 
         $couponService->setRequest($request);
         $plansService->listPremiumOnly();

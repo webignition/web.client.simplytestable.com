@@ -8,7 +8,10 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\TestOptions;
+use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\TaskTypeService;
+use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -33,9 +36,9 @@ class TestStartController extends TestController
      */
     public function startNewAction(Request $request)
     {
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
-        $testOptionsAdapterFactory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
-        $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
+        $remoteTestService = $this->container->get(RemoteTestService::class);
+        $testOptionsAdapterFactory = $this->container->get(RequestAdapterFactory::class);
+        $taskTypeService = $this->container->get(TaskTypeService::class);
         $session = $this->container->get('session');
         $router = $this->container->get('router');
         $userManager = $this->container->get(UserManager::class);

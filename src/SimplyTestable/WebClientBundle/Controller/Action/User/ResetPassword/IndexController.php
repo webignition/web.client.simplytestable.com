@@ -7,11 +7,13 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
 class IndexController extends Controller
 {
@@ -43,7 +45,7 @@ class IndexController extends Controller
     public function requestAction(Request $request)
     {
         $session = $this->container->get('session');
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get(UserService::class);
         $router = $this->container->get('router');
 
         $requestData = $request->request;
@@ -145,7 +147,7 @@ class IndexController extends Controller
      */
     private function sendPasswordResetConfirmationToken($email, $token)
     {
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get(MailService::class);
         $router = $this->container->get('router');
 
         $mailServiceConfiguration = $mailService->getConfiguration();
@@ -182,7 +184,7 @@ class IndexController extends Controller
      */
     private function sendInvalidAdminCredentialsNotification()
     {
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get(MailService::class);
         $mailServiceConfiguration = $mailService->getConfiguration();
 
         $sender = $mailServiceConfiguration->getSender('default');

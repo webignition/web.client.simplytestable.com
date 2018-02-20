@@ -8,7 +8,11 @@ use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\FlashBagValues;
+use SimplyTestable\WebClientBundle\Services\TeamInviteService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
@@ -100,10 +104,10 @@ class InviteControllerTest extends AbstractBaseTestCase
 
         $container = $containerFactory->create(
             [
-                'simplytestable.services.teaminviteservice',
-                'simplytestable.services.userservice',
-                'simplytestable.services.flashbagvalues',
-                'simplytestable.services.cachevalidator',
+                TeamInviteService::class,
+                UserService::class,
+                FlashBagValues::class,
+                CacheValidatorService::class,
                 UserManager::class,
             ],
             [

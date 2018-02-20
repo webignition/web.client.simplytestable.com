@@ -33,9 +33,7 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
     {
         parent::setUp();
 
-        $this->userEmailChangeRequestService = $this->container->get(
-            'simplytestable.services.useremailchangerequestservice'
-        );
+        $this->userEmailChangeRequestService = $this->container->get(UserEmailChangeRequestService::class);
 
         $this->user = new User(self::USER_EMAIL);
     }

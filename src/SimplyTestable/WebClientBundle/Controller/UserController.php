@@ -9,8 +9,11 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAlreadyExistsException;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\CouponService;
+use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,6 +24,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\RouterInterface;
 use webignition\ResqueJobFactory\ResqueJobFactory;
+use SimplyTestable\WebClientBundle\Services\Mail\Configuration as MailConfiguration;
+use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
 class UserController extends Controller
 {
@@ -91,7 +96,7 @@ class UserController extends Controller
     public function signInSubmitAction(Request $request)
     {
         $session = $this->container->get('session');
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get(UserService::class);
         $router = $this->container->get('router');
         $userManager = $this->container->get(UserManager::class);
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
@@ -271,7 +276,7 @@ class UserController extends Controller
      */
     public function resetPasswordChooseSubmitAction(Request $request)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get(UserService::class);
         $router = $this->container->get('router');
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
@@ -356,8 +361,8 @@ class UserController extends Controller
     public function signUpSubmitAction(Request $request)
     {
         $session = $this->container->get('session');
-        $userService = $this->container->get('simplytestable.services.userservice');
-        $couponService = $this->container->get('simplytestable.services.couponservice');
+        $userService = $this->container->get(UserService::class);
+        $couponService = $this->container->get(CouponService::class);
         $router = $this->container->get('router');
 
         $requestData = $request->request;
@@ -490,8 +495,8 @@ class UserController extends Controller
      */
     private function sendConfirmationToken(RouterInterface $router, $email, $token)
     {
-        $mailConfiguration = $this->container->get('simplytestable.services.mail.configuration');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailConfiguration = $this->container->get(MailConfiguration::class);
+        $mailService = $this->container->get(MailService::class);
 
         $sender = $mailConfiguration->getSender('default');
         $messageProperties = $mailConfiguration->getMessageProperties('user_creation_confirmation');
@@ -532,10 +537,10 @@ class UserController extends Controller
      */
     public function signUpConfirmSubmitAction(Request $request, $email)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get(UserService::class);
         $session = $this->container->get('session');
         $router = $this->container->get('router');
-        $resqueQueueService = $this->container->get('simplytestable.services.resque.queueservice');
+        $resqueQueueService = $this->container->get(ResqueQueueService::class);
         $resqueJobFactory = $this->container->get(ResqueJobFactory::class);
 
         $userExists = $userService->exists($email);

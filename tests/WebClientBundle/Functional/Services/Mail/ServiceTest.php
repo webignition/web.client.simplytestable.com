@@ -4,8 +4,10 @@ namespace Tests\WebClientBundle\Functional\Services\Mail;
 
 use ReflectionClass;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
+use SimplyTestable\WebClientBundle\Services\PostmarkSender;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
+use SimplyTestable\WebClientBundle\Services\Mail\Configuration as MailConfiguration;
 
 class ServiceTest extends AbstractBaseTestCase
 {
@@ -18,13 +20,13 @@ class ServiceTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->mailService = $this->container->get('simplytestable.services.mail.service');
+        $this->mailService = $this->container->get(MailService::class);
     }
 
     public function testGetConfiguration()
     {
         $this->assertEquals(
-            $this->container->get('simplytestable.services.mail.configuration'),
+            $this->container->get(MailConfiguration::class),
             $this->mailService->getConfiguration()
         );
     }
@@ -39,7 +41,7 @@ class ServiceTest extends AbstractBaseTestCase
     public function testGetSender()
     {
         $this->assertEquals(
-            $this->container->get('simplytestable.services.postmark.sender'),
+            $this->container->get(PostmarkSender::class),
             $this->mailService->getSender()
         );
     }

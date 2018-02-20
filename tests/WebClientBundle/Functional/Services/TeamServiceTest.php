@@ -29,9 +29,7 @@ class TeamServiceTest extends AbstractCoreApplicationServiceTest
     {
         parent::setUp();
 
-        $this->teamService = $this->container->get(
-            'simplytestable.services.teamservice'
-        );
+        $this->teamService = $this->container->get(TeamService::class);
 
         $this->user = new User('user@example.com');
         $this->coreApplicationHttpClient->setUser($this->user);

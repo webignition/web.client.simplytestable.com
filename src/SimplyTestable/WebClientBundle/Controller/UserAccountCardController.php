@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
+use SimplyTestable\WebClientBundle\Services\UserAccountCardService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,7 +30,7 @@ class UserAccountCardController extends Controller implements RequiresPrivateUse
     public function associateAction($stripe_card_token)
     {
         $router = $this->container->get('router');
-        $userAccountCardService = $this->get('simplytestable.services.useraccountcardservice');
+        $userAccountCardService = $this->get(UserAccountCardService::class);
         $userManager = $this->container->get(UserManager::class);
 
         $user = $userManager->getUser();

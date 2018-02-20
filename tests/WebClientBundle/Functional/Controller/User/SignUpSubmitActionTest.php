@@ -8,17 +8,19 @@ use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use SimplyTestable\WebClientBundle\Services\CouponService;
+use SimplyTestable\WebClientBundle\Services\PostmarkSender;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
+use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
 class SignUpSubmitActionTest extends AbstractUserControllerTest
 {
     public function testSignUpSubmitActionPostRequest()
     {
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get(MailService::class);
 
         $postmarkMessage = MockFactory::createPostmarkMessage([
             'setFrom' => true,
@@ -241,8 +243,8 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
-        $postmarkSender = $this->container->get('simplytestable.services.postmark.sender');
+        $mailService = $this->container->get(MailService::class);
+        $postmarkSender = $this->container->get(PostmarkSender::class);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -365,9 +367,9 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
     public function testSignUpSubmitActionSuccess(Request $request, array $couponData)
     {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
-        $postmarkSender = $this->container->get('simplytestable.services.postmark.sender');
-        $couponService = $this->container->get('simplytestable.services.couponservice');
+        $mailService = $this->container->get(MailService::class);
+        $postmarkSender = $this->container->get(PostmarkSender::class);
+        $couponService = $this->container->get(CouponService::class);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),

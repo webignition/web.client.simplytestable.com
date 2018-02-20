@@ -12,7 +12,13 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\LinkIntegrityMessage;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService;
+use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\TaskService;
+use SimplyTestable\WebClientBundle\Services\TestService;
+use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,11 +48,11 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
     public function indexAction(Request $request, $website, $test_id, $task_id)
     {
         $router = $this->container->get('router');
-        $testService = $this->container->get('simplytestable.services.testservice');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
-        $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
-        $taskService = $this->container->get('simplytestable.services.taskservice');
-        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
+        $testService = $this->container->get(TestService::class);
+        $remoteTestService = $this->container->get(RemoteTestService::class);
+        $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
+        $taskService = $this->container->get(TaskService::class);
+        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
         $templating = $this->container->get('templating');
         $userManager = $this->container->get(UserManager::class);
 
@@ -156,7 +162,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
      */
     private function getHtmlValidationErrorDocumentationUrls(Task $task)
     {
-        $documentationUrlChecker = $this->container->get('simplytestable.services.documentationurlcheckerservice');
+        $documentationUrlChecker = $this->container->get(DocumentationUrlCheckerService::class);
         $kernel = $this->container->get('kernel');
 
         $documentationUrls = [];

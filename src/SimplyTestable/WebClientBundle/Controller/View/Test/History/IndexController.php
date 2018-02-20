@@ -10,6 +10,10 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\TestList;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\RemoteTestService;
+use SimplyTestable\WebClientBundle\Services\TaskService;
+use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,7 +37,7 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
     public function indexAction(Request $request)
     {
         $router = $this->container->get('router');
-        $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
+        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
 
         $pageNumber = (int)$request->attributes->get('page_number');
 
@@ -118,9 +122,9 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
      */
     private function getFinishedTests($limit, $offset, $filter = null)
     {
-        $testService = $this->container->get('simplytestable.services.testservice');
-        $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
-        $taskService = $this->container->get('simplytestable.services.taskservice');
+        $testService = $this->container->get(TestService::class);
+        $remoteTestService = $this->container->get(RemoteTestService::class);
+        $taskService = $this->container->get(TaskService::class);
 
         $testList = $remoteTestService->getFinished($limit, $offset, $filter);
 
