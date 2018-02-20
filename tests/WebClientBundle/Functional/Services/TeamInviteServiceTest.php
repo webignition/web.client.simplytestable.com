@@ -9,7 +9,6 @@ use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
-use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\TeamInviteService;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
@@ -35,9 +34,6 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
         parent::setUp();
 
         $this->teamInviteService = $this->container->get(TeamInviteService::class);
-
-        $user = new User(self::USERNAME);
-        $this->coreApplicationHttpClient->setUser($user);
     }
 
     /**

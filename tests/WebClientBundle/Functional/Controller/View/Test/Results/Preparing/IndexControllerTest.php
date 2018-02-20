@@ -117,9 +117,6 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionPublicUserGetRequest()
     {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
-
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
@@ -144,9 +141,6 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionNoRemoteTasks()
     {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
-
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                 'task_count' => 0,
@@ -185,7 +179,6 @@ class IndexControllerTest extends AbstractBaseTestCase
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
 
-        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
         $userManager->setUser($user);
 
         $httpHistory = new HttpHistorySubscriber();
@@ -246,9 +239,6 @@ class IndexControllerTest extends AbstractBaseTestCase
      */
     public function testIndexActionRender(array $httpFixtures, array $testValues, EngineInterface $templatingEngine)
     {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
-
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($testValues)) {
@@ -376,9 +366,6 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionCachedResponse()
     {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
-
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([1, 2, 3,]),

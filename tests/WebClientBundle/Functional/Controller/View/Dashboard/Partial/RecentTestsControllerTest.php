@@ -10,9 +10,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\TestList;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
-use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UserService;
@@ -106,9 +104,6 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
         array $httpFixtures,
         EngineInterface $templatingEngine
     ) {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
-
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $containerFactory = new ContainerFactory($this->container);

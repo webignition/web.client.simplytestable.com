@@ -9,12 +9,9 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
-use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
@@ -58,8 +55,10 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
     public function testResendInviteActionPostRequestPrivateUser()
     {
         $router = $this->container->get('router');
-        $userSerializerService = $this->container->get(UserSerializerService::class);
         $mailService = $this->container->get(MailService::class);
+        $userManager = $this->container->get(UserManager::class);
+
+        $userManager->setUser(new User('user@example.com'));
 
         $inviteData = [
             'team' => self::TEAM_NAME,
@@ -79,10 +78,6 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
         ));
 
         $requestUrl = $router->generate(self::ROUTE_NAME);
-
-        $this->client->getCookieJar()->set(
-            new Cookie(UserManager::USER_COOKIE_KEY, $userSerializerService->serializeToString($this->user))
-        );
 
         $this->client->request(
             'POST',
@@ -115,10 +110,7 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
      */
     public function testResendInviteActionGetInviteFailure(array $httpFixtures, array $expectedFlashBagValues)
     {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $session = $this->container->get('session');
-
-        $coreApplicationHttpClient->setUser($this->user);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
@@ -175,9 +167,6 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
     ) {
         $session = $this->container->get('session');
         $mailService = $this->container->get(MailService::class);
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-
-        $coreApplicationHttpClient->setUser($this->user);
 
         $inviteData = [
             'team' => self::TEAM_NAME,
@@ -250,9 +239,6 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
     ) {
         $session = $this->container->get('session');
         $mailService = $this->container->get(MailService::class);
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-
-        $coreApplicationHttpClient->setUser($this->user);
 
         $inviteData = [
             'team' => self::TEAM_NAME,

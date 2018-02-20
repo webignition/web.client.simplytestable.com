@@ -3,6 +3,8 @@
 namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account\Team;
 
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -38,6 +40,10 @@ abstract class AbstractTeamControllerTest extends AbstractBaseTestCase
     public function testPostRequestPublicUser($routeName)
     {
         $router = $this->container->get('router');
+        $userManager = $this->container->get(UserManager::class);
+
+        $userManager->setUser(SystemUserService::getPublicUser());
+
         $requestUrl = $router->generate($routeName);
 
         $this->setCoreApplicationHttpClientHttpFixtures([

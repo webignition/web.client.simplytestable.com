@@ -8,7 +8,6 @@ use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserSerializerService;
@@ -145,11 +144,9 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
     ) {
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $user = new User(self::USER_EMAIL, self::USER_CURRENT_PASSWORD);
         $userManager->setUser($user);
-        $coreApplicationHttpClient->setUser($user);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 

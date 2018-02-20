@@ -8,7 +8,6 @@ use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAlreadyExistsException;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\CouponService;
 use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
@@ -99,7 +98,6 @@ class UserController extends Controller
         $userService = $this->container->get(UserService::class);
         $router = $this->container->get('router');
         $userManager = $this->container->get(UserManager::class);
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $mailConfiguration = $this->container->get(MailConfiguration::class);
         $mailService = $this->container->get(MailService::class);
 
@@ -165,10 +163,12 @@ class UserController extends Controller
             ]);
         }
 
-        $coreApplicationHttpClient->setUser($user);
+        $userManager->setUser($user);
 
         if (!$userService->authenticate()) {
             if (!$userService->exists()) {
+                $userManager->clearSessionUser();
+
                 $flashBag->set(
                     self::FLASH_BAG_SIGN_IN_ERROR_KEY,
                     self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_INVALID_USER
@@ -182,6 +182,8 @@ class UserController extends Controller
             }
 
             if ($userService->isEnabled()) {
+                $userManager->clearSessionUser();
+
                 $flashBag->set(
                     self::FLASH_BAG_SIGN_IN_ERROR_KEY,
                     self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_AUTHENTICATION_FAILURE
@@ -193,6 +195,8 @@ class UserController extends Controller
                     'stay-signed-in' => $staySignedIn,
                 ]);
             }
+
+            $userManager->clearSessionUser();
 
             $token = $userService->getConfirmationToken($email);
 
@@ -211,6 +215,8 @@ class UserController extends Controller
         }
 
         if (!$userService->isEnabled()) {
+            $userManager->clearSessionUser();
+
             $token = $userService->getConfirmationToken($email);
             $this->sendConfirmationToken($mailConfiguration, $mailService, $router, $email, $token);
 
@@ -225,8 +231,6 @@ class UserController extends Controller
                 'stay-signed-in' => $staySignedIn,
             ]);
         }
-
-        $userManager->setUser($user);
 
         $response = $this->createPostSignInRedirectResponse($router, $redirect);
 

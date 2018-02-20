@@ -47,11 +47,6 @@ class CoreApplicationHttpClient
     private $responseCache;
 
     /**
-     * @var User
-     */
-    private $user;
-
-    /**
      * @var UserManager
      */
     private $userManager;
@@ -95,14 +90,6 @@ class CoreApplicationHttpClient
     public function getHttpClient()
     {
         return $this->httpClient;
-    }
-
-    /**
-     * @param User $user
-     */
-    public function setUser(User $user)
-    {
-        $this->user = $user;
     }
 
     /**

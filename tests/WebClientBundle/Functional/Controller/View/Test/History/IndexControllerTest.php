@@ -120,7 +120,6 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $user = SystemUserService::getPublicUser();
         $userManager->setUser($user);
-        $coreApplicationHttpClient->setUser($user);
 
         $httpHistory = new HttpHistorySubscriber();
         $coreApplicationHttpClient->getHttpClient()->getEmitter()->attach($httpHistory);
@@ -274,11 +273,9 @@ class IndexControllerTest extends AbstractBaseTestCase
         Request $request,
         EngineInterface $templatingEngine
     ) {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser($user);
-        $coreApplicationHttpClient->setUser($user);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
@@ -480,9 +477,6 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionCachedResponse()
     {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
-
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
                 'max_results' => 0,

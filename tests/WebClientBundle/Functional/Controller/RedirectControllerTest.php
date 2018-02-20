@@ -4,8 +4,6 @@ namespace Tests\WebClientBundle\Functional\Controller;
 
 use SimplyTestable\WebClientBundle\Controller\RedirectController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\TestFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
@@ -50,11 +48,6 @@ class RedirectControllerTest extends AbstractBaseTestCase
         $testId,
         $expectedRedirectUrl
     ) {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-
-        $user = new User(self::USERNAME);
-        $coreApplicationHttpClient->setUser($user);
-
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($testValues)) {

@@ -8,8 +8,6 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
-use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -108,9 +106,6 @@ class TaskControllerTest extends AbstractBaseTestCase
     protected function setUp()
     {
         parent::setUp();
-
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
 
         $this->taskController = new TaskController();
         $this->taskController->setContainer($this->container);

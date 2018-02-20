@@ -7,8 +7,6 @@ use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
-use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\TaskFactory;
 use Tests\WebClientBundle\Factory\TestFactory;
@@ -146,9 +144,6 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
      */
     public function testIndexActionRender(array $httpFixtures, array $testValues, array $expectedResponseData)
     {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
-
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($testValues)) {

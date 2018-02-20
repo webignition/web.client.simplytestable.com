@@ -3,9 +3,7 @@
 namespace Tests\WebClientBundle\Functional\Controller\Action\SignUp\Team;
 
 use SimplyTestable\WebClientBundle\Controller\Action\SignUp\Team\InviteController;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
-use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
@@ -87,9 +85,6 @@ class InviteControllerTest extends AbstractBaseTestCase
         array $expectedFailureFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-
-        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
@@ -218,9 +213,6 @@ class InviteControllerTest extends AbstractBaseTestCase
     ) {
         $session = $this->container->get('session');
         $resqueQueueService = $this->container->get(ResqueQueueService::class);
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-
-        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([

@@ -5,10 +5,8 @@ namespace Tests\WebClientBundle\Functional\Controller;
 use SimplyTestable\WebClientBundle\Controller\UserAccountCardController;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -60,15 +58,10 @@ class UserAccountCardControllerTest extends AbstractBaseTestCase
      */
     public function testIndexActionPrivateUserPostRequest(array $httpFixtures, array $expectedResponseData)
     {
-        $userSerializerService = $this->container->get(UserSerializerService::class);
+        $userManager = $this->container->get(UserManager::class);
+        $userManager->setUser(new User(self::USER_EMAIL));
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
-
-        $this->client->getCookieJar()->set(new Cookie(
-            UserManager::USER_COOKIE_KEY,
-            $userSerializerService->serializeToString(new User(self::USER_EMAIL))
-        ));
-
         $this->client->request(
             'POST',
             $this->createRequestUrl()

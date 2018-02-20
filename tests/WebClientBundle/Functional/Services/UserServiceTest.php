@@ -59,8 +59,6 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->coreApplicationHttpClient->setUser($this->user);
-
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->expectException($expectedException);
@@ -127,8 +125,6 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
     public function testResetPasswordSuccess()
     {
-        $this->coreApplicationHttpClient->setUser($this->user);
-
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
@@ -157,7 +153,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testAuthenticate(array $httpFixtures, $expectedAuthenticateReturnValue)
     {
-        $this->coreApplicationHttpClient->setUser($this->user);
+        $this->userManager->setUser($this->user);
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->assertEquals($expectedAuthenticateReturnValue, $this->userService->authenticate());
@@ -210,7 +206,6 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->coreApplicationHttpClient->setUser($this->user);
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->expectException($expectedException);
@@ -458,8 +453,6 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
-
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $invite = new Invite([
@@ -524,8 +517,6 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
     public function testActivateAndAcceptSuccess()
     {
-        $this->coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
-
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
@@ -583,7 +574,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         if (!empty($user)) {
-            $this->coreApplicationHttpClient->setUser($user);
+            $this->userManager->setUser($user);
         }
 
         $this->assertEquals($expectedReturnValue, $this->userService->exists($email));
@@ -714,8 +705,6 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->coreApplicationHttpClient->setUser($this->user);
-
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->expectException($expectedException);
@@ -775,7 +764,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testGetSummarySuccess($user, $expectedRequestUrl)
     {
-        $this->coreApplicationHttpClient->setUser($user);
+        $this->userManager->setUser($user);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([

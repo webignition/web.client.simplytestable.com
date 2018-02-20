@@ -14,19 +14,16 @@ use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
-use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
-use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -112,17 +109,14 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionInvalidTestOwnerIsLoggedIn()
     {
-        $userSerializerService = $this->container->get(UserSerializerService::class);
+        $userManager = $this->container->get(UserManager::class);
+
+        $userManager->setUser(new User(self::USER_EMAIL));
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createForbiddenResponse(),
         ]);
-
-        $this->client->getCookieJar()->set(new Cookie(
-            UserManager::USER_COOKIE_KEY,
-            $userSerializerService->serializeToString(new User(self::USER_EMAIL))
-        ));
 
         $this->client->request(
             'GET',
@@ -174,7 +168,6 @@ class IndexControllerTest extends AbstractBaseTestCase
         $expectedRequestUrl
     ) {
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
 
         $httpHistory = new HttpHistorySubscriber();
         $coreApplicationHttpClient->getHttpClient()->getEmitter()->attach($httpHistory);
@@ -231,12 +224,10 @@ class IndexControllerTest extends AbstractBaseTestCase
      */
     public function testIndexActionRender(array $httpFixtures, EngineInterface $templatingEngine)
     {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL);
         $userManager->setUser($user);
-        $coreApplicationHttpClient->setUser($user);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
@@ -383,9 +374,6 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionCachedResponse()
     {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
-
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);

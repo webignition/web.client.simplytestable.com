@@ -7,7 +7,6 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
@@ -36,8 +35,6 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
         $this->userPlanSubscriptionService = $this->container->get(UserPlanSubscriptionService::class);
 
         $this->user = new User('user@example.com');
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser($this->user);
     }
 
     /**
