@@ -5,6 +5,7 @@ namespace Tests\WebClientBundle\Functional\Controller\View\Dashboard;
 use SimplyTestable\WebClientBundle\Controller\View\Dashboard\IndexController;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\TaskTypeService;
 use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserSerializerService;
@@ -141,7 +142,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $containerFactory = new ContainerFactory($this->container);
         $container = $containerFactory->create(
             [
-                'SimplyTestable\WebClientBundle\Services\TaskTypeService',
+                TaskTypeService::ACCESS_LEVEL_PUBLIC,
                 UserService::class,
                 RequestAdapterFactory::class,
                 UserSerializerService::class,

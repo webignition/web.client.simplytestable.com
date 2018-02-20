@@ -3,6 +3,7 @@
 namespace Tests\WebClientBundle\Functional\Services\TestOptions;
 
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\TaskTypeService;
 use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -23,7 +24,7 @@ class RequestAdapterTest extends AbstractBaseTestCase
 
         $user = new User('user@example.com');
 
-        $taskTypeService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskTypeService');
+        $taskTypeService = $this->container->get(TaskTypeService::class);
         $taskTypeService->setEarlyAccessUsers([
             $user,
         ]);

@@ -3,6 +3,7 @@
 namespace Tests\WebClientBundle\Functional\Services\TestOptions;
 
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\TaskTypeService;
 use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter;
 use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
@@ -29,7 +30,7 @@ class RequestAdapterFactoryTest extends AbstractBaseTestCase
     {
         $user = new User('user@example.com');
 
-        $taskTypeService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskTypeService');
+        $taskTypeService = $this->container->get(TaskTypeService::class);
         $taskTypeService->setUser($user);
         $taskTypeService->setUserIsAuthenticated();
 

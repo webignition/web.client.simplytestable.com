@@ -10,6 +10,7 @@ use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService;
 use SimplyTestable\WebClientBundle\Services\TaskService;
+use SimplyTestable\WebClientBundle\Services\TaskTypeService;
 use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
@@ -76,7 +77,7 @@ class IndexController extends AbstractResultsController
         $taskService = $this->container->get(TaskService::class);
         $taskCollectionFilterService = $this->container->get(TaskCollectionFilterService::class);
         $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
-        $taskTypeService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskTypeService');
+        $taskTypeService = $this->container->get(TaskTypeService::class);
         $templating = $this->container->get('templating');
         $testOptionsAdapterFactory = $this->container->get(RequestAdapterFactory::class);
         $userManager = $this->container->get(UserManager::class);
@@ -315,7 +316,7 @@ class IndexController extends AbstractResultsController
     private function getAvailableTaskTypes($isOwner)
     {
         $remoteTestService = $this->container->get(RemoteTestService::class);
-        $taskTypeService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskTypeService');
+        $taskTypeService = $this->container->get(TaskTypeService::class);
 
         $remoteTest = $remoteTestService->get();
 

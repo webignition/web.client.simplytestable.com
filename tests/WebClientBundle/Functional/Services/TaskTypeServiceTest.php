@@ -2,10 +2,7 @@
 
 namespace Tests\WebClientBundle\Functional\Services;
 
-use Doctrine\ORM\EntityManagerInterface;
-use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
 use SimplyTestable\WebClientBundle\Services\TaskTypeService;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 
@@ -66,9 +63,7 @@ class TaskTypeServiceTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->taskTypeService = $this->container->get(
-            'SimplyTestable\WebClientBundle\Services\TaskTypeService'
-        );
+        $this->taskTypeService = $this->container->get(TaskTypeService::class);
 
         $allTaskTypes = array_merge($this->taskTypeService->get(), $this->testEarlyAccessTaskType);
         $this->taskTypeService->setTaskTypes($allTaskTypes);
