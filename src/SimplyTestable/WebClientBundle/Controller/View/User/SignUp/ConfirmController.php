@@ -23,7 +23,7 @@ class ConfirmController extends BaseViewController implements IEFiltered
     {
         $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
         $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
-        $flashBagValuesService = $this->container->get('simplytestable.services.flashbagvalues');
+        $flashBagValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\FlashBagValues');
         $templating = $this->container->get('templating');
 
         $notificationKeys = [

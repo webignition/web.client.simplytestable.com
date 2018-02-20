@@ -21,7 +21,7 @@ class SignInController extends BaseViewController implements IEFiltered
     public function indexAction(Request $request)
     {
         $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
-        $flashBagValuesService = $this->container->get('simplytestable.services.flashbagvalues');
+        $flashBagValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\FlashBagValues');
         $templating = $this->container->get('templating');
         $router = $this->container->get('router');
         $userManager = $this->container->get(UserManager::class);

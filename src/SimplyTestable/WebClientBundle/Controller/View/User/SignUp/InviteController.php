@@ -24,7 +24,7 @@ class InviteController extends BaseViewController implements IEFiltered
     public function indexAction(Request $request, $token)
     {
         $teamInviteService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamInviteService');
-        $flashBagValuesService = $this->container->get('simplytestable.services.flashbagvalues');
+        $flashBagValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\FlashBagValues');
         $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
         $templating = $this->container->get('templating');
 
