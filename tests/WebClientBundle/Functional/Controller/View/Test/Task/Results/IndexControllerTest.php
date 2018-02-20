@@ -15,6 +15,7 @@ use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
+use SimplyTestable\WebClientBundle\Services\ResourceLocator;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
@@ -360,8 +361,8 @@ class IndexControllerTest extends AbstractBaseTestCase
                 UrlViewValuesService::class,
                 TaskService::class,
                 DocumentationUrlCheckerService::class,
-                'kernel',
                 UserManager::class,
+                ResourceLocator::class
             ],
             [
                 'templating' => $templatingEngine,
