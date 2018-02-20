@@ -34,7 +34,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
     public function testConfirmActionPostRequestPrivateUser()
     {
         $router = $this->container->get('router');
-        $userSerializerService = $this->container->get(UserSerializerService::SERIALIZED_USER_USERNAME_KEY);
+        $userSerializerService = $this->container->get(UserSerializerService::class);
 
         $requestUrl = $router->generate(self::ROUTE_NAME);
 

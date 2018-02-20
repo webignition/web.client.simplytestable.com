@@ -145,7 +145,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $containerFactory = new ContainerFactory($this->container);
         $container = $containerFactory->create(
             [
-                TaskTypeService::ACCESS_LEVEL_PUBLIC,
+                TaskTypeService::class,
                 UserService::class,
                 RequestAdapterFactory::class,
                 UserSerializerService::class,
