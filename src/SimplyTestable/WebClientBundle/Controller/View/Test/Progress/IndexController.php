@@ -52,7 +52,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $router = $this->container->get('router');
         $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
-        $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
+        $taskTypeService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskTypeService');
         $testOptionsAdapterFactory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
         $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
         $templating = $this->container->get('templating');

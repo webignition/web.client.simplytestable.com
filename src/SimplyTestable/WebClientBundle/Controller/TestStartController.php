@@ -35,7 +35,7 @@ class TestStartController extends TestController
     {
         $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $testOptionsAdapterFactory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
-        $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
+        $taskTypeService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskTypeService');
         $session = $this->container->get('session');
         $router = $this->container->get('router');
         $userManager = $this->container->get(UserManager::class);

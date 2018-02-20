@@ -67,7 +67,7 @@ class TaskTypeServiceTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->taskTypeService = $this->container->get(
-            'simplytestable.services.tasktypeservice'
+            'SimplyTestable\WebClientBundle\Services\TaskTypeService'
         );
 
         $allTaskTypes = array_merge($this->taskTypeService->get(), $this->testEarlyAccessTaskType);

@@ -138,7 +138,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $containerFactory = new ContainerFactory($this->container);
         $container = $containerFactory->create(
             [
-                'simplytestable.services.tasktypeservice',
+                'SimplyTestable\WebClientBundle\Services\TaskTypeService',
                 'SimplyTestable\WebClientBundle\Services\UserService',
                 'simplytestable.services.testoptions.adapter.factory',
                 'SimplyTestable\WebClientBundle\Services\UserSerializerService',

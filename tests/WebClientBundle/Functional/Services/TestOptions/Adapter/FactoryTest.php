@@ -31,7 +31,7 @@ class FactoryTest extends AbstractBaseTestCase
     {
         $user = new User('user@example.com');
 
-        $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');
+        $taskTypeService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskTypeService');
         $taskTypeService->setUser($user);
         $taskTypeService->setUserIsAuthenticated();
 
