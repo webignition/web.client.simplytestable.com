@@ -30,7 +30,7 @@ class TeamServiceTest extends AbstractCoreApplicationServiceTest
         parent::setUp();
 
         $this->teamService = $this->container->get(
-            'simplytestable.services.teamservice'
+            'SimplyTestable\WebClientBundle\Services\TeamService'
         );
 
         $this->user = new User('user@example.com');

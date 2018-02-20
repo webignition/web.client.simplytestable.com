@@ -73,7 +73,7 @@ class TeamController extends Controller implements RequiresPrivateUser
     public function createAction(Request $request)
     {
         $session = $this->container->get('session');
-        $teamService = $this->container->get('simplytestable.services.teamservice');
+        $teamService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamService');
         $router = $this->container->get('router');
 
         $requestData = $request->request;
@@ -331,7 +331,7 @@ class TeamController extends Controller implements RequiresPrivateUser
      */
     public function removeMemberAction(Request $request)
     {
-        $teamService = $this->container->get('simplytestable.services.teamservice');
+        $teamService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamService');
         $router = $this->container->get('router');
 
         $requestData = $request->request;
@@ -416,7 +416,7 @@ class TeamController extends Controller implements RequiresPrivateUser
      */
     public function leaveAction()
     {
-        $teamService = $this->container->get('simplytestable.services.teamservice');
+        $teamService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamService');
         $router = $this->container->get('router');
 
         $teamService->leave();

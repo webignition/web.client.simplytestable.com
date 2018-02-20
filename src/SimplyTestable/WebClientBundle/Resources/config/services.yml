@@ -166,7 +166,7 @@ services:
       - [setTaskTypes, ['%task_types%']]
       - [setEarlyAccessUsers, ['%early_access_users%']]
 
-  simplytestable.services.teamservice:
+  SimplyTestable\WebClientBundle\Services\TeamService:
     class:   SimplyTestable\WebClientBundle\Services\TeamService
     arguments:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'

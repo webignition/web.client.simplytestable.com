@@ -211,7 +211,7 @@ class CardControllerTest extends AbstractBaseTestCase
             [
                 'router',
                 'SimplyTestable\WebClientBundle\Services\UserService',
-                'simplytestable.services.teamservice',
+                'SimplyTestable\WebClientBundle\Services\TeamService',
                 UserManager::class,
             ],
             [
