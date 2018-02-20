@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
+use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -48,7 +49,7 @@ class TestController extends Controller
     private function lockUnlock($website, $test_id, $action)
     {
         $testService = $this->container->get(TestService::class);
-        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
+        $remoteTestService = $this->container->get(RemoteTestService::class);
         $router = $this->container->get('router');
 
         try {
@@ -84,7 +85,7 @@ class TestController extends Controller
     public function cancelAction($website, $test_id)
     {
         $testService = $this->container->get(TestService::class);
-        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
+        $remoteTestService = $this->container->get(RemoteTestService::class);
         $router = $this->container->get('router');
 
         $routeParameters = [
@@ -127,7 +128,7 @@ class TestController extends Controller
     public function cancelCrawlAction($website, $test_id)
     {
         $testService = $this->container->get(TestService::class);
-        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
+        $remoteTestService = $this->container->get(RemoteTestService::class);
         $router = $this->container->get('router');
 
         try {
@@ -165,7 +166,7 @@ class TestController extends Controller
      */
     public function retestAction($website, $test_id)
     {
-        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
+        $remoteTestService = $this->container->get(RemoteTestService::class);
         $router = $this->container->get('router');
 
         $remoteTest = $remoteTestService->retest($test_id, $website);

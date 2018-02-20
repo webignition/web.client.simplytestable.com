@@ -11,6 +11,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\TestList;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
@@ -112,7 +113,7 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 TestService::class,
-                'SimplyTestable\WebClientBundle\Services\RemoteTestService',
+                RemoteTestService::class,
                 'SimplyTestable\WebClientBundle\Services\TaskService',
                 'SimplyTestable\WebClientBundle\Services\UserService',
             ],

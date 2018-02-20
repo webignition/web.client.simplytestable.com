@@ -12,6 +12,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\Test\Task\ErrorTaskMapCollection;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
@@ -430,7 +431,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
             [
                 'router',
                 TestService::class,
-                'SimplyTestable\WebClientBundle\Services\RemoteTestService',
+                RemoteTestService::class,
                 'SimplyTestable\WebClientBundle\Services\UserService',
                 'SimplyTestable\WebClientBundle\Services\CacheValidatorService',
                 'SimplyTestable\WebClientBundle\Services\UrlViewValuesService',

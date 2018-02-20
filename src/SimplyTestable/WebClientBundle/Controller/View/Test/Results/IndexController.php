@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
+use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService;
 use SimplyTestable\WebClientBundle\Services\TestService;
@@ -68,7 +69,7 @@ class IndexController extends AbstractResultsController
     {
         $router = $this->container->get('router');
         $testService = $this->container->get(TestService::class);
-        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
+        $remoteTestService = $this->container->get(RemoteTestService::class);
         $urlViewValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\UrlViewValuesService');
         $taskService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskService');
         $taskCollectionFilterService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService');
@@ -311,7 +312,7 @@ class IndexController extends AbstractResultsController
      */
     private function getAvailableTaskTypes($isOwner)
     {
-        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
+        $remoteTestService = $this->container->get(RemoteTestService::class);
         $taskTypeService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskTypeService');
 
         $remoteTest = $remoteTestService->get();

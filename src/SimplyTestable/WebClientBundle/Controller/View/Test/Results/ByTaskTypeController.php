@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\Test\Task\ErrorTaskMapCollection;
+use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
@@ -47,7 +48,7 @@ class ByTaskTypeController extends AbstractResultsController
     {
         $router = $this->container->get('router');
         $testService = $this->container->get(TestService::class);
-        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
+        $remoteTestService = $this->container->get(RemoteTestService::class);
         $urlViewValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\UrlViewValuesService');
         $taskService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskService');
         $taskCollectionFilterService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService');
@@ -198,7 +199,7 @@ class ByTaskTypeController extends AbstractResultsController
     public function getRequestWebsiteMismatchResponse(Request $request)
     {
         $router = $this->container->get('router');
-        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
+        $remoteTestService = $this->container->get(RemoteTestService::class);
 
         $remoteTest = $remoteTestService->get();
         $filter = trim($request->attributes->get('filter'));

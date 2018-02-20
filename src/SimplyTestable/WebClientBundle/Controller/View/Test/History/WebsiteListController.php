@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
+use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class WebsiteListController extends BaseViewController implements RequiresValidUser
@@ -16,7 +17,7 @@ class WebsiteListController extends BaseViewController implements RequiresValidU
      */
     public function indexAction()
     {
-        $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
+        $remoteTestService = $this->container->get(RemoteTestService::class);
 
         $finishedWebsites = [];
 
