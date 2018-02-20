@@ -22,12 +22,12 @@ class CoreApplicationRouter
     /**
      * @param $baseUrl
      * @param ResourceLocator $resourceLocator
-     * @param ApplicationConfigurationService $applicationConfigurationService
+     * @param string $cacheDir
      */
     public function __construct(
         $baseUrl,
         ResourceLocator $resourceLocator,
-        ApplicationConfigurationService $applicationConfigurationService
+        $cacheDir
     ) {
         $locator = new FileLocator($resourceLocator->locate(self::BUNDLE_CONFIG_PATH));
         $requestContext = new RequestContext();
@@ -36,7 +36,7 @@ class CoreApplicationRouter
         $this->router = new Router(
             new YamlFileLoader($locator),
             self::ROUTING_RESOURCE,
-            ['cache_dir' => $applicationConfigurationService->getCacheDir()],
+            ['cache_dir' => $cacheDir],
             $requestContext
         );
 
