@@ -14,9 +14,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class TestController extends Controller
 {
-    const ACTION_LOCK = 'lock';
-    const ACTION_UNLOCK = 'unlock';
-
     /**
      * @param string $website
      * @param int $test_id
@@ -25,7 +22,25 @@ class TestController extends Controller
      */
     public function lockAction($website, $test_id)
     {
-        return $this->lockUnlock($website, $test_id, self::ACTION_LOCK);
+        $testService = $this->container->get(TestService::class);
+        $remoteTestService = $this->container->get(RemoteTestService::class);
+        $router = $this->container->get('router');
+
+        try {
+            $testService->get($website, $test_id);
+            $remoteTestService->lock();
+        } catch (\Exception $e) {
+            // We already redirect back to test results regardless of if this action succeeds
+        }
+
+        return new RedirectResponse($router->generate(
+            'view_test_results_index_index',
+            [
+                'website' => $website,
+                'test_id' => $test_id,
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
     }
 
     /**
@@ -36,30 +51,13 @@ class TestController extends Controller
      */
     public function unlockAction($website, $test_id)
     {
-        return $this->lockUnlock($website, $test_id, self::ACTION_UNLOCK);
-    }
-
-    /**
-     * @param string $website
-     * @param int $test_id
-     * @param string $action
-     *
-     * @return RedirectResponse
-     */
-    private function lockUnlock($website, $test_id, $action)
-    {
         $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get(RemoteTestService::class);
         $router = $this->container->get('router');
 
         try {
             $testService->get($website, $test_id);
-
-            if (self::ACTION_LOCK === $action) {
-                $remoteTestService->lock();
-            } else {
-                $remoteTestService->unlock();
-            }
+            $remoteTestService->unlock();
         } catch (\Exception $e) {
             // We already redirect back to test results regardless of if this action succeeds
         }
