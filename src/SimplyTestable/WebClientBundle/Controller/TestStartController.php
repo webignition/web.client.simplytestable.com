@@ -34,7 +34,7 @@ class TestStartController extends TestController
     public function startNewAction(Request $request)
     {
         $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
-        $testOptionsAdapterFactory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
+        $testOptionsAdapterFactory = $this->container->get('SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Factory');
         $taskTypeService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskTypeService');
         $session = $this->container->get('session');
         $router = $this->container->get('router');

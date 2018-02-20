@@ -74,7 +74,7 @@ class IndexController extends AbstractResultsController
         $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
         $taskTypeService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskTypeService');
         $templating = $this->container->get('templating');
-        $testOptionsAdapterFactory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
+        $testOptionsAdapterFactory = $this->container->get('SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Factory');
         $userManager = $this->container->get(UserManager::class);
 
         $user = $userManager->getUser();

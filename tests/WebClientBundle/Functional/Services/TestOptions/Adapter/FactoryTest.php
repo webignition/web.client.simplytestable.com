@@ -24,7 +24,7 @@ class FactoryTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->factory = $this->container->get('simplytestable.services.testoptions.adapter.factory');
+        $this->factory = $this->container->get('SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Factory');
     }
 
     public function testCreate()
