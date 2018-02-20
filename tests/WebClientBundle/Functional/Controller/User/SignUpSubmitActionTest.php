@@ -369,7 +369,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         $session = $this->container->get('session');
         $mailService = $this->container->get(MailService::class);
         $postmarkSender = $this->container->get(PostmarkSender::class);
-        $couponService = $this->container->get('SimplyTestable\WebClientBundle\Services\CouponService');
+        $couponService = $this->container->get(CouponService::class);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),

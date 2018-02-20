@@ -77,7 +77,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 'SimplyTestable\WebClientBundle\Services\CacheValidatorService',
-                'SimplyTestable\WebClientBundle\Services\CouponService',
+                CouponService::class,
                 'SimplyTestable\WebClientBundle\Services\FlashBagValues',
                 'SimplyTestable\WebClientBundle\Services\PlansService',
                 UserService::class,

@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAlreadyExistsException;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\CouponService;
 use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
@@ -361,7 +362,7 @@ class UserController extends Controller
     {
         $session = $this->container->get('session');
         $userService = $this->container->get(UserService::class);
-        $couponService = $this->container->get('SimplyTestable\WebClientBundle\Services\CouponService');
+        $couponService = $this->container->get(CouponService::class);
         $router = $this->container->get('router');
 
         $requestData = $request->request;
