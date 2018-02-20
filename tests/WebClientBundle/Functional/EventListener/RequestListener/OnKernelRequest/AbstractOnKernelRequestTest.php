@@ -5,6 +5,7 @@ namespace Tests\WebClientBundle\Functional\EventListener\RequestListener\OnKerne
 use SimplyTestable\WebClientBundle\EventListener\RequestListener;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -47,7 +48,7 @@ abstract class AbstractOnKernelRequestTest extends AbstractBaseTestCase
         $request->attributes->set('_route', $controllerRoute);
 
         if (!empty($user)) {
-            $userSerializerService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
+            $userSerializerService = $this->container->get(UserSerializerService::class);
 
             $request->cookies->add(array(
                 UserManager::USER_COOKIE_KEY => $userSerializerService->serializeToString($user)

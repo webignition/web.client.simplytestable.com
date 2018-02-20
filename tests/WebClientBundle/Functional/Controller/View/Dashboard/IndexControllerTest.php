@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Controller\View\Dashboard\IndexController;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
@@ -82,7 +83,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionPrivateUserGetRequest()
     {
         $user = new User(self::USER_EMAIL);
-        $userSerializerService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
+        $userSerializerService = $this->container->get(UserSerializerService::class);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -142,7 +143,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'SimplyTestable\WebClientBundle\Services\TaskTypeService',
                 UserService::class,
                 'SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Factory',
-                'SimplyTestable\WebClientBundle\Services\UserSerializerService',
+                UserSerializerService::class,
                 'SimplyTestable\WebClientBundle\Services\UrlViewValuesService',
                 'SimplyTestable\WebClientBundle\Services\CacheValidatorService',
                 'SimplyTestable\WebClientBundle\Services\FlashBagValues',

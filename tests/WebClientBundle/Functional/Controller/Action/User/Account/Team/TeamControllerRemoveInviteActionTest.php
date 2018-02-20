@@ -4,6 +4,7 @@ namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account\Team;
 
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -28,7 +29,7 @@ class TeamControllerRemoveInviteActionTest extends AbstractTeamControllerTest
     public function testRemoveInviteActionPostRequestPrivateUser()
     {
         $router = $this->container->get('router');
-        $userSerializerService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
+        $userSerializerService = $this->container->get(UserSerializerService::class);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),

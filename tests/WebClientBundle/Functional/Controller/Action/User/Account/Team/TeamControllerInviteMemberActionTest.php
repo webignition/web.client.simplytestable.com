@@ -12,6 +12,7 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
 use Symfony\Component\BrowserKit\Cookie;
@@ -58,7 +59,7 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
     public function testInviteMemberActionPostRequestPrivateUser()
     {
         $router = $this->container->get('router');
-        $userSerializerService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
+        $userSerializerService = $this->container->get(UserSerializerService::class);
         $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
 
         $inviteData = [

@@ -13,6 +13,7 @@ use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
@@ -122,7 +123,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionPrivateUserGetRequest()
     {
         $user = new User(self::USER_EMAIL);
-        $userSerializerService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
+        $userSerializerService = $this->container->get(UserSerializerService::class);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::create(200),
