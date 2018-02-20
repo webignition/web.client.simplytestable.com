@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskTypeService;
 use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter as TestOptionsRequestAdapter;
 use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory;
+use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
@@ -25,7 +26,7 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
     {
         $taskTypeService = $this->container->get(TaskTypeService::class);
         $testOptionsAdapterFactory = $this->container->get(RequestAdapterFactory::class);
-        $urlViewValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\UrlViewValuesService');
+        $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
         $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
         $flashBagValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\FlashBagValues');
         $templating = $this->container->get('templating');

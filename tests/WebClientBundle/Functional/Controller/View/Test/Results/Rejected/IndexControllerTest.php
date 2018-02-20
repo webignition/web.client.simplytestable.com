@@ -16,6 +16,7 @@ use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
+use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use SimplyTestable\WebClientBundle\Services\UserService;
@@ -246,7 +247,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 RemoteTestService::class,
                 UserService::class,
                 'SimplyTestable\WebClientBundle\Services\CacheValidatorService',
-                'SimplyTestable\WebClientBundle\Services\UrlViewValuesService',
+                UrlViewValuesService::class,
                 TaskService::class,
                 UserManager::class,
             ],

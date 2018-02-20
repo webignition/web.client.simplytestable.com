@@ -15,6 +15,7 @@ use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskTypeService;
 use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory;
 use SimplyTestable\WebClientBundle\Services\TestService;
+use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -55,7 +56,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get(RemoteTestService::class);
         $router = $this->container->get('router');
-        $urlViewValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\UrlViewValuesService');
+        $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
         $taskTypeService = $this->container->get(TaskTypeService::class);
         $testOptionsAdapterFactory = $this->container->get(RequestAdapterFactory::class);
         $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
