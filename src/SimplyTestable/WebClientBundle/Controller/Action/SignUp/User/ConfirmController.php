@@ -42,7 +42,7 @@ class ConfirmController extends Controller
     {
         $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
         $router = $this->container->get('router');
 
         $redirectResponse = new RedirectResponse($router->generate(

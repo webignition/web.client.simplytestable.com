@@ -38,7 +38,7 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testRequestActionPostRequest()
     {
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
 
         $postmarkMessage = MockPostmarkMessageFactory::createMockResetPasswordPostmarkMessage(
             self::EMAIL,
@@ -173,7 +173,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testRequestActionInvalidAdminCredentials()
     {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
 
         $request = new Request([], [
             'email' => self::EMAIL,
@@ -225,7 +225,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
         $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\Postmark\Sender');
 
         $this->setCoreApplicationHttpClientHttpFixtures([
@@ -318,7 +318,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testResendActionSuccess()
     {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
         $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\Postmark\Sender');
 
         $this->setCoreApplicationHttpClientHttpFixtures([

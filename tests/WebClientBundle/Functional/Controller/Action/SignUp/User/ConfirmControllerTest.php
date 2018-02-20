@@ -38,7 +38,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
 
     public function testResendActionPostRequest()
     {
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
 
         $postmarkMessage = MockPostmarkMessageFactory::createMockActivateAccountPostmarkMessage(
             self::EMAIL,
@@ -100,7 +100,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
     public function testResendActionInvalidAdminCredentials()
     {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createForbiddenResponse(),
@@ -155,7 +155,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
         $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\Postmark\Sender');
 
         $this->setCoreApplicationHttpClientHttpFixtures([
@@ -230,7 +230,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
     public function testResendActionSuccess()
     {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
         $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\Postmark\Sender');
 
         $this->setCoreApplicationHttpClientHttpFixtures([

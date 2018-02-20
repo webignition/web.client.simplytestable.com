@@ -29,7 +29,7 @@ class OnCustomerSubscriptionTrialWillEndTest extends AbstractListenerTest
      */
     public function testOnCustomerSubscriptionTrialWillEnd(StripeEvent $event, PostmarkMessage $postmarkMessage)
     {
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
         $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\Postmark\Sender');
 
         $mailService->setPostmarkMessage($postmarkMessage);

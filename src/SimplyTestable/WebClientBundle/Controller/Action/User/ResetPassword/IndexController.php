@@ -145,7 +145,7 @@ class IndexController extends Controller
      */
     private function sendPasswordResetConfirmationToken($email, $token)
     {
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
         $router = $this->container->get('router');
 
         $mailServiceConfiguration = $mailService->getConfiguration();
@@ -182,7 +182,7 @@ class IndexController extends Controller
      */
     private function sendInvalidAdminCredentialsNotification()
     {
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
         $mailServiceConfiguration = $mailService->getConfiguration();
 
         $sender = $mailServiceConfiguration->getSender('default');

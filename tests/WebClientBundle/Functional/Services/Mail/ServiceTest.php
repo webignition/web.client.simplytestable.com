@@ -18,7 +18,7 @@ class ServiceTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->mailService = $this->container->get('simplytestable.services.mail.service');
+        $this->mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
     }
 
     public function testGetConfiguration()

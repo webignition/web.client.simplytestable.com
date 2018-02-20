@@ -368,7 +368,7 @@ class EmailChangeController extends AccountCredentialsChangeController
     private function sendEmailChangeConfirmationToken()
     {
         $emailChangeRequestService = $this->get('SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');
 

@@ -53,7 +53,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
     {
         $router = $this->container->get('router');
         $userSerializerService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
 
         $requestUrl = $router->generate(self::ROUTE_NAME);
 
@@ -109,7 +109,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
         $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser($this->user);
@@ -198,7 +198,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
     public function testRequestActionSuccess()
     {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
 

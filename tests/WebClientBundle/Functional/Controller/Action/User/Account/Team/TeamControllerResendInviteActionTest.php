@@ -57,7 +57,7 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
     {
         $router = $this->container->get('router');
         $userSerializerService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
 
         $inviteData = [
             'team' => self::TEAM_NAME,
@@ -172,7 +172,7 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $coreApplicationHttpClient->setUser($this->user);
@@ -247,7 +247,7 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
 
         $coreApplicationHttpClient->setUser($this->user);

@@ -436,7 +436,7 @@ class TeamController extends Controller implements RequiresPrivateUser
      */
     private function sendInviteEmail(Invite $invite)
     {
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
         $mailServiceConfiguration = $mailService->getConfiguration();
         $router = $this->container->get('router');
 
@@ -470,7 +470,7 @@ class TeamController extends Controller implements RequiresPrivateUser
      */
     private function sendInviteActivationEmail(Invite $invite)
     {
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
         $router = $this->container->get('router');
 
         $mailServiceConfiguration = $mailService->getConfiguration();

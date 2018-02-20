@@ -18,7 +18,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 {
     public function testSignUpSubmitActionPostRequest()
     {
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
 
         $postmarkMessage = MockFactory::createPostmarkMessage([
             'setFrom' => true,
@@ -241,7 +241,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
         $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\Postmark\Sender');
 
         $this->setCoreApplicationHttpClientHttpFixtures([
@@ -365,7 +365,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
     public function testSignUpSubmitActionSuccess(Request $request, array $couponData)
     {
         $session = $this->container->get('session');
-        $mailService = $this->container->get('simplytestable.services.mail.service');
+        $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
         $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\Postmark\Sender');
         $couponService = $this->container->get('simplytestable.services.couponservice');
 
