@@ -1,18 +1,18 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\Services\TestOptions\Adapter\Request;
+namespace Tests\WebClientBundle\Functional\Services\TestOptions;
 
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter;
+use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class AdapterTest extends AbstractBaseTestCase
+class RequestAdapterTest extends AbstractBaseTestCase
 {
     /**
-     * @var Adapter
+     * @var RequestAdapter
      */
-    private $adapter;
+    private $requestAdapter;
 
     /**
      * {@inheritdoc}
@@ -30,14 +30,14 @@ class AdapterTest extends AbstractBaseTestCase
         $taskTypeService->setUser($user);
         $taskTypeService->setUserIsAuthenticated();
 
-        $this->adapter = $this->container->get('SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter');
+        $this->requestAdapter = $this->container->get(RequestAdapter::class);
 
         $testOptionsParameters = $this->container->getParameter('test_options');
 
-        $this->adapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-        $this->adapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
-        $this->adapter->setAvailableTaskTypes($taskTypeService->getAvailable());
-        $this->adapter->setAvailableFeatures($testOptionsParameters['features']);
+        $this->requestAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
+        $this->requestAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
+        $this->requestAdapter->setAvailableTaskTypes($taskTypeService->getAvailable());
+        $this->requestAdapter->setAvailableFeatures($testOptionsParameters['features']);
     }
 
     /**
@@ -48,9 +48,9 @@ class AdapterTest extends AbstractBaseTestCase
      */
     public function testGetTestOptionsTestTypes(array $requestData, array $expectedTestTypes)
     {
-        $this->adapter->setRequestData(new ParameterBag($requestData));
+        $this->requestAdapter->setRequestData(new ParameterBag($requestData));
 
-        $testOptions = $this->adapter->getTestOptions();
+        $testOptions = $this->requestAdapter->getTestOptions();
 
         $this->assertEquals($expectedTestTypes, $testOptions->getTestTypes());
     }
@@ -267,9 +267,9 @@ class AdapterTest extends AbstractBaseTestCase
      */
     public function testGetTestOptionsFeatureOptions(array $requestData, array $expectedFeatureOptionsCollection)
     {
-        $this->adapter->setRequestData(new ParameterBag($requestData));
+        $this->requestAdapter->setRequestData(new ParameterBag($requestData));
 
-        $testOptions = $this->adapter->getTestOptions();
+        $testOptions = $this->requestAdapter->getTestOptions();
 
         $features = $testOptions->getFeatures();
 
@@ -374,9 +374,9 @@ class AdapterTest extends AbstractBaseTestCase
      */
     public function testGetTestOptionsTestTypeOptions(array $requestData, array $expectedTestTypeOptionsCollection)
     {
-        $this->adapter->setRequestData(new ParameterBag($requestData));
+        $this->requestAdapter->setRequestData(new ParameterBag($requestData));
 
-        $testOptions = $this->adapter->getTestOptions();
+        $testOptions = $this->requestAdapter->getTestOptions();
 
         foreach ($expectedTestTypeOptionsCollection as $testTypeKey => $expectedTestTypeOptions) {
             $testTypeOptions = $testOptions->getTestTypeOptions($testTypeKey);
@@ -450,10 +450,10 @@ class AdapterTest extends AbstractBaseTestCase
         array $requestData,
         array $expectedTestTypeOptionsCollection
     ) {
-        $this->adapter->setRequestData(new ParameterBag($requestData));
-        $this->adapter->setInvertInvertableOptions(true);
+        $this->requestAdapter->setRequestData(new ParameterBag($requestData));
+        $this->requestAdapter->setInvertInvertableOptions(true);
 
-        $testOptions = $this->adapter->getTestOptions();
+        $testOptions = $this->requestAdapter->getTestOptions();
 
         foreach ($expectedTestTypeOptionsCollection as $testTypeKey => $expectedTestTypeOptions) {
             $testTypeOptions = $testOptions->getTestTypeOptions($testTypeKey);

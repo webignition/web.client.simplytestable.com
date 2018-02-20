@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\WebClientBundle\Unit\Services\TestOptions\Adapter\Request\FeatureParser;
+namespace Tests\WebClientBundle\Unit\Services\TestOptions;
 
-use SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser\OptionsParser;
+use SimplyTestable\WebClientBundle\Services\TestOptions\OptionsParser;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 class OptionsParserTest extends \PHPUnit_Framework_TestCase

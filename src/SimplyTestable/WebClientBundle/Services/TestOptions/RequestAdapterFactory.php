@@ -1,10 +1,9 @@
 <?php
-namespace SimplyTestable\WebClientBundle\Services\TestOptions\Adapter;
+namespace SimplyTestable\WebClientBundle\Services\TestOptions;
 
 use SimplyTestable\WebClientBundle\Services\TaskTypeService;
-use SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter;
 
-class Factory
+class RequestAdapterFactory
 {
     /**
      * @var array
@@ -12,9 +11,9 @@ class Factory
     private $parameters;
 
     /**
-     * @var Adapter
+     * @var RequestAdapter
      */
-    private $adapter;
+    private $requestAdapter;
 
     /**
      * @var TaskTypeService
@@ -22,23 +21,23 @@ class Factory
     private $taskTypeService;
 
     /**
-     * @param Adapter $adapter
+     * @param RequestAdapter $requestAdapter
      * @param TaskTypeService $taskTypeService
      * @param array $parameters
      */
-    public function __construct(Adapter $adapter, TaskTypeService $taskTypeService, array $parameters)
+    public function __construct(RequestAdapter $requestAdapter, TaskTypeService $taskTypeService, array $parameters)
     {
-        $this->adapter = $adapter;
+        $this->requestAdapter = $requestAdapter;
         $this->taskTypeService = $taskTypeService;
         $this->parameters = $parameters;
     }
 
     /**
-     * @return Adapter
+     * @return RequestAdapter
      */
     public function create()
     {
-        $adapter = $this->adapter;
+        $adapter = $this->requestAdapter;
 
         $adapter->setNamesAndDefaultValues($this->parameters['names_and_default_values']);
         $adapter->setAvailableTaskTypes($this->taskTypeService->getAvailable());

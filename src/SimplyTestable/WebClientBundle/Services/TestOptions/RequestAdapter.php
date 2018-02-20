@@ -1,11 +1,11 @@
 <?php
-namespace SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request;
+
+namespace SimplyTestable\WebClientBundle\Services\TestOptions;
 
 use SimplyTestable\WebClientBundle\Model\TestOptions;
-use SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser\OptionsParser;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class Adapter
+class RequestAdapter
 {
     /**
      * @var OptionsParser[]

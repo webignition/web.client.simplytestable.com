@@ -17,6 +17,7 @@ use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService;
 use SimplyTestable\WebClientBundle\Services\TaskService;
+use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserSerializerService;
@@ -485,7 +486,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 TaskService::class,
                 TaskCollectionFilterService::class,
                 'SimplyTestable\WebClientBundle\Services\TaskTypeService',
-                'SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Factory',
+                RequestAdapterFactory::class,
                 UserManager::class,
             ],
             [

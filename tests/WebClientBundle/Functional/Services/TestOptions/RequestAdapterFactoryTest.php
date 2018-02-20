@@ -1,21 +1,19 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\Services\TestOptions\Adapter;
+namespace Tests\WebClientBundle\Functional\Services\TestOptions;
 
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Factory;
-use SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter;
-use SimplyTestable\WebClientBundle\Services\UserSerializerService;
-use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter;
+use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class FactoryTest extends AbstractBaseTestCase
+class RequestAdapterFactoryTest extends AbstractBaseTestCase
 {
     /**
-     * @var Factory
+     * @var RequestAdapterFactory
      */
-    private $factory;
+    private $requestAdapterFactory;
 
     /**
      * {@inheritdoc}
@@ -24,7 +22,7 @@ class FactoryTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->factory = $this->container->get('SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Factory');
+        $this->requestAdapterFactory = $this->container->get(RequestAdapterFactory::class);
     }
 
     public function testCreate()
@@ -35,10 +33,10 @@ class FactoryTest extends AbstractBaseTestCase
         $taskTypeService->setUser($user);
         $taskTypeService->setUserIsAuthenticated();
 
-        $adapter = $this->factory->create();
+        $adapter = $this->requestAdapterFactory->create();
         $adapter->setRequestData(new ParameterBag([]));
 
-        $this->assertInstanceOf(Adapter::class, $adapter);
+        $this->assertInstanceOf(RequestAdapter::class, $adapter);
 
         $testOptions = $adapter->getTestOptions();
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser;
+namespace SimplyTestable\WebClientBundle\Services\TestOptions;
 
 class CookieOptionsParser extends OptionsParser
 {
