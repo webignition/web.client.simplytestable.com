@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -45,7 +46,7 @@ class UserAccountPlanController extends Controller implements RequiresPrivateUse
         $userService = $this->container->get(UserService::class);
         $session = $this->container->get('session');
         $teamService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamService');
-        $userAccountPlanSubscriptionService = $this->get('SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService');
+        $userAccountPlanSubscriptionService = $this->get(UserPlanSubscriptionService::class);
         $logger = $this->container->get('logger');
         $userManager = $this->container->get(UserManager::class);
 
