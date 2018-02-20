@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
+use SimplyTestable\WebClientBundle\Services\TeamInviteService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -39,7 +40,7 @@ class InviteController extends Controller
      */
     public function acceptAction(Request $request, $token)
     {
-        $teamInviteService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamInviteService');
+        $teamInviteService = $this->container->get(TeamInviteService::class);
         $session = $this->container->get('session');
         $userService = $this->container->get(UserService::class);
         $resqueQueueService = $this->container->get(ResqueQueueService::class);

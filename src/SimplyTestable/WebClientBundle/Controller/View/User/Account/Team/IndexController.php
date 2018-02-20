@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+use SimplyTestable\WebClientBundle\Services\TeamInviteService;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
@@ -48,7 +49,7 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
         $userService = $this->container->get(UserService::class);
         $session = $this->get('session');
         $teamService = $this->container->get(TeamService::class);
-        $teamInviteService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamInviteService');
+        $teamInviteService = $this->container->get(TeamInviteService::class);
         $templating = $this->container->get('templating');
         $userManager = $this->container->get(UserManager::class);
 

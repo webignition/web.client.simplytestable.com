@@ -12,6 +12,7 @@ use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\TeamInviteService;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserSerializerService;
@@ -185,7 +186,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'session',
                 UserService::class,
                 TeamService::class,
-                'SimplyTestable\WebClientBundle\Services\TeamInviteService',
+                TeamInviteService::class,
                 UserManager::class,
             ],
             [

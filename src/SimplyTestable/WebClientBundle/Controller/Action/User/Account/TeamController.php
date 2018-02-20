@@ -12,6 +12,7 @@ use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
+use SimplyTestable\WebClientBundle\Services\TeamInviteService;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
@@ -118,7 +119,7 @@ class TeamController extends Controller implements RequiresPrivateUser
     public function inviteMemberAction(Request $request)
     {
         $session = $this->container->get('session');
-        $teamInviteService = $this->get('SimplyTestable\WebClientBundle\Services\TeamInviteService');
+        $teamInviteService = $this->get(TeamInviteService::class);
         $userService = $this->container->get(UserService::class);
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');
@@ -261,7 +262,7 @@ class TeamController extends Controller implements RequiresPrivateUser
      */
     public function respondInviteAction(Request $request)
     {
-        $teamInviteService = $this->get('SimplyTestable\WebClientBundle\Services\TeamInviteService');
+        $teamInviteService = $this->get(TeamInviteService::class);
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');
 
@@ -305,7 +306,7 @@ class TeamController extends Controller implements RequiresPrivateUser
      */
     public function removeInviteAction(Request $request)
     {
-        $teamInviteService = $this->get('SimplyTestable\WebClientBundle\Services\TeamInviteService');
+        $teamInviteService = $this->get(TeamInviteService::class);
         $router = $this->container->get('router');
 
         $requestData = $request->request;
@@ -363,7 +364,7 @@ class TeamController extends Controller implements RequiresPrivateUser
     public function resendInviteAction(Request $request)
     {
         $session = $this->container->get('session');
-        $teamInviteService = $this->get('SimplyTestable\WebClientBundle\Services\TeamInviteService');
+        $teamInviteService = $this->get(TeamInviteService::class);
         $userService = $this->container->get(UserService::class);
         $router = $this->container->get('router');
 
