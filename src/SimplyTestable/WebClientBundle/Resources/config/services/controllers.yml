@@ -1,0 +1,8 @@
+services:
+  SimplyTestable\WebClientBundle\Controller\ExceptionController:
+    class: SimplyTestable\WebClientBundle\Controller\ExceptionController
+    arguments:
+      - '@twig'
+      - '%kernel.debug%'
+      - '@SimplyTestable\WebClientBundle\Services\PostmarkSender'
+      - '@postmark.message'
