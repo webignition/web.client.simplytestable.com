@@ -31,7 +31,7 @@ class UserSerializerServiceTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->userSerializerService = $this->container->get(
-            'simplytestable.services.userserializerservice'
+            'SimplyTestable\WebClientBundle\Services\UserSerializerService'
         );
 
         $this->user = new User('user@example.com', 'password-value');

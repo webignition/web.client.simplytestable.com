@@ -90,7 +90,7 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
 
     public function testRequestActionPostRequest()
     {
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userSerializerService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
         $userManager = $this->container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL, self::USER_CURRENT_PASSWORD);

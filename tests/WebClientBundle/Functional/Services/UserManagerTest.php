@@ -26,7 +26,7 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
     ) {
         $requestStack = $this->container->get('request_stack');
         $session = $this->container->get('session');
-        $userSerializer = $this->container->get('simplytestable.services.userserializerservice');
+        $userSerializer = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
 
         $privateUser = new User(self::USER_EMAIL);
 
@@ -93,7 +93,7 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
     {
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
-        $userSerializer = $this->container->get('simplytestable.services.userserializerservice');
+        $userSerializer = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
 
         $originalSerializedUser = $session->get(UserManager::SESSION_USER_KEY);
 
@@ -120,7 +120,7 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
     {
         $userManager = new UserManager(
             $this->container->get('request_stack'),
-            $this->container->get('simplytestable.services.userserializerservice'),
+            $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService'),
             $this->container->get('session'),
             $this->container->get(SystemUserService::class)
         );
@@ -154,11 +154,11 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
     public function testClearSessionUser()
     {
         $session = $this->container->get('session');
-        $userSerializer = $this->container->get('simplytestable.services.userserializerservice');
+        $userSerializer = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
 
         $userManager = new UserManager(
             $this->container->get('request_stack'),
-            $this->container->get('simplytestable.services.userserializerservice'),
+            $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService'),
             $this->container->get('session'),
             $this->container->get(SystemUserService::class)
         );
@@ -177,11 +177,11 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
 
     public function testCreateUserCookie()
     {
-        $userSerializer = $this->container->get('simplytestable.services.userserializerservice');
+        $userSerializer = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
 
         $userManager = new UserManager(
             $this->container->get('request_stack'),
-            $this->container->get('simplytestable.services.userserializerservice'),
+            $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService'),
             $this->container->get('session'),
             $this->container->get(SystemUserService::class)
         );

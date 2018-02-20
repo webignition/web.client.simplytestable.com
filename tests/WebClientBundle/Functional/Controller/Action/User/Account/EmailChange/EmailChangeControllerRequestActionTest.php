@@ -54,7 +54,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
     public function testRequestActionPostRequestPrivateUser()
     {
         $router = $this->container->get('router');
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userSerializerService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
         $mailService = $this->container->get('simplytestable.services.mail.service');
 
         $requestUrl = $router->generate(self::ROUTE_NAME);

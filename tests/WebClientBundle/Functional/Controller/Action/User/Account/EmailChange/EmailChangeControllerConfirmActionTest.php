@@ -32,7 +32,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
     public function testConfirmActionPostRequestPrivateUser()
     {
         $router = $this->container->get('router');
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userSerializerService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
 
         $requestUrl = $router->generate(self::ROUTE_NAME);
 
@@ -202,7 +202,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
     {
         $session = $this->container->get('session');
         $resqueQueueService = $this->container->get('SimplyTestable\WebClientBundle\Services\Resque\QueueService');
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userSerializerService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
 

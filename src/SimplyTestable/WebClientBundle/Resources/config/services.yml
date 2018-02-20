@@ -57,7 +57,7 @@ services:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
         jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
-  simplytestable.services.userserializerservice:
+  SimplyTestable\WebClientBundle\Services\UserSerializerService:
     class:  SimplyTestable\WebClientBundle\Services\UserSerializerService
     arguments:
         key: '%secret%'
@@ -273,7 +273,7 @@ services:
     class:  SimplyTestable\WebClientBundle\Services\UserManager
     arguments:
       - '@request_stack'
-      - '@simplytestable.services.userserializerservice'
+      - '@SimplyTestable\WebClientBundle\Services\UserSerializerService'
       - '@session'
       - '@SimplyTestable\WebClientBundle\Services\SystemUserService'
 

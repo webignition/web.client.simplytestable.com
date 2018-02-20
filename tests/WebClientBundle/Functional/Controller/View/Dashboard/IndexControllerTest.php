@@ -81,7 +81,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionPrivateUserGetRequest()
     {
         $user = new User(self::USER_EMAIL);
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userSerializerService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -141,7 +141,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'simplytestable.services.tasktypeservice',
                 'SimplyTestable\WebClientBundle\Services\UserService',
                 'simplytestable.services.testoptions.adapter.factory',
-                'simplytestable.services.userserializerservice',
+                'SimplyTestable\WebClientBundle\Services\UserSerializerService',
                 'simplytestable.services.urlviewvalues',
                 'simplytestable.services.cachevalidator',
                 'simplytestable.services.flashbagvalues',

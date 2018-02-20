@@ -47,7 +47,7 @@ abstract class AbstractOnKernelRequestTest extends AbstractBaseTestCase
         $request->attributes->set('_route', $controllerRoute);
 
         if (!empty($user)) {
-            $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+            $userSerializerService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
 
             $request->cookies->add(array(
                 UserManager::USER_COOKIE_KEY => $userSerializerService->serializeToString($user)

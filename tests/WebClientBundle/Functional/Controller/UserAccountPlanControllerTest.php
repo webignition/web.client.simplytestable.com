@@ -82,7 +82,7 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionPrivateUserPostRequest()
     {
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userSerializerService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
 
         $this->client->getCookieJar()->set(new Cookie(
             UserManager::USER_COOKIE_KEY,

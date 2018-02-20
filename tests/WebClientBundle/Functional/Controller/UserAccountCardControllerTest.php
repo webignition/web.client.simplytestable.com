@@ -59,7 +59,7 @@ class UserAccountCardControllerTest extends AbstractBaseTestCase
      */
     public function testIndexActionPrivateUserPostRequest(array $httpFixtures, array $expectedResponseData)
     {
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userSerializerService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 

@@ -216,7 +216,7 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionInvalidTestOwnerIsLoggedIn()
     {
-        $userSerializerService = $this->container->get('simplytestable.services.userserializerservice');
+        $userSerializerService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserSerializerService');
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
