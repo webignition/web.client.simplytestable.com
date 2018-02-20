@@ -107,15 +107,15 @@ services:
     arguments:
         configuration: '%mail%'
 
-  SimplyTestable\WebClientBundle\Services\Postmark\Sender:
-    class:   SimplyTestable\WebClientBundle\Services\Postmark\Sender
+  SimplyTestable\WebClientBundle\Services\PostmarkSender:
+    class:   SimplyTestable\WebClientBundle\Services\PostmarkSender
 
   SimplyTestable\WebClientBundle\Services\Mail\Service:
     class:   SimplyTestable\WebClientBundle\Services\Mail\Service
     arguments:
         mailConfiguration: '@SimplyTestable\WebClientBundle\Services\Mail\Configuration'
         postmarkMessage: '@postmark.message'
-        postmarkSender: '@SimplyTestable\WebClientBundle\Services\Postmark\Sender'
+        postmarkSender: '@SimplyTestable\WebClientBundle\Services\PostmarkSender'
 
   SimplyTestable\WebClientBundle\EventListener\Stripe\Listener:
     class:   SimplyTestable\WebClientBundle\EventListener\Stripe\Listener

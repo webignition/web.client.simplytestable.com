@@ -1,15 +1,15 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\Services\Postmark;
+namespace Tests\WebClientBundle\Functional\Services;
 
-use SimplyTestable\WebClientBundle\Services\Postmark\Sender;
+use SimplyTestable\WebClientBundle\Services\PostmarkSender;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Model\Postmark\Response as PostmarkResponse;
 
-class SenderTest extends AbstractBaseTestCase
+class PostmarkSenderTest extends AbstractBaseTestCase
 {
     /**
      * @var array
@@ -23,7 +23,7 @@ class SenderTest extends AbstractBaseTestCase
     ];
 
     /**
-     * @var Sender
+     * @var PostmarkSender
      */
     private $postmarkSender;
 
@@ -34,7 +34,7 @@ class SenderTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\Postmark\Sender');
+        $this->postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\PostmarkSender');
     }
 
     /**

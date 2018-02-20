@@ -39,7 +39,7 @@ class ServiceTest extends AbstractBaseTestCase
     public function testGetSender()
     {
         $this->assertEquals(
-            $this->container->get('SimplyTestable\WebClientBundle\Services\Postmark\Sender'),
+            $this->container->get('SimplyTestable\WebClientBundle\Services\PostmarkSender'),
             $this->mailService->getSender()
         );
     }

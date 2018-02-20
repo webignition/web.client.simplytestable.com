@@ -123,7 +123,7 @@ class ExceptionController extends Controller
             'request' => (string)$request,
         ]));
 
-        $postmarkSenderService = $this->container->get('SimplyTestable\WebClientBundle\Services\Postmark\Sender');
+        $postmarkSenderService = $this->container->get('SimplyTestable\WebClientBundle\Services\PostmarkSender');
 
         $postmarkSenderService->send($message);
     }

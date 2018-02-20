@@ -30,7 +30,7 @@ class OnCustomerSubscriptionUpdatedTest extends AbstractListenerTest
     public function testOnCustomerSubscriptionUpdated(StripeEvent $event, PostmarkMessage $postmarkMessage)
     {
         $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
-        $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\Postmark\Sender');
+        $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\PostmarkSender');
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
@@ -218,7 +218,7 @@ class OnCustomerSubscriptionUpdatedTest extends AbstractListenerTest
 
     public function testOnCustomerSubscriptionUpdatedNoPlanChangeNoTransitionChange()
     {
-        $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\Postmark\Sender');
+        $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\PostmarkSender');
 
         $event = new StripeEvent(new ParameterBag(
             $this->eventData

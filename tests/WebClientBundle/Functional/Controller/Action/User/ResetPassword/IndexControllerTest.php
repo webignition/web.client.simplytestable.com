@@ -226,7 +226,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     ) {
         $session = $this->container->get('session');
         $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
-        $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\Postmark\Sender');
+        $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\PostmarkSender');
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -319,7 +319,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     {
         $session = $this->container->get('session');
         $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
-        $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\Postmark\Sender');
+        $postmarkSender = $this->container->get('SimplyTestable\WebClientBundle\Services\PostmarkSender');
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
