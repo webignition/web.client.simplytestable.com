@@ -148,7 +148,7 @@ class IndexControllerTest extends AbstractBaseTestCase
             [
                 'SimplyTestable\WebClientBundle\Services\TestService',
                 'SimplyTestable\WebClientBundle\Services\RemoteTestService',
-                'simplytestable.services.userservice',
+                'SimplyTestable\WebClientBundle\Services\UserService',
                 'simplytestable.services.cachevalidator',
                 UserManager::class,
             ],

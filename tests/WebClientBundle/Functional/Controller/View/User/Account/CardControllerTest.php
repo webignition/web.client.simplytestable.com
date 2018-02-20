@@ -210,7 +210,7 @@ class CardControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 'router',
-                'simplytestable.services.userservice',
+                'SimplyTestable\WebClientBundle\Services\UserService',
                 'simplytestable.services.teamservice',
                 UserManager::class,
             ],

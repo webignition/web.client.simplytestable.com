@@ -38,7 +38,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         parent::setUp();
 
         $this->userService = $this->container->get(
-            'simplytestable.services.userservice'
+            'SimplyTestable\WebClientBundle\Services\UserService'
         );
 
         $this->user = new User('user@example.com');

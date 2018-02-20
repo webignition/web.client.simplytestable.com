@@ -45,7 +45,7 @@ services:
       jobFactoryService: '@webignition\ResqueJobFactory\ResqueJobFactory'
       environment: '%kernel.environment%'
 
-  simplytestable.services.userservice:
+  SimplyTestable\WebClientBundle\Services\UserService:
     class:  SimplyTestable\WebClientBundle\Services\UserService
     arguments:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'

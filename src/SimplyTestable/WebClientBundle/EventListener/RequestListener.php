@@ -77,7 +77,7 @@ class RequestListener
             return;
         }
 
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
 

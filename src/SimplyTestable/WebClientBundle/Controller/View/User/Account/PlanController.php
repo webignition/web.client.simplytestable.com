@@ -39,7 +39,7 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
      */
     public function indexAction()
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $teamService = $this->container->get('simplytestable.services.teamservice');
         $templating = $this->container->get('templating');
         $planService = $this->container->get('simplytestable.services.plansservice');

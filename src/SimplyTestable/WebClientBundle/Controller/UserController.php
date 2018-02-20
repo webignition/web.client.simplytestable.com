@@ -91,7 +91,7 @@ class UserController extends Controller
     public function signInSubmitAction(Request $request)
     {
         $session = $this->container->get('session');
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $router = $this->container->get('router');
         $userManager = $this->container->get(UserManager::class);
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
@@ -271,7 +271,7 @@ class UserController extends Controller
      */
     public function resetPasswordChooseSubmitAction(Request $request)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $router = $this->container->get('router');
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
@@ -356,7 +356,7 @@ class UserController extends Controller
     public function signUpSubmitAction(Request $request)
     {
         $session = $this->container->get('session');
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $couponService = $this->container->get('simplytestable.services.couponservice');
         $router = $this->container->get('router');
 
@@ -532,7 +532,7 @@ class UserController extends Controller
      */
     public function signUpConfirmSubmitAction(Request $request, $email)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $session = $this->container->get('session');
         $router = $this->container->get('router');
         $resqueQueueService = $this->container->get('SimplyTestable\WebClientBundle\Services\Resque\QueueService');

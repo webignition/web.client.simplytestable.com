@@ -28,7 +28,7 @@ class ChooseController extends BaseViewController implements IEFiltered
     public function indexAction(Request $request, $email, $token)
     {
         $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $flashBagValuesService = $this->container->get('simplytestable.services.flashbagvalues');
         $templating = $this->container->get('templating');
 

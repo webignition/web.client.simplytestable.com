@@ -190,7 +190,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $containerFactory = new ContainerFactory($this->container);
         $container = $containerFactory->create(
             [
-                'simplytestable.services.userservice',
+                'SimplyTestable\WebClientBundle\Services\UserService',
                 'simplytestable.services.mailchimp.listrecipients',
                 'simplytestable.services.teamservice',
                 'simplytestable.services.useremailchangerequestservice',

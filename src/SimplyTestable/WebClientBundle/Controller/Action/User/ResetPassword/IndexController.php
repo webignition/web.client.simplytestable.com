@@ -43,7 +43,7 @@ class IndexController extends Controller
     public function requestAction(Request $request)
     {
         $session = $this->container->get('session');
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $router = $this->container->get('router');
 
         $requestData = $request->request;

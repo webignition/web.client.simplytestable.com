@@ -41,7 +41,7 @@ class UserAccountPlanController extends Controller implements RequiresPrivateUse
     public function subscribeAction(Request $request)
     {
         $router = $this->container->get('router');
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $session = $this->container->get('session');
         $teamService = $this->container->get('simplytestable.services.teamservice');
         $userAccountPlanSubscriptionService = $this->get('simplytestable.services.userplansubscriptionservice');

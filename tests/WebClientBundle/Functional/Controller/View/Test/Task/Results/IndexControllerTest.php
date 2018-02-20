@@ -347,7 +347,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'router',
                 'SimplyTestable\WebClientBundle\Services\TestService',
                 'SimplyTestable\WebClientBundle\Services\RemoteTestService',
-                'simplytestable.services.userservice',
+                'SimplyTestable\WebClientBundle\Services\UserService',
                 'simplytestable.services.cachevalidator',
                 'simplytestable.services.urlviewvalues',
                 'SimplyTestable\WebClientBundle\Services\TaskService',
@@ -919,7 +919,7 @@ class IndexControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
         ]);
 
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
 

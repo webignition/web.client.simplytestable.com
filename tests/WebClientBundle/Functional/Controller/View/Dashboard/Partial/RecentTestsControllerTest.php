@@ -113,7 +113,7 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
                 'SimplyTestable\WebClientBundle\Services\TestService',
                 'SimplyTestable\WebClientBundle\Services\RemoteTestService',
                 'SimplyTestable\WebClientBundle\Services\TaskService',
-                'simplytestable.services.userservice',
+                'SimplyTestable\WebClientBundle\Services\UserService',
             ],
             [
                 'templating' => $templatingEngine,

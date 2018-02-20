@@ -116,7 +116,7 @@ class TeamController extends Controller implements RequiresPrivateUser
     {
         $session = $this->container->get('session');
         $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');
 
@@ -361,7 +361,7 @@ class TeamController extends Controller implements RequiresPrivateUser
     {
         $session = $this->container->get('session');
         $teamInviteService = $this->get('simplytestable.services.teaminviteservice');
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $router = $this->container->get('router');
 
         $requestData = $request->request;

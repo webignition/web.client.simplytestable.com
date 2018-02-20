@@ -40,7 +40,7 @@ class ConfirmController extends Controller
      */
     public function resendAction($email)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $session = $this->container->get('session');
         $mailService = $this->container->get('simplytestable.services.mail.service');
         $router = $this->container->get('router');

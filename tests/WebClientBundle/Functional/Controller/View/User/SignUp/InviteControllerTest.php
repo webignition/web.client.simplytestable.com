@@ -101,7 +101,7 @@ class InviteControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 'simplytestable.services.teaminviteservice',
-                'simplytestable.services.userservice',
+                'SimplyTestable\WebClientBundle\Services\UserService',
                 'simplytestable.services.flashbagvalues',
                 'simplytestable.services.cachevalidator',
                 UserManager::class,

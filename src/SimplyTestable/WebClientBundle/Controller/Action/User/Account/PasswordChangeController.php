@@ -34,7 +34,7 @@ class PasswordChangeController extends AccountCredentialsChangeController
     public function requestAction(Request $request)
     {
         $session = $this->container->get('session');
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');
 

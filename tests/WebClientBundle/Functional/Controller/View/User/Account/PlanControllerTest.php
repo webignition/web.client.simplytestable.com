@@ -213,7 +213,7 @@ class PlanControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 'router',
-                'simplytestable.services.userservice',
+                'SimplyTestable\WebClientBundle\Services\UserService',
                 'simplytestable.services.teamservice',
                 'simplytestable.services.plansservice',
                 'simplytestable.services.flashbagvalues',

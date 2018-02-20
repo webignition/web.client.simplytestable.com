@@ -49,7 +49,7 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
      */
     public function indexAction(Request $request)
     {
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $mailChimpListRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
         $teamService = $this->container->get('simplytestable.services.teamservice');
         $emailChangeRequestService = $this->get('simplytestable.services.useremailchangerequestservice');

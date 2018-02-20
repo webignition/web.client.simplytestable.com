@@ -180,7 +180,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 'session',
-                'simplytestable.services.userservice',
+                'SimplyTestable\WebClientBundle\Services\UserService',
                 'simplytestable.services.teamservice',
                 'simplytestable.services.teaminviteservice',
                 UserManager::class,

@@ -39,7 +39,7 @@ class InviteController extends Controller
     {
         $teamInviteService = $this->container->get('simplytestable.services.teaminviteservice');
         $session = $this->container->get('session');
-        $userService = $this->container->get('simplytestable.services.userservice');
+        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $resqueQueueService = $this->container->get('SimplyTestable\WebClientBundle\Services\Resque\QueueService');
         $resqueJobFactory = $this->container->get(ResqueJobFactory::class);
         $userManager = $this->container->get(UserManager::class);
