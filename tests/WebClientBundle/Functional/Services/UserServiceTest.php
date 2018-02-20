@@ -15,7 +15,6 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
-use Tests\WebClientBundle\Factory\CurlExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 
 class UserServiceTest extends AbstractCoreApplicationServiceTest
