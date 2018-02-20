@@ -47,7 +47,7 @@ class ByTaskTypeController extends AbstractResultsController
         $router = $this->container->get('router');
         $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
         $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
-        $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
+        $urlViewValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\UrlViewValuesService');
         $taskService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskService');
         $taskCollectionFilterService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService');
         $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');

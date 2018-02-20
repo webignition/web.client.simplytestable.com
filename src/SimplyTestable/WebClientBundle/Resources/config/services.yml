@@ -198,7 +198,7 @@ services:
       taskTypeService: '@SimplyTestable\WebClientBundle\Services\TaskTypeService'
       parameters: '%test_options%'
 
-  simplytestable.services.urlviewvalues:
+  SimplyTestable\WebClientBundle\Services\UrlViewValuesService:
     class: SimplyTestable\WebClientBundle\Services\UrlViewValuesService
 
   simplytestable.services.cachevalidator:

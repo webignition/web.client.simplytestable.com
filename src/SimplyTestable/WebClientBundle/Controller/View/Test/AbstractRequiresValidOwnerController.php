@@ -16,7 +16,7 @@ abstract class AbstractRequiresValidOwnerController extends BaseViewController i
      */
     public function getInvalidOwnerResponse(Request $request)
     {
-        $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
+        $urlViewValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\UrlViewValuesService');
         $session = $this->container->get('session');
         $router = $this->container->get('router');
         $userManager = $this->container->get(UserManager::class);

@@ -31,7 +31,7 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
         $router = $this->container->get('router');
         $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
         $templating = $this->container->get('templating');
-        $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
+        $urlViewValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\UrlViewValuesService');
         $userManager = $this->container->get(UserManager::class);
 
         $viewRedirectParameters = [
