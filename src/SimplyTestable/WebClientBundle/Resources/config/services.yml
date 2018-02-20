@@ -238,12 +238,6 @@ services:
     arguments:
       - '@kernel'
 
-  SimplyTestable\WebClientBundle\Services\ApplicationConfigurationService:
-    class: SimplyTestable\WebClientBundle\Services\ApplicationConfigurationService
-    arguments:
-      - '@=service("kernel").getRootDir()'
-      - '@=service("kernel").getCacheDir()'
-
   SimplyTestable\WebClientBundle\Services\CoreApplicationRouter:
     class: SimplyTestable\WebClientBundle\Services\CoreApplicationRouter
     arguments:
