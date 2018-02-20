@@ -62,17 +62,17 @@ services:
     arguments:
         key: '%secret%'
 
-  simplytestable.services.testoptions.adapter.request.featureoptionsparser:
+  SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser\OptionsParser:
     class:  SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser\OptionsParser
 
-  simplytestable.services.testoptions.adapter.request.cookieoptionsparser:
+  SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser\CookieOptionsParser:
     class:  SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser\CookieOptionsParser
 
-  simplytestable.services.testoptions.adapter.request:
+  SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter:
     class:  SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter
     calls:
-      - [addFeatureOptionsParser, ['@simplytestable.services.testoptions.adapter.request.featureoptionsparser']]
-      - [addFeatureOptionsParser, ['@simplytestable.services.testoptions.adapter.request.cookieoptionsparser', 'cookies']]
+      - [addFeatureOptionsParser, ['@SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser\OptionsParser']]
+      - [addFeatureOptionsParser, ['@SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\FeatureParser\CookieOptionsParser', 'cookies']]
 
   simplytestable.services.userplansubscriptionservice:
     class:  SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService
@@ -194,7 +194,7 @@ services:
   simplytestable.services.testoptions.adapter.factory:
     class: SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Factory
     arguments:
-      adapter: '@simplytestable.services.testoptions.adapter.request'
+      adapter: '@SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter'
       taskTypeService: '@simplytestable.services.tasktypeservice'
       parameters: '%test_options%'
 

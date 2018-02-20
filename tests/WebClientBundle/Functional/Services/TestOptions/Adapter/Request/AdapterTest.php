@@ -30,7 +30,7 @@ class AdapterTest extends AbstractBaseTestCase
         $taskTypeService->setUser($user);
         $taskTypeService->setUserIsAuthenticated();
 
-        $this->adapter = $this->container->get('simplytestable.services.testoptions.adapter.request');
+        $this->adapter = $this->container->get('SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Request\Adapter');
 
         $testOptionsParameters = $this->container->getParameter('test_options');
 
