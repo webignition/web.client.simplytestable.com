@@ -27,7 +27,7 @@ services:
         taskFactory: '@SimplyTestable\WebClientBundle\Services\Factory\TaskFactory'
         taskOutputFactory: '@SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory'
 
-  simplytestable.services.taskcollectionfilterservice:
+  SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService:
     class:   SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService
     arguments:
         entityManager: '@doctrine.orm.entity_manager'
