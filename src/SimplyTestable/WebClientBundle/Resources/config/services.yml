@@ -96,7 +96,7 @@ services:
   SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService:
     class:  SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService
 
-  simplytestable.services.mailchimpservice:
+  SimplyTestable\WebClientBundle\Services\MailChimp\Service:
     class:   SimplyTestable\WebClientBundle\Services\MailChimp\Service
     arguments:
         mailChimpClient: '@SimplyTestable\WebClientBundle\Services\MailChimp\Client'
