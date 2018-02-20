@@ -12,6 +12,7 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\TestService;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,7 +35,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
     {
         $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get(RemoteTestService::class);
-        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
+        $userService = $this->container->get(UserService::class);
         $router = $this->container->get('router');
         $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
         $templating = $this->container->get('templating');

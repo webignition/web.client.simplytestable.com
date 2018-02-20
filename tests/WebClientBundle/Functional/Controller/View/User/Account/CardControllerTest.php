@@ -11,6 +11,7 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
@@ -210,7 +211,7 @@ class CardControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 'router',
-                'SimplyTestable\WebClientBundle\Services\UserService',
+                UserService::class,
                 'SimplyTestable\WebClientBundle\Services\TeamService',
                 UserManager::class,
             ],

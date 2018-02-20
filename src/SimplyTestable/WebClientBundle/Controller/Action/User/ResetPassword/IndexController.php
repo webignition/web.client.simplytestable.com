@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,7 +44,7 @@ class IndexController extends Controller
     public function requestAction(Request $request)
     {
         $session = $this->container->get('session');
-        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
+        $userService = $this->container->get(UserService::class);
         $router = $this->container->get('router');
 
         $requestData = $request->request;

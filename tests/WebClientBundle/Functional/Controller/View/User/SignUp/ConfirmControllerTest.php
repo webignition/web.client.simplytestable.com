@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Controller\View\User\SignUp\ConfirmController
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
@@ -89,7 +90,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 'SimplyTestable\WebClientBundle\Services\CacheValidatorService',
-                'SimplyTestable\WebClientBundle\Services\UserService',
+                UserService::class,
                 'SimplyTestable\WebClientBundle\Services\FlashBagValues',
                 UserManager::class,
             ],

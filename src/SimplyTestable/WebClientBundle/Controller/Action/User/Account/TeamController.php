@@ -13,6 +13,7 @@ use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -116,7 +117,7 @@ class TeamController extends Controller implements RequiresPrivateUser
     {
         $session = $this->container->get('session');
         $teamInviteService = $this->get('SimplyTestable\WebClientBundle\Services\TeamInviteService');
-        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
+        $userService = $this->container->get(UserService::class);
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');
 
@@ -361,7 +362,7 @@ class TeamController extends Controller implements RequiresPrivateUser
     {
         $session = $this->container->get('session');
         $teamInviteService = $this->get('SimplyTestable\WebClientBundle\Services\TeamInviteService');
-        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
+        $userService = $this->container->get(UserService::class);
         $router = $this->container->get('router');
 
         $requestData = $request->request;

@@ -11,6 +11,7 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Services\UserStripeEventService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,7 +50,7 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
      */
     public function indexAction(Request $request)
     {
-        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
+        $userService = $this->container->get(UserService::class);
         $mailChimpListRecipientsService = $this->container->get('SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService');
         $teamService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamService');
         $emailChangeRequestService = $this->get('SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService');

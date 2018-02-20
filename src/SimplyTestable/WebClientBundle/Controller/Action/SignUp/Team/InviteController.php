@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,7 +41,7 @@ class InviteController extends Controller
     {
         $teamInviteService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamInviteService');
         $session = $this->container->get('session');
-        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
+        $userService = $this->container->get(UserService::class);
         $resqueQueueService = $this->container->get(ResqueQueueService::class);
         $resqueJobFactory = $this->container->get(ResqueJobFactory::class);
         $userManager = $this->container->get(UserManager::class);

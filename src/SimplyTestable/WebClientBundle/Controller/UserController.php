@@ -12,6 +12,7 @@ use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -92,7 +93,7 @@ class UserController extends Controller
     public function signInSubmitAction(Request $request)
     {
         $session = $this->container->get('session');
-        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
+        $userService = $this->container->get(UserService::class);
         $router = $this->container->get('router');
         $userManager = $this->container->get(UserManager::class);
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
@@ -272,7 +273,7 @@ class UserController extends Controller
      */
     public function resetPasswordChooseSubmitAction(Request $request)
     {
-        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
+        $userService = $this->container->get(UserService::class);
         $router = $this->container->get('router');
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
@@ -357,7 +358,7 @@ class UserController extends Controller
     public function signUpSubmitAction(Request $request)
     {
         $session = $this->container->get('session');
-        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
+        $userService = $this->container->get(UserService::class);
         $couponService = $this->container->get('SimplyTestable\WebClientBundle\Services\CouponService');
         $router = $this->container->get('router');
 
@@ -533,7 +534,7 @@ class UserController extends Controller
      */
     public function signUpConfirmSubmitAction(Request $request, $email)
     {
-        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
+        $userService = $this->container->get(UserService::class);
         $session = $this->container->get('session');
         $router = $this->container->get('router');
         $resqueQueueService = $this->container->get(ResqueQueueService::class);

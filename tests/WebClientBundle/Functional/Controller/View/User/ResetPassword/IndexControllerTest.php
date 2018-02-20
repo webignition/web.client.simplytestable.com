@@ -4,6 +4,7 @@ namespace Tests\WebClientBundle\Functional\Controller\View\User\ResetPassword;
 
 use SimplyTestable\WebClientBundle\Controller\View\User\ResetPassword\IndexController;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
@@ -71,7 +72,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 'SimplyTestable\WebClientBundle\Services\CacheValidatorService',
-                'SimplyTestable\WebClientBundle\Services\UserService',
+                UserService::class,
                 'SimplyTestable\WebClientBundle\Services\FlashBagValues',
                 UserManager::class,
             ],

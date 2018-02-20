@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Controller\View\Dashboard\IndexController;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
@@ -139,7 +140,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 'SimplyTestable\WebClientBundle\Services\TaskTypeService',
-                'SimplyTestable\WebClientBundle\Services\UserService',
+                UserService::class,
                 'SimplyTestable\WebClientBundle\Services\TestOptions\Adapter\Factory',
                 'SimplyTestable\WebClientBundle\Services\UserSerializerService',
                 'SimplyTestable\WebClientBundle\Services\UrlViewValuesService',

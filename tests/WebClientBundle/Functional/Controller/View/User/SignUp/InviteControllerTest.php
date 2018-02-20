@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
@@ -101,7 +102,7 @@ class InviteControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 'SimplyTestable\WebClientBundle\Services\TeamInviteService',
-                'SimplyTestable\WebClientBundle\Services\UserService',
+                UserService::class,
                 'SimplyTestable\WebClientBundle\Services\FlashBagValues',
                 'SimplyTestable\WebClientBundle\Services\CacheValidatorService',
                 UserManager::class,

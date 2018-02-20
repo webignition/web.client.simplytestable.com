@@ -10,6 +10,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,7 +44,7 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
      */
     public function indexAction()
     {
-        $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
+        $userService = $this->container->get(UserService::class);
         $session = $this->get('session');
         $teamService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamService');
         $teamInviteService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamInviteService');
