@@ -23,6 +23,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\RouterInterface;
 use webignition\ResqueJobFactory\ResqueJobFactory;
+use SimplyTestable\WebClientBundle\Services\Mail\Configuration as MailConfiguration;
 
 class UserController extends Controller
 {
@@ -492,7 +493,7 @@ class UserController extends Controller
      */
     private function sendConfirmationToken(RouterInterface $router, $email, $token)
     {
-        $mailConfiguration = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Configuration');
+        $mailConfiguration = $this->container->get(MailConfiguration::class);
         $mailService = $this->container->get('SimplyTestable\WebClientBundle\Services\Mail\Service');
 
         $sender = $mailConfiguration->getSender('default');
