@@ -139,7 +139,7 @@ services:
     tags:
       - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
 
-  simplytestable.listener.mailchimpevent:
+  SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener:
     class:   SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener
     arguments:
         mailchimpListRecipientsService: '@simplytestable.services.mailchimp.listrecipients'

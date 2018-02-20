@@ -32,7 +32,7 @@ class ListenerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->listener = $this->container->get('simplytestable.listener.mailchimpevent');
+        $this->listener = $this->container->get('SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener');
         $this->listRecipientsService = $this->container->get('simplytestable.services.mailchimp.listrecipients');
     }
 
