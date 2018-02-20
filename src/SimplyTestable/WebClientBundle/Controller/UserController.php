@@ -357,7 +357,7 @@ class UserController extends Controller
     {
         $session = $this->container->get('session');
         $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
-        $couponService = $this->container->get('simplytestable.services.couponservice');
+        $couponService = $this->container->get('SimplyTestable\WebClientBundle\Services\CouponService');
         $router = $this->container->get('router');
 
         $requestData = $request->request;

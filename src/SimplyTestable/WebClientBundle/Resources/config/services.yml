@@ -178,7 +178,7 @@ services:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
         jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
-  simplytestable.services.couponservice:
+  SimplyTestable\WebClientBundle\Services\CouponService:
     class:  SimplyTestable\WebClientBundle\Services\CouponService
     calls:
       - [setCouponData, ['%coupons%']]
