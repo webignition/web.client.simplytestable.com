@@ -21,7 +21,7 @@ abstract class AbstractTaskServiceTest extends AbstractCoreApplicationServiceTes
     {
         parent::setUp();
 
-        $this->taskService = $this->container->get('simplytestable.services.taskservice');
+        $this->taskService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskService');
 
         $user = new User('user@example.com');
 

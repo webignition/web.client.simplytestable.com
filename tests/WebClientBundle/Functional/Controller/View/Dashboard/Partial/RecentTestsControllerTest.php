@@ -112,7 +112,7 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
             [
                 'SimplyTestable\WebClientBundle\Services\TestService',
                 'SimplyTestable\WebClientBundle\Services\RemoteTestService',
-                'simplytestable.services.taskservice',
+                'SimplyTestable\WebClientBundle\Services\TaskService',
                 'simplytestable.services.userservice',
             ],
             [

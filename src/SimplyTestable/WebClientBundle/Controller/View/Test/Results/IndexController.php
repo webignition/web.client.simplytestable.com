@@ -69,7 +69,7 @@ class IndexController extends AbstractResultsController
         $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
         $remoteTestService = $this->container->get('SimplyTestable\WebClientBundle\Services\RemoteTestService');
         $urlViewValuesService = $this->container->get('simplytestable.services.urlviewvalues');
-        $taskService = $this->container->get('simplytestable.services.taskservice');
+        $taskService = $this->container->get('SimplyTestable\WebClientBundle\Services\TaskService');
         $taskCollectionFilterService = $this->container->get('simplytestable.services.taskcollectionfilterservice');
         $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
         $taskTypeService = $this->container->get('simplytestable.services.tasktypeservice');

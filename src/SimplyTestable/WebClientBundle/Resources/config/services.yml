@@ -8,7 +8,7 @@ services:
     arguments:
         entityManager: '@doctrine.orm.entity_manager'
         logger: '@logger'
-        taskService: '@simplytestable.services.taskservice'
+        taskService: '@SimplyTestable\WebClientBundle\Services\TaskService'
         remoteTestService: '@SimplyTestable\WebClientBundle\Services\RemoteTestService'
 
   SimplyTestable\WebClientBundle\Services\RemoteTestService:
@@ -17,7 +17,7 @@ services:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
         jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
-  simplytestable.services.taskservice:
+  SimplyTestable\WebClientBundle\Services\TaskService:
     class:   SimplyTestable\WebClientBundle\Services\TaskService
     arguments:
         entityManager: '@doctrine.orm.entity_manager'

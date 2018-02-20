@@ -259,7 +259,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'simplytestable.services.userservice',
                 'simplytestable.services.cachevalidator',
                 'simplytestable.services.urlviewvalues',
-                'simplytestable.services.taskservice',
+                'SimplyTestable\WebClientBundle\Services\TaskService',
                 UserManager::class,
             ],
             [
