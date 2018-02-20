@@ -249,7 +249,7 @@ services:
     arguments:
       - '%core_url%'
       - '@SimplyTestable\WebClientBundle\Services\ResourceLocator'
-      - '@SimplyTestable\WebClientBundle\Services\ApplicationConfigurationService'
+      - '%kernel.cache_dir%'
 
   SimplyTestable\WebClientBundle\Services\CoreApplicationResponseCache:
     class: SimplyTestable\WebClientBundle\Services\CoreApplicationResponseCache
