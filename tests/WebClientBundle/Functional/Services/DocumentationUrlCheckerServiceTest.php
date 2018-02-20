@@ -23,7 +23,7 @@ class DocumentationUrlCheckerServiceTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->documentationUrlCheckerService = $this->container->get(
-            'simplytestable.services.documentationurlcheckerservice'
+            'SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService'
         );
 
         $this->documentationUrlCheckerService->setDocumentationSitemapPath(

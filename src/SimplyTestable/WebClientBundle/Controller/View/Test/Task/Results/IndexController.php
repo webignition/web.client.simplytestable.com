@@ -156,7 +156,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
      */
     private function getHtmlValidationErrorDocumentationUrls(Task $task)
     {
-        $documentationUrlChecker = $this->container->get('simplytestable.services.documentationurlcheckerservice');
+        $documentationUrlChecker = $this->container->get('SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService');
         $kernel = $this->container->get('kernel');
 
         $documentationUrls = [];

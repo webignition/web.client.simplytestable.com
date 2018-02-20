@@ -93,7 +93,7 @@ services:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
         jsonResponseHandler: '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
-  simplytestable.services.documentationurlcheckerservice:
+  SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService:
     class:  SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService
 
   simplytestable.services.mailchimpservice:
