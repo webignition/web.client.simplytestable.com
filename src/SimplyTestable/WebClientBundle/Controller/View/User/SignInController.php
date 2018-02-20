@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Controller\View\User;
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -22,7 +23,7 @@ class SignInController extends BaseViewController implements IEFiltered
     public function indexAction(Request $request)
     {
         $cacheValidatorService = $this->container->get(CacheValidatorService::class);
-        $flashBagValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\FlashBagValues');
+        $flashBagValuesService = $this->container->get(FlashBagValues::class);
         $templating = $this->container->get('templating');
         $router = $this->container->get('router');
         $userManager = $this->container->get(UserManager::class);

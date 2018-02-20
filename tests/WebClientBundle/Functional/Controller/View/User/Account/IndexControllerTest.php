@@ -11,6 +11,7 @@ use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService;
@@ -201,7 +202,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 TeamService::class,
                 UserEmailChangeRequestService::class,
                 UserStripeEventService::class,
-                'SimplyTestable\WebClientBundle\Services\FlashBagValues',
+                FlashBagValues::class,
                 UserManager::class,
             ],
             [

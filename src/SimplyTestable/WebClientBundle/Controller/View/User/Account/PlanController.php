@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\PlansService;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserService;
@@ -47,7 +48,7 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
         $templating = $this->container->get('templating');
         $planService = $this->container->get(PlansService::class);
         $router = $this->container->get('router');
-        $flashBagValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\FlashBagValues');
+        $flashBagValuesService = $this->container->get(FlashBagValues::class);
 
         $userSummary = $userService->getSummary();
         $team = null;

@@ -5,6 +5,7 @@ namespace Tests\WebClientBundle\Functional\Controller\View\Dashboard;
 use SimplyTestable\WebClientBundle\Controller\View\Dashboard\IndexController;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskTypeService;
 use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory;
@@ -150,7 +151,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 UserSerializerService::class,
                 UrlViewValuesService::class,
                 CacheValidatorService::class,
-                'SimplyTestable\WebClientBundle\Services\FlashBagValues',
+                FlashBagValues::class,
                 UserManager::class,
             ],
             [
