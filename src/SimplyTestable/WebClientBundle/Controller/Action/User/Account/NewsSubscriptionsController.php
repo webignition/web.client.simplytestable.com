@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Exception\MailChimp\MemberExistsException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\ResourceNotFoundException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\UnknownException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
+use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -38,7 +39,7 @@ class NewsSubscriptionsController extends Controller implements RequiresPrivateU
      */
     public function updateAction(Request $request)
     {
-        $mailChimpListRecipientsService = $this->container->get('SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService');
+        $mailChimpListRecipientsService = $this->container->get(ListRecipientsService::class);
         $mailChimpService = $this->container->get(MailChimpService::class);
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');

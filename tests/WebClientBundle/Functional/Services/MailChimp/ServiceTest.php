@@ -38,7 +38,7 @@ class ServiceTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->mailChimpService = $this->container->get(MailChimpService::class);
-        $this->listRecipientsService = $this->container->get('SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService');
+        $this->listRecipientsService = $this->container->get(ListRecipientsService::class);
     }
 
     public function testSubscribeAlreadySubscribedLocally()

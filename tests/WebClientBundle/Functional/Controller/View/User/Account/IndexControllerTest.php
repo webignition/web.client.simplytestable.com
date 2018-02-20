@@ -11,6 +11,7 @@ use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
 use SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserSerializerService;
@@ -195,7 +196,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 UserService::class,
-                'SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService',
+                ListRecipientsService::class,
                 'SimplyTestable\WebClientBundle\Services\TeamService',
                 UserEmailChangeRequestService::class,
                 UserStripeEventService::class,

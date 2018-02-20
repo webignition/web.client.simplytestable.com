@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 use SimplyTestable\WebClientBundle\Model\MailChimp\ApiError;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\MailChimp\Client;
+use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
@@ -95,7 +96,7 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
         $expectedAnnouncementsListRecipientsContains,
         $expectedUpdatesListRecipientsContains
     ) {
-        $mailChimpListRecipientsService = $this->container->get('SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService');
+        $mailChimpListRecipientsService = $this->container->get(ListRecipientsService::class);
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
 
