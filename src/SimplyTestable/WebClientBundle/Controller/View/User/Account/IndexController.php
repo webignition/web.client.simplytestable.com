@@ -56,7 +56,7 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
         $teamService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamService');
         $emailChangeRequestService = $this->get(UserEmailChangeRequestService::class);
         $templating = $this->container->get('templating');
-        $userStripeEventService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserStripeEventService');
+        $userStripeEventService = $this->container->get(UserStripeEventService::class);
         $flashBagValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\FlashBagValues');
         $userManager = $this->container->get(UserManager::class);
 

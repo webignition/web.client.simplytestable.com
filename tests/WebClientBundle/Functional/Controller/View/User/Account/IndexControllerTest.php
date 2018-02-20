@@ -15,6 +15,7 @@ use SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use SimplyTestable\WebClientBundle\Services\UserService;
+use SimplyTestable\WebClientBundle\Services\UserStripeEventService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
@@ -197,7 +198,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService',
                 'SimplyTestable\WebClientBundle\Services\TeamService',
                 UserEmailChangeRequestService::class,
-                'SimplyTestable\WebClientBundle\Services\UserStripeEventService',
+                UserStripeEventService::class,
                 'SimplyTestable\WebClientBundle\Services\FlashBagValues',
                 UserManager::class,
             ],
