@@ -10,7 +10,7 @@ abstract class AbstractListenerTest extends AbstractBaseTestCase
     const EVENT_USER = 'user@example.com';
 
     /**
-     * @var Listener
+     * @var StripeListener
      */
     protected $listener;
 
