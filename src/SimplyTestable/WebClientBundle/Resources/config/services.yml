@@ -87,7 +87,7 @@ services:
         coreApplicationRouter: '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
 
-  simplytestable.services.userstripeeventservice:
+  SimplyTestable\WebClientBundle\Services\UserStripeEventService:
     class:  SimplyTestable\WebClientBundle\Services\UserStripeEventService
     arguments:
         coreApplicationHttpClient: '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'

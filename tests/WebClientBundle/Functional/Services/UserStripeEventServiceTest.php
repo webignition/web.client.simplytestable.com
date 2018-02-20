@@ -54,7 +54,7 @@ class UserStripeEventServiceTest extends AbstractCoreApplicationServiceTest
         parent::setUp();
 
         $this->userStripeEventService = $this->container->get(
-            'simplytestable.services.userstripeeventservice'
+            'SimplyTestable\WebClientBundle\Services\UserStripeEventService'
         );
 
         $this->user = new User('user@example.com');
