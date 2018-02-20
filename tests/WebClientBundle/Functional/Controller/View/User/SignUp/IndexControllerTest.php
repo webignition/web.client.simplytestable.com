@@ -78,7 +78,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'simplytestable.services.cachevalidator',
                 'SimplyTestable\WebClientBundle\Services\CouponService',
                 'simplytestable.services.flashbagvalues',
-                'simplytestable.services.plansservice',
+                'SimplyTestable\WebClientBundle\Services\PlansService',
                 'SimplyTestable\WebClientBundle\Services\UserService',
                 UserManager::class,
             ],

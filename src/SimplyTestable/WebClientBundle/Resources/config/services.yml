@@ -183,7 +183,7 @@ services:
     calls:
       - [setCouponData, ['%coupons%']]
 
-  simplytestable.services.plansservice:
+  SimplyTestable\WebClientBundle\Services\PlansService:
     class:  SimplyTestable\WebClientBundle\Services\PlansService
     calls:
       - [setPlansData, ['%plans%']]

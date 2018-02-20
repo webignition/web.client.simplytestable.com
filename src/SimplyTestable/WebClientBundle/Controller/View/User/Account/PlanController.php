@@ -42,7 +42,7 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
         $userService = $this->container->get('SimplyTestable\WebClientBundle\Services\UserService');
         $teamService = $this->container->get('SimplyTestable\WebClientBundle\Services\TeamService');
         $templating = $this->container->get('templating');
-        $planService = $this->container->get('simplytestable.services.plansservice');
+        $planService = $this->container->get('SimplyTestable\WebClientBundle\Services\PlansService');
         $router = $this->container->get('router');
         $flashBagValuesService = $this->container->get('simplytestable.services.flashbagvalues');
 

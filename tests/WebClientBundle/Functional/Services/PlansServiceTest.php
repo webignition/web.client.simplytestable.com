@@ -22,7 +22,7 @@ class PlansServiceTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->plansService = $this->container->get('simplytestable.services.plansservice');
+        $this->plansService = $this->container->get('SimplyTestable\WebClientBundle\Services\PlansService');
     }
 
     /**
