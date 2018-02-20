@@ -29,7 +29,7 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
      */
     public function indexAction(Request $request, $website, $test_id)
     {
-        $testService = $this->container->get('simplytestable.services.testservice');
+        $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
         $cacheValidatorService = $this->container->get('simplytestable.services.cachevalidator');
         $router = $this->container->get('router');

@@ -281,7 +281,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $container = $containerFactory->create(
             [
                 'router',
-                'simplytestable.services.testservice',
+                'SimplyTestable\WebClientBundle\Services\TestService',
                 'simplytestable.services.remotetestservice',
                 'simplytestable.services.userservice',
                 'simplytestable.services.taskservice',

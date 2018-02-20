@@ -29,7 +29,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
         parent::setUp();
 
         $this->testService = $this->container->get(
-            'simplytestable.services.testservice'
+            'SimplyTestable\WebClientBundle\Services\TestService'
         );
     }
 

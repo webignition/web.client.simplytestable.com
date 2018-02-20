@@ -35,7 +35,7 @@ class TaskController extends BaseViewController implements RequiresValidOwner
      */
     public function idCollectionAction($website, $test_id)
     {
-        $testService = $this->container->get('simplytestable.services.testservice');
+        $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
         $taskService = $this->container->get('simplytestable.services.taskservice');
 
         $test = $testService->get($website, $test_id);
@@ -58,7 +58,7 @@ class TaskController extends BaseViewController implements RequiresValidOwner
      */
     public function unretrievedIdCollectionAction($website, $test_id, $limit = null)
     {
-        $testService = $this->container->get('simplytestable.services.testservice');
+        $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
         $taskService = $this->container->get('simplytestable.services.taskservice');
 
         $test = $testService->get($website, $test_id);
@@ -90,7 +90,7 @@ class TaskController extends BaseViewController implements RequiresValidOwner
      */
     public function retrieveAction(Request $request, $website, $test_id)
     {
-        $testService = $this->container->get('simplytestable.services.testservice');
+        $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
         $taskService = $this->container->get('simplytestable.services.taskservice');
 
         $test = $testService->get($website, $test_id);

@@ -121,7 +121,7 @@ class RequestListener
         }
 
         if ($controller instanceof RequiresValidTestOwnerController) {
-            $testService = $this->container->get('simplytestable.services.testservice');
+            $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
             $requestAttributes = $this->request->attributes;
 
             $website = $requestAttributes->get('website');
@@ -150,7 +150,7 @@ class RequestListener
         }
 
         if ($controller instanceof RequiresCompletedTestController) {
-            $testService = $this->container->get('simplytestable.services.testservice');
+            $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
             $requestAttributes = $this->request->attributes;
 
             $website = $requestAttributes->get('website');

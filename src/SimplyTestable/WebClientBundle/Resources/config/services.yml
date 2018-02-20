@@ -3,7 +3,7 @@ imports:
     - { resource: services/resque-job-factory.yml }
 
 services:
-  simplytestable.services.testservice:
+  SimplyTestable\WebClientBundle\Services\TestService:
     class:   SimplyTestable\WebClientBundle\Services\TestService
     arguments:
         entityManager: '@doctrine.orm.entity_manager'

@@ -118,7 +118,7 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
      */
     private function getFinishedTests($limit, $offset, $filter = null)
     {
-        $testService = $this->container->get('simplytestable.services.testservice');
+        $testService = $this->container->get('SimplyTestable\WebClientBundle\Services\TestService');
         $remoteTestService = $this->container->get('simplytestable.services.remotetestservice');
         $taskService = $this->container->get('simplytestable.services.taskservice');
 
