@@ -15,6 +15,7 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\LinkIntegrityMessage;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
+use SimplyTestable\WebClientBundle\Services\ResourceLocator;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
@@ -23,7 +24,6 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use webignition\HtmlValidationErrorLinkifier\HtmlValidationErrorLinkifier;
 use webignition\HtmlValidationErrorNormaliser\HtmlValidationErrorNormaliser;
@@ -57,7 +57,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         $templating = $this->container->get('templating');
         $userManager = $this->container->get(UserManager::class);
         $documentationUrlLinkChecker = $this->container->get(DocumentationUrlCheckerService::class);
-        $kernel = $this->container->get('kernel');
+        $resourceLocator = $this->container->get(ResourceLocator::class);
 
         $user = $userManager->getUser();
         $test = $testService->get($website, $test_id);
@@ -115,7 +115,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         if (Task::TYPE_HTML_VALIDATION === $task->getType()) {
             $documentationUrls = $this->getHtmlValidationErrorDocumentationUrls(
                 $documentationUrlLinkChecker,
-                $kernel,
+                $resourceLocator,
                 $task
             );
             $fixes = $this->getHtmlValidationErrorFixes($task, $documentationUrls);
@@ -164,14 +164,14 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
 
     /**
      * @param DocumentationUrlCheckerService $documentationUrlChecker
-     * @param KernelInterface $kernel
+     * @param ResourceLocator $resourceLocator
      * @param Task $task
      *
      * @return array
      */
     private function getHtmlValidationErrorDocumentationUrls(
         DocumentationUrlCheckerService $documentationUrlChecker,
-        KernelInterface $kernel,
+        ResourceLocator $resourceLocator,
         Task $task
     ) {
         $documentationUrls = [];
@@ -191,7 +191,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         $normaliser = new HtmlValidationErrorNormaliser();
         $linkifier = new HtmlValidationErrorLinkifier();
 
-        $sitemapPath = $kernel->locateResource(self::DOCUMENTATION_SITEMAP_RESOURCE_PATH);
+        $sitemapPath = $resourceLocator->locate(self::DOCUMENTATION_SITEMAP_RESOURCE_PATH);
 
         $documentationUrlChecker->setDocumentationSitemapPath($sitemapPath);
         foreach ($errors as $error) {
