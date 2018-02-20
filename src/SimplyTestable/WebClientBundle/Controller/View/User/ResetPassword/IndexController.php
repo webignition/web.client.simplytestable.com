@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\Controller\View\User\ResetPassword;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -16,7 +17,7 @@ class IndexController extends BaseViewController implements IEFiltered
      */
     public function indexAction(Request $request)
     {
-        $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
+        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
         $flashBagValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\FlashBagValues');
         $templating = $this->container->get('templating');
 

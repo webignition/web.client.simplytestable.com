@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\TeamInviteService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,7 +27,7 @@ class InviteController extends BaseViewController implements IEFiltered
     {
         $teamInviteService = $this->container->get(TeamInviteService::class);
         $flashBagValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\FlashBagValues');
-        $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
+        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
         $templating = $this->container->get('templating');
 
         $staySignedIn = $request->query->get('stay-signed-in');

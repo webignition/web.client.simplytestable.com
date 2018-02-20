@@ -10,6 +10,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
@@ -38,7 +39,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         $remoteTestService = $this->container->get(RemoteTestService::class);
         $userService = $this->container->get(UserService::class);
         $router = $this->container->get('router');
-        $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
+        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
         $templating = $this->container->get('templating');
         $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
 

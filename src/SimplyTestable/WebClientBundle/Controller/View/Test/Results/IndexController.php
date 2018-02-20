@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService;
@@ -77,7 +78,7 @@ class IndexController extends AbstractResultsController
         $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
         $taskService = $this->container->get(TaskService::class);
         $taskCollectionFilterService = $this->container->get(TaskCollectionFilterService::class);
-        $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
+        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
         $taskTypeService = $this->container->get(TaskTypeService::class);
         $templating = $this->container->get('templating');
         $testOptionsAdapterFactory = $this->container->get(RequestAdapterFactory::class);

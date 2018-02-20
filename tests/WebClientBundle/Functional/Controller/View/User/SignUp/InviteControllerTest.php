@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\TeamInviteService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
@@ -105,7 +106,7 @@ class InviteControllerTest extends AbstractBaseTestCase
                 TeamInviteService::class,
                 UserService::class,
                 'SimplyTestable\WebClientBundle\Services\FlashBagValues',
-                'SimplyTestable\WebClientBundle\Services\CacheValidatorService',
+                CacheValidatorService::class,
                 UserManager::class,
             ],
             [

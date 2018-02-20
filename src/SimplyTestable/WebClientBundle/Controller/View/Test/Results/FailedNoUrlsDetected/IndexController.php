@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
@@ -31,7 +32,7 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
     {
         $testService = $this->container->get(TestService::class);
         $router = $this->container->get('router');
-        $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
+        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
         $templating = $this->container->get('templating');
         $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
         $userManager = $this->container->get(UserManager::class);

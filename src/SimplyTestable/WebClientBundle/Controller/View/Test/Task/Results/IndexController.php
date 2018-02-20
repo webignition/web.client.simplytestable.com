@@ -12,6 +12,7 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\LinkIntegrityMessage;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
@@ -51,7 +52,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
         $remoteTestService = $this->container->get(RemoteTestService::class);
         $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
         $taskService = $this->container->get(TaskService::class);
-        $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
+        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
         $templating = $this->container->get('templating');
         $userManager = $this->container->get(UserManager::class);
 

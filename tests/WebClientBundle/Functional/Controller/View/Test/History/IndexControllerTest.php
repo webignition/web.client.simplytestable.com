@@ -12,6 +12,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\TestList;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
@@ -289,7 +290,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 RemoteTestService::class,
                 UserService::class,
                 TaskService::class,
-                'SimplyTestable\WebClientBundle\Services\CacheValidatorService',
+                CacheValidatorService::class,
                 UserManager::class,
             ],
             [

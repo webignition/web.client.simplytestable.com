@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Dashboard;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskTypeService;
 use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter as TestOptionsRequestAdapter;
@@ -27,7 +28,7 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
         $taskTypeService = $this->container->get(TaskTypeService::class);
         $testOptionsAdapterFactory = $this->container->get(RequestAdapterFactory::class);
         $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
-        $cacheValidatorService = $this->container->get('SimplyTestable\WebClientBundle\Services\CacheValidatorService');
+        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
         $flashBagValuesService = $this->container->get('SimplyTestable\WebClientBundle\Services\FlashBagValues');
         $templating = $this->container->get('templating');
         $userManager = $this->container->get(UserManager::class);

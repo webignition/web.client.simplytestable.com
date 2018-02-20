@@ -4,6 +4,7 @@ namespace Tests\WebClientBundle\Functional\Controller\View\User;
 
 use SimplyTestable\WebClientBundle\Controller\View\User\SignInController;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Tests\WebClientBundle\Factory\ContainerFactory;
@@ -87,7 +88,7 @@ class SignInControllerTest extends AbstractBaseTestCase
         $containerFactory = new ContainerFactory($this->container);
         $container = $containerFactory->create(
             [
-                'SimplyTestable\WebClientBundle\Services\CacheValidatorService',
+                CacheValidatorService::class,
                 UserService::class,
                 'SimplyTestable\WebClientBundle\Services\FlashBagValues',
                 'router',
