@@ -143,8 +143,8 @@ services:
   SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener:
     class:   SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener
     arguments:
-        mailchimpListRecipientsService: '@SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService'
-        entityManager: '@doctrine.orm.entity_manager'
+      - '@SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService'
+      - '@doctrine.orm.entity_manager'
     tags:
       - { name: kernel.event_listener, event: mailchimp.subscribe, method: onSubscribe }
       - { name: kernel.event_listener, event: mailchimp.unsubscribe, method: onUnsubscribe }
