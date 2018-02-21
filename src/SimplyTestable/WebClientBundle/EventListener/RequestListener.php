@@ -21,6 +21,7 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresCompletedT
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered as IEFilteredController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use webignition\IEDetector\IEDetector;
 
 class RequestListener
 {
@@ -84,6 +85,10 @@ class RequestListener
         $controller = $this->createController();
 
         if ($controller instanceof IEFilteredController && $this->isUsingOldIE()) {
+            $this->container->get('logger')->error(
+                'Detected old IE for [' . $this->getUserAgentString() . ']'
+            );
+
             $this->event->setResponse(
                 new RedirectResponse($this->container->getParameter('marketing_site'))
             );
@@ -224,46 +229,9 @@ class RequestListener
      */
     private function isUsingOldIE()
     {
-        if ($this->isUsingIE6() || $this->isUsingIE7()) {
-            $this->kernel->getContainer()->get('logger')->error(
-                'Detected old IE for [' . $this->getUserAgentString() . ']'
-            );
-            return true;
-        }
+        $userAgentString = $this->getUserAgentString();
 
-        return false;
-    }
-
-    /**
-     * @return bool
-     */
-    private function isUsingIE6()
-    {
-        if (preg_match('/msie 8.[0-9]+/i', $this->getUserAgentString())) {
-            return false;
-        }
-
-        if (!preg_match('/msie 6\.[0-9]+/i', $this->getUserAgentString())) {
-            return false;
-        }
-
-        if (preg_match('/opera/i', $this->getUserAgentString())) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * @return bool
-     */
-    private function isUsingIE7()
-    {
-        if (!preg_match('/msie 7\.[0-9]+/i', $this->getUserAgentString())) {
-            return false;
-        }
-
-        return true;
+        return IEDetector::isIE6($userAgentString) || IEDetector::isIE7($userAgentString);
     }
 
     /**
