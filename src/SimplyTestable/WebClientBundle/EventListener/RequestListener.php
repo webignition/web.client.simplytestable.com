@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\EventListener;
 
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Services\TestService;
@@ -10,10 +11,9 @@ use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser as RequiresPrivateUserController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser as RequiresValidUserController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner as RequiresValidTestOwnerController;
@@ -28,7 +28,7 @@ class RequestListener
     const APPLICATION_CONTROLLER_PREFIX = 'SimplyTestable\WebClientBundle\Controller\\';
 
     /**
-     * @var GetResponseEvent
+     * @var FilterControllerEvent
      */
     private $event;
 
@@ -48,11 +48,6 @@ class RequestListener
     private $container;
 
     /**
-     * @var Controller
-     */
-    private $controller;
-
-    /**
      * @param Kernel $kernel
      */
     public function __construct(Kernel $kernel)
@@ -62,36 +57,37 @@ class RequestListener
     }
 
     /**
-     * @param GetResponseEvent $event
+     * @param FilterControllerEvent $event
      *
-     * @throws \Exception
+     * @throws CoreApplicationRequestException
      */
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelController(FilterControllerEvent $event)
     {
-        if ($event->getRequestType() == HttpKernelInterface::SUB_REQUEST) {
+        if (!$event->isMasterRequest()) {
             return;
         }
 
         $this->event = $event;
         $this->request = $event->getRequest();
 
-        if (!$this->isApplicationController()) {
+        /* @var Controller $controller */
+        $controller = $this->event->getController()[0];
+
+        if (!$this->isApplicationController($controller)) {
             return;
         }
 
         $userService = $this->container->get(UserService::class);
         $userManager = $this->container->get(UserManager::class);
 
-        $controller = $this->createController();
-
         if ($controller instanceof IEFilteredController && $this->isUsingOldIE()) {
+            /* @var IEFilteredController $controller */
+
             $this->container->get('logger')->error(
                 'Detected old IE for [' . $this->getUserAgentString() . ']'
             );
 
-            $this->event->setResponse(
-                new RedirectResponse($this->container->getParameter('marketing_site'))
-            );
+            $controller->setResponse(new RedirectResponse($this->container->getParameter('marketing_site')));
 
             return;
         }
@@ -100,29 +96,32 @@ class RequestListener
             $controller instanceof RequiresValidUserController || $controller instanceof RequiresPrivateUserController;
 
         if ($requiresValidUserController && !$userService->authenticate()) {
+            /* @var RequiresValidUserController $controller */
+
             $router = $this->container->get('router');
             $redirectUrl = $router->generate('sign_out_submit', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
-            $this->event->setResponse(new RedirectResponse($redirectUrl));
+            $controller->setResponse(new RedirectResponse($redirectUrl));
 
             return;
         }
 
         if ($controller instanceof RequiresPrivateUserController && !$userManager->isLoggedIn()) {
+            /* @var RequiresPrivateUserController $controller */
+
             $session = $this->container->get('session');
             $router = $this->container->get('router');
 
             $session->getFlashBag()->set('user_signin_error', 'account-not-logged-in');
 
-            /* @var RequiresPrivateUserController $controller */
-            $controller = $this->createController();
-
-            $this->event->setResponse($controller->getUserSignInRedirectResponse($router, $this->request));
+            $controller->setResponse($controller->getUserSignInRedirectResponse($router, $this->request));
 
             return;
         }
 
         if ($controller instanceof RequiresValidTestOwnerController) {
+            /* @var RequiresValidTestOwnerController $controller */
+
             $testService = $this->container->get(TestService::class);
             $requestAttributes = $this->request->attributes;
 
@@ -130,11 +129,8 @@ class RequestListener
             $testId = $requestAttributes->get('test_id');
 
             try {
-                /* @var RequiresValidTestOwnerController $controller */
-                $controller = $this->createController();
-
                 if (!$testService->has($website, $testId)) {
-                    $this->event->setResponse($controller->getInvalidOwnerResponse($this->request));
+                    $controller->setResponse($controller->getInvalidOwnerResponse($this->request));
 
                     return;
                 }
@@ -145,45 +141,46 @@ class RequestListener
                     throw new InvalidCredentialsException();
                 }
             } catch (InvalidCredentialsException $invalidCredentialsException) {
-                $this->event->setResponse($controller->getInvalidOwnerResponse($this->request));
+                $controller->setResponse($controller->getInvalidOwnerResponse($this->request));
 
                 return;
             }
         }
 
         if ($controller instanceof RequiresCompletedTestController) {
+            /* @var RequiresCompletedTestController $controller */
+
             $testService = $this->container->get(TestService::class);
+            $router = $this->container->get('router');
             $requestAttributes = $this->request->attributes;
 
             $website = $requestAttributes->get('website');
             $testId = $requestAttributes->get('test_id');
 
-            /* @var RequiresCompletedTestController $controller */
-            $controller = $this->createController();
 
             /* @var Test $test */
             $test = $testService->get($website, $testId);
 
             if ($test->getState() == Test::STATE_FAILED_NO_SITEMAP) {
-                $this->event->setResponse($controller->getFailedNoSitemapTestResponse($this->request));
+                $controller->setResponse($controller->getFailedNoSitemapTestResponse($router, $this->request));
 
                 return;
             }
 
             if ($test->getState() == Test::STATE_REJECTED) {
-                $this->event->setResponse($controller->getRejectedTestResponse($this->request));
+                $controller->setResponse($controller->getRejectedTestResponse($router, $this->request));
 
                 return;
             }
 
             if (!$testService->isFinished($test)) {
-                $this->event->setResponse($controller->getNotFinishedTestResponse($this->request));
+                $controller->setResponse($controller->getNotFinishedTestResponse($router, $this->request));
 
                 return;
             }
 
             if ($test->getWebsite() != $this->request->attributes->get('website')) {
-                $this->event->setResponse($controller->getRequestWebsiteMismatchResponse($this->request));
+                $controller->setResponse($controller->getRequestWebsiteMismatchResponse($router, $this->request));
 
                 return;
             }
@@ -191,37 +188,16 @@ class RequestListener
     }
 
     /**
-     * @return string
-     */
-    private function getControllerClassName()
-    {
-        $controllerActionParts = explode('::', $this->request->attributes->get('_controller'));
-        return $controllerActionParts[0];
-    }
-
-    /**
+     * @param Controller $controller
+     *
      * @return bool
      */
-    private function isApplicationController()
+    private function isApplicationController(Controller $controller)
     {
-        $controllerClassName = $this->getControllerClassName();
+        $controllerClassName = get_class($controller);
         $controllerClassNamePrefix = substr($controllerClassName, 0, strlen(self::APPLICATION_CONTROLLER_PREFIX));
 
         return $controllerClassNamePrefix == self::APPLICATION_CONTROLLER_PREFIX;
-    }
-
-    /**
-     * @return Controller
-     */
-    private function createController()
-    {
-        if (is_null($this->controller)) {
-            $className = $this->getControllerClassName();
-            $this->controller = new $className;
-            $this->controller->setContainer($this->container);
-        }
-
-        return $this->controller;
     }
 
     /**

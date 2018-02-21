@@ -1,15 +1,13 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\EventListener\RequestListener\OnKernelRequest;
+namespace Tests\WebClientBundle\Functional\EventListener\RequestListener\OnKernelController;
 
+use SimplyTestable\WebClientBundle\Controller\UserController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-class OnKernelRequestTest extends AbstractOnKernelRequestTest
+class OnKernelControllerTest extends AbstractOnKernelControllerTest
 {
-    const CONTROLLER_ACTION = 'foo';
-    const CONTROLLER_ROUTE = 'foo';
-
     /**
      * @dataProvider dataProvider
      *
@@ -17,21 +15,15 @@ class OnKernelRequestTest extends AbstractOnKernelRequestTest
      *
      * @throws \Exception
      */
-    public function testOnKernelRequest($requestType)
+    public function testOnKernelRequestRequestType($requestType)
     {
         $request = new Request();
 
-        $event = $this->createGetResponseEvent(
-            $request,
-            self::CONTROLLER_ACTION,
-            self::CONTROLLER_ROUTE,
-            null,
-            $requestType
-        );
+        $controller = new UserController();
 
-        $this->requestListener->onKernelRequest($event);
+        $event = $this->createFilterControllerEvent($request, $controller, 'signOutSubmitAction', $requestType);
 
-        $this->assertNull($event->getResponse());
+        $this->requestListener->onKernelController($event);
     }
 
     /**

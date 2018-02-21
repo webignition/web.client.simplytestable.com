@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\EventListener\RequestListener\OnKernelRequest;
+namespace Tests\WebClientBundle\Functional\EventListener\RequestListener\OnKernelController;
 
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
@@ -8,13 +8,10 @@ use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\TestFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use SimplyTestable\WebClientBundle\Controller\View\Test\Partial\Notification\UrlLimitController;
 
-class OnKernelRequestRequiresValidTestOwnerTest extends AbstractOnKernelRequestTest
+class OnKernelControllerRequiresValidTestOwnerTest extends AbstractOnKernelControllerTest
 {
-    const CONTROLLER_ACTION =
-        'SimplyTestable\WebClientBundle\Controller\View\Test\Partial\Notification\UrlLimitController::indexAction';
-    const CONTROLLER_ROUTE = 'view_test_partial_notification_urlimit_index';
-
     const WEBSITE = 'http://example.com';
     const TEST_ID = 1;
 
@@ -25,9 +22,10 @@ class OnKernelRequestRequiresValidTestOwnerTest extends AbstractOnKernelRequestT
      * @param array $testValues
      * @param bool $expectedHasResponse
      *
-     * @throws \Exception
+     * @throws \ReflectionException
+     * @throws CoreApplicationRequestException
      */
-    public function testOnKernelRequest(array $httpFixtures, array $testValues, $expectedHasResponse)
+    public function testOnKernelController(array $httpFixtures, array $testValues, $expectedHasResponse)
     {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
@@ -36,25 +34,23 @@ class OnKernelRequestRequiresValidTestOwnerTest extends AbstractOnKernelRequestT
             $testFactory->create($testValues);
         }
 
+        $controller = new UrlLimitController();
+
         $request = new Request([], [], [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
         ]);
 
-        $event = $this->createGetResponseEvent(
-            $request,
-            self::CONTROLLER_ACTION,
-            self::CONTROLLER_ROUTE
-        );
+        $event = $this->createFilterControllerEvent($request, $controller, 'indexAction');
 
-        $this->requestListener->onKernelRequest($event);
+        $this->requestListener->onKernelController($event);
 
-        $response = $event->getResponse();
+        $this->assertEquals($expectedHasResponse, $controller->hasResponse());
 
         if ($expectedHasResponse) {
+            $response = $this->getControllerResponse($controller, UrlLimitController::class);
+
             $this->assertInstanceOf(Response::class, $response);
-        } else {
-            $this->assertNull($response);
         }
     }
 
@@ -105,7 +101,7 @@ class OnKernelRequestRequiresValidTestOwnerTest extends AbstractOnKernelRequestT
         ];
     }
 
-    public function testOnKernelRequestCoreApplicationRequestException()
+    public function testOnKernelControllerCoreApplicationRequestException()
     {
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -118,21 +114,19 @@ class OnKernelRequestRequiresValidTestOwnerTest extends AbstractOnKernelRequestT
             TestFactory::KEY_TEST_ID => self::TEST_ID,
         ]);
 
+        $controller = new UrlLimitController();
+
         $request = new Request([], [], [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
         ]);
 
-        $event = $this->createGetResponseEvent(
-            $request,
-            self::CONTROLLER_ACTION,
-            self::CONTROLLER_ROUTE
-        );
+        $event = $this->createFilterControllerEvent($request, $controller, 'indexAction');
 
         $this->expectException(CoreApplicationRequestException::class);
         $this->expectExceptionMessage('Not Found');
         $this->expectExceptionCode(404);
 
-        $this->requestListener->onKernelRequest($event);
+        $this->requestListener->onKernelController($event);
     }
 }
