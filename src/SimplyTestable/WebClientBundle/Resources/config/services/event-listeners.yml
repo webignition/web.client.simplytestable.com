@@ -1,0 +1,33 @@
+services:
+  SimplyTestable\WebClientBundle\EventListener\Stripe\Listener:
+    class:   SimplyTestable\WebClientBundle\EventListener\Stripe\Listener
+    arguments:
+      - '@logger'
+      - '@templating'
+      - '@router'
+      - '@SimplyTestable\WebClientBundle\Services\Mail\Service'
+    tags:
+      - { name: kernel.event_listener, event: stripe.customer.subscription.created, method: onCustomerSubscriptionCreated }
+      - { name: kernel.event_listener, event: stripe.customer.subscription.deleted, method: onCustomerSubscriptionDeleted }
+      - { name: kernel.event_listener, event: stripe.customer.subscription.trial_will_end, method: onCustomerSubscriptionTrialWillEnd }
+      - { name: kernel.event_listener, event: stripe.customer.subscription.updated, method: onCustomerSubscriptionUpdated }
+      - { name: kernel.event_listener, event: stripe.invoice.payment_succeeded, method: onInvoicePaymentSucceeded }
+      - { name: kernel.event_listener, event: stripe.invoice.payment_failed, method: onInvoicePaymentFailed }
+
+  SimplyTestable\WebClientBundle\EventListener\RequestListener:
+    class: SimplyTestable\WebClientBundle\EventListener\RequestListener
+    arguments:
+      - '@kernel'
+    tags:
+      - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
+  SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener:
+    class:   SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener
+    arguments:
+      - '@SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService'
+      - '@doctrine.orm.entity_manager'
+    tags:
+      - { name: kernel.event_listener, event: mailchimp.subscribe, method: onSubscribe }
+      - { name: kernel.event_listener, event: mailchimp.unsubscribe, method: onUnsubscribe }
+      - { name: kernel.event_listener, event: mailchimp.upemail, method: onUpEmail }
+      - { name: kernel.event_listener, event: mailchimp.cleaned, method: onCleaned }
