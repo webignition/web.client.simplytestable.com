@@ -39,7 +39,8 @@
         "chrisboulton/php-resque": "dev-master#e393d5672cdbe1e94e856a6cb2b2ec97042a4f24",
         "chrisboulton/php-resque-scheduler": "dev-master#ab8bd52949cac1f815bbb97aa39f51c7b5766a86",
         "resquebundle/resque": "1.2.0",
-        "webignition/resque-job-factory": ">=0.1.1,<1.0"
+        "webignition/resque-job-factory": ">=0.1.1,<1.0",
+        "webignition/php-ie-detector": "0.1"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
