@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "b0dc2dac36813f61ede964d8a5097c10",
+    "content-hash": "e8a0f4b7c5abbeb4a702793eef68821b",
     "packages": [
         {
             "name": "chrisboulton/php-resque",
@@ -3229,6 +3229,54 @@
                 "validation"
             ],
             "time": "2013-07-24T16:44:57+00:00"
+        },
+        {
+            "name": "webignition/php-ie-detector",
+            "version": "0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/php-ie-detector.git",
+                "reference": "85225da9a9b2e2a866c4a85f962af83e51bae7b9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webignition/php-ie-detector/zipball/85225da9a9b2e2a866c4a85f962af83e51bae7b9",
+                "reference": "85225da9a9b2e2a866c4a85f962af83e51bae7b9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~5.0",
+                "squizlabs/php_codesniffer": "3.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "webignition\\IEDetector\\": "src/",
+                    "webignition\\Tests\\IEDetector\\": "tests/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "jon@webignition.net"
+                }
+            ],
+            "description": "Parses a user agent string to detect Internet Explorer",
+            "homepage": "https://github.com/webignition/php-ie-detector",
+            "keywords": [
+                "detector",
+                "ie",
+                "internet explorer",
+                "user-agent"
+            ],
+            "time": "2018-02-21T17:04:02+00:00"
         },
         {
             "name": "webignition/php-stripe-models",
