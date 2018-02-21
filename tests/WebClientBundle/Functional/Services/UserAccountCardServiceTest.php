@@ -35,7 +35,6 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
         $this->userAccountCardService = $this->container->get(UserAccountCardService::class);
 
         $this->user = new User('user@example.com');
-        $this->coreApplicationHttpClient->setUser($this->user);
     }
 
     /**

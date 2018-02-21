@@ -65,7 +65,6 @@ class TestStartControllerTest extends AbstractBaseTestCase
         $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
 
-        $coreApplicationHttpClient->setUser($user);
         $userManager->setUser($user);
 
         $httpHistory = new HttpHistorySubscriber();

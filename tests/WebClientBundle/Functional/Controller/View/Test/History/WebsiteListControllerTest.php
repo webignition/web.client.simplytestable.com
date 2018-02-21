@@ -3,7 +3,6 @@
 namespace Tests\WebClientBundle\Functional\Controller\View\Test\History;
 
 use SimplyTestable\WebClientBundle\Controller\View\Test\History\WebsiteListController;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
@@ -83,12 +82,10 @@ class WebsiteListControllerTest extends AbstractBaseTestCase
         array $httpFixtures,
         array $expectedResponseData
     ) {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
 
         $user = SystemUserService::getPublicUser();
         $userManager->setUser($user);
-        $coreApplicationHttpClient->setUser($user);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 

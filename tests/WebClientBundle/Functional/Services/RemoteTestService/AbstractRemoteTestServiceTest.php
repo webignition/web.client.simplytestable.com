@@ -6,7 +6,6 @@ use ReflectionClass;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use Tests\WebClientBundle\Functional\Services\AbstractCoreApplicationServiceTest;
 
@@ -32,9 +31,6 @@ abstract class AbstractRemoteTestServiceTest extends AbstractCoreApplicationServ
         $this->remoteTestService = $this->container->get(RemoteTestService::class);
 
         $this->user = new User('user@example.com');
-
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser($this->user);
     }
 
     /**

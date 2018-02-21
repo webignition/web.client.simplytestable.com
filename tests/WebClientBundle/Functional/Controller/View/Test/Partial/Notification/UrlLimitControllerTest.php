@@ -5,18 +5,15 @@ namespace Tests\WebClientBundle\Functional\Controller\View\Test\Partial\Notifica
 use SimplyTestable\WebClientBundle\Controller\View\Test\Partial\Notification\UrlLimitController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class IndexControllerTest extends AbstractBaseTestCase
+class UrlLimitControllerTest extends AbstractBaseTestCase
 {
     const INDEX_ACTION_VIEW_NAME =
         'SimplyTestableWebClientBundle:bs3/Test/Partial/Notification/UrlLimit:index.html.twig';
@@ -103,17 +100,14 @@ class IndexControllerTest extends AbstractBaseTestCase
         $expectedResponseHasContent,
         array $expectedContentContains = []
     ) {
-        $userSerializerService = $this->container->get(UserSerializerService::class);
+        $userManager = $this->container->get(UserManager::class);
+
+        $userManager->setUser($user);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($remoteTestData),
         ]);
-
-        $this->client->getCookieJar()->set(new Cookie(
-            UserManager::USER_COOKIE_KEY,
-            $userSerializerService->serializeToString($user)
-        ));
 
         $router = $this->container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
@@ -233,9 +227,6 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionCachedResponse()
     {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
-
         $remoteTestData = [
             'id' => self::TEST_ID,
             'website' => self::WEBSITE,

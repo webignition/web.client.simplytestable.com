@@ -47,22 +47,25 @@ class CoreApplicationHttpClient
     private $responseCache;
 
     /**
-     * @var User
+     * @var UserManager
      */
-    private $user;
+    private $userManager;
 
     /**
      * @param CoreApplicationRouter $coreApplicationRouter
      * @param CoreApplicationResponseCache $coreApplicationResponseCache
      * @param SystemUserService $systemUserService
+     * @param UserManager $userManager
      */
     public function __construct(
         CoreApplicationRouter $coreApplicationRouter,
         CoreApplicationResponseCache $coreApplicationResponseCache,
-        SystemUserService $systemUserService
+        SystemUserService $systemUserService,
+        UserManager $userManager
     ) {
         $this->router = $coreApplicationRouter;
         $this->responseCache = $coreApplicationResponseCache;
+        $this->userManager = $userManager;
 
         $this->adminUser = $systemUserService->getAdminUser();
 
@@ -90,14 +93,6 @@ class CoreApplicationHttpClient
     }
 
     /**
-     * @param User $user
-     */
-    public function setUser(User $user)
-    {
-        $this->user = $user;
-    }
-
-    /**
      * @param string $routeName
      * @param array $routeParameters
      * @param array $options
@@ -110,9 +105,10 @@ class CoreApplicationHttpClient
     public function get($routeName, array $routeParameters = [], array $options = [])
     {
         $response = null;
+        $user = $this->userManager->getUser();
 
         try {
-            $response = $this->getAsUser($this->user, $routeName, $routeParameters, $options);
+            $response = $this->getAsUser($user, $routeName, $routeParameters, $options);
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
             // Not a write request, can't happen
         } catch (InvalidAdminCredentialsException $invalidAdminCredentialsException) {
@@ -184,9 +180,10 @@ class CoreApplicationHttpClient
     public function post($routeName, array $routeParameters = [], array $postData = [], array $options = [])
     {
         $response = null;
+        $user = $this->userManager->getUser();
 
         try {
-            $response = $this->postAsUser($this->user, $routeName, $routeParameters, $postData, $options);
+            $response = $this->postAsUser($user, $routeName, $routeParameters, $postData, $options);
         } catch (InvalidAdminCredentialsException $invalidAdminCredentialsException) {
             // Not an admin request, can't happen
         }
@@ -351,9 +348,11 @@ class CoreApplicationHttpClient
      */
     private function createRequestUrl($routeName, $routeParameters)
     {
+        $user = $this->userManager->getUser();
+
         foreach ($routeParameters as $key => $value) {
             if (self::ROUTE_PARAMETER_USER_PLACEHOLDER === $value) {
-                $routeParameters[$key] = $this->user->getUsername();
+                $routeParameters[$key] = $user->getUsername();
             }
         }
 

@@ -4,11 +4,8 @@ namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account\Team;
 
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
-use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -33,7 +30,9 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
     public function testCreateActionPostRequestPrivateUser()
     {
         $router = $this->container->get('router');
-        $userSerializerService = $this->container->get(UserSerializerService::class);
+        $userManager = $this->container->get(UserManager::class);
+
+        $userManager->setUser(new User('user@example.com'));
 
         $requestUrl = $router->generate(self::ROUTE_NAME);
 
@@ -41,12 +40,6 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
         ]);
-
-        $user = new User('user@example.com', 'password');
-
-        $this->client->getCookieJar()->set(
-            new Cookie(UserManager::USER_COOKIE_KEY, $userSerializerService->serializeToString($user))
-        );
 
         $this->client->request(
             'POST',
@@ -87,9 +80,6 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
     public function testCreateActionSuccess()
     {
         $session = $this->container->get('session');
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-
-        $coreApplicationHttpClient->setUser(new User('user@example.com'));
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),

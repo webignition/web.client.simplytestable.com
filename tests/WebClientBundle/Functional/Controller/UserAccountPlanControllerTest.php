@@ -7,13 +7,10 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -83,12 +80,8 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionPrivateUserPostRequest()
     {
-        $userSerializerService = $this->container->get(UserSerializerService::class);
-
-        $this->client->getCookieJar()->set(new Cookie(
-            UserManager::USER_COOKIE_KEY,
-            $userSerializerService->serializeToString(new User(self::USER_EMAIL))
-        ));
+        $userManager = $this->container->get(UserManager::class);
+        $userManager->setUser(new User(self::USER_EMAIL));
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -128,12 +121,10 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL);
         $userManager->setUser($user);
-        $coreApplicationHttpClient->setUser($user);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 

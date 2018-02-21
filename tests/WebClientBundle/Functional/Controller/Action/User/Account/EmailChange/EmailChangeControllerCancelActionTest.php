@@ -3,12 +3,8 @@
 namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account\EmailChange;
 
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
-use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
-use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class EmailChangeControllerCancelActionTest extends AbstractEmailChangeControllerTest
@@ -31,7 +27,9 @@ class EmailChangeControllerCancelActionTest extends AbstractEmailChangeControlle
     public function testCancelActionPostRequestPrivateUser()
     {
         $router = $this->container->get('router');
-        $userSerializerService = $this->container->get(UserSerializerService::class);
+        $userManager = $this->container->get(UserManager::class);
+
+        $userManager->setUser(new User('user@example.com'));
 
         $requestUrl = $router->generate(self::ROUTE_NAME);
 
@@ -39,12 +37,6 @@ class EmailChangeControllerCancelActionTest extends AbstractEmailChangeControlle
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
         ]);
-
-        $user = new User('user@example.com', 'password');
-
-        $this->client->getCookieJar()->set(
-            new Cookie(UserManager::USER_COOKIE_KEY, $userSerializerService->serializeToString($user))
-        );
 
         $this->client->request(
             'POST',
@@ -63,9 +55,6 @@ class EmailChangeControllerCancelActionTest extends AbstractEmailChangeControlle
     public function testCancelAction()
     {
         $session = $this->container->get('session');
-
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $coreApplicationHttpClient->setUser(SystemUserService::getPublicUser());
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),

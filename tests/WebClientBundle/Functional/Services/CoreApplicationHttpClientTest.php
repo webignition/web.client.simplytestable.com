@@ -12,6 +12,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
@@ -54,7 +55,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->expectException($expectedException);
@@ -83,7 +83,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->expectException($expectedException);
@@ -113,7 +112,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->expectException($expectedException);
@@ -143,7 +141,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $this->expectException($expectedException);
@@ -165,7 +162,9 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      */
     public function testGetDoesNotThrowException(array $httpFixtures, $userName, array $options)
     {
-        $this->coreApplicationHttpClient->setUser($this->getUserFromUserName($userName));
+        $userManager = $this->container->get(UserManager::class);
+
+        $userManager->setUser($this->getUserFromUserName($userName));
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $response = $this->coreApplicationHttpClient->get('team_get', [], $options);
@@ -185,7 +184,9 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      */
     public function testPostDoesNotThrowException(array $httpFixtures, $userName, array $options)
     {
-        $this->coreApplicationHttpClient->setUser($this->getUserFromUserName($userName));
+        $userManager = $this->container->get(UserManager::class);
+
+        $userManager->setUser($this->getUserFromUserName($userName));
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $response = $this->coreApplicationHttpClient->post('team_get', [], $options);
@@ -207,7 +208,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
     {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
         $response1 = $this->coreApplicationHttpClient->get('team_get', [], $options);
         $response2 = $this->coreApplicationHttpClient->get('team_get', [], $options);
 
@@ -235,7 +235,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
     {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
         $response1 = $this->coreApplicationHttpClient->getAsAdmin('team_get', [], $options);
         $response2 = $this->coreApplicationHttpClient->getAsAdmin('team_get', [], $options);
 
@@ -271,7 +270,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $httpHistory = new HttpHistorySubscriber();
 
         $this->coreApplicationHttpClient->getHttpClient()->getEmitter()->attach($httpHistory);
-        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
         $response = $this->coreApplicationHttpClient->post('team_get', [], $postData, $options);
 
         if (empty($expectedResponse)) {
@@ -311,7 +309,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $httpHistory = new HttpHistorySubscriber();
 
         $this->coreApplicationHttpClient->getHttpClient()->getEmitter()->attach($httpHistory);
-        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
         $response = $this->coreApplicationHttpClient->postAsAdmin('team_get', [], $postData, $options);
 
         if (empty($expectedResponse)) {
@@ -365,12 +362,11 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
             ]),
         ]);
 
-        $this->coreApplicationHttpClient->setUser(new User(self::USER_EMAIL));
         $this->coreApplicationHttpClient->get('user', [
             'email' => CoreApplicationHttpClient::ROUTE_PARAMETER_USER_PLACEHOLDER,
         ]);
 
-        $this->assertEquals('http://null/user/user@example.com/', $httpHistory->getLastRequest()->getUrl());
+        $this->assertEquals('http://null/user/public/', $httpHistory->getLastRequest()->getUrl());
     }
 
     /**

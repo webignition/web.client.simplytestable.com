@@ -101,7 +101,7 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
     {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->coreApplicationHttpClient->setUser($this->user);
+        $this->userManager->setUser($this->user);
         $this->userEmailChangeRequestService->cancelEmailChangeRequest();
 
         $lastRequest = $this->getLastRequest();
@@ -137,7 +137,7 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
         $this->expectExceptionMessage($expectedExceptionMessage);
         $this->expectExceptionCode($expectedExceptionCode);
 
-        $this->coreApplicationHttpClient->setUser($this->user);
+        $this->userManager->setUser($this->user);
         $this->userEmailChangeRequestService->confirmEmailChangeRequest([
             'new_email' => 'foo@example.com',
             'token' => 'foo',
@@ -153,11 +153,11 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
      * @throws InvalidCredentialsException
      * @throws UserEmailChangeException
      */
-    public function testConfirmEmailChangeRequestFoo(array $httpFixtures, $expectedRequestIsMade)
+    public function testConfirmEmailChangeRequest(array $httpFixtures, $expectedRequestIsMade)
     {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->coreApplicationHttpClient->setUser($this->user);
+        $this->userManager->setUser($this->user);
         $this->userEmailChangeRequestService->confirmEmailChangeRequest([
             'new_email' => 'foo@example.com',
             'token' => 'token-value',
@@ -196,7 +196,7 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
         $this->expectExceptionMessage($expectedExceptionMessage);
         $this->expectExceptionCode($expectedExceptionCode);
 
-        $this->coreApplicationHttpClient->setUser($this->user);
+        $this->userManager->setUser($this->user);
         $this->userEmailChangeRequestService->createEmailChangeRequest('foo@example.com');
     }
 
@@ -213,7 +213,7 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
     {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->coreApplicationHttpClient->setUser($this->user);
+        $this->userManager->setUser($this->user);
         $this->userEmailChangeRequestService->createEmailChangeRequest('foo@example.com');
 
         $lastRequest = $this->getLastRequest();

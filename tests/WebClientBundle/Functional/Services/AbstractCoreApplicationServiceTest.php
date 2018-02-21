@@ -5,6 +5,7 @@ namespace Tests\WebClientBundle\Functional\Services;
 use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Subscriber\History as HttpHistorySubscriber;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 
 abstract class AbstractCoreApplicationServiceTest extends AbstractBaseTestCase
@@ -15,9 +16,9 @@ abstract class AbstractCoreApplicationServiceTest extends AbstractBaseTestCase
     private $httpHistory;
 
     /**
-     * @var CoreApplicationHttpClient
+     * @var UserManager
      */
-    protected $coreApplicationHttpClient;
+    protected $userManager;
 
     /**
      * {@inheritdoc}
@@ -28,9 +29,10 @@ abstract class AbstractCoreApplicationServiceTest extends AbstractBaseTestCase
 
         $this->httpHistory = new HttpHistorySubscriber();
 
-        $this->coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $this->userManager = $this->container->get(UserManager::class);
 
-        $httpClient = $this->coreApplicationHttpClient->getHttpClient();
+        $httpClient = $coreApplicationHttpClient->getHttpClient();
         $httpClient->getEmitter()->attach($this->httpHistory);
     }
 
