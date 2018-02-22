@@ -14,13 +14,6 @@ services:
       - { name: kernel.event_listener, event: stripe.invoice.payment_succeeded, method: onInvoicePaymentSucceeded }
       - { name: kernel.event_listener, event: stripe.invoice.payment_failed, method: onInvoicePaymentFailed }
 
-  SimplyTestable\WebClientBundle\EventListener\RequestListener:
-    class: SimplyTestable\WebClientBundle\EventListener\RequestListener
-    arguments:
-      - '@kernel'
-    tags:
-      - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
-
   SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener:
     class:   SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener
     arguments:
@@ -31,3 +24,18 @@ services:
       - { name: kernel.event_listener, event: mailchimp.unsubscribe, method: onUnsubscribe }
       - { name: kernel.event_listener, event: mailchimp.upemail, method: onUpEmail }
       - { name: kernel.event_listener, event: mailchimp.cleaned, method: onCleaned }
+
+  SimplyTestable\WebClientBundle\EventListener\IEFilteredRequestListener:
+    class: SimplyTestable\WebClientBundle\EventListener\IEFilteredRequestListener
+    arguments:
+      - '@logger'
+      - '%marketing_site%'
+    tags:
+      - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 25 }
+
+  SimplyTestable\WebClientBundle\EventListener\RequestListener:
+    class: SimplyTestable\WebClientBundle\EventListener\RequestListener
+    arguments:
+      - '@kernel'
+    tags:
+      - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 24 }

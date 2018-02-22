@@ -18,10 +18,8 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser as 
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser as RequiresValidUserController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner as RequiresValidTestOwnerController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresCompletedTest as RequiresCompletedTestController;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered as IEFilteredController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use webignition\IEDetector\IEDetector;
 
 class RequestListener
 {
@@ -79,18 +77,6 @@ class RequestListener
 
         $userService = $this->container->get(UserService::class);
         $userManager = $this->container->get(UserManager::class);
-
-        if ($controller instanceof IEFilteredController && $this->isUsingOldIE()) {
-            /* @var IEFilteredController $controller */
-
-            $this->container->get('logger')->error(
-                'Detected old IE for [' . $this->getUserAgentString() . ']'
-            );
-
-            $controller->setResponse(new RedirectResponse($this->container->getParameter('marketing_site')));
-
-            return;
-        }
 
         $requiresValidUserController =
             $controller instanceof RequiresValidUserController || $controller instanceof RequiresPrivateUserController;
@@ -198,29 +184,5 @@ class RequestListener
         $controllerClassNamePrefix = substr($controllerClassName, 0, strlen(self::APPLICATION_CONTROLLER_PREFIX));
 
         return $controllerClassNamePrefix == self::APPLICATION_CONTROLLER_PREFIX;
-    }
-
-    /**
-     * @return bool
-     */
-    private function isUsingOldIE()
-    {
-        $userAgentString = $this->getUserAgentString();
-
-        return IEDetector::isIE6($userAgentString) || IEDetector::isIE7($userAgentString);
-    }
-
-    /**
-     * @return string
-     */
-    private function getUserAgentString()
-    {
-        $request = $this->event->getRequest();
-
-        if ($request->headers->has('user-agent')) {
-            return $request->headers->get('user-agent');
-        }
-
-        return $request->server->get('HTTP_USER_AGENT');
     }
 }
