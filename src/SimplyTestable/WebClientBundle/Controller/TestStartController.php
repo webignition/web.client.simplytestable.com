@@ -13,6 +13,7 @@ use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskTypeService;
 use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,7 +21,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use webignition\NormalisedUrl\NormalisedUrl;
 
-class TestStartController extends TestController
+class TestStartController extends Controller
 {
     const HTTP_AUTH_FEATURE_NAME = 'http-authentication';
     const HTTP_AUTH_FEATURE_USERNAME_KEY = 'http-auth-username';

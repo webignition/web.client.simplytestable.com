@@ -4,7 +4,7 @@ namespace SimplyTestable\WebClientBundle\Controller\View\User\SignUp;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Controller\UserController;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+
 use SimplyTestable\WebClientBundle\Model\User\Plan;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\CouponService;
@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class IndexController extends BaseViewController implements IEFiltered
+class IndexController extends BaseViewController
 {
     const ONE_YEAR_IN_SECONDS = 31536000;
 

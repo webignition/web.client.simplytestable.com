@@ -2,12 +2,9 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\User\Account;
 
-use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
@@ -17,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class CardController extends BaseViewController implements RequiresPrivateUser, IEFiltered
+class CardController extends AbstractUserAccountController
 {
     const CARD_EXPIRY_DATE_YEAR_RANGE = 10;
 
@@ -44,6 +41,10 @@ class CardController extends BaseViewController implements RequiresPrivateUser, 
      */
     public function indexAction()
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $userService = $this->container->get(UserService::class);
         $teamService = $this->container->get(TeamService::class);
         $router = $this->container->get('router');

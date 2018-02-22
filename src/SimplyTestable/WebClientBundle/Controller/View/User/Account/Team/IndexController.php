@@ -3,12 +3,10 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\User\Account\Team;
 
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
-use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Controller\View\User\Account\AbstractUserAccountController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Services\TeamInviteService;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
@@ -19,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class IndexController extends BaseViewController implements RequiresPrivateUser, IEFiltered
+class IndexController extends AbstractUserAccountController
 {
     const STRIPE_CARD_CHECK_KEY_POSTFIX = '_check';
 
@@ -46,6 +44,10 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
      */
     public function indexAction()
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $userService = $this->container->get(UserService::class);
         $session = $this->get('session');
         $teamService = $this->container->get(TeamService::class);

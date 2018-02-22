@@ -33,6 +33,10 @@ class PreparingStatsController extends BaseViewController implements RequiresVal
      */
     public function indexAction($website, $test_id)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get(RemoteTestService::class);
 

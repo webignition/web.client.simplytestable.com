@@ -27,6 +27,10 @@ class IndexController extends BaseViewController implements RequiresValidUser, R
      */
     public function indexAction(Request $request, $website, $test_id)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $cacheValidatorService = $this->container->get(CacheValidatorService::class);
         $templating = $this->container->get('templating');
         $testService = $this->container->get(TestService::class);

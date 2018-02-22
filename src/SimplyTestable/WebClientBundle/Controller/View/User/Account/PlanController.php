@@ -2,12 +2,9 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\User\Account;
 
-use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\PlansService;
 use SimplyTestable\WebClientBundle\Services\TeamService;
@@ -18,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class PlanController extends BaseViewController implements RequiresPrivateUser, IEFiltered
+class PlanController extends AbstractUserAccountController
 {
     /**
      * {@inheritdoc}
@@ -43,6 +40,10 @@ class PlanController extends BaseViewController implements RequiresPrivateUser, 
      */
     public function indexAction()
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $userService = $this->container->get(UserService::class);
         $teamService = $this->container->get(TeamService::class);
         $templating = $this->container->get('templating');

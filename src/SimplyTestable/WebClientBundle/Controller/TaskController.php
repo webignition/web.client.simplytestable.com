@@ -37,6 +37,10 @@ class TaskController extends BaseViewController implements RequiresValidOwner
      */
     public function idCollectionAction($website, $test_id)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $testService = $this->container->get(TestService::class);
         $taskService = $this->container->get(TaskService::class);
 
@@ -60,6 +64,10 @@ class TaskController extends BaseViewController implements RequiresValidOwner
      */
     public function unretrievedIdCollectionAction($website, $test_id, $limit = null)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $testService = $this->container->get(TestService::class);
         $taskService = $this->container->get(TaskService::class);
 
@@ -92,6 +100,10 @@ class TaskController extends BaseViewController implements RequiresValidOwner
      */
     public function retrieveAction(Request $request, $website, $test_id)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $testService = $this->container->get(TestService::class);
         $taskService = $this->container->get(TaskService::class);
 

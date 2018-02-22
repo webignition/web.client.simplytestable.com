@@ -3,13 +3,12 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\User\ResetPassword;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class IndexController extends BaseViewController implements IEFiltered
+class IndexController extends BaseViewController
 {
     /**
      * @param Request $request

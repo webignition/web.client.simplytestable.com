@@ -2,13 +2,10 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\User\Account;
 
-use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
@@ -24,7 +21,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use Symfony\Component\Routing\RouterInterface;
 
-class IndexController extends BaseViewController implements RequiresPrivateUser, IEFiltered
+class IndexController extends AbstractUserAccountController
 {
     const STRIPE_CARD_CHECK_KEY_POSTFIX = '_check';
 
@@ -54,6 +51,10 @@ class IndexController extends BaseViewController implements RequiresPrivateUser,
      */
     public function indexAction(Request $request)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $userService = $this->container->get(UserService::class);
         $mailChimpListRecipientsService = $this->container->get(ListRecipientsService::class);
         $teamService = $this->container->get(TeamService::class);

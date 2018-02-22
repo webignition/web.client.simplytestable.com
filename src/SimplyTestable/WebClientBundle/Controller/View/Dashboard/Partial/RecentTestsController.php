@@ -26,6 +26,10 @@ class RecentTestsController extends BaseViewController implements RequiresValidU
      */
     public function indexAction()
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get(RemoteTestService::class);
         $taskService = $this->container->get(TaskService::class);

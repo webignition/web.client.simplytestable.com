@@ -7,7 +7,6 @@ use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage;
@@ -29,7 +28,7 @@ use webignition\HtmlValidationErrorLinkifier\HtmlValidationErrorLinkifier;
 use webignition\HtmlValidationErrorNormaliser\HtmlValidationErrorNormaliser;
 use webignition\HtmlValidationErrorNormaliser\Result as HtmlValidationErrorNormalisationResult;
 
-class IndexController extends AbstractRequiresValidOwnerController implements IEFiltered, RequiresValidUser
+class IndexController extends AbstractRequiresValidOwnerController implements RequiresValidUser
 {
     const DOCUMENTATION_SITEMAP_RESOURCE_PATH =
         '@SimplyTestableWebClientBundle/Resources/config/documentation_sitemap.xml';
@@ -48,6 +47,10 @@ class IndexController extends AbstractRequiresValidOwnerController implements IE
      */
     public function indexAction(Request $request, $website, $test_id, $task_id)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $router = $this->container->get('router');
         $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get(RemoteTestService::class);

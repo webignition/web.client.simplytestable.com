@@ -11,20 +11,17 @@ use SimplyTestable\WebClientBundle\Exception\Team\Service\Exception as TeamServi
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Services\TeamInviteService;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
-use Symfony\Component\Routing\RouterInterface;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
-class TeamController extends Controller implements RequiresPrivateUser
+class TeamController extends AbstractUserAccountController
 {
     const FLASH_BAG_KEY_STATUS = 'status';
     const FLASH_BAG_KEY_ERROR = 'error';
@@ -53,20 +50,6 @@ class TeamController extends Controller implements RequiresPrivateUser
     const FLASH_BAG_TEAM_RESEND_INVITE_KEY = 'team_invite_resend';
 
     /**
-     * {@inheritdoc}
-     */
-    public function getUserSignInRedirectResponse(RouterInterface $router, Request $request)
-    {
-        return new RedirectResponse($router->generate(
-            'view_user_signin_index',
-            [
-                'redirect' => base64_encode(json_encode(['route' => 'view_user_account_index_index']))
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
-    }
-
-    /**
      * @param Request $request
      * @return RedirectResponse
      *
@@ -76,6 +59,10 @@ class TeamController extends Controller implements RequiresPrivateUser
      */
     public function createAction(Request $request)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $session = $this->container->get('session');
         $teamService = $this->container->get(TeamService::class);
         $router = $this->container->get('router');
@@ -118,6 +105,10 @@ class TeamController extends Controller implements RequiresPrivateUser
      */
     public function inviteMemberAction(Request $request)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $session = $this->container->get('session');
         $teamInviteService = $this->get(TeamInviteService::class);
         $userService = $this->container->get(UserService::class);
@@ -262,6 +253,10 @@ class TeamController extends Controller implements RequiresPrivateUser
      */
     public function respondInviteAction(Request $request)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $teamInviteService = $this->get(TeamInviteService::class);
         $userManager = $this->container->get(UserManager::class);
         $router = $this->container->get('router');
@@ -306,6 +301,10 @@ class TeamController extends Controller implements RequiresPrivateUser
      */
     public function removeInviteAction(Request $request)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $teamInviteService = $this->get(TeamInviteService::class);
         $router = $this->container->get('router');
 
@@ -335,6 +334,10 @@ class TeamController extends Controller implements RequiresPrivateUser
      */
     public function removeMemberAction(Request $request)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $teamService = $this->container->get(TeamService::class);
         $router = $this->container->get('router');
 
@@ -363,6 +366,10 @@ class TeamController extends Controller implements RequiresPrivateUser
      */
     public function resendInviteAction(Request $request)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $session = $this->container->get('session');
         $teamInviteService = $this->get(TeamInviteService::class);
         $userService = $this->container->get(UserService::class);
@@ -420,6 +427,10 @@ class TeamController extends Controller implements RequiresPrivateUser
      */
     public function leaveAction()
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $teamService = $this->container->get(TeamService::class);
         $router = $this->container->get('router');
 

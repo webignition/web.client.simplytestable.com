@@ -13,11 +13,10 @@ use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class IndexController extends BaseViewController implements IEFiltered, RequiresValidUser
+class IndexController extends BaseViewController implements RequiresValidUser
 {
     /**
      * @param Request $request
@@ -26,6 +25,10 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
      */
     public function indexAction(Request $request)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $taskTypeService = $this->container->get(TaskTypeService::class);
         $testOptionsAdapterFactory = $this->container->get(RequestAdapterFactory::class);
         $urlViewValuesService = $this->container->get(UrlViewValuesService::class);

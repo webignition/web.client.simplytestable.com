@@ -13,11 +13,17 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class UserAccountCardController extends Controller implements RequiresPrivateUser
 {
+    /**
+     * @var Response|RedirectResponse|JsonResponse
+     */
+    protected $response;
+
     /**
      * @param $stripe_card_token
      *
@@ -29,6 +35,10 @@ class UserAccountCardController extends Controller implements RequiresPrivateUse
      */
     public function associateAction($stripe_card_token)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $router = $this->container->get('router');
         $userAccountCardService = $this->get(UserAccountCardService::class);
         $userManager = $this->container->get(UserManager::class);
@@ -64,5 +74,21 @@ class UserAccountCardController extends Controller implements RequiresPrivateUse
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
         ));
+    }
+
+    /**
+     * @param Response $response
+     */
+    public function setResponse(Response $response)
+    {
+        $this->response = $response;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasResponse()
+    {
+        return !empty($this->response);
     }
 }
