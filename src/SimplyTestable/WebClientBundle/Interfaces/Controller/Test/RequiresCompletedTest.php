@@ -2,11 +2,12 @@
 
 namespace SimplyTestable\WebClientBundle\Interfaces\Controller\Test;
 
+use SimplyTestable\WebClientBundle\Interfaces\Controller\SettableResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
-interface RequiresCompletedTest
+interface RequiresCompletedTest extends SettableResponse
 {
     /**
      * @param RouterInterface $router
@@ -39,14 +40,4 @@ interface RequiresCompletedTest
      * @return Response
      */
     public function getRequestWebsiteMismatchResponse(RouterInterface $router, Request $request);
-
-    /**
-     * @param Response $response
-     */
-    public function setResponse(Response $response);
-
-    /**
-     * @return bool
-     */
-    public function hasResponse();
 }

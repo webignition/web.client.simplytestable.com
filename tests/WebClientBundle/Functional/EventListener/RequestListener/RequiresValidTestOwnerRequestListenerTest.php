@@ -1,8 +1,9 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\EventListener\RequestListener\OnKernelController;
+namespace Tests\WebClientBundle\Functional\EventListener\RequestListener;
 
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\EventListener\RequiresValidTestOwnerRequestListener;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\TestFactory;
@@ -10,10 +11,20 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Controller\View\Test\Partial\Notification\UrlLimitController;
 
-class OnKernelControllerRequiresValidTestOwnerTest extends AbstractOnKernelControllerTest
+class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelControllerTest
 {
     const WEBSITE = 'http://example.com';
     const TEST_ID = 1;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->requestListener = $this->container->get(RequiresValidTestOwnerRequestListener::class);
+    }
 
     /**
      * @dataProvider dataProvider
@@ -23,7 +34,6 @@ class OnKernelControllerRequiresValidTestOwnerTest extends AbstractOnKernelContr
      * @param bool $expectedHasResponse
      *
      * @throws \ReflectionException
-     * @throws CoreApplicationRequestException
      */
     public function testOnKernelController(array $httpFixtures, array $testValues, $expectedHasResponse)
     {
@@ -62,7 +72,6 @@ class OnKernelControllerRequiresValidTestOwnerTest extends AbstractOnKernelContr
         return [
             'invalid test' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createSuccessResponse([
                         'content-type' => 'text/plain',
                     ], 'foo'),
@@ -72,7 +81,6 @@ class OnKernelControllerRequiresValidTestOwnerTest extends AbstractOnKernelContr
             ],
             'invalid test owner' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createForbiddenResponse(),
                 ],
                 'testValues' => [
@@ -83,7 +91,6 @@ class OnKernelControllerRequiresValidTestOwnerTest extends AbstractOnKernelContr
             ],
             'valid test owner' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createJsonResponse([
                         'id' => self::TEST_ID,
                         'website' => self::WEBSITE,
@@ -104,7 +111,6 @@ class OnKernelControllerRequiresValidTestOwnerTest extends AbstractOnKernelContr
     public function testOnKernelControllerCoreApplicationRequestException()
     {
         $this->setCoreApplicationHttpClientHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 

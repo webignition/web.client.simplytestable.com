@@ -2,10 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Interfaces\Controller\Test;
 
+use SimplyTestable\WebClientBundle\Interfaces\Controller\SettableResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-interface RequiresValidOwner
+interface RequiresValidOwner extends SettableResponse
 {
     /**
      * @param Request $request
@@ -13,14 +14,4 @@ interface RequiresValidOwner
      * @return Response
      */
     public function getInvalidOwnerResponse(Request $request);
-
-    /**
-     * @param Response $response
-     */
-    public function setResponse(Response $response);
-
-    /**
-     * @return bool
-     */
-    public function hasResponse();
 }

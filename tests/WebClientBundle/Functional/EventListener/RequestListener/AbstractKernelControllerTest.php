@@ -1,9 +1,15 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\EventListener\RequestListener\OnKernelController;
+namespace Tests\WebClientBundle\Functional\EventListener\RequestListener;
 
 use ReflectionClass;
-use SimplyTestable\WebClientBundle\EventListener\RequestListener;
+use SimplyTestable\WebClientBundle\Controller\UserController;
+use SimplyTestable\WebClientBundle\Controller\View\Dashboard\IndexController;
+use SimplyTestable\WebClientBundle\EventListener\IEFilteredRequestListener;
+use SimplyTestable\WebClientBundle\EventListener\RequiresCompletedTestRequestListener;
+use SimplyTestable\WebClientBundle\EventListener\RequiresPrivateUserRequestListener;
+use SimplyTestable\WebClientBundle\EventListener\RequiresValidTestOwnerRequestListener;
+use SimplyTestable\WebClientBundle\EventListener\RequiresValidUserRequestListener;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
@@ -17,22 +23,12 @@ use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-abstract class AbstractOnKernelControllerTest extends AbstractBaseTestCase
+abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
 {
     /**
-     * @var RequestListener
+     * @var IEFilteredRequestListener|RequiresCompletedTestRequestListener|RequiresPrivateUserRequestListener|RequiresValidTestOwnerRequestListener|RequiresValidUserRequestListener
      */
     protected $requestListener;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->requestListener = $this->container->get(RequestListener::class);
-    }
 
     /**
      * @param Request $request
@@ -77,5 +73,50 @@ abstract class AbstractOnKernelControllerTest extends AbstractBaseTestCase
         $reflectionProperty->setAccessible(true);
 
         return $reflectionProperty->getValue($controller);
+    }
+
+    /**
+     * @dataProvider requestTypeDataProvider
+     *
+     * @param string $requestType
+     *
+     * @throws \Exception
+     */
+    public function testOnKernelControllerRequestType($requestType)
+    {
+        $request = new Request();
+
+        $controller = new UserController();
+
+        $event = $this->createFilterControllerEvent($request, $controller, 'signOutSubmitAction', $requestType);
+
+        $this->requestListener->onKernelController($event);
+    }
+
+    /**
+     * @return array
+     */
+    public function requestTypeDataProvider()
+    {
+        return [
+            'sub request' => [
+                'requestType' => HttpKernelInterface::SUB_REQUEST
+            ],
+            'master request' => [
+                'requestType' => HttpKernelInterface::MASTER_REQUEST
+            ],
+        ];
+    }
+
+    public function testOnKernelControllerHasResponse()
+    {
+        $request = new Request();
+
+        $controller = new IndexController();
+        $controller->setResponse(new Response());
+
+        $event = $this->createFilterControllerEvent($request, $controller, 'indexAction');
+
+        $this->requestListener->onKernelController($event);
     }
 }

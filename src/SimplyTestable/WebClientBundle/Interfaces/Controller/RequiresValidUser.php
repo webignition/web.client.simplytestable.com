@@ -2,17 +2,6 @@
 
 namespace SimplyTestable\WebClientBundle\Interfaces\Controller;
 
-use Symfony\Component\HttpFoundation\Response;
-
-interface RequiresValidUser
+interface RequiresValidUser extends SettableResponse
 {
-    /**
-     * @param Response $response
-     */
-    public function setResponse(Response $response);
-
-    /**
-     * @return bool
-     */
-    public function hasResponse();
 }
