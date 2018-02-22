@@ -35,13 +35,7 @@ class IEFilteredRequestListener extends AbstractRequestListener
      */
     public function onKernelController(FilterControllerEvent $event)
     {
-        parent::onKernelController($event);
-
-        if (!$event->isMasterRequest()) {
-            return;
-        }
-
-        if (!$this->isApplicationController()) {
+        if (!parent::onKernelController($event)) {
             return;
         }
 
@@ -60,14 +54,14 @@ class IEFilteredRequestListener extends AbstractRequestListener
             $isUsingOldIE = IEDetector::isIE6($userAgentString) || IEDetector::isIE7($userAgentString);
 
             if ($isUsingOldIE) {
-                /* @var IEFiltered $controller */
-
                 $this->logger->error(sprintf(
                     'Detected old IE for [%s]',
                     $userAgentString
                 ));
 
-                $this->controller->setResponse(new RedirectResponse($this->marketingSiteUrl));
+                /* @var IEFiltered $controller */
+                $controller = $this->controller;
+                $controller->setResponse(new RedirectResponse($this->marketingSiteUrl));
 
                 return;
             }

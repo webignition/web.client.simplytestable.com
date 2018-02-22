@@ -7,19 +7,15 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser as RequiresPrivateUserController;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser as RequiresValidUserController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner as RequiresValidTestOwnerController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresCompletedTest as RequiresCompletedTestController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class RequestListener
 {
@@ -75,22 +71,7 @@ class RequestListener
             return;
         }
 
-        $userService = $this->container->get(UserService::class);
         $userManager = $this->container->get(UserManager::class);
-
-        $requiresValidUserController =
-            $controller instanceof RequiresValidUserController || $controller instanceof RequiresPrivateUserController;
-
-        if ($requiresValidUserController && !$userService->authenticate()) {
-            /* @var RequiresValidUserController $controller */
-
-            $router = $this->container->get('router');
-            $redirectUrl = $router->generate('sign_out_submit', [], UrlGeneratorInterface::ABSOLUTE_URL);
-
-            $controller->setResponse(new RedirectResponse($redirectUrl));
-
-            return;
-        }
 
         if ($controller instanceof RequiresPrivateUserController && !$userManager->isLoggedIn()) {
             /* @var RequiresPrivateUserController $controller */

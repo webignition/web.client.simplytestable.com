@@ -33,9 +33,17 @@ services:
     tags:
       - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 25 }
 
+  SimplyTestable\WebClientBundle\EventListener\RequiresValidUserRequestListener:
+    class: SimplyTestable\WebClientBundle\EventListener\RequiresValidUserRequestListener
+    arguments:
+      - '@SimplyTestable\WebClientBundle\Services\UserService'
+      - '@router'
+    tags:
+      - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 24 }
+
   SimplyTestable\WebClientBundle\EventListener\RequestListener:
     class: SimplyTestable\WebClientBundle\EventListener\RequestListener
     arguments:
       - '@kernel'
     tags:
-      - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 24 }
+      - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 20 }

@@ -1,14 +1,30 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\EventListener\RequestListener\OnKernelController;
+namespace Tests\WebClientBundle\Functional\EventListener\RequestListener;
 
 use SimplyTestable\WebClientBundle\Controller\View\Dashboard\Partial\RecentTestsController;
+use SimplyTestable\WebClientBundle\EventListener\RequiresValidUserRequestListener;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class OnKernelControllerRequiresValidUserTest extends AbstractOnKernelControllerTest
+class OnKernelControllerRequiresValidUserTest extends AbstractKernelControllerTest
 {
+    /**
+     * @var RequiresValidUserRequestListener
+     */
+    private $requestListener;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->requestListener = $this->container->get(RequiresValidUserRequestListener::class);
+    }
+
     /**
      * @dataProvider dataProvider
      *

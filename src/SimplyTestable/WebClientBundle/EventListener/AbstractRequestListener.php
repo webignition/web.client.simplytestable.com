@@ -16,14 +16,22 @@ abstract class AbstractRequestListener
 
     /**
      * @param FilterControllerEvent $event
+     *
+     * @return bool
      */
     public function onKernelController(FilterControllerEvent $event)
     {
         if (!$event->isMasterRequest()) {
-            return;
+            return false;
         }
 
         $this->controller = $event->getController()[0];
+
+        if (!$this->isApplicationController()) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
