@@ -11,11 +11,6 @@ use Symfony\Component\HttpFoundation\Request;
 class OnKernelControllerRequiresValidUserTest extends AbstractKernelControllerTest
 {
     /**
-     * @var RequiresValidUserRequestListener
-     */
-    private $requestListener;
-
-    /**
      * {@inheritdoc}
      */
     protected function setUp()

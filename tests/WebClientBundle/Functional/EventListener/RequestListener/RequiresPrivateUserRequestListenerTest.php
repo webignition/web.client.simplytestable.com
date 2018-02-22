@@ -14,11 +14,6 @@ use SimplyTestable\WebClientBundle\Controller\Action\User\Account\NewsSubscripti
 class RequiresPrivateUserRequestListenerTest extends AbstractKernelControllerTest
 {
     /**
-     * @var RequiresPrivateUserRequestListener
-     */
-    private $requestListener;
-
-    /**
      * {@inheritdoc}
      */
     protected function setUp()

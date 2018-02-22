@@ -3,12 +3,10 @@
 namespace Tests\WebClientBundle\Functional\EventListener\RequestListener;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Controller\UserController;
 use SimplyTestable\WebClientBundle\EventListener\IEFilteredRequestListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use SimplyTestable\WebClientBundle\Controller\View\User\SignUp\IndexController;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class IEFilteredRequestListenerTest extends AbstractKernelControllerTest
 {
@@ -16,11 +14,6 @@ class IEFilteredRequestListenerTest extends AbstractKernelControllerTest
     const IE7_USER_AGENT = 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)';
     const OPERA_950_USER_AGENT = 'Mozilla/4.0 (compatible; MSIE 6.0; X11; Linux x86_64; en) Opera 9.50';
     const IE8_USER_AGENT = 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)';
-
-    /**
-     * @var IEFilteredRequestListener
-     */
-    private $requestListener;
 
     /**
      * {@inheritdoc}
@@ -89,39 +82,6 @@ class IEFilteredRequestListenerTest extends AbstractKernelControllerTest
             'IE8' => [
                 'userAgent' => self::IE8_USER_AGENT,
                 'expectedHasResponse' => false,
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider requestTypeDataProvider
-     *
-     * @param string $requestType
-     *
-     * @throws \Exception
-     */
-    public function testOnKernelControllerRequestType($requestType)
-    {
-        $request = new Request();
-
-        $controller = new UserController();
-
-        $event = $this->createFilterControllerEvent($request, $controller, 'signOutSubmitAction', $requestType);
-
-        $this->requestListener->onKernelController($event);
-    }
-
-    /**
-     * @return array
-     */
-    public function requestTypeDataProvider()
-    {
-        return [
-            'sub request' => [
-                'requestType' => HttpKernelInterface::SUB_REQUEST
-            ],
-            'master request' => [
-                'requestType' => HttpKernelInterface::MASTER_REQUEST
             ],
         ];
     }

@@ -17,11 +17,6 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelController
     const TEST_ID = 1;
 
     /**
-     * @var RequiresValidTestOwnerRequestListener
-     */
-    private $requestListener;
-
-    /**
      * {@inheritdoc}
      */
     protected function setUp()

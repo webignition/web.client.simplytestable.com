@@ -17,11 +17,6 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerT
     const TEST_ID = 1;
 
     /**
-     * @var RequiresCompletedTestRequestListener
-     */
-    private $requestListener;
-
-    /**
      * {@inheritdoc}
      */
     protected function setUp()

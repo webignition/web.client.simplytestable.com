@@ -3,6 +3,12 @@
 namespace Tests\WebClientBundle\Functional\EventListener\RequestListener;
 
 use ReflectionClass;
+use SimplyTestable\WebClientBundle\Controller\UserController;
+use SimplyTestable\WebClientBundle\EventListener\IEFilteredRequestListener;
+use SimplyTestable\WebClientBundle\EventListener\RequiresCompletedTestRequestListener;
+use SimplyTestable\WebClientBundle\EventListener\RequiresPrivateUserRequestListener;
+use SimplyTestable\WebClientBundle\EventListener\RequiresValidTestOwnerRequestListener;
+use SimplyTestable\WebClientBundle\EventListener\RequiresValidUserRequestListener;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
@@ -18,6 +24,11 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
 {
+    /**
+     * @var IEFilteredRequestListener|RequiresCompletedTestRequestListener|RequiresPrivateUserRequestListener|RequiresValidTestOwnerRequestListener|RequiresValidUserRequestListener
+     */
+    protected $requestListener;
+
     /**
      * @param Request $request
      * @param Controller $controller
@@ -61,5 +72,38 @@ abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
         $reflectionProperty->setAccessible(true);
 
         return $reflectionProperty->getValue($controller);
+    }
+
+    /**
+     * @dataProvider requestTypeDataProvider
+     *
+     * @param string $requestType
+     *
+     * @throws \Exception
+     */
+    public function testOnKernelControllerRequestType($requestType)
+    {
+        $request = new Request();
+
+        $controller = new UserController();
+
+        $event = $this->createFilterControllerEvent($request, $controller, 'signOutSubmitAction', $requestType);
+
+        $this->requestListener->onKernelController($event);
+    }
+
+    /**
+     * @return array
+     */
+    public function requestTypeDataProvider()
+    {
+        return [
+            'sub request' => [
+                'requestType' => HttpKernelInterface::SUB_REQUEST
+            ],
+            'master request' => [
+                'requestType' => HttpKernelInterface::MASTER_REQUEST
+            ],
+        ];
     }
 }
