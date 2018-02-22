@@ -50,6 +50,13 @@ services:
     tags:
       - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 23 }
 
+  SimplyTestable\WebClientBundle\EventListener\RequiresValidTestOwnerRequestListener:
+    class: SimplyTestable\WebClientBundle\EventListener\RequiresValidTestOwnerRequestListener
+    arguments:
+      - '@SimplyTestable\WebClientBundle\Services\TestService'
+    tags:
+      - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 22 }
+
   SimplyTestable\WebClientBundle\EventListener\RequestListener:
     class: SimplyTestable\WebClientBundle\EventListener\RequestListener
     arguments:

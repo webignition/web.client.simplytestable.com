@@ -3,14 +3,12 @@
 namespace SimplyTestable\WebClientBundle\EventListener;
 
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
-use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Kernel;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner as RequiresValidTestOwnerController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresCompletedTest as RequiresCompletedTestController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 
@@ -66,34 +64,6 @@ class RequestListener
 
         if (!$this->isApplicationController($controller)) {
             return;
-        }
-
-        if ($controller instanceof RequiresValidTestOwnerController) {
-            /* @var RequiresValidTestOwnerController $controller */
-
-            $testService = $this->container->get(TestService::class);
-            $requestAttributes = $this->request->attributes;
-
-            $website = $requestAttributes->get('website');
-            $testId = $requestAttributes->get('test_id');
-
-            try {
-                if (!$testService->has($website, $testId)) {
-                    $controller->setResponse($controller->getInvalidOwnerResponse($this->request));
-
-                    return;
-                }
-
-                $test = $testService->get($website, $testId);
-
-                if (empty($test)) {
-                    throw new InvalidCredentialsException();
-                }
-            } catch (InvalidCredentialsException $invalidCredentialsException) {
-                $controller->setResponse($controller->getInvalidOwnerResponse($this->request));
-
-                return;
-            }
         }
 
         if ($controller instanceof RequiresCompletedTestController) {
