@@ -21,9 +21,10 @@ abstract class AbstractRequiresValidOwnerController extends BaseViewController i
         $session = $this->container->get('session');
         $router = $this->container->get('router');
         $userManager = $this->container->get(UserManager::class);
+        $templating = $this->container->get('templating');
 
         if ($userManager->isLoggedIn()) {
-            return $this->render(
+            return $templating->render(
                 'SimplyTestableWebClientBundle:bs3/Test/Results:not-authorised.html.twig',
                 array_merge($this->getDefaultViewParameters(), [
                     'test_id' => $request->attributes->get('test_id'),
