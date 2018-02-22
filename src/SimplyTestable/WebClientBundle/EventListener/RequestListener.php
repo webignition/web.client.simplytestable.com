@@ -4,15 +4,12 @@ namespace SimplyTestable\WebClientBundle\EventListener;
 
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Services\TestService;
-use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Kernel;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser as RequiresPrivateUserController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner as RequiresValidTestOwnerController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresCompletedTest as RequiresCompletedTestController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
@@ -68,21 +65,6 @@ class RequestListener
         $controller = $this->event->getController()[0];
 
         if (!$this->isApplicationController($controller)) {
-            return;
-        }
-
-        $userManager = $this->container->get(UserManager::class);
-
-        if ($controller instanceof RequiresPrivateUserController && !$userManager->isLoggedIn()) {
-            /* @var RequiresPrivateUserController $controller */
-
-            $session = $this->container->get('session');
-            $router = $this->container->get('router');
-
-            $session->getFlashBag()->set('user_signin_error', 'account-not-logged-in');
-
-            $controller->setResponse($controller->getUserSignInRedirectResponse($router, $this->request));
-
             return;
         }
 

@@ -62,8 +62,6 @@ class IEFilteredRequestListener extends AbstractRequestListener
                 /* @var IEFiltered $controller */
                 $controller = $this->controller;
                 $controller->setResponse(new RedirectResponse($this->marketingSiteUrl));
-
-                return;
             }
         }
     }

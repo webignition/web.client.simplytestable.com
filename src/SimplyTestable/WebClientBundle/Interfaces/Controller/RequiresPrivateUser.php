@@ -4,10 +4,9 @@ namespace SimplyTestable\WebClientBundle\Interfaces\Controller;
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
-interface RequiresPrivateUser
+interface RequiresPrivateUser extends RequiresValidUser
 {
     /**
      * @param RouterInterface $router
@@ -16,14 +15,4 @@ interface RequiresPrivateUser
      * @return RedirectResponse
      */
     public function getUserSignInRedirectResponse(RouterInterface $router, Request $request);
-
-    /**
-     * @param Response $response
-     */
-    public function setResponse(Response $response);
-
-    /**
-     * @return bool
-     */
-    public function hasResponse();
 }

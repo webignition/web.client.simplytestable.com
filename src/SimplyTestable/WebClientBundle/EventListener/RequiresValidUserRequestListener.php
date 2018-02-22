@@ -46,8 +46,6 @@ class RequiresValidUserRequestListener extends AbstractRequestListener
             /* @var RequiresValidUser $controller */
             $controller = $this->controller;
             $controller->setResponse(new RedirectResponse($redirectUrl));
-
-            return;
         }
     }
 }

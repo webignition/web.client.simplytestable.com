@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\EventListener\RequestListener\OnKernelController;
+namespace Tests\WebClientBundle\Functional\EventListener\RequestListener;
 
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\EventListener\RequiresPrivateUserRequestListener;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
@@ -11,8 +11,23 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\NewsSubscriptionsController;
 
-class OnKernelControllerRequiresPrivateUserTest extends AbstractOnKernelControllerTest
+class RequiresPrivateUserRequestListenerTest extends AbstractKernelControllerTest
 {
+    /**
+     * @var RequiresPrivateUserRequestListener
+     */
+    private $requestListener;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->requestListener = $this->container->get(RequiresPrivateUserRequestListener::class);
+    }
+
     /**
      * @dataProvider dataProvider
      *
@@ -20,8 +35,6 @@ class OnKernelControllerRequiresPrivateUserTest extends AbstractOnKernelControll
      * @param User $user
      * @param $expectedHasResponse
      * @param string $expectedRedirectUrl
-     *
-     * @throws CoreApplicationRequestException
      */
     public function testOnKernelController(
         array $httpFixtures,
