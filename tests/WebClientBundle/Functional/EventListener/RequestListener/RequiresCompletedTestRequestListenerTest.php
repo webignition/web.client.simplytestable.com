@@ -1,20 +1,35 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\EventListener\RequestListener\OnKernelController;
+namespace Tests\WebClientBundle\Functional\EventListener\RequestListener;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\EventListener\RequiresCompletedTestRequestListener;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\TestFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use SimplyTestable\WebClientBundle\Controller\View\Test\Results\IndexController;
 
-class OnKernelControllerRequiresCompletedTestTest extends AbstractOnKernelControllerTest
+class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerTest
 {
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
+
+    /**
+     * @var RequiresCompletedTestRequestListener
+     */
+    private $requestListener;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->requestListener = $this->container->get(RequiresCompletedTestRequestListener::class);
+    }
 
     /**
      * @dataProvider dataProvider
@@ -25,7 +40,6 @@ class OnKernelControllerRequiresCompletedTestTest extends AbstractOnKernelContro
      * @param string $expectedRedirectUrl
      *
      * @throws \ReflectionException
-     * @throws CoreApplicationRequestException
      */
     public function testOnKernelController(
         array $httpFixtures,
@@ -69,7 +83,6 @@ class OnKernelControllerRequiresCompletedTestTest extends AbstractOnKernelContro
         return [
             'state: failed no sitemap' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createJsonResponse([
                         'id' => self::TEST_ID,
                         'website' => self::WEBSITE,
@@ -88,7 +101,6 @@ class OnKernelControllerRequiresCompletedTestTest extends AbstractOnKernelContro
             ],
             'state: rejected' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createJsonResponse([
                         'id' => self::TEST_ID,
                         'website' => self::WEBSITE,
@@ -107,7 +119,6 @@ class OnKernelControllerRequiresCompletedTestTest extends AbstractOnKernelContro
             ],
             'state: in progress' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createJsonResponse([
                         'id' => self::TEST_ID,
                         'website' => self::WEBSITE,
@@ -126,7 +137,6 @@ class OnKernelControllerRequiresCompletedTestTest extends AbstractOnKernelContro
             ],
             'non-matching website' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createJsonResponse([
                         'id' => self::TEST_ID,
                         'website' => 'http://foo.example.com/',
@@ -141,7 +151,6 @@ class OnKernelControllerRequiresCompletedTestTest extends AbstractOnKernelContro
             ],
             'state: completed' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createJsonResponse([
                         'id' => self::TEST_ID,
                         'website' => self::WEBSITE,

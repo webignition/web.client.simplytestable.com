@@ -6,7 +6,6 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner as RequiresValidTestOwnerController;
 
 class RequiresValidTestOwnerRequestListener extends AbstractRequestListener
 {
@@ -32,7 +31,7 @@ class RequiresValidTestOwnerRequestListener extends AbstractRequestListener
             return;
         }
 
-        if ($this->controller instanceof RequiresValidTestOwnerController) {
+        if ($this->controller instanceof RequiresValidOwner) {
             $request = $event->getRequest();
 
             $requestAttributes = $request->attributes;

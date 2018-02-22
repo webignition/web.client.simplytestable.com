@@ -3,10 +3,12 @@
 namespace Tests\WebClientBundle\Functional\EventListener\RequestListener;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Controller\UserController;
 use SimplyTestable\WebClientBundle\EventListener\IEFilteredRequestListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use SimplyTestable\WebClientBundle\Controller\View\User\SignUp\IndexController;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class IEFilteredRequestListenerTest extends AbstractKernelControllerTest
 {
@@ -87,6 +89,39 @@ class IEFilteredRequestListenerTest extends AbstractKernelControllerTest
             'IE8' => [
                 'userAgent' => self::IE8_USER_AGENT,
                 'expectedHasResponse' => false,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider requestTypeDataProvider
+     *
+     * @param string $requestType
+     *
+     * @throws \Exception
+     */
+    public function testOnKernelControllerRequestType($requestType)
+    {
+        $request = new Request();
+
+        $controller = new UserController();
+
+        $event = $this->createFilterControllerEvent($request, $controller, 'signOutSubmitAction', $requestType);
+
+        $this->requestListener->onKernelController($event);
+    }
+
+    /**
+     * @return array
+     */
+    public function requestTypeDataProvider()
+    {
+        return [
+            'sub request' => [
+                'requestType' => HttpKernelInterface::SUB_REQUEST
+            ],
+            'master request' => [
+                'requestType' => HttpKernelInterface::MASTER_REQUEST
             ],
         ];
     }

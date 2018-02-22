@@ -57,9 +57,10 @@ services:
     tags:
       - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 22 }
 
-  SimplyTestable\WebClientBundle\EventListener\RequestListener:
-    class: SimplyTestable\WebClientBundle\EventListener\RequestListener
+  SimplyTestable\WebClientBundle\EventListener\RequiresCompletedTestRequestListener:
+    class: SimplyTestable\WebClientBundle\EventListener\RequiresCompletedTestRequestListener
     arguments:
-      - '@kernel'
+      - '@SimplyTestable\WebClientBundle\Services\TestService'
+      - '@router'
     tags:
-      - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 20 }
+      - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 21 }
