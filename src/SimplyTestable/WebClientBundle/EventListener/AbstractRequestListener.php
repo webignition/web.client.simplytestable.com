@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\EventListener;
 
+use SimplyTestable\WebClientBundle\Interfaces\Controller\SettableResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 
@@ -28,6 +29,10 @@ abstract class AbstractRequestListener
         $this->controller = $event->getController()[0];
 
         if (!$this->isApplicationController()) {
+            return false;
+        }
+
+        if ($this->controller instanceof SettableResponse && $this->controller->hasResponse()) {
             return false;
         }
 
