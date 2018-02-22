@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 abstract class AbstractRequiresValidOwnerController extends BaseViewController implements RequiresValidOwner
@@ -24,13 +25,13 @@ abstract class AbstractRequiresValidOwnerController extends BaseViewController i
         $templating = $this->container->get('templating');
 
         if ($userManager->isLoggedIn()) {
-            return $templating->render(
+            return new Response($templating->render(
                 'SimplyTestableWebClientBundle:bs3/Test/Results:not-authorised.html.twig',
                 array_merge($this->getDefaultViewParameters(), [
                     'test_id' => $request->attributes->get('test_id'),
                     'website' => $urlViewValuesService->create($request->attributes->get('website')),
                 ])
-            );
+            ));
         }
 
         $redirectParameters = json_encode([
