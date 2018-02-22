@@ -4,6 +4,7 @@ namespace Tests\WebClientBundle\Functional\EventListener\RequestListener;
 
 use ReflectionClass;
 use SimplyTestable\WebClientBundle\Controller\UserController;
+use SimplyTestable\WebClientBundle\Controller\View\Dashboard\IndexController;
 use SimplyTestable\WebClientBundle\EventListener\IEFilteredRequestListener;
 use SimplyTestable\WebClientBundle\EventListener\RequiresCompletedTestRequestListener;
 use SimplyTestable\WebClientBundle\EventListener\RequiresPrivateUserRequestListener;
@@ -105,5 +106,17 @@ abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
                 'requestType' => HttpKernelInterface::MASTER_REQUEST
             ],
         ];
+    }
+
+    public function testOnKernelControllerHasResponse()
+    {
+        $request = new Request();
+
+        $controller = new IndexController();
+        $controller->setResponse(new Response());
+
+        $event = $this->createFilterControllerEvent($request, $controller, 'indexAction');
+
+        $this->requestListener->onKernelController($event);
     }
 }
