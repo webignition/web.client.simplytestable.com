@@ -5,7 +5,6 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results\FailedNoUr
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
@@ -17,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class IndexController extends BaseViewController implements IEFiltered, RequiresValidUser
+class IndexController extends BaseViewController implements RequiresValidUser
 {
     /**
      * @param Request $request
@@ -30,6 +29,10 @@ class IndexController extends BaseViewController implements IEFiltered, Requires
      */
     public function indexAction(Request $request, $website, $test_id)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $testService = $this->container->get(TestService::class);
         $router = $this->container->get('router');
         $cacheValidatorService = $this->container->get(CacheValidatorService::class);

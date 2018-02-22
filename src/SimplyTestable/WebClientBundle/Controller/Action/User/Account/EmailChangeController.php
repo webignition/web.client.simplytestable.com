@@ -16,11 +16,10 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
-use Symfony\Component\Routing\RouterInterface;
 use webignition\ResqueJobFactory\ResqueJobFactory;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
-class EmailChangeController extends AccountCredentialsChangeController
+class EmailChangeController extends AbstractUserAccountController
 {
     const FLASH_BAG_CONFIRM_KEY = 'user_account_details_update_email_confirm_notice';
     const FLASH_BAG_CONFIRM_ERROR_MESSAGE_TOKEN_INVALID = 'invalid-token';
@@ -49,21 +48,8 @@ class EmailChangeController extends AccountCredentialsChangeController
     const FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN = 'postmark-failure';
 
     /**
-     * {@inheritdoc}
-     */
-    public function getUserSignInRedirectResponse(RouterInterface $router, Request $request)
-    {
-        return new RedirectResponse($router->generate(
-            'view_user_signin_index',
-            [
-                'redirect' => base64_encode(json_encode(['route' => 'view_user_account_index_index']))
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
-    }
-
-    /**
      * @param Request $request
+     *
      * @return RedirectResponse
      *
      * @throws CoreApplicationRequestException
@@ -74,6 +60,10 @@ class EmailChangeController extends AccountCredentialsChangeController
      */
     public function requestAction(Request $request)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $emailChangeRequestService = $this->get(UserEmailChangeRequestService::class);
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
@@ -185,6 +175,10 @@ class EmailChangeController extends AccountCredentialsChangeController
      */
     public function resendAction()
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $session = $this->container->get('session');
         $router = $this->container->get('router');
 
@@ -236,6 +230,10 @@ class EmailChangeController extends AccountCredentialsChangeController
      */
     public function confirmAction(Request $request)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $session = $this->container->get('session');
         $emailChangeRequestService = $this->get(UserEmailChangeRequestService::class);
         $resqueQueueService = $this->container->get(ResqueQueueService::class);
@@ -347,6 +345,10 @@ class EmailChangeController extends AccountCredentialsChangeController
      */
     public function cancelAction()
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $emailChangeRequestService = $this->get(UserEmailChangeRequestService::class);
         $session = $this->container->get('session');
         $router = $this->container->get('router');

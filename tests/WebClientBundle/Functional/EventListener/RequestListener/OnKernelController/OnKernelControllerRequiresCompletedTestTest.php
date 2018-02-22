@@ -1,19 +1,18 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\EventListener\RequestListener\OnKernelRequest;
+namespace Tests\WebClientBundle\Functional\EventListener\RequestListener\OnKernelController;
 
+use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\TestFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use SimplyTestable\WebClientBundle\Controller\View\Test\Results\IndexController;
 
-class OnKernelRequestRequiresCompletedTestTest extends AbstractOnKernelRequestTest
+class OnKernelControllerRequiresCompletedTestTest extends AbstractOnKernelControllerTest
 {
-    const CONTROLLER_ACTION =
-        'SimplyTestable\WebClientBundle\Controller\View\Test\Results\IndexController::indexAction';
-    const CONTROLLER_ROUTE = 'view_test_results_index_index';
-
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
 
@@ -22,15 +21,16 @@ class OnKernelRequestRequiresCompletedTestTest extends AbstractOnKernelRequestTe
      *
      * @param array $httpFixtures
      * @param array $testValues
-     * @param bool $expectedHasRedirectResponse
+     * @param bool $expectedHasResponse
      * @param string $expectedRedirectUrl
      *
-     * @throws \Exception
+     * @throws \ReflectionException
+     * @throws CoreApplicationRequestException
      */
-    public function testOnKernelRequest(
+    public function testOnKernelController(
         array $httpFixtures,
         array $testValues,
-        $expectedHasRedirectResponse,
+        $expectedHasResponse,
         $expectedRedirectUrl = null
     ) {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
@@ -40,27 +40,24 @@ class OnKernelRequestRequiresCompletedTestTest extends AbstractOnKernelRequestTe
             $testFactory->create($testValues);
         }
 
+        $controller = new IndexController();
+
         $request = new Request([], [], [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
         ]);
 
-        $event = $this->createGetResponseEvent(
-            $request,
-            self::CONTROLLER_ACTION,
-            self::CONTROLLER_ROUTE
-        );
+        $event = $this->createFilterControllerEvent($request, $controller, 'indexAction');
 
-        $this->requestListener->onKernelRequest($event);
+        $this->requestListener->onKernelController($event);
 
-        $response = $event->getResponse();
+        $this->assertEquals($expectedHasResponse, $controller->hasResponse());
 
-        if ($expectedHasRedirectResponse) {
-            /* @var RedirectResponse $response */
+        if ($expectedHasResponse) {
+            $response = $this->getControllerResponse($controller, BaseViewController::class);
+
             $this->assertInstanceOf(RedirectResponse::class, $response);
             $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
-        } else {
-            $this->assertNull($response);
         }
     }
 
@@ -86,7 +83,7 @@ class OnKernelRequestRequiresCompletedTestTest extends AbstractOnKernelRequestTe
                     TestFactory::KEY_TEST_ID => self::TEST_ID,
                     TestFactory::KEY_STATE => Test::STATE_FAILED_NO_SITEMAP,
                 ],
-                'expectedHasRedirectResponse' => true,
+                'expectedHasResponse' => true,
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/failed/no-urls-detected/',
             ],
             'state: rejected' => [
@@ -105,7 +102,7 @@ class OnKernelRequestRequiresCompletedTestTest extends AbstractOnKernelRequestTe
                     TestFactory::KEY_TEST_ID => self::TEST_ID,
                     TestFactory::KEY_STATE => Test::STATE_REJECTED,
                 ],
-                'expectedHasRedirectResponse' => true,
+                'expectedHasResponse' => true,
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/rejected/',
             ],
             'state: in progress' => [
@@ -124,7 +121,7 @@ class OnKernelRequestRequiresCompletedTestTest extends AbstractOnKernelRequestTe
                     TestFactory::KEY_TEST_ID => self::TEST_ID,
                     TestFactory::KEY_STATE => Test::STATE_IN_PROGRESS,
                 ],
-                'expectedHasRedirectResponse' => true,
+                'expectedHasResponse' => true,
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
             ],
             'non-matching website' => [
@@ -139,7 +136,7 @@ class OnKernelRequestRequiresCompletedTestTest extends AbstractOnKernelRequestTe
                     ]),
                 ],
                 'testValues' => [],
-                'expectedHasRedirectResponse' => true,
+                'expectedHasResponse' => true,
                 'expectedRedirectUrl' => 'http://localhost/http://example.com//1/',
             ],
             'state: completed' => [
@@ -158,7 +155,7 @@ class OnKernelRequestRequiresCompletedTestTest extends AbstractOnKernelRequestTe
                     TestFactory::KEY_TEST_ID => self::TEST_ID,
                     TestFactory::KEY_STATE => Test::STATE_COMPLETED,
                 ],
-                'expectedHasRedirectResponse' => false,
+                'expectedHasResponse' => false,
             ],
         ];
     }

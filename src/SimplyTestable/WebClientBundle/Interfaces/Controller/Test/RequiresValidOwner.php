@@ -13,4 +13,14 @@ interface RequiresValidOwner
      * @return Response
      */
     public function getInvalidOwnerResponse(Request $request);
+
+    /**
+     * @param Response $response
+     */
+    public function setResponse(Response $response);
+
+    /**
+     * @return bool
+     */
+    public function hasResponse();
 }

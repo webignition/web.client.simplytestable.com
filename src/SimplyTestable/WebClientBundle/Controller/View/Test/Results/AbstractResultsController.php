@@ -3,7 +3,6 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Results;
 
 use SimplyTestable\WebClientBundle\Controller\View\Test\AbstractRequiresValidOwnerController;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresCompletedTest;
@@ -12,9 +11,9 @@ use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 abstract class AbstractResultsController extends AbstractRequiresValidOwnerController implements
-    IEFiltered,
     RequiresValidUser,
     RequiresValidOwner,
     RequiresCompletedTest
@@ -24,10 +23,8 @@ abstract class AbstractResultsController extends AbstractRequiresValidOwnerContr
     /**
      * {@inheritdoc}
      */
-    public function getFailedNoSitemapTestResponse(Request $request)
+    public function getFailedNoSitemapTestResponse(RouterInterface $router, Request $request)
     {
-        $router = $this->container->get('router');
-
         return new RedirectResponse($router->generate(
             'view_test_results_failednourlsdetected_index_index',
             [
@@ -41,10 +38,8 @@ abstract class AbstractResultsController extends AbstractRequiresValidOwnerContr
     /**
      * {@inheritdoc}
      */
-    public function getRejectedTestResponse(Request $request)
+    public function getRejectedTestResponse(RouterInterface $router, Request $request)
     {
-        $router = $this->container->get('router');
-
         return new RedirectResponse($router->generate(
             'view_test_results_rejected_index_index',
             [
@@ -58,10 +53,8 @@ abstract class AbstractResultsController extends AbstractRequiresValidOwnerContr
     /**
      * {@inheritdoc}
      */
-    public function getNotFinishedTestResponse(Request $request)
+    public function getNotFinishedTestResponse(RouterInterface $router, Request $request)
     {
-        $router = $this->container->get('router');
-
         return new RedirectResponse($router->generate(
             'view_test_progress_index_index',
             [

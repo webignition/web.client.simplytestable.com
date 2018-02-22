@@ -17,6 +17,10 @@ class WebsiteListController extends BaseViewController implements RequiresValidU
      */
     public function indexAction()
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $remoteTestService = $this->container->get(RemoteTestService::class);
 
         $finishedWebsites = [];

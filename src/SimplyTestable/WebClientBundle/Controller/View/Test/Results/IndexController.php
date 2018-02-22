@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 class IndexController extends AbstractResultsController
 {
@@ -45,10 +46,8 @@ class IndexController extends AbstractResultsController
     /**
      * {@inheritdoc}
      */
-    public function getRequestWebsiteMismatchResponse(Request $request)
+    public function getRequestWebsiteMismatchResponse(RouterInterface $router, Request $request)
     {
-        $router = $this->container->get('router');
-
         return new RedirectResponse($router->generate(
             'app_test_redirector',
             [
@@ -72,6 +71,10 @@ class IndexController extends AbstractResultsController
      */
     public function indexAction(Request $request, $website, $test_id)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $router = $this->container->get('router');
         $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get(RemoteTestService::class);

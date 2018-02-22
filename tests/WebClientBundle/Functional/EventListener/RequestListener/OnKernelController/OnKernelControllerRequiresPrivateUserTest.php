@@ -1,34 +1,32 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\EventListener\RequestListener\OnKernelRequest;
+namespace Tests\WebClientBundle\Functional\EventListener\RequestListener\OnKernelController;
 
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use SimplyTestable\WebClientBundle\Controller\Action\User\Account\NewsSubscriptionsController;
 
-class OnKernelRequestRequiresPrivateUserTest extends AbstractOnKernelRequestTest
+class OnKernelControllerRequiresPrivateUserTest extends AbstractOnKernelControllerTest
 {
-    const CONTROLLER_ACTION =
-        'SimplyTestable\WebClientBundle\Controller\Action\User\Account\NewsSubscriptionsController::updateAction';
-    const CONTROLLER_ROUTE = 'action_user_account_newssubscriptions_update';
-
     /**
      * @dataProvider dataProvider
      *
      * @param array $httpFixtures
      * @param User $user
-     * @param $expectedIsRedirectResponse
+     * @param $expectedHasResponse
      * @param string $expectedRedirectUrl
      *
-     * @throws \Exception
+     * @throws CoreApplicationRequestException
      */
-    public function testOnKernelRequest(
+    public function testOnKernelController(
         array $httpFixtures,
         User $user,
-        $expectedIsRedirectResponse,
+        $expectedHasResponse,
         $expectedRedirectUrl = null
     ) {
         $userManager = $this->container->get(UserManager::class);
@@ -36,25 +34,21 @@ class OnKernelRequestRequiresPrivateUserTest extends AbstractOnKernelRequestTest
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
+        $controller = new NewsSubscriptionsController();
+
         $request = new Request();
 
-        $event = $this->createGetResponseEvent(
-            $request,
-            self::CONTROLLER_ACTION,
-            self::CONTROLLER_ROUTE,
-            $user
-        );
+        $event = $this->createFilterControllerEvent($request, $controller, 'updateAction');
 
-        $this->requestListener->onKernelRequest($event);
+        $this->requestListener->onKernelController($event);
 
-        $response = $event->getResponse();
+        $this->assertEquals($expectedHasResponse, $controller->hasResponse());
 
-        if ($expectedIsRedirectResponse) {
-            /* @var RedirectResponse $response */
+        if ($expectedHasResponse) {
+            $response = $this->getControllerResponse($controller, NewsSubscriptionsController::class);
+
             $this->assertInstanceOf(RedirectResponse::class, $response);
             $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
-        } else {
-            $this->assertNull($response);
         }
     }
 
@@ -69,7 +63,7 @@ class OnKernelRequestRequiresPrivateUserTest extends AbstractOnKernelRequestTest
                     HttpResponseFactory::createSuccessResponse(),
                 ],
                 'user' => SystemUserService::getPublicUser(),
-                'expectedIsRedirectResponse' => true,
+                'expectedHasResponse' => true,
                 'expectedRedirectUrl' =>
                     'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2luZGV4X2luZGV4In0%3D',
             ],
@@ -78,7 +72,7 @@ class OnKernelRequestRequiresPrivateUserTest extends AbstractOnKernelRequestTest
                     HttpResponseFactory::createSuccessResponse(),
                 ],
                 'user' => new User('user@example.com'),
-                'expectedIsRedirectResponse' => false,
+                'expectedHasResponse' => false,
             ],
         ];
     }

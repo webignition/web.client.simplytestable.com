@@ -6,12 +6,16 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-abstract class AccountCredentialsChangeController extends Controller implements RequiresPrivateUser
+abstract class AbstractUserAccountController extends Controller implements RequiresPrivateUser
 {
-    const ONE_YEAR_IN_SECONDS = 31536000;
+    /**
+     * @var Response|RedirectResponse
+     */
+    protected $response;
 
     /**
      * {@inheritdoc}
@@ -25,5 +29,21 @@ abstract class AccountCredentialsChangeController extends Controller implements 
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
         ));
+    }
+
+    /**
+     * @param Response $response
+     */
+    public function setResponse(Response $response)
+    {
+        $this->response = $response;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasResponse()
+    {
+        return !empty($this->response);
     }
 }

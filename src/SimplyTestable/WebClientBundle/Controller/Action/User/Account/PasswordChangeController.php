@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class PasswordChangeController extends AccountCredentialsChangeController
+class PasswordChangeController extends AbstractUserAccountController
 {
     const FLASH_BAG_REQUEST_KEY = 'user_account_details_update_password_request_notice';
     const FLASH_BAG_REQUEST_ERROR_MESSAGE_PASSWORD_MISSING = 'password-missing';
@@ -34,6 +34,10 @@ class PasswordChangeController extends AccountCredentialsChangeController
      */
     public function requestAction(Request $request)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $session = $this->container->get('session');
         $userService = $this->container->get(UserService::class);
         $userManager = $this->container->get(UserManager::class);

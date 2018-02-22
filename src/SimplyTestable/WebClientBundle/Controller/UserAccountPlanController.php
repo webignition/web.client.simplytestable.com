@@ -13,13 +13,20 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class UserAccountPlanController extends Controller implements RequiresPrivateUser
 {
+    /**
+     * @var Response|RedirectResponse|JsonResponse
+     */
+    protected $response;
+
     /**
      * {@inheritdoc}
      */
@@ -43,6 +50,10 @@ class UserAccountPlanController extends Controller implements RequiresPrivateUse
      */
     public function subscribeAction(Request $request)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $router = $this->container->get('router');
         $userService = $this->container->get(UserService::class);
         $session = $this->container->get('session');
@@ -99,5 +110,21 @@ class UserAccountPlanController extends Controller implements RequiresPrivateUse
         }
 
         return $redirectResponse;
+    }
+
+    /**
+     * @param Response $response
+     */
+    public function setResponse(Response $response)
+    {
+        $this->response = $response;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasResponse()
+    {
+        return !empty($this->response);
     }
 }

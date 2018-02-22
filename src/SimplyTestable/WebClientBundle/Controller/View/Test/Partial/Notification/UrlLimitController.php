@@ -28,6 +28,10 @@ class UrlLimitController extends BaseViewController implements RequiresValidUser
      */
     public function indexAction(Request $request, $website, $test_id)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get(RemoteTestService::class);
         $cacheValidatorService = $this->container->get(CacheValidatorService::class);

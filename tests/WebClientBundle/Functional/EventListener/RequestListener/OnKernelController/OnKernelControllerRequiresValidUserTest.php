@@ -1,48 +1,42 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\EventListener\RequestListener\OnKernelRequest;
+namespace Tests\WebClientBundle\Functional\EventListener\RequestListener\OnKernelController;
 
+use SimplyTestable\WebClientBundle\Controller\View\Dashboard\Partial\RecentTestsController;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class OnKernelRequestRequiresValidUserTest extends AbstractOnKernelRequestTest
+class OnKernelControllerRequiresValidUserTest extends AbstractOnKernelControllerTest
 {
-    const CONTROLLER_ACTION =
-        'SimplyTestable\WebClientBundle\Controller\View\Dashboard\Partial\RecentTestsController::indexAction';
-    const CONTROLLER_ROUTE = 'view_dashboard_partial_recenttests_index';
-
     /**
      * @dataProvider dataProvider
      *
      * @param array $httpFixtures
-     * @param $expectedIsRedirectResponse
+     * @param $expectedHasResponse
      * @param string null $expectedRedirectUrl
      *
      * @throws \Exception
      */
-    public function testOnKernelRequest(array $httpFixtures, $expectedIsRedirectResponse, $expectedRedirectUrl = null)
+    public function testOnKernelController(array $httpFixtures, $expectedHasResponse, $expectedRedirectUrl = null)
     {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $request = new Request();
 
-        $event = $this->createGetResponseEvent(
-            $request,
-            self::CONTROLLER_ACTION,
-            self::CONTROLLER_ROUTE
-        );
+        $controller = new RecentTestsController();
 
-        $this->requestListener->onKernelRequest($event);
+        $event = $this->createFilterControllerEvent($request, $controller, 'indexAction');
 
-        $response = $event->getResponse();
+        $this->requestListener->onKernelController($event);
 
-        if ($expectedIsRedirectResponse) {
-            /* @var RedirectResponse $response */
+        $this->assertEquals($expectedHasResponse, $controller->hasResponse());
+
+        if ($expectedHasResponse) {
+            $response = $this->getControllerResponse($controller, RecentTestsController::class);
+
             $this->assertInstanceOf(RedirectResponse::class, $response);
             $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
-        } else {
-            $this->assertNull($response);
         }
     }
 
@@ -56,14 +50,14 @@ class OnKernelRequestRequiresValidUserTest extends AbstractOnKernelRequestTest
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'expectedIsRedirectResponse' => true,
+                'expectedHasResponse' => true,
                 'expectedRedirectUrl' => 'http://localhost/signout/',
             ],
             'authenticated' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                 ],
-                'expectedIsRedirectResponse' => false,
+                'expectedHasResponse' => false,
             ],
         ];
     }

@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 class ByTaskTypeController extends AbstractResultsController
 {
@@ -50,6 +51,10 @@ class ByTaskTypeController extends AbstractResultsController
      */
     public function indexAction(Request $request, $website, $test_id, $task_type, $filter = null)
     {
+        if ($this->hasResponse()) {
+            return $this->response;
+        }
+
         $router = $this->container->get('router');
         $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get(RemoteTestService::class);
@@ -200,9 +205,8 @@ class ByTaskTypeController extends AbstractResultsController
     /**
      * {@inheritdoc}
      */
-    public function getRequestWebsiteMismatchResponse(Request $request)
+    public function getRequestWebsiteMismatchResponse(RouterInterface $router, Request $request)
     {
-        $router = $this->container->get('router');
         $remoteTestService = $this->container->get(RemoteTestService::class);
 
         $remoteTest = $remoteTestService->get();
