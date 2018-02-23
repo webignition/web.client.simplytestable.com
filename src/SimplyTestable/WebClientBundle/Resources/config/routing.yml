@@ -136,7 +136,7 @@ user_account_card_associate:
 
 user_account_plan_subscribe:
     path: /account/plan/subscribe/
-    defaults: { _controller: SimplyTestableWebClientBundle:UserAccountPlan:subscribe }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Plan:subscribe }
 
 view_dashboard_index_index:
     path: /

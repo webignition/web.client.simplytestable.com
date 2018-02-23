@@ -59,7 +59,6 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
 
     public function testInviteMemberActionPostRequestPrivateUser()
     {
-        $router = $this->container->get('router');
         $mailService = $this->container->get(MailService::class);
 
         $inviteData = [
@@ -79,11 +78,9 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
             self::INVITEE_EMAIL
         ));
 
-        $requestUrl = $router->generate(self::ROUTE_NAME);
-
         $this->client->request(
             'POST',
-            $requestUrl,
+            $this->createRequestUrl(self::ROUTE_NAME),
             [
                 'email' => self::INVITEE_EMAIL,
             ]

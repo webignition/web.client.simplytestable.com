@@ -26,12 +26,8 @@ class EmailChangeControllerCancelActionTest extends AbstractEmailChangeControlle
 
     public function testCancelActionPostRequestPrivateUser()
     {
-        $router = $this->container->get('router');
         $userManager = $this->container->get(UserManager::class);
-
         $userManager->setUser(new User('user@example.com'));
-
-        $requestUrl = $router->generate(self::ROUTE_NAME);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -40,7 +36,7 @@ class EmailChangeControllerCancelActionTest extends AbstractEmailChangeControlle
 
         $this->client->request(
             'POST',
-            $requestUrl
+            $this->createRequestUrl(self::ROUTE_NAME)
         );
 
         /* @var RedirectResponse $response */

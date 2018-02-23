@@ -26,7 +26,6 @@ class TeamControllerRemoveMemberActionTest extends AbstractTeamControllerTest
 
     public function testRemoveInviteActionPostRequestPrivateUser()
     {
-        $router = $this->container->get('router');
         $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser(new User('user@example.com'));
@@ -36,11 +35,9 @@ class TeamControllerRemoveMemberActionTest extends AbstractTeamControllerTest
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $requestUrl = $router->generate(self::ROUTE_NAME);
-
         $this->client->request(
             'POST',
-            $requestUrl,
+            $this->createRequestUrl(self::ROUTE_NAME),
             [
                 'user' => 'member@example.com',
             ]

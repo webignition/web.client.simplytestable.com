@@ -52,13 +52,10 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 
     public function testRequestActionPostRequestPrivateUser()
     {
-        $router = $this->container->get('router');
         $mailService = $this->container->get(MailService::class);
         $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser(new User('user@example.com'));
-
-        $requestUrl = $router->generate(self::ROUTE_NAME);
 
         $mailService->setPostmarkMessage(MockPostmarkMessageFactory::createMockConfirmEmailAddressPostmarkMessage(
             self::NEW_EMAIL,
@@ -78,7 +75,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 
         $this->client->request(
             'POST',
-            $requestUrl
+            $this->createRequestUrl(self::ROUTE_NAME)
         );
 
         /* @var RedirectResponse $response */
