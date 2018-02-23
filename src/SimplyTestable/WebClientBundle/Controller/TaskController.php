@@ -8,14 +8,36 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class TaskController extends BaseViewController implements RequiresValidOwner
+class TaskController extends Controller implements RequiresValidOwner
 {
     const DEFAULT_UNRETRIEVED_TASKID_LIMIT = 100;
     const MAX_UNRETRIEVED_TASKID_LIMIT = 1000;
+
+    /**
+     * @var Response|JsonResponse
+     */
+    private $response;
+
+    /**
+     * @param Response $response
+     */
+    public function setResponse(Response $response)
+    {
+        $this->response = $response;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasResponse()
+    {
+        return !empty($this->response);
+    }
 
     /**
      * {@inheritdoc}
