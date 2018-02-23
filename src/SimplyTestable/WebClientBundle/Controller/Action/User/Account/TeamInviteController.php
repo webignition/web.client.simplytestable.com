@@ -30,9 +30,6 @@ class TeamInviteController extends AbstractUserAccountController
     const FLASH_BAG_STATUS_ERROR = 'error';
     const FLASH_BAG_STATUS_SUCCESS = 'success';
 
-    const FLASH_BAG_CREATE_ERROR_KEY = 'team_create_error';
-    const FLASH_BAG_CREATE_ERROR_MESSAGE_NAME_BLANK = 'blank-name';
-
     const FLASH_BAG_TEAM_INVITE_GET_KEY = 'team_invite_get';
     const FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_INVALID = 'invalid-invitee';
     const FLASH_BAG_TEAM_INVITE_GET_ERROR_SELF_INVITE = 'invite-self';
