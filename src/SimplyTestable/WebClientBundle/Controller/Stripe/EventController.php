@@ -2,14 +2,27 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Stripe;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
 
-class EventController extends Controller
+class EventController
 {
     const LISTENER_EVENT_PREFIX = 'stripe.';
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
+     * @param EventDispatcherInterface $eventDispatcher
+     */
+    public function __construct(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
 
     /**
      * @param Request $request
@@ -18,8 +31,6 @@ class EventController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $dispatcher = $this->container->get('event_dispatcher');
-
         $event = new StripeEvent($request->request);
         $listenerEventName = self::LISTENER_EVENT_PREFIX . $event->getName();
 
@@ -27,13 +38,13 @@ class EventController extends Controller
             return new Response('', 400);
         }
 
-        $hasListenerForEvent = count($dispatcher->getListeners($listenerEventName)) > 0;
+        $hasListenerForEvent = count($this->eventDispatcher->getListeners($listenerEventName)) > 0;
 
         if (!$hasListenerForEvent) {
             return new Response('', 400);
         }
 
-        $dispatcher->dispatch(
+        $this->eventDispatcher->dispatch(
             $listenerEventName,
             $event
         );
