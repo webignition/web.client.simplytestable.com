@@ -4,6 +4,8 @@ namespace Tests\WebClientBundle\Functional\Controller;
 
 use SimplyTestable\WebClientBundle\Controller\RedirectController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Services\RemoteTestService;
+use SimplyTestable\WebClientBundle\Services\TestService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\TestFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
@@ -26,8 +28,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->redirectController = new RedirectController();
-        $this->redirectController->setContainer($this->container);
+        $this->redirectController = $this->container->get(RedirectController::class);
     }
 
     /**
@@ -56,7 +57,15 @@ class RedirectControllerTest extends AbstractBaseTestCase
         }
 
         /* @var RedirectResponse $response */
-        $response = $this->redirectController->testAction($request, $website, $testId);
+        $response = $this->redirectController->testAction(
+            $this->container->get(TestService::class),
+            $this->container->get(RemoteTestService::class),
+            $this->container->get('doctrine.orm.entity_manager'),
+            $this->container->get('logger'),
+            $request,
+            $website,
+            $testId
+        );
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
