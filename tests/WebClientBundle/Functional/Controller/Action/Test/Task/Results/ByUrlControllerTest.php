@@ -28,8 +28,7 @@ class ByUrlControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->byUrlController = new ByUrlController();
-        $this->byUrlController->setContainer($this->container);
+        $this->byUrlController = $this->container->get(ByUrlController::class);
 
         $testFactory = new TestFactory($this->container);
 
