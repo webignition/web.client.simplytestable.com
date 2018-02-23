@@ -11,7 +11,10 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 class PasswordChangeController extends AbstractUserAccountController
 {
@@ -21,6 +24,44 @@ class PasswordChangeController extends AbstractUserAccountController
     const FLASH_BAG_REQUEST_ERROR_MESSAGE_FAILED_READ_ONLY = 'password-failed-read-only';
     const FLASH_BAG_REQUEST_ERROR_MESSAGE_FAILED_UNKNOWN = 'unknown';
     const FLASH_BAG_REQUEST_SUCCESS_MESSAGE = 'password-done';
+
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
+     * @var UserService
+     */
+    private $userService;
+
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @param UserManager $userManager
+     * @param UserService $userService
+     * @param RouterInterface $router
+     * @param SessionInterface $session
+     */
+    public function __construct(
+        UserManager $userManager,
+        UserService $userService,
+        RouterInterface $router,
+        SessionInterface $session
+    ) {
+        $this->userManager = $userManager;
+        $this->userService = $userService;
+        $this->router = $router;
+        $this->session = $session;
+    }
 
     /**
      * @param Request $request
@@ -38,24 +79,19 @@ class PasswordChangeController extends AbstractUserAccountController
             return $this->response;
         }
 
-        $session = $this->container->get('session');
-        $userService = $this->container->get(UserService::class);
-        $userManager = $this->container->get(UserManager::class);
-        $router = $this->container->get('router');
-
         $requestData = $request->request;
 
         $currentPassword = trim($requestData->get('current-password'));
         $newPassword = trim($requestData->get('new-password'));
 
-        $redirectResponse = new RedirectResponse($router->generate(
+        $redirectResponse = new RedirectResponse($this->router->generate(
             'view_user_account_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
         ));
 
         if (empty($currentPassword) || empty($newPassword)) {
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_REQUEST_KEY,
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_PASSWORD_MISSING
             );
@@ -63,10 +99,10 @@ class PasswordChangeController extends AbstractUserAccountController
             return $redirectResponse;
         }
 
-        $user = $userManager->getUser();
+        $user = $this->userManager->getUser();
 
         if ($currentPassword != $user->getPassword()) {
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_REQUEST_KEY,
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_PASSWORD_INVALID
             );
@@ -74,31 +110,31 @@ class PasswordChangeController extends AbstractUserAccountController
             return $redirectResponse;
         }
 
-        $token = $userService->getConfirmationToken($user->getUsername());
+        $token = $this->userService->getConfirmationToken($user->getUsername());
 
         try {
-            $userService->resetPassword($token, $newPassword);
+            $this->userService->resetPassword($token, $newPassword);
 
             $user->setPassword($newPassword);
-            $userManager->setUser($user);
+            $this->userManager->setUser($user);
 
             $cookieUser = $request->cookies->get(UserManager::USER_COOKIE_KEY);
 
             if (!empty($cookieUser)) {
-                $redirectResponse->headers->setCookie($userManager->createUserCookie());
+                $redirectResponse->headers->setCookie($this->userManager->createUserCookie());
             }
 
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_REQUEST_KEY,
                 self::FLASH_BAG_REQUEST_SUCCESS_MESSAGE
             );
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_REQUEST_KEY,
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_FAILED_READ_ONLY
             );
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_REQUEST_KEY,
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_FAILED_UNKNOWN
             );
