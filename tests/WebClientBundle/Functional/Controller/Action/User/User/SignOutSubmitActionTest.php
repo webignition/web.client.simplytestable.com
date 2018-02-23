@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\Controller\User;
+namespace Tests\WebClientBundle\Functional\Controller\Action\User\User;
 
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;

@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\Controller\User;
+namespace Tests\WebClientBundle\Functional\Controller\Action\User\User;
 
-use SimplyTestable\WebClientBundle\Controller\UserController;
+use SimplyTestable\WebClientBundle\Controller\Action\User\UserController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;

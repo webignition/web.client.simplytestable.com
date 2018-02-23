@@ -2,7 +2,7 @@
 
 namespace Tests\WebClientBundle\Functional\Controller\View\User\SignUp;
 
-use SimplyTestable\WebClientBundle\Controller\UserController;
+use SimplyTestable\WebClientBundle\Controller\Action\User\UserController;
 use SimplyTestable\WebClientBundle\Controller\View\User\SignUp\ConfirmController;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;

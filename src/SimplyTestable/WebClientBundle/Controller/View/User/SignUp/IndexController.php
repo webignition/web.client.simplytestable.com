@@ -3,8 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\User\SignUp;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Controller\UserController;
-
+use SimplyTestable\WebClientBundle\Controller\Action\User\UserController;
 use SimplyTestable\WebClientBundle\Model\User\Plan;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\CouponService;
