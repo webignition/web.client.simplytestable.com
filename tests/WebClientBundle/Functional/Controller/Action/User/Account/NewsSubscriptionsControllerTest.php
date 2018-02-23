@@ -12,12 +12,13 @@ use SimplyTestable\WebClientBundle\Services\MailChimp\Client;
 use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
+class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
 {
+    const ROUTE_NAME = 'action_user_account_newssubscriptions_update';
+
     /**
      * @var NewsSubscriptionsController
      */
@@ -34,46 +35,33 @@ class NewsSubscriptionsControllerTest extends AbstractBaseTestCase
         $this->newsSubscriptionsController->setContainer($this->container);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function postRequestPublicUserDataProvider()
+    {
+        return [
+            'default' => [
+                'routeName' => self::ROUTE_NAME,
+            ],
+        ];
+    }
+
     public function testUpdateActionInvalidUserPostRequest()
     {
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate('action_user_account_newssubscriptions_update');
-
         $this->client->request(
             'POST',
-            $requestUrl
+            $this->createRequestUrl(self::ROUTE_NAME)
         );
 
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
         $this->assertTrue($response->isRedirect('http://localhost/signout/'));
-    }
-
-    public function testUpdateActionNotPrivateUserPostRequest()
-    {
-        $this->setCoreApplicationHttpClientHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate('action_user_account_newssubscriptions_update');
-
-        $this->client->request(
-            'POST',
-            $requestUrl
-        );
-
-        /* @var RedirectResponse $response */
-        $response = $this->client->getResponse();
-
-        $this->assertTrue($response->isRedirect(
-            'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2luZGV4X2luZGV4In0%3D'
-        ));
     }
 
     /**

@@ -29,12 +29,9 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
 
     public function testCreateActionPostRequestPrivateUser()
     {
-        $router = $this->container->get('router');
         $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser(new User('user@example.com'));
-
-        $requestUrl = $router->generate(self::ROUTE_NAME);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -43,7 +40,7 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
 
         $this->client->request(
             'POST',
-            $requestUrl,
+            $this->createRequestUrl(self::ROUTE_NAME),
             [
                 'name' => self::TEAM_NAME,
             ]

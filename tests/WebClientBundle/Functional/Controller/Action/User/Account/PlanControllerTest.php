@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\Controller;
+namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account;
 
-use SimplyTestable\WebClientBundle\Controller\UserAccountPlanController;
+use SimplyTestable\WebClientBundle\Controller\Action\User\Account\PlanController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
@@ -10,11 +10,10 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class UserAccountPlanControllerTest extends AbstractBaseTestCase
+class PlanControllerTest extends AbstractUserAccountControllerTest
 {
     const ROUTE_NAME = 'user_account_plan_subscribe';
 
@@ -22,9 +21,9 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
     const STRIPE_CARD_TOKEN = 'card_Bb4A2szGLfgwJe';
 
     /**
-     * @var UserAccountPlanController
+     * @var PlanController
      */
-    protected $userAccountPlanController;
+    protected $planController;
 
     /**
      * @var array
@@ -57,25 +56,19 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->userAccountPlanController = new UserAccountPlanController();
+        $this->planController = new PlanController();
     }
 
-    public function testIndexActionPublicUserPostRequest()
+    /**
+     * {@inheritdoc}
+     */
+    public function postRequestPublicUserDataProvider()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
-        $this->client->request(
-            'POST',
-            $this->createRequestUrl()
-        );
-
-        /* @var RedirectResponse $response */
-        $response = $this->client->getResponse();
-
-        $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/signin/', $response->getTargetUrl());
+        return [
+            'default' => [
+                'routeName' => self::ROUTE_NAME,
+            ],
+        ];
     }
 
     public function testIndexActionPrivateUserPostRequest()
@@ -91,7 +84,7 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
 
         $this->client->request(
             'POST',
-            $this->createRequestUrl(),
+            $this->createRequestUrl(self::ROUTE_NAME),
             [
                 'plan' => 'personal',
             ]
@@ -128,10 +121,10 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->userAccountPlanController->setContainer($this->container);
+        $this->planController->setContainer($this->container);
 
         /* @var RedirectResponse $response */
-        $response = $this->userAccountPlanController->subscribeAction($request);
+        $response = $this->planController->subscribeAction($request);
 
         $this->assertEquals('http://localhost/account/plan/', $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -287,15 +280,5 @@ class UserAccountPlanControllerTest extends AbstractBaseTestCase
                 ],
             ],
         ];
-    }
-
-    /**
-     * @return string
-     */
-    private function createRequestUrl()
-    {
-        $router = $this->container->get('router');
-
-        return $router->generate(self::ROUTE_NAME);
     }
 }

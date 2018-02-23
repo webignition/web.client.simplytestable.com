@@ -8,17 +8,15 @@ use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class PasswordChangeControllerTest extends AbstractBaseTestCase
+class PasswordChangeControllerTest extends AbstractUserAccountControllerTest
 {
     const USER_EMAIL = 'user@example.com';
     const USER_CURRENT_PASSWORD = 'Current-Password';
@@ -41,50 +39,33 @@ class PasswordChangeControllerTest extends AbstractBaseTestCase
         $this->passwordChangeController->setContainer($this->container);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function postRequestPublicUserDataProvider()
+    {
+        return [
+            'default' => [
+                'routeName' => self::ROUTE_NAME,
+            ],
+        ];
+    }
+
     public function testRequestActionInvalidUserPostRequest()
     {
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME);
-
         $this->client->request(
             'POST',
-            $requestUrl
+            $this->createRequestUrl(self::ROUTE_NAME)
         );
 
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
         $this->assertTrue($response->isRedirect('http://localhost/signout/'));
-    }
-
-    public function testRequestActionNotPrivateUserPostRequest()
-    {
-        $userManager = $this->container->get(UserManager::class);
-
-        $userManager->setUser(SystemUserService::getPublicUser());
-
-        $this->setCoreApplicationHttpClientHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME);
-
-        $this->client->request(
-            'POST',
-            $requestUrl
-        );
-
-        /* @var RedirectResponse $response */
-        $response = $this->client->getResponse();
-
-        $this->assertTrue($response->isRedirect(
-            'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2luZGV4X2luZGV4In0%3D'
-        ));
     }
 
     public function testRequestActionPostRequest()

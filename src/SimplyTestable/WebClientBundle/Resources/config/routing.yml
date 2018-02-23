@@ -132,11 +132,11 @@ view_user_account_plan_index:
 
 user_account_card_associate:
     path: /account/card/{stripe_card_token}/associate/
-    defaults: { _controller: SimplyTestableWebClientBundle:UserAccountCard:associate }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Card:associate }
 
 user_account_plan_subscribe:
     path: /account/plan/subscribe/
-    defaults: { _controller: SimplyTestableWebClientBundle:UserAccountPlan:subscribe }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Plan:subscribe }
 
 view_dashboard_index_index:
     path: /

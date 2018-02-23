@@ -1,29 +1,18 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Controller;
+namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
-use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Services\UserAccountCardService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\RouterInterface;
 
-class UserAccountCardController extends Controller implements RequiresPrivateUser
+class CardController extends AbstractUserAccountController
 {
-    /**
-     * @var Response|RedirectResponse|JsonResponse
-     */
-    protected $response;
-
     /**
      * @param $stripe_card_token
      *
@@ -62,33 +51,5 @@ class UserAccountCardController extends Controller implements RequiresPrivateUse
                 UrlGeneratorInterface::ABSOLUTE_URL
             ),
         ]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getUserSignInRedirectResponse(RouterInterface $router, Request $request)
-    {
-        return new RedirectResponse($router->generate(
-            'view_user_signin_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
-    }
-
-    /**
-     * @param Response $response
-     */
-    public function setResponse(Response $response)
-    {
-        $this->response = $response;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasResponse()
-    {
-        return !empty($this->response);
     }
 }

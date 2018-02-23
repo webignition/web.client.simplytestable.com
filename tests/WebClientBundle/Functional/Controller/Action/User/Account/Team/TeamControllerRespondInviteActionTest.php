@@ -29,8 +29,7 @@ class TeamControllerRespondInviteActionTest extends AbstractTeamControllerTest
 
     public function testRespondInviteActionPostRequestPrivateUser()
     {
-        $router = $this->container->get('router');
-         $userManager = $this->container->get(UserManager::class);
+        $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser(new User('user@example.com'));
 
@@ -39,11 +38,9 @@ class TeamControllerRespondInviteActionTest extends AbstractTeamControllerTest
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $requestUrl = $router->generate(self::ROUTE_NAME);
-
         $this->client->request(
             'POST',
-            $requestUrl,
+            $this->createRequestUrl(self::ROUTE_NAME),
             [
                 'response' => 'accept',
             ]
