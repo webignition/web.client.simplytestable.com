@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Controller;
+namespace SimplyTestable\WebClientBundle\Controller\Action\Test;
 
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
@@ -21,7 +21,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use webignition\NormalisedUrl\NormalisedUrl;
 
-class TestStartController extends Controller
+class StartController extends Controller
 {
     const HTTP_AUTH_FEATURE_NAME = 'http-authentication';
     const HTTP_AUTH_FEATURE_USERNAME_KEY = 'http-auth-username';
