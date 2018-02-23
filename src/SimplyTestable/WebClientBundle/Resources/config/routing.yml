@@ -8,7 +8,7 @@ mailchimp_event:
 
 sign_out_submit:
     path: /signout/
-    defaults: { _controller: SimplyTestableWebClientBundle:User:signOutSubmit }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/User:signOutSubmit }
 
 view_user_signin_index:
     path: /signin/
@@ -16,7 +16,7 @@ view_user_signin_index:
 
 sign_in_submit:
     path: /signin/submit/
-    defaults: { _controller: SimplyTestableWebClientBundle:User:signInSubmit }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/User:signInSubmit }
 
 view_user_resetpassword_index_index:
     path: /reset-password/
@@ -28,7 +28,7 @@ action_user_resetpassword_index_request:
 
 reset_password_choose_submit:
     path: /reset-password/choose/submit/
-    defaults: { _controller: SimplyTestableWebClientBundle:User:resetPasswordChooseSubmit }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/User:resetPasswordChooseSubmit }
 
 view_user_resetpassword_choose_index:
     path: /reset-password/{email}/{token}/
@@ -40,7 +40,7 @@ view_user_signup_index_index:
 
 sign_up_submit:
     path: /signup/submit/
-    defaults: { _controller: SimplyTestableWebClientBundle:User:signUpSubmit }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/User:signUpSubmit }
 
 view_user_signup_confirm_index:
     path: /signup/confirm/{email}/
@@ -52,7 +52,7 @@ view_user_signup_invite_index:
 
 sign_up_confirm_submit:
     path: /signup/confirm/{email}/submit/
-    defaults: { _controller: SimplyTestableWebClientBundle:User:signUpConfirmSubmit }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/User:signUpConfirmSubmit }
 
 action_signup_team_invite_accept:
     path: /signup/invite/{token}/accept/
