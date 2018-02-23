@@ -1,10 +1,10 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\Controller;
+namespace Tests\WebClientBundle\Functional\Controller\Action\Test;
 
 use GuzzleHttp\Post\PostBody;
 use GuzzleHttp\Subscriber\History as HttpHistorySubscriber;
-use SimplyTestable\WebClientBundle\Controller\TestStartController;
+use SimplyTestable\WebClientBundle\Controller\Action\Test\StartController;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
@@ -17,14 +17,14 @@ use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class TestStartControllerTest extends AbstractBaseTestCase
+class StartControllerTest extends AbstractBaseTestCase
 {
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
 
     /**
-     * @var TestStartController
+     * @var StartController
      */
     private $testStartController;
 
@@ -35,7 +35,7 @@ class TestStartControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->testStartController = new TestStartController();
+        $this->testStartController = new StartController();
         $this->testStartController->setContainer($this->container);
     }
 

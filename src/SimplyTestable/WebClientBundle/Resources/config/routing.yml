@@ -309,7 +309,7 @@ app_unretrieved_task_ids:
 
 test_start:
     path: /test/start/
-    defaults: { _controller: SimplyTestableWebClientBundle:TestStart:startNew }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/Test/Start:startNew }
 
 test_cancel:
     path: /test/{website}/{test_id}/cancel/
