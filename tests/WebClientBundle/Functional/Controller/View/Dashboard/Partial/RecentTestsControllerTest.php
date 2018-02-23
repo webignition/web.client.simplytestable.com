@@ -10,17 +10,16 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\TestList;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
-use SimplyTestable\WebClientBundle\Services\UserService;
-use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Twig_Environment;
 
 class RecentTestsControllerTest extends AbstractBaseTestCase
 {
@@ -28,21 +27,6 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
     const VIEW_NAME = 'view_dashboard_partial_recenttests_index';
 
     const USER_EMAIL = 'user@example.com';
-
-    /**
-     * @var RecentTestsController
-     */
-    private $recentTestsController;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->recentTestsController = new RecentTestsController();
-    }
 
     public function testIndexActionInvalidUserGetRequest()
     {
@@ -94,7 +78,7 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
      * @dataProvider indexActionDataProvider
      *
      * @param array $httpFixtures
-     * @param EngineInterface $templatingEngine
+     * @param Twig_Environment $twig
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
@@ -102,26 +86,19 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
      */
     public function testIndexActionFoo(
         array $httpFixtures,
-        EngineInterface $templatingEngine
+        Twig_Environment $twig
     ) {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $containerFactory = new ContainerFactory($this->container);
-        $container = $containerFactory->create(
-            [
-                TestService::class,
-                RemoteTestService::class,
-                TaskService::class,
-                UserService::class,
-            ],
-            [
-                'templating' => $templatingEngine,
-            ]
+        $recentTestsController = new RecentTestsController(
+            $twig,
+            $this->container->get(DefaultViewParameters::class),
+            $this->container->get(TestService::class),
+            $this->container->get(RemoteTestService::class),
+            $this->container->get(TaskService::class)
         );
 
-        $this->recentTestsController->setContainer($container);
-
-        $response = $this->recentTestsController->indexAction();
+        $response = $recentTestsController->indexAction();
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -140,7 +117,7 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
                         'jobs' => [],
                     ]),
                 ],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);
@@ -187,7 +164,7 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
                         ],
                     ]),
                 ],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);
@@ -247,7 +224,7 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
                         ],
                     ]),
                 ],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);

@@ -3,30 +3,37 @@
 namespace SimplyTestable\WebClientBundle\Controller;
 
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
-use SimplyTestable\WebClientBundle\Services\UserManager;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Twig_Environment;
 
-abstract class BaseViewController extends Controller implements IEFiltered
+abstract class BaseViewController implements IEFiltered
 {
+    /**
+     * @var DefaultViewParameters
+     */
+    protected $defaultViewParameters;
+
     /**
      * @var Response|RedirectResponse|JsonResponse
      */
     protected $response;
 
     /**
-     * @return array
+     * @var Twig_Environment
      */
-    protected function getDefaultViewParameters()
-    {
-        $userManager = $this->container->get(UserManager::class);
+    protected $twig;
 
-        return [
-            'user' => $userManager->getUser(),
-            'is_logged_in' => $userManager->isLoggedIn(),
-        ];
+    /**
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     */
+    public function __construct(Twig_Environment $twig, DefaultViewParameters $defaultViewParameters)
+    {
+        $this->twig = $twig;
+        $this->defaultViewParameters = $defaultViewParameters;
     }
 
     /**

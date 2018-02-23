@@ -10,6 +10,7 @@ use SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Twig_Environment;
 
 class MockFactory
 {
@@ -77,6 +78,25 @@ class MockFactory
         }
 
         return $templatingEngine;
+    }
+
+    /**
+     * @param array $calls
+     *
+     * @return MockInterface|Twig_Environment
+     */
+    public static function createTwig($calls = [])
+    {
+        $twig = \Mockery::mock(Twig_Environment::class);
+
+        if (isset($calls['render'])) {
+            $twig
+                ->shouldReceive('render')
+                ->withArgs($calls['render']['withArgs'])
+                ->andReturn($calls['render']['return']);
+        }
+
+        return $twig;
     }
 
     /**
