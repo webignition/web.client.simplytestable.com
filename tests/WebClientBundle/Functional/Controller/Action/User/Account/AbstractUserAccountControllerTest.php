@@ -45,13 +45,14 @@ abstract class AbstractUserAccountControllerTest extends AbstractBaseTestCase
 
     /**
      * @param string $routeName
+     * @param array $routeParameters
      *
      * @return string
      */
-    protected function createRequestUrl($routeName)
+    protected function createRequestUrl($routeName, array $routeParameters = [])
     {
         $router = $this->container->get('router');
 
-        return $router->generate($routeName);
+        return $router->generate($routeName, $routeParameters);
     }
 }

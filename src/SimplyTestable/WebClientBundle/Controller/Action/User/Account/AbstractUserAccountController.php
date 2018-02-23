@@ -4,6 +4,7 @@ namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +14,7 @@ use Symfony\Component\Routing\RouterInterface;
 abstract class AbstractUserAccountController extends Controller implements RequiresPrivateUser
 {
     /**
-     * @var Response|RedirectResponse
+     * @var Response|RedirectResponse|JsonResponse
      */
     protected $response;
 

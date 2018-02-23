@@ -1,16 +1,14 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\Controller;
+namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account;
 
-use SimplyTestable\WebClientBundle\Controller\UserAccountCardController;
+use SimplyTestable\WebClientBundle\Controller\Action\User\Account\CardController;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class UserAccountCardControllerTest extends AbstractBaseTestCase
+class UserAccountCardControllerTest extends AbstractUserAccountControllerTest
 {
     const ROUTE_NAME = 'user_account_card_associate';
 
@@ -18,7 +16,7 @@ class UserAccountCardControllerTest extends AbstractBaseTestCase
     const STRIPE_CARD_TOKEN = 'card_Bb4A2szGLfgwJe';
 
     /**
-     * @var UserAccountCardController
+     * @var CardController
      */
     protected $userAccountCardController;
 
@@ -29,25 +27,19 @@ class UserAccountCardControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->userAccountCardController = new UserAccountCardController();
+        $this->userAccountCardController = new CardController();
     }
 
-    public function testIndexActionPublicUserPostRequest()
+    /**
+     * {@inheritdoc}
+     */
+    public function postRequestPublicUserDataProvider()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
-        $this->client->request(
-            'POST',
-            $this->createRequestUrl()
-        );
-
-        /* @var RedirectResponse $response */
-        $response = $this->client->getResponse();
-
-        $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/signin/', $response->getTargetUrl());
+        return [
+            'default' => [
+                'routeName' => self::ROUTE_NAME,
+            ],
+        ];
     }
 
     /**
@@ -64,7 +56,9 @@ class UserAccountCardControllerTest extends AbstractBaseTestCase
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
         $this->client->request(
             'POST',
-            $this->createRequestUrl()
+            $this->createRequestUrl(self::ROUTE_NAME, [
+                'stripe_card_token' => self::STRIPE_CARD_TOKEN,
+            ])
         );
 
         /* @var JsonResponse $response */
@@ -109,17 +103,5 @@ class UserAccountCardControllerTest extends AbstractBaseTestCase
                 ],
             ],
         ];
-    }
-
-    /**
-     * @return string
-     */
-    private function createRequestUrl()
-    {
-        $router = $this->container->get('router');
-
-        return $router->generate(self::ROUTE_NAME, [
-            'stripe_card_token' => self::STRIPE_CARD_TOKEN,
-        ]);
     }
 }
