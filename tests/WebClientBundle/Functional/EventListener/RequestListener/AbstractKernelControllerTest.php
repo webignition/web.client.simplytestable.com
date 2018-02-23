@@ -3,7 +3,7 @@
 namespace Tests\WebClientBundle\Functional\EventListener\RequestListener;
 
 use ReflectionClass;
-use SimplyTestable\WebClientBundle\Controller\UserController;
+use SimplyTestable\WebClientBundle\Controller\Action\User\UserController;
 use SimplyTestable\WebClientBundle\Controller\View\Dashboard\IndexController;
 use SimplyTestable\WebClientBundle\EventListener\IEFilteredRequestListener;
 use SimplyTestable\WebClientBundle\EventListener\RequiresCompletedTestRequestListener;
