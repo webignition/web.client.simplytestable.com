@@ -35,8 +35,7 @@ class StartControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->testStartController = new StartController();
-        $this->testStartController->setContainer($this->container);
+        $this->testStartController = $this->container->get(StartController::class);
     }
 
     /**

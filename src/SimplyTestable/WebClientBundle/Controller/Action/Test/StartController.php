@@ -8,25 +8,98 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\TestOptions;
+use SimplyTestable\WebClientBundle\Services\LinkIntegrityTestConfiguration;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskTypeService;
-use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory;
+use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
+use SimplyTestable\WebClientBundle\Services\TestOptionsConfiguration;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use webignition\NormalisedUrl\NormalisedUrl;
 
-class StartController extends Controller
+class StartController
 {
     const HTTP_AUTH_FEATURE_NAME = 'http-authentication';
     const HTTP_AUTH_FEATURE_USERNAME_KEY = 'http-auth-username';
     const HTTP_AUTH_FEATURE_PASSWORD_KEY = 'http-auth-password';
     const COOKIES_FEATURE_NAME = 'cookies';
+
+    /**
+     * @var RemoteTestService
+     */
+    private $remoteTestService;
+
+    /**
+     * @var TestOptionsRequestAdapterFactory
+     */
+    private $testOptionsRequestAdapterFactory;
+
+    /**
+     * @var TaskTypeService
+     */
+    private $taskTypeService;
+
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
+     * @var LinkIntegrityTestConfiguration
+     */
+    private $linkIntegrityTestConfiguration;
+
+    /**
+     * @var TestOptionsConfiguration
+     */
+    private $testOptionsConfiguration;
+
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
+    /**
+     * @param RemoteTestService $remoteTestService
+     * @param TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory
+     * @param TaskTypeService $taskTypeService
+     * @param UserManager $userManager
+     * @param LinkIntegrityTestConfiguration $linkIntegrityTestConfiguration
+     * @param TestOptionsConfiguration $testOptionsConfiguration
+     * @param SessionInterface $session
+     * @param RouterInterface $router
+     */
+    public function __construct(
+        RemoteTestService $remoteTestService,
+        TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
+        TaskTypeService $taskTypeService,
+        UserManager $userManager,
+        LinkIntegrityTestConfiguration $linkIntegrityTestConfiguration,
+        TestOptionsConfiguration $testOptionsConfiguration,
+        SessionInterface $session,
+        RouterInterface $router
+    ) {
+        $this->remoteTestService = $remoteTestService;
+        $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
+        $this->taskTypeService = $taskTypeService;
+        $this->userManager = $userManager;
+        $this->linkIntegrityTestConfiguration = $linkIntegrityTestConfiguration;
+        $this->testOptionsConfiguration = $testOptionsConfiguration;
+        $this->session = $session;
+        $this->router = $router;
+    }
 
     /**
      * @param Request $request
@@ -37,19 +110,12 @@ class StartController extends Controller
      */
     public function startNewAction(Request $request)
     {
-        $remoteTestService = $this->container->get(RemoteTestService::class);
-        $testOptionsAdapterFactory = $this->container->get(RequestAdapterFactory::class);
-        $taskTypeService = $this->container->get(TaskTypeService::class);
-        $session = $this->container->get('session');
-        $router = $this->container->get('router');
-        $userManager = $this->container->get(UserManager::class);
+        $user = $this->userManager->getUser();
 
-        $user = $userManager->getUser();
-
-        $taskTypeService->setUser($user);
+        $this->taskTypeService->setUser($user);
 
         if (!SystemUserService::isPublicUser($user)) {
-            $taskTypeService->setUserIsAuthenticated();
+            $this->taskTypeService->setUserIsAuthenticated();
         }
 
         $requestData = $request->request;
@@ -57,11 +123,11 @@ class StartController extends Controller
         if ($requestData->get(Task::TYPE_KEY_LINK_INTEGRITY)) {
             $requestData->set(
                 'link-integrity-excluded-domains',
-                $this->container->getParameter('link-integrity-excluded-domains')
+                $this->linkIntegrityTestConfiguration->getExcludedDomains()
             );
         }
 
-        $testOptionsAdapter = $testOptionsAdapterFactory->create();
+        $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData($requestData);
         $testOptionsAdapter->setInvertInvertableOptions(true);
 
@@ -80,18 +146,18 @@ class StartController extends Controller
 
         $website = trim($requestData->get('website'));
         $redirectRouteParameters = $this->getRedirectRouteParameters($testOptions, $website);
-        $flashBag = $session->getFlashBag();
+        $flashBag = $this->session->getFlashBag();
 
         if (empty($website)) {
             $flashBag->set('test_start_error', 'website-blank');
 
-            return new RedirectResponse($this->createStartErrorRedirectUrl($router, $redirectRouteParameters));
+            return new RedirectResponse($this->createStartErrorRedirectUrl($redirectRouteParameters));
         }
 
         if (!$testOptions->hasTestTypes()) {
             $flashBag->set('test_start_error', 'no-test-types-selected');
 
-            return new RedirectResponse($this->createStartErrorRedirectUrl($router, $redirectRouteParameters));
+            return new RedirectResponse($this->createStartErrorRedirectUrl($redirectRouteParameters));
         }
 
         $isFullSiteTest = $this->isFullSiteTest($requestData);
@@ -99,9 +165,9 @@ class StartController extends Controller
         $urlToTest = $this->getUrlToTest($isFullSiteTest, $website);
 
         try {
-            $remoteTest = $remoteTestService->start($urlToTest, $testOptions, $testType);
+            $remoteTest = $this->remoteTestService->start($urlToTest, $testOptions, $testType);
 
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'view_test_progress_index_index',
                 [
                     'website' => $remoteTest->getWebsite(),
@@ -112,7 +178,7 @@ class StartController extends Controller
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
             $flashBag->set('test_start_error', 'web_resource_exception');
 
-            return new RedirectResponse($this->createStartErrorRedirectUrl($router, $redirectRouteParameters));
+            return new RedirectResponse($this->createStartErrorRedirectUrl($redirectRouteParameters));
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             if ($coreApplicationRequestException->isCurlException()) {
                 $flashBag->set('test_start_error', 'curl-error');
@@ -121,7 +187,7 @@ class StartController extends Controller
                 $flashBag->set('test_start_error', 'web_resource_exception');
             }
 
-            return new RedirectResponse($this->createStartErrorRedirectUrl($router, $redirectRouteParameters));
+            return new RedirectResponse($this->createStartErrorRedirectUrl($redirectRouteParameters));
         }
     }
 
@@ -208,20 +274,17 @@ class StartController extends Controller
      */
     private function isIgnoredOnRedirect($formKey)
     {
-        $testOptionsParameters = $this->container->getParameter('test_options');
-
-        return in_array($formKey, $testOptionsParameters['ignore_on_error']);
+        return in_array($formKey, $this->testOptionsConfiguration->getConfiguration()['ignore_on_error']);
     }
 
     /**
-     * @param RouterInterface $router
      * @param array $redirectRouteParameters
      *
      * @return string
      */
-    private function createStartErrorRedirectUrl(RouterInterface $router, array $redirectRouteParameters)
+    private function createStartErrorRedirectUrl(array $redirectRouteParameters)
     {
-        return $router->generate(
+        return $this->router->generate(
             'view_dashboard_index_index',
             $redirectRouteParameters,
             UrlGeneratorInterface::ABSOLUTE_URL
