@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account\Team;
+namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account\TeamInvite;
 
-use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
+use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamInviteController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
@@ -18,7 +18,7 @@ use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
-class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
+class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteControllerTest
 {
     const ROUTE_NAME = 'action_user_account_team_invitemember';
     const USER_USERNAME = 'user@example.com';
@@ -110,7 +110,7 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         $session = $this->container->get('session');
 
         /* @var RedirectResponse $response */
-        $response = $this->teamController->inviteMemberAction($request);
+        $response = $this->teamInviteController->inviteMemberAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -126,11 +126,11 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
             'empty invitee' => [
                 'request' => new Request(),
                 'expectedFlashBagValues' => [
-                    TeamController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
-                        TeamController::FLASH_BAG_KEY_STATUS => TeamController::FLASH_BAG_STATUS_ERROR,
-                        TeamController::FLASH_BAG_KEY_ERROR =>
-                            TeamController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_INVALID,
-                        TeamController::FLASH_BAG_KEY_INVITEE => '',
+                    TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
+                        TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_ERROR,
+                        TeamInviteController::FLASH_BAG_KEY_ERROR =>
+                            TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_INVALID,
+                        TeamInviteController::FLASH_BAG_KEY_INVITEE => '',
                     ],
                 ],
             ],
@@ -139,11 +139,11 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
                     'email' => 'foo',
                 ]),
                 'expectedFlashBagValues' => [
-                    TeamController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
-                        TeamController::FLASH_BAG_KEY_STATUS => TeamController::FLASH_BAG_STATUS_ERROR,
-                        TeamController::FLASH_BAG_KEY_ERROR =>
-                            TeamController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_INVALID,
-                        TeamController::FLASH_BAG_KEY_INVITEE => 'foo',
+                    TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
+                        TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_ERROR,
+                        TeamInviteController::FLASH_BAG_KEY_ERROR =>
+                            TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_INVALID,
+                        TeamInviteController::FLASH_BAG_KEY_INVITEE => 'foo',
                     ],
                 ],
             ],
@@ -152,10 +152,10 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
                     'email' => self::USER_USERNAME,
                 ]),
                 'expectedFlashBagValues' => [
-                    TeamController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
-                        TeamController::FLASH_BAG_KEY_STATUS => TeamController::FLASH_BAG_STATUS_ERROR,
-                        TeamController::FLASH_BAG_KEY_ERROR =>
-                            TeamController::FLASH_BAG_TEAM_INVITE_GET_ERROR_SELF_INVITE,
+                    TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
+                        TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_ERROR,
+                        TeamInviteController::FLASH_BAG_KEY_ERROR =>
+                            TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_ERROR_SELF_INVITE,
                     ],
                 ],
             ],
@@ -182,7 +182,7 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         /* @var RedirectResponse $response */
-        $response = $this->teamController->inviteMemberAction(new Request([], [
+        $response = $this->teamInviteController->inviteMemberAction(new Request([], [
             'email' => self::INVITEE_EMAIL,
         ]));
 
@@ -205,11 +205,11 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
                     ]),
                 ],
                 'expectedFlashBagValues' => [
-                    TeamController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
-                        TeamController::FLASH_BAG_KEY_STATUS => TeamController::FLASH_BAG_STATUS_ERROR,
-                        TeamController::FLASH_BAG_KEY_ERROR =>
-                            TeamController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_IS_A_TEAM_LEADER,
-                        TeamController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
+                    TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
+                        TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_ERROR,
+                        TeamInviteController::FLASH_BAG_KEY_ERROR =>
+                            TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_IS_A_TEAM_LEADER,
+                        TeamInviteController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
                     ],
                 ],
             ],
@@ -221,11 +221,11 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
                     ]),
                 ],
                 'expectedFlashBagValues' => [
-                    TeamController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
-                        TeamController::FLASH_BAG_KEY_STATUS => TeamController::FLASH_BAG_STATUS_ERROR,
-                        TeamController::FLASH_BAG_KEY_ERROR =>
-                            TeamController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_ALREADY_ON_A_TEAM,
-                        TeamController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
+                    TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
+                        TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_ERROR,
+                        TeamInviteController::FLASH_BAG_KEY_ERROR =>
+                            TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_ALREADY_ON_A_TEAM,
+                        TeamInviteController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
                     ],
                 ],
             ],
@@ -237,11 +237,11 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
                     ]),
                 ],
                 'expectedFlashBagValues' => [
-                    TeamController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
-                        TeamController::FLASH_BAG_KEY_STATUS => TeamController::FLASH_BAG_STATUS_ERROR,
-                        TeamController::FLASH_BAG_KEY_ERROR =>
-                            TeamController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_HAS_A_PREMIUM_PLAN,
-                        TeamController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
+                    TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
+                        TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_ERROR,
+                        TeamInviteController::FLASH_BAG_KEY_ERROR =>
+                            TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_HAS_A_PREMIUM_PLAN,
+                        TeamInviteController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
                     ],
                 ],
             ],
@@ -253,11 +253,11 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
                     ]),
                 ],
                 'expectedFlashBagValues' => [
-                    TeamController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
-                        TeamController::FLASH_BAG_KEY_STATUS => TeamController::FLASH_BAG_STATUS_ERROR,
-                        TeamController::FLASH_BAG_KEY_ERROR =>
-                            TeamController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_UNKNOWN,
-                        TeamController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
+                    TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
+                        TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_ERROR,
+                        TeamInviteController::FLASH_BAG_KEY_ERROR =>
+                            TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_UNKNOWN,
+                        TeamInviteController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
                     ],
                 ],
             ],
@@ -300,7 +300,7 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         $mailService->setPostmarkMessage($postmarkMessage);
 
         /* @var RedirectResponse $response */
-        $response = $this->teamController->inviteMemberAction(new Request([], [
+        $response = $this->teamInviteController->inviteMemberAction(new Request([], [
             'email' => self::INVITEE_EMAIL,
         ]));
 
@@ -324,11 +324,11 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
                     ]
                 ),
                 'expectedFlashBagValues' => [
-                    TeamController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
-                        TeamController::FLASH_BAG_KEY_STATUS => TeamController::FLASH_BAG_STATUS_ERROR,
-                        TeamController::FLASH_BAG_KEY_ERROR =>
-                            TeamController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND,
-                        TeamController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
+                    TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
+                        TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_ERROR,
+                        TeamInviteController::FLASH_BAG_KEY_ERROR =>
+                            TeamInviteController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND,
+                        TeamInviteController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
                     ],
                 ],
             ],
@@ -341,11 +341,11 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
                     ]
                 ),
                 'expectedFlashBagValues' => [
-                    TeamController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
-                        TeamController::FLASH_BAG_KEY_STATUS => TeamController::FLASH_BAG_STATUS_ERROR,
-                        TeamController::FLASH_BAG_KEY_ERROR =>
-                            TeamController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT,
-                        TeamController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
+                    TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
+                        TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_ERROR,
+                        TeamInviteController::FLASH_BAG_KEY_ERROR =>
+                            TeamInviteController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT,
+                        TeamInviteController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
                     ],
                 ],
             ],
@@ -358,11 +358,11 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
                     ]
                 ),
                 'expectedFlashBagValues' => [
-                    TeamController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
-                        TeamController::FLASH_BAG_KEY_STATUS => TeamController::FLASH_BAG_STATUS_ERROR,
-                        TeamController::FLASH_BAG_KEY_ERROR =>
-                            TeamController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INVALID_EMAIL,
-                        TeamController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
+                    TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
+                        TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_ERROR,
+                        TeamInviteController::FLASH_BAG_KEY_ERROR =>
+                            TeamInviteController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INVALID_EMAIL,
+                        TeamInviteController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
                     ],
                 ],
             ],
@@ -375,11 +375,11 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
                     ]
                 ),
                 'expectedFlashBagValues' => [
-                    TeamController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
-                        TeamController::FLASH_BAG_KEY_STATUS => TeamController::FLASH_BAG_STATUS_ERROR,
-                        TeamController::FLASH_BAG_KEY_ERROR =>
-                            TeamController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN,
-                        TeamController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
+                    TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
+                        TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_ERROR,
+                        TeamInviteController::FLASH_BAG_KEY_ERROR =>
+                            TeamInviteController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN,
+                        TeamInviteController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
                     ],
                 ],
             ],
@@ -421,7 +421,7 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         $mailService->setPostmarkMessage($postmarkMessage);
 
         /* @var RedirectResponse $response */
-        $response = $this->teamController->inviteMemberAction(new Request([], [
+        $response = $this->teamInviteController->inviteMemberAction(new Request([], [
             'email' => self::INVITEE_EMAIL,
         ]));
 
@@ -445,10 +445,10 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
                     self::INVITEE_EMAIL
                 ),
                 'expectedFlashBagValues' => [
-                    TeamController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
-                        TeamController::FLASH_BAG_KEY_STATUS => TeamController::FLASH_BAG_STATUS_SUCCESS,
-                        TeamController::FLASH_BAG_KEY_TEAM => self::TEAM_NAME,
-                        TeamController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
+                    TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
+                        TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_SUCCESS,
+                        TeamInviteController::FLASH_BAG_KEY_TEAM => self::TEAM_NAME,
+                        TeamInviteController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
                     ],
                 ],
             ],
@@ -461,10 +461,10 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
                     self::INVITEE_EMAIL
                 ),
                 'expectedFlashBagValues' => [
-                    TeamController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
-                        TeamController::FLASH_BAG_KEY_STATUS => TeamController::FLASH_BAG_STATUS_SUCCESS,
-                        TeamController::FLASH_BAG_KEY_TEAM => self::TEAM_NAME,
-                        TeamController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
+                    TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
+                        TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_SUCCESS,
+                        TeamInviteController::FLASH_BAG_KEY_TEAM => self::TEAM_NAME,
+                        TeamInviteController::FLASH_BAG_KEY_INVITEE => self::INVITEE_EMAIL,
                     ],
                 ],
             ],

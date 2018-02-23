@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Controller\View\User\Account\Team;
 
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
+use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamInviteController;
 use SimplyTestable\WebClientBundle\Controller\View\User\Account\AbstractUserAccountController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
@@ -71,12 +72,12 @@ class IndexController extends AbstractUserAccountController
             'team_create_error' => $teamCreateError,
         ];
 
-        $teamInviteGetData = $flashBag->get(TeamController::FLASH_BAG_TEAM_INVITE_GET_KEY);
+        $teamInviteGetData = $flashBag->get(TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY);
         if (is_array($teamInviteGetData) && count($teamInviteGetData)) {
             $viewData['team_invite_get'] = $teamInviteGetData;
         }
 
-        $teamInviteResendData = $flashBag->get(TeamController::FLASH_BAG_TEAM_RESEND_INVITE_KEY);
+        $teamInviteResendData = $flashBag->get(TeamInviteController::FLASH_BAG_TEAM_RESEND_INVITE_KEY);
         if (is_array($teamInviteResendData) && count($teamInviteResendData)) {
             $viewData['team_invite_resend'] = $teamInviteResendData;
         }

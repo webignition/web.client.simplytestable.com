@@ -3,6 +3,7 @@
 namespace Tests\WebClientBundle\Functional\Controller\View\User\Account\Team;
 
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
+use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamInviteController;
 use SimplyTestable\WebClientBundle\Controller\View\User\Account\Team\IndexController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
@@ -258,12 +259,12 @@ class IndexControllerTest extends AbstractBaseTestCase
                     ])),
                 ],
                 'flashBagValues' => [
-                    TeamController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
-                        TeamController::FLASH_BAG_KEY_STATUS =>
-                            TeamController::FLASH_BAG_STATUS_ERROR,
-                        TeamController::FLASH_BAG_KEY_ERROR =>
-                            TeamController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_INVALID,
-                        TeamController::FLASH_BAG_KEY_INVITEE =>
+                    TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
+                        TeamInviteController::FLASH_BAG_KEY_STATUS =>
+                            TeamInviteController::FLASH_BAG_STATUS_ERROR,
+                        TeamInviteController::FLASH_BAG_KEY_ERROR =>
+                            TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_INVALID,
+                        TeamInviteController::FLASH_BAG_KEY_INVITEE =>
                             'invitee@example.com',
                     ],
                 ],
@@ -275,11 +276,11 @@ class IndexControllerTest extends AbstractBaseTestCase
                             $this->assertArrayHasKey('team_invite_get', $parameters);
                             $this->assertEquals(
                                 [
-                                    TeamController::FLASH_BAG_KEY_STATUS =>
-                                        TeamController::FLASH_BAG_STATUS_ERROR,
-                                    TeamController::FLASH_BAG_KEY_ERROR =>
-                                        TeamController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_INVALID,
-                                    TeamController::FLASH_BAG_KEY_INVITEE =>
+                                    TeamInviteController::FLASH_BAG_KEY_STATUS =>
+                                        TeamInviteController::FLASH_BAG_STATUS_ERROR,
+                                    TeamInviteController::FLASH_BAG_KEY_ERROR =>
+                                        TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_INVALID,
+                                    TeamInviteController::FLASH_BAG_KEY_INVITEE =>
                                         'invitee@example.com',
                                 ],
                                 $parameters['team_invite_get']
@@ -301,11 +302,11 @@ class IndexControllerTest extends AbstractBaseTestCase
                     ])),
                 ],
                 'flashBagValues' => [
-                    TeamController::FLASH_BAG_TEAM_RESEND_INVITE_KEY => [
-                        TeamController::FLASH_BAG_KEY_STATUS => TeamController::FLASH_BAG_STATUS_ERROR,
-                        TeamController::FLASH_BAG_KEY_ERROR =>
-                            TeamController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_IS_A_TEAM_LEADER,
-                        TeamController::FLASH_BAG_KEY_INVITEE => 'invitee@example.com',
+                    TeamInviteController::FLASH_BAG_TEAM_RESEND_INVITE_KEY => [
+                        TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_ERROR,
+                        TeamInviteController::FLASH_BAG_KEY_ERROR =>
+                            TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_IS_A_TEAM_LEADER,
+                        TeamInviteController::FLASH_BAG_KEY_INVITEE => 'invitee@example.com',
                     ],
                 ],
                 'templatingEngine' => MockFactory::createTemplatingEngine([
@@ -316,10 +317,11 @@ class IndexControllerTest extends AbstractBaseTestCase
                             $this->assertArrayHasKey('team_invite_resend', $parameters);
                             $this->assertEquals(
                                 [
-                                    TeamController::FLASH_BAG_KEY_STATUS => TeamController::FLASH_BAG_STATUS_ERROR,
-                                    TeamController::FLASH_BAG_KEY_ERROR =>
-                                        TeamController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_IS_A_TEAM_LEADER,
-                                    TeamController::FLASH_BAG_KEY_INVITEE => 'invitee@example.com',
+                                    TeamInviteController::FLASH_BAG_KEY_STATUS =>
+                                        TeamInviteController::FLASH_BAG_STATUS_ERROR,
+                                    TeamInviteController::FLASH_BAG_KEY_ERROR =>
+                                        TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_IS_A_TEAM_LEADER,
+                                    TeamInviteController::FLASH_BAG_KEY_INVITEE => 'invitee@example.com',
                                 ],
                                 $parameters['team_invite_resend']
                             );

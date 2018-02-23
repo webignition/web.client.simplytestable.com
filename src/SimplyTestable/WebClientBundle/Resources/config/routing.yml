@@ -104,19 +104,19 @@ action_user_account_team_create:
 
 action_user_account_team_invitemember:
     path: /account/team/invite-member/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:inviteMember }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/TeamInvite:inviteMember }
 
 action_user_account_team_respondinvite:
     path: /account/team/invite/respond/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:respondInvite }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/TeamInvite:respondInvite }
 
 action_user_account_team_removeinvite:
     path: /account/team/invite/remove/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:removeInvite }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/TeamInvite:removeInvite }
 
 action_user_account_team_resendinvite:
     path: /account/team/invite/resend/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:resendInvite }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/TeamInvite:resendInvite }
 
 action_user_account_team_removemember:
     path: /account/team/member/remove/
