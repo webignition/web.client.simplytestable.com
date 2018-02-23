@@ -33,6 +33,7 @@ class RecentTestsController extends BaseViewController implements RequiresValidU
         $testService = $this->container->get(TestService::class);
         $remoteTestService = $this->container->get(RemoteTestService::class);
         $taskService = $this->container->get(TaskService::class);
+        $templating = $this->container->get('templating');
 
         $testList = $remoteTestService->getRecent(self::LIMIT);
 
@@ -56,9 +57,11 @@ class RecentTestsController extends BaseViewController implements RequiresValidU
             'test_list' => $testList,
         ];
 
-        return $this->render(
+        $content = $templating->render(
             'SimplyTestableWebClientBundle:bs3/Dashboard/Partial/RecentTests:index.html.twig',
             $viewData
         );
+
+        return new Response($content);
     }
 }

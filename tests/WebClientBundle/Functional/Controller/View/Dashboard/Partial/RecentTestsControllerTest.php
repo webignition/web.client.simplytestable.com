@@ -100,7 +100,7 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function testIndexAction(
+    public function testIndexActionFoo(
         array $httpFixtures,
         EngineInterface $templatingEngine
     ) {
@@ -141,10 +141,9 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
                     ]),
                 ],
                 'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'renderResponse' => [
-                        'withArgs' => function ($viewName, $parameters, $response) {
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);
-                            $this->assertNull($response);
 
                             $this->assertEquals(
                                 [
@@ -189,10 +188,9 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
                     ]),
                 ],
                 'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'renderResponse' => [
-                        'withArgs' => function ($viewName, $parameters, $response) {
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);
-                            $this->assertNull($response);
 
                             $this->assertEquals(
                                 [
@@ -250,10 +248,9 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
                     ]),
                 ],
                 'templatingEngine' => MockFactory::createTemplatingEngine([
-                    'renderResponse' => [
-                        'withArgs' => function ($viewName, $parameters, $response) {
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);
-                            $this->assertNull($response);
 
                             $this->assertEquals(
                                 [

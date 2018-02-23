@@ -69,13 +69,6 @@ class MockFactory
     {
         $templatingEngine = \Mockery::mock(EngineInterface::class);
 
-        if (isset($calls['renderResponse'])) {
-            $templatingEngine
-                ->shouldReceive('renderResponse')
-                ->withArgs($calls['renderResponse']['withArgs'])
-                ->andReturn($calls['renderResponse']['return']);
-        }
-
         if (isset($calls['render'])) {
             $templatingEngine
                 ->shouldReceive('render')
