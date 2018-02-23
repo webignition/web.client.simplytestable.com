@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\Controller;
+namespace Tests\WebClientBundle\Functional\Controller\Action\Test;
 
-use SimplyTestable\WebClientBundle\Controller\TestController;
+use SimplyTestable\WebClientBundle\Controller\Action\Test\TestController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
@@ -60,12 +60,9 @@ class TestControllerTest extends AbstractBaseTestCase
     {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate($routeName, $routeParameters);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->createRequestUrl($routeName, $routeParameters)
         );
 
         /* @var RedirectResponse $response */
@@ -138,15 +135,12 @@ class TestControllerTest extends AbstractBaseTestCase
     {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate('test_cancel', [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->createRequestUrl('test_cancel', [
+                'website' => self::WEBSITE,
+                'test_id' => self::TEST_ID,
+            ])
         );
 
         /* @var RedirectResponse $response */
@@ -214,15 +208,12 @@ class TestControllerTest extends AbstractBaseTestCase
     {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $router = $this->container->get('router');
-        $requestUrl = $router->generate('test_cancel_crawl', [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->createRequestUrl('test_cancel_crawl', [
+                'website' => self::WEBSITE,
+                'test_id' => self::TEST_ID,
+            ])
         );
 
         /* @var RedirectResponse $response */
@@ -290,14 +281,13 @@ class TestControllerTest extends AbstractBaseTestCase
         ]);
 
         $router = $this->container->get('router');
-        $requestUrl = $router->generate('app_test_retest', [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
 
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->createRequestUrl('app_test_retest', [
+                'website' => self::WEBSITE,
+                'test_id' => self::TEST_ID,
+            ])
         );
 
         /* @var RedirectResponse $response */
@@ -305,5 +295,18 @@ class TestControllerTest extends AbstractBaseTestCase
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('http://localhost/http://example.com//2/progress/', $response->getTargetUrl());
+    }
+
+    /**
+     * @param string $routeName
+     * @param array $routeParameters
+     *
+     * @return string
+     */
+    private function createRequestUrl($routeName, array $routeParameters = [])
+    {
+        $router = $this->container->get('router');
+
+        return $router->generate($routeName, $routeParameters);
     }
 }
