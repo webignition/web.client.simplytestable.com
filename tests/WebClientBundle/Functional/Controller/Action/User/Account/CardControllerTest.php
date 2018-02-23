@@ -27,7 +27,7 @@ class UserAccountCardControllerTest extends AbstractUserAccountControllerTest
     {
         parent::setUp();
 
-        $this->userAccountCardController = new CardController();
+        $this->userAccountCardController = $this->container->get(CardController::class);
     }
 
     /**
