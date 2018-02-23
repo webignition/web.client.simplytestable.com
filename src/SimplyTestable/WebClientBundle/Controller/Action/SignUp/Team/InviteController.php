@@ -11,13 +11,15 @@ use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
 use SimplyTestable\WebClientBundle\Services\TeamInviteService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 use webignition\ResqueJobFactory\ResqueJobFactory;
 
-class InviteController extends Controller
+class InviteController
 {
     const ONE_YEAR_IN_SECONDS = 31536000;
 
@@ -26,6 +28,68 @@ class InviteController extends Controller
     const FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_FAILURE = 'failure';
 
     const FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY = 'invite_accept_failure';
+
+    /**
+     * @var TeamInviteService
+     */
+    private $teamInviteService;
+
+    /**
+     * @var UserService
+     */
+    private $userService;
+
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
+     * @var ResqueQueueService
+     */
+    private $resqueQueueService;
+
+    /**
+     * @var ResqueJobFactory
+     */
+    private $resqueJobFactory;
+
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
+    /**
+     * @param TeamInviteService $teamInviteService
+     * @param UserService $userService
+     * @param UserManager $userManager
+     * @param ResqueQueueService $resqueQueueService
+     * @param ResqueJobFactory $resqueJobFactory
+     * @param SessionInterface $session
+     * @param RouterInterface $router
+     */
+    public function __construct(
+        TeamInviteService $teamInviteService,
+        UserService $userService,
+        UserManager $userManager,
+        ResqueQueueService $resqueQueueService,
+        ResqueJobFactory $resqueJobFactory,
+        SessionInterface $session,
+        RouterInterface $router
+    ) {
+        $this->teamInviteService = $teamInviteService;
+        $this->userService = $userService;
+        $this->userManager = $userManager;
+        $this->resqueQueueService = $resqueQueueService;
+        $this->resqueJobFactory = $resqueJobFactory;
+        $this->session = $session;
+        $this->router = $router;
+    }
 
     /**
      * @param Request $request
@@ -40,28 +104,20 @@ class InviteController extends Controller
      */
     public function acceptAction(Request $request, $token)
     {
-        $teamInviteService = $this->container->get(TeamInviteService::class);
-        $session = $this->container->get('session');
-        $userService = $this->container->get(UserService::class);
-        $resqueQueueService = $this->container->get(ResqueQueueService::class);
-        $resqueJobFactory = $this->container->get(ResqueJobFactory::class);
-        $userManager = $this->container->get(UserManager::class);
-        $router = $this->container->get('router');
-
         $requestData = $request->request;
 
         if (empty($token)) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'view_user_signup_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
             ));
         }
 
-        $invite = $teamInviteService->getForToken($token);
+        $invite = $this->teamInviteService->getForToken($token);
 
         if (empty($invite)) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'view_user_signup_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
@@ -70,12 +126,12 @@ class InviteController extends Controller
 
         $password = trim($requestData->get('password'));
         if (empty($password)) {
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY,
                 self::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_PASSWORD_BLANK
             );
 
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'view_user_signup_invite_index',
                 [
                     'token' => $token
@@ -88,7 +144,7 @@ class InviteController extends Controller
         $activateAndAcceptFailureCode = null;
 
         try {
-            $userService->activateAndAccept($invite, $password);
+            $this->userService->activateAndAccept($invite, $password);
             $activateAndAcceptIsSuccessful = true;
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
             $activateAndAcceptFailureCode = 503;
@@ -97,17 +153,17 @@ class InviteController extends Controller
         }
 
         if (false === $activateAndAcceptIsSuccessful) {
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY,
                 self::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_FAILURE
             );
 
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY,
                 $activateAndAcceptFailureCode
             );
 
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'view_user_signup_invite_index',
                 [
                     'token' => $token
@@ -116,8 +172,8 @@ class InviteController extends Controller
             ));
         }
 
-        $resqueQueueService->enqueue(
-            $resqueJobFactory->create(
+        $this->resqueQueueService->enqueue(
+            $this->resqueJobFactory->create(
                 'email-list-subscribe',
                 [
                     'listId' => 'announcements',
@@ -126,8 +182,8 @@ class InviteController extends Controller
             )
         );
 
-        $resqueQueueService->enqueue(
-            $resqueJobFactory->create(
+        $this->resqueQueueService->enqueue(
+            $this->resqueJobFactory->create(
                 'email-list-subscribe',
                 [
                     'listId' => 'introduction',
@@ -137,18 +193,18 @@ class InviteController extends Controller
         );
 
         $user = new User($invite->getUser(), $password);
-        $userManager->setUser($user);
+        $this->userManager->setUser($user);
 
         $staySignedIn = !empty(trim($requestData->get('stay-signed-in')));
 
-        $response = new RedirectResponse($router->generate(
+        $response = new RedirectResponse($this->router->generate(
             'view_dashboard_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
         ));
 
         if ($staySignedIn) {
-            $response->headers->setCookie($userManager->createUserCookie());
+            $response->headers->setCookie($this->userManager->createUserCookie());
         }
 
         return $response;
