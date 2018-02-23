@@ -19,6 +19,6 @@ abstract class AbstractUserControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->userController = new UserController();
+        $this->userController = $this->container->get(UserController::class);
     }
 }

@@ -72,8 +72,6 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->userController->setContainer($this->container);
-
         /* @var RedirectResponse $response */
         $response = $this->userController->resetPasswordChooseSubmitAction($request);
 
