@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
 use SimplyTestable\WebClientBundle\Services\UserAccountCardService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -20,28 +21,20 @@ class CardController extends AbstractUserAccountController
     private $userAccountCardService;
 
     /**
-     * @var UserManager
-     */
-    private $userManager;
-
-    /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
      * @param UserAccountCardService $userAccountCardService
      * @param UserManager $userManager
      * @param RouterInterface $router
+     * @param SessionInterface $session
      */
     public function __construct(
         UserAccountCardService $userAccountCardService,
         UserManager $userManager,
-        RouterInterface $router
+        RouterInterface $router,
+        SessionInterface $session
     ) {
+        parent::__construct($userManager, $router, $session);
+
         $this->userAccountCardService = $userAccountCardService;
-        $this->userManager = $userManager;
-        $this->router = $router;
     }
 
     /**

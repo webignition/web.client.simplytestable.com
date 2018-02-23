@@ -16,7 +16,6 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
@@ -55,44 +54,28 @@ class TeamInviteController extends AbstractUserAccountController
     private $teamInviteService;
 
     /**
-     * @var UserManager
-     */
-    private $userManager;
-
-    /**
      * @var UserService
      */
     private $userService;
 
     /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
-     * @var Session
-     */
-    private $session;
-
-    /**
      * @param TeamInviteService $teamInviteService
-     * @param UserManager $userManager
      * @param UserService $userService
+     * @param UserManager $userManager
      * @param RouterInterface $router
      * @param SessionInterface $session
      */
     public function __construct(
         TeamInviteService $teamInviteService,
-        UserManager $userManager,
         UserService $userService,
+        UserManager $userManager,
         RouterInterface $router,
         SessionInterface $session
     ) {
+        parent::__construct($userManager, $router, $session);
+
         $this->teamInviteService = $teamInviteService;
-        $this->userManager = $userManager;
         $this->userService = $userService;
-        $this->router = $router;
-        $this->session = $session;
     }
 
     /**

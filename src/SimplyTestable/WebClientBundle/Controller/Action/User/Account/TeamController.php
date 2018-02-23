@@ -6,9 +6,9 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Services\TeamService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -24,28 +24,20 @@ class TeamController extends AbstractUserAccountController
     private $teamService;
 
     /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
-     * @var Session
-     */
-    private $session;
-
-    /**
      * @param TeamService $teamService
+     * @param UserManager $userManager
      * @param RouterInterface $router
      * @param SessionInterface $session
      */
     public function __construct(
         TeamService $teamService,
+        UserManager $userManager,
         RouterInterface $router,
         SessionInterface $session
     ) {
+        parent::__construct($userManager, $router, $session);
+
         $this->teamService = $teamService;
-        $this->router = $router;
-        $this->session = $session;
     }
 
     /**

@@ -14,7 +14,6 @@ use SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
@@ -57,21 +56,6 @@ class EmailChangeController extends AbstractUserAccountController
     private $emailChangeRequestService;
 
     /**
-     * @var UserManager
-     */
-    private $userManager;
-
-    /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
-     * @var Session
-     */
-    private $session;
-
-    /**
      * @param UserEmailChangeRequestService $emailChangeRequestService
      * @param UserManager $userManager
      * @param RouterInterface $router
@@ -83,10 +67,9 @@ class EmailChangeController extends AbstractUserAccountController
         RouterInterface $router,
         SessionInterface $session
     ) {
+        parent::__construct($userManager, $router, $session);
+
         $this->emailChangeRequestService = $emailChangeRequestService;
-        $this->userManager = $userManager;
-        $this->router = $router;
-        $this->session = $session;
     }
 
     /**

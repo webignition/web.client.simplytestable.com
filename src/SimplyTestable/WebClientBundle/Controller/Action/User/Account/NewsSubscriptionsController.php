@@ -10,7 +10,6 @@ use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Services\MailChimp\Service as MailChimpService;
@@ -34,21 +33,6 @@ class NewsSubscriptionsController extends AbstractUserAccountController
     private $entityManager;
 
     /**
-     * @var UserManager
-     */
-    private $userManager;
-
-    /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
-     * @var Session
-     */
-    private $session;
-
-    /**
      * @param ListRecipientsService $mailChimpListRecipientsService
      * @param MailChimpService $mailChimpService
      * @param EntityManagerInterface $entityManager
@@ -64,12 +48,11 @@ class NewsSubscriptionsController extends AbstractUserAccountController
         RouterInterface $router,
         SessionInterface $session
     ) {
+        parent::__construct($userManager, $router, $session);
+
         $this->mailChimpListRecipientsService = $mailChimpListRecipientsService;
         $this->mailChimpService = $mailChimpService;
         $this->entityManager = $entityManager;
-        $this->userManager = $userManager;
-        $this->router = $router;
-        $this->session = $session;
     }
 
     /**

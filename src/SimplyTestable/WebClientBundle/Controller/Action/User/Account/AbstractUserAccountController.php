@@ -3,11 +3,14 @@
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -17,6 +20,36 @@ abstract class AbstractUserAccountController extends Controller implements Requi
      * @var Response|RedirectResponse|JsonResponse
      */
     protected $response;
+
+    /**
+     * @var UserManager
+     */
+    protected $userManager;
+
+    /**
+     * @var RouterInterface
+     */
+    protected $router;
+
+    /**
+     * @var Session
+     */
+    protected $session;
+
+    /**
+     * @param UserManager $userManager
+     * @param RouterInterface $router
+     * @param SessionInterface $session
+     */
+    public function __construct(
+        UserManager $userManager,
+        RouterInterface $router,
+        SessionInterface $session
+    ) {
+        $this->userManager = $userManager;
+        $this->router = $router;
+        $this->session = $session;
+    }
 
     /**
      * {@inheritdoc}

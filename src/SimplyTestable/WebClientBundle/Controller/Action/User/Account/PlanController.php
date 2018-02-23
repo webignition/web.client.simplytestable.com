@@ -15,18 +15,12 @@ use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class PlanController extends AbstractUserAccountController
 {
-    /**
-     * @var UserManager
-     */
-    private $userManager;
-
     /**
      * @var UserService
      */
@@ -48,40 +42,29 @@ class PlanController extends AbstractUserAccountController
     private $logger;
 
     /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
-     * @var Session
-     */
-    private $session;
-
-    /**
-     * @param UserManager $userManager
      * @param UserService $userService
      * @param TeamService $teamService
      * @param UserPlanSubscriptionService $userPlanSubscriptionService
      * @param LoggerInterface $logger
+     * @param UserManager $userManager
      * @param RouterInterface $router
      * @param SessionInterface $session
      */
     public function __construct(
-        UserManager $userManager,
         UserService $userService,
         TeamService $teamService,
         UserPlanSubscriptionService $userPlanSubscriptionService,
         LoggerInterface $logger,
+        UserManager $userManager,
         RouterInterface $router,
         SessionInterface $session
     ) {
-        $this->userManager = $userManager;
+        parent::__construct($userManager, $router, $session);
+
         $this->userService = $userService;
         $this->teamService = $teamService;
         $this->userPlanSubscriptionService = $userPlanSubscriptionService;
         $this->logger = $logger;
-        $this->router = $router;
-        $this->session = $session;
     }
 
     /**

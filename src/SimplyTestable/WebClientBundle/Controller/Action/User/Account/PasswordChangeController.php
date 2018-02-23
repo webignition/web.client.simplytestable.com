@@ -11,7 +11,6 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -26,41 +25,25 @@ class PasswordChangeController extends AbstractUserAccountController
     const FLASH_BAG_REQUEST_SUCCESS_MESSAGE = 'password-done';
 
     /**
-     * @var UserManager
-     */
-    private $userManager;
-
-    /**
      * @var UserService
      */
     private $userService;
 
     /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
-     * @var Session
-     */
-    private $session;
-
-    /**
-     * @param UserManager $userManager
      * @param UserService $userService
+     * @param UserManager $userManager
      * @param RouterInterface $router
      * @param SessionInterface $session
      */
     public function __construct(
-        UserManager $userManager,
         UserService $userService,
+        UserManager $userManager,
         RouterInterface $router,
         SessionInterface $session
     ) {
-        $this->userManager = $userManager;
+        parent::__construct($userManager, $router, $session);
+
         $this->userService = $userService;
-        $this->router = $router;
-        $this->session = $session;
     }
 
     /**
