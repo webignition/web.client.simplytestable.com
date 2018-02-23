@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account\Team;
+namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account\TeamInvite;
 
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
@@ -18,7 +18,7 @@ use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
-class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
+class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteControllerTest
 {
     const ROUTE_NAME = 'action_user_account_team_invitemember';
     const USER_USERNAME = 'user@example.com';
@@ -110,7 +110,7 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         $session = $this->container->get('session');
 
         /* @var RedirectResponse $response */
-        $response = $this->teamController->inviteMemberAction($request);
+        $response = $this->teamInviteController->inviteMemberAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -182,7 +182,7 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         /* @var RedirectResponse $response */
-        $response = $this->teamController->inviteMemberAction(new Request([], [
+        $response = $this->teamInviteController->inviteMemberAction(new Request([], [
             'email' => self::INVITEE_EMAIL,
         ]));
 
@@ -300,7 +300,7 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         $mailService->setPostmarkMessage($postmarkMessage);
 
         /* @var RedirectResponse $response */
-        $response = $this->teamController->inviteMemberAction(new Request([], [
+        $response = $this->teamInviteController->inviteMemberAction(new Request([], [
             'email' => self::INVITEE_EMAIL,
         ]));
 
@@ -421,7 +421,7 @@ class TeamControllerInviteMemberActionTest extends AbstractTeamControllerTest
         $mailService->setPostmarkMessage($postmarkMessage);
 
         /* @var RedirectResponse $response */
-        $response = $this->teamController->inviteMemberAction(new Request([], [
+        $response = $this->teamInviteController->inviteMemberAction(new Request([], [
             'email' => self::INVITEE_EMAIL,
         ]));
 

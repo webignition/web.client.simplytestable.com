@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account\Team;
+namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account\TeamInvite;
 
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
-class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
+class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteControllerTest
 {
     const ROUTE_NAME = 'action_user_account_team_resendinvite';
     const USER_USERNAME = 'user@example.com';
@@ -112,7 +112,7 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         /* @var RedirectResponse $response */
-        $response = $this->teamController->resendInviteAction(new Request([], [
+        $response = $this->teamInviteController->resendInviteAction(new Request([], [
             'user' => self::INVITEE_EMAIL,
         ]));
 
@@ -181,7 +181,7 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
         $mailService->setPostmarkMessage($postmarkMessage);
 
         /* @var RedirectResponse $response */
-        $response = $this->teamController->resendInviteAction(new Request([], [
+        $response = $this->teamInviteController->resendInviteAction(new Request([], [
             'user' => self::INVITEE_EMAIL,
         ]));
 
@@ -253,7 +253,7 @@ class TeamControllerResendInviteActionTest extends AbstractTeamControllerTest
         $mailService->setPostmarkMessage($postmarkMessage);
 
         /* @var RedirectResponse $response */
-        $response = $this->teamController->resendInviteAction(new Request([], [
+        $response = $this->teamInviteController->resendInviteAction(new Request([], [
             'user' => self::INVITEE_EMAIL,
         ]));
 

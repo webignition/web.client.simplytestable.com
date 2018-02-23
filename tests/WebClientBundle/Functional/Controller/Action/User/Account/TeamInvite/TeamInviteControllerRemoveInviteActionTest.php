@@ -1,13 +1,13 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account\Team;
+namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account\TeamInvite;
 
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class TeamControllerRemoveInviteActionTest extends AbstractTeamControllerTest
+class TeamInviteControllerRemoveInviteActionTest extends AbstractTeamInviteControllerTest
 {
     const ROUTE_NAME = 'action_user_account_team_removeinvite';
     const EXPECTED_REDIRECT_URL = 'http://localhost/account/team/';

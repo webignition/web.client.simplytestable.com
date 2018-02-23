@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account\Team;
+namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account\TeamInvite;
 
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
@@ -10,7 +10,7 @@ use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class TeamControllerRespondInviteActionTest extends AbstractTeamControllerTest
+class TeamInviteControllerRespondInviteActionTest extends AbstractTeamInviteControllerTest
 {
     const ROUTE_NAME = 'action_user_account_team_respondinvite';
     const EXPECTED_REDIRECT_URL = 'http://localhost/account/team/';
@@ -58,7 +58,7 @@ class TeamControllerRespondInviteActionTest extends AbstractTeamControllerTest
     public function testRespondInviteActionBadRequestResponseValue()
     {
         /* @var RedirectResponse $response */
-        $response = $this->teamController->respondInviteAction(new Request());
+        $response = $this->teamInviteController->respondInviteAction(new Request());
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
@@ -79,7 +79,7 @@ class TeamControllerRespondInviteActionTest extends AbstractTeamControllerTest
         ]);
 
         /* @var RedirectResponse $response */
-        $response = $this->teamController->respondInviteAction($request);
+        $response = $this->teamInviteController->respondInviteAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
