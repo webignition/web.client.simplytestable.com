@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
+use Psr\Log\LoggerInterface;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
@@ -14,10 +15,75 @@ use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 class PlanController extends AbstractUserAccountController
 {
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
+     * @var UserService
+     */
+    private $userService;
+
+    /**
+     * @var TeamService
+     */
+    private $teamService;
+
+    /**
+     * @var UserPlanSubscriptionService
+     */
+    private $userPlanSubscriptionService;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @param UserManager $userManager
+     * @param UserService $userService
+     * @param TeamService $teamService
+     * @param UserPlanSubscriptionService $userPlanSubscriptionService
+     * @param LoggerInterface $logger
+     * @param RouterInterface $router
+     * @param SessionInterface $session
+     */
+    public function __construct(
+        UserManager $userManager,
+        UserService $userService,
+        TeamService $teamService,
+        UserPlanSubscriptionService $userPlanSubscriptionService,
+        LoggerInterface $logger,
+        RouterInterface $router,
+        SessionInterface $session
+    ) {
+        $this->userManager = $userManager;
+        $this->userService = $userService;
+        $this->teamService = $teamService;
+        $this->userPlanSubscriptionService = $userPlanSubscriptionService;
+        $this->logger = $logger;
+        $this->router = $router;
+        $this->session = $session;
+    }
+
     /**
      * @param Request $request
      *
@@ -33,24 +99,16 @@ class PlanController extends AbstractUserAccountController
             return $this->response;
         }
 
-        $router = $this->container->get('router');
-        $userService = $this->container->get(UserService::class);
-        $session = $this->container->get('session');
-        $teamService = $this->container->get(TeamService::class);
-        $userAccountPlanSubscriptionService = $this->get(UserPlanSubscriptionService::class);
-        $logger = $this->container->get('logger');
-        $userManager = $this->container->get(UserManager::class);
-
-        $user = $userManager->getUser();
-        $redirectResponse = new RedirectResponse($router->generate(
+        $user = $this->userManager->getUser();
+        $redirectResponse = new RedirectResponse($this->router->generate(
             'view_user_account_plan_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
         ));
 
-        $userSummary = $userService->getSummary($user);
+        $userSummary = $this->userService->getSummary($user);
         $requestData = $request->request;
-        $flashBag = $session->getFlashBag();
+        $flashBag = $this->session->getFlashBag();
 
         $plan = $requestData->get('plan');
 
@@ -61,7 +119,7 @@ class PlanController extends AbstractUserAccountController
         }
 
         if ($userSummary->getTeamSummary()->isInTeam()) {
-            $team = $teamService->getTeam();
+            $team = $this->teamService->getTeam();
 
             if ($team->getLeader() != $user->getUsername()) {
                 return $redirectResponse;
@@ -69,10 +127,10 @@ class PlanController extends AbstractUserAccountController
         }
 
         try {
-            $userAccountPlanSubscriptionService->subscribe($user, $plan);
+            $this->userPlanSubscriptionService->subscribe($user, $plan);
             $flashBag->set('plan_subscribe_success', 'ok');
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
-            $logger->error(sprintf(
+            $this->logger->error(sprintf(
                 'UserAccountPlanController::subscribeAction::subscribe method return %s ',
                 $coreApplicationRequestException->getCode()
             ));
@@ -81,7 +139,7 @@ class PlanController extends AbstractUserAccountController
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
             $flashBag->set('plan_subscribe_error', 503);
         } catch (UserAccountCardException $userAccountCardException) {
-            $logger->error('UserAccountPlanController::subscribeAction::stripe card error');
+            $this->logger->error('UserAccountPlanController::subscribeAction::stripe card error');
 
             $flashBag->set('user_account_card_exception_message', $userAccountCardException->getMessage());
             $flashBag->set('user_account_card_exception_param', $userAccountCardException->getParam());
