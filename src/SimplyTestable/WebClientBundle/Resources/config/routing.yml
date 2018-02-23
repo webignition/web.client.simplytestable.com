@@ -228,19 +228,19 @@ view_test_results_index_index:
 
 app_test_lock:
     path: /{website}/{test_id}/lock/
-    defaults: { _controller: SimplyTestableWebClientBundle:Test:lock }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/Test/Test:lock }
     requirements:
        website: '.+'
 
 app_test_unlock:
     path: /{website}/{test_id}/unlock/
-    defaults: { _controller: SimplyTestableWebClientBundle:Test:unlock }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/Test/Test:unlock }
     requirements:
        website: '.+'
 
 app_test_retest:
     path: /{website}/{test_id}/re-test/
-    defaults: { _controller: SimplyTestableWebClientBundle:Test:retest }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/Test/Test:retest }
     requirements:
        website: '.+'
 
@@ -313,13 +313,13 @@ test_start:
 
 test_cancel:
     path: /test/{website}/{test_id}/cancel/
-    defaults: { _controller: SimplyTestableWebClientBundle:Test:cancel }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/Test/Test:cancel }
     requirements:
         website: '.+'
 
 test_cancel_crawl:
     path: /test/{website}/{test_id}/cancel-crawl/
-    defaults: { _controller: SimplyTestableWebClientBundle:Test:cancelCrawl }
+    defaults: { _controller: SimplyTestableWebClientBundle:Action/Test/Test:cancelCrawl }
     requirements:
         website: '.+'
 
