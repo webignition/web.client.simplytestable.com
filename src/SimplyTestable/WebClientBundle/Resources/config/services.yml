@@ -256,6 +256,16 @@ services:
     arguments:
       - '@SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory'
 
+  SimplyTestable\WebClientBundle\Services\CssValidationTestConfiguration:
+    class:  SimplyTestable\WebClientBundle\Services\CssValidationTestConfiguration
+    arguments:
+      - '%css-validation-ignore-common-cdns%'
+
+  SimplyTestable\WebClientBundle\Services\JsStaticAnalysisTestConfiguration:
+    class:  SimplyTestable\WebClientBundle\Services\JsStaticAnalysisTestConfiguration
+    arguments:
+      - '%js-static-analysis-ignore-common-cdns%'
+
   SimplyTestable\WebClientBundle\Services\LinkIntegrityTestConfiguration:
     class:  SimplyTestable\WebClientBundle\Services\LinkIntegrityTestConfiguration
     arguments:
