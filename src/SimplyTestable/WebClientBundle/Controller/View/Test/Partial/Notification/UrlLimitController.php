@@ -8,14 +8,49 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
 class UrlLimitController extends BaseViewController implements RequiresValidUser, RequiresValidOwner
 {
+    /**
+     * @var TestService
+     */
+    private $testService;
+
+    /**
+     * @var RemoteTestService
+     */
+    private $remoteTestService;
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param TestService $testService
+     * @param RemoteTestService $remoteTestService
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        TestService $testService,
+        RemoteTestService $remoteTestService
+    ) {
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
+
+        $this->testService = $testService;
+        $this->remoteTestService = $remoteTestService;
+    }
+
     /**
      * @param Request $request
      * @param string $website
@@ -32,15 +67,10 @@ class UrlLimitController extends BaseViewController implements RequiresValidUser
             return $this->response;
         }
 
-        $testService = $this->container->get(TestService::class);
-        $remoteTestService = $this->container->get(RemoteTestService::class);
-        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
-        $templating = $this->container->get('templating');
+        $test = $this->testService->get($website, $test_id);
+        $this->remoteTestService->setTest($test);
 
-        $test = $testService->get($website, $test_id);
-        $remoteTestService->setTest($test);
-
-        $remoteTest = $remoteTestService->get();
+        $remoteTest = $this->remoteTestService->get();
         $ammendments = $remoteTest->getAmmendments();
 
         if (empty($ammendments)) {
@@ -49,29 +79,23 @@ class UrlLimitController extends BaseViewController implements RequiresValidUser
 
         $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
 
-        $response = $cacheValidatorService->createResponse($request, [
+        $response = $this->cacheValidator->createResponse($request, [
             'test_id' => $test_id,
             'is_public_user_test' => $isPublicUserTest,
         ]);
 
-        if ($cacheValidatorService->isNotModified($response)) {
+        if ($this->cacheValidator->isNotModified($response)) {
             return $response;
         }
 
-        $viewData = [
-            'remote_test' => $remoteTest,
-            'is_public_user_test' => $isPublicUserTest,
-        ];
-
-        $content = $templating->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/Test/Partial/Notification/UrlLimit:index.html.twig',
-            array_merge($this->getDefaultViewParameters(), $viewData)
+            [
+                'remote_test' => $remoteTest,
+                'is_public_user_test' => $isPublicUserTest,
+            ],
+            $response
         );
-
-        $response->setContent($content);
-        $response->headers->set('content-type', 'text/html');
-
-        return $response;
     }
 
     /**
