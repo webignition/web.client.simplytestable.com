@@ -3,8 +3,8 @@
 {% set next_plan = null %}
 
 {% for plan in plans %}
-    {% if plan.credits_per_month > credits_used and next_plan is null %}
-        {% set next_plan = plan %}
+    {% if plan.plan.creditsPerMonth > credits_used and next_plan is null %}
+        {% set next_plan = plan.plan %}
     {% endif %}
 {% endfor %}
 
