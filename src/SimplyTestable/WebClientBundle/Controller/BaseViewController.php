@@ -3,18 +3,25 @@
 namespace SimplyTestable\WebClientBundle\Controller;
 
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-abstract class BaseViewController implements IEFiltered
+abstract class BaseViewController extends AbstractController implements IEFiltered
 {
     /**
      * @var DefaultViewParameters
      */
-    protected $defaultViewParameters;
+    private $defaultViewParameters;
+
+    /**
+     * @var Twig_Environment
+     */
+    private $twig;
 
     /**
      * @var Response|RedirectResponse|JsonResponse
@@ -22,18 +29,27 @@ abstract class BaseViewController implements IEFiltered
     protected $response;
 
     /**
-     * @var Twig_Environment
+     * @var CacheValidatorService
      */
-    protected $twig;
+    protected $cacheValidator;
 
     /**
+     * @param RouterInterface $router
      * @param Twig_Environment $twig
      * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
      */
-    public function __construct(Twig_Environment $twig, DefaultViewParameters $defaultViewParameters)
-    {
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator
+    ) {
+        parent::__construct($router);
+
         $this->twig = $twig;
         $this->defaultViewParameters = $defaultViewParameters;
+        $this->cacheValidator = $cacheValidator;
     }
 
     /**
@@ -50,5 +66,49 @@ abstract class BaseViewController implements IEFiltered
     public function hasResponse()
     {
         return !empty($this->response);
+    }
+
+    /**
+     * @param string $view
+     * @param array $parameters
+     * @param Response|null $response
+     *
+     * @return Response
+     *
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
+    protected function render($view, array $parameters = array(), Response $response = null)
+    {
+        if (empty($response)) {
+            $response = new Response();
+        }
+
+        $content = $this->twig->render($view, $parameters);
+
+        $response->setContent($content);
+
+        return $response;
+    }
+
+    /**
+     * @param string $view
+     * @param array $parameters
+     * @param Response|null $response
+     *
+     * @return Response
+     *
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
+    protected function renderWithDefaultViewParameters($view, array $parameters = array(), Response $response = null)
+    {
+        return $this->render(
+            $view,
+            array_merge($this->defaultViewParameters->getDefaultViewParameters(), $parameters),
+            $response
+        );
     }
 }

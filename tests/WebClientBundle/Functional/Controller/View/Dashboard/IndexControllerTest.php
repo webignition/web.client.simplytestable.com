@@ -296,6 +296,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     private function createIndexController(array $services = [])
     {
         $requiredServiceIds = [
+            'router',
             'twig',
             DefaultViewParameters::class,
             TaskTypeService::class,
@@ -316,6 +317,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         }
 
         $indexController = new IndexController(
+            $services['router'],
             $services['twig'],
             $services[DefaultViewParameters::class],
             $services[TaskTypeService::class],

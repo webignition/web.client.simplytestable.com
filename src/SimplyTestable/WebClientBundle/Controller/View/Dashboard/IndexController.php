@@ -153,24 +153,18 @@ class IndexController extends BaseViewController implements RequiresValidUser
             return $response;
         }
 
-        $viewData = [
-            'available_task_types' => $availableTaskTypes,
-            'task_types' => $taskTypes,
-            'test_options' => $testOptions,
-            'css_validation_ignore_common_cdns' => $cssValidationExcludedDomains,
-            'js_static_analysis_ignore_common_cdns' => $jsStaticAnalysisExcludedDomains,
-            'test_start_error' => $testStartError,
-            'website' => $this->urlViewValuesService->create($website),
-        ];
-
-        $content = $this->twig->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/Dashboard/Index:index.html.twig',
-            array_merge($this->defaultViewParameters->getDefaultViewParameters(), $viewData)
+            [
+                'available_task_types' => $availableTaskTypes,
+                'task_types' => $taskTypes,
+                'test_options' => $testOptions,
+                'css_validation_ignore_common_cdns' => $cssValidationExcludedDomains,
+                'js_static_analysis_ignore_common_cdns' => $jsStaticAnalysisExcludedDomains,
+                'test_start_error' => $testStartError,
+                'website' => $this->urlViewValuesService->create($website),
+            ]
         );
-
-        $response->setContent($content);
-
-        return $response;
     }
 
     /**

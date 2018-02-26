@@ -92,15 +92,8 @@ class RecentTestsController extends BaseViewController implements RequiresValidU
             }
         }
 
-        $viewData = [
+        return $this->render('SimplyTestableWebClientBundle:bs3/Dashboard/Partial/RecentTests:index.html.twig', [
             'test_list' => $testList,
-        ];
-
-        $content = $this->twig->render(
-            'SimplyTestableWebClientBundle:bs3/Dashboard/Partial/RecentTests:index.html.twig',
-            $viewData
-        );
-
-        return new Response($content);
+        ]);
     }
 }

@@ -10,6 +10,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\TestList;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\TaskService;
@@ -91,8 +92,10 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $recentTestsController = new RecentTestsController(
+            $this->container->get('router'),
             $twig,
             $this->container->get(DefaultViewParameters::class),
+            $this->container->get(CacheValidatorService::class),
             $this->container->get(TestService::class),
             $this->container->get(RemoteTestService::class),
             $this->container->get(TaskService::class)
