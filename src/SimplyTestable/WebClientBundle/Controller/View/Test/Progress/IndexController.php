@@ -10,10 +10,13 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\CssValidationTestConfiguration;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
+use SimplyTestable\WebClientBundle\Services\JsStaticAnalysisTestConfiguration;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskTypeService;
-use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory;
+use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
@@ -22,11 +25,53 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 use webignition\NormalisedUrl\NormalisedUrl;
 
 class IndexController extends AbstractRequiresValidOwnerController implements RequiresValidUser
 {
     const RESULTS_PREPARATION_THRESHOLD = 100;
+
+    /**
+     * @var TestService
+     */
+    private $testService;
+
+    /**
+     * @var RemoteTestService
+     */
+    private $remoteTestService;
+
+    /**
+     * @var UrlViewValuesService
+     */
+    private $urlViewValues;
+
+    /**
+     * @var TaskTypeService
+     */
+    private $taskTypeService;
+
+    /**
+     * @var TestOptionsRequestAdapterFactory
+     */
+    private $testOptionsRequestAdapterFactory;
+
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
+     * @var CssValidationTestConfiguration
+     */
+    private $cssValidationTestConfiguration;
+
+    /**
+     * @var JsStaticAnalysisTestConfiguration
+     */
+    private $jsStaticAnalysisTestConfiguration;
 
     /**
      * @var string[]
@@ -40,6 +85,47 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         'crawling' => 'Finding URLs to test',
         'failed-no-sitemap' => 'Finding URLs to test: preparing to crawl'
     );
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param TestService $testService
+     * @param RemoteTestService $remoteTestService
+     * @param UrlViewValuesService $urlViewValues
+     * @param TaskTypeService $taskTypeService
+     * @param TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory
+     * @param UserManager $userManager
+     * @param CssValidationTestConfiguration $cssValidationTestConfiguration
+     * @param JsStaticAnalysisTestConfiguration $jsStaticAnalysisTestConfiguration
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        TestService $testService,
+        RemoteTestService $remoteTestService,
+        UrlViewValuesService $urlViewValues,
+        TaskTypeService $taskTypeService,
+        TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
+        UserManager $userManager,
+        CssValidationTestConfiguration $cssValidationTestConfiguration,
+        JsStaticAnalysisTestConfiguration $jsStaticAnalysisTestConfiguration
+
+    ) {
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
+
+        $this->testService = $testService;
+        $this->remoteTestService = $remoteTestService;
+        $this->urlViewValues = $urlViewValues;
+        $this->taskTypeService = $taskTypeService;
+        $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
+        $this->userManager = $userManager;
+        $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
+        $this->jsStaticAnalysisTestConfiguration = $jsStaticAnalysisTestConfiguration;
+    }
 
     /**
      * @param Request $request
@@ -57,25 +143,15 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
             return $this->response;
         }
 
-        $testService = $this->container->get(TestService::class);
-        $remoteTestService = $this->container->get(RemoteTestService::class);
-        $router = $this->container->get('router');
-        $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
-        $taskTypeService = $this->container->get(TaskTypeService::class);
-        $testOptionsAdapterFactory = $this->container->get(RequestAdapterFactory::class);
-        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
-        $templating = $this->container->get('templating');
-        $userManager = $this->container->get(UserManager::class);
+        $user = $this->userManager->getUser();
 
-        $user = $userManager->getUser();
-
-        $test = $testService->get($website, $test_id);
-        $remoteTest = $remoteTestService->get();
+        $test = $this->testService->get($website, $test_id);
+        $remoteTest = $this->remoteTestService->get();
 
         $testWebsite = (string)$test->getWebsite();
 
         if ($testWebsite !== $website) {
-            $redirectUrl = $router->generate(
+            $redirectUrl = $this->router->generate(
                 'view_test_progress_index_index',
                 [
                     'website' => $testWebsite,
@@ -87,9 +163,9 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
             return $this->issueRedirect($request, $redirectUrl);
         }
 
-        if ($testService->isFinished($test)) {
-            if ($test->getState() !== Test::STATE_FAILED_NO_SITEMAP || SystemUserService::isPublicUser($user)) {
-                $redirectUrl = $router->generate(
+        if ($this->testService->isFinished($test)) {
+            if (Test::STATE_FAILED_NO_SITEMAP  !== $test->getState() || SystemUserService::isPublicUser($user)) {
+                $redirectUrl = $this->router->generate(
                     'view_test_results_index_index',
                     [
                         'website' => $testWebsite,
@@ -101,7 +177,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
                 return $this->issueRedirect($request, $redirectUrl);
             }
 
-            $redirectUrl = $router->generate(
+            $redirectUrl = $this->router->generate(
                 'app_test_retest',
                 [
                     'website' => $testWebsite,
@@ -116,7 +192,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         $requestTimeStamp = $request->query->get('timestamp');
         $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
 
-        $response = $cacheValidatorService->createResponse($request, [
+        $response = $this->cacheValidator->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,
             'is_public' => $remoteTest->getIsPublic(),
@@ -125,16 +201,16 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
             'state' => $test->getState()
         ]);
 
-        if ($cacheValidatorService->isNotModified($response)) {
+        if ($this->cacheValidator->isNotModified($response)) {
             return $response;
         }
 
-        $taskTypeService->setUser($user);
+        $this->taskTypeService->setUser($user);
         if (!SystemUserService::isPublicUser($user)) {
-            $taskTypeService->setUserIsAuthenticated();
+            $this->taskTypeService->setUserIsAuthenticated();
         }
 
-        $testOptionsAdapter = $testOptionsAdapterFactory->create();
+        $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData($remoteTest->getOptions());
         $testOptionsAdapter->setInvertInvertableOptions(true);
 
@@ -144,7 +220,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         ];
 
         if ($this->requestIsForApplicationJson($request)) {
-            $testProgressUrl = $router->generate(
+            $testProgressUrl = $this->router->generate(
                 'view_test_progress_index_index',
                 [
                     'website' => $testWebsite,
@@ -163,17 +239,15 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         } else {
             $viewData = array_merge($commonViewData, [
                 'remote_test' => $remoteTest,
-                'website' => $urlViewValuesService->create($testWebsite),
-                'available_task_types' => $taskTypeService->getAvailable(),
-                'task_types' => $taskTypeService->get(),
+                'website' => $this->urlViewValues->create($testWebsite),
+                'available_task_types' => $this->taskTypeService->getAvailable(),
+                'task_types' => $this->taskTypeService->get(),
                 'test_options' => $testOptionsAdapter->getTestOptions()->__toKeyArray(),
                 'is_public_user_test' => $isPublicUserTest,
-                'css_validation_ignore_common_cdns' => $this->container->getParameter(
-                    'css-validation-ignore-common-cdns'
-                ),
-                'js_static_analysis_ignore_common_cdns' => $this->container->getParameter(
-                    'js-static-analysis-ignore-common-cdns'
-                ),
+                'css_validation_ignore_common_cdns' =>
+                    $this->cssValidationTestConfiguration->getExcludedDomains(),
+                'js_static_analysis_ignore_common_cdns' =>
+                    $this->jsStaticAnalysisTestConfiguration->getExcludedDomains(),
                 'default_css_validation_options' => array(
                     'ignore-warnings' => 1,
                     'vendor-extensions' => 'warn',
@@ -187,13 +261,11 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
                 ),
             ]);
 
-            $content = $templating->render(
+            $response = $this->renderWithDefaultViewParameters(
                 'SimplyTestableWebClientBundle:bs3/Test/Progress/Index:index.html.twig',
-                array_merge($this->getDefaultViewParameters(), $viewData)
+                $viewData,
+                $response
             );
-
-            $response->setContent($content);
-            $response->headers->set('content-type', 'text/html');
         }
 
         return $response;
