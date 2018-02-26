@@ -13,6 +13,7 @@ use SimplyTestable\WebClientBundle\Model\Test\Task\ErrorTaskMapCollection;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService;
@@ -20,16 +21,14 @@ use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
-use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Tests\WebClientBundle\Factory\TestFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Twig_Environment;
 
 class ByTaskTypeControllerTest extends AbstractBaseTestCase
 {
@@ -40,11 +39,6 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
-
-    /**
-     * @var ByTaskTypeController
-     */
-    private $byTaskTypeController;
 
     /**
      * @var array
@@ -120,16 +114,6 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
             ],
         ],
     ];
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->byTaskTypeController = new ByTaskTypeController();
-    }
 
     /**
      * @dataProvider indexActionInvalidGetRequestDataProvider
@@ -302,10 +286,11 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->byTaskTypeController->setContainer($this->container);
+        /* @var ByTaskTypeController $byTaskTypeController */
+        $byTaskTypeController = $this->container->get(ByTaskTypeController::class);
 
         /* @var RedirectResponse $response */
-        $response = $this->byTaskTypeController->indexAction(
+        $response = $byTaskTypeController->indexAction(
             $request,
             self::WEBSITE,
             self::TEST_ID,
@@ -399,7 +384,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
      * @param array $testValues
      * @param string $taskType
      * @param string $filter
-     * @param EngineInterface $templatingEngine
+     * @param Twig_Environment $twig
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
@@ -411,7 +396,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
         array $testValues,
         $taskType,
         $filter,
-        EngineInterface $templatingEngine
+        Twig_Environment $twig
     ) {
         $userManager = $this->container->get(UserManager::class);
 
@@ -424,27 +409,21 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
             $testFactory->create($testValues);
         }
 
-        $containerFactory = new ContainerFactory($this->container);
-        $container = $containerFactory->create(
-            [
-                'router',
-                TestService::class,
-                RemoteTestService::class,
-                UserService::class,
-                CacheValidatorService::class,
-                UrlViewValuesService::class,
-                TaskService::class,
-                TaskCollectionFilterService::class,
-                UserManager::class,
-            ],
-            [
-                'templating' => $templatingEngine,
-            ]
+        $byTaskTypeController = new ByTaskTypeController(
+            $this->container->get('router'),
+            $twig,
+            $this->container->get(DefaultViewParameters::class),
+            $this->container->get(CacheValidatorService::class),
+            $this->container->get(UrlViewValuesService::class),
+            $this->container->get(UserManager::class),
+            $this->container->get('session'),
+            $this->container->get(TestService::class),
+            $this->container->get(RemoteTestService::class),
+            $this->container->get(TaskService::class),
+            $this->container->get(TaskCollectionFilterService::class)
         );
 
-        $this->byTaskTypeController->setContainer($container);
-
-        $response = $this->byTaskTypeController->indexAction(
+        $response = $byTaskTypeController->indexAction(
             new Request(),
             self::WEBSITE,
             self::TEST_ID,
@@ -470,7 +449,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                 'testValues' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertStandardViewData($viewName, $parameters);
@@ -503,7 +482,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                 'testValues' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertStandardViewData($viewName, $parameters);
@@ -536,7 +515,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                 'testValues' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertStandardViewData($viewName, $parameters);
@@ -583,7 +562,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                 'testValues' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertStandardViewData($viewName, $parameters);
@@ -616,7 +595,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                 'testValues' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertStandardViewData($viewName, $parameters);
@@ -649,7 +628,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
                 'testValues' => [],
                 'taskType' => Task::TYPE_CSS_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertStandardViewData($viewName, $parameters);
@@ -684,9 +663,11 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
         $request = new Request();
 
         $this->container->get('request_stack')->push($request);
-        $this->byTaskTypeController->setContainer($this->container);
 
-        $response = $this->byTaskTypeController->indexAction(
+        /* @var ByTaskTypeController $byTaskTypeController */
+        $byTaskTypeController = $this->container->get(ByTaskTypeController::class);
+
+        $response = $byTaskTypeController->indexAction(
             $request,
             self::WEBSITE,
             self::TEST_ID,
@@ -702,7 +683,7 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $this->byTaskTypeController->indexAction(
+        $newResponse = $byTaskTypeController->indexAction(
             $newRequest,
             self::WEBSITE,
             self::TEST_ID,
