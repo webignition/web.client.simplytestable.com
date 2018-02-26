@@ -163,7 +163,8 @@ class IndexController extends BaseViewController implements RequiresValidUser
                 'js_static_analysis_ignore_common_cdns' => $jsStaticAnalysisExcludedDomains,
                 'test_start_error' => $testStartError,
                 'website' => $this->urlViewValuesService->create($website),
-            ]
+            ],
+            $response
         );
     }
 
