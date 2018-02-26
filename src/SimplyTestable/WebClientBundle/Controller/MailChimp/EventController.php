@@ -3,19 +3,15 @@
 namespace SimplyTestable\WebClientBundle\Controller\MailChimp;
 
 use Psr\Log\LoggerInterface;
+use SimplyTestable\WebClientBundle\Controller\AbstractEventController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Event\MailChimp\Event as MailChimpEvent;
 
-class EventController
+class EventController extends AbstractEventController
 {
     const LISTENER_EVENT_PREFIX = 'mailchimp.';
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
 
     /**
      * @var LoggerInterface
@@ -28,7 +24,8 @@ class EventController
      */
     public function __construct(EventDispatcherInterface $eventDispatcher, LoggerInterface $logger)
     {
-        $this->eventDispatcher = $eventDispatcher;
+        parent::__construct($eventDispatcher);
+
         $this->logger = $logger;
     }
 

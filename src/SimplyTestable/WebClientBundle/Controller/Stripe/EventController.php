@@ -2,26 +2,22 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Stripe;
 
+use SimplyTestable\WebClientBundle\Controller\AbstractEventController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
 
-class EventController
+class EventController extends AbstractEventController
 {
     const LISTENER_EVENT_PREFIX = 'stripe.';
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
 
     /**
      * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(EventDispatcherInterface $eventDispatcher)
     {
-        $this->eventDispatcher = $eventDispatcher;
+        parent::__construct($eventDispatcher);
     }
 
     /**
