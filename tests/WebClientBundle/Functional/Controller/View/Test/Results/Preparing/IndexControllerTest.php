@@ -12,23 +12,22 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
-use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Tests\WebClientBundle\Factory\TaskFactory;
 use Tests\WebClientBundle\Factory\TestFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Twig_Environment;
 
 class IndexControllerTest extends AbstractBaseTestCase
 {
@@ -38,11 +37,6 @@ class IndexControllerTest extends AbstractBaseTestCase
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
-
-    /**
-     * @var IndexController
-     */
-    private $indexController;
 
     /**
      * @var array
@@ -56,16 +50,6 @@ class IndexControllerTest extends AbstractBaseTestCase
         'task_type_options' => [],
         'task_count' => 12,
     ];
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->indexController = new IndexController();
-    }
 
     public function testIndexActionInvalidUserGetRequest()
     {
@@ -147,9 +131,9 @@ class IndexControllerTest extends AbstractBaseTestCase
             ])),
         ]);
 
-        $this->indexController->setContainer($this->container);
+        $indexController = $this->container->get(IndexController::class);
 
-        $response = $this->indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
+        $response = $indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('http://localhost/http://example.com//1/', $response->getTargetUrl());
     }
@@ -186,9 +170,9 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->indexController->setContainer($this->container);
+        $indexController = $this->container->get(IndexController::class);
 
-        $response = $this->indexController->indexAction($request, $website, self::TEST_ID);
+        $response = $indexController->indexAction($request, $website, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
@@ -231,13 +215,12 @@ class IndexControllerTest extends AbstractBaseTestCase
      *
      * @param array $httpFixtures
      * @param array $testValues
-     * @param EngineInterface $templatingEngine
-     *
+     * @param Twig_Environment $twig
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function testIndexActionRender(array $httpFixtures, array $testValues, EngineInterface $templatingEngine)
+    public function testIndexActionRender(array $httpFixtures, array $testValues, Twig_Environment $twig)
     {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
@@ -246,26 +229,18 @@ class IndexControllerTest extends AbstractBaseTestCase
             $testFactory->create($testValues);
         }
 
-        $containerFactory = new ContainerFactory($this->container);
-        $container = $containerFactory->create(
-            [
-                'router',
-                TestService::class,
-                RemoteTestService::class,
-                UserService::class,
-                CacheValidatorService::class,
-                UrlViewValuesService::class,
-                TaskService::class,
-                UserManager::class,
-            ],
-            [
-                'templating' => $templatingEngine,
-            ]
+        $indexController = new IndexController(
+            $this->container->get('router'),
+            $twig,
+            $this->container->get(DefaultViewParameters::class),
+            $this->container->get(CacheValidatorService::class),
+            $this->container->get(TestService::class),
+            $this->container->get(RemoteTestService::class),
+            $this->container->get(TaskService::class),
+            $this->container->get(UrlViewValuesService::class)
         );
 
-        $this->indexController->setContainer($container);
-
-        $response = $this->indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
+        $response = $indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -281,7 +256,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                     HttpResponseFactory::createJsonResponse([1, 2, 3,]),
                 ],
                 'testValues' => [],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::VIEW_NAME, $viewName);
@@ -336,7 +311,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                         ],
                     ],
                 ],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::VIEW_NAME, $viewName);
@@ -374,9 +349,9 @@ class IndexControllerTest extends AbstractBaseTestCase
         $request = new Request();
 
         $this->container->get('request_stack')->push($request);
-        $this->indexController->setContainer($this->container);
+        $indexController = $this->container->get(IndexController::class);
 
-        $response = $this->indexController->indexAction($request, self::WEBSITE, self::TEST_ID);
+        $response = $indexController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -386,7 +361,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $this->indexController->indexAction($newRequest, self::WEBSITE, self::TEST_ID);
+        $newResponse = $indexController->indexAction($newRequest, self::WEBSITE, self::TEST_ID);
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());
