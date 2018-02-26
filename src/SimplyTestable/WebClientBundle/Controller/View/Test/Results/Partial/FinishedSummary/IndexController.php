@@ -8,13 +8,48 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
 class IndexController extends BaseViewController implements RequiresValidUser, RequiresValidOwner
 {
+    /**
+     * @var TestService
+     */
+    private $testService;
+
+    /**
+     * @var RemoteTestService
+     */
+    private $remoteTestService;
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param TestService $testService
+     * @param RemoteTestService $remoteTestService
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        TestService $testService,
+        RemoteTestService $remoteTestService
+    ) {
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
+
+        $this->testService = $testService;
+        $this->remoteTestService = $remoteTestService;
+    }
+
     /**
      * @param Request $request
      * @param string $website
@@ -31,22 +66,17 @@ class IndexController extends BaseViewController implements RequiresValidUser, R
             return $this->response;
         }
 
-        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
-        $templating = $this->container->get('templating');
-        $testService = $this->container->get(TestService::class);
-        $remoteTestService = $this->container->get(RemoteTestService::class);
-
-        $response = $cacheValidatorService->createResponse($request, [
+        $response = $this->cacheValidator->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,
         ]);
 
-        if ($cacheValidatorService->isNotModified($response)) {
+        if ($this->cacheValidator->isNotModified($response)) {
             return $response;
         }
 
-        $test = $testService->get($website, $test_id);
-        $remoteTest = $remoteTestService->get();
+        $test = $this->testService->get($website, $test_id);
+        $remoteTest = $this->remoteTestService->get();
 
         $viewData = [
             'test' => [
@@ -55,15 +85,11 @@ class IndexController extends BaseViewController implements RequiresValidUser, R
             ]
         ];
 
-        $content = $templating->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/Test/Results/Partial/FinishedSummary/Index:index.html.twig',
-            array_merge($this->getDefaultViewParameters(), $viewData)
+            $viewData,
+            $response
         );
-
-        $response->setContent($content);
-        $response->headers->set('content-type', 'text/html');
-
-        return $response;
     }
 
     /**
