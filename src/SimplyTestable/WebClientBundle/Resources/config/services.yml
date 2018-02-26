@@ -280,3 +280,14 @@ services:
     class:  SimplyTestable\WebClientBundle\Services\DefaultViewParameters
     arguments:
       - '@SimplyTestable\WebClientBundle\Services\UserManager'
+
+  SimplyTestable\WebClientBundle\Services\LinkIntegrityErrorCodeMap:
+    class:  SimplyTestable\WebClientBundle\Services\LinkIntegrityErrorCodeMap
+    arguments:
+      - '%link_integrity_error_code_map%'
+
+
+  SimplyTestable\WebClientBundle\Services\DocumentationSiteUrls:
+    class:  SimplyTestable\WebClientBundle\Services\DocumentationSiteUrls
+    arguments:
+      - '%documentation_site_urls%'

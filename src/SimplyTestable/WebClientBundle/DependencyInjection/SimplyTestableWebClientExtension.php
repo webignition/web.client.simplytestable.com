@@ -24,7 +24,7 @@ class SimplyTestableWebClientExtension extends Extension
         'css-validation-ignore-common-cdns.yml',
         'js-static-analysis-ignore-common-cdns.yml',
         'plans.yml',
-        'documentation_site.yml',
+        'documentation_site_urls.yml',
         'test_options.yml',
         'link-integrity-excluded-domains.yml',
         'coupons.yml',
