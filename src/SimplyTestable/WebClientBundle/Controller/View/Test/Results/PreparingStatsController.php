@@ -7,13 +7,49 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
 class PreparingStatsController extends BaseViewController implements RequiresValidUser, RequiresValidOwner
 {
+    /**
+     * @var TestService
+     */
+    private $testService;
+
+    /**
+     * @var RemoteTestService
+     */
+    private $remoteTestService;
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param TestService $testService
+     * @param RemoteTestService $remoteTestService
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        TestService $testService,
+        RemoteTestService $remoteTestService
+    ) {
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
+
+        $this->testService = $testService;
+        $this->remoteTestService = $remoteTestService;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -37,11 +73,8 @@ class PreparingStatsController extends BaseViewController implements RequiresVal
             return $this->response;
         }
 
-        $testService = $this->container->get(TestService::class);
-        $remoteTestService = $this->container->get(RemoteTestService::class);
-
-        $test = $testService->get($website, $test_id);
-        $remoteTest = $remoteTestService->get();
+        $test = $this->testService->get($website, $test_id);
+        $remoteTest = $this->remoteTestService->get();
 
         $localTaskCount = $test->getTaskCount();
         $remoteTaskCount = $remoteTest->getTaskCount();

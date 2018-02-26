@@ -23,11 +23,6 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
     const USER_EMAIL = 'user@example.com';
 
     /**
-     * @var PreparingStatsController
-     */
-    private $preparingStatsController;
-
-    /**
      * @var array
      */
     private $remoteTestData = [
@@ -39,17 +34,6 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
         'task_type_options' => [],
         'task_count' => 12,
     ];
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->preparingStatsController = new PreparingStatsController();
-        $this->preparingStatsController->setContainer($this->container);
-    }
 
     public function testIndexActionInvalidUserGetRequest()
     {
@@ -151,7 +135,10 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
             $testFactory->create($testValues);
         }
 
-        $response = $this->preparingStatsController->indexAction(self::WEBSITE, self::TEST_ID);
+        /* @var PreparingStatsController $preparingStatsController */
+        $preparingStatsController = $this->container->get(PreparingStatsController::class);
+
+        $response = $preparingStatsController->indexAction(self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(JsonResponse::class, $response);
 
         $responseData = json_decode($response->getContent(), true);
