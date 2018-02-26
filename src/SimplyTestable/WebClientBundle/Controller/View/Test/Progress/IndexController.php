@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
@@ -44,11 +45,6 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
     private $remoteTestService;
 
     /**
-     * @var UrlViewValuesService
-     */
-    private $urlViewValues;
-
-    /**
      * @var TaskTypeService
      */
     private $taskTypeService;
@@ -57,11 +53,6 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
      * @var TestOptionsRequestAdapterFactory
      */
     private $testOptionsRequestAdapterFactory;
-
-    /**
-     * @var UserManager
-     */
-    private $userManager;
 
     /**
      * @var CssValidationTestConfiguration
@@ -91,12 +82,13 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
      * @param Twig_Environment $twig
      * @param DefaultViewParameters $defaultViewParameters
      * @param CacheValidatorService $cacheValidator
+     * @param UrlViewValuesService $urlViewValues
+     * @param UserManager $userManager
+     * @param SessionInterface $session
      * @param TestService $testService
      * @param RemoteTestService $remoteTestService
-     * @param UrlViewValuesService $urlViewValues
      * @param TaskTypeService $taskTypeService
      * @param TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory
-     * @param UserManager $userManager
      * @param CssValidationTestConfiguration $cssValidationTestConfiguration
      * @param JsStaticAnalysisTestConfiguration $jsStaticAnalysisTestConfiguration
      */
@@ -105,24 +97,30 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
         CacheValidatorService $cacheValidator,
+        UrlViewValuesService $urlViewValues,
+        UserManager $userManager,
+        SessionInterface $session,
         TestService $testService,
         RemoteTestService $remoteTestService,
-        UrlViewValuesService $urlViewValues,
         TaskTypeService $taskTypeService,
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
-        UserManager $userManager,
         CssValidationTestConfiguration $cssValidationTestConfiguration,
         JsStaticAnalysisTestConfiguration $jsStaticAnalysisTestConfiguration
-
     ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
+        parent::__construct(
+            $router,
+            $twig,
+            $defaultViewParameters,
+            $cacheValidator,
+            $urlViewValues,
+            $userManager,
+            $session
+        );
 
         $this->testService = $testService;
         $this->remoteTestService = $remoteTestService;
-        $this->urlViewValues = $urlViewValues;
         $this->taskTypeService = $taskTypeService;
         $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
-        $this->userManager = $userManager;
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
         $this->jsStaticAnalysisTestConfiguration = $jsStaticAnalysisTestConfiguration;
     }
@@ -160,7 +158,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
                 UrlGeneratorInterface::ABSOLUTE_URL
             );
 
-            return $this->issueRedirect($request, $redirectUrl);
+            return $this->createRedirectResponse($request, $redirectUrl);
         }
 
         if ($this->testService->isFinished($test)) {
@@ -174,7 +172,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
                     UrlGeneratorInterface::ABSOLUTE_URL
                 );
 
-                return $this->issueRedirect($request, $redirectUrl);
+                return $this->createRedirectResponse($request, $redirectUrl);
             }
 
             $redirectUrl = $this->router->generate(
@@ -186,7 +184,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
                 UrlGeneratorInterface::ABSOLUTE_URL
             );
 
-            return $this->issueRedirect($request, $redirectUrl);
+            return $this->createRedirectResponse($request, $redirectUrl);
         }
 
         $requestTimeStamp = $request->query->get('timestamp');
@@ -248,17 +246,17 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
                     $this->cssValidationTestConfiguration->getExcludedDomains(),
                 'js_static_analysis_ignore_common_cdns' =>
                     $this->jsStaticAnalysisTestConfiguration->getExcludedDomains(),
-                'default_css_validation_options' => array(
+                'default_css_validation_options' => [
                     'ignore-warnings' => 1,
                     'vendor-extensions' => 'warn',
                     'ignore-common-cdns' => 1
-                ),
-                'default_js_static_analysis_options' => array(
+                ],
+                'default_js_static_analysis_options' => [
                     'ignore-common-cdns' => 1,
                     'jslint-option-maxerr' => 50,
                     'jslint-option-indent' => 4,
                     'jslint-option-maxlen' => 256
-                ),
+                ],
             ]);
 
             $response = $this->renderWithDefaultViewParameters(
@@ -313,7 +311,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
      *
      * @return RedirectResponse|JsonResponse
      */
-    private function issueRedirect(Request $request, $locationValue)
+    private function createRedirectResponse(Request $request, $locationValue)
     {
         $requestHeaders = $request->headers;
         $requestedWithHeaderName = 'X-Requested-With';
@@ -340,7 +338,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
             $locationValue = (string)$normalisedUrl;
         }
 
-        return parent::redirect($locationValue);
+        return new RedirectResponse($locationValue);
     }
 
     /**
