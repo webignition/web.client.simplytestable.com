@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
 class IndexController extends BaseViewController implements RequiresValidUser
@@ -37,11 +38,6 @@ class IndexController extends BaseViewController implements RequiresValidUser
      * @var UrlViewValuesService
      */
     private $urlViewValuesService;
-
-    /**
-     * @var CacheValidatorService
-     */
-    private $cacheValidator;
 
     /**
      * @var FlashBagValues
@@ -69,6 +65,7 @@ class IndexController extends BaseViewController implements RequiresValidUser
     private $jsStaticAnalysisTestConfiguration;
 
     /**
+     * @param RouterInterface $router
      * @param Twig_Environment $twig
      * @param DefaultViewParameters $defaultViewParameters
      * @param TaskTypeService $taskTypeService
@@ -82,6 +79,7 @@ class IndexController extends BaseViewController implements RequiresValidUser
      * @param JsStaticAnalysisTestConfiguration $jsStaticAnalysisTestConfiguration
      */
     public function __construct(
+        RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
         TaskTypeService $taskTypeService,
@@ -94,12 +92,11 @@ class IndexController extends BaseViewController implements RequiresValidUser
         CssValidationTestConfiguration $cssValidationTestConfiguration,
         JsStaticAnalysisTestConfiguration $jsStaticAnalysisTestConfiguration
     ) {
-        parent::__construct($twig, $defaultViewParameters);
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
 
         $this->taskTypeService = $taskTypeService;
         $this->testOptionsAdapterFactory = $testOptionsAdapterFactory;
         $this->urlViewValuesService = $urlViewValuesService;
-        $this->cacheValidator = $cacheValidator;
         $this->flashBagValues = $flashBagValues;
         $this->userManager = $userManager;
         $this->testOptionsConfiguration = $testOptionsConfiguration;

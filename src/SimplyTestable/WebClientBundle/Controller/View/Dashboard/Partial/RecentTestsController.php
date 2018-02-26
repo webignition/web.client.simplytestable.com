@@ -8,11 +8,13 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
 class RecentTestsController extends BaseViewController implements RequiresValidUser
@@ -35,20 +37,24 @@ class RecentTestsController extends BaseViewController implements RequiresValidU
     private $taskService;
 
     /**
+     * @param RouterInterface $router
      * @param Twig_Environment $twig
      * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
      * @param TestService $testService
      * @param RemoteTestService $remoteTestService
      * @param TaskService $taskService
      */
     public function __construct(
+        RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
         TestService $testService,
         RemoteTestService $remoteTestService,
         TaskService $taskService
     ) {
-        parent::__construct($twig, $defaultViewParameters);
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
 
         $this->testService = $testService;
         $this->remoteTestService = $remoteTestService;
