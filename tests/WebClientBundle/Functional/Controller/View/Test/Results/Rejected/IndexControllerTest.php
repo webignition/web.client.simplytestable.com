@@ -20,6 +20,7 @@ use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
+use Symfony\Component\DomCrawler\Crawler;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
@@ -50,6 +51,39 @@ class IndexControllerTest extends AbstractBaseTestCase
         'task_count' => 12,
         'rejection' => [
             'reason' => 'foo',
+        ],
+    ];
+
+    /**
+     * @var array
+     */
+    private $userData = [
+        'email' => self::USER_EMAIL,
+        'user_plan' => [
+            'plan' => [
+                'name' => 'personal',
+                'is_premium' => true,
+            ],
+            'start_trial_period' => 30,
+        ],
+        'plan_constraints' => [
+            'urls_per_job' => 10,
+            'credits' => [
+                'limit' => 5000,
+                'used' => 5001,
+            ],
+        ],
+        'team_summary' => [
+            'in' => false,
+            'has_invite' => false,
+        ],
+        'stripe_customer' => [
+            'id' => 'cus_aaaaaaaaaaaaa0',
+            'subscription' => [
+                'plan' => [
+                    'currency' => 'gbp',
+                ],
+            ],
         ],
     ];
 
@@ -115,11 +149,22 @@ class IndexControllerTest extends AbstractBaseTestCase
         $this->assertContains('<title>Not authorised', $response->getContent());
     }
 
-    public function testIndexActionPublicUserGetRequest()
-    {
+    /**
+     * @dataProvider indexActionGetRequestDataProvider
+     *
+     * @param array $remoteTestData
+     * @param array $userData
+     * @param array $expectedLeadContentContains
+     */
+    public function testIndexActionGetRequestFoo(
+        array $remoteTestData,
+        array $userData,
+        array $expectedLeadContentContains
+    ) {
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
+            HttpResponseFactory::createJsonResponse($remoteTestData),
+            HttpResponseFactory::createJsonResponse($userData),
         ]);
 
         $this->client->request(
@@ -130,6 +175,118 @@ class IndexControllerTest extends AbstractBaseTestCase
         /* @var Response $response */
         $response = $this->client->getResponse();
         $this->assertTrue($response->isSuccessful());
+
+        $crawler = new Crawler($response->getContent());
+        $leadContent = $crawler->filter('.lead');
+
+        $leadContent->each(function (Crawler $content, $index) use ($expectedLeadContentContains) {
+            $expectedContentContainsCollection = $expectedLeadContentContains[$index];
+
+            foreach ($expectedContentContainsCollection as $expectedContentContains) {
+                $this->assertContains($expectedContentContains, $content->html());
+            }
+        });
+    }
+
+    /**
+     * @return array
+     */
+    public function indexActionGetRequestDataProvider()
+    {
+        return [
+            'personal credit limit reached; agency plan available' => [
+                'remoteTestData' => array_merge($this->remoteTestData, [
+                    'rejection' => [
+                        'reason' => 'plan-constraint-limit-reached',
+                        'constraint' => [
+                            'name' => 'credits_per_month',
+                            'limit' => 5000,
+                        ]
+                    ],
+                ]),
+                'userData' => array_merge($this->userData, []),
+                'expectedLeadContentContains' => [
+                    [
+                        'limit of <strong>5,000</strong>',
+                    ],
+                    [
+                        'from the <strong>personal</strong>',
+                        'to the  <strong>agency</strong>',
+                    ]
+                ],
+            ],
+            'agency credit limit reached; business plan available' => [
+                'remoteTestData' => array_merge($this->remoteTestData, [
+                    'rejection' => [
+                        'reason' => 'plan-constraint-limit-reached',
+                        'constraint' => [
+                            'name' => 'credits_per_month',
+                            'limit' => 20000,
+                        ]
+                    ],
+                ]),
+                'userData' => array_merge($this->userData, [
+                    'user_plan' => [
+                        'plan' => [
+                            'name' => 'agency',
+                            'is_premium' => true,
+                        ],
+                        'start_trial_period' => 30,
+                    ],
+                    'plan_constraints' => [
+                        'urls_per_job' => 10,
+                        'credits' => [
+                            'limit' => 20000,
+                            'used' => 20001,
+                        ],
+                    ],
+                ]),
+                'expectedLeadContentContains' => [
+                    [
+                        'limit of <strong>20,000</strong>',
+                    ],
+                    [
+                        'from the <strong>agency</strong>',
+                        'to the  <strong>business</strong>',
+                    ]
+                ],
+            ],
+            'business credit limit reached; enterprise plan available' => [
+                'remoteTestData' => array_merge($this->remoteTestData, [
+                    'rejection' => [
+                        'reason' => 'plan-constraint-limit-reached',
+                        'constraint' => [
+                            'name' => 'credits_per_month',
+                            'limit' => 100000,
+                        ]
+                    ],
+                ]),
+                'userData' => array_merge($this->userData, [
+                    'user_plan' => [
+                        'plan' => [
+                            'name' => 'business',
+                            'is_premium' => true,
+                        ],
+                        'start_trial_period' => 30,
+                    ],
+                    'plan_constraints' => [
+                        'urls_per_job' => 10,
+                        'credits' => [
+                            'limit' => 100000,
+                            'used' => 100001,
+                        ],
+                    ],
+                ]),
+                'expectedLeadContentContains' => [
+                    [
+                        'limit of <strong>100,000</strong>',
+                    ],
+                    [
+                        'You\'re on our largest standard plan. We can\'t offer you any direct upgrade options',
+                    ]
+                ],
+            ],
+        ];
     }
 
     /**
