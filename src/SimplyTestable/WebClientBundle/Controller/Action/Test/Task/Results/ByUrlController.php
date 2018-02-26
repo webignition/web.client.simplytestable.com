@@ -3,13 +3,14 @@
 namespace SimplyTestable\WebClientBundle\Controller\Action\Test\Task\Results;
 
 use Doctrine\ORM\EntityManagerInterface;
+use SimplyTestable\WebClientBundle\Controller\AbstractController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class ByUrlController
+class ByUrlController extends AbstractController
 {
     /**
      * @var EntityManagerInterface
@@ -17,16 +18,13 @@ class ByUrlController
     private $entityManager;
 
     /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
-     * @param EntityManagerInterface $entityManager
      * @param RouterInterface $router
+     * @param EntityManagerInterface $entityManager
      */
-    public function __construct(EntityManagerInterface $entityManager, RouterInterface $router)
+    public function __construct(RouterInterface $router, EntityManagerInterface $entityManager)
     {
+        parent::__construct($router);
+
         $this->entityManager = $entityManager;
         $this->router = $router;
     }

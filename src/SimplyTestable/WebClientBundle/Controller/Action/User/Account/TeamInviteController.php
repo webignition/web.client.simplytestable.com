@@ -59,20 +59,20 @@ class TeamInviteController extends AbstractUserAccountController
     private $userService;
 
     /**
+     * @param RouterInterface $router
+     * @param UserManager $userManager
+     * @param SessionInterface $session
      * @param TeamInviteService $teamInviteService
      * @param UserService $userService
-     * @param UserManager $userManager
-     * @param RouterInterface $router
-     * @param SessionInterface $session
      */
     public function __construct(
-        TeamInviteService $teamInviteService,
-        UserService $userService,
-        UserManager $userManager,
         RouterInterface $router,
-        SessionInterface $session
+        UserManager $userManager,
+        SessionInterface $session,
+        TeamInviteService $teamInviteService,
+        UserService $userService
     ) {
-        parent::__construct($userManager, $router, $session);
+        parent::__construct($router, $userManager, $session);
 
         $this->teamInviteService = $teamInviteService;
         $this->userService = $userService;

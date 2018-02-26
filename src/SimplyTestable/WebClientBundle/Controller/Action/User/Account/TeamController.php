@@ -24,18 +24,18 @@ class TeamController extends AbstractUserAccountController
     private $teamService;
 
     /**
-     * @param TeamService $teamService
-     * @param UserManager $userManager
      * @param RouterInterface $router
+     * @param UserManager $userManager
      * @param SessionInterface $session
+     * @param TeamService $teamService
      */
     public function __construct(
-        TeamService $teamService,
-        UserManager $userManager,
         RouterInterface $router,
-        SessionInterface $session
+        UserManager $userManager,
+        SessionInterface $session,
+        TeamService $teamService
     ) {
-        parent::__construct($userManager, $router, $session);
+        parent::__construct($router, $userManager, $session);
 
         $this->teamService = $teamService;
     }

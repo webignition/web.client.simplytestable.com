@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\User;
 
+use SimplyTestable\WebClientBundle\Controller\AbstractController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
@@ -27,7 +28,7 @@ use Twig_Environment;
 use webignition\ResqueJobFactory\ResqueJobFactory;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
-class UserController
+class UserController extends AbstractController
 {
     const ONE_YEAR_IN_SECONDS = 31536000;
 
@@ -77,27 +78,24 @@ class UserController
     private $userService;
 
     /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
      * @var Session
      */
     private $session;
 
     /**
+     * @param RouterInterface $router
      * @param UserManager $userManager
      * @param UserService $userService
-     * @param RouterInterface $router
      * @param SessionInterface $session
      */
     public function __construct(
+        RouterInterface $router,
         UserManager $userManager,
         UserService $userService,
-        RouterInterface $router,
         SessionInterface $session
     ) {
+        parent::__construct($router);
+
         $this->userManager = $userManager;
         $this->userService = $userService;
         $this->router = $router;

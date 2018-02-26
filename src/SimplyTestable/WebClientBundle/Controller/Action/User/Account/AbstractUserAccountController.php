@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
+use SimplyTestable\WebClientBundle\Controller\AbstractController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,7 +14,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-abstract class AbstractUserAccountController implements RequiresPrivateUser
+abstract class AbstractUserAccountController extends AbstractController implements RequiresPrivateUser
 {
     /**
      * @var Response|RedirectResponse|JsonResponse
@@ -26,25 +27,22 @@ abstract class AbstractUserAccountController implements RequiresPrivateUser
     protected $userManager;
 
     /**
-     * @var RouterInterface
-     */
-    protected $router;
-
-    /**
      * @var Session
      */
     protected $session;
 
     /**
-     * @param UserManager $userManager
      * @param RouterInterface $router
+     * @param UserManager $userManager
      * @param SessionInterface $session
      */
     public function __construct(
-        UserManager $userManager,
         RouterInterface $router,
+        UserManager $userManager,
         SessionInterface $session
     ) {
+        parent::__construct($router);
+
         $this->userManager = $userManager;
         $this->router = $router;
         $this->session = $session;

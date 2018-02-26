@@ -21,18 +21,18 @@ class CardController extends AbstractUserAccountController
     private $userAccountCardService;
 
     /**
-     * @param UserAccountCardService $userAccountCardService
-     * @param UserManager $userManager
      * @param RouterInterface $router
+     * @param UserManager $userManager
      * @param SessionInterface $session
+     * @param UserAccountCardService $userAccountCardService
      */
     public function __construct(
-        UserAccountCardService $userAccountCardService,
-        UserManager $userManager,
         RouterInterface $router,
-        SessionInterface $session
+        UserManager $userManager,
+        SessionInterface $session,
+        UserAccountCardService $userAccountCardService
     ) {
-        parent::__construct($userManager, $router, $session);
+        parent::__construct($router, $userManager, $session);
 
         $this->userAccountCardService = $userAccountCardService;
     }

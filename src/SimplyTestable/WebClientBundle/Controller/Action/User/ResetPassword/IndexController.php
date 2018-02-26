@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword;
 
 use Egulias\EmailValidator\EmailValidator;
+use SimplyTestable\WebClientBundle\Controller\AbstractController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
@@ -18,7 +19,7 @@ use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class IndexController
+class IndexController extends AbstractController
 {
     const FLASH_BAG_REQUEST_ERROR_KEY = 'user_reset_password_error';
     const FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_BLANK = 'blank-email';
@@ -50,11 +51,6 @@ class IndexController
     private $twig;
 
     /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
      * @var Session
      */
     private $session;
@@ -67,16 +63,17 @@ class IndexController
      * @param SessionInterface $session
      */
     public function __construct(
+        RouterInterface $router,
         UserService $userService,
         MailService $mailService,
         Twig_Environment $twig,
-        RouterInterface $router,
         SessionInterface $session
     ) {
+        parent::__construct($router);
+
         $this->userService = $userService;
         $this->mailService = $mailService;
         $this->twig = $twig;
-        $this->router = $router;
         $this->session = $session;
     }
 

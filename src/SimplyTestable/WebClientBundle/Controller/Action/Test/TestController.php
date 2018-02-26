@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\Test;
 
+use SimplyTestable\WebClientBundle\Controller\AbstractController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
@@ -12,7 +13,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class TestController
+class TestController extends AbstractController
 {
     /**
      * @var TestService
@@ -25,20 +26,17 @@ class TestController
     private $remoteTestService;
 
     /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
+     * @param RouterInterface $router
      * @param TestService $testService
      * @param RemoteTestService $remoteTestService
-     * @param RouterInterface $router
      */
     public function __construct(
+        RouterInterface $router,
         TestService $testService,
-        RemoteTestService $remoteTestService,
-        RouterInterface $router
+        RemoteTestService $remoteTestService
     ) {
+        parent::__construct($router);
+
         $this->testService = $testService;
         $this->remoteTestService = $remoteTestService;
         $this->router = $router;

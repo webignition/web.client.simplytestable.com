@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\SignUp\User;
 
+use SimplyTestable\WebClientBundle\Controller\AbstractController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
@@ -17,7 +18,7 @@ use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as Mai
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class ConfirmController
+class ConfirmController extends AbstractController
 {
     const FLASH_BAG_TOKEN_RESEND_ERROR_KEY = 'token_resend_error';
     const FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_USER_INVALID = 'invalid-user';
@@ -46,29 +47,26 @@ class ConfirmController
     private $twig;
 
     /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
      * @var Session
      */
     private $session;
 
     /**
+     * @param RouterInterface $router
      * @param UserService $userService
      * @param MailService $mailService
      * @param Twig_Environment $twig
-     * @param RouterInterface $router
      * @param SessionInterface $session
      */
     public function __construct(
+        RouterInterface $router,
         UserService $userService,
         MailService $mailService,
         Twig_Environment $twig,
-        RouterInterface $router,
         SessionInterface $session
     ) {
+        parent::__construct($router);
+
         $this->userService = $userService;
         $this->mailService = $mailService;
         $this->twig = $twig;

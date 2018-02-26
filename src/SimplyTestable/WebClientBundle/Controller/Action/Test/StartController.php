@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\Test;
 
+use SimplyTestable\WebClientBundle\Controller\AbstractController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
@@ -24,7 +25,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use webignition\NormalisedUrl\NormalisedUrl;
 
-class StartController
+class StartController extends AbstractController
 {
     const HTTP_AUTH_FEATURE_NAME = 'http-authentication';
     const HTTP_AUTH_FEATURE_USERNAME_KEY = 'http-auth-username';
@@ -67,11 +68,7 @@ class StartController
     private $session;
 
     /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
+     * @param RouterInterface $router
      * @param RemoteTestService $remoteTestService
      * @param TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory
      * @param TaskTypeService $taskTypeService
@@ -79,18 +76,19 @@ class StartController
      * @param LinkIntegrityTestConfiguration $linkIntegrityTestConfiguration
      * @param TestOptionsConfiguration $testOptionsConfiguration
      * @param SessionInterface $session
-     * @param RouterInterface $router
      */
     public function __construct(
+        RouterInterface $router,
         RemoteTestService $remoteTestService,
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
         TaskTypeService $taskTypeService,
         UserManager $userManager,
         LinkIntegrityTestConfiguration $linkIntegrityTestConfiguration,
         TestOptionsConfiguration $testOptionsConfiguration,
-        SessionInterface $session,
-        RouterInterface $router
+        SessionInterface $session
     ) {
+        parent::__construct($router);
+
         $this->remoteTestService = $remoteTestService;
         $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
         $this->taskTypeService = $taskTypeService;

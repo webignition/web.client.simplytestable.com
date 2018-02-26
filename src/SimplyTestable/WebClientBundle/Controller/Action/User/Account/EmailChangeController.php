@@ -56,18 +56,18 @@ class EmailChangeController extends AbstractUserAccountController
     private $emailChangeRequestService;
 
     /**
-     * @param UserEmailChangeRequestService $emailChangeRequestService
-     * @param UserManager $userManager
      * @param RouterInterface $router
+     * @param UserManager $userManager
      * @param SessionInterface $session
+     * @param UserEmailChangeRequestService $emailChangeRequestService
      */
     public function __construct(
-        UserEmailChangeRequestService $emailChangeRequestService,
-        UserManager $userManager,
         RouterInterface $router,
-        SessionInterface $session
+        UserManager $userManager,
+        SessionInterface $session,
+        UserEmailChangeRequestService $emailChangeRequestService
     ) {
-        parent::__construct($userManager, $router, $session);
+        parent::__construct($router, $userManager, $session);
 
         $this->emailChangeRequestService = $emailChangeRequestService;
     }

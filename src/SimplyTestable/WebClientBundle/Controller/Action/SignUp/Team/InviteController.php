@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\SignUp\Team;
 
+use SimplyTestable\WebClientBundle\Controller\AbstractController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
@@ -19,7 +20,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use webignition\ResqueJobFactory\ResqueJobFactory;
 
-class InviteController
+class InviteController extends AbstractController
 {
     const ONE_YEAR_IN_SECONDS = 31536000;
 
@@ -60,28 +61,25 @@ class InviteController
     private $session;
 
     /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
+     * @param RouterInterface $router
      * @param TeamInviteService $teamInviteService
      * @param UserService $userService
      * @param UserManager $userManager
      * @param ResqueQueueService $resqueQueueService
      * @param ResqueJobFactory $resqueJobFactory
      * @param SessionInterface $session
-     * @param RouterInterface $router
      */
     public function __construct(
+        RouterInterface $router,
         TeamInviteService $teamInviteService,
         UserService $userService,
         UserManager $userManager,
         ResqueQueueService $resqueQueueService,
         ResqueJobFactory $resqueJobFactory,
-        SessionInterface $session,
-        RouterInterface $router
+        SessionInterface $session
     ) {
+        parent::__construct($router);
+
         $this->teamInviteService = $teamInviteService;
         $this->userService = $userService;
         $this->userManager = $userManager;

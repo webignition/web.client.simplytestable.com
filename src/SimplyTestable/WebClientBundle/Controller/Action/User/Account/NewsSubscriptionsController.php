@@ -33,22 +33,22 @@ class NewsSubscriptionsController extends AbstractUserAccountController
     private $entityManager;
 
     /**
+     * @param RouterInterface $router
+     * @param UserManager $userManager
+     * @param SessionInterface $session
      * @param ListRecipientsService $mailChimpListRecipientsService
      * @param MailChimpService $mailChimpService
      * @param EntityManagerInterface $entityManager
-     * @param UserManager $userManager
-     * @param RouterInterface $router
-     * @param SessionInterface $session
      */
     public function __construct(
+        RouterInterface $router,
+        UserManager $userManager,
+        SessionInterface $session,
         ListRecipientsService $mailChimpListRecipientsService,
         MailChimpService $mailChimpService,
-        EntityManagerInterface $entityManager,
-        UserManager $userManager,
-        RouterInterface $router,
-        SessionInterface $session
+        EntityManagerInterface $entityManager
     ) {
-        parent::__construct($userManager, $router, $session);
+        parent::__construct($router, $userManager, $session);
 
         $this->mailChimpListRecipientsService = $mailChimpListRecipientsService;
         $this->mailChimpService = $mailChimpService;

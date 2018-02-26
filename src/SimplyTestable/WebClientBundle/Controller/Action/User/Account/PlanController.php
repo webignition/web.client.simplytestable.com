@@ -42,24 +42,24 @@ class PlanController extends AbstractUserAccountController
     private $logger;
 
     /**
+     * @param RouterInterface $router
+     * @param UserManager $userManager
+     * @param SessionInterface $session
      * @param UserService $userService
      * @param TeamService $teamService
      * @param UserPlanSubscriptionService $userPlanSubscriptionService
      * @param LoggerInterface $logger
-     * @param UserManager $userManager
-     * @param RouterInterface $router
-     * @param SessionInterface $session
      */
     public function __construct(
+        RouterInterface $router,
+        UserManager $userManager,
+        SessionInterface $session,
         UserService $userService,
         TeamService $teamService,
         UserPlanSubscriptionService $userPlanSubscriptionService,
-        LoggerInterface $logger,
-        UserManager $userManager,
-        RouterInterface $router,
-        SessionInterface $session
+        LoggerInterface $logger
     ) {
-        parent::__construct($userManager, $router, $session);
+        parent::__construct($router, $userManager, $session);
 
         $this->userService = $userService;
         $this->teamService = $teamService;

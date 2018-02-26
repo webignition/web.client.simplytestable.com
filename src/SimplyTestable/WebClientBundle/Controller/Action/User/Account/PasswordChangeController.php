@@ -30,18 +30,18 @@ class PasswordChangeController extends AbstractUserAccountController
     private $userService;
 
     /**
-     * @param UserService $userService
-     * @param UserManager $userManager
      * @param RouterInterface $router
+     * @param UserManager $userManager
      * @param SessionInterface $session
+     * @param UserService $userService
      */
     public function __construct(
-        UserService $userService,
-        UserManager $userManager,
         RouterInterface $router,
-        SessionInterface $session
+        UserManager $userManager,
+        SessionInterface $session,
+        UserService $userService
     ) {
-        parent::__construct($userManager, $router, $session);
+        parent::__construct($router, $userManager, $session);
 
         $this->userService = $userService;
     }
