@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
@@ -16,12 +17,54 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
 class IndexController extends BaseViewController implements RequiresValidUser
 {
     const RESULTS_PREPARATION_THRESHOLD = 10;
     const DEFAULT_PAGE_NUMBER = 1;
     const TEST_LIST_LIMIT = 10;
+
+    /**
+     * @var TestService
+     */
+    private $testService;
+
+    /**
+     * @var RemoteTestService
+     */
+    private $remoteTestService;
+
+    /**
+     * @var TaskService
+     */
+    private $taskService;
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param TestService $testService
+     * @param RemoteTestService $remoteTestService
+     * @param TaskService $taskService
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        TestService $testService,
+        RemoteTestService $remoteTestService,
+        TaskService $taskService
+    ) {
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
+
+        $this->testService = $testService;
+        $this->remoteTestService = $remoteTestService;
+        $this->taskService = $taskService;
+    }
 
     /**
      * @param Request $request
@@ -38,16 +81,10 @@ class IndexController extends BaseViewController implements RequiresValidUser
             return $this->response;
         }
 
-        $router = $this->container->get('router');
-        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
-        $testService = $this->container->get(TestService::class);
-        $remoteTestService = $this->container->get(RemoteTestService::class);
-        $taskService = $this->container->get(TaskService::class);
-
         $pageNumber = (int)$request->attributes->get('page_number');
 
         if ($pageNumber < self::DEFAULT_PAGE_NUMBER) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'view_test_history_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
@@ -61,26 +98,26 @@ class IndexController extends BaseViewController implements RequiresValidUser
 
         $testListOffset = ($pageNumber - 1) * self::TEST_LIST_LIMIT;
 
-        $testList = $remoteTestService->getFinished(self::TEST_LIST_LIMIT, $testListOffset, $filter);
+        $testList = $this->remoteTestService->getFinished(self::TEST_LIST_LIMIT, $testListOffset, $filter);
 
         foreach ($testList->get() as $testObject) {
             /* @var RemoteTest $remoteTest */
             $remoteTest = $testObject['remote_test'];
 
-            $remoteTestService->set($remoteTest);
-            $test = $testService->get($remoteTest->getWebsite(), $remoteTest->getId());
+            $this->remoteTestService->set($remoteTest);
+            $test = $this->testService->get($remoteTest->getWebsite(), $remoteTest->getId());
 
             $testList->addTest($test);
 
             if ($testList->requiresResults($test) && $remoteTest->isSingleUrl()) {
-                $taskService->getCollection($test);
+                $this->taskService->getCollection($test);
             }
         }
 
         $isPageNumberAboveRange = $pageNumber > $testList->getPageCount() && $testList->getPageCount() > 0;
 
         if ($isPageNumberAboveRange) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'app_history',
                 [
                     'page_number' => $testList->getPageCount(),
@@ -90,39 +127,31 @@ class IndexController extends BaseViewController implements RequiresValidUser
             ));
         }
 
-        $response = $cacheValidatorService->createResponse($request, [
+        $response = $this->cacheValidator->createResponse($request, [
             'test_list_hash' => $testList->getHash(),
             'filter' => $filter,
             'page_number' => $pageNumber
         ]);
 
-        if ($cacheValidatorService->isNotModified($response)) {
+        if ($this->cacheValidator->isNotModified($response)) {
             return $response;
         }
 
-        $websitesSourceUrl = $router->generate(
+        $websitesSourceUrl = $this->router->generate(
             'view_test_history_websitelist_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 
-        $viewData = [
-            'test_list' => $testList,
-            'pagination_page_numbers' => $testList->getPageNumbers(),
-            'filter' => $filter,
-            'websites_source' => $websitesSourceUrl
-        ];
-
-        $templating = $this->container->get('templating');
-
-        $content = $templating->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/Test/History/Index:index.html.twig',
-            array_merge($this->getDefaultViewParameters(), $viewData)
+            [
+                'test_list' => $testList,
+                'pagination_page_numbers' => $testList->getPageNumbers(),
+                'filter' => $filter,
+                'websites_source' => $websitesSourceUrl
+            ],
+            $response
         );
-
-        $response->setContent($content);
-        $response->headers->set('content-type', 'text/html');
-
-        return $response;
     }
 }
