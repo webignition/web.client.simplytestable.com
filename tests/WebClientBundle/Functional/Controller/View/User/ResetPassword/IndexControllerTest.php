@@ -4,17 +4,15 @@ namespace Tests\WebClientBundle\Functional\Controller\View\User\ResetPassword;
 
 use SimplyTestable\WebClientBundle\Controller\View\User\ResetPassword\IndexController;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\FlashBagValues;
-use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
-use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword\IndexController
     as ResetPasswordActionController;
+use Twig_Environment;
 
 class IndexControllerTest extends AbstractBaseTestCase
 {
@@ -22,21 +20,6 @@ class IndexControllerTest extends AbstractBaseTestCase
     const ROUTE_NAME = 'view_user_resetpassword_index_index';
 
     const USER_EMAIL = 'user@example.com';
-
-    /**
-     * @var IndexController
-     */
-    private $indexController;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->indexController = new IndexController();
-    }
 
     public function testIndexActionPublicUserGetRequest()
     {
@@ -55,12 +38,12 @@ class IndexControllerTest extends AbstractBaseTestCase
      *
      * @param array $flashBagValues
      * @param Request $request
-     * @param EngineInterface $templatingEngine
+     * @param Twig_Environment $twig
      */
     public function testIndexActionRender(
         array $flashBagValues,
         Request $request,
-        EngineInterface $templatingEngine
+        Twig_Environment $twig
     ) {
         $session = $this->container->get('session');
 
@@ -70,22 +53,15 @@ class IndexControllerTest extends AbstractBaseTestCase
             }
         }
 
-        $containerFactory = new ContainerFactory($this->container);
-        $container = $containerFactory->create(
-            [
-                CacheValidatorService::class,
-                UserService::class,
-                FlashBagValues::class,
-                UserManager::class,
-            ],
-            [
-                'templating' => $templatingEngine,
-            ]
+        $indexController = new IndexController(
+            $this->container->get('router'),
+            $twig,
+            $this->container->get(DefaultViewParameters::class),
+            $this->container->get(CacheValidatorService::class),
+            $this->container->get(FlashBagValues::class)
         );
 
-        $this->indexController->setContainer($container);
-
-        $response = $this->indexController->indexAction($request);
+        $response = $indexController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -98,7 +74,7 @@ class IndexControllerTest extends AbstractBaseTestCase
             'no email' => [
                 'flashBagValues' => [],
                 'request' => new Request(),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -118,7 +94,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'request' => new Request([
                     'email' => self::USER_EMAIL,
                 ]),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -141,7 +117,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'request' => new Request([
                     'email' => self::USER_EMAIL,
                 ]),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -167,7 +143,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'request' => new Request([
                     'email' => self::USER_EMAIL,
                 ]),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -193,9 +169,11 @@ class IndexControllerTest extends AbstractBaseTestCase
         $request = new Request();
 
         $this->container->get('request_stack')->push($request);
-        $this->indexController->setContainer($this->container);
 
-        $response = $this->indexController->indexAction($request);
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
+
+        $response = $indexController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -205,7 +183,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $this->indexController->indexAction($newRequest);
+        $newResponse = $indexController->indexAction($newRequest);
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());
