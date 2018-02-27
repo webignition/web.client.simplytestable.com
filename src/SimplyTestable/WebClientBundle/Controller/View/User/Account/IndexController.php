@@ -7,36 +7,100 @@ use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\CurrencyMap;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\FlashBagValues;
-use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
+use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService as MailChimpListRecipientsService;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Services\UserStripeEventService;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
 class IndexController extends AbstractUserAccountController
 {
     const STRIPE_CARD_CHECK_KEY_POSTFIX = '_check';
 
     /**
+     * @var MailChimpListRecipientsService
+     */
+    private $mailChimpListRecipientsService;
+
+    /**
+     * @var TeamService
+     */
+    private $teamService;
+
+    /**
+     * @var UserEmailChangeRequestService
+     */
+    private $emailChangeRequestService;
+
+    /**
+     * @var UserStripeEventService
+     */
+    private $userStripeEventService;
+
+    /**
+     * @var FlashBagValues
+     */
+    private $flashBagValues;
+
+    /**
+     * @var CurrencyMap
+     */
+    private $currencyMap;
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param UserService $userService
+     * @param UserManager $userManager
+     * @param MailChimpListRecipientsService $mailChimpListRecipientsService
+     * @param TeamService $teamService
+     * @param UserEmailChangeRequestService $userEmailChangeRequestService
+     * @param UserStripeEventService $userStripeEventService
+     * @param FlashBagValues $flashBagValues
+     * @param CurrencyMap $currencyMap
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        UserService $userService,
+        UserManager $userManager,
+        MailChimpListRecipientsService $mailChimpListRecipientsService,
+        TeamService $teamService,
+        UserEmailChangeRequestService $userEmailChangeRequestService,
+        UserStripeEventService $userStripeEventService,
+        FlashBagValues $flashBagValues,
+        CurrencyMap $currencyMap
+    ) {
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator, $userService, $userManager);
+
+        $this->mailChimpListRecipientsService = $mailChimpListRecipientsService;
+        $this->teamService = $teamService;
+        $this->emailChangeRequestService = $userEmailChangeRequestService;
+        $this->userStripeEventService = $userStripeEventService;
+        $this->flashBagValues = $flashBagValues;
+        $this->currencyMap = $currencyMap;
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function getUserSignInRedirectResponse(RouterInterface $router, Request $request)
+    protected function getUserSignInRedirectResponseRoute()
     {
-        return new RedirectResponse($router->generate(
-            'view_user_signin_index',
-            [
-                'redirect' => base64_encode(json_encode(['route' => 'view_user_account_index_index']))
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        return 'view_user_account_index_index';
     }
 
     /**
@@ -55,36 +119,26 @@ class IndexController extends AbstractUserAccountController
             return $this->response;
         }
 
-        $userService = $this->container->get(UserService::class);
-        $mailChimpListRecipientsService = $this->container->get(ListRecipientsService::class);
-        $teamService = $this->container->get(TeamService::class);
-        $emailChangeRequestService = $this->get(UserEmailChangeRequestService::class);
-        $templating = $this->container->get('templating');
-        $userStripeEventService = $this->container->get(UserStripeEventService::class);
-        $flashBagValuesService = $this->container->get(FlashBagValues::class);
-        $userManager = $this->container->get(UserManager::class);
-
-        $user = $userManager->getUser();
+        $user = $this->userManager->getUser();
         $username = $user->getUsername();
-        $userSummary = $userService->getSummary();
+        $userSummary = $this->userService->getSummary();
 
-        $updatesListRecipients = $mailChimpListRecipientsService->get('updates');
-        $announcementsListRecipients = $mailChimpListRecipientsService->get('announcements');
+        $updatesListRecipients = $this->mailChimpListRecipientsService->get('updates');
+        $announcementsListRecipients = $this->mailChimpListRecipientsService->get('announcements');
 
         $viewData = array_merge(
-            $this->getDefaultViewParameters(),
             [
                 'user_summary' => $userSummary,
                 'plan_presentation_name' => $this->getPlanPresentationName(
                     $userSummary->getPlan()->getAccountPlan()->getName()
                 ),
-                'stripe_event_data' => $this->getUserStripeEvents($user, $userSummary, $userStripeEventService),
+                'stripe_event_data' => $this->getUserStripeEvents($user, $userSummary),
                 'mailchimp_updates_subscribed' => $updatesListRecipients->contains($username),
                 'mailchimp_announcements_subscribed' => $announcementsListRecipients->contains($username),
                 'card_expiry_month' => $this->getCardExpiryMonth($userSummary),
-                'currency_map' => $this->container->getParameter('currency_map')
+                'currency_map' => $this->currencyMap->getCurrencyMap(),
             ],
-            $flashBagValuesService->get([
+            $this->flashBagValues->get([
                 'user_account_details_update_notice',
                 'user_account_details_update_email',
                 'user_account_details_update_email_confirm_notice',
@@ -100,28 +154,25 @@ class IndexController extends AbstractUserAccountController
         );
 
         if ($userSummary->getTeamSummary()->isInTeam()) {
-            $viewData['team'] = $teamService->getTeam();
+            $viewData['team'] = $this->teamService->getTeam();
         }
 
-        $emailChangeRequest = $emailChangeRequestService->getEmailChangeRequest($user->getUsername());
+        $emailChangeRequest = $this->emailChangeRequestService->getEmailChangeRequest($user->getUsername());
 
         if (!empty($emailChangeRequest)) {
             $viewData['email_change_request'] = $emailChangeRequest;
             $viewData['token'] = $request->query->get('token');
         }
 
-        return new Response(
-            $templating->render(
-                'SimplyTestableWebClientBundle:bs3/User/Account/Index:index.html.twig',
-                $viewData
-            )
+        return $this->renderWithDefaultViewParameters(
+            'SimplyTestableWebClientBundle:bs3/User/Account/Index:index.html.twig',
+            $viewData
         );
     }
 
     /**
      * @param User $user
      * @param UserSummary $userSummary
-     * @param UserStripeEventService $userStripeEventService
      *
      * @return array
      *
@@ -129,11 +180,8 @@ class IndexController extends AbstractUserAccountController
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    private function getUserStripeEvents(
-        User $user,
-        UserSummary $userSummary,
-        UserStripeEventService $userStripeEventService
-    ) {
+    private function getUserStripeEvents(User $user, UserSummary $userSummary)
+    {
         $stripeCustomer = $userSummary->getStripeCustomer();
 
         if (empty($stripeCustomer)) {
@@ -152,7 +200,7 @@ class IndexController extends AbstractUserAccountController
         ];
 
         foreach ($eventKeys as $eventKey) {
-            $eventData = $userStripeEventService->getLatest($user, $eventKey);
+            $eventData = $this->userStripeEventService->getLatest($user, $eventKey);
             if (!is_null($eventData) && !isset($stripeEvents['invoice'])) {
                 $stripeEvents['invoice'] = $eventData->getDataObject()->getObject();
             }

@@ -10,6 +10,9 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\CurrencyMap;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
 use SimplyTestable\WebClientBundle\Services\TeamService;
@@ -17,14 +20,13 @@ use SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use SimplyTestable\WebClientBundle\Services\UserStripeEventService;
-use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Twig_Environment;
 use webignition\Model\Stripe\Invoice\Invoice;
 
 class IndexControllerTest extends AbstractBaseTestCase
@@ -33,11 +35,6 @@ class IndexControllerTest extends AbstractBaseTestCase
     const ROUTE_NAME = 'view_user_account_index_index';
 
     const USER_EMAIL = 'user@example.com';
-
-    /**
-     * @var IndexController
-     */
-    private $indexController;
 
     /**
      * @var array
@@ -67,16 +64,6 @@ class IndexControllerTest extends AbstractBaseTestCase
             ],
         ],
     ];
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->indexController = new IndexController();
-    }
 
     /**
      * @dataProvider indexActionInvalidGetRequestDataProvider
@@ -156,7 +143,7 @@ class IndexControllerTest extends AbstractBaseTestCase
      *
      * @param array $httpFixtures
      * @param array $flashBagValues
-     * @param EngineInterface $templatingEngine
+     * @param Twig_Environment $twig
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
@@ -166,7 +153,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionRender(
         array $httpFixtures,
         array $flashBagValues,
-        EngineInterface $templatingEngine
+        Twig_Environment $twig
     ) {
         $userManager = $this->container->get(UserManager::class);
 
@@ -184,28 +171,22 @@ class IndexControllerTest extends AbstractBaseTestCase
             }
         }
 
-        $containerFactory = new ContainerFactory($this->container);
-        $container = $containerFactory->create(
-            [
-                UserService::class,
-                ListRecipientsService::class,
-                TeamService::class,
-                UserEmailChangeRequestService::class,
-                UserStripeEventService::class,
-                FlashBagValues::class,
-                UserManager::class,
-            ],
-            [
-                'templating' => $templatingEngine,
-            ],
-            [
-                'currency_map',
-            ]
+        $indexController = new IndexController(
+            $this->container->get('router'),
+            $twig,
+            $this->container->get(DefaultViewParameters::class),
+            $this->container->get(CacheValidatorService::class),
+            $this->container->get(UserService::class),
+            $this->container->get(UserManager::class),
+            $this->container->get(ListRecipientsService::class),
+            $this->container->get(TeamService::class),
+            $this->container->get(UserEmailChangeRequestService::class),
+            $this->container->get(UserStripeEventService::class),
+            $this->container->get(FlashBagValues::class),
+            $this->container->get(CurrencyMap::class)
         );
 
-        $this->indexController->setContainer($container);
-
-        $response = $this->indexController->indexAction(new Request());
+        $response = $indexController->indexAction(new Request());
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -239,7 +220,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'flashBagValues' => [],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -295,7 +276,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'flashBagValues' => [],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -363,7 +344,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'flashBagValues' => [],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -434,7 +415,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'flashBagValues' => [],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -510,7 +491,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'flashBagValues' => [],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -577,7 +558,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'flashBagValues' => [],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -637,7 +618,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                     ]),
                 ],
                 'flashBagValues' => [],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -714,7 +695,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                     'user_account_details_update_password_request_notice' => 'foo10',
                     'user_account_newssubscriptions_update' => 'foo11',
                 ],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);

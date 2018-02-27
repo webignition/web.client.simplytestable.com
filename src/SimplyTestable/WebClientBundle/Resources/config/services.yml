@@ -286,8 +286,12 @@ services:
     arguments:
       - '%link_integrity_error_code_map%'
 
-
   SimplyTestable\WebClientBundle\Services\DocumentationSiteUrls:
     class:  SimplyTestable\WebClientBundle\Services\DocumentationSiteUrls
     arguments:
       - '%documentation_site_urls%'
+
+  SimplyTestable\WebClientBundle\Services\CurrencyMap:
+    class:  SimplyTestable\WebClientBundle\Services\CurrencyMap
+    arguments:
+      - '%currency_map%'
