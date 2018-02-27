@@ -9,13 +9,65 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\Task\Collection as TaskCollection;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
+use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
 class IndexController extends AbstractRequiresValidOwnerController implements RequiresValidUser
 {
+    /**
+     * @var TestService
+     */
+    private $testService;
+
+    /**
+     * @var TaskService
+     */
+    private $taskService;
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param UrlViewValuesService $urlViewValues
+     * @param UserManager $userManager
+     * @param SessionInterface $session
+     * @param TestService $testService
+     * @param TaskService $taskService
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        UrlViewValuesService $urlViewValues,
+        UserManager $userManager,
+        SessionInterface $session,
+        TestService $testService,
+        TaskService $taskService
+    ) {
+        parent::__construct(
+            $router,
+            $twig,
+            $defaultViewParameters,
+            $cacheValidator,
+            $urlViewValues,
+            $userManager,
+            $session
+        );
+
+        $this->testService = $testService;
+        $this->taskService = $taskService;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -41,32 +93,27 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
             return $this->response;
         }
 
-        $testService = $this->container->get(TestService::class);
-        $taskService = $this->container->get(TaskService::class);
-        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
-        $templating = $this->container->get('templating');
-
-        $test = $testService->get($website, $test_id);
+        $test = $this->testService->get($website, $test_id);
         $taskIds = $this->getTaskIdsFromRequest($request);
 
         if (empty($taskIds)) {
             return new Response('');
         }
 
-        $tasks = $taskService->getCollection($test, $taskIds);
+        $tasks = $this->taskService->getCollection($test, $taskIds);
         $taskCollection = new TaskCollection($tasks);
 
         if ($taskCollection->isEmpty()) {
             return new Response('');
         }
 
-        $response = $cacheValidatorService->createResponse($request, [
+        $response = $this->cacheValidator->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,
             'task_collection_hash' => $taskCollection->getHash(),
         ]);
 
-        if ($cacheValidatorService->isNotModified($response)) {
+        if ($this->cacheValidator->isNotModified($response)) {
             return $response;
         }
 
@@ -75,15 +122,11 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
             'tasks' => $tasks
         ];
 
-        $content = $templating->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/Test/Task/TaskList/Index:index.html.twig',
-            array_merge($this->getDefaultViewParameters(), $viewData)
+            $viewData,
+            $response
         );
-
-        $response->setContent($content);
-        $response->headers->set('content-type', 'text/html');
-
-        return $response;
     }
 
 

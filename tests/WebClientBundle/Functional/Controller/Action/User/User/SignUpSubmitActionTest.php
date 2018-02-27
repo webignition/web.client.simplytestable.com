@@ -87,10 +87,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
     ) {
         $session = $this->container->get('session');
 
-        $this->userController->setContainer($this->container);
-
-        /* @var RedirectResponse $response */
-        $response = $this->userController->signUpSubmitAction($request);
+        $response = $this->callSignUpSubmitAction($request);
 
         $this->assertEquals($expectedRedirectLocation, $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -170,10 +167,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             'password' => 'password',
         ]);
 
-        $this->userController->setContainer($this->container);
-
-        /* @var RedirectResponse $response */
-        $response = $this->userController->signUpSubmitAction($request);
+        $response = $this->callSignUpSubmitAction($request);
 
         $this->assertEquals($expectedRedirectLocation, $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -259,10 +253,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
-        $this->userController->setContainer($this->container);
-
-        /* @var RedirectResponse $response */
-        $response = $this->userController->signUpSubmitAction($request);
+        $response = $this->callSignUpSubmitAction($request);
 
         $this->assertEquals(
             'http://localhost/signup/?email=user%40example.com&plan=basic',
@@ -395,12 +386,9 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
-        $this->userController->setContainer($this->container);
-
         $couponService->setCouponData($couponData);
 
-        /* @var RedirectResponse $response */
-        $response = $this->userController->signUpSubmitAction($request);
+        $response = $this->callSignUpSubmitAction($request);
 
         $this->assertEquals(
             'http://localhost/signup/confirm/user@example.com/',
@@ -482,5 +470,25 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                 ],
             ],
         ];
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return RedirectResponse
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws MailConfigurationException
+     */
+    private function callSignUpSubmitAction(Request $request)
+    {
+        return $this->userController->signUpSubmitAction(
+            $this->container->get(MailService::class),
+            $this->container->get(CouponService::class),
+            $this->container->get('twig'),
+            $request
+        );
     }
 }

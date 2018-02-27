@@ -2,23 +2,31 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
+use Psr\Log\LoggerInterface;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\TestService;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 use webignition\NormalisedUrl\NormalisedUrl;
 
 /**
  * Redirects valid-looking URLs to those that match actual controller actions
  */
-class RedirectController extends Controller
+class RedirectController
 {
     const TASK_RESULTS_URL_PATTERN = '/\/[0-9]+\/[0-9]+\/results\/?$/';
+
+    /**
+     * @var RouterInterface
+     */
+    private $router;
 
     /**
      * @var string[]
@@ -30,20 +38,34 @@ class RedirectController extends Controller
     ];
 
     /**
+     * @param RouterInterface $router
+     */
+    public function __construct(RouterInterface $router)
+    {
+        $this->router = $router;
+    }
+
+    /**
+     * @param TestService $testService
+     * @param RemoteTestService $remoteTestService
+     * @param EntityManagerInterface $entityManager
+     * @param LoggerInterface $logger
      * @param Request $request
      * @param string $website
      * @param int $test_id
      *
      * @return RedirectResponse
      */
-    public function testAction(Request $request, $website, $test_id = null)
-    {
-        $testService = $this->container->get(TestService::class);
-        $remoteTestService = $this->container->get(RemoteTestService::class);
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
-        $logger = $this->container->get('logger');
-        $router = $this->container->get('router');
-
+    public function testAction(
+        TestService $testService,
+        RemoteTestService $remoteTestService,
+        EntityManagerInterface $entityManager,
+        LoggerInterface $logger,
+        Request $request,
+        $website,
+        $test_id = null
+    ) {
+        /* @var EntityRepository $testRepository */
         $testRepository = $entityManager->getRepository(Test::class);
 
         $isTaskResultsUrl = preg_match(self::TASK_RESULTS_URL_PATTERN, $website) > 0;
@@ -51,7 +73,7 @@ class RedirectController extends Controller
         if ($isTaskResultsUrl) {
             $routeParameters = $this->getWebsiteAndTestIdAndTaskIdFromWebsite($website);
 
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'view_test_task_results_index_index_verbose',
                 $routeParameters,
                 UrlGeneratorInterface::ABSOLUTE_URL
@@ -71,7 +93,7 @@ class RedirectController extends Controller
             $latestRemoteTest = $remoteTestService->retrieveLatest($normalisedWebsite);
 
             if ($latestRemoteTest instanceof RemoteTest) {
-                return new RedirectResponse($router->generate(
+                return new RedirectResponse($this->router->generate(
                     'app_test_redirector',
                     [
                         'website' => $latestRemoteTest->getWebsite(),
@@ -89,7 +111,7 @@ class RedirectController extends Controller
             ]);
 
             if (!empty($latestTest)) {
-                return new RedirectResponse($router->generate(
+                return new RedirectResponse($this->router->generate(
                     'app_test_redirector',
                     [
                         'website' => $normalisedWebsite,
@@ -99,7 +121,7 @@ class RedirectController extends Controller
                 ));
             }
 
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'view_dashboard_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
@@ -123,7 +145,7 @@ class RedirectController extends Controller
                     ]
                 );
 
-                return new RedirectResponse($router->generate(
+                return new RedirectResponse($this->router->generate(
                     'app_website',
                     [
                         'website' => $website
@@ -136,7 +158,7 @@ class RedirectController extends Controller
                 ? 'view_test_results_index_index'
                 : 'view_test_progress_index_index';
 
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 $routeName,
                 [
                     'website' => $normalisedWebsite,
@@ -146,7 +168,7 @@ class RedirectController extends Controller
             ));
         }
 
-        return new RedirectResponse($router->generate(
+        return new RedirectResponse($this->router->generate(
             'view_dashboard_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -162,9 +184,7 @@ class RedirectController extends Controller
      */
     public function taskAction($website, $test_id, $task_id)
     {
-        $router = $this->container->get('router');
-
-        return new RedirectResponse($router->generate(
+        return new RedirectResponse($this->router->generate(
             'view_test_task_results_index_index',
             [
                 'website' => $website,

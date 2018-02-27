@@ -8,20 +8,39 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class TaskController extends Controller implements RequiresValidOwner
+class TaskController implements RequiresValidOwner
 {
     const DEFAULT_UNRETRIEVED_TASKID_LIMIT = 100;
     const MAX_UNRETRIEVED_TASKID_LIMIT = 1000;
 
     /**
+     * @var TestService
+     */
+    private $testService;
+
+    /**
+     * @var TaskService
+     */
+    private $taskService;
+
+    /**
      * @var Response|JsonResponse
      */
     private $response;
+
+    /**
+     * @param TestService $testService
+     * @param TaskService $taskService
+     */
+    public function __construct(TestService $testService, TaskService $taskService)
+    {
+        $this->testService = $testService;
+        $this->taskService = $taskService;
+    }
 
     /**
      * @param Response $response
@@ -63,12 +82,9 @@ class TaskController extends Controller implements RequiresValidOwner
             return $this->response;
         }
 
-        $testService = $this->container->get(TestService::class);
-        $taskService = $this->container->get(TaskService::class);
+        $test = $this->testService->get($website, $test_id);
 
-        $test = $testService->get($website, $test_id);
-
-        $taskIds = $taskService->getRemoteTaskIds($test);
+        $taskIds = $this->taskService->getRemoteTaskIds($test);
 
         return new JsonResponse($taskIds);
     }
@@ -90,10 +106,7 @@ class TaskController extends Controller implements RequiresValidOwner
             return $this->response;
         }
 
-        $testService = $this->container->get(TestService::class);
-        $taskService = $this->container->get(TaskService::class);
-
-        $test = $testService->get($website, $test_id);
+        $test = $this->testService->get($website, $test_id);
 
         $limit = filter_var($limit, FILTER_VALIDATE_INT);
         if (false === $limit) {
@@ -104,7 +117,7 @@ class TaskController extends Controller implements RequiresValidOwner
             $limit = self::MAX_UNRETRIEVED_TASKID_LIMIT;
         }
 
-        $taskIds = $taskService->getUnretrievedRemoteTaskIds($test, $limit);
+        $taskIds = $this->taskService->getUnretrievedRemoteTaskIds($test, $limit);
 
         return new JsonResponse($taskIds);
     }
@@ -126,12 +139,9 @@ class TaskController extends Controller implements RequiresValidOwner
             return $this->response;
         }
 
-        $testService = $this->container->get(TestService::class);
-        $taskService = $this->container->get(TaskService::class);
+        $test = $this->testService->get($website, $test_id);
 
-        $test = $testService->get($website, $test_id);
-
-        $taskService->getCollection($test, $this->getRequestRemoteTaskIds($request));
+        $this->taskService->getCollection($test, $this->getRequestRemoteTaskIds($request));
 
         return new Response();
     }

@@ -2,13 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\User\ResetPassword;
 
-use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
-use SimplyTestable\WebClientBundle\Services\FlashBagValues;
+use SimplyTestable\WebClientBundle\Controller\View\User\AbstractUserController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class IndexController extends BaseViewController
+class IndexController extends AbstractUserController
 {
     /**
      * @param Request $request
@@ -17,30 +15,23 @@ class IndexController extends BaseViewController
      */
     public function indexAction(Request $request)
     {
-        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
-        $flashBagValuesService = $this->container->get(FlashBagValues::class);
-        $templating = $this->container->get('templating');
-
         $viewData = array_merge([
             'email' => trim($request->query->get('email')),
-        ], $flashBagValuesService->get([
+        ], $this->flashBagValues->get([
             'user_reset_password_error',
             'user_reset_password_confirmation',
         ]));
 
-        $response = $cacheValidatorService->createResponse($request, $viewData);
+        $response = $this->cacheValidator->createResponse($request, $viewData);
 
-        if ($cacheValidatorService->isNotModified($response)) {
+        if ($this->cacheValidator->isNotModified($response)) {
             return $response;
         }
 
-        $content = $templating->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/User/ResetPassword/Index:index.html.twig',
-            array_merge($this->getDefaultViewParameters(), $viewData)
+            $viewData,
+            $response
         );
-
-        $response->setContent($content);
-
-        return $response;
     }
 }

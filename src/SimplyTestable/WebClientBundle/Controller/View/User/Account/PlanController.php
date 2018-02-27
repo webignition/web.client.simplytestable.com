@@ -5,30 +5,77 @@ namespace SimplyTestable\WebClientBundle\Controller\View\User\Account;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\CurrencyMap;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\PlansService;
 use SimplyTestable\WebClientBundle\Services\TeamService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
 class PlanController extends AbstractUserAccountController
 {
     /**
+     * @var PlansService
+     */
+    private $plansService;
+
+    /**
+     * @var CurrencyMap
+     */
+    private $currencyMap;
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param UserService $userService
+     * @param UserManager $userManager
+     * @param TeamService $teamService
+     * @param FlashBagValues $flashBagValues
+     * @param PlansService $plansService
+     * @param CurrencyMap $currencyMap
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        UserService $userService,
+        UserManager $userManager,
+        TeamService $teamService,
+        FlashBagValues $flashBagValues,
+        PlansService $plansService,
+        CurrencyMap $currencyMap
+    ) {
+        parent::__construct(
+            $router,
+            $twig,
+            $defaultViewParameters,
+            $cacheValidator,
+            $userService,
+            $userManager,
+            $teamService,
+            $flashBagValues
+        );
+
+        $this->plansService = $plansService;
+        $this->currencyMap = $currencyMap;
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function getUserSignInRedirectResponse(RouterInterface $router, Request $request)
+    protected function getUserSignInRedirectResponseRoute()
     {
-        return new RedirectResponse($router->generate(
-            'view_user_signin_index',
-            [
-                'redirect' => base64_encode(json_encode(['route' => 'view_user_account_plan_index']))
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        return 'view_user_account_plan_index';
     }
 
     /**
@@ -44,18 +91,11 @@ class PlanController extends AbstractUserAccountController
             return $this->response;
         }
 
-        $userService = $this->container->get(UserService::class);
-        $teamService = $this->container->get(TeamService::class);
-        $templating = $this->container->get('templating');
-        $planService = $this->container->get(PlansService::class);
-        $router = $this->container->get('router');
-        $flashBagValuesService = $this->container->get(FlashBagValues::class);
-
-        $userSummary = $userService->getSummary();
+        $userSummary = $this->userService->getSummary();
         $team = null;
 
         if ($userSummary->getPlan()->getAccountPlan()->getIsCustom()) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'view_user_account_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
@@ -66,32 +106,29 @@ class PlanController extends AbstractUserAccountController
 
         if (!empty($stripeCustomer) && $stripeCustomer->hasDiscount()) {
             $priceModifier = (100 - $stripeCustomer->getDiscount()->getCoupon()->getPercentOff()) / 100;
-            $planService->setPriceModifier($priceModifier);
+            $this->plansService->setPriceModifier($priceModifier);
         }
 
         $viewData = array_merge(
-            $this->getDefaultViewParameters(),
             [
                 'user_summary' => $userSummary,
                 'plan_presentation_name' => ucwords($userSummary->getPlan()->getAccountPlan()->getName()),
-                'plans' => $planService->listPremiumOnly()->getList(),
-                'currency_map' => $this->container->getParameter('currency_map'),
+                'plans' => $this->plansService->listPremiumOnly()->getList(),
+                'currency_map' => $this->currencyMap->getCurrencyMap(),
             ],
-            $flashBagValuesService->get([
+            $this->flashBagValues->get([
                 'plan_subscribe_error',
                 'plan_subscribe_success',
             ])
         );
 
         if ($userSummary->getTeamSummary()->isInTeam()) {
-            $viewData['team'] = $teamService->getTeam();
+            $viewData['team'] = $this->teamService->getTeam();
         }
 
-        $content = $templating->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/User/Account/Plan:index.html.twig',
             $viewData
         );
-
-        return new Response($content);
     }
 }

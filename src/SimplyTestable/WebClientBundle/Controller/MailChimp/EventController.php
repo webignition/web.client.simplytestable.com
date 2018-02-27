@@ -2,14 +2,32 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\MailChimp;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Psr\Log\LoggerInterface;
+use SimplyTestable\WebClientBundle\Controller\AbstractEventController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Event\MailChimp\Event as MailChimpEvent;
 
-class EventController extends Controller
+class EventController extends AbstractEventController
 {
     const LISTENER_EVENT_PREFIX = 'mailchimp.';
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param LoggerInterface $logger
+     */
+    public function __construct(EventDispatcherInterface $eventDispatcher, LoggerInterface $logger)
+    {
+        parent::__construct($eventDispatcher);
+
+        $this->logger = $logger;
+    }
 
     /**
      * @param Request $request
@@ -18,9 +36,6 @@ class EventController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $dispatcher = $this->container->get('event_dispatcher');
-        $logger = $this->container->get('logger');
-
         if ($request->isMethod('GET')) {
             return new Response();
         }
@@ -33,14 +48,14 @@ class EventController extends Controller
 
         $event = new MailChimpEvent($requestData);
         $listenerEventName = self::LISTENER_EVENT_PREFIX . $event->getType();
-        $dispatcherHasListener = count($dispatcher->getListeners($listenerEventName)) > 0;
+        $dispatcherHasListener = count($this->eventDispatcher->getListeners($listenerEventName)) > 0;
 
         if (!$dispatcherHasListener) {
             return new Response('', 400);
         }
 
         try {
-            $dispatcher->dispatch(
+            $this->eventDispatcher->dispatch(
                 $listenerEventName,
                 $event
             );
@@ -54,18 +69,18 @@ class EventController extends Controller
                 ? 'invalid list_id "' . $eventData['list_id'] . '" in event data'
                 : 'no list_id in event data';
 
-            $logger->error('Controller\MailChimp\EventController \DomainException START');
-            $logger->error($logMessage);
-            $logger->error($domainException);
-            $logger->error($domainException);
-            $logger->error('Controller\MailChimp\EventController \DomainException END');
+            $this->logger->error('Controller\MailChimp\EventController \DomainException START');
+            $this->logger->error($logMessage);
+            $this->logger->error($domainException);
+            $this->logger->error($domainException);
+            $this->logger->error('Controller\MailChimp\EventController \DomainException END');
         } catch (\UnexpectedValueException $unexpectedValueException) {
             // Event raw data is missing "data"
-            $logger->error('Controller\MailChimp\EventController \UnexpectedValueException START');
-            $logger->error('Controller\MailChimp\EventController event raw data is missing "data"');
-            $logger->error($request);
-            $logger->error($unexpectedValueException);
-            $logger->error('Controller\MailChimp\EventController \UnexpectedValueException END');
+            $this->logger->error('Controller\MailChimp\EventController \UnexpectedValueException START');
+            $this->logger->error('Controller\MailChimp\EventController event raw data is missing "data"');
+            $this->logger->error($request);
+            $this->logger->error($unexpectedValueException);
+            $this->logger->error('Controller\MailChimp\EventController \UnexpectedValueException END');
         }
 
         return new Response('', 200);

@@ -34,8 +34,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->indexController = new IndexController();
-        $this->indexController->setContainer($this->container);
+        $this->indexController = $this->container->get(IndexController::class);
     }
 
     public function testRequestActionPostRequest()

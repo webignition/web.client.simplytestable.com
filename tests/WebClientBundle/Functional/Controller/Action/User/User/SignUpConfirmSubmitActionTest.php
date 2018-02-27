@@ -4,9 +4,11 @@ namespace Tests\WebClientBundle\Functional\Controller\Action\User\User;
 
 use SimplyTestable\WebClientBundle\Controller\Action\User\UserController;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use webignition\ResqueJobFactory\ResqueJobFactory;
 
 class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
 {
@@ -66,10 +68,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->userController->setContainer($this->container);
-
-        /* @var RedirectResponse $response */
-        $response = $this->userController->signUpConfirmSubmitAction($request, $email);
+        $response = $this->callSignUpConfirmSubmitAction($request, $email);
 
         $this->assertEquals($expectedRedirectLocation, $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -171,8 +170,6 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $this->userController->setContainer($this->container);
-
         $request = new Request([], [
             'token' => self::TOKEN,
         ]);
@@ -181,8 +178,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
             $request->cookies->replace($requestCookies);
         }
 
-        /* @var RedirectResponse $response */
-        $response = $this->userController->signUpConfirmSubmitAction($request, self::USER_EMAIL);
+        $response = $this->callSignUpConfirmSubmitAction($request, self::USER_EMAIL);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
         $this->assertEquals([
@@ -209,5 +205,25 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
                 'expectedRedirectUrl' => 'http://localhost/signin/?email=user%40example.com&redirect=foo',
             ],
         ];
+    }
+
+    /**
+     * @param Request $request
+     * @param string $email
+     *
+     * @return RedirectResponse
+     *
+     * @throws InvalidAdminCredentialsException
+     * @throws \CredisException
+     * @throws \Exception
+     */
+    private function callSignUpConfirmSubmitAction(Request $request, $email)
+    {
+        return $this->userController->signUpConfirmSubmitAction(
+            $this->container->get(ResqueQueueService::class),
+            $this->container->get(ResqueJobFactory::class),
+            $request,
+            $email
+        );
     }
 }

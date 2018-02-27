@@ -34,8 +34,6 @@ class SignOutSubmitActionTest extends AbstractUserControllerTest
         $user = new User(self::USER_EMAIL);
         $userManager->setUser($user);
 
-        $this->userController->setContainer($this->container);
-
         /* @var RedirectResponse $response */
         $response = $this->userController->signOutSubmitAction();
 

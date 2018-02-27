@@ -34,8 +34,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->confirmController = new ConfirmController();
-        $this->confirmController->setContainer($this->container);
+        $this->confirmController = $this->container->get(ConfirmController::class);
     }
 
     public function testResendActionPostRequest()

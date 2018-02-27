@@ -9,7 +9,7 @@ use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
 use SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Twig_Environment;
 
 class MockFactory
 {
@@ -63,20 +63,20 @@ class MockFactory
     /**
      * @param array $calls
      *
-     * @return MockInterface|EngineInterface
+     * @return MockInterface|Twig_Environment
      */
-    public static function createTemplatingEngine($calls = [])
+    public static function createTwig($calls = [])
     {
-        $templatingEngine = \Mockery::mock(EngineInterface::class);
+        $twig = \Mockery::mock(Twig_Environment::class);
 
         if (isset($calls['render'])) {
-            $templatingEngine
+            $twig
                 ->shouldReceive('render')
                 ->withArgs($calls['render']['withArgs'])
                 ->andReturn($calls['render']['return']);
         }
 
-        return $templatingEngine;
+        return $twig;
     }
 
     /**

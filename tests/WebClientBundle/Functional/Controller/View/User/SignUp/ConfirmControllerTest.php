@@ -6,40 +6,21 @@ use SimplyTestable\WebClientBundle\Controller\Action\User\UserController;
 use SimplyTestable\WebClientBundle\Controller\View\User\SignUp\ConfirmController;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
-use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
-use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\SignUp\User\ConfirmController as ActionConfirmController;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
+use Twig_Environment;
 
-class ConfirmControllerTest extends AbstractBaseTestCase
+class ConfirmControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/SignUp/Confirm:index.html.twig';
     const ROUTE_NAME = 'view_user_signup_confirm_index';
 
     const USER_EMAIL = 'user@example.com';
-
-    /**
-     * @var ConfirmController
-     */
-    private $confirmController;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->confirmController = new ConfirmController();
-    }
 
     public function testIndexActionPublicUserGetRequest()
     {
@@ -63,7 +44,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
      * @param array $httpFixtures
      * @param array $flashBagValues
      * @param Request $request
-     * @param EngineInterface $templatingEngine
+     * @param Twig_Environment $twig
      *
      * @throws InvalidAdminCredentialsException
      */
@@ -71,7 +52,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
         array $httpFixtures,
         array $flashBagValues,
         Request $request,
-        EngineInterface $templatingEngine
+        Twig_Environment $twig
     ) {
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
@@ -88,22 +69,11 @@ class ConfirmControllerTest extends AbstractBaseTestCase
             }
         }
 
-        $containerFactory = new ContainerFactory($this->container);
-        $container = $containerFactory->create(
-            [
-                CacheValidatorService::class,
-                UserService::class,
-                FlashBagValues::class,
-                UserManager::class,
-            ],
-            [
-                'templating' => $templatingEngine,
-            ]
-        );
+        /* @var ConfirmController $confirmController */
+        $confirmController = $this->container->get(ConfirmController::class);
+        $this->setTwigOnController($twig, $confirmController);
 
-        $this->confirmController->setContainer($container);
-
-        $response = $this->confirmController->indexAction($request, self::USER_EMAIL);
+        $response = $confirmController->indexAction($request, self::USER_EMAIL);
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -119,7 +89,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
                 ],
                 'flashBagValues' => [],
                 'request' => new Request(),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -147,7 +117,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
                 ],
                 'flashBagValues' => [],
                 'request' => new Request(),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -175,7 +145,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
                 'request' => new Request([
                     'token' => 'foo',
                 ]),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -204,7 +174,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
                         ActionConfirmController::FLASH_BAG_TOKEN_RESEND_SUCCESS_MESSAGE,
                 ],
                 'request' => new Request(),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -233,7 +203,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
                         UserController::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED
                 ],
                 'request' => new Request(),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -263,7 +233,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
                         ActionConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND,
                 ],
                 'request' => new Request(),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -295,7 +265,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
                         ActionConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_USER_INVALID,
                 ],
                 'request' => new Request(),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -327,9 +297,11 @@ class ConfirmControllerTest extends AbstractBaseTestCase
         $request = new Request();
 
         $this->container->get('request_stack')->push($request);
-        $this->confirmController->setContainer($this->container);
 
-        $response = $this->confirmController->indexAction(
+        /* @var ConfirmController $confirmController */
+        $confirmController = $this->container->get(ConfirmController::class);
+
+        $response = $confirmController->indexAction(
             $request,
             self::USER_EMAIL
         );
@@ -342,7 +314,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $this->confirmController->indexAction(
+        $newResponse = $confirmController->indexAction(
             $newRequest,
             self::USER_EMAIL
         );

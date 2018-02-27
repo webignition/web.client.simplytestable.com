@@ -31,8 +31,7 @@ class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
     {
         parent::setUp();
 
-        $this->newsSubscriptionsController = new NewsSubscriptionsController();
-        $this->newsSubscriptionsController->setContainer($this->container);
+        $this->newsSubscriptionsController = $this->container->get(NewsSubscriptionsController::class);
     }
 
     /**

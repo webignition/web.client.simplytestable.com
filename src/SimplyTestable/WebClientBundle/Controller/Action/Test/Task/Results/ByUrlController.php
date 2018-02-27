@@ -3,15 +3,32 @@
 namespace SimplyTestable\WebClientBundle\Controller\Action\Test\Task\Results;
 
 use Doctrine\ORM\EntityManagerInterface;
-use SimplyTestable\WebClientBundle\Controller\BaseController;
+use SimplyTestable\WebClientBundle\Controller\AbstractController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
-class ByUrlController extends Controller
+class ByUrlController extends AbstractController
 {
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    /**
+     * @param RouterInterface $router
+     * @param EntityManagerInterface $entityManager
+     */
+    public function __construct(RouterInterface $router, EntityManagerInterface $entityManager)
+    {
+        parent::__construct($router);
+
+        $this->entityManager = $entityManager;
+        $this->router = $router;
+    }
+
     /**
      * @param string $website
      * @param int $test_id
@@ -22,19 +39,15 @@ class ByUrlController extends Controller
      */
     public function indexAction($website, $test_id, $task_url, $task_type)
     {
-        /* @var EntityManagerInterface $entityManager */
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
-        $router = $this->container->get('router');
-
-        $testRepository = $entityManager->getRepository(Test::class);
-        $taskRepository = $entityManager->getRepository(Task::class);
+        $testRepository = $this->entityManager->getRepository(Test::class);
+        $taskRepository = $this->entityManager->getRepository(Task::class);
 
         $test = $testRepository->findOneBy([
             'testId' => $test_id
         ]);
 
         if (empty($test)) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'view_dashboard_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
@@ -48,7 +61,7 @@ class ByUrlController extends Controller
         ]);
 
         if (empty($task)) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'app_test_redirector',
                 [
                     'website' => $website,
@@ -58,7 +71,7 @@ class ByUrlController extends Controller
             ));
         }
 
-        return new RedirectResponse($router->generate(
+        return new RedirectResponse($this->router->generate(
             'view_test_task_results_index_index',
             [
                 'website' => $website,

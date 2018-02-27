@@ -35,8 +35,7 @@ class PasswordChangeControllerTest extends AbstractUserAccountControllerTest
     {
         parent::setUp();
 
-        $this->passwordChangeController = new PasswordChangeController();
-        $this->passwordChangeController->setContainer($this->container);
+        $this->passwordChangeController = $this->container->get(PasswordChangeController::class);
     }
 
     /**

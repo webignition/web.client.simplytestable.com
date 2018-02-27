@@ -13,9 +13,9 @@ use SimplyTestable\WebClientBundle\EventListener\RequiresValidUserRequestListene
 use SimplyTestable\WebClientBundle\Interfaces\Controller\IEFiltered;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
+use SimplyTestable\WebClientBundle\Interfaces\Controller\SettableResponse;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresCompletedTest;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
@@ -32,7 +32,7 @@ abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
 
     /**
      * @param Request $request
-     * @param Controller $controller
+     * @param $controller
      * @param string $action
      * @param int $requestType
      *
@@ -40,7 +40,7 @@ abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
      */
     protected function createFilterControllerEvent(
         Request $request,
-        Controller $controller,
+        $controller,
         $action,
         $requestType = HttpKernelInterface::MASTER_REQUEST
     ) {
@@ -86,7 +86,7 @@ abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
     {
         $request = new Request();
 
-        $controller = new UserController();
+        $controller = $this->container->get(UserController::class);
 
         $event = $this->createFilterControllerEvent($request, $controller, 'signOutSubmitAction', $requestType);
 
@@ -112,7 +112,8 @@ abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
     {
         $request = new Request();
 
-        $controller = new IndexController();
+        /* @var SettableResponse $controller */
+        $controller = $this->container->get(IndexController::class);
         $controller->setResponse(new Response());
 
         $event = $this->createFilterControllerEvent($request, $controller, 'indexAction');

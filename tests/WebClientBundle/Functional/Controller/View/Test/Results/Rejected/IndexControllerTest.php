@@ -11,24 +11,18 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
-use SimplyTestable\WebClientBundle\Services\RemoteTestService;
-use SimplyTestable\WebClientBundle\Services\TaskService;
-use SimplyTestable\WebClientBundle\Services\TestService;
-use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
-use Tests\WebClientBundle\Factory\ContainerFactory;
+use Symfony\Component\DomCrawler\Crawler;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
+use Twig_Environment;
 
-class IndexControllerTest extends AbstractBaseTestCase
+class IndexControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Test/Results/Rejected/Index:index.html.twig';
     const ROUTE_NAME = 'view_test_results_rejected_index_index';
@@ -36,11 +30,6 @@ class IndexControllerTest extends AbstractBaseTestCase
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
-
-    /**
-     * @var IndexController
-     */
-    private $indexController;
 
     /**
      * @var array
@@ -59,14 +48,37 @@ class IndexControllerTest extends AbstractBaseTestCase
     ];
 
     /**
-     * {@inheritdoc}
+     * @var array
      */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->indexController = new IndexController();
-    }
+    private $userData = [
+        'email' => self::USER_EMAIL,
+        'user_plan' => [
+            'plan' => [
+                'name' => 'personal',
+                'is_premium' => true,
+            ],
+            'start_trial_period' => 30,
+        ],
+        'plan_constraints' => [
+            'urls_per_job' => 10,
+            'credits' => [
+                'limit' => 5000,
+                'used' => 5001,
+            ],
+        ],
+        'team_summary' => [
+            'in' => false,
+            'has_invite' => false,
+        ],
+        'stripe_customer' => [
+            'id' => 'cus_aaaaaaaaaaaaa0',
+            'subscription' => [
+                'plan' => [
+                    'currency' => 'gbp',
+                ],
+            ],
+        ],
+    ];
 
     public function testIndexActionInvalidUserGetRequest()
     {
@@ -130,11 +142,22 @@ class IndexControllerTest extends AbstractBaseTestCase
         $this->assertContains('<title>Not authorised', $response->getContent());
     }
 
-    public function testIndexActionPublicUserGetRequest()
-    {
+    /**
+     * @dataProvider indexActionGetRequestDataProvider
+     *
+     * @param array $remoteTestData
+     * @param array $userData
+     * @param array $expectedLeadContentContains
+     */
+    public function testIndexActionGetRequestFoo(
+        array $remoteTestData,
+        array $userData,
+        array $expectedLeadContentContains
+    ) {
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
+            HttpResponseFactory::createJsonResponse($remoteTestData),
+            HttpResponseFactory::createJsonResponse($userData),
         ]);
 
         $this->client->request(
@@ -145,6 +168,118 @@ class IndexControllerTest extends AbstractBaseTestCase
         /* @var Response $response */
         $response = $this->client->getResponse();
         $this->assertTrue($response->isSuccessful());
+
+        $crawler = new Crawler($response->getContent());
+        $leadContent = $crawler->filter('.lead');
+
+        $leadContent->each(function (Crawler $content, $index) use ($expectedLeadContentContains) {
+            $expectedContentContainsCollection = $expectedLeadContentContains[$index];
+
+            foreach ($expectedContentContainsCollection as $expectedContentContains) {
+                $this->assertContains($expectedContentContains, $content->html());
+            }
+        });
+    }
+
+    /**
+     * @return array
+     */
+    public function indexActionGetRequestDataProvider()
+    {
+        return [
+            'personal credit limit reached; agency plan available' => [
+                'remoteTestData' => array_merge($this->remoteTestData, [
+                    'rejection' => [
+                        'reason' => 'plan-constraint-limit-reached',
+                        'constraint' => [
+                            'name' => 'credits_per_month',
+                            'limit' => 5000,
+                        ]
+                    ],
+                ]),
+                'userData' => array_merge($this->userData, []),
+                'expectedLeadContentContains' => [
+                    [
+                        'limit of <strong>5,000</strong>',
+                    ],
+                    [
+                        'from the <strong>personal</strong>',
+                        'to the  <strong>agency</strong>',
+                    ]
+                ],
+            ],
+            'agency credit limit reached; business plan available' => [
+                'remoteTestData' => array_merge($this->remoteTestData, [
+                    'rejection' => [
+                        'reason' => 'plan-constraint-limit-reached',
+                        'constraint' => [
+                            'name' => 'credits_per_month',
+                            'limit' => 20000,
+                        ]
+                    ],
+                ]),
+                'userData' => array_merge($this->userData, [
+                    'user_plan' => [
+                        'plan' => [
+                            'name' => 'agency',
+                            'is_premium' => true,
+                        ],
+                        'start_trial_period' => 30,
+                    ],
+                    'plan_constraints' => [
+                        'urls_per_job' => 10,
+                        'credits' => [
+                            'limit' => 20000,
+                            'used' => 20001,
+                        ],
+                    ],
+                ]),
+                'expectedLeadContentContains' => [
+                    [
+                        'limit of <strong>20,000</strong>',
+                    ],
+                    [
+                        'from the <strong>agency</strong>',
+                        'to the  <strong>business</strong>',
+                    ]
+                ],
+            ],
+            'business credit limit reached; enterprise plan available' => [
+                'remoteTestData' => array_merge($this->remoteTestData, [
+                    'rejection' => [
+                        'reason' => 'plan-constraint-limit-reached',
+                        'constraint' => [
+                            'name' => 'credits_per_month',
+                            'limit' => 100000,
+                        ]
+                    ],
+                ]),
+                'userData' => array_merge($this->userData, [
+                    'user_plan' => [
+                        'plan' => [
+                            'name' => 'business',
+                            'is_premium' => true,
+                        ],
+                        'start_trial_period' => 30,
+                    ],
+                    'plan_constraints' => [
+                        'urls_per_job' => 10,
+                        'credits' => [
+                            'limit' => 100000,
+                            'used' => 100001,
+                        ],
+                    ],
+                ]),
+                'expectedLeadContentContains' => [
+                    [
+                        'limit of <strong>100,000</strong>',
+                    ],
+                    [
+                        'You\'re on our largest standard plan. We can\'t offer you any direct upgrade options',
+                    ]
+                ],
+            ],
+        ];
     }
 
     /**
@@ -174,9 +309,11 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->indexController->setContainer($this->container);
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
 
-        $response = $this->indexController->indexAction($request, $website, self::TEST_ID);
+        /* @var RedirectResponse $response */
+        $response = $indexController->indexAction($request, $website, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
@@ -216,13 +353,13 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @dataProvider indexActionRenderDataProvider
      *
      * @param array $httpFixtures
-     * @param EngineInterface $templatingEngine
+     * @param Twig_Environment $twig
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function testIndexActionRender(array $httpFixtures, EngineInterface $templatingEngine)
+    public function testIndexActionRender(array $httpFixtures, Twig_Environment $twig)
     {
         $userManager = $this->container->get(UserManager::class);
 
@@ -231,29 +368,11 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $containerFactory = new ContainerFactory($this->container);
-        $container = $containerFactory->create(
-            [
-                'router',
-                TestService::class,
-                RemoteTestService::class,
-                UserService::class,
-                CacheValidatorService::class,
-                UrlViewValuesService::class,
-                TaskService::class,
-                UserManager::class,
-            ],
-            [
-                'templating' => $templatingEngine,
-            ],
-            [
-                'plans',
-            ]
-        );
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
+        $this->setTwigOnController($twig, $indexController);
 
-        $this->indexController->setContainer($container);
-
-        $response = $this->indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
+        $response = $indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -271,7 +390,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                         ],
                     ])),
                 ],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::VIEW_NAME, $viewName);
@@ -334,7 +453,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                         ],
                     ]),
                 ],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::VIEW_NAME, $viewName);
@@ -381,9 +500,11 @@ class IndexControllerTest extends AbstractBaseTestCase
         $request = new Request();
 
         $this->container->get('request_stack')->push($request);
-        $this->indexController->setContainer($this->container);
 
-        $response = $this->indexController->indexAction($request, self::WEBSITE, self::TEST_ID);
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
+
+        $response = $indexController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -393,7 +514,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $this->indexController->indexAction($newRequest, self::WEBSITE, self::TEST_ID);
+        $newResponse = $indexController->indexAction($newRequest, self::WEBSITE, self::TEST_ID);
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());

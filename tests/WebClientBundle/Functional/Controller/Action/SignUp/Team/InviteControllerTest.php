@@ -29,8 +29,7 @@ class InviteControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->inviteController = new InviteController();
-        $this->inviteController->setContainer($this->container);
+        $this->inviteController = $this->container->get(InviteController::class);
     }
 
     public function testAcceptActionPostRequest()

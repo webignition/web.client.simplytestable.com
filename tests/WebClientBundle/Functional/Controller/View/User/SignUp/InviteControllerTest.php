@@ -9,38 +9,21 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\TeamInviteService;
-use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
-use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
+use Twig_Environment;
 
-class InviteControllerTest extends AbstractBaseTestCase
+class InviteControllerTest extends AbstractViewControllerTest
 {
     const INVITE_USERNAME = 'user@example.com';
     const TOKEN = 'tokenValue';
     const TEAM_NAME = 'Team Name';
-
-    /**
-     * @var InviteController
-     */
-    private $inviteController;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->inviteController = new InviteController();
-    }
 
     public function testIndexActionGetRequest()
     {
@@ -79,7 +62,7 @@ class InviteControllerTest extends AbstractBaseTestCase
      * @param array $httpFixtures
      * @param Request $request
      * @param array $flashBagValues
-     * @param EngineInterface $templatingEngine
+     * @param Twig_Environment $twig
      *
      * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
@@ -88,7 +71,7 @@ class InviteControllerTest extends AbstractBaseTestCase
         array $httpFixtures,
         Request $request,
         array $flashBagValues,
-        EngineInterface $templatingEngine
+        Twig_Environment $twig
     ) {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
@@ -100,24 +83,11 @@ class InviteControllerTest extends AbstractBaseTestCase
             $flashBag->set($key, $value);
         }
 
-        $containerFactory = new ContainerFactory($this->container);
+        /* @var InviteController $inviteController */
+        $inviteController = $this->container->get(InviteController::class);
+        $this->setTwigOnController($twig, $inviteController);
 
-        $container = $containerFactory->create(
-            [
-                TeamInviteService::class,
-                UserService::class,
-                FlashBagValues::class,
-                CacheValidatorService::class,
-                UserManager::class,
-            ],
-            [
-                'templating' => $templatingEngine,
-            ]
-        );
-
-        $this->inviteController->setContainer($container);
-
-        $this->inviteController->indexAction($request, self::TOKEN);
+        $inviteController->indexAction($request, self::TOKEN);
     }
 
     /**
@@ -145,7 +115,7 @@ class InviteControllerTest extends AbstractBaseTestCase
                     ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY =>
                         ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_PASSWORD_BLANK
                 ],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) use ($invite) {
                             $this->assertEquals(
@@ -192,7 +162,7 @@ class InviteControllerTest extends AbstractBaseTestCase
                         ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_FAILURE,
                     ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY => 500,
                 ],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(
@@ -229,7 +199,7 @@ class InviteControllerTest extends AbstractBaseTestCase
                     'stay-signed-in' => 1,
                 ]),
                 'flashBagValues' => [],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) use ($invite) {
                             $this->assertEquals(
@@ -274,9 +244,11 @@ class InviteControllerTest extends AbstractBaseTestCase
         $request = new Request();
 
         $this->container->get('request_stack')->push($request);
-        $this->inviteController->setContainer($this->container);
 
-        $response = $this->inviteController->indexAction($request, self::TOKEN);
+        /* @var InviteController $inviteController */
+        $inviteController = $this->container->get(InviteController::class);
+
+        $response = $inviteController->indexAction($request, self::TOKEN);
         $this->assertInstanceOf(SymfonyResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -286,7 +258,7 @@ class InviteControllerTest extends AbstractBaseTestCase
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $this->inviteController->indexAction($newRequest, self::TOKEN);
+        $newResponse = $inviteController->indexAction($newRequest, self::TOKEN);
 
         $this->assertInstanceOf(SymfonyResponse::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());

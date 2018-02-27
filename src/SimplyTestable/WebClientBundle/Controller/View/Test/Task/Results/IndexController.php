@@ -12,7 +12,10 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\CssTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\JsTextFileMessage;
 use SimplyTestable\WebClientBundle\Model\TaskOutput\LinkIntegrityMessage;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
+use SimplyTestable\WebClientBundle\Services\DocumentationSiteUrls;
 use SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService;
+use SimplyTestable\WebClientBundle\Services\LinkIntegrityErrorCodeMap;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\ResourceLocator;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
@@ -23,7 +26,10 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 use webignition\HtmlValidationErrorLinkifier\HtmlValidationErrorLinkifier;
 use webignition\HtmlValidationErrorNormaliser\HtmlValidationErrorNormaliser;
 use webignition\HtmlValidationErrorNormaliser\Result as HtmlValidationErrorNormalisationResult;
@@ -32,6 +38,92 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
 {
     const DOCUMENTATION_SITEMAP_RESOURCE_PATH =
         '@SimplyTestableWebClientBundle/Resources/config/documentation_sitemap.xml';
+
+    /**
+     * @var TestService
+     */
+    private $testService;
+
+    /**
+     * @var RemoteTestService
+     */
+    private $remoteTestService;
+
+    /**
+     * @var TaskService
+     */
+    private $taskService;
+
+    /**
+     * @var DocumentationUrlCheckerService
+     */
+    private $documentationUrlLinkChecker;
+
+    /**
+     * @var ResourceLocator
+     */
+    private $resourceLocator;
+
+    /**
+     * @var LinkIntegrityErrorCodeMap
+     */
+    private $linkIntegrityErrorCodeMap;
+
+    /**
+     * @var DocumentationSiteUrls
+     */
+    private $documentationSiteUrls;
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param UrlViewValuesService $urlViewValues
+     * @param UserManager $userManager
+     * @param SessionInterface $session
+     * @param TestService $testService
+     * @param RemoteTestService $remoteTestService
+     * @param TaskService $taskService
+     * @param DocumentationUrlCheckerService $documentationUrlChecker
+     * @param ResourceLocator $resourceLocator
+     * @param LinkIntegrityErrorCodeMap $linkIntegrityErrorCodeMap
+     * @param DocumentationSiteUrls $documentationSiteUrls
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        UrlViewValuesService $urlViewValues,
+        UserManager $userManager,
+        SessionInterface $session,
+        TestService $testService,
+        RemoteTestService $remoteTestService,
+        TaskService $taskService,
+        DocumentationUrlCheckerService $documentationUrlChecker,
+        ResourceLocator $resourceLocator,
+        LinkIntegrityErrorCodeMap $linkIntegrityErrorCodeMap,
+        DocumentationSiteUrls $documentationSiteUrls
+    ) {
+        parent::__construct(
+            $router,
+            $twig,
+            $defaultViewParameters,
+            $cacheValidator,
+            $urlViewValues,
+            $userManager,
+            $session
+        );
+
+        $this->testService = $testService;
+        $this->remoteTestService = $remoteTestService;
+        $this->taskService = $taskService;
+        $this->documentationUrlLinkChecker = $documentationUrlChecker;
+        $this->resourceLocator = $resourceLocator;
+        $this->linkIntegrityErrorCodeMap = $linkIntegrityErrorCodeMap;
+        $this->documentationSiteUrls = $documentationSiteUrls;
+    }
 
     /**
      * @param Request $request
@@ -51,25 +143,14 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
             return $this->response;
         }
 
-        $router = $this->container->get('router');
-        $testService = $this->container->get(TestService::class);
-        $remoteTestService = $this->container->get(RemoteTestService::class);
-        $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
-        $taskService = $this->container->get(TaskService::class);
-        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
-        $templating = $this->container->get('templating');
-        $userManager = $this->container->get(UserManager::class);
-        $documentationUrlLinkChecker = $this->container->get(DocumentationUrlCheckerService::class);
-        $resourceLocator = $this->container->get(ResourceLocator::class);
+        $user = $this->userManager->getUser();
+        $test = $this->testService->get($website, $test_id);
+        $isOwner = $this->remoteTestService->owns($user);
 
-        $user = $userManager->getUser();
-        $test = $testService->get($website, $test_id);
-        $isOwner = $remoteTestService->owns($user);
-
-        $task = $taskService->get($test, $task_id);
+        $task = $this->taskService->get($test, $task_id);
 
         if (empty($task)) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'app_test_redirector',
                 [
                     'website' => $website,
@@ -82,8 +163,8 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         $taskOutput = $task->getOutput();
         $taskHasErrorsOrWarnings = $taskOutput->getErrorCount() > 0 || $taskOutput->getWarningCount() > 0;
 
-        if (!$taskHasErrorsOrWarnings || $taskService->isIncomplete($task)) {
-            return new RedirectResponse($router->generate(
+        if (!$taskHasErrorsOrWarnings || $this->taskService->isIncomplete($task)) {
+            return new RedirectResponse($this->router->generate(
                 'app_test_redirector',
                 [
                     'website' => $website,
@@ -95,32 +176,28 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
 
         $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
 
-        $response = $cacheValidatorService->createResponse($request, [
+        $response = $this->cacheValidator->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,
             'task_id' => $task_id,
             'is_public_user_test' => $isPublicUserTest,
         ]);
 
-        if ($cacheValidatorService->isNotModified($response)) {
+        if ($this->cacheValidator->isNotModified($response)) {
             return $response;
         }
 
         $viewData = array(
-            'website_url' => $urlViewValuesService->create($website),
+            'website_url' => $this->urlViewValues->create($website),
             'test' => $test,
             'task' => $task,
-            'task_url' => $urlViewValuesService->create($task->getUrl()),
+            'task_url' => $this->urlViewValues->create($task->getUrl()),
             'is_owner' => $isOwner,
             'is_public_user_test' => $isPublicUserTest,
         );
 
         if (Task::TYPE_HTML_VALIDATION === $task->getType()) {
-            $documentationUrls = $this->getHtmlValidationErrorDocumentationUrls(
-                $documentationUrlLinkChecker,
-                $resourceLocator,
-                $task
-            );
+            $documentationUrls = $this->getHtmlValidationErrorDocumentationUrls($task);
             $fixes = $this->getHtmlValidationErrorFixes($task, $documentationUrls);
 
             $viewData['documentation_urls'] = $documentationUrls;
@@ -151,52 +228,46 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
                 'curl' => 'Network-Level (curl)',
                 'http' => 'HTTP'
             ];
-            $viewData['link_state_descriptions'] = $this->container->getParameter('link_integrity_error_code_map');
+            $viewData['link_state_descriptions'] = $this->linkIntegrityErrorCodeMap->getErrorCodeMap();
         }
 
-        $content = $templating->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/Test/Task/Results/Index:index.html.twig',
-            array_merge($this->getDefaultViewParameters(), $viewData)
+            $viewData,
+            $response
         );
-
-        $response->setContent($content);
-        $response->headers->set('content-type', 'text/html');
-
-        return $response;
     }
 
     /**
-     * @param DocumentationUrlCheckerService $documentationUrlChecker
-     * @param ResourceLocator $resourceLocator
      * @param Task $task
      *
      * @return array
      */
-    private function getHtmlValidationErrorDocumentationUrls(
-        DocumentationUrlCheckerService $documentationUrlChecker,
-        ResourceLocator $resourceLocator,
-        Task $task
-    ) {
+    private function getHtmlValidationErrorDocumentationUrls(Task $task)
+    {
         $documentationUrls = [];
 
         if (0 === $task->getOutput()->getErrorCount()) {
             return $documentationUrls;
         }
 
-        $documentationSiteProperties = $this->container->getParameter('documentation_site');
+        $documentationSiteUrls = $this->documentationSiteUrls->getUrls();
 
-        $baseUrl = $documentationSiteProperties['urls']['home']
-            . $documentationSiteProperties['urls']['errors']
-            . $documentationSiteProperties['urls']['html-validation'];
+        $baseUrl = sprintf(
+            '%s%s%s',
+            $documentationSiteUrls['home'],
+            $documentationSiteUrls['errors'],
+            $documentationSiteUrls['html-validation']
+        );
 
         $errors = $task->getOutput()->getResult()->getErrors();
 
         $normaliser = new HtmlValidationErrorNormaliser();
         $linkifier = new HtmlValidationErrorLinkifier();
 
-        $sitemapPath = $resourceLocator->locate(self::DOCUMENTATION_SITEMAP_RESOURCE_PATH);
+        $sitemapPath = $this->resourceLocator->locate(self::DOCUMENTATION_SITEMAP_RESOURCE_PATH);
 
-        $documentationUrlChecker->setDocumentationSitemapPath($sitemapPath);
+        $this->documentationUrlLinkChecker->setDocumentationSitemapPath($sitemapPath);
         foreach ($errors as $error) {
             /* @var HtmlValidationErrorNormalisationResult $normalisationResult */
             $normalisationResult = $normaliser->normalise($error->getMessage());
@@ -212,7 +283,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
                     $linkifier->linkify($normalForm, $normalisedError->getParameters())
                 );
 
-                if ($documentationUrlChecker->exists($parameterisedUrl)) {
+                if ($this->documentationUrlLinkChecker->exists($parameterisedUrl)) {
                     $documentationUrls[] = [
                         'url' => $parameterisedUrl,
                         'exists' => true
@@ -221,14 +292,14 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
                     $url = $baseUrl . $linkifier->linkify($normalForm) . '/';
                     $documentationUrls[] = [
                         'url' => $url,
-                        'exists' => $documentationUrlChecker->exists($url)
+                        'exists' => $this->documentationUrlLinkChecker->exists($url)
                     ];
                 }
             } else {
                 $url = $baseUrl . $linkifier->linkify($normalisationResult->getRawError()) . '/';
                 $documentationUrls[] = [
                     'url' => $url,
-                    'exists' => $documentationUrlChecker->exists($url)
+                    'exists' => $this->documentationUrlLinkChecker->exists($url)
                 ];
             }
         }

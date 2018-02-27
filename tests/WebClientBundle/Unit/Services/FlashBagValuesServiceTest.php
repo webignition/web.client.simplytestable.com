@@ -108,6 +108,24 @@ class FlashBagValuesServiceTest extends \PHPUnit_Framework_TestCase
                     'foobar' => 'foo',
                 ],
             ],
+            'has array value and scalar value' => [
+                'exitingFlashBagValues' => [
+                    'foo' => [
+                        'key' => 'value',
+                    ],
+                    'bar' => 'foobar',
+                ],
+                'keys' => [
+                    'foo',
+                    'bar',
+                ],
+                'expectedReturnValues' => [
+                    'foo' => [
+                        'key' => 'value',
+                    ],
+                    'bar' => 'foobar',
+                ],
+            ],
         ];
     }
 

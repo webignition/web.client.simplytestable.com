@@ -4,39 +4,20 @@ namespace Tests\WebClientBundle\Functional\Controller\View\User;
 
 use SimplyTestable\WebClientBundle\Controller\View\User\SignInController;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
-use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
-use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
+use Twig_Environment;
 
-class SignInControllerTest extends AbstractBaseTestCase
+class SignInControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/SignIn:index.html.twig';
     const ROUTE_NAME = 'view_user_signin_index';
 
     const USER_EMAIL = 'user@example.com';
-
-    /**
-     * @var SignInController
-     */
-    private $signInController;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->signInController = new SignInController();
-    }
 
     public function testIndexActionPublicUserGetRequest()
     {
@@ -57,10 +38,11 @@ class SignInControllerTest extends AbstractBaseTestCase
         $user = new User(self::USER_EMAIL);
         $userManager->setUser($user);
 
-        $this->signInController->setContainer($this->container);
+        /* @var SignInController $signInController */
+        $signInController = $this->container->get(SignInController::class);
 
         /* @var RedirectResponse $response */
-        $response = $this->signInController->indexAction(new Request());
+        $response = $signInController->indexAction(new Request());
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('http://localhost/', $response->getTargetUrl());
@@ -71,12 +53,12 @@ class SignInControllerTest extends AbstractBaseTestCase
      *
      * @param array $flashBagValues
      * @param Request $request
-     * @param EngineInterface $templatingEngine
+     * @param Twig_Environment $twig
      */
     public function testIndexActionRender(
         array $flashBagValues,
         Request $request,
-        EngineInterface $templatingEngine
+        Twig_Environment $twig
     ) {
         $session = $this->container->get('session');
 
@@ -86,23 +68,11 @@ class SignInControllerTest extends AbstractBaseTestCase
             }
         }
 
-        $containerFactory = new ContainerFactory($this->container);
-        $container = $containerFactory->create(
-            [
-                CacheValidatorService::class,
-                UserService::class,
-                FlashBagValues::class,
-                'router',
-                UserManager::class,
-            ],
-            [
-                'templating' => $templatingEngine,
-            ]
-        );
+        /* @var SignInController $signInController */
+        $signInController = $this->container->get(SignInController::class);
+        $this->setTwigOnController($twig, $signInController);
 
-        $this->signInController->setContainer($container);
-
-        $response = $this->signInController->indexAction($request);
+        $response = $signInController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -115,7 +85,7 @@ class SignInControllerTest extends AbstractBaseTestCase
             'no request data, no flash error messages' => [
                 'flashBagValues' => [],
                 'request' => new Request(),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -139,7 +109,7 @@ class SignInControllerTest extends AbstractBaseTestCase
                     'stay-signed-in' => 1,
                     'redirect' => 'foo',
                 ]),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -162,7 +132,7 @@ class SignInControllerTest extends AbstractBaseTestCase
                     'user_signin_confirmation' => 'user-activated',
                 ],
                 'request' => new Request(),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -187,9 +157,11 @@ class SignInControllerTest extends AbstractBaseTestCase
         $request = new Request();
 
         $this->container->get('request_stack')->push($request);
-        $this->signInController->setContainer($this->container);
 
-        $response = $this->signInController->indexAction($request);
+        /* @var SignInController $signInController */
+        $signInController = $this->container->get(SignInController::class);
+
+        $response = $signInController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -199,7 +171,7 @@ class SignInControllerTest extends AbstractBaseTestCase
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $this->signInController->indexAction($newRequest);
+        $newResponse = $signInController->indexAction($newRequest);
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());

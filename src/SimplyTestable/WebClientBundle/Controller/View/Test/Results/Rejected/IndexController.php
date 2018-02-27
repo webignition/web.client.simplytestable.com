@@ -10,17 +10,85 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
+use SimplyTestable\WebClientBundle\Services\PlansService;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
+use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
 class IndexController extends AbstractRequiresValidOwnerController implements RequiresValidUser
 {
+    /**
+     * @var TestService
+     */
+    private $testService;
+
+    /**
+     * @var RemoteTestService
+     */
+    private $remoteTestService;
+
+    /**
+     * @var UserService
+     */
+    private $userService;
+
+    /**
+     * @var PlansService
+     */
+    private $plansService;
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param UrlViewValuesService $urlViewValues
+     * @param UserManager $userManager
+     * @param SessionInterface $session
+     * @param TestService $testService
+     * @param RemoteTestService $remoteTestService
+     * @param UserService $userService
+     * @param PlansService $plansService
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        UrlViewValuesService $urlViewValues,
+        UserManager $userManager,
+        SessionInterface $session,
+        TestService $testService,
+        RemoteTestService $remoteTestService,
+        UserService $userService,
+        PlansService $plansService
+    ) {
+        parent::__construct(
+            $router,
+            $twig,
+            $defaultViewParameters,
+            $cacheValidator,
+            $urlViewValues,
+            $userManager,
+            $session
+        );
+
+        $this->testService = $testService;
+        $this->remoteTestService = $remoteTestService;
+        $this->userService = $userService;
+        $this->plansService = $plansService;
+    }
+
     /**
      * @param Request $request
      * @param string $website
@@ -38,16 +106,8 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
             return $this->response;
         }
 
-        $testService = $this->container->get(TestService::class);
-        $remoteTestService = $this->container->get(RemoteTestService::class);
-        $userService = $this->container->get(UserService::class);
-        $router = $this->container->get('router');
-        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
-        $templating = $this->container->get('templating');
-        $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
-
-        $test = $testService->get($website, $test_id);
-        $remoteTest = $remoteTestService->get();
+        $test = $this->testService->get($website, $test_id);
+        $remoteTest = $this->remoteTestService->get();
 
         $cacheValidatorParameters = [
             'website' => $website,
@@ -55,7 +115,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         ];
 
         if ($this->isRejectedDueToCreditLimit($remoteTest)) {
-            $userSummary = $userService->getSummary();
+            $userSummary = $this->userService->getSummary();
             $planConstraints = $userSummary->getPlanConstraints();
             $planCredits = $planConstraints->credits;
 
@@ -66,14 +126,14 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
             $cacheValidatorParameters['credits_remaining'] = $planCredits->limit - $planCredits->used;
         }
 
-        $response = $cacheValidatorService->createResponse($request, $cacheValidatorParameters);
+        $response = $this->cacheValidator->createResponse($request, $cacheValidatorParameters);
 
-        if ($cacheValidatorService->isNotModified($response)) {
+        if ($this->cacheValidator->isNotModified($response)) {
             return $response;
         }
 
         if ($test->getWebsite() != $website) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'app_test_redirector',
                 [
                     'website' => $test->getWebsite(),
@@ -84,7 +144,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         }
 
         if (Test::STATE_REJECTED !== $test->getState()) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'view_test_progress_index_index',
                 [
                     'website' => $website,
@@ -95,24 +155,20 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         }
 
         $viewData = [
-            'website' => $urlViewValuesService->create($website),
+            'website' => $this->urlViewValues->create($website),
             'remote_test' => $remoteTest,
-            'plans' => $this->container->getParameter('plans'),
+            'plans' => $this->plansService->getList(),
         ];
 
         if ($this->isRejectedDueToCreditLimit($remoteTest)) {
-            $viewData['userSummary'] = $userService->getSummary();
+            $viewData['userSummary'] = $this->userService->getSummary();
         }
 
-        $content = $templating->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/Test/Results/Rejected/Index:index.html.twig',
-            array_merge($this->getDefaultViewParameters(), $viewData)
+            $viewData,
+            $response
         );
-
-        $response->setContent($content);
-        $response->headers->set('content-type', 'text/html');
-
-        return $response;
     }
 
     /**

@@ -3,19 +3,23 @@
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword;
 
 use Egulias\EmailValidator\EmailValidator;
+use SimplyTestable\WebClientBundle\Controller\AbstractController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Services\UserService;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
+use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
-class IndexController extends Controller
+class IndexController extends AbstractController
 {
     const FLASH_BAG_REQUEST_ERROR_KEY = 'user_reset_password_error';
     const FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_BLANK = 'blank-email';
@@ -32,6 +36,48 @@ class IndexController extends Controller
     const FLASH_BAG_ERROR_MESSAGE_POSTMARK_INVALID_EMAIL = 'invalid-email';
 
     /**
+     * @var UserService
+     */
+    private $userService;
+
+    /**
+     * @var MailService
+     */
+    private $mailService;
+
+    /**
+     * @var Twig_Environment
+     */
+    private $twig;
+
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @param UserService $userService
+     * @param MailService $mailService
+     * @param Twig_Environment $twig
+     * @param RouterInterface $router
+     * @param SessionInterface $session
+     */
+    public function __construct(
+        RouterInterface $router,
+        UserService $userService,
+        MailService $mailService,
+        Twig_Environment $twig,
+        SessionInterface $session
+    ) {
+        parent::__construct($router);
+
+        $this->userService = $userService;
+        $this->mailService = $mailService;
+        $this->twig = $twig;
+        $this->session = $session;
+    }
+
+    /**
      * @param Request $request
      *
      * @return RedirectResponse
@@ -44,28 +90,24 @@ class IndexController extends Controller
      */
     public function requestAction(Request $request)
     {
-        $session = $this->container->get('session');
-        $userService = $this->container->get(UserService::class);
-        $router = $this->container->get('router');
-
         $requestData = $request->request;
 
         $email = trim($requestData->get('email'));
 
         if (empty($email)) {
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_REQUEST_ERROR_KEY,
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_BLANK
             );
 
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'view_user_resetpassword_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
             ));
         }
 
-        $redirectResponse = new RedirectResponse($router->generate(
+        $redirectResponse = new RedirectResponse($this->router->generate(
             'view_user_resetpassword_index_index',
             [
                 'email' => $email
@@ -75,7 +117,7 @@ class IndexController extends Controller
 
         $emailValidator = new EmailValidator;
         if (!$emailValidator->isValid($email)) {
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_REQUEST_ERROR_KEY,
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID
             );
@@ -84,8 +126,8 @@ class IndexController extends Controller
         }
 
         try {
-            if (!$userService->exists($email)) {
-                $session->getFlashBag()->set(
+            if (!$this->userService->exists($email)) {
+                $this->session->getFlashBag()->set(
                     self::FLASH_BAG_REQUEST_ERROR_KEY,
                     self::FLASH_BAG_REQUEST_ERROR_MESSAGE_USER_INVALID
                 );
@@ -93,7 +135,7 @@ class IndexController extends Controller
                 return $redirectResponse;
             }
         } catch (InvalidAdminCredentialsException $invalidAdminCredentialsException) {
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_REQUEST_ERROR_KEY,
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_INVALID_ADMIN_CREDENTIALS
             );
@@ -103,32 +145,32 @@ class IndexController extends Controller
             return $redirectResponse;
         }
 
-        $token = $userService->getConfirmationToken($email);
+        $token = $this->userService->getConfirmationToken($email);
 
         try {
             $this->sendPasswordResetConfirmationToken($email, $token);
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_REQUEST_SUCCESS_KEY,
                 self::FLASH_BAG_REQUEST_MESSAGE_SUCCESS
             );
         } catch (PostmarkResponseException $postmarkResponseException) {
             if ($postmarkResponseException->isNotAllowedToSendException()) {
-                $session->getFlashBag()->set(
+                $this->session->getFlashBag()->set(
                     self::FLASH_BAG_REQUEST_ERROR_KEY,
                     self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND
                 );
             } elseif ($postmarkResponseException->isInactiveRecipientException()) {
-                $session->getFlashBag()->set(
+                $this->session->getFlashBag()->set(
                     self::FLASH_BAG_REQUEST_ERROR_KEY,
                     self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT
                 );
             } elseif ($postmarkResponseException->isInvalidEmailAddressException()) {
-                $session->getFlashBag()->set(
+                $this->session->getFlashBag()->set(
                     self::FLASH_BAG_REQUEST_ERROR_KEY,
                     self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INVALID_EMAIL
                 );
             } else {
-                $session->getFlashBag()->set(
+                $this->session->getFlashBag()->set(
                     self::FLASH_BAG_REQUEST_ERROR_KEY,
                     self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN
                 );
@@ -147,15 +189,12 @@ class IndexController extends Controller
      */
     private function sendPasswordResetConfirmationToken($email, $token)
     {
-        $mailService = $this->container->get(MailService::class);
-        $router = $this->container->get('router');
-
-        $mailServiceConfiguration = $mailService->getConfiguration();
+        $mailServiceConfiguration = $this->mailService->getConfiguration();
 
         $sender = $mailServiceConfiguration->getSender('default');
         $messageProperties = $mailServiceConfiguration->getMessageProperties('user_reset_password');
 
-        $confirmationUrl = $router->generate(
+        $confirmationUrl = $this->router->generate(
             'view_user_resetpassword_choose_index',
             [
                 'email' => $email,
@@ -166,16 +205,16 @@ class IndexController extends Controller
 
         $viewName = 'SimplyTestableWebClientBundle:Email:reset-password-confirmation.txt.twig';
 
-        $message = $mailService->getNewMessage();
+        $message = $this->mailService->getNewMessage();
         $message->setFrom($sender['email'], $sender['name']);
         $message->addTo($email);
         $message->setSubject($messageProperties['subject']);
-        $message->setTextMessage($this->renderView($viewName, [
+        $message->setTextMessage($this->twig->render($viewName, [
             'confirmation_url' => $confirmationUrl,
             'email' => $email
         ]));
 
-        $mailService->getSender()->send($message);
+        $this->mailService->getSender()->send($message);
     }
 
     /**
@@ -184,17 +223,16 @@ class IndexController extends Controller
      */
     private function sendInvalidAdminCredentialsNotification()
     {
-        $mailService = $this->container->get(MailService::class);
-        $mailServiceConfiguration = $mailService->getConfiguration();
+        $mailServiceConfiguration = $this->mailService->getConfiguration();
 
         $sender = $mailServiceConfiguration->getSender('default');
 
-        $message = $mailService->getNewMessage();
+        $message = $this->mailService->getNewMessage();
         $message->setFrom($sender['email'], $sender['name']);
         $message->addTo('jon@simplytestable.com');
         $message->setSubject('Invalid admin user credentials');
         $message->setTextMessage('Invalid admin user credentials exception raised when calling UserService::exists()');
 
-        $mailService->getSender()->send($message);
+        $this->mailService->getSender()->send($message);
     }
 }

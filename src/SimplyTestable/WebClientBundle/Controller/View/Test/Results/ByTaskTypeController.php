@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\Test\Task\ErrorTaskMapCollection;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService;
@@ -19,8 +20,10 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
 class ByTaskTypeController extends AbstractResultsController
 {
@@ -29,12 +32,74 @@ class ByTaskTypeController extends AbstractResultsController
     const DEFAULT_FILTER = self::FILTER_BY_ERROR;
 
     /**
+     * @var TestService
+     */
+    private $testService;
+
+    /**
+     * @var RemoteTestService
+     */
+    private $remoteTestService;
+
+    /**
+     * @var TaskService
+     */
+    private $taskService;
+
+    /**
+     * @var TaskCollectionFilterService
+     */
+    private $taskCollectionFilterService;
+
+    /**
      * @var string[]
      */
     private $allowedFilters = [
         self::FILTER_BY_PAGE,
         self::FILTER_BY_ERROR
     ];
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param UrlViewValuesService $urlViewValues
+     * @param UserManager $userManager
+     * @param SessionInterface $session
+     * @param TestService $testService
+     * @param RemoteTestService $remoteTestService
+     * @param TaskService $taskService
+     * @param TaskCollectionFilterService $taskCollectionFilterService
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        UrlViewValuesService $urlViewValues,
+        UserManager $userManager,
+        SessionInterface $session,
+        TestService $testService,
+        RemoteTestService $remoteTestService,
+        TaskService $taskService,
+        TaskCollectionFilterService $taskCollectionFilterService
+    ) {
+        parent::__construct(
+            $router,
+            $twig,
+            $defaultViewParameters,
+            $cacheValidator,
+            $urlViewValues,
+            $userManager,
+            $session
+        );
+
+        $this->testService = $testService;
+        $this->remoteTestService = $remoteTestService;
+        $this->taskService = $taskService;
+        $this->taskCollectionFilterService = $taskCollectionFilterService;
+    }
 
     /**
      * @param Request $request
@@ -55,26 +120,16 @@ class ByTaskTypeController extends AbstractResultsController
             return $this->response;
         }
 
-        $router = $this->container->get('router');
-        $testService = $this->container->get(TestService::class);
-        $remoteTestService = $this->container->get(RemoteTestService::class);
-        $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
-        $taskService = $this->container->get(TaskService::class);
-        $taskCollectionFilterService = $this->container->get(TaskCollectionFilterService::class);
-        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
-        $templating = $this->container->get('templating');
-        $userManager = $this->container->get(UserManager::class);
+        $user = $this->userManager->getUser();
 
-        $user = $userManager->getUser();
-
-        $test = $testService->get($website, $test_id);
-        $remoteTest = $remoteTestService->get();
+        $test = $this->testService->get($website, $test_id);
+        $remoteTest = $this->remoteTestService->get();
 
         $requestTaskType = str_replace('+', ' ', $task_type);
         $selectedTaskType = $this->getSelectedTaskType($remoteTest, $requestTaskType);
 
         if (empty($selectedTaskType)) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'view_test_results_index_index',
                 [
                     'website' => $website,
@@ -87,7 +142,7 @@ class ByTaskTypeController extends AbstractResultsController
         $hasValidFilter = in_array($filter, $this->allowedFilters);
 
         if (!$hasValidFilter) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'view_test_results_bytasktype_index',
                 [
                     'website' => $website,
@@ -99,19 +154,19 @@ class ByTaskTypeController extends AbstractResultsController
             ));
         }
 
-        $response = $cacheValidatorService->createResponse($request, [
+        $response = $this->cacheValidator->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,
             'task_type' => $selectedTaskType,
             'filter' => $filter
         ]);
 
-        if ($cacheValidatorService->isNotModified($response)) {
+        if ($this->cacheValidator->isNotModified($response)) {
             return $response;
         }
 
         if ($this->requiresPreparation($remoteTest, $test)) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'view_test_results_preparing_index_index',
                 [
                     'website' => $website,
@@ -121,41 +176,35 @@ class ByTaskTypeController extends AbstractResultsController
             ));
         }
 
-        $taskCollectionFilterService->setTest($test);
-        $taskCollectionFilterService->setOutcomeFilter('with-errors');
-        $taskCollectionFilterService->setTypeFilter($selectedTaskType);
+        $this->taskCollectionFilterService->setTest($test);
+        $this->taskCollectionFilterService->setOutcomeFilter('with-errors');
+        $this->taskCollectionFilterService->setTypeFilter($selectedTaskType);
 
-        $taskService->getCollection($test);
-        $filteredRemoteTaskIds = $taskCollectionFilterService->getRemoteIds();
+        $this->taskService->getCollection($test);
+        $filteredRemoteTaskIds = $this->taskCollectionFilterService->getRemoteIds();
 
-        $filteredTasks = $taskService->getCollection($test, $filteredRemoteTaskIds);
-        $taskService->setParsedOutputOnCollection($filteredTasks);
+        $filteredTasks = $this->taskService->getCollection($test, $filteredRemoteTaskIds);
+        $this->taskService->setParsedOutputOnCollection($filteredTasks);
 
         $tasks = $this->sortTasks($filteredTasks);
 
         $errorTaskMaps = new ErrorTaskMapCollection($tasks);
         $errorTaskMaps->sortMapsByOccurrenceCount()->sortByOccurrenceCount();
 
-        $viewData = [
-            'is_owner' => $remoteTestService->owns($user),
-            'is_public_user_test' => $test->getUser() === SystemUserService::getPublicUser()->getUsername(),
-            'website' => $urlViewValuesService->create($website),
-            'test' => $test,
-            'task_type' => $selectedTaskType,
-            'filter' => $hasValidFilter ? $filter : self::DEFAULT_FILTER,
-            'tasks' => $tasks,
-            'error_task_maps' => $errorTaskMaps
-        ];
-
-        $content = $templating->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/Test/Results/ByTaskType:index.html.twig',
-            array_merge($this->getDefaultViewParameters(), $viewData)
+            [
+                'is_owner' => $this->remoteTestService->owns($user),
+                'is_public_user_test' => $test->getUser() === SystemUserService::getPublicUser()->getUsername(),
+                'website' => $this->urlViewValues->create($website),
+                'test' => $test,
+                'task_type' => $selectedTaskType,
+                'filter' => $hasValidFilter ? $filter : self::DEFAULT_FILTER,
+                'tasks' => $tasks,
+                'error_task_maps' => $errorTaskMaps
+            ],
+            $response
         );
-
-        $response->setContent($content);
-        $response->headers->set('content-type', 'text/html');
-
-        return $response;
     }
 
     /**
@@ -201,19 +250,16 @@ class ByTaskTypeController extends AbstractResultsController
         return null;
     }
 
-
     /**
      * {@inheritdoc}
      */
     public function getRequestWebsiteMismatchResponse(RouterInterface $router, Request $request)
     {
-        $remoteTestService = $this->container->get(RemoteTestService::class);
-
-        $remoteTest = $remoteTestService->get();
+        $remoteTest = $this->remoteTestService->get();
         $filter = trim($request->attributes->get('filter'));
         $hasValidFilter = in_array($filter, $this->allowedFilters);
 
-        return new RedirectResponse($router->generate(
+        return new RedirectResponse($this->router->generate(
             'view_test_results_bytasktype_index',
             [
                 'website' => $remoteTest->getWebsite(),

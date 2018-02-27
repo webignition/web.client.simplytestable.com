@@ -9,6 +9,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\Test\RequiresValidOwner;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
@@ -17,9 +18,59 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
 class IndexController extends BaseViewController implements RequiresValidUser, RequiresValidOwner
 {
+    /**
+     * @var TestService
+     */
+    private $testService;
+
+    /**
+     * @var RemoteTestService
+     */
+    private $remoteTestService;
+
+    /**
+     * @var TaskService
+     */
+    private $taskService;
+
+    /**
+     * @var UrlViewValuesService
+     */
+    private $urlViewValues;
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param TestService $testService
+     * @param RemoteTestService $remoteTestService
+     * @param TaskService $taskService
+     * @param UrlViewValuesService $urlViewValues
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        TestService $testService,
+        RemoteTestService $remoteTestService,
+        TaskService $taskService,
+        UrlViewValuesService $urlViewValues
+    ) {
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
+
+        $this->testService = $testService;
+        $this->remoteTestService = $remoteTestService;
+        $this->taskService = $taskService;
+        $this->urlViewValues = $urlViewValues;
+    }
+
     /**
      * @param Request $request
      * @param string $website
@@ -37,22 +88,14 @@ class IndexController extends BaseViewController implements RequiresValidUser, R
             return $this->response;
         }
 
-        $testService = $this->container->get(TestService::class);
-        $remoteTestService = $this->container->get(RemoteTestService::class);
-        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
-        $router = $this->container->get('router');
-        $taskService = $this->container->get(TaskService::class);
-        $templating = $this->container->get('templating');
-        $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
-
-        $test = $testService->get($website, $test_id);
-        $remoteTest = $remoteTestService->get();
+        $test = $this->testService->get($website, $test_id);
+        $remoteTest = $this->remoteTestService->get();
 
         $localTaskCount = $test->getTaskCount();
         $remoteTaskCount = $remoteTest->getTaskCount();
 
         if (0 === $remoteTaskCount) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'app_test_redirector',
                 [
                     'website' => $test->getWebsite(),
@@ -65,19 +108,19 @@ class IndexController extends BaseViewController implements RequiresValidUser, R
         $completionPercent = (int)round(($localTaskCount / $remoteTaskCount) * 100);
         $tasksToRetrieveCount = $remoteTaskCount - $localTaskCount;
 
-        $response = $cacheValidatorService->createResponse($request, [
+        $response = $this->cacheValidator->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,
             'completion_percent' => $completionPercent,
             'remaining_tasks_to_retrieve_count' => $tasksToRetrieveCount,
         ]);
 
-        if ($cacheValidatorService->isNotModified($response)) {
+        if ($this->cacheValidator->isNotModified($response)) {
             return $response;
         }
 
-        if (!$testService->isFinished($test)) {
-            return new RedirectResponse($router->generate(
+        if (!$this->testService->isFinished($test)) {
+            return new RedirectResponse($this->router->generate(
                 'view_test_progress_index_index',
                 [
                     'website' => $website,
@@ -88,7 +131,7 @@ class IndexController extends BaseViewController implements RequiresValidUser, R
         }
 
         if ($test->getWebsite() != $website) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'app_test_redirector',
                 [
                     'website' => $test->getWebsite(),
@@ -99,27 +142,21 @@ class IndexController extends BaseViewController implements RequiresValidUser, R
         }
 
         if (!$test->hasTaskIds()) {
-            $taskService->getRemoteTaskIds($test);
+            $this->taskService->getRemoteTaskIds($test);
         }
 
-        $viewData = [
-            'completion_percent' => $completionPercent,
-            'website' => $urlViewValuesService->create($website),
-            'test' => $test,
-            'local_task_count' => $test->getTaskCount(),
-            'remote_task_count' => $remoteTest->getTaskCount(),
-            'remaining_tasks_to_retrieve_count' => $tasksToRetrieveCount,
-        ];
-
-        $content = $templating->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/Test/Results/Preparing/Index:index.html.twig',
-            array_merge($this->getDefaultViewParameters(), $viewData)
+            [
+                'completion_percent' => $completionPercent,
+                'website' => $this->urlViewValues->create($website),
+                'test' => $test,
+                'local_task_count' => $test->getTaskCount(),
+                'remote_task_count' => $remoteTest->getTaskCount(),
+                'remaining_tasks_to_retrieve_count' => $tasksToRetrieveCount,
+            ],
+            $response
         );
-
-        $response->setContent($content);
-        $response->headers->set('content-type', 'text/html');
-
-        return $response;
     }
 
     /**

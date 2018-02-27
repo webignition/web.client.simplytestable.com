@@ -45,8 +45,7 @@ class TestControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->testController = new TestController();
-        $this->testController->setContainer($this->container);
+        $this->testController = $this->container->get(TestController::class);
     }
 
     /**
@@ -279,8 +278,6 @@ class TestControllerTest extends AbstractBaseTestCase
                 'id' => 2,
             ])),
         ]);
-
-        $router = $this->container->get('router');
 
         $this->client->request(
             'GET',

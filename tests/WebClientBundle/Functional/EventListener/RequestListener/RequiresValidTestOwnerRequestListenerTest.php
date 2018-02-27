@@ -44,7 +44,8 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelController
             $testFactory->create($testValues);
         }
 
-        $controller = new UrlLimitController();
+        /* @var UrlLimitController $controller */
+        $controller = $this->container->get(UrlLimitController::class);
 
         $request = new Request([], [], [
             'website' => self::WEBSITE,
@@ -120,7 +121,8 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelController
             TestFactory::KEY_TEST_ID => self::TEST_ID,
         ]);
 
-        $controller = new UrlLimitController();
+        /* @var UrlLimitController $controller */
+        $controller = $this->container->get(UrlLimitController::class);
 
         $request = new Request([], [], [
             'website' => self::WEBSITE,

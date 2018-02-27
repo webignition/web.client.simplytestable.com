@@ -14,8 +14,11 @@ use SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 use webignition\ResqueJobFactory\ResqueJobFactory;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
@@ -48,6 +51,30 @@ class EmailChangeController extends AbstractUserAccountController
     const FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN = 'postmark-failure';
 
     /**
+     * @var UserEmailChangeRequestService
+     */
+    private $emailChangeRequestService;
+
+    /**
+     * @param RouterInterface $router
+     * @param UserManager $userManager
+     * @param SessionInterface $session
+     * @param UserEmailChangeRequestService $emailChangeRequestService
+     */
+    public function __construct(
+        RouterInterface $router,
+        UserManager $userManager,
+        SessionInterface $session,
+        UserEmailChangeRequestService $emailChangeRequestService
+    ) {
+        parent::__construct($router, $userManager, $session);
+
+        $this->emailChangeRequestService = $emailChangeRequestService;
+    }
+
+    /**
+     * @param MailService $mailService
+     * @param Twig_Environment $twig
      * @param Request $request
      *
      * @return RedirectResponse
@@ -58,32 +85,27 @@ class EmailChangeController extends AbstractUserAccountController
      * @throws InvalidCredentialsException
      * @throws MailConfigurationException
      */
-    public function requestAction(Request $request)
+    public function requestAction(MailService $mailService, Twig_Environment $twig, Request $request)
     {
         if ($this->hasResponse()) {
             return $this->response;
         }
 
-        $emailChangeRequestService = $this->get(UserEmailChangeRequestService::class);
-        $session = $this->container->get('session');
-        $userManager = $this->container->get(UserManager::class);
-        $router = $this->container->get('router');
-
         $requestData = $request->request;
 
-        $redirectResponse = new RedirectResponse($router->generate(
+        $redirectResponse = new RedirectResponse($this->router->generate(
             'view_user_account_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
         ));
 
-        $user = $userManager->getUser();
+        $user = $this->userManager->getUser();
         $username = $user->getUsername();
 
         $newEmail = strtolower(trim($requestData->get('email')));
 
         if (empty($newEmail)) {
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_REQUEST_KEY,
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_EMPTY
             );
@@ -92,7 +114,7 @@ class EmailChangeController extends AbstractUserAccountController
         }
 
         if ($newEmail === $username) {
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_REQUEST_KEY,
                 self::FLASH_BAG_REQUEST_MESSAGE_EMAIL_SAME
             );
@@ -104,12 +126,12 @@ class EmailChangeController extends AbstractUserAccountController
         $emailValidator->isValid($newEmail);
 
         if (!$emailValidator->isValid($newEmail)) {
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_REQUEST_KEY,
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID
             );
 
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_EMAIL_VALUE_KEY,
                 $newEmail
             );
@@ -118,10 +140,10 @@ class EmailChangeController extends AbstractUserAccountController
         }
 
         try {
-            $emailChangeRequestService->createEmailChangeRequest($newEmail);
-            $this->sendEmailChangeConfirmationToken();
+            $this->emailChangeRequestService->createEmailChangeRequest($newEmail);
+            $this->sendEmailChangeConfirmationToken($mailService, $twig);
 
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_REQUEST_KEY,
                 self::FLASH_BAG_REQUEST_MESSAGE_SUCCESS
             );
@@ -132,17 +154,17 @@ class EmailChangeController extends AbstractUserAccountController
                 $flashMessage = self::FLASH_BAG_REQUEST_ERROR_MESSAGE_UNKNOWN;
             }
 
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_REQUEST_KEY,
                 $flashMessage
             );
 
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_EMAIL_VALUE_KEY,
                 $newEmail
             );
         } catch (PostmarkResponseException $postmarkResponseException) {
-            $emailChangeRequestService->cancelEmailChangeRequest();
+            $this->emailChangeRequestService->cancelEmailChangeRequest();
 
             if ($postmarkResponseException->isNotAllowedToSendException()) {
                 $flashMessage = self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND;
@@ -154,9 +176,9 @@ class EmailChangeController extends AbstractUserAccountController
                 $flashMessage = self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN;
             }
 
-            $session->getFlashBag()->set(self::FLASH_BAG_REQUEST_KEY, $flashMessage);
+            $this->session->getFlashBag()->set(self::FLASH_BAG_REQUEST_KEY, $flashMessage);
 
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_EMAIL_VALUE_KEY,
                 $newEmail
             );
@@ -166,6 +188,9 @@ class EmailChangeController extends AbstractUserAccountController
     }
 
     /**
+     * @param MailService $mailService
+     * @param Twig_Environment $twig
+     *
      * @return RedirectResponse
      *
      * @throws CoreApplicationRequestException
@@ -173,46 +198,43 @@ class EmailChangeController extends AbstractUserAccountController
      * @throws InvalidContentTypeException
      * @throws MailConfigurationException
      */
-    public function resendAction()
+    public function resendAction(MailService $mailService, Twig_Environment $twig)
     {
         if ($this->hasResponse()) {
             return $this->response;
         }
 
-        $session = $this->container->get('session');
-        $router = $this->container->get('router');
-
         try {
-            $this->sendEmailChangeConfirmationToken();
-            $session->getFlashBag()->set(
+            $this->sendEmailChangeConfirmationToken($mailService, $twig);
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_RESEND_SUCCESS_KEY,
                 self::FLASH_BAG_RESEND_MESSAGE_SUCCESS
             );
         } catch (PostmarkResponseException $postmarkResponseException) {
             if ($postmarkResponseException->isNotAllowedToSendException()) {
-                $session->getFlashBag()->set(
+                $this->session->getFlashBag()->set(
                     self::FLASH_BAG_RESEND_ERROR_KEY,
                     self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND
                 );
             } elseif ($postmarkResponseException->isInactiveRecipientException()) {
-                $session->getFlashBag()->set(
+                $this->session->getFlashBag()->set(
                     self::FLASH_BAG_RESEND_ERROR_KEY,
                     self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT
                 );
             } elseif ($postmarkResponseException->isInvalidEmailAddressException()) {
-                $session->getFlashBag()->set(
+                $this->session->getFlashBag()->set(
                     self::FLASH_BAG_RESEND_ERROR_KEY,
                     self::FLASH_BAG_RESEND_ERROR_MESSAGE_EMAIL_INVALID
                 );
             } else {
-                $session->getFlashBag()->set(
+                $this->session->getFlashBag()->set(
                     self::FLASH_BAG_RESEND_ERROR_KEY,
                     self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN
                 );
             }
         }
 
-        return new RedirectResponse($router->generate(
+        return new RedirectResponse($this->router->generate(
             'view_user_account_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -220,30 +242,29 @@ class EmailChangeController extends AbstractUserAccountController
     }
 
     /**
+     * @param ResqueQueueService $resqueQueueService
+     * @param ResqueJobFactory $resqueJobFactory
      * @param Request $request
      * @return RedirectResponse
      *
-     * @throws \CredisException
-     * @throws \Exception
+     * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
+     * @throws \CredisException
      */
-    public function confirmAction(Request $request)
-    {
+    public function confirmAction(
+        ResqueQueueService $resqueQueueService,
+        ResqueJobFactory $resqueJobFactory,
+        Request $request
+    ) {
         if ($this->hasResponse()) {
             return $this->response;
         }
 
-        $session = $this->container->get('session');
-        $emailChangeRequestService = $this->get(UserEmailChangeRequestService::class);
-        $resqueQueueService = $this->container->get(ResqueQueueService::class);
-        $resqueJobFactory = $this->container->get(ResqueJobFactory::class);
-        $userManager = $this->container->get(UserManager::class);
-        $router = $this->container->get('router');
-
         $requestData = $request->request;
 
-        $redirectResponse =  new RedirectResponse($router->generate(
+        $redirectResponse =  new RedirectResponse($this->router->generate(
             'view_user_account_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -252,7 +273,7 @@ class EmailChangeController extends AbstractUserAccountController
         $token = trim($requestData->get('token'));
 
         if (empty($token)) {
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_CONFIRM_KEY,
                 self::FLASH_BAG_CONFIRM_ERROR_MESSAGE_TOKEN_INVALID
             );
@@ -260,16 +281,16 @@ class EmailChangeController extends AbstractUserAccountController
             return $redirectResponse;
         }
 
-        $user = $userManager->getUser();
+        $user = $this->userManager->getUser();
         $username = $user->getUsername();
 
-        $emailChangeRequest = $emailChangeRequestService->getEmailChangeRequest($username);
+        $emailChangeRequest = $this->emailChangeRequestService->getEmailChangeRequest($username);
         if (empty($emailChangeRequest)) {
             return $redirectResponse;
         }
 
         if ($token !== $emailChangeRequest['token']) {
-            $session->getFlashBag()->set(
+            $this->session->getFlashBag()->set(
                 self::FLASH_BAG_CONFIRM_KEY,
                 self::FLASH_BAG_CONFIRM_ERROR_MESSAGE_TOKEN_INVALID
             );
@@ -278,19 +299,19 @@ class EmailChangeController extends AbstractUserAccountController
         }
 
         try {
-            $emailChangeRequestService->confirmEmailChangeRequest($emailChangeRequest);
+            $this->emailChangeRequestService->confirmEmailChangeRequest($emailChangeRequest);
         } catch (UserEmailChangeException $userEmailChangeException) {
             if ($userEmailChangeException->isEmailAddressAlreadyTakenException()) {
-                $session->getFlashBag()->set(
+                $this->session->getFlashBag()->set(
                     self::FLASH_BAG_CONFIRM_KEY,
                     self::FLASH_BAG_CONFIRM_ERROR_MESSAGE_EMAIL_TAKEN
                 );
-                $session->getFlashBag()->set(
+                $this->session->getFlashBag()->set(
                     self::FLASH_BAG_EMAIL_VALUE_KEY,
                     $emailChangeRequest['new_email']
                 );
             } else {
-                $session->getFlashBag()->set(
+                $this->session->getFlashBag()->set(
                     self::FLASH_BAG_CONFIRM_KEY,
                     self::FLASH_BAG_CONFIRM_ERROR_MESSAGE_UNKNOWN
                 );
@@ -323,13 +344,13 @@ class EmailChangeController extends AbstractUserAccountController
         );
 
         $user->setUsername($emailChangeRequest['new_email']);
-        $userManager->setUser($user);
+        $this->userManager->setUser($user);
 
         if (!is_null($request->cookies->get('simplytestable-user'))) {
-            $redirectResponse->headers->setCookie($userManager->createUserCookie());
+            $redirectResponse->headers->setCookie($this->userManager->createUserCookie());
         }
 
-        $this->get('session')->getFlashBag()->set(
+        $this->session->getFlashBag()->set(
             self::FLASH_BAG_CONFIRM_KEY,
             self::FLASH_BAG_CONFIRM_MESSAGE_SUCCESS
         );
@@ -349,14 +370,10 @@ class EmailChangeController extends AbstractUserAccountController
             return $this->response;
         }
 
-        $emailChangeRequestService = $this->get(UserEmailChangeRequestService::class);
-        $session = $this->container->get('session');
-        $router = $this->container->get('router');
+        $this->emailChangeRequestService->cancelEmailChangeRequest();
+        $this->session->getFlashBag()->set('user_account_details_cancel_email_change_notice', 'cancelled');
 
-        $emailChangeRequestService->cancelEmailChangeRequest();
-        $session->getFlashBag()->set('user_account_details_cancel_email_change_notice', 'cancelled');
-
-        return new RedirectResponse($router->generate(
+        return new RedirectResponse($this->router->generate(
             'view_user_account_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -364,29 +381,27 @@ class EmailChangeController extends AbstractUserAccountController
     }
 
     /**
+     * @param MailService $mailService
+     *
+     * @param Twig_Environment $twig
+     * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
      * @throws MailConfigurationException
      * @throws PostmarkResponseException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
      */
-    private function sendEmailChangeConfirmationToken()
+    private function sendEmailChangeConfirmationToken(MailService $mailService, Twig_Environment $twig)
     {
-        $emailChangeRequestService = $this->get(UserEmailChangeRequestService::class);
-        $mailService = $this->container->get(MailService::class);
-        $userManager = $this->container->get(UserManager::class);
-        $router = $this->container->get('router');
-
         $mailServiceConfiguration = $mailService->getConfiguration();
-        $user = $userManager->getUser();
+        $user = $this->userManager->getUser();
         $userName = $user->getUsername();
 
-        $emailChangeRequest = $emailChangeRequestService->getEmailChangeRequest($userName);
+        $emailChangeRequest = $this->emailChangeRequestService->getEmailChangeRequest($userName);
 
         $sender = $mailServiceConfiguration->getSender('default');
         $messageProperties = $mailServiceConfiguration->getMessageProperties('user_email_change_request_confirmation');
 
-        $confirmationUrl = $router->generate(
+        $confirmationUrl = $this->router->generate(
             'view_user_account_index_index',
             [
                 'token' => $emailChangeRequest['token'],
@@ -400,7 +415,7 @@ class EmailChangeController extends AbstractUserAccountController
         $message->setFrom($sender['email'], $sender['name']);
         $message->addTo($emailChangeRequest['new_email']);
         $message->setSubject($messageProperties['subject']);
-        $message->setTextMessage($this->renderView($viewName, [
+        $message->setTextMessage($twig->render($viewName, [
             'current_email' => $userName,
             'new_email' => $emailChangeRequest['new_email'],
             'confirmation_url' => $confirmationUrl,

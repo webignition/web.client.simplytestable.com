@@ -56,7 +56,7 @@ class PlanControllerTest extends AbstractUserAccountControllerTest
     {
         parent::setUp();
 
-        $this->planController = new PlanController();
+        $this->planController = $this->container->get(PlanController::class);
     }
 
     /**
@@ -120,8 +120,6 @@ class PlanControllerTest extends AbstractUserAccountControllerTest
         $userManager->setUser($user);
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
-
-        $this->planController->setContainer($this->container);
 
         /* @var RedirectResponse $response */
         $response = $this->planController->subscribeAction($request);

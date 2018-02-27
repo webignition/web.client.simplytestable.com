@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\User;
 
+use SimplyTestable\WebClientBundle\Controller\AbstractController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
@@ -13,20 +14,21 @@ use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use SimplyTestable\WebClientBundle\Model\User;
 use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 use webignition\ResqueJobFactory\ResqueJobFactory;
-use SimplyTestable\WebClientBundle\Services\Mail\Configuration as MailConfiguration;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
-class UserController extends Controller
+class UserController extends AbstractController
 {
     const ONE_YEAR_IN_SECONDS = 31536000;
 
@@ -66,16 +68,48 @@ class UserController extends Controller
     const FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_MESSAGE_TOKEN_INVALID = 'invalid-token';
 
     /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
+     * @var UserService
+     */
+    private $userService;
+
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @param RouterInterface $router
+     * @param UserManager $userManager
+     * @param UserService $userService
+     * @param SessionInterface $session
+     */
+    public function __construct(
+        RouterInterface $router,
+        UserManager $userManager,
+        UserService $userService,
+        SessionInterface $session
+    ) {
+        parent::__construct($router);
+
+        $this->userManager = $userManager;
+        $this->userService = $userService;
+        $this->router = $router;
+        $this->session = $session;
+    }
+
+    /**
      * @return RedirectResponse
      */
     public function signOutSubmitAction()
     {
-        $userManager = $this->container->get(UserManager::class);
-        $router = $this->container->get('router');
+        $this->userManager->clearSessionUser();
 
-        $userManager->clearSessionUser();
-
-        $response = $this->createDashboardRedirectResponse($router);
+        $response = $this->createDashboardRedirectResponse();
 
         $response->headers->clearCookie(UserManager::USER_COOKIE_KEY, '/', '.simplytestable.com');
 
@@ -83,6 +117,8 @@ class UserController extends Controller
     }
 
     /**
+     * @param MailService $mailService
+     * @param Twig_Environment $twig
      * @param Request $request
      * @return RedirectResponse
      *
@@ -92,15 +128,8 @@ class UserController extends Controller
      * @throws MailConfigurationException
      * @throws PostmarkResponseException
      */
-    public function signInSubmitAction(Request $request)
+    public function signInSubmitAction(MailService $mailService, Twig_Environment $twig, Request $request)
     {
-        $session = $this->container->get('session');
-        $userService = $this->container->get(UserService::class);
-        $router = $this->container->get('router');
-        $userManager = $this->container->get(UserManager::class);
-        $mailConfiguration = $this->container->get(MailConfiguration::class);
-        $mailService = $this->container->get(MailService::class);
-
         $requestData = $request->request;
 
         $email = strtolower(trim($requestData->get('email')));
@@ -108,7 +137,7 @@ class UserController extends Controller
         $staySignedIn = empty(trim($requestData->get('stay-signed-in'))) ? 0 : 1;
         $password = trim($requestData->get('password'));
 
-        $flashBag = $session->getFlashBag();
+        $flashBag = $this->session->getFlashBag();
 
         if (empty($email)) {
             $flashBag->set(
@@ -116,7 +145,7 @@ class UserController extends Controller
                 self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_EMAIL_BLANK
             );
 
-            return $this->createSignInRedirectResponse($router, [
+            return $this->createSignInRedirectResponse([
                 'redirect' => $redirect,
                 'stay-signed-in' => $staySignedIn,
             ]);
@@ -128,7 +157,7 @@ class UserController extends Controller
                 self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_EMAIL_INVALID
             );
 
-            return $this->createSignInRedirectResponse($router, [
+            return $this->createSignInRedirectResponse([
                 'email' => $email,
                 'redirect' => $redirect,
                 'stay-signed-in' => $staySignedIn,
@@ -141,7 +170,7 @@ class UserController extends Controller
                 self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_PASSWORD_BLANK
             );
 
-            return $this->createSignInRedirectResponse($router, [
+            return $this->createSignInRedirectResponse([
                 'email' => $email,
                 'redirect' => $redirect,
                 'stay-signed-in' => $staySignedIn,
@@ -156,110 +185,109 @@ class UserController extends Controller
                 self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_PUBLIC_USER
             );
 
-            return $this->createSignInRedirectResponse($router, [
+            return $this->createSignInRedirectResponse([
                 'email' => $email,
                 'redirect' => $redirect,
                 'stay-signed-in' => $staySignedIn,
             ]);
         }
 
-        $userManager->setUser($user);
+        $this->userManager->setUser($user);
 
-        if (!$userService->authenticate()) {
-            if (!$userService->exists()) {
-                $userManager->clearSessionUser();
+        if (!$this->userService->authenticate()) {
+            if (!$this->userService->exists()) {
+                $this->userManager->clearSessionUser();
 
                 $flashBag->set(
                     self::FLASH_BAG_SIGN_IN_ERROR_KEY,
                     self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_INVALID_USER
                 );
 
-                return $this->createSignInRedirectResponse($router, [
+                return $this->createSignInRedirectResponse([
                     'email' => $email,
                     'redirect' => $redirect,
                     'stay-signed-in' => $staySignedIn,
                 ]);
             }
 
-            if ($userService->isEnabled()) {
-                $userManager->clearSessionUser();
+            if ($this->userService->isEnabled()) {
+                $this->userManager->clearSessionUser();
 
                 $flashBag->set(
                     self::FLASH_BAG_SIGN_IN_ERROR_KEY,
                     self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_AUTHENTICATION_FAILURE
                 );
 
-                return $this->createSignInRedirectResponse($router, [
+                return $this->createSignInRedirectResponse([
                     'email' => $email,
                     'redirect' => $redirect,
                     'stay-signed-in' => $staySignedIn,
                 ]);
             }
 
-            $userManager->clearSessionUser();
+            $this->userManager->clearSessionUser();
 
-            $token = $userService->getConfirmationToken($email);
+            $token = $this->userService->getConfirmationToken($email);
 
-            $this->sendConfirmationToken($mailConfiguration, $mailService, $router, $email, $token);
-
-            $flashBag->set(
-                self::FLASH_BAG_SIGN_IN_ERROR_KEY,
-                self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_USER_NOT_ENABLED
-            );
-
-            return $this->createSignInRedirectResponse($router, [
-                'email' => $email,
-                'redirect' => $redirect,
-                'stay-signed-in' => $staySignedIn,
-            ]);
-        }
-
-        if (!$userService->isEnabled()) {
-            $userManager->clearSessionUser();
-
-            $token = $userService->getConfirmationToken($email);
-            $this->sendConfirmationToken($mailConfiguration, $mailService, $router, $email, $token);
+            $this->sendConfirmationToken($mailService, $twig, $email, $token);
 
             $flashBag->set(
                 self::FLASH_BAG_SIGN_IN_ERROR_KEY,
                 self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_USER_NOT_ENABLED
             );
 
-            return $this->createSignInRedirectResponse($router, [
+            return $this->createSignInRedirectResponse([
                 'email' => $email,
                 'redirect' => $redirect,
                 'stay-signed-in' => $staySignedIn,
             ]);
         }
 
-        $response = $this->createPostSignInRedirectResponse($router, $redirect);
+        if (!$this->userService->isEnabled()) {
+            $this->userManager->clearSessionUser();
+
+            $token = $this->userService->getConfirmationToken($email);
+            $this->sendConfirmationToken($mailService, $twig, $email, $token);
+
+            $flashBag->set(
+                self::FLASH_BAG_SIGN_IN_ERROR_KEY,
+                self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_USER_NOT_ENABLED
+            );
+
+            return $this->createSignInRedirectResponse([
+                'email' => $email,
+                'redirect' => $redirect,
+                'stay-signed-in' => $staySignedIn,
+            ]);
+        }
+
+        $response = $this->createPostSignInRedirectResponse($redirect);
 
         if ($staySignedIn) {
-            $response->headers->setCookie($userManager->createUserCookie());
+            $response->headers->setCookie($this->userManager->createUserCookie());
         }
 
         return $response;
     }
 
     /**
-     * @param RouterInterface $router
      * @param string $requestRedirect
      *
      * @return RedirectResponse
      */
-    private function createPostSignInRedirectResponse(RouterInterface $router, $requestRedirect)
+    private function createPostSignInRedirectResponse($requestRedirect)
     {
         $redirectValues = json_decode(base64_decode($requestRedirect), true);
 
         if (!is_array($redirectValues) || !isset($redirectValues['route'])) {
-            return $this->createDashboardRedirectResponse($router);
+            return $this->createDashboardRedirectResponse();
         }
 
         $routeName = $redirectValues['route'];
         $routeParameters = isset($redirectValues['parameters']) ? $redirectValues['parameters'] : [];
 
         try {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 $routeName,
                 $routeParameters,
                 UrlGeneratorInterface::ABSOLUTE_URL
@@ -267,7 +295,7 @@ class UserController extends Controller
         } catch (\Exception $exception) {
         }
 
-        return $this->createDashboardRedirectResponse($router);
+        return $this->createDashboardRedirectResponse();
     }
 
     /**
@@ -282,34 +310,29 @@ class UserController extends Controller
      */
     public function resetPasswordChooseSubmitAction(Request $request)
     {
-        $userService = $this->container->get(UserService::class);
-        $router = $this->container->get('router');
-        $session = $this->container->get('session');
-        $userManager = $this->container->get(UserManager::class);
-
         $requestData = $request->request;
-        $flashBag = $session->getFlashBag();
+        $flashBag = $this->session->getFlashBag();
 
         $email = trim($requestData->get('email'));
         $requestToken = trim($requestData->get('token'));
         $staySignedIn = empty($requestData->get('stay-signed-in')) ? 0 : 1;
-        $userExists = $userService->exists($email);
+        $userExists = $this->userService->exists($email);
 
         if (!$this->isEmailValid($email) || empty($requestToken) || !$userExists) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->router->generate(
                 'view_user_resetpassword_index_index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
             ));
         }
 
-        $failureRedirectResponse = $this->createPasswordChooseRedirectResponse($router, [
+        $failureRedirectResponse = $this->createPasswordChooseRedirectResponse([
             'email' => $email,
             'token' => $requestToken,
             'stay-signed-in' => $staySignedIn
         ]);
 
-        $token = $userService->getConfirmationToken($email);
+        $token = $this->userService->getConfirmationToken($email);
 
         if ($token !== $requestToken) {
             $flashBag->set(
@@ -332,7 +355,7 @@ class UserController extends Controller
         }
 
         try {
-            $userService->resetPassword($token, $password);
+            $this->userService->resetPassword($token, $password);
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
             $flashBag->set(
                 self::FLASH_BAG_RESET_PASSWORD_ERROR_KEY,
@@ -343,18 +366,21 @@ class UserController extends Controller
         }
 
         $user = new User($email, $password);
-        $userManager->setUser($user);
+        $this->userManager->setUser($user);
 
-        $response = $this->createDashboardRedirectResponse($router);
+        $response = $this->createDashboardRedirectResponse();
 
         if ($staySignedIn) {
-            $response->headers->setCookie($userManager->createUserCookie());
+            $response->headers->setCookie($this->userManager->createUserCookie());
         }
 
         return $response;
     }
 
     /**
+     * @param MailService $mailService
+     * @param CouponService $couponService
+     * @param Twig_Environment $twig
      * @param Request $request
      *
      * @return RedirectResponse
@@ -364,17 +390,14 @@ class UserController extends Controller
      * @throws InvalidContentTypeException
      * @throws MailConfigurationException
      */
-    public function signUpSubmitAction(Request $request)
-    {
-        $session = $this->container->get('session');
-        $userService = $this->container->get(UserService::class);
-        $couponService = $this->container->get(CouponService::class);
-        $router = $this->container->get('router');
-        $mailConfiguration = $this->container->get(MailConfiguration::class);
-        $mailService = $this->container->get(MailService::class);
-
+    public function signUpSubmitAction(
+        MailService $mailService,
+        CouponService $couponService,
+        Twig_Environment $twig,
+        Request $request
+    ) {
         $requestData = $request->request;
-        $flashBag = $session->getFlashBag();
+        $flashBag = $this->session->getFlashBag();
 
         $plan = trim($requestData->get('plan'));
         $email = strtolower(trim($requestData->get('email')));
@@ -386,12 +409,12 @@ class UserController extends Controller
                 self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_BLANK
             );
 
-            return $this->createSignUpRedirectResponse($router, [
+            return $this->createSignUpRedirectResponse([
                 'plan' => $plan,
             ]);
         }
 
-        $failureRedirectResponse = $this->createSignUpRedirectResponse($router, [
+        $failureRedirectResponse = $this->createSignUpRedirectResponse([
             'email' => $email,
             'plan' => $plan,
         ]);
@@ -426,7 +449,7 @@ class UserController extends Controller
         }
 
         try {
-            $userService->create($email, $password, $plan, $coupon);
+            $this->userService->create($email, $password, $plan, $coupon);
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
             $flashBag->set(
                 self::FLASH_BAG_SIGN_UP_ERROR_KEY,
@@ -440,7 +463,7 @@ class UserController extends Controller
                 self::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS
             );
 
-            return $this->createSignUpRedirectResponse($router, [
+            return $this->createSignUpRedirectResponse([
                 'email' => $email,
             ]);
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
@@ -452,10 +475,10 @@ class UserController extends Controller
             return $failureRedirectResponse;
         }
 
-        $token = $userService->getConfirmationToken($email);
+        $token = $this->userService->getConfirmationToken($email);
 
         try {
-            $this->sendConfirmationToken($mailConfiguration, $mailService, $router, $email, $token);
+            $this->sendConfirmationToken($mailService, $twig, $email, $token);
         } catch (PostmarkResponseException $postmarkResponseException) {
             if ($postmarkResponseException->isNotAllowedToSendException()) {
                 $flashBag->set(
@@ -482,7 +505,7 @@ class UserController extends Controller
             self::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED
         );
 
-        $successRedirectUrl = $router->generate(
+        $successRedirectUrl = $this->router->generate(
             'view_user_signup_confirm_index',
             [
                 'email' => $email,
@@ -494,9 +517,8 @@ class UserController extends Controller
     }
 
     /**
-     * @param MailConfiguration $mailConfiguration
      * @param MailService $mailService
-     * @param RouterInterface $router
+     * @param Twig_Environment $twig
      * @param string $email
      * @param string $token
      *
@@ -504,16 +526,17 @@ class UserController extends Controller
      * @throws PostmarkResponseException
      */
     private function sendConfirmationToken(
-        MailConfiguration $mailConfiguration,
         MailService $mailService,
-        RouterInterface $router,
+        Twig_Environment $twig,
         $email,
         $token
     ) {
+        $mailConfiguration = $mailService->getConfiguration();
+
         $sender = $mailConfiguration->getSender('default');
         $messageProperties = $mailConfiguration->getMessageProperties('user_creation_confirmation');
 
-        $confirmationUrl = $router->generate(
+        $confirmationUrl = $this->router->generate(
             'view_user_signup_confirm_index',
             [
                 'email' => $email,
@@ -526,7 +549,7 @@ class UserController extends Controller
         $message->setFrom($sender['email'], $sender['name']);
         $message->addTo($email);
         $message->setSubject($messageProperties['subject']);
-        $message->setTextMessage($this->renderView(
+        $message->setTextMessage($twig->render(
             'SimplyTestableWebClientBundle:Email:user-creation-confirmation.txt.twig',
             [
                 'confirmation_url' => $confirmationUrl,
@@ -538,6 +561,8 @@ class UserController extends Controller
     }
 
     /**
+     * @param ResqueQueueService $resqueQueueService
+     * @param ResqueJobFactory $resqueJobFactory
      * @param Request $request
      * @param string $email
      *
@@ -547,19 +572,17 @@ class UserController extends Controller
      * @throws \CredisException
      * @throws \Exception
      */
-    public function signUpConfirmSubmitAction(Request $request, $email)
-    {
-        $userService = $this->container->get(UserService::class);
-        $session = $this->container->get('session');
-        $router = $this->container->get('router');
-        $resqueQueueService = $this->container->get(ResqueQueueService::class);
-        $resqueJobFactory = $this->container->get(ResqueJobFactory::class);
-
-        $userExists = $userService->exists($email);
-        $flashBag = $session->getFlashBag();
+    public function signUpConfirmSubmitAction(
+        ResqueQueueService $resqueQueueService,
+        ResqueJobFactory $resqueJobFactory,
+        Request $request,
+        $email
+    ) {
+        $userExists = $this->userService->exists($email);
+        $flashBag = $this->session->getFlashBag();
         $requestData = $request->request;
 
-        $failureRedirect = new RedirectResponse($router->generate(
+        $failureRedirect = new RedirectResponse($this->router->generate(
             'view_user_signup_confirm_index',
             [
                 'email' => $email,
@@ -587,7 +610,7 @@ class UserController extends Controller
         }
 
         try {
-            $userService->activate($token);
+            $this->userService->activate($token);
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
             $flashBag->set(
                 self::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_KEY,
@@ -635,7 +658,7 @@ class UserController extends Controller
             $redirectParameters['redirect'] = $requestRedirectCookie;
         }
 
-        return new RedirectResponse($router->generate(
+        return new RedirectResponse($this->router->generate(
             'view_user_signin_index',
             $redirectParameters,
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -655,14 +678,13 @@ class UserController extends Controller
     }
 
     /**
-     * @param RouterInterface $router
      * @param array $routeParameters
      *
      * @return RedirectResponse
      */
-    private function createSignInRedirectResponse(RouterInterface $router, array $routeParameters)
+    private function createSignInRedirectResponse(array $routeParameters)
     {
-        return new RedirectResponse($router->generate(
+        return new RedirectResponse($this->router->generate(
             'view_user_signin_index',
             $routeParameters,
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -670,13 +692,11 @@ class UserController extends Controller
     }
 
     /**
-     * @param RouterInterface $router
-     *
      * @return RedirectResponse
      */
-    private function createDashboardRedirectResponse(RouterInterface $router)
+    private function createDashboardRedirectResponse()
     {
-        return new RedirectResponse($router->generate(
+        return new RedirectResponse($this->router->generate(
             'view_dashboard_index_index',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -684,14 +704,13 @@ class UserController extends Controller
     }
 
     /**
-     * @param RouterInterface $router
      * @param array $routeParameters
      *
      * @return RedirectResponse
      */
-    private function createPasswordChooseRedirectResponse(RouterInterface $router, array $routeParameters)
+    private function createPasswordChooseRedirectResponse(array $routeParameters)
     {
-        return new RedirectResponse($router->generate(
+        return new RedirectResponse($this->router->generate(
             'view_user_resetpassword_choose_index',
             $routeParameters,
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -699,14 +718,13 @@ class UserController extends Controller
     }
 
     /**
-     * @param RouterInterface $router
      * @param array $routeParameters
      *
      * @return RedirectResponse
      */
-    private function createSignUpRedirectResponse(RouterInterface $router, array $routeParameters = [])
+    private function createSignUpRedirectResponse(array $routeParameters = [])
     {
-        return new RedirectResponse($router->generate(
+        return new RedirectResponse($this->router->generate(
             'view_user_signup_index_index',
             $routeParameters,
             UrlGeneratorInterface::ABSOLUTE_URL

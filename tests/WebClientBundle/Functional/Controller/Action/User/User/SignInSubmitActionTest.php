@@ -64,10 +64,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
     ) {
         $session = $this->container->get('session');
 
-        $this->userController->setContainer($this->container);
-
-        /* @var RedirectResponse $response */
-        $response = $this->userController->signInSubmitAction($request);
+        $response = $this->callSignInSubmitAction($request);
 
         $this->assertEquals($expectedRedirectLocation, $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -152,10 +149,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             'password' => 'foo',
         ]);
 
-        $this->userController->setContainer($this->container);
-
-        /* @var RedirectResponse $response */
-        $response = $this->userController->signInSubmitAction($request);
+        $response = $this->callSignInSubmitAction($request);
 
         $this->assertEquals(
             'http://localhost/signin/?email=user%40example.com&redirect=&stay-signed-in=0',
@@ -241,10 +235,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
-        $this->userController->setContainer($this->container);
-
-        /* @var RedirectResponse $response */
-        $response = $this->userController->signInSubmitAction($request);
+        $response = $this->callSignInSubmitAction($request);
 
         $this->assertEquals(
             'http://localhost/signin/?email=user%40example.com&redirect=&stay-signed-in=0',
@@ -312,10 +303,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $this->userController->setContainer($this->container);
-
-        /* @var RedirectResponse $response */
-        $response = $this->userController->signInSubmitAction($request);
+        $response = $this->callSignInSubmitAction($request);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
 
@@ -414,5 +402,23 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                 'expectedRedirectUrl' => 'http://localhost/http://example.com/1/progress/',
             ],
         ];
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws MailConfigurationException
+     * @throws PostmarkResponseException
+     */
+    private function callSignInSubmitAction(Request $request)
+    {
+        return $this->userController->signInSubmitAction(
+            $this->container->get(MailService::class),
+            $this->container->get('twig'),
+            $request
+        );
     }
 }

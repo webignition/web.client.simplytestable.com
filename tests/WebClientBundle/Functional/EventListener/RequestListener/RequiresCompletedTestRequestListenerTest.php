@@ -49,7 +49,8 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerT
             $testFactory->create($testValues);
         }
 
-        $controller = new IndexController();
+        /* @var IndexController $controller */
+        $controller = $this->container->get(IndexController::class);
 
         $request = new Request([], [], [
             'website' => self::WEBSITE,
