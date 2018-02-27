@@ -2,38 +2,77 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\User\Account\Team;
 
-use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController;
-use SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamInviteController;
 use SimplyTestable\WebClientBundle\Controller\View\User\Account\AbstractUserAccountController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
+use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\TeamInviteService;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
 class IndexController extends AbstractUserAccountController
 {
     const STRIPE_CARD_CHECK_KEY_POSTFIX = '_check';
 
     /**
+     * @var TeamInviteService
+     */
+    private $teamInviteService;
+
+    /**
+     * @var FlashBagValues
+     */
+    private $flashBagValues;
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param UserService $userService
+     * @param UserManager $userManager
+     * @param TeamService $teamService
+     * @param TeamInviteService $teamInviteService
+     * @param FlashBagValues $flashBagValues
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        UserService $userService,
+        UserManager $userManager,
+        TeamService $teamService,
+        TeamInviteService $teamInviteService,
+        FlashBagValues $flashBagValues
+    ) {
+        parent::__construct(
+            $router,
+            $twig,
+            $defaultViewParameters,
+            $cacheValidator,
+            $userService,
+            $userManager,
+            $teamService
+        );
+
+        $this->teamInviteService = $teamInviteService;
+        $this->flashBagValues = $flashBagValues;
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function getUserSignInRedirectResponse(RouterInterface $router, Request $request)
+    protected function getUserSignInRedirectResponseRoute()
     {
-        return new RedirectResponse($router->generate(
-            'view_user_signin_index',
-            [
-                'redirect' => base64_encode(json_encode(['route' => 'view_user_account_team_index_index']))
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        return 'view_user_account_team_index_index';
     }
 
     /**
@@ -49,57 +88,40 @@ class IndexController extends AbstractUserAccountController
             return $this->response;
         }
 
-        $userService = $this->container->get(UserService::class);
-        $session = $this->get('session');
-        $teamService = $this->container->get(TeamService::class);
-        $teamInviteService = $this->container->get(TeamInviteService::class);
-        $templating = $this->container->get('templating');
-        $userManager = $this->container->get(UserManager::class);
-
-        $user = $userManager->getUser();
-        $userSummary = $userService->getSummary();
-        $flashBag = $session->getFlashBag();
+        $user = $this->userManager->getUser();
+        $userSummary = $this->userService->getSummary();
         $teamSummary = $userSummary->getTeamSummary();
 
-        $teamCreateErrorValues = $flashBag->get(TeamController::FLASH_BAG_CREATE_ERROR_KEY);
-        $teamCreateError = empty($teamCreateErrorValues) ? '' : $teamCreateErrorValues[0];
-
-        $viewData = [
-            'plan_presentation_name' => ucwords(
-                $userSummary->getPlan()->getAccountPlan()->getName()
-            ),
-            'user_summary' => $userSummary,
-            'team_create_error' => $teamCreateError,
-        ];
-
-        $teamInviteGetData = $flashBag->get(TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY);
-        if (is_array($teamInviteGetData) && count($teamInviteGetData)) {
-            $viewData['team_invite_get'] = $teamInviteGetData;
-        }
-
-        $teamInviteResendData = $flashBag->get(TeamInviteController::FLASH_BAG_TEAM_RESEND_INVITE_KEY);
-        if (is_array($teamInviteResendData) && count($teamInviteResendData)) {
-            $viewData['team_invite_resend'] = $teamInviteResendData;
-        }
+        $viewData = array_merge(
+            [
+                'plan_presentation_name' => ucwords(
+                    $userSummary->getPlan()->getAccountPlan()->getName()
+                ),
+                'user_summary' => $userSummary,
+            ],
+            $this->flashBagValues->get([
+                'team_create_error',
+                'team_invite_get',
+                'team_invite_resend',
+            ])
+        );
 
         if ($teamSummary->isInTeam()) {
-            $team = $teamService->getTeam();
+            $team = $this->teamService->getTeam();
             $viewData['team'] = $team;
 
             if ($team->getLeader() === $user->getUsername()) {
-                $viewData['invites'] = $teamInviteService->getForTeam();
+                $viewData['invites'] = $this->teamInviteService->getForTeam();
             }
         }
 
         if ($teamSummary->hasInvite()) {
-            $viewData['invites'] = $teamInviteService->getForUser();
+            $viewData['invites'] = $this->teamInviteService->getForUser();
         }
 
-        $content = $templating->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/User/Account/Team/Index:index.html.twig',
-            array_merge($this->getDefaultViewParameters(), $viewData)
+            $viewData
         );
-
-        return new Response($content);
     }
 }
