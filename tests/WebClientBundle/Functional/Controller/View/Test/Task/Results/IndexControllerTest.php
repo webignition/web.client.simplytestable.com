@@ -11,30 +11,20 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
-use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
-use SimplyTestable\WebClientBundle\Services\DocumentationSiteUrls;
-use SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService;
-use SimplyTestable\WebClientBundle\Services\LinkIntegrityErrorCodeMap;
-use SimplyTestable\WebClientBundle\Services\RemoteTestService;
-use SimplyTestable\WebClientBundle\Services\ResourceLocator;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
-use SimplyTestable\WebClientBundle\Services\TaskService;
-use SimplyTestable\WebClientBundle\Services\TestService;
-use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Tests\WebClientBundle\Factory\TestFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 
-class IndexControllerTest extends AbstractBaseTestCase
+class IndexControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Test/Task/Results/Index:index.html.twig';
     const ROUTE_NAME = 'view_test_task_results_index_index';
@@ -329,22 +319,9 @@ class IndexControllerTest extends AbstractBaseTestCase
             $testFactory->create($testValues);
         }
 
-        $indexController = new IndexController(
-            $this->container->get('router'),
-            $twig,
-            $this->container->get(DefaultViewParameters::class),
-            $this->container->get(CacheValidatorService::class),
-            $this->container->get(UrlViewValuesService::class),
-            $this->container->get(UserManager::class),
-            $this->container->get('session'),
-            $this->container->get(TestService::class),
-            $this->container->get(RemoteTestService::class),
-            $this->container->get(TaskService::class),
-            $this->container->get(DocumentationUrlCheckerService::class),
-            $this->container->get(ResourceLocator::class),
-            $this->container->get(LinkIntegrityErrorCodeMap::class),
-            $this->container->get(DocumentationSiteUrls::class)
-        );
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
+        $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction(
             new Request(),

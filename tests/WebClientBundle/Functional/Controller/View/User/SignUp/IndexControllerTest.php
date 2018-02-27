@@ -6,19 +6,15 @@ use SimplyTestable\WebClientBundle\Controller\Action\User\UserController;
 use SimplyTestable\WebClientBundle\Controller\View\User\SignUp\IndexController;
 use SimplyTestable\WebClientBundle\Model\Coupon;
 use SimplyTestable\WebClientBundle\Model\User\Plan;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\CouponService;
-use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
-use SimplyTestable\WebClientBundle\Services\FlashBagValues;
-use SimplyTestable\WebClientBundle\Services\PlansService;
 use Tests\WebClientBundle\Factory\MockFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 
-class IndexControllerTest extends AbstractBaseTestCase
+class IndexControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/SignUp/Index:index.html.twig';
     const ROUTE_NAME = 'view_user_signup_index_index';
@@ -59,15 +55,9 @@ class IndexControllerTest extends AbstractBaseTestCase
             }
         }
 
-        $indexController = new IndexController(
-            $this->container->get('router'),
-            $twig,
-            $this->container->get(DefaultViewParameters::class),
-            $this->container->get(CacheValidatorService::class),
-            $this->container->get(FlashBagValues::class),
-            $this->container->get(CouponService::class),
-            $this->container->get(PlansService::class)
-        );
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
+        $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);

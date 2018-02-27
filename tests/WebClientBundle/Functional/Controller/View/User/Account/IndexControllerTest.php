@@ -10,26 +10,17 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
-use SimplyTestable\WebClientBundle\Services\CurrencyMap;
-use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
-use SimplyTestable\WebClientBundle\Services\FlashBagValues;
-use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
-use SimplyTestable\WebClientBundle\Services\TeamService;
-use SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
-use SimplyTestable\WebClientBundle\Services\UserStripeEventService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 use webignition\Model\Stripe\Invoice\Invoice;
 
-class IndexControllerTest extends AbstractBaseTestCase
+class IndexControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/Account/Index:index.html.twig';
     const ROUTE_NAME = 'view_user_account_index_index';
@@ -171,20 +162,9 @@ class IndexControllerTest extends AbstractBaseTestCase
             }
         }
 
-        $indexController = new IndexController(
-            $this->container->get('router'),
-            $twig,
-            $this->container->get(DefaultViewParameters::class),
-            $this->container->get(CacheValidatorService::class),
-            $this->container->get(UserService::class),
-            $this->container->get(UserManager::class),
-            $this->container->get(TeamService::class),
-            $this->container->get(FlashBagValues::class),
-            $this->container->get(ListRecipientsService::class),
-            $this->container->get(UserEmailChangeRequestService::class),
-            $this->container->get(UserStripeEventService::class),
-            $this->container->get(CurrencyMap::class)
-        );
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
+        $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction(new Request());
         $this->assertInstanceOf(Response::class, $response);

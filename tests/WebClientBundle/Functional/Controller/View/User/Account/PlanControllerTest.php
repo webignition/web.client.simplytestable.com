@@ -10,22 +10,15 @@ use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Plan;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
-use SimplyTestable\WebClientBundle\Services\CurrencyMap;
-use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
-use SimplyTestable\WebClientBundle\Services\FlashBagValues;
-use SimplyTestable\WebClientBundle\Services\PlansService;
-use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 
-class PlanControllerTest extends AbstractBaseTestCase
+class PlanControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/Account/Plan:index.html.twig';
     const ROUTE_NAME = 'view_user_account_plan_index';
@@ -190,18 +183,9 @@ class PlanControllerTest extends AbstractBaseTestCase
             }
         }
 
-        $planController = new PlanController(
-            $this->container->get('router'),
-            $twig,
-            $this->container->get(DefaultViewParameters::class),
-            $this->container->get(CacheValidatorService::class),
-            $this->container->get(UserService::class),
-            $this->container->get(UserManager::class),
-            $this->container->get(TeamService::class),
-            $this->container->get(FlashBagValues::class),
-            $this->container->get(PlansService::class),
-            $this->container->get(CurrencyMap::class)
-        );
+        /* @var PlanController $planController */
+        $planController = $this->container->get(PlanController::class);
+        $this->setTwigOnController($twig, $planController);
 
         $response = $planController->indexAction();
         $this->assertInstanceOf(Response::class, $response);

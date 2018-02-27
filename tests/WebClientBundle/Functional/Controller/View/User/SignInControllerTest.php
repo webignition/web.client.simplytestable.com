@@ -4,18 +4,15 @@ namespace Tests\WebClientBundle\Functional\Controller\View\User;
 
 use SimplyTestable\WebClientBundle\Controller\View\User\SignInController;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
-use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
-use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\MockFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 
-class SignInControllerTest extends AbstractBaseTestCase
+class SignInControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/SignIn:index.html.twig';
     const ROUTE_NAME = 'view_user_signin_index';
@@ -71,14 +68,9 @@ class SignInControllerTest extends AbstractBaseTestCase
             }
         }
 
-        $signInController = new SignInController(
-            $this->container->get('router'),
-            $twig,
-            $this->container->get(DefaultViewParameters::class),
-            $this->container->get(CacheValidatorService::class),
-            $this->container->get(FlashBagValues::class),
-            $this->container->get(UserManager::class)
-        );
+        /* @var SignInController $signInController */
+        $signInController = $this->container->get(SignInController::class);
+        $this->setTwigOnController($twig, $signInController);
 
         $response = $signInController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);

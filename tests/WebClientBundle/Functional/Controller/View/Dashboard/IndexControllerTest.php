@@ -4,28 +4,19 @@ namespace Tests\WebClientBundle\Functional\Controller\View\Dashboard;
 
 use SimplyTestable\WebClientBundle\Controller\View\Dashboard\IndexController;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
-use SimplyTestable\WebClientBundle\Services\CssValidationTestConfiguration;
-use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
-use SimplyTestable\WebClientBundle\Services\FlashBagValues;
-use SimplyTestable\WebClientBundle\Services\JsStaticAnalysisTestConfiguration;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
-use SimplyTestable\WebClientBundle\Services\TaskTypeService;
-use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory;
-use SimplyTestable\WebClientBundle\Services\TestOptionsConfiguration;
-use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 
-class IndexControllerTest extends AbstractBaseTestCase
+class IndexControllerTest extends AbstractViewControllerTest
 {
     const INDEX_ACTION_VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Dashboard/Index:index.html.twig';
     const VIEW_NAME = 'view_dashboard_index_index';
@@ -128,9 +119,9 @@ class IndexControllerTest extends AbstractBaseTestCase
             }
         }
 
-        $indexController = $this->createIndexController([
-            'twig' => $twig,
-        ]);
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
+        $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);
@@ -229,8 +220,8 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $this->container->get('request_stack')->push($request);
 
-
-        $indexController = $this->createIndexController();
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
 
         $response = $indexController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);
@@ -286,51 +277,5 @@ class IndexControllerTest extends AbstractBaseTestCase
     {
         \Mockery::close();
         parent::tearDown();
-    }
-
-    /**
-     * @param array $services
-     *
-     * @return IndexController
-     */
-    private function createIndexController(array $services = [])
-    {
-        $requiredServiceIds = [
-            'router',
-            'twig',
-            DefaultViewParameters::class,
-            TaskTypeService::class,
-            RequestAdapterFactory::class,
-            UrlViewValuesService::class,
-            CacheValidatorService::class,
-            FlashBagValues::class,
-            UserManager::class,
-            TestOptionsConfiguration::class,
-            CssValidationTestConfiguration::class,
-            JsStaticAnalysisTestConfiguration::class
-        ];
-
-        foreach ($requiredServiceIds as $serviceId) {
-            if (!isset($services[$serviceId])) {
-                $services[$serviceId] = $this->container->get($serviceId);
-            }
-        }
-
-        $indexController = new IndexController(
-            $services['router'],
-            $services['twig'],
-            $services[DefaultViewParameters::class],
-            $services[TaskTypeService::class],
-            $services[RequestAdapterFactory::class],
-            $services[UrlViewValuesService::class],
-            $services[CacheValidatorService::class],
-            $services[FlashBagValues::class],
-            $services[UserManager::class],
-            $services[TestOptionsConfiguration::class],
-            $services[CssValidationTestConfiguration::class],
-            $services[JsStaticAnalysisTestConfiguration::class]
-        );
-
-        return $indexController;
     }
 }

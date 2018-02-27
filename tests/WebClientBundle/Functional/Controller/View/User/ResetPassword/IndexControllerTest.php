@@ -3,18 +3,15 @@
 namespace Tests\WebClientBundle\Functional\Controller\View\User\ResetPassword;
 
 use SimplyTestable\WebClientBundle\Controller\View\User\ResetPassword\IndexController;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
-use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
-use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use Tests\WebClientBundle\Factory\MockFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword\IndexController
     as ResetPasswordActionController;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 
-class IndexControllerTest extends AbstractBaseTestCase
+class IndexControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/ResetPassword/Index:index.html.twig';
     const ROUTE_NAME = 'view_user_resetpassword_index_index';
@@ -53,13 +50,9 @@ class IndexControllerTest extends AbstractBaseTestCase
             }
         }
 
-        $indexController = new IndexController(
-            $this->container->get('router'),
-            $twig,
-            $this->container->get(DefaultViewParameters::class),
-            $this->container->get(CacheValidatorService::class),
-            $this->container->get(FlashBagValues::class)
-        );
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
+        $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);

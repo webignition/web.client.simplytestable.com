@@ -14,12 +14,12 @@ use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\TeamInviteService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 
-class InviteControllerTest extends AbstractBaseTestCase
+class InviteControllerTest extends AbstractViewControllerTest
 {
     const INVITE_USERNAME = 'user@example.com';
     const TOKEN = 'tokenValue';
@@ -83,14 +83,9 @@ class InviteControllerTest extends AbstractBaseTestCase
             $flashBag->set($key, $value);
         }
 
-        $inviteController = new InviteController(
-            $this->container->get('router'),
-            $twig,
-            $this->container->get(DefaultViewParameters::class),
-            $this->container->get(CacheValidatorService::class),
-            $this->container->get(FlashBagValues::class),
-            $this->container->get(TeamInviteService::class)
-        );
+        /* @var InviteController $inviteController */
+        $inviteController = $this->container->get(InviteController::class);
+        $this->setTwigOnController($twig, $inviteController);
 
         $inviteController->indexAction($request, self::TOKEN);
     }

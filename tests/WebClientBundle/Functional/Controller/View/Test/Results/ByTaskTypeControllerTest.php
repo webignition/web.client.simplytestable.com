@@ -11,26 +11,19 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\Test\Task\ErrorTaskMapCollection;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
-use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
-use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
-use SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService;
-use SimplyTestable\WebClientBundle\Services\TaskService;
-use SimplyTestable\WebClientBundle\Services\TestService;
-use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Tests\WebClientBundle\Factory\TestFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 
-class ByTaskTypeControllerTest extends AbstractBaseTestCase
+class ByTaskTypeControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Test/Results/ByTaskType:index.html.twig';
     const ROUTE_NAME_DEFAULT = 'view_test_results_bytasktype_index_default';
@@ -409,19 +402,9 @@ class ByTaskTypeControllerTest extends AbstractBaseTestCase
             $testFactory->create($testValues);
         }
 
-        $byTaskTypeController = new ByTaskTypeController(
-            $this->container->get('router'),
-            $twig,
-            $this->container->get(DefaultViewParameters::class),
-            $this->container->get(CacheValidatorService::class),
-            $this->container->get(UrlViewValuesService::class),
-            $this->container->get(UserManager::class),
-            $this->container->get('session'),
-            $this->container->get(TestService::class),
-            $this->container->get(RemoteTestService::class),
-            $this->container->get(TaskService::class),
-            $this->container->get(TaskCollectionFilterService::class)
-        );
+        /* @var ByTaskTypeController $byTaskTypeController */
+        $byTaskTypeController = $this->container->get(ByTaskTypeController::class);
+        $this->setTwigOnController($twig, $byTaskTypeController);
 
         $response = $byTaskTypeController->indexAction(
             new Request(),

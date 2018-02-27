@@ -8,19 +8,15 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
-use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
-use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 
-class ChooseControllerTest extends AbstractBaseTestCase
+class ChooseControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/ResetPassword/Choose:index.html.twig';
     const ROUTE_NAME = 'view_user_resetpassword_choose_index';
@@ -80,14 +76,9 @@ class ChooseControllerTest extends AbstractBaseTestCase
             }
         }
 
-        $chooseController = new ChooseController(
-            $this->container->get('router'),
-            $twig,
-            $this->container->get(DefaultViewParameters::class),
-            $this->container->get(CacheValidatorService::class),
-            $this->container->get(UserService::class),
-            $this->container->get(FlashBagValues::class)
-        );
+        /* @var ChooseController $chooseController */
+        $chooseController = $this->container->get(ChooseController::class);
+        $this->setTwigOnController($twig, $chooseController);
 
         $response = $chooseController->indexAction($request, self::USER_EMAIL, $token);
         $this->assertInstanceOf(Response::class, $response);

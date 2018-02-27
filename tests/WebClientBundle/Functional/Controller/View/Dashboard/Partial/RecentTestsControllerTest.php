@@ -10,19 +10,14 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\TestList;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
-use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
-use SimplyTestable\WebClientBundle\Services\RemoteTestService;
-use SimplyTestable\WebClientBundle\Services\TaskService;
-use SimplyTestable\WebClientBundle\Services\TestService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 
-class RecentTestsControllerTest extends AbstractBaseTestCase
+class RecentTestsControllerTest extends AbstractViewControllerTest
 {
     const INDEX_ACTION_VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Dashboard/Partial/RecentTests:index.html.twig';
     const VIEW_NAME = 'view_dashboard_partial_recenttests_index';
@@ -85,21 +80,15 @@ class RecentTestsControllerTest extends AbstractBaseTestCase
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function testIndexActionFoo(
+    public function testIndexAction(
         array $httpFixtures,
         Twig_Environment $twig
     ) {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $recentTestsController = new RecentTestsController(
-            $this->container->get('router'),
-            $twig,
-            $this->container->get(DefaultViewParameters::class),
-            $this->container->get(CacheValidatorService::class),
-            $this->container->get(TestService::class),
-            $this->container->get(RemoteTestService::class),
-            $this->container->get(TaskService::class)
-        );
+        /* @var RecentTestsController $recentTestsController */
+        $recentTestsController = $this->container->get(RecentTestsController::class);
+        $this->setTwigOnController($twig, $recentTestsController);
 
         $response = $recentTestsController->indexAction();
         $this->assertInstanceOf(Response::class, $response);
