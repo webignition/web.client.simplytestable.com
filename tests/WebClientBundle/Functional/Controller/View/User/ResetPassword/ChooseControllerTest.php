@@ -9,16 +9,16 @@ use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
-use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Twig_Environment;
 
 class ChooseControllerTest extends AbstractBaseTestCase
 {
@@ -27,21 +27,6 @@ class ChooseControllerTest extends AbstractBaseTestCase
 
     const USER_EMAIL = 'user@example.com';
     const TOKEN = 'token-value';
-
-    /**
-     * @var ChooseController
-     */
-    private $chooseController;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->chooseController = new ChooseController();
-    }
 
     public function testIndexActionPublicUserGetRequest()
     {
@@ -68,7 +53,7 @@ class ChooseControllerTest extends AbstractBaseTestCase
      * @param array $flashBagValues
      * @param Request $request
      * @param string $token
-     * @param EngineInterface $templatingEngine
+     * @param Twig_Environment $twig
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
@@ -79,7 +64,7 @@ class ChooseControllerTest extends AbstractBaseTestCase
         array $flashBagValues,
         Request $request,
         $token,
-        EngineInterface $templatingEngine
+        Twig_Environment $twig
     ) {
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
@@ -95,22 +80,16 @@ class ChooseControllerTest extends AbstractBaseTestCase
             }
         }
 
-        $containerFactory = new ContainerFactory($this->container);
-        $container = $containerFactory->create(
-            [
-                CacheValidatorService::class,
-                UserService::class,
-                FlashBagValues::class,
-                UserManager::class,
-            ],
-            [
-                'templating' => $templatingEngine,
-            ]
+        $chooseController = new ChooseController(
+            $this->container->get('router'),
+            $twig,
+            $this->container->get(DefaultViewParameters::class),
+            $this->container->get(CacheValidatorService::class),
+            $this->container->get(UserService::class),
+            $this->container->get(FlashBagValues::class)
         );
 
-        $this->chooseController->setContainer($container);
-
-        $response = $this->chooseController->indexAction($request, self::USER_EMAIL, $token);
+        $response = $chooseController->indexAction($request, self::USER_EMAIL, $token);
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -127,7 +106,7 @@ class ChooseControllerTest extends AbstractBaseTestCase
                 'flashBagValues' => [],
                 'request' => new Request(),
                 'token' => 'invalid-token',
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -151,7 +130,7 @@ class ChooseControllerTest extends AbstractBaseTestCase
                 ],
                 'request' => new Request(),
                 'token' => 'invalid-token',
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -176,7 +155,7 @@ class ChooseControllerTest extends AbstractBaseTestCase
                 ],
                 'request' => new Request(),
                 'token' => self::TOKEN,
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -201,7 +180,7 @@ class ChooseControllerTest extends AbstractBaseTestCase
                 'flashBagValues' => [],
                 'request' => new Request(),
                 'token' => self::TOKEN,
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -225,7 +204,7 @@ class ChooseControllerTest extends AbstractBaseTestCase
                     'stay-signed-in' => 1,
                 ]),
                 'token' => self::TOKEN,
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -252,9 +231,11 @@ class ChooseControllerTest extends AbstractBaseTestCase
         $request = new Request();
 
         $this->container->get('request_stack')->push($request);
-        $this->chooseController->setContainer($this->container);
 
-        $response = $this->chooseController->indexAction(
+        /* @var ChooseController $chooseController */
+        $chooseController = $this->container->get(ChooseController::class);
+
+        $response = $chooseController->indexAction(
             $request,
             self::USER_EMAIL,
             self::TOKEN
@@ -268,7 +249,7 @@ class ChooseControllerTest extends AbstractBaseTestCase
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $this->chooseController->indexAction(
+        $newResponse = $chooseController->indexAction(
             $newRequest,
             self::USER_EMAIL,
             self::TOKEN
