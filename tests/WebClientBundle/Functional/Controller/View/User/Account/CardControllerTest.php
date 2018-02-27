@@ -11,6 +11,7 @@ use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
+use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\StripeConfiguration;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
@@ -194,6 +195,7 @@ class CardControllerTest extends AbstractBaseTestCase
             $this->container->get(UserService::class),
             $this->container->get(UserManager::class),
             $this->container->get(TeamService::class),
+            $this->container->get(FlashBagValues::class),
             $this->container->get(StripeConfiguration::class)
         );
 

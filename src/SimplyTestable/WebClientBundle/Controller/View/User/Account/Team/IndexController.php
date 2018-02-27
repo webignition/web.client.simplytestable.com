@@ -27,11 +27,6 @@ class IndexController extends AbstractUserAccountController
     private $teamInviteService;
 
     /**
-     * @var FlashBagValues
-     */
-    private $flashBagValues;
-
-    /**
      * @param RouterInterface $router
      * @param Twig_Environment $twig
      * @param DefaultViewParameters $defaultViewParameters
@@ -50,8 +45,8 @@ class IndexController extends AbstractUserAccountController
         UserService $userService,
         UserManager $userManager,
         TeamService $teamService,
-        TeamInviteService $teamInviteService,
-        FlashBagValues $flashBagValues
+        FlashBagValues $flashBagValues,
+        TeamInviteService $teamInviteService
     ) {
         parent::__construct(
             $router,
@@ -60,11 +55,11 @@ class IndexController extends AbstractUserAccountController
             $cacheValidator,
             $userService,
             $userManager,
-            $teamService
+            $teamService,
+            $flashBagValues
         );
 
         $this->teamInviteService = $teamInviteService;
-        $this->flashBagValues = $flashBagValues;
     }
 
     /**

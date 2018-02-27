@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
+use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\StripeConfiguration;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
@@ -34,6 +35,7 @@ class CardController extends AbstractUserAccountController
      * @param UserService $userService
      * @param UserManager $userManager
      * @param TeamService $teamService
+     * @param FlashBagValues $flashBagValues
      * @param StripeConfiguration $stripeConfiguration
      */
     public function __construct(
@@ -44,6 +46,7 @@ class CardController extends AbstractUserAccountController
         UserService $userService,
         UserManager $userManager,
         TeamService $teamService,
+        FlashBagValues $flashBagValues,
         StripeConfiguration $stripeConfiguration
     ) {
         parent::__construct(
@@ -53,7 +56,8 @@ class CardController extends AbstractUserAccountController
             $cacheValidator,
             $userService,
             $userManager,
-            $teamService
+            $teamService,
+            $flashBagValues
         );
 
         $this->stripeConfiguration = $stripeConfiguration;

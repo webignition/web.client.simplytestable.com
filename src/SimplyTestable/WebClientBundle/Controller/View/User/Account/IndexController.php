@@ -43,11 +43,6 @@ class IndexController extends AbstractUserAccountController
     private $userStripeEventService;
 
     /**
-     * @var FlashBagValues
-     */
-    private $flashBagValues;
-
-    /**
      * @var CurrencyMap
      */
     private $currencyMap;
@@ -60,10 +55,10 @@ class IndexController extends AbstractUserAccountController
      * @param UserService $userService
      * @param UserManager $userManager
      * @param TeamService $teamService
+     * @param FlashBagValues $flashBagValues
      * @param MailChimpListRecipientsService $mailChimpListRecipientsService
      * @param UserEmailChangeRequestService $userEmailChangeRequestService
      * @param UserStripeEventService $userStripeEventService
-     * @param FlashBagValues $flashBagValues
      * @param CurrencyMap $currencyMap
      */
     public function __construct(
@@ -74,10 +69,10 @@ class IndexController extends AbstractUserAccountController
         UserService $userService,
         UserManager $userManager,
         TeamService $teamService,
+        FlashBagValues $flashBagValues,
         MailChimpListRecipientsService $mailChimpListRecipientsService,
         UserEmailChangeRequestService $userEmailChangeRequestService,
         UserStripeEventService $userStripeEventService,
-        FlashBagValues $flashBagValues,
         CurrencyMap $currencyMap
     ) {
         parent::__construct(
@@ -87,13 +82,13 @@ class IndexController extends AbstractUserAccountController
             $cacheValidator,
             $userService,
             $userManager,
-            $teamService
+            $teamService,
+            $flashBagValues
         );
 
         $this->mailChimpListRecipientsService = $mailChimpListRecipientsService;
         $this->emailChangeRequestService = $userEmailChangeRequestService;
         $this->userStripeEventService = $userStripeEventService;
-        $this->flashBagValues = $flashBagValues;
         $this->currencyMap = $currencyMap;
     }
 

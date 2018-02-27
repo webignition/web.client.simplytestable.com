@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Controller\View\User\ResetPassword;
 use SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword\IndexController
     as ResetPasswordActionController;
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Controller\View\User\AbstractUserController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
@@ -17,17 +18,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class ChooseController extends BaseViewController
+class ChooseController extends AbstractUserController
 {
     /**
      * @var UserService
      */
     private $userService;
-
-    /**
-     * @var FlashBagValues
-     */
-    private $flashBagValues;
 
     /**
      * @param RouterInterface $router
@@ -45,10 +41,9 @@ class ChooseController extends BaseViewController
         UserService $userService,
         FlashBagValues $flashBagValues
     ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator, $flashBagValues);
 
         $this->userService = $userService;
-        $this->flashBagValues = $flashBagValues;
     }
 
     /**

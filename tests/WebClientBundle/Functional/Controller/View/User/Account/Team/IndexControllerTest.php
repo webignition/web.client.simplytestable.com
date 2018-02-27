@@ -166,8 +166,8 @@ class IndexControllerTest extends AbstractBaseTestCase
             $this->container->get(UserService::class),
             $this->container->get(UserManager::class),
             $this->container->get(TeamService::class),
-            $this->container->get(TeamInviteService::class),
-            $this->container->get(FlashBagValues::class)
+            $this->container->get(FlashBagValues::class),
+            $this->container->get(TeamInviteService::class)
         );
 
         $response = $indexController->indexAction();

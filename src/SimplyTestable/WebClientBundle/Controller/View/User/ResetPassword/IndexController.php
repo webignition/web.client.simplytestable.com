@@ -2,41 +2,12 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\User\ResetPassword;
 
-use SimplyTestable\WebClientBundle\Controller\BaseViewController;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
-use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
-use SimplyTestable\WebClientBundle\Services\FlashBagValues;
+use SimplyTestable\WebClientBundle\Controller\View\User\AbstractUserController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\RouterInterface;
-use Twig_Environment;
 
-class IndexController extends BaseViewController
+class IndexController extends AbstractUserController
 {
-    /**
-     * @var FlashBagValues
-     */
-    private $flashBagValues;
-
-    /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param CacheValidatorService $cacheValidator
-     * @param FlashBagValues $flashBagValues
-     */
-    public function __construct(
-        RouterInterface $router,
-        Twig_Environment $twig,
-        DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator,
-        FlashBagValues $flashBagValues
-    ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
-
-        $this->flashBagValues = $flashBagValues;
-    }
-
     /**
      * @param Request $request
      *

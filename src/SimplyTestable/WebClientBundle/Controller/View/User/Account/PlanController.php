@@ -27,11 +27,6 @@ class PlanController extends AbstractUserAccountController
     private $plansService;
 
     /**
-     * @var FlashBagValues
-     */
-    private $flashBagValues;
-
-    /**
      * @var CurrencyMap
      */
     private $currencyMap;
@@ -44,8 +39,8 @@ class PlanController extends AbstractUserAccountController
      * @param UserService $userService
      * @param UserManager $userManager
      * @param TeamService $teamService
-     * @param PlansService $plansService
      * @param FlashBagValues $flashBagValues
+     * @param PlansService $plansService
      * @param CurrencyMap $currencyMap
      */
     public function __construct(
@@ -56,8 +51,8 @@ class PlanController extends AbstractUserAccountController
         UserService $userService,
         UserManager $userManager,
         TeamService $teamService,
-        PlansService $plansService,
         FlashBagValues $flashBagValues,
+        PlansService $plansService,
         CurrencyMap $currencyMap
     ) {
         parent::__construct(
@@ -67,11 +62,11 @@ class PlanController extends AbstractUserAccountController
             $cacheValidator,
             $userService,
             $userManager,
-            $teamService
+            $teamService,
+            $flashBagValues
         );
 
         $this->plansService = $plansService;
-        $this->flashBagValues = $flashBagValues;
         $this->currencyMap = $currencyMap;
     }
 

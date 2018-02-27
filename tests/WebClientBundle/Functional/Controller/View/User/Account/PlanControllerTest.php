@@ -198,8 +198,8 @@ class PlanControllerTest extends AbstractBaseTestCase
             $this->container->get(UserService::class),
             $this->container->get(UserManager::class),
             $this->container->get(TeamService::class),
-            $this->container->get(PlansService::class),
             $this->container->get(FlashBagValues::class),
+            $this->container->get(PlansService::class),
             $this->container->get(CurrencyMap::class)
         );
 

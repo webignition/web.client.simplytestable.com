@@ -2,10 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\User\Account;
 
-use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Controller\View\User\AbstractUserController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
+use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
@@ -15,7 +16,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-abstract class AbstractUserAccountController extends BaseViewController implements RequiresPrivateUser
+abstract class AbstractUserAccountController extends AbstractUserController implements RequiresPrivateUser
 {
     /**
      * @var UserService
@@ -40,6 +41,7 @@ abstract class AbstractUserAccountController extends BaseViewController implemen
      * @param UserService $userService
      * @param UserManager $userManager
      * @param TeamService $teamService
+     * @param FlashBagValues $flashBagValues
      */
     public function __construct(
         RouterInterface $router,
@@ -48,9 +50,10 @@ abstract class AbstractUserAccountController extends BaseViewController implemen
         CacheValidatorService $cacheValidator,
         UserService $userService,
         UserManager $userManager,
-        TeamService $teamService
+        TeamService $teamService,
+        FlashBagValues $flashBagValues
     ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator, $flashBagValues);
 
         $this->userService = $userService;
         $this->userManager = $userManager;
