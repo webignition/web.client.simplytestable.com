@@ -5,31 +5,66 @@ namespace SimplyTestable\WebClientBundle\Controller\View\User\Account;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
+use SimplyTestable\WebClientBundle\Services\StripeConfiguration;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
 class CardController extends AbstractUserAccountController
 {
     const CARD_EXPIRY_DATE_YEAR_RANGE = 10;
 
     /**
+     * @var StripeConfiguration
+     */
+    private $stripeConfiguration;
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param UserService $userService
+     * @param UserManager $userManager
+     * @param TeamService $teamService
+     * @param StripeConfiguration $stripeConfiguration
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        UserService $userService,
+        UserManager $userManager,
+        TeamService $teamService,
+        StripeConfiguration $stripeConfiguration
+    ) {
+        parent::__construct(
+            $router,
+            $twig,
+            $defaultViewParameters,
+            $cacheValidator,
+            $userService,
+            $userManager,
+            $teamService
+        );
+
+        $this->stripeConfiguration = $stripeConfiguration;
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function getUserSignInRedirectResponse(RouterInterface $router, Request $request)
+    protected function getUserSignInRedirectResponseRoute()
     {
-        return new RedirectResponse($router->generate(
-            'view_user_signin_index',
-            [
-                'redirect' => base64_encode(json_encode(['route' => 'view_user_account_card_index']))
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        return 'view_user_account_card_index';
     }
 
     /**
@@ -45,21 +80,15 @@ class CardController extends AbstractUserAccountController
             return $this->response;
         }
 
-        $userService = $this->container->get(UserService::class);
-        $teamService = $this->container->get(TeamService::class);
-        $router = $this->container->get('router');
-        $templating = $this->container->get('templating');
-        $userManager = $this->container->get(UserManager::class);
-
-        $user = $userManager->getUser();
-        $userSummary = $userService->getSummary();
+        $user = $this->userManager->getUser();
+        $userSummary = $this->userService->getSummary();
         $team = null;
 
         if ($userSummary->getTeamSummary()->isInTeam()) {
-            $team = $teamService->getTeam();
+            $team = $this->teamService->getTeam();
 
             if ($team->getLeader() !== $user->getUsername()) {
-                return new RedirectResponse($router->generate(
+                return new RedirectResponse($this->router->generate(
                     'view_user_account_index_index',
                     [],
                     UrlGeneratorInterface::ABSOLUTE_URL
@@ -69,25 +98,23 @@ class CardController extends AbstractUserAccountController
 
         $currentYear = (int)date('Y');
 
-        $viewData = array_merge($this->getDefaultViewParameters(), [
-            'stripe_publishable_key' => $this->container->getParameter('stripe_publishable_key'),
+        $viewData = [
+            'stripe_publishable_key' => $this->stripeConfiguration->getPublishableKey(),
             'plan_presentation_name' => ucwords($userSummary->getPlan()->getAccountPlan()->getName()),
             'user_summary' => $userSummary,
             'countries' => $this->getCountries(),
             'expiry_year_start' => $currentYear,
             'expiry_year_end' => $currentYear + self::CARD_EXPIRY_DATE_YEAR_RANGE,
-        ]);
+        ];
 
         if ($userSummary->getTeamSummary()->isInTeam()) {
             $viewData['team'] = $team;
         }
 
-        $content = $templating->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/User/Account/Card:index.html.twig',
             $viewData
         );
-
-        return new Response($content);
     }
 
     /**

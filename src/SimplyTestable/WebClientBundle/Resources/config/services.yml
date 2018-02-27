@@ -295,3 +295,8 @@ services:
     class:  SimplyTestable\WebClientBundle\Services\CurrencyMap
     arguments:
       - '%currency_map%'
+
+  SimplyTestable\WebClientBundle\Services\StripeConfiguration:
+    class:  SimplyTestable\WebClientBundle\Services\StripeConfiguration
+    arguments:
+      - '%stripe_publishable_key%'
