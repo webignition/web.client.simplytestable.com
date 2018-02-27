@@ -33,11 +33,6 @@ class IndexController extends AbstractUserAccountController
     private $mailChimpListRecipientsService;
 
     /**
-     * @var TeamService
-     */
-    private $teamService;
-
-    /**
      * @var UserEmailChangeRequestService
      */
     private $emailChangeRequestService;
@@ -64,8 +59,8 @@ class IndexController extends AbstractUserAccountController
      * @param CacheValidatorService $cacheValidator
      * @param UserService $userService
      * @param UserManager $userManager
-     * @param MailChimpListRecipientsService $mailChimpListRecipientsService
      * @param TeamService $teamService
+     * @param MailChimpListRecipientsService $mailChimpListRecipientsService
      * @param UserEmailChangeRequestService $userEmailChangeRequestService
      * @param UserStripeEventService $userStripeEventService
      * @param FlashBagValues $flashBagValues
@@ -78,17 +73,24 @@ class IndexController extends AbstractUserAccountController
         CacheValidatorService $cacheValidator,
         UserService $userService,
         UserManager $userManager,
-        MailChimpListRecipientsService $mailChimpListRecipientsService,
         TeamService $teamService,
+        MailChimpListRecipientsService $mailChimpListRecipientsService,
         UserEmailChangeRequestService $userEmailChangeRequestService,
         UserStripeEventService $userStripeEventService,
         FlashBagValues $flashBagValues,
         CurrencyMap $currencyMap
     ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator, $userService, $userManager);
+        parent::__construct(
+            $router,
+            $twig,
+            $defaultViewParameters,
+            $cacheValidator,
+            $userService,
+            $userManager,
+            $teamService
+        );
 
         $this->mailChimpListRecipientsService = $mailChimpListRecipientsService;
-        $this->teamService = $teamService;
         $this->emailChangeRequestService = $userEmailChangeRequestService;
         $this->userStripeEventService = $userStripeEventService;
         $this->flashBagValues = $flashBagValues;

@@ -6,6 +6,7 @@ use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
+use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -27,12 +28,18 @@ abstract class AbstractUserAccountController extends BaseViewController implemen
     protected $userManager;
 
     /**
+     * @var TeamService
+     */
+    protected $teamService;
+
+    /**
      * @param RouterInterface $router
      * @param Twig_Environment $twig
      * @param DefaultViewParameters $defaultViewParameters
      * @param CacheValidatorService $cacheValidator
      * @param UserService $userService
      * @param UserManager $userManager
+     * @param TeamService $teamService
      */
     public function __construct(
         RouterInterface $router,
@@ -40,12 +47,14 @@ abstract class AbstractUserAccountController extends BaseViewController implemen
         DefaultViewParameters $defaultViewParameters,
         CacheValidatorService $cacheValidator,
         UserService $userService,
-        UserManager $userManager
+        UserManager $userManager,
+        TeamService $teamService
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
 
         $this->userService = $userService;
         $this->userManager = $userManager;
+        $this->teamService = $teamService;
     }
 
     /**
