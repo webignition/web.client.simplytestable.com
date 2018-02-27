@@ -8,17 +8,15 @@ use SimplyTestable\WebClientBundle\Model\Coupon;
 use SimplyTestable\WebClientBundle\Model\User\Plan;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\CouponService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\PlansService;
-use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
-use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Twig_Environment;
 
 class IndexControllerTest extends AbstractBaseTestCase
 {
@@ -26,21 +24,6 @@ class IndexControllerTest extends AbstractBaseTestCase
     const ROUTE_NAME = 'view_user_signup_index_index';
 
     const USER_EMAIL = 'user@example.com';
-
-    /**
-     * @var IndexController
-     */
-    private $indexController;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->indexController = new IndexController();
-    }
 
     public function testIndexActionPublicUserGetRequest()
     {
@@ -59,13 +42,13 @@ class IndexControllerTest extends AbstractBaseTestCase
      *
      * @param array $flashBagValues
      * @param Request $request
-     * @param EngineInterface $templatingEngine
+     * @param Twig_Environment $twig
      * @param bool $expectedHasRedirectCookie
      */
     public function testIndexActionRender(
         array $flashBagValues,
         Request $request,
-        EngineInterface $templatingEngine,
+        Twig_Environment $twig,
         $expectedHasRedirectCookie
     ) {
         $session = $this->container->get('session');
@@ -76,25 +59,17 @@ class IndexControllerTest extends AbstractBaseTestCase
             }
         }
 
-        $containerFactory = new ContainerFactory($this->container);
-        $container = $containerFactory->create(
-            [
-                CacheValidatorService::class,
-                CouponService::class,
-                FlashBagValues::class
-                ,
-                PlansService::class,
-                UserService::class,
-                UserManager::class,
-            ],
-            [
-                'templating' => $templatingEngine,
-            ]
+        $indexController = new IndexController(
+            $this->container->get('router'),
+            $twig,
+            $this->container->get(DefaultViewParameters::class),
+            $this->container->get(CacheValidatorService::class),
+            $this->container->get(FlashBagValues::class),
+            $this->container->get(CouponService::class),
+            $this->container->get(PlansService::class)
         );
 
-        $this->indexController->setContainer($container);
-
-        $response = $this->indexController->indexAction($request);
+        $response = $indexController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);
 
         /* @var Cookie[] $responseCookies */
@@ -119,7 +94,7 @@ class IndexControllerTest extends AbstractBaseTestCase
             'no request data' => [
                 'flashBagValues' => [],
                 'request' => new Request(),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -145,7 +120,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'request' => new Request([
                     'plan' => 'foo',
                 ]),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -173,7 +148,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                     'plan' => 'agency',
                     'redirect' => 'foo',
                 ]),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -202,7 +177,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                         UserController::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED
                 ],
                 'request' => new Request(),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -228,7 +203,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'request' => new Request([], [], [], [
                     CouponService::COUPON_COOKIE_NAME => 'TMS',
                 ]),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -257,9 +232,11 @@ class IndexControllerTest extends AbstractBaseTestCase
         $request = new Request();
 
         $this->container->get('request_stack')->push($request);
-        $this->indexController->setContainer($this->container);
 
-        $response = $this->indexController->indexAction($request);
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
+
+        $response = $indexController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -269,7 +246,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $this->indexController->indexAction($newRequest);
+        $newResponse = $indexController->indexAction($newRequest);
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());
