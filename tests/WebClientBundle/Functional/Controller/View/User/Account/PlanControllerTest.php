@@ -10,18 +10,20 @@ use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Plan;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
+use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\CurrencyMap;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\PlansService;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
-use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Twig_Environment;
 
 class PlanControllerTest extends AbstractBaseTestCase
 {
@@ -29,11 +31,6 @@ class PlanControllerTest extends AbstractBaseTestCase
     const ROUTE_NAME = 'view_user_account_plan_index';
 
     const USER_EMAIL = 'user@example.com';
-
-    /**
-     * @var PlanController
-     */
-    private $planController;
 
     /**
      * @var array
@@ -63,16 +60,6 @@ class PlanControllerTest extends AbstractBaseTestCase
             ],
         ],
     ];
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->planController = new PlanController();
-    }
 
     /**
      * @dataProvider indexActionInvalidGetRequestDataProvider
@@ -162,10 +149,11 @@ class PlanControllerTest extends AbstractBaseTestCase
             ])),
         ]);
 
-        $this->planController->setContainer($this->container);
+        /* @var PlanController $planController */
+        $planController = $this->container->get(PlanController::class);
 
         /* @var RedirectResponse $response */
-        $response = $this->planController->indexAction();
+        $response = $planController->indexAction();
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('http://localhost/account/', $response->getTargetUrl());
@@ -176,7 +164,7 @@ class PlanControllerTest extends AbstractBaseTestCase
      *
      * @param array $httpFixtures
      * @param array $flashBagValues
-     * @param EngineInterface $templatingEngine
+     * @param Twig_Environment $twig
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
@@ -185,7 +173,7 @@ class PlanControllerTest extends AbstractBaseTestCase
     public function testIndexActionRender(
         array $httpFixtures,
         array $flashBagValues,
-        EngineInterface $templatingEngine
+        Twig_Environment $twig
     ) {
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
@@ -202,27 +190,20 @@ class PlanControllerTest extends AbstractBaseTestCase
             }
         }
 
-        $containerFactory = new ContainerFactory($this->container);
-        $container = $containerFactory->create(
-            [
-                'router',
-                UserService::class,
-                TeamService::class,
-                PlansService::class,
-                FlashBagValues::class,
-                UserManager::class,
-            ],
-            [
-                'templating' => $templatingEngine,
-            ],
-            [
-                'currency_map',
-            ]
+        $planController = new PlanController(
+            $this->container->get('router'),
+            $twig,
+            $this->container->get(DefaultViewParameters::class),
+            $this->container->get(CacheValidatorService::class),
+            $this->container->get(UserService::class),
+            $this->container->get(UserManager::class),
+            $this->container->get(TeamService::class),
+            $this->container->get(PlansService::class),
+            $this->container->get(FlashBagValues::class),
+            $this->container->get(CurrencyMap::class)
         );
 
-        $this->planController->setContainer($container);
-
-        $response = $this->planController->indexAction();
+        $response = $planController->indexAction();
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -242,7 +223,7 @@ class PlanControllerTest extends AbstractBaseTestCase
                     ])),
                 ],
                 'flashBagValues' => [],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -280,7 +261,7 @@ class PlanControllerTest extends AbstractBaseTestCase
                     ])),
                 ],
                 'flashBagValues' => [],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -319,7 +300,7 @@ class PlanControllerTest extends AbstractBaseTestCase
                     ]),
                 ],
                 'flashBagValues' => [],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -348,7 +329,7 @@ class PlanControllerTest extends AbstractBaseTestCase
                     'plan_subscribe_error' => 403,
                     'plan_subscribe_success' => 'success',
                 ],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
