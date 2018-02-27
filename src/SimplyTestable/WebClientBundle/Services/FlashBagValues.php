@@ -33,7 +33,14 @@ class FlashBagValues
             $flashValues = $flashBag->get($key);
 
             if (!empty($flashValues)) {
-                $values[$key] = $flashValues[0];
+                $isSingleItemArray = 1 === count($flashValues);
+                $isSingleItemNumericallyIndexedArray = $isSingleItemArray && [0] === array_keys($flashValues);
+
+                if ($isSingleItemNumericallyIndexedArray) {
+                    $values[$key] = $flashValues[0];
+                } else {
+                    $values[$key] = $flashValues;
+                }
             }
         }
 
