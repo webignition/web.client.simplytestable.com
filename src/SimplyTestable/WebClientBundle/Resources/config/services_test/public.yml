@@ -20,3 +20,5 @@ services:
   SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService:
 
   SimplyTestable\WebClientBundle\Services\UserAccountCardService:
+
+  SimplyTestable\WebClientBundle\Services\UserStripeEventService:
