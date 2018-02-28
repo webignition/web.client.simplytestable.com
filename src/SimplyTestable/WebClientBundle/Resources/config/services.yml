@@ -151,7 +151,6 @@ services:
 #      - '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
   SimplyTestable\WebClientBundle\Services\CouponService:
-    class:  SimplyTestable\WebClientBundle\Services\CouponService
     calls:
       - [setCouponData, ['%coupons%']]
 

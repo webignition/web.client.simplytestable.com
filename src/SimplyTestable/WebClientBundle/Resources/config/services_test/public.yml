@@ -41,3 +41,7 @@ services:
   SimplyTestable\WebClientBundle\Services\UserManager:
 
   SimplyTestable\WebClientBundle\Services\TeamInviteService:
+
+  SimplyTestable\WebClientBundle\Services\CouponService:
+    calls:
+      - [setCouponData, ['%coupons%']]
