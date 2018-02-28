@@ -108,7 +108,6 @@ services:
 #      - '@SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService'
 
   SimplyTestable\WebClientBundle\Services\Mail\Configuration:
-    class:   SimplyTestable\WebClientBundle\Services\Mail\Configuration
     arguments:
       - '%mail%'
 
