@@ -144,11 +144,11 @@ services:
 #      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
 #      - '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
-  SimplyTestable\WebClientBundle\Services\TeamInviteService:
-    class:   SimplyTestable\WebClientBundle\Services\TeamInviteService
-    arguments:
-      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
-      - '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
+#  SimplyTestable\WebClientBundle\Services\TeamInviteService:
+#    class:   SimplyTestable\WebClientBundle\Services\TeamInviteService
+#    arguments:
+#      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
+#      - '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
   SimplyTestable\WebClientBundle\Services\CouponService:
     class:  SimplyTestable\WebClientBundle\Services\CouponService

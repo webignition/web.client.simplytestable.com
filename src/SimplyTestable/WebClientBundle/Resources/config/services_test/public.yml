@@ -39,3 +39,5 @@ services:
   SimplyTestable\WebClientBundle\Services\TeamService:
 
   SimplyTestable\WebClientBundle\Services\UserManager:
+
+  SimplyTestable\WebClientBundle\Services\TeamInviteService:
