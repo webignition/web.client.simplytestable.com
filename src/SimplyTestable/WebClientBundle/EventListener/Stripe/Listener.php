@@ -4,10 +4,10 @@ namespace SimplyTestable\WebClientBundle\EventListener\Stripe;
 
 use Psr\Log\LoggerInterface;
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
-use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
+use Twig_Environment;
 
 class Listener
 {
@@ -20,9 +20,9 @@ class Listener
     private $logger;
 
     /**
-     * @var TwigEngine
+     * @var Twig_Environment
      */
-    private $templating;
+    private $twig;
 
     /**
      * @var RouterInterface
@@ -49,18 +49,18 @@ class Listener
 
     /**
      * @param LoggerInterface $logger
-     * @param TwigEngine $templating
+     * @param Twig_Environment $twig
      * @param RouterInterface $router
      * @param MailService $mailService
      */
     public function __construct(
         LoggerInterface $logger,
-        TwigEngine $templating,
+        Twig_Environment $twig,
         RouterInterface $router,
         MailService $mailService
     ) {
         $this->logger = $logger;
-        $this->templating = $templating;
+        $this->twig = $twig;
         $this->router = $router;
         $this->mailService = $mailService;
     }
@@ -132,7 +132,7 @@ class Listener
 
         $this->issueNotification(
             $subject,
-            $this->templating->render($this->getViewPath($event, $viewPathParameters), $viewParameters)
+            $this->twig->render($this->getViewPath($event, $viewPathParameters), $viewParameters)
         );
     }
 
@@ -163,7 +163,7 @@ class Listener
             'currency_symbol' => $this->getCurrencySymbol($eventData->get('plan_currency'))
         ];
 
-        $this->issueNotification($subject, $this->templating->render($this->getViewPath($event, [
+        $this->issueNotification($subject, $this->twig->render($this->getViewPath($event, [
             'has_card'
         ]), $viewParameters));
     }
@@ -208,7 +208,7 @@ class Listener
                 'currency_symbol' => $this->getCurrencySymbol($eventData->get('currency'))
             ];
 
-            $this->issueNotification($subject, $this->templating->render($this->getViewPath($event, [
+            $this->issueNotification($subject, $this->twig->render($this->getViewPath($event, [
                 'plan_change',
                 'subscription_status'
             ]), $viewParameters));
@@ -240,7 +240,7 @@ class Listener
                 'currency_symbol' => $this->getCurrencySymbol($eventData->get('currency'))
             ];
 
-            $this->issueNotification($subject, $this->templating->render($this->getViewPath($event, [
+            $this->issueNotification($subject, $this->twig->render($this->getViewPath($event, [
                 'transition',
                 'has_card'
             ]), $viewParameters));
@@ -274,7 +274,7 @@ class Listener
             'invoice_lines' => $this->getInvoiceLinesContent($eventData->get('lines'), $eventData->get('currency')),
         ];
 
-        $this->issueNotification($subject, $this->templating->render($this->getViewPath($event), $viewParameters));
+        $this->issueNotification($subject, $this->twig->render($this->getViewPath($event), $viewParameters));
     }
 
     /**
@@ -312,7 +312,7 @@ class Listener
             ]
         );
 
-        $this->issueNotification($subject, $this->templating->render($this->getViewPath($event, [
+        $this->issueNotification($subject, $this->twig->render($this->getViewPath($event, [
             'has_discount'
         ]), $viewParameters));
     }
@@ -362,7 +362,7 @@ class Listener
 
         $this->issueNotification(
             $subject,
-            $this->templating->render($this->getViewPath($event, $viewPathParameters), $viewParameters)
+            $this->twig->render($this->getViewPath($event, $viewPathParameters), $viewParameters)
         );
     }
 
