@@ -2,20 +2,57 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\User\SignUp;
 
-use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Controller\Action\User\UserController;
+use SimplyTestable\WebClientBundle\Controller\View\User\AbstractUserController;
 use SimplyTestable\WebClientBundle\Model\User\Plan;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\CouponService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\PlansService;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
-class IndexController extends BaseViewController
+class IndexController extends AbstractUserController
 {
     const ONE_YEAR_IN_SECONDS = 31536000;
+
+    /**
+     * @var CouponService
+     */
+    private $couponService;
+
+    /**
+     * @var PlansService
+     */
+    private $plansService;
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param FlashBagValues $flashBagValues
+     * @param CouponService $couponService
+     * @param PlansService $plansService
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        FlashBagValues $flashBagValues,
+        CouponService $couponService,
+        PlansService $plansService
+    ) {
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator, $flashBagValues);
+
+        $this->couponService = $couponService;
+        $this->plansService = $plansService;
+    }
 
     /**
      * @param Request $request
@@ -24,35 +61,29 @@ class IndexController extends BaseViewController
      */
     public function indexAction(Request $request)
     {
-        $couponService = $this->container->get(CouponService::class);
-        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
-        $flashBagValuesService = $this->container->get(FlashBagValues::class);
-        $templating = $this->container->get('templating');
-        $plansService = $this->container->get(PlansService::class);
+        $this->couponService->setRequest($request);
+        $this->plansService->listPremiumOnly();
 
-        $couponService->setRequest($request);
-        $plansService->listPremiumOnly();
-
-        $hasCoupon = $couponService->has();
+        $hasCoupon = $this->couponService->has();
         $redirect = trim($request->query->get('redirect'));
 
-        $userCreateError = $flashBagValuesService->getSingle(UserController::FLASH_BAG_SIGN_UP_ERROR_KEY);
-        $userCreateConfirmation = $flashBagValuesService->getSingle('user_create_confirmation');
+        $userCreateError = $this->flashBagValues->getSingle(UserController::FLASH_BAG_SIGN_UP_ERROR_KEY);
+        $userCreateConfirmation = $this->flashBagValues->getSingle('user_create_confirmation');
         $email = strtolower(trim($request->query->get('email')));
 
-        $plans = $plansService->getList();
+        $plans = $this->plansService->getList();
         $requestedPlan = $this->getRequestedPlan($request->query->get('plan'), $plans);
 
-        $response = $cacheValidatorService->createResponse($request, [
+        $response = $this->cacheValidator->createResponse($request, [
             'user_create_error' => $userCreateError,
             'user_create_confirmation' => $userCreateConfirmation,
             'email' => $email,
             'plan' => $requestedPlan,
             'redirect' => $redirect,
-            'coupon' => $hasCoupon ? $couponService->get()->__toString() : ''
+            'coupon' => $hasCoupon ? $this->couponService->get()->__toString() : ''
         ]);
 
-        if ($cacheValidatorService->isNotModified($response)) {
+        if ($this->cacheValidator->isNotModified($response)) {
             return $response;
         }
 
@@ -73,18 +104,17 @@ class IndexController extends BaseViewController
         }
 
         if ($hasCoupon) {
-            $coupon = $couponService->get();
+            $coupon = $this->couponService->get();
 
             $viewData['coupon'] = $coupon;
-            $plansService->setPriceModifier($coupon->getPriceModifier());
+            $this->plansService->setPriceModifier($coupon->getPriceModifier());
         }
 
-        $content = $templating->render(
+        $response = $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/User/SignUp/Index:index.html.twig',
-            array_merge($this->getDefaultViewParameters(), $viewData)
+            $viewData,
+            $response
         );
-
-        $response->setContent($content);
 
         if (!empty($redirect)) {
             $cookie = new Cookie(

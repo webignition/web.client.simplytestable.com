@@ -21,27 +21,19 @@ class UserAccountCardService
     private $stripeErrorFactory;
 
     /**
-     * @var CoreApplicationRouter
-     */
-    private $coreApplicationRouter;
-
-    /**
      * @var CoreApplicationHttpClient
      */
     private $coreApplicationHttpClient;
 
     /**
      * @param StripeErrorFactory $stripeErrorFactory
-     * @param CoreApplicationRouter $coreApplicationRouter
      * @param CoreApplicationHttpClient $coreApplicationHttpClient
      */
     public function __construct(
         StripeErrorFactory $stripeErrorFactory,
-        CoreApplicationRouter $coreApplicationRouter,
         CoreApplicationHttpClient $coreApplicationHttpClient
     ) {
-         $this->stripeErrorFactory = $stripeErrorFactory;
-        $this->coreApplicationRouter = $coreApplicationRouter;
+        $this->stripeErrorFactory = $stripeErrorFactory;
         $this->coreApplicationHttpClient = $coreApplicationHttpClient;
     }
 

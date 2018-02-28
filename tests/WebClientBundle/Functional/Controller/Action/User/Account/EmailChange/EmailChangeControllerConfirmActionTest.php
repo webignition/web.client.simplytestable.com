@@ -3,6 +3,10 @@
 namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account\EmailChange;
 
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\EmailChangeController;
+use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
+use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
+use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
@@ -10,11 +14,12 @@ use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use webignition\ResqueJobFactory\ResqueJobFactory;
 
 class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControllerTest
 {
     const ROUTE_NAME = 'action_user_account_emailchange_confirm';
-    const EXPECTED_REDIRECT_URL = 'http://localhost/account/';
+    const EXPECTED_REDIRECT_URL = '/account/';
 
     /**
      * {@inheritdoc}
@@ -49,7 +54,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $response = $this->client->getResponse();
 
         $this->assertEquals(
-            'http://localhost/account/',
+            '/account/',
             $response->getTargetUrl()
         );
     }
@@ -60,11 +65,10 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
 
         $request = new Request([], []);
 
-        /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->confirmAction($request);
+        $response = $this->callConfirmAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/account/', $response->getTargetUrl());
+        $this->assertEquals('/account/', $response->getTargetUrl());
         $this->assertEquals([
             EmailChangeController::FLASH_BAG_CONFIRM_KEY => [
                 EmailChangeController::FLASH_BAG_CONFIRM_ERROR_MESSAGE_TOKEN_INVALID,
@@ -86,11 +90,10 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
             'token' => 'foo',
         ]);
 
-        /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->confirmAction($request);
+        $response = $this->callConfirmAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/account/', $response->getTargetUrl());
+        $this->assertEquals('/account/', $response->getTargetUrl());
         $this->assertEquals([
             EmailChangeController::FLASH_BAG_CONFIRM_KEY => [
                 EmailChangeController::FLASH_BAG_CONFIRM_ERROR_MESSAGE_TOKEN_INVALID,
@@ -110,11 +113,10 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
             'token' => 'foo',
         ]);
 
-        /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->confirmAction($request);
+        $response = $this->callConfirmAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/account/', $response->getTargetUrl());
+        $this->assertEquals('/account/', $response->getTargetUrl());
         $this->assertEquals([], $session->getFlashBag()->peekAll());
     }
 
@@ -126,8 +128,8 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
      *
      * @throws \CredisException
      * @throws \Exception
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException
-     * @throws \SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidCredentialsException
      */
     public function testConfirmActionChangeFailure(
         array $confirmEmailChangeRequestHttpFixtures,
@@ -146,11 +148,10 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
             'token' => 'token-value',
         ]);
 
-        /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->confirmAction($request);
+        $response = $this->callConfirmAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/account/', $response->getTargetUrl());
+        $this->assertEquals('/account/', $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
     }
 
@@ -215,11 +216,10 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
             'simplytestable-user' => $serializerUser,
         ]);
 
-        /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->confirmAction($request);
+        $response = $this->callConfirmAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/account/', $response->getTargetUrl());
+        $this->assertEquals('/account/', $response->getTargetUrl());
         $this->assertEquals([
             EmailChangeController::FLASH_BAG_CONFIRM_KEY => [
                 EmailChangeController::FLASH_BAG_CONFIRM_MESSAGE_SUCCESS
@@ -250,5 +250,24 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $rememberUserCookie = $responseCookies[0];
 
         $this->assertNotEquals($rememberUserCookie->getValue(), $serializerUser);
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     *
+     * @throws \CredisException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     */
+    private function callConfirmAction(Request $request)
+    {
+        return $this->emailChangeController->confirmAction(
+            $this->container->get(ResqueQueueService::class),
+            $this->container->get(ResqueJobFactory::class),
+            $request
+        );
     }
 }

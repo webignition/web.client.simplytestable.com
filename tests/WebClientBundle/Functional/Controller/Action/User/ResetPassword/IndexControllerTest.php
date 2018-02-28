@@ -34,8 +34,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->indexController = new IndexController();
-        $this->indexController->setContainer($this->container);
+        $this->indexController = $this->container->get(IndexController::class);
     }
 
     public function testRequestActionPostRequest()
@@ -72,7 +71,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $response = $this->client->getResponse();
 
         $this->assertEquals(
-            'http://localhost/reset-password/?email=user%40example.com',
+            '/reset-password/?email=user%40example.com',
             $response->getTargetUrl()
         );
     }
@@ -115,7 +114,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                         IndexController::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_BLANK,
                     ],
                 ],
-                'expectedRedirectUrl' => 'http://localhost/reset-password/',
+                'expectedRedirectUrl' => '/reset-password/',
             ],
             'invalid email' => [
                 'request' => new Request([], [
@@ -126,7 +125,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                         IndexController::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID,
                     ],
                 ],
-                'expectedRedirectUrl' => 'http://localhost/reset-password/?email=foo',
+                'expectedRedirectUrl' => '/reset-password/?email=foo',
             ],
         ];
     }
@@ -154,7 +153,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $response = $this->indexController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/reset-password/?email=user%40example.com', $response->getTargetUrl());
+        $this->assertEquals('/reset-password/?email=user%40example.com', $response->getTargetUrl());
         $this->assertEquals(
             [
                 IndexController::FLASH_BAG_REQUEST_ERROR_KEY => [
@@ -198,7 +197,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $response = $this->indexController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/reset-password/?email=user%40example.com', $response->getTargetUrl());
+        $this->assertEquals('/reset-password/?email=user%40example.com', $response->getTargetUrl());
         $this->assertEquals(
             [
                 IndexController::FLASH_BAG_REQUEST_ERROR_KEY => [
@@ -245,7 +244,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $response = $this->indexController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/reset-password/?email=user%40example.com', $response->getTargetUrl());
+        $this->assertEquals('/reset-password/?email=user%40example.com', $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
 
         $this->assertNotNull($postmarkSender->getLastMessage());
@@ -344,7 +343,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $response = $this->indexController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/reset-password/?email=user%40example.com', $response->getTargetUrl());
+        $this->assertEquals('/reset-password/?email=user%40example.com', $response->getTargetUrl());
         $this->assertEquals(
             [
                 IndexController::FLASH_BAG_REQUEST_SUCCESS_KEY => [

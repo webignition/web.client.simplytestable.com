@@ -4,6 +4,8 @@ namespace Tests\WebClientBundle\Functional\Controller;
 
 use SimplyTestable\WebClientBundle\Controller\RedirectController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use SimplyTestable\WebClientBundle\Services\RemoteTestService;
+use SimplyTestable\WebClientBundle\Services\TestService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\TestFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
@@ -26,8 +28,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->redirectController = new RedirectController();
-        $this->redirectController->setContainer($this->container);
+        $this->redirectController = $this->container->get(RedirectController::class);
     }
 
     /**
@@ -56,7 +57,15 @@ class RedirectControllerTest extends AbstractBaseTestCase
         }
 
         /* @var RedirectResponse $response */
-        $response = $this->redirectController->testAction($request, $website, $testId);
+        $response = $this->redirectController->testAction(
+            $this->container->get(TestService::class),
+            $this->container->get(RemoteTestService::class),
+            $this->container->get('doctrine.orm.entity_manager'),
+            $this->container->get('logger'),
+            $request,
+            $website,
+            $testId
+        );
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
@@ -74,7 +83,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
                 'request' => new Request(),
                 'website' => 'http://example.com//1/2/results',
                 'testId' => null,
-                'expectedRedirectUrl' => 'http://localhost/website/http://example.com//test_id/1/task_id/2/results/',
+                'expectedRedirectUrl' => '/website/http://example.com//test_id/1/task_id/2/results/',
             ],
             'task results url with trailing slash' => [
                 'httpFixtures' => [],
@@ -82,7 +91,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
                 'request' => new Request(),
                 'website' => 'http://example.com//3/4/results/',
                 'testId' => null,
-                'expectedRedirectUrl' => 'http://localhost/website/http://example.com//test_id/3/task_id/4/results/',
+                'expectedRedirectUrl' => '/website/http://example.com//test_id/3/task_id/4/results/',
             ],
             'posted website, has latest test' => [
                 'httpFixtures' => [
@@ -97,7 +106,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
                 ]),
                 'website' => 'http://example.com/',
                 'testId' => null,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//99/',
+                'expectedRedirectUrl' => '/http://example.com//99/',
             ],
             'posted website, no latest test, has test in repository' => [
                 'httpFixtures' => [
@@ -112,7 +121,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
                 ]),
                 'website' => 'http://example.com/',
                 'testId' => null,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//2/',
+                'expectedRedirectUrl' => '/http://example.com//2/',
             ],
             'get website, no latest test, does not have test in repository' => [
                 'httpFixtures' => [
@@ -124,7 +133,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
                 ]),
                 'website' => 'http://example.com/',
                 'testId' => null,
-                'expectedRedirectUrl' => 'http://localhost/',
+                'expectedRedirectUrl' => '/',
             ],
             'no website, no latest test, does not have test in repository' => [
                 'httpFixtures' => [
@@ -134,7 +143,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
                 'request' => new Request(),
                 'website' => 'http://example.com/',
                 'testId' => null,
-                'expectedRedirectUrl' => 'http://localhost/',
+                'expectedRedirectUrl' => '/',
             ],
             'posted website, no latest test, does not have test in repository' => [
                 'httpFixtures' => [
@@ -146,7 +155,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
                 ]),
                 'website' => 'http://example.com/',
                 'testId' => null,
-                'expectedRedirectUrl' => 'http://localhost/',
+                'expectedRedirectUrl' => '/',
             ],
             'posted website, no scheme, no latest test, does not have test in repository' => [
                 'httpFixtures' => [
@@ -158,7 +167,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
                 ]),
                 'website' => 'http://example.com/',
                 'testId' => null,
-                'expectedRedirectUrl' => 'http://localhost/',
+                'expectedRedirectUrl' => '/',
             ],
             'posted website, no scheme, no host, no latest test, does not have test in repository' => [
                 'httpFixtures' => [
@@ -170,7 +179,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
                 ]),
                 'website' => 'http://example.com/',
                 'testId' => null,
-                'expectedRedirectUrl' => 'http://localhost/',
+                'expectedRedirectUrl' => '/',
             ],
             'posted website, no id, no latest test, does not have test in repository' => [
                 'httpFixtures' => [
@@ -182,7 +191,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
                 ]),
                 'website' => 'http://example.com/',
                 'testId' => null,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//',
+                'expectedRedirectUrl' => '/http://example.com//',
             ],
             'website and test_id, has latest test, http error retrieving remote test' => [
                 'httpFixtures' => [
@@ -192,7 +201,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
                 'request' => new Request(),
                 'website' => 'http://example.com/',
                 'testId' => 1,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//',
+                'expectedRedirectUrl' => '/http://example.com//',
             ],
             'website and test_id, has latest test, success retrieving remote test, test finished' => [
                 'httpFixtures' => [
@@ -208,7 +217,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
                 'request' => new Request(),
                 'website' => 'http://example.com/',
                 'testId' => 1,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/',
+                'expectedRedirectUrl' => '/http://example.com//1/results/',
             ],
             'website and test_id, has latest test, success retrieving remote test, test in progress' => [
                 'httpFixtures' => [
@@ -224,7 +233,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
                 'request' => new Request(),
                 'website' => 'http://example.com/',
                 'testId' => 1,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
             'no website, no test id' => [
                 'httpFixtures' => [],
@@ -232,7 +241,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
                 'request' => new Request(),
                 'website' => null,
                 'testId' => null,
-                'expectedRedirectUrl' => 'http://localhost/',
+                'expectedRedirectUrl' => '/',
             ],
         ];
     }
@@ -247,6 +256,6 @@ class RedirectControllerTest extends AbstractBaseTestCase
         );
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/http://example.com//1/2/results/', $response->getTargetUrl());
+        $this->assertEquals('/http://example.com//1/2/results/', $response->getTargetUrl());
     }
 }

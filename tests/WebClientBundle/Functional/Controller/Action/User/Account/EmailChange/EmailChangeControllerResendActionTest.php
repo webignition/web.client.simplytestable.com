@@ -19,7 +19,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
 {
     const ROUTE_NAME = 'action_user_account_emailchange_resend';
     const NEW_EMAIL = 'new-email@example.com';
-    const EXPECTED_REDIRECT_URL = 'http://localhost/account/';
+    const EXPECTED_REDIRECT_URL = '/account/';
 
     /**
      * @var User
@@ -114,8 +114,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
             ]),
         ]);
 
-        /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->resendAction();
+        $response = $this->callResendAction();
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
@@ -209,8 +208,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
             ]),
         ]);
 
-        /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->resendAction();
+        $response = $this->callResendAction();
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
@@ -219,5 +217,21 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
                 EmailChangeController::FLASH_BAG_RESEND_MESSAGE_SUCCESS
             ],
         ], $session->getFlashBag()->peekAll());
+    }
+
+    /**
+     * @return RedirectResponse
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws MailConfigurationException
+     */
+    private function callResendAction()
+    {
+        return $this->emailChangeController->resendAction(
+            $this->container->get(MailService::class),
+            $this->container->get('twig')
+        );
     }
 }

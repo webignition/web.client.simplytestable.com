@@ -34,7 +34,7 @@ class PostmarkSenderTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->postmarkSender = $this->container->get(PostmarkSender::class);
+        $this->postmarkSender = new PostmarkSender();
     }
 
     /**

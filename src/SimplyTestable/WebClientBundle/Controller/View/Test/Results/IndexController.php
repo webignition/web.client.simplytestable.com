@@ -6,21 +6,26 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
+use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\Configuration\CssValidationTestConfiguration;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
+use SimplyTestable\WebClientBundle\Services\Configuration\JsStaticAnalysisTestConfiguration;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService;
 use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TaskTypeService;
-use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory;
+use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
 class IndexController extends AbstractResultsController
 {
@@ -30,6 +35,46 @@ class IndexController extends AbstractResultsController
     const FILTER_ALL = 'all';
     const FILTER_SKIPPED = 'skipped';
     const FILTER_CANCELLED = 'cancelled';
+
+    /**
+     * @var TestService
+     */
+    private $testService;
+
+    /**
+     * @var RemoteTestService
+     */
+    private $remoteTestService;
+
+    /**
+     * @var TaskService
+     */
+    private $taskService;
+
+    /**
+     * @var TaskTypeService
+     */
+    private $taskTypeService;
+
+    /**
+     * @var TaskCollectionFilterService
+     */
+    private $taskCollectionFilterService;
+
+    /**
+     * @var TestOptionsRequestAdapterFactory
+     */
+    private $testOptionsRequestAdapterFactory;
+
+    /**
+     * @var CssValidationTestConfiguration
+     */
+    private $cssValidationTestConfiguration;
+
+    /**
+     * @var JsStaticAnalysisTestConfiguration
+     */
+    private $jsStaticAnalysisTestConfiguration;
 
     /**
      * @var string[]
@@ -44,17 +89,70 @@ class IndexController extends AbstractResultsController
     ];
 
     /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param UrlViewValuesService $urlViewValues
+     * @param UserManager $userManager
+     * @param SessionInterface $session
+     * @param TestService $testService
+     * @param RemoteTestService $remoteTestService
+     * @param TaskService $taskService
+     * @param TaskTypeService $taskTypeService
+     * @param TaskCollectionFilterService $taskCollectionFilterService
+     * @param TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory
+     * @param CssValidationTestConfiguration $cssValidationTestConfiguration
+     * @param JsStaticAnalysisTestConfiguration $jsStaticAnalysisTestConfiguration
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        UrlViewValuesService $urlViewValues,
+        UserManager $userManager,
+        SessionInterface $session,
+        TestService $testService,
+        RemoteTestService $remoteTestService,
+        TaskService $taskService,
+        TaskTypeService $taskTypeService,
+        TaskCollectionFilterService $taskCollectionFilterService,
+        TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
+        CssValidationTestConfiguration $cssValidationTestConfiguration,
+        JsStaticAnalysisTestConfiguration $jsStaticAnalysisTestConfiguration
+    ) {
+        parent::__construct(
+            $router,
+            $twig,
+            $defaultViewParameters,
+            $cacheValidator,
+            $urlViewValues,
+            $userManager,
+            $session
+        );
+
+        $this->testService = $testService;
+        $this->remoteTestService = $remoteTestService;
+        $this->taskService = $taskService;
+        $this->taskTypeService = $taskTypeService;
+        $this->taskCollectionFilterService = $taskCollectionFilterService;
+        $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
+        $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
+        $this->jsStaticAnalysisTestConfiguration = $jsStaticAnalysisTestConfiguration;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getRequestWebsiteMismatchResponse(RouterInterface $router, Request $request)
     {
-        return new RedirectResponse($router->generate(
+        return new RedirectResponse($this->generateUrl(
             'app_test_redirector',
             [
                 'website' => $request->attributes->get('website'),
                 'test_id' => $request->attributes->get('test_id')
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         ));
     }
 
@@ -75,65 +173,51 @@ class IndexController extends AbstractResultsController
             return $this->response;
         }
 
-        $router = $this->container->get('router');
-        $testService = $this->container->get(TestService::class);
-        $remoteTestService = $this->container->get(RemoteTestService::class);
-        $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
-        $taskService = $this->container->get(TaskService::class);
-        $taskCollectionFilterService = $this->container->get(TaskCollectionFilterService::class);
-        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
-        $taskTypeService = $this->container->get(TaskTypeService::class);
-        $templating = $this->container->get('templating');
-        $testOptionsAdapterFactory = $this->container->get(RequestAdapterFactory::class);
-        $userManager = $this->container->get(UserManager::class);
+        $user = $this->userManager->getUser();
 
-        $user = $userManager->getUser();
+        $test = $this->testService->get($website, $test_id);
+        $remoteTest = $this->remoteTestService->get();
 
-        $test = $testService->get($website, $test_id);
-        $remoteTest = $remoteTestService->get();
-
-        $taskTypeService->setUser($user);
+        $this->taskTypeService->setUser($user);
         if (!SystemUserService::isPublicUser($user)) {
-            $taskTypeService->setUserIsAuthenticated();
+            $this->taskTypeService->setUserIsAuthenticated();
         }
 
         if ($this->requiresPreparation($remoteTest, $test)) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'view_test_results_preparing_index_index',
                 [
                     'website' => $website,
                     'test_id' => $test_id,
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 
-        $taskService->getCollection($test);
+        $this->taskService->getCollection($test);
 
         $filter = trim($request->query->get('filter'));
         $taskType = trim($request->query->get('type'));
         $defaultFilter = $this->getDefaultRequestFilter($test);
 
-        $taskCollectionFilterService->setTest($test);
-        $taskCollectionFilterService->setTypeFilter($taskType);
+        $this->taskCollectionFilterService->setTest($test);
+        $this->taskCollectionFilterService->setTypeFilter($taskType);
 
-        $filteredTaskCounts = $this->createFilteredTaskCounts($taskCollectionFilterService);
+        $filteredTaskCounts = $this->createFilteredTaskCounts();
 
         if (!$this->isFilterValid($filter, $filteredTaskCounts)) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'view_test_results_index_index',
                 [
                     'website' => $website,
                     'test_id' => $test_id,
                     'filter' => $defaultFilter
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 
         $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
 
-        $response = $cacheValidatorService->createResponse($request, [
+        $response = $this->cacheValidator->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,
             'is_public' => $remoteTest->getIsPublic(),
@@ -142,67 +226,60 @@ class IndexController extends AbstractResultsController
             'filter' => $filter,
         ]);
 
-        if ($cacheValidatorService->isNotModified($response)) {
+        if ($this->cacheValidator->isNotModified($response)) {
             return $response;
         }
 
         $remoteTaskIds = $this->getRemoteTaskIds(
-            $taskCollectionFilterService,
             $filter,
             $taskType
         );
 
-        $tasks = $taskService->getCollection($test, $remoteTaskIds);
+        $tasks = $this->taskService->getCollection($test, $remoteTaskIds);
 
-        $testOptionsAdapter = $testOptionsAdapterFactory->create();
+        $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData($remoteTest->getOptions());
         $testOptionsAdapter->setInvertInvertableOptions(true);
 
-        $isOwner = $remoteTestService->owns($user);
+        $isOwner = $this->remoteTestService->owns($user);
 
-        $viewData = [
-            'website' => $urlViewValuesService->create($website),
-            'test' => $test,
-            'is_public' => $remoteTest->getIsPublic(),
-            'is_public_user_test' => $isPublicUserTest,
-            'remote_test' => $remoteTest,
-            'is_owner' => $isOwner,
-            'type' => $taskType,
-            'type_label' => $this->getTaskTypeLabel($taskType),
-            'filter' => $filter,
-            'filter_label' => ucwords(str_replace('-', ' ', $filter)),
-            'available_task_types' => $this->getAvailableTaskTypes($isOwner),
-            'task_types' => $taskTypeService->get(),
-            'test_options' => $testOptionsAdapter->getTestOptions()->__toKeyArray(),
-            'css_validation_ignore_common_cdns' =>
-                $this->container->getParameter('css-validation-ignore-common-cdns'),
-            'js_static_analysis_ignore_common_cdns' =>
-                $this->container->getParameter('js-static-analysis-ignore-common-cdns'),
-            'tasks' => $tasks,
-            'filtered_task_counts' => $filteredTaskCounts,
-            'domain_test_count' => $remoteTestService->getFinishedCount($website),
-            'default_css_validation_options' => [
-                'ignore-warnings' => 1,
-                'vendor-extensions' => 'warn',
-                'ignore-common-cdns' => 1
-            ],
-            'default_js_static_analysis_options' => [
-                'ignore-common-cdns' => 1,
-                'jslint-option-maxerr' => 50,
-                'jslint-option-indent' => 4,
-                'jslint-option-maxlen' => 256
-            ],
-        ];
-
-        $content = $templating->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/Test/Results/Index:index.html.twig',
-            array_merge($this->getDefaultViewParameters(), $viewData)
+            [
+                'website' => $this->urlViewValues->create($website),
+                'test' => $test,
+                'is_public' => $remoteTest->getIsPublic(),
+                'is_public_user_test' => $isPublicUserTest,
+                'remote_test' => $remoteTest,
+                'is_owner' => $isOwner,
+                'type' => $taskType,
+                'type_label' => $this->getTaskTypeLabel($taskType),
+                'filter' => $filter,
+                'filter_label' => ucwords(str_replace('-', ' ', $filter)),
+                'available_task_types' => $this->getAvailableTaskTypes($remoteTest, $isOwner),
+                'task_types' => $this->taskTypeService->get(),
+                'test_options' => $testOptionsAdapter->getTestOptions()->__toKeyArray(),
+                'css_validation_ignore_common_cdns' =>
+                    $this->cssValidationTestConfiguration->getExcludedDomains(),
+                'js_static_analysis_ignore_common_cdns' =>
+                    $this->jsStaticAnalysisTestConfiguration->getExcludedDomains(),
+                'tasks' => $tasks,
+                'filtered_task_counts' => $filteredTaskCounts,
+                'domain_test_count' => $this->remoteTestService->getFinishedCount($website),
+                'default_css_validation_options' => [
+                    'ignore-warnings' => 1,
+                    'vendor-extensions' => 'warn',
+                    'ignore-common-cdns' => 1
+                ],
+                'default_js_static_analysis_options' => [
+                    'ignore-common-cdns' => 1,
+                    'jslint-option-maxerr' => 50,
+                    'jslint-option-indent' => 4,
+                    'jslint-option-maxlen' => 256
+                ],
+            ],
+            $response
         );
-
-        $response->setContent($content);
-        $response->headers->set('content-type', 'text/html');
-
-        return $response;
     }
 
     /**
@@ -262,16 +339,14 @@ class IndexController extends AbstractResultsController
     }
 
     /**
-     * @param TaskCollectionFilterService $taskCollectionFilterService
-     *
      * @return array
      */
-    private function createFilteredTaskCounts(TaskCollectionFilterService $taskCollectionFilterService)
+    private function createFilteredTaskCounts()
     {
         $filteredTaskCounts = [];
 
-        $taskCollectionFilterService->setOutcomeFilter(null);
-        $filteredTaskCounts['all'] = $taskCollectionFilterService->getRemoteIdCount();
+        $this->taskCollectionFilterService->setOutcomeFilter(null);
+        $filteredTaskCounts['all'] = $this->taskCollectionFilterService->getRemoteIdCount();
 
         $filters = [
             self::FILTER_WITH_ERRORS,
@@ -282,51 +357,43 @@ class IndexController extends AbstractResultsController
         ];
 
         foreach ($filters as $filter) {
-            $taskCollectionFilterService->setOutcomeFilter($filter);
+            $this->taskCollectionFilterService->setOutcomeFilter($filter);
 
             $filteredTaskCountKey = str_replace('-', '_', $filter);
-            $filteredTaskCounts[$filteredTaskCountKey] = $taskCollectionFilterService->getRemoteIdCount();
+            $filteredTaskCounts[$filteredTaskCountKey] = $this->taskCollectionFilterService->getRemoteIdCount();
         }
 
         return $filteredTaskCounts;
     }
 
     /**
-     * @param TaskCollectionFilterService $taskCollectionFilterService
      * @param string $filter
      * @param string $taskType
      *
      * @return int[]|null
      */
-    private function getRemoteTaskIds(TaskCollectionFilterService $taskCollectionFilterService, $filter, $taskType)
+    private function getRemoteTaskIds($filter, $taskType)
     {
         if ($filter == 'all' && empty($taskType)) {
             return null;
         }
 
-        $taskCollectionFilterService->setOutcomeFilter($filter);
-        $taskCollectionFilterService->setTypeFilter($taskType);
+        $this->taskCollectionFilterService->setOutcomeFilter($filter);
+        $this->taskCollectionFilterService->setTypeFilter($taskType);
 
-        return $taskCollectionFilterService->getRemoteIds();
+        return $this->taskCollectionFilterService->getRemoteIds();
     }
 
     /**
+     * @param RemoteTest $remoteTest
      * @param bool $isOwner
      *
      * @return array
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
      */
-    private function getAvailableTaskTypes($isOwner)
+    private function getAvailableTaskTypes(RemoteTest $remoteTest, $isOwner)
     {
-        $remoteTestService = $this->container->get(RemoteTestService::class);
-        $taskTypeService = $this->container->get(TaskTypeService::class);
-
-        $remoteTest = $remoteTestService->get();
-
         if ($remoteTest->getIsPublic() && !$isOwner) {
-            $availableTaskTypes = $taskTypeService->get();
+            $availableTaskTypes = $this->taskTypeService->get();
             $remoteTestTaskTypes = $remoteTest->getTaskTypes();
 
             foreach ($availableTaskTypes as $taskTypeKey => $taskTypeDetails) {
@@ -338,6 +405,6 @@ class IndexController extends AbstractResultsController
             return $availableTaskTypes;
         }
 
-        return $taskTypeService->getAvailable();
+        return $this->taskTypeService->getAvailable();
     }
 }

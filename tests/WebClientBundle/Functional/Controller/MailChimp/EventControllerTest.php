@@ -23,8 +23,7 @@ class EventControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->eventController = new EventController();
-        $this->eventController->setContainer($this->container);
+        $this->eventController = $this->container->get(EventController::class);
     }
 
     public function testIndexActionGetRequest()
@@ -49,7 +48,6 @@ class EventControllerTest extends AbstractBaseTestCase
      */
     public function testIndexActionBadRequest(Request $request)
     {
-        $this->eventController->setContainer($this->container);
         $request->setMethod('POST');
 
         $response = $this->eventController->indexAction($request);

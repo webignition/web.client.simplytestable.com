@@ -24,7 +24,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
     const USER_USERNAME = 'user@example.com';
     const INVITEE_EMAIL = 'invitee@example.com';
     const TEAM_NAME = 'Team Name';
-    const EXPECTED_REDIRECT_URL = 'http://localhost/account/team/';
+    const EXPECTED_REDIRECT_URL = '/account/team/';
 
     /**
      * @var User
@@ -109,8 +109,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
     {
         $session = $this->container->get('session');
 
-        /* @var RedirectResponse $response */
-        $response = $this->teamInviteController->inviteMemberAction($request);
+        $response = $this->callInviteMemberAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -181,8 +180,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        /* @var RedirectResponse $response */
-        $response = $this->teamInviteController->inviteMemberAction(new Request([], [
+        $response = $this->callInviteMemberAction(new Request([], [
             'email' => self::INVITEE_EMAIL,
         ]));
 
@@ -299,8 +297,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
-        /* @var RedirectResponse $response */
-        $response = $this->teamInviteController->inviteMemberAction(new Request([], [
+        $response = $this->callInviteMemberAction(new Request([], [
             'email' => self::INVITEE_EMAIL,
         ]));
 
@@ -420,8 +417,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
-        /* @var RedirectResponse $response */
-        $response = $this->teamInviteController->inviteMemberAction(new Request([], [
+        $response = $this->callInviteMemberAction(new Request([], [
             'email' => self::INVITEE_EMAIL,
         ]));
 
@@ -469,5 +465,26 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
                 ],
             ],
         ];
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return RedirectResponse
+     *
+     * @throws CoreApplicationReadOnlyException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     * @throws MailConfigurationException
+     */
+    private function callInviteMemberAction(Request $request)
+    {
+        return $this->teamInviteController->inviteMemberAction(
+            $this->container->get(MailService::class),
+            $this->container->get('twig'),
+            $request
+        );
     }
 }

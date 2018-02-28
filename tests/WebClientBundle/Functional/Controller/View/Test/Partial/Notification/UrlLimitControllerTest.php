@@ -23,21 +23,6 @@ class UrlLimitControllerTest extends AbstractBaseTestCase
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
 
-    /**
-     * @var UrlLimitController
-     */
-    private $indexController;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->indexController = new UrlLimitController();
-    }
-
     public function testIndexActionInvalidUserGetRequest()
     {
         $this->setCoreApplicationHttpClientHttpFixtures([
@@ -58,7 +43,7 @@ class UrlLimitControllerTest extends AbstractBaseTestCase
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
-        $this->assertTrue($response->isRedirect('http://localhost/signout/'));
+        $this->assertTrue($response->isRedirect('/signout/'));
     }
 
     public function testIndexActionInvalidOwnerGetRequest()
@@ -249,9 +234,9 @@ class UrlLimitControllerTest extends AbstractBaseTestCase
 
         $request = new Request();
 
-        $this->indexController->setContainer($this->container);
+        $urlLimitController = $this->container->get(UrlLimitController::class);
 
-        $response = $this->indexController->indexAction($request, self::WEBSITE, self::TEST_ID);
+        $response = $urlLimitController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -262,7 +247,7 @@ class UrlLimitControllerTest extends AbstractBaseTestCase
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $this->indexController->indexAction($newRequest, self::WEBSITE, self::TEST_ID);
+        $newResponse = $urlLimitController->indexAction($newRequest, self::WEBSITE, self::TEST_ID);
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());

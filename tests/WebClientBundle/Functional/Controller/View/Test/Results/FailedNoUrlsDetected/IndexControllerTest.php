@@ -7,24 +7,18 @@ use SimplyTestable\WebClientBundle\Controller\View\Test\Results\FailedNoUrlsDete
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
-use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
-use SimplyTestable\WebClientBundle\Services\TestService;
-use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
-use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
+use Twig_Environment;
 
-class IndexControllerTest extends AbstractBaseTestCase
+class IndexControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Test/Results/FailedNoUrlsDetected/Index:index.html.twig';
     const ROUTE_NAME = 'view_test_results_failednourlsdetected_index_index';
@@ -32,11 +26,6 @@ class IndexControllerTest extends AbstractBaseTestCase
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
-
-    /**
-     * @var IndexController
-     */
-    private $indexController;
 
     /**
      * @var array
@@ -49,16 +38,6 @@ class IndexControllerTest extends AbstractBaseTestCase
         'state' => Test::STATE_FAILED_NO_SITEMAP,
         'task_type_options' => [],
     ];
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->indexController = new IndexController();
-    }
 
     public function testIndexActionInvalidUserGetRequest()
     {
@@ -80,7 +59,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
-        $this->assertTrue($response->isRedirect('http://localhost/signout/'));
+        $this->assertTrue($response->isRedirect('/signout/'));
     }
 
     public function testIndexActionPublicUserGetRequest()
@@ -136,9 +115,10 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->indexController->setContainer($this->container);
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
 
-        $response = $this->indexController->indexAction($request, $website, self::TEST_ID);
+        $response = $indexController->indexAction($request, $website, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
@@ -158,7 +138,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'website' => 'http://foo.example.com/',
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/',
+                'expectedRedirectUrl' => '/http://example.com//1/',
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Ffoo.example.com%2F/1/',
             ],
             'incorrect state' => [
@@ -170,7 +150,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'website' => self::WEBSITE,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => '/http://example.com//1/progress/',
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
             'not public user' => [
@@ -180,7 +160,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'user' => new User(self::USER_EMAIL),
                 'request' => new Request(),
                 'website' => self::WEBSITE,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => '/http://example.com//1/progress/',
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
         ];
@@ -189,35 +169,20 @@ class IndexControllerTest extends AbstractBaseTestCase
     /**
      * @dataProvider indexActionRenderDataProvider
      *
-     * @param EngineInterface $templatingEngine
-     *
+     * @param Twig_Environment $twig
      * @throws CoreApplicationRequestException
      */
-    public function testIndexActionRender(EngineInterface $templatingEngine)
+    public function testIndexActionRender(Twig_Environment $twig)
     {
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
-        $containerFactory = new ContainerFactory($this->container);
-        $container = $containerFactory->create(
-            [
-                'router',
-                TestService::class,
-                RemoteTestService::class,
-                UserService::class,
-                CacheValidatorService::class,
-                UrlViewValuesService::class,
-                UserManager::class,
-            ],
-            [
-                'templating' => $templatingEngine,
-            ]
-        );
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
+        $this->setTwigOnController($twig, $indexController);
 
-        $this->indexController->setContainer($container);
-
-        $response = $this->indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
+        $response = $indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -228,7 +193,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     {
         return [
             'default' => [
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(self::VIEW_NAME, $viewName);
@@ -255,9 +220,11 @@ class IndexControllerTest extends AbstractBaseTestCase
         $request = new Request();
 
         $this->container->get('request_stack')->push($request);
-        $this->indexController->setContainer($this->container);
 
-        $response = $this->indexController->indexAction($request, self::WEBSITE, self::TEST_ID);
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
+
+        $response = $indexController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -267,7 +234,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $this->indexController->indexAction($newRequest, self::WEBSITE, self::TEST_ID);
+        $newResponse = $indexController->indexAction($newRequest, self::WEBSITE, self::TEST_ID);
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());

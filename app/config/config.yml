@@ -2,6 +2,7 @@ imports:
     - { resource: parameters.yml }
     - { resource: "@SimplyTestableWebClientBundle/Resources/config/parameters.yml" }
     - { resource: security.yml }
+    - { resource: services.yml }
     - { resource: "@SimplyTestableWebClientBundle/Resources/config/services.yml" }
 
 framework:
@@ -17,8 +18,6 @@ framework:
     validation:      { enable_annotations: true }
     templating:      { engines: ['twig'] } #assets_version: SomeVersionScheme
     default_locale:  '%locale%'
-    #trust_proxy_headers: false # Whether or not the Request object should trust proxy headers (X_FORWARDED_FOR/HTTP_CLIENT_IP)
-    trusted_proxies:  [127.0.0.1]
     session:
       cookie_domain: .simplytestable.com
       save_path: "%simplytestable_session_savepath%"

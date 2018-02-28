@@ -38,7 +38,7 @@ class IEFilteredRequestListenerTest extends AbstractKernelControllerTest
         $request = new Request();
         $request->headers->set('user-agent', $userAgent);
 
-        $controller = new IndexController();
+        $controller = $this->container->get(IndexController::class);
 
         $event = $this->createFilterControllerEvent($request, $controller, 'indexAction');
 

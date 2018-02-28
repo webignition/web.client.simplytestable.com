@@ -11,29 +11,20 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\User;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
-use SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService;
-use SimplyTestable\WebClientBundle\Services\RemoteTestService;
-use SimplyTestable\WebClientBundle\Services\ResourceLocator;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
-use SimplyTestable\WebClientBundle\Services\TaskService;
-use SimplyTestable\WebClientBundle\Services\TestService;
-use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
-use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Tests\WebClientBundle\Factory\TestFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
+use Twig_Environment;
 
-class IndexControllerTest extends AbstractBaseTestCase
+class IndexControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Test/Task/Results/Index:index.html.twig';
     const ROUTE_NAME = 'view_test_task_results_index_index';
@@ -42,11 +33,6 @@ class IndexControllerTest extends AbstractBaseTestCase
     const TEST_ID = 1;
     const TASK_ID = 2;
     const USER_EMAIL = 'user@example.com';
-
-    /**
-     * @var IndexController
-     */
-    private $indexController;
 
     /**
      * @var array
@@ -92,16 +78,6 @@ class IndexControllerTest extends AbstractBaseTestCase
     ];
 
     /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->indexController = new IndexController();
-    }
-
-    /**
      * @dataProvider indexActionInvalidGetRequestDataProvider
      *
      * @param array $httpFixtures
@@ -132,7 +108,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'expectedRedirectUrl' => 'http://localhost/signout/',
+                'expectedRedirectUrl' => '/signout/',
             ],
             'invalid owner, not logged in' => [
                 'httpFixtures' => [
@@ -140,7 +116,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                     HttpResponseFactory::createForbiddenResponse(),
                 ],
                 'expectedRedirectUrl' => sprintf(
-                    'http://localhost/signin/?redirect=%s%s',
+                    '/signin/?redirect=%s%s',
                     'eyJyb3V0ZSI6InZpZXdfdGVzdF9wcm9ncmVzc19pbmRleF9pbmRleCIsInBhcmFtZXRlcnMiOnsid2Vic2l0ZSI6I',
                     'mh0dHA6XC9cL2V4YW1wbGUuY29tXC8iLCJ0ZXN0X2lkIjoiMSJ9fQ%3D%3D'
                 ),
@@ -219,10 +195,11 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->indexController->setContainer($this->container);
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
 
         /* @var RedirectResponse $response */
-        $response = $this->indexController->indexAction(
+        $response = $indexController->indexAction(
             $request,
             self::WEBSITE,
             self::TEST_ID,
@@ -265,7 +242,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 ],
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/',
+                'expectedRedirectUrl' => '/http://example.com//1/',
                 'expectedRequestUrls' => [
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
@@ -287,7 +264,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 ],
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/',
+                'expectedRedirectUrl' => '/http://example.com//1/',
                 'expectedRequestUrls' => [
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
@@ -306,7 +283,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 ],
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/',
+                'expectedRedirectUrl' => '/http://example.com//1/',
                 'expectedRequestUrls' => [
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
@@ -320,7 +297,7 @@ class IndexControllerTest extends AbstractBaseTestCase
      *
      * @param array $httpFixtures
      * @param User $user
-     * @param EngineInterface $templatingEngine
+     * @param Twig_Environment $twig
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
@@ -329,7 +306,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionRender(
         array $httpFixtures,
         User $user,
-        EngineInterface $templatingEngine
+        Twig_Environment $twig
     ) {
         $userManager = $this->container->get(UserManager::class);
 
@@ -342,32 +319,11 @@ class IndexControllerTest extends AbstractBaseTestCase
             $testFactory->create($testValues);
         }
 
-        $containerFactory = new ContainerFactory($this->container);
-        $container = $containerFactory->create(
-            [
-                'router',
-                TestService::class,
-                RemoteTestService::class,
-                UserService::class,
-                CacheValidatorService::class,
-                UrlViewValuesService::class,
-                TaskService::class,
-                DocumentationUrlCheckerService::class,
-                UserManager::class,
-                ResourceLocator::class
-            ],
-            [
-                'templating' => $templatingEngine,
-            ],
-            [
-                'documentation_site',
-                'link_integrity_error_code_map',
-            ]
-        );
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
+        $this->setTwigOnController($twig, $indexController);
 
-        $this->indexController->setContainer($container);
-
-        $response = $this->indexController->indexAction(
+        $response = $indexController->indexAction(
             new Request(),
             self::WEBSITE,
             self::TEST_ID,
@@ -391,7 +347,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                     HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
                 ],
                 'user' => SystemUserService::getPublicUser(),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertStandardViewData($viewName, $parameters);
@@ -418,7 +374,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                     HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
                 ],
                 'user' => new User(self::USER_EMAIL),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertStandardViewData($viewName, $parameters);
@@ -443,7 +399,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                     HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
                 ],
                 'user' => new User(self::USER_EMAIL),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertStandardViewData($viewName, $parameters);
@@ -468,7 +424,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                     HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
                 ],
                 'user' => new User(self::USER_EMAIL),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertStandardViewData($viewName, $parameters);
@@ -498,9 +454,11 @@ class IndexControllerTest extends AbstractBaseTestCase
                     ]),
                 ],
                 'user' => new User(self::USER_EMAIL),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
+                            $this->assertStandardViewData($viewName, $parameters);
+
                             $this->assertEquals([], $parameters['documentation_urls']);
                             $this->assertEquals([], $parameters['fixes']);
                             $this->assertEquals([], $parameters['distinct_fixes']);
@@ -562,9 +520,11 @@ class IndexControllerTest extends AbstractBaseTestCase
                     ]),
                 ],
                 'user' => new User(self::USER_EMAIL),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
+                            $this->assertStandardViewData($viewName, $parameters);
+
                             $expectedError1Url = 'http://help.simplytestable.com/errors/html-validation/an-img-'
                                 .'element-must-have-an-alt-attribute-except-under-certain-conditions-for-details-'
                                 .'consult-guidance-on-providing-text-alternatives-for-images/';
@@ -635,9 +595,11 @@ class IndexControllerTest extends AbstractBaseTestCase
                     ]),
                 ],
                 'user' => new User(self::USER_EMAIL),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
+                            $this->assertStandardViewData($viewName, $parameters);
+
                             $this->assertArrayHasKey('errors_by_ref', $parameters);
                             $this->assertArrayHasKey('warnings_by_ref', $parameters);
 
@@ -692,9 +654,11 @@ class IndexControllerTest extends AbstractBaseTestCase
                     ]),
                 ],
                 'user' => new User(self::USER_EMAIL),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
+                            $this->assertStandardViewData($viewName, $parameters);
+
                             $errorsByRef = $parameters['errors_by_ref'];
 
                             $this->assertEquals(['http://example.com/foo.css'], array_keys($errorsByRef));
@@ -722,9 +686,11 @@ class IndexControllerTest extends AbstractBaseTestCase
                     ]),
                 ],
                 'user' => new User(self::USER_EMAIL),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
+                            $this->assertStandardViewData($viewName, $parameters);
+
                             $this->assertArrayHasKey('errors_by_js_context', $parameters);
 
                             return true;
@@ -792,9 +758,11 @@ class IndexControllerTest extends AbstractBaseTestCase
                     ]),
                 ],
                 'user' => new User(self::USER_EMAIL),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
+                            $this->assertStandardViewData($viewName, $parameters);
+
                             $this->assertArrayHasKey('errors_by_js_context', $parameters);
 
                             $errorsByJsContext = $parameters['errors_by_js_context'];
@@ -825,9 +793,11 @@ class IndexControllerTest extends AbstractBaseTestCase
                     ]),
                 ],
                 'user' => new User(self::USER_EMAIL),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
+                            $this->assertStandardViewData($viewName, $parameters);
+
                             $this->assertArrayHasKey('errors_by_link_state', $parameters);
                             $this->assertArrayHasKey('link_class_labels', $parameters);
                             $this->assertArrayHasKey('link_state_descriptions', $parameters);
@@ -885,9 +855,11 @@ class IndexControllerTest extends AbstractBaseTestCase
                     ]),
                 ],
                 'user' => new User(self::USER_EMAIL),
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
+                            $this->assertStandardViewData($viewName, $parameters);
+
                             $errorsByLinkState  = $parameters['errors_by_link_state'];
 
                             $this->assertEquals(
@@ -923,9 +895,11 @@ class IndexControllerTest extends AbstractBaseTestCase
         $request = new Request();
 
         $this->container->get('request_stack')->push($request);
-        $this->indexController->setContainer($this->container);
 
-        $response = $this->indexController->indexAction(
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
+
+        $response = $indexController->indexAction(
             $request,
             self::WEBSITE,
             self::TEST_ID,
@@ -940,7 +914,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $this->indexController->indexAction(
+        $newResponse = $indexController->indexAction(
             $newRequest,
             self::WEBSITE,
             self::TEST_ID,

@@ -107,8 +107,7 @@ class TaskControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->taskController = new TaskController();
-        $this->taskController->setContainer($this->container);
+        $this->taskController = $this->container->get(TaskController::class);
     }
 
     /**

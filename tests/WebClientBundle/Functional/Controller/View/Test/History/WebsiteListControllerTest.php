@@ -15,22 +15,6 @@ class WebsiteListControllerTest extends AbstractBaseTestCase
 {
     const ROUTE_NAME = 'view_test_history_websitelist_index';
 
-    /**
-     * @var WebsiteListController
-     */
-    private $websiteListController;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->websiteListController = new WebsiteListController();
-        $this->websiteListController->setContainer($this->container);
-    }
-
     public function testIndexActionInvalidUserGetRequest()
     {
         $this->setCoreApplicationHttpClientHttpFixtures([
@@ -48,7 +32,7 @@ class WebsiteListControllerTest extends AbstractBaseTestCase
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
-        $this->assertTrue($response->isRedirect('http://localhost/signout/'));
+        $this->assertTrue($response->isRedirect('/signout/'));
     }
 
     public function testIndexActionPublicUserGetRequest()
@@ -89,8 +73,10 @@ class WebsiteListControllerTest extends AbstractBaseTestCase
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
+        $websiteListController = $this->container->get(WebsiteListController::class);
+
         /* @var JsonResponse $response */
-        $response = $this->websiteListController->indexAction();
+        $response = $websiteListController->indexAction();
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals($expectedResponseData, json_decode($response->getContent()));

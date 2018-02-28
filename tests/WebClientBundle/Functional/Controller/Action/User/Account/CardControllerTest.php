@@ -8,7 +8,7 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class UserAccountCardControllerTest extends AbstractUserAccountControllerTest
+class CardControllerTest extends AbstractUserAccountControllerTest
 {
     const ROUTE_NAME = 'user_account_card_associate';
 
@@ -27,7 +27,7 @@ class UserAccountCardControllerTest extends AbstractUserAccountControllerTest
     {
         parent::setUp();
 
-        $this->userAccountCardController = new CardController();
+        $this->userAccountCardController = $this->container->get(CardController::class);
     }
 
     /**

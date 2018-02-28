@@ -29,8 +29,7 @@ class InviteControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->inviteController = new InviteController();
-        $this->inviteController->setContainer($this->container);
+        $this->inviteController = $this->container->get(InviteController::class);
     }
 
     public function testAcceptActionPostRequest()
@@ -60,7 +59,7 @@ class InviteControllerTest extends AbstractBaseTestCase
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
-        $this->assertTrue($response->isRedirect('http://localhost/'));
+        $this->assertTrue($response->isRedirect('/'));
     }
 
     /**
@@ -125,7 +124,7 @@ class InviteControllerTest extends AbstractBaseTestCase
                 'httpFixtures' => [],
                 'token' => '',
                 'request' => new Request(),
-                'expectedRedirectUrl' => 'http://localhost/signup/',
+                'expectedRedirectUrl' => '/signup/',
                 'expectedErrorFlashBagValues' => [],
                 'expectedFailureFlashBagValues' => [],
             ],
@@ -135,7 +134,7 @@ class InviteControllerTest extends AbstractBaseTestCase
                 ],
                 'token' => 'invalid token',
                 'request' => new Request(),
-                'expectedRedirectUrl' => 'http://localhost/signup/',
+                'expectedRedirectUrl' => '/signup/',
                 'expectedErrorFlashBagValues' => [],
                 'expectedFailureFlashBagValues' => [],
             ],
@@ -145,7 +144,7 @@ class InviteControllerTest extends AbstractBaseTestCase
                 ],
                 'token' => self::TOKEN,
                 'request' => new Request(),
-                'expectedRedirectUrl' => 'http://localhost/signup/invite/tokenValue/',
+                'expectedRedirectUrl' => '/signup/invite/tokenValue/',
                 'expectedErrorFlashBagValues' => [
                     InviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_PASSWORD_BLANK,
                 ],
@@ -165,7 +164,7 @@ class InviteControllerTest extends AbstractBaseTestCase
                 'request' => new Request([], [
                     'password' => self::PASSWORD,
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/signup/invite/tokenValue/',
+                'expectedRedirectUrl' => '/signup/invite/tokenValue/',
                 'expectedErrorFlashBagValues' => [
                     InviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_FAILURE,
                 ],
@@ -187,7 +186,7 @@ class InviteControllerTest extends AbstractBaseTestCase
                 'request' => new Request([], [
                     'password' => self::PASSWORD,
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/signup/invite/tokenValue/',
+                'expectedRedirectUrl' => '/signup/invite/tokenValue/',
                 'expectedErrorFlashBagValues' => [
                     InviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_FAILURE,
                 ],
@@ -227,7 +226,7 @@ class InviteControllerTest extends AbstractBaseTestCase
         $response = $this->inviteController->acceptAction($request, self::TOKEN);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/', $response->getTargetUrl());
+        $this->assertEquals('/', $response->getTargetUrl());
 
         $this->assertTrue($resqueQueueService->contains(
             'email-list-subscribe',

@@ -23,7 +23,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
     const USER_USERNAME = 'user@example.com';
     const INVITEE_EMAIL = 'invitee@example.com';
     const TEAM_NAME = 'Team Name';
-    const EXPECTED_REDIRECT_URL = 'http://localhost/account/team/';
+    const EXPECTED_REDIRECT_URL = '/account/team/';
 
     /**
      * @var User
@@ -112,7 +112,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         /* @var RedirectResponse $response */
-        $response = $this->teamInviteController->resendInviteAction(new Request([], [
+        $response = $this->callResendInviteAction(new Request([], [
             'user' => self::INVITEE_EMAIL,
         ]));
 
@@ -181,7 +181,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
         $mailService->setPostmarkMessage($postmarkMessage);
 
         /* @var RedirectResponse $response */
-        $response = $this->teamInviteController->resendInviteAction(new Request([], [
+        $response = $this->callResendInviteAction(new Request([], [
             'user' => self::INVITEE_EMAIL,
         ]));
 
@@ -253,7 +253,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
         $mailService->setPostmarkMessage($postmarkMessage);
 
         /* @var RedirectResponse $response */
-        $response = $this->teamInviteController->resendInviteAction(new Request([], [
+        $response = $this->callResendInviteAction(new Request([], [
             'user' => self::INVITEE_EMAIL,
         ]));
 
@@ -301,5 +301,25 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
                 ],
             ],
         ];
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return RedirectResponse
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     * @throws MailConfigurationException
+     */
+    private function callResendInviteAction(Request $request)
+    {
+        return $this->teamInviteController->resendInviteAction(
+            $this->container->get(MailService::class),
+            $this->container->get('twig'),
+            $request
+        );
     }
 }

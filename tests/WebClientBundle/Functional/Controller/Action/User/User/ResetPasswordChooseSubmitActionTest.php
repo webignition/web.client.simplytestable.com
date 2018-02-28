@@ -44,7 +44,7 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
         $response = $this->client->getResponse();
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/', $response->getTargetUrl());
+        $this->assertEquals('/', $response->getTargetUrl());
     }
 
     /**
@@ -71,8 +71,6 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
         $session = $this->container->get('session');
 
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
-
-        $this->userController->setContainer($this->container);
 
         /* @var RedirectResponse $response */
         $response = $this->userController->resetPasswordChooseSubmitAction($request);
@@ -108,7 +106,7 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
                     'token' => self::TOKEN,
                     'password' => self::PASSWORD,
                 ]),
-                'expectedRedirectLocation' => 'http://localhost/reset-password/',
+                'expectedRedirectLocation' => '/reset-password/',
                 'expectedFlashBagValues' => [],
                 'expectedResponseHasUserCookie' => false,
             ],
@@ -121,7 +119,7 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
                     'token' => self::TOKEN,
                     'password' => self::PASSWORD,
                 ]),
-                'expectedRedirectLocation' => 'http://localhost/reset-password/',
+                'expectedRedirectLocation' => '/reset-password/',
                 'expectedFlashBagValues' => [],
                 'expectedResponseHasUserCookie' => false,
             ],
@@ -134,7 +132,7 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
                     'token' => '',
                     'password' => self::PASSWORD,
                 ]),
-                'expectedRedirectLocation' => 'http://localhost/reset-password/',
+                'expectedRedirectLocation' => '/reset-password/',
                 'expectedFlashBagValues' => [],
                 'expectedResponseHasUserCookie' => false,
             ],
@@ -147,7 +145,7 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
                     'token' => self::TOKEN,
                     'password' => self::PASSWORD,
                 ]),
-                'expectedRedirectLocation' => 'http://localhost/reset-password/',
+                'expectedRedirectLocation' => '/reset-password/',
                 'expectedFlashBagValues' => [],
                 'expectedResponseHasUserCookie' => false,
             ],
@@ -161,7 +159,7 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
                     'token' => 'foo',
                     'password' => self::PASSWORD,
                 ]),
-                'expectedRedirectLocation' => 'http://localhost/reset-password/user@example.com/foo/?stay-signed-in=0',
+                'expectedRedirectLocation' => '/reset-password/user@example.com/foo/?stay-signed-in=0',
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_RESET_PASSWORD_ERROR_KEY => [
                         UserController::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_TOKEN_INVALID,
@@ -180,7 +178,7 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
                     'password' => '',
                 ]),
                 'expectedRedirectLocation' =>
-                    'http://localhost/reset-password/user@example.com/confirmation-token/?stay-signed-in=0',
+                    '/reset-password/user@example.com/confirmation-token/?stay-signed-in=0',
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_RESET_PASSWORD_ERROR_KEY => [
                         UserController::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_PASSWORD_BLANK,
@@ -203,7 +201,7 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
                     'password' => self::PASSWORD,
                 ]),
                 'expectedRedirectLocation' =>
-                    'http://localhost/reset-password/user@example.com/confirmation-token/?stay-signed-in=0',
+                    '/reset-password/user@example.com/confirmation-token/?stay-signed-in=0',
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_RESET_PASSWORD_ERROR_KEY => [
                         UserController::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_FAILED_READ_ONLY,
@@ -222,7 +220,7 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
                     'token' => self::TOKEN,
                     'password' => self::PASSWORD,
                 ]),
-                'expectedRedirectLocation' => 'http://localhost/',
+                'expectedRedirectLocation' => '/',
                 'expectedFlashBagValues' => [],
                 'expectedResponseHasUserCookie' => false,
             ],
@@ -238,7 +236,7 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
                     'password' => self::PASSWORD,
                     'stay-signed-in' => 1,
                 ]),
-                'expectedRedirectLocation' => 'http://localhost/',
+                'expectedRedirectLocation' => '/',
                 'expectedFlashBagValues' => [],
                 'expectedResponseHasUserCookie' => true,
             ],

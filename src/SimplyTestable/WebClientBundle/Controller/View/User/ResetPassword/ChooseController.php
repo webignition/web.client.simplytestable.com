@@ -5,17 +5,47 @@ namespace SimplyTestable\WebClientBundle\Controller\View\User\ResetPassword;
 use SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword\IndexController
     as ResetPasswordActionController;
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Controller\View\User\AbstractUserController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
-class ChooseController extends BaseViewController
+class ChooseController extends AbstractUserController
 {
+    /**
+     * @var UserService
+     */
+    private $userService;
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param UserService $userService
+     * @param FlashBagValues $flashBagValues
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        UserService $userService,
+        FlashBagValues $flashBagValues
+    ) {
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator, $flashBagValues);
+
+        $this->userService = $userService;
+    }
+
     /**
      * @param Request $request
      * @param string $email
@@ -29,14 +59,9 @@ class ChooseController extends BaseViewController
      */
     public function indexAction(Request $request, $email, $token)
     {
-        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
-        $userService = $this->container->get(UserService::class);
-        $flashBagValuesService = $this->container->get(FlashBagValues::class);
-        $templating = $this->container->get('templating');
-
         $staySignedIn = $request->query->get('stay-signed-in');
-        $actualToken = $userService->getConfirmationToken($email);
-        $userResetPasswordError = $flashBagValuesService->getSingle(
+        $actualToken = $this->userService->getConfirmationToken($email);
+        $userResetPasswordError = $this->flashBagValues->getSingle(
             ResetPasswordActionController::FLASH_BAG_REQUEST_ERROR_KEY
         );
 
@@ -51,19 +76,16 @@ class ChooseController extends BaseViewController
             'user_reset_password_error' => $userResetPasswordError,
         ];
 
-        $response = $cacheValidatorService->createResponse($request, $viewData);
+        $response = $this->cacheValidator->createResponse($request, $viewData);
 
-        if ($cacheValidatorService->isNotModified($response)) {
+        if ($this->cacheValidator->isNotModified($response)) {
             return $response;
         }
 
-        $content = $templating->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/User/ResetPassword/Choose:index.html.twig',
-            array_merge($this->getDefaultViewParameters(), $viewData)
+            $viewData,
+            $response
         );
-
-        $response->setContent($content);
-
-        return $response;
     }
 }

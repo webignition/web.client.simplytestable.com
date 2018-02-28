@@ -2,16 +2,45 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\User\SignUp;
 
-use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Controller\View\User\AbstractUserController;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
-class ConfirmController extends BaseViewController
+class ConfirmController extends AbstractUserController
 {
+    /**
+     * @var UserService
+     */
+    private $userService;
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param FlashBagValues $flashBagValues
+     * @param UserService $userService
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        FlashBagValues $flashBagValues,
+        UserService $userService
+    ) {
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator, $flashBagValues);
+
+        $this->userService = $userService;
+    }
+
     /**
      * @param Request $request
      * @param string $email
@@ -23,11 +52,6 @@ class ConfirmController extends BaseViewController
      */
     public function indexAction(Request $request, $email)
     {
-        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
-        $userService = $this->container->get(UserService::class);
-        $flashBagValuesService = $this->container->get(FlashBagValues::class);
-        $templating = $this->container->get('templating');
-
         $notificationKeys = [
             'token_resend_confirmation',
             'user_create_confirmation',
@@ -38,14 +62,14 @@ class ConfirmController extends BaseViewController
         $viewData = array_merge([
             'email' => $email,
             'token' => trim($request->query->get('token')),
-        ], $flashBagValuesService->get([
+        ], $this->flashBagValues->get([
             'token_resend_confirmation',
             'user_create_confirmation',
             'user_token_error',
             'token_resend_error',
         ]));
 
-        if (!$userService->exists($email)) {
+        if (!$this->userService->exists($email)) {
             $viewData['user_error'] = 'invalid-user';
         }
 
@@ -54,22 +78,19 @@ class ConfirmController extends BaseViewController
             $viewData['user_error'] = 'invalid-user';
         }
 
-        $response = $cacheValidatorService->createResponse($request, $viewData);
+        $response = $this->cacheValidator->createResponse($request, $viewData);
 
-        if ($cacheValidatorService->isNotModified($response)) {
+        if ($this->cacheValidator->isNotModified($response)) {
             return $response;
         }
 
         $viewData['has_notification'] = $this->hasNotification($notificationKeys, $viewData);
 
-        $content = $templating->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/User/SignUp/Confirm:index.html.twig',
-            array_merge($this->getDefaultViewParameters(), $viewData)
+            $viewData,
+            $response
         );
-
-        $response->setContent($content);
-
-        return $response;
     }
 
     /**

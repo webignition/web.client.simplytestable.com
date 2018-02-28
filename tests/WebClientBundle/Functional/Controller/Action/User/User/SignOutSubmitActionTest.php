@@ -24,7 +24,7 @@ class SignOutSubmitActionTest extends AbstractUserControllerTest
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
-        $this->assertEquals('http://localhost/', $response->getTargetUrl());
+        $this->assertEquals('/', $response->getTargetUrl());
     }
 
     public function testSignOutSubmitAction()
@@ -34,13 +34,11 @@ class SignOutSubmitActionTest extends AbstractUserControllerTest
         $user = new User(self::USER_EMAIL);
         $userManager->setUser($user);
 
-        $this->userController->setContainer($this->container);
-
         /* @var RedirectResponse $response */
         $response = $this->userController->signOutSubmitAction();
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/', $response->getTargetUrl());
+        $this->assertEquals('/', $response->getTargetUrl());
 
         /* @var Cookie[] $responseCookies */
         $responseCookies = $response->headers->getCookies();

@@ -3,8 +3,8 @@
 {% set next_plan = null %}
 
 {% for plan in plans %}
-    {% if plan.credits_per_month > credits_used and next_plan is null %}
-        {% set next_plan = plan %}
+    {% if plan.accountPlan.creditsPerMonth > credits_used and next_plan is null %}
+        {% set next_plan = plan.accountPlan %}
     {% endif %}
 {% endfor %}
 
@@ -29,7 +29,7 @@
     </div>
 {% else %}
     {% set is_next_plan_free = next_plan.price == 0 %}
-    {% set credit_increase_factor = (next_plan.credits_per_month / userSummary.planConstraints.credits.limit) %}
+    {% set credit_increase_factor = (next_plan.creditsPerMonth / userSummary.planConstraints.credits.limit) %}
 
     <p class="lead">
         You have reached your account's monthly limit of <strong>{{ remote_test.rejection.constraint.limit|number_format }}</strong>

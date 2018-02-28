@@ -5,7 +5,6 @@ namespace Tests\WebClientBundle\Functional\Controller\Stripe;
 use Mockery\Mock;
 use SimplyTestable\WebClientBundle\Controller\Stripe\EventController;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
@@ -15,30 +14,11 @@ class EventControllerTest extends AbstractBaseTestCase
     const ROUTE_NAME = 'action_user_resetpassword_index_request';
     const EMAIL = 'user@example.com';
 
-    /**
-     * @var EventController
-     */
-    private $eventController;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->eventController = new EventController();
-    }
-
     public function testIndexActionEventHasNoUser()
     {
-        $container = $this->createContainer([
-            'event_dispatcher' => null,
-        ]);
+        $eventController = $this->container->get(EventController::class);
 
-        $this->eventController->setContainer($container);
-
-        $response = $this->eventController->indexAction(new Request());
+        $response = $eventController->indexAction(new Request());
 
         $this->assertTrue($response->isClientError());
     }
@@ -52,13 +32,9 @@ class EventControllerTest extends AbstractBaseTestCase
             ->with('stripe.customer.subscription.created')
             ->andReturn([]);
 
-        $container = $this->createContainer([
-            'event_dispatcher' => $eventDispatcher,
-        ]);
+        $eventController = new EventController($eventDispatcher);
 
-        $this->eventController->setContainer($container);
-
-        $response = $this->eventController->indexAction(new Request([], [
+        $response = $eventController->indexAction(new Request([], [
             'event' => 'customer.subscription.created',
             'user' => 'user@example.com',
         ]));
@@ -91,34 +67,13 @@ class EventControllerTest extends AbstractBaseTestCase
                 return true;
             });
 
-        $container = $this->createContainer([
-            'event_dispatcher' => $eventDispatcher,
-        ]);
+        $eventController = new EventController($eventDispatcher);
 
-        $this->eventController->setContainer($container);
-
-        $response = $this->eventController->indexAction(new Request([], [
+        $response = $eventController->indexAction(new Request([], [
             'event' => 'customer.subscription.created',
             'user' => 'user@example.com',
         ]));
 
         $this->assertTrue($response->isSuccessful());
-    }
-
-    /**
-     * @param array $services
-     * @return Mock|ContainerInterface
-     */
-    private function createContainer($services = [])
-    {
-        /* @var ContainerInterface|Mock $container */
-        $container = \Mockery::mock(ContainerInterface::class);
-
-        $container
-            ->shouldReceive('get')
-            ->with('event_dispatcher')
-            ->andReturn($services['event_dispatcher']);
-
-        return $container;
     }
 }

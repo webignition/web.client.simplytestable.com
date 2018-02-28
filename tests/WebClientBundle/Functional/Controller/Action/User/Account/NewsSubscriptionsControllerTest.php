@@ -31,8 +31,7 @@ class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
     {
         parent::setUp();
 
-        $this->newsSubscriptionsController = new NewsSubscriptionsController();
-        $this->newsSubscriptionsController->setContainer($this->container);
+        $this->newsSubscriptionsController = $this->container->get(NewsSubscriptionsController::class);
     }
 
     /**
@@ -61,7 +60,7 @@ class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
-        $this->assertTrue($response->isRedirect('http://localhost/signout/'));
+        $this->assertTrue($response->isRedirect('/signout/'));
     }
 
     /**
@@ -119,7 +118,7 @@ class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
         $response = $this->newsSubscriptionsController->updateAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertTrue($response->isRedirect('http://localhost/account/#news-subscriptions'));
+        $this->assertTrue($response->isRedirect('/account/#news-subscriptions'));
 
         $this->assertEquals(
             $expectedFlashBagValues,

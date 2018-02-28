@@ -63,7 +63,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         $response = $this->client->getResponse();
 
         $this->assertEquals(
-            'http://localhost/signup/confirm/user@example.com/',
+            '/signup/confirm/user@example.com/',
             $response->getTargetUrl()
         );
     }
@@ -87,10 +87,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
     ) {
         $session = $this->container->get('session');
 
-        $this->userController->setContainer($this->container);
-
-        /* @var RedirectResponse $response */
-        $response = $this->userController->signUpSubmitAction($request);
+        $response = $this->callSignUpSubmitAction($request);
 
         $this->assertEquals($expectedRedirectLocation, $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -106,7 +103,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                 'request' => new Request([], [
                     'plan' => 'basic',
                 ]),
-                'expectedRedirectLocation' => 'http://localhost/signup/?plan=basic',
+                'expectedRedirectLocation' => '/signup/?plan=basic',
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_UP_ERROR_KEY => [
                         UserController::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_BLANK,
@@ -118,7 +115,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                     'plan' => 'basic',
                     'email' => 'foo',
                 ]),
-                'expectedRedirectLocation' => 'http://localhost/signup/?email=foo&plan=basic',
+                'expectedRedirectLocation' => '/signup/?email=foo&plan=basic',
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_UP_ERROR_KEY => [
                         UserController::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_INVALID,
@@ -130,7 +127,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                     'plan' => 'basic',
                     'email' => 'user@example.com',
                 ]),
-                'expectedRedirectLocation' => 'http://localhost/signup/?email=user%40example.com&plan=basic',
+                'expectedRedirectLocation' => '/signup/?email=user%40example.com&plan=basic',
                 'expectedFlashBagValues' => [
                     'user_create_prefil' => [
                         'user@example.com',
@@ -170,10 +167,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             'password' => 'password',
         ]);
 
-        $this->userController->setContainer($this->container);
-
-        /* @var RedirectResponse $response */
-        $response = $this->userController->signUpSubmitAction($request);
+        $response = $this->callSignUpSubmitAction($request);
 
         $this->assertEquals($expectedRedirectLocation, $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -189,7 +183,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createRedirectResponse(),
                 ],
-                'expectedRedirectLocation' => 'http://localhost/signup/?email=user%40example.com',
+                'expectedRedirectLocation' => '/signup/?email=user%40example.com',
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_UP_SUCCESS_KEY => [
                         UserController::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS,
@@ -203,7 +197,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                     HttpResponseFactory::createServiceUnavailableResponse(),
                     HttpResponseFactory::createServiceUnavailableResponse(),
                 ],
-                'expectedRedirectLocation' => 'http://localhost/signup/?email=user%40example.com&plan=basic',
+                'expectedRedirectLocation' => '/signup/?email=user%40example.com&plan=basic',
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_UP_ERROR_KEY => [
                         UserController::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_READ_ONLY,
@@ -217,7 +211,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                     HttpResponseFactory::createInternalServerErrorResponse(),
                     HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
-                'expectedRedirectLocation' => 'http://localhost/signup/?email=user%40example.com&plan=basic',
+                'expectedRedirectLocation' => '/signup/?email=user%40example.com&plan=basic',
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_UP_ERROR_KEY => [
                         UserController::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_UNKNOWN,
@@ -259,13 +253,10 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
-        $this->userController->setContainer($this->container);
-
-        /* @var RedirectResponse $response */
-        $response = $this->userController->signUpSubmitAction($request);
+        $response = $this->callSignUpSubmitAction($request);
 
         $this->assertEquals(
-            'http://localhost/signup/?email=user%40example.com&plan=basic',
+            '/signup/?email=user%40example.com&plan=basic',
             $response->getTargetUrl()
         );
 
@@ -395,15 +386,12 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
-        $this->userController->setContainer($this->container);
-
         $couponService->setCouponData($couponData);
 
-        /* @var RedirectResponse $response */
-        $response = $this->userController->signUpSubmitAction($request);
+        $response = $this->callSignUpSubmitAction($request);
 
         $this->assertEquals(
-            'http://localhost/signup/confirm/user@example.com/',
+            '/signup/confirm/user@example.com/',
             $response->getTargetUrl()
         );
 
@@ -482,5 +470,25 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                 ],
             ],
         ];
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return RedirectResponse
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws MailConfigurationException
+     */
+    private function callSignUpSubmitAction(Request $request)
+    {
+        return $this->userController->signUpSubmitAction(
+            $this->container->get(MailService::class),
+            $this->container->get(CouponService::class),
+            $this->container->get('twig'),
+            $request
+        );
     }
 }

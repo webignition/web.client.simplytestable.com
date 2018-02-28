@@ -7,7 +7,7 @@ use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 use SimplyTestable\WebClientBundle\Services\PostmarkSender;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
-use SimplyTestable\WebClientBundle\Services\Mail\Configuration as MailConfiguration;
+use SimplyTestable\WebClientBundle\Services\Configuration\MailConfiguration as MailConfiguration;
 
 class ServiceTest extends AbstractBaseTestCase
 {

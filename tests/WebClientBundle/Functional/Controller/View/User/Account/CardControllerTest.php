@@ -9,28 +9,20 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
-use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
-use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
+use Twig_Environment;
 
-class CardControllerTest extends AbstractBaseTestCase
+class CardControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/Account/Card:index.html.twig';
     const ROUTE_NAME = 'view_user_account_card_index';
 
     const USER_EMAIL = 'user@example.com';
-
-    /**
-     * @var CardController
-     */
-    private $cardController;
 
     /**
      * @var array
@@ -55,16 +47,6 @@ class CardControllerTest extends AbstractBaseTestCase
             'id' => 'cus_aaaaaaaaaaaaa0',
         ],
     ];
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->cardController = new CardController();
-    }
 
     /**
      * @dataProvider indexActionInvalidGetRequestDataProvider
@@ -97,14 +79,14 @@ class CardControllerTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'expectedRedirectUrl' => 'http://localhost/signout/',
+                'expectedRedirectUrl' => '/signout/',
             ],
             'public user' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse()
                 ],
                 'expectedRedirectUrl' =>
-                    'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2NhcmRfaW5kZXgifQ%3D%3D'
+                    '/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2NhcmRfaW5kZXgifQ%3D%3D'
             ],
         ];
     }
@@ -131,6 +113,7 @@ class CardControllerTest extends AbstractBaseTestCase
 
         /* @var Response $response */
         $response = $this->client->getResponse();
+
         $this->assertTrue($response->isSuccessful());
     }
 
@@ -159,20 +142,21 @@ class CardControllerTest extends AbstractBaseTestCase
             ]),
         ]);
 
-        $this->cardController->setContainer($this->container);
+        /* @var CardController $cardController */
+        $cardController = $this->container->get(CardController::class);
 
         /* @var RedirectResponse $response */
-        $response = $this->cardController->indexAction();
+        $response = $cardController->indexAction();
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/account/', $response->getTargetUrl());
+        $this->assertEquals('/account/', $response->getTargetUrl());
     }
 
     /**
      * @dataProvider indexActionRenderDataProvider
      *
      * @param array $httpFixtures
-     * @param EngineInterface $templatingEngine
+     * @param Twig_Environment $twig
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
@@ -180,7 +164,7 @@ class CardControllerTest extends AbstractBaseTestCase
      */
     public function testIndexActionRender(
         array $httpFixtures,
-        EngineInterface $templatingEngine
+        Twig_Environment $twig
     ) {
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
@@ -197,25 +181,11 @@ class CardControllerTest extends AbstractBaseTestCase
             }
         }
 
-        $containerFactory = new ContainerFactory($this->container);
-        $container = $containerFactory->create(
-            [
-                'router',
-                UserService::class,
-                TeamService::class,
-                UserManager::class,
-            ],
-            [
-                'templating' => $templatingEngine,
-            ],
-            [
-                'stripe_publishable_key',
-            ]
-        );
+        /* @var CardController $cardController */
+        $cardController = $this->container->get(CardController::class);
+        $this->setTwigOnController($twig, $cardController);
 
-        $this->cardController->setContainer($container);
-
-        $response = $this->cardController->indexAction();
+        $response = $cardController->indexAction();
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -234,7 +204,7 @@ class CardControllerTest extends AbstractBaseTestCase
                         ],
                     ])),
                 ],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -263,7 +233,7 @@ class CardControllerTest extends AbstractBaseTestCase
                         'members' => [],
                     ]),
                 ],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);

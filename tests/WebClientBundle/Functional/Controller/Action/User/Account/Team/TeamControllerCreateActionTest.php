@@ -13,7 +13,7 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
 {
     const ROUTE_NAME = 'action_user_account_team_create';
     const TEAM_NAME = 'Team Name';
-    const EXPECTED_REDIRECT_URL = 'http://localhost/account/team/';
+    const EXPECTED_REDIRECT_URL = '/account/team/';
 
     /**
      * {@inheritdoc}

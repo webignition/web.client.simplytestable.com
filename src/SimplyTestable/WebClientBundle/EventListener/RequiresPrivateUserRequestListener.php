@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\EventListener;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresPrivateUser as RequiresPrivateUserController;
 use Symfony\Component\Routing\RouterInterface;
@@ -28,10 +29,10 @@ class RequiresPrivateUserRequestListener extends AbstractRequestListener
 
     /**
      * @param UserManager $userManager
-     * @param Session $session
+     * @param SessionInterface $session
      * @param RouterInterface $router
      */
-    public function __construct(UserManager $userManager, Session $session, RouterInterface $router)
+    public function __construct(UserManager $userManager, SessionInterface $session, RouterInterface $router)
     {
         $this->userManager = $userManager;
         $this->session = $session;

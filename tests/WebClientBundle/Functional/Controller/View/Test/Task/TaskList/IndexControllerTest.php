@@ -25,11 +25,6 @@ class IndexControllerTest extends AbstractBaseTestCase
     const USER_EMAIL = 'user@example.com';
 
     /**
-     * @var IndexController
-     */
-    private $indexController;
-
-    /**
      * @var array
      */
     private $remoteTestData = [
@@ -59,16 +54,6 @@ class IndexControllerTest extends AbstractBaseTestCase
         ],
     ];
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->indexController = new IndexController();
-    }
-
     public function testIndexActionInvalidUserGetRequest()
     {
         $this->setCoreApplicationHttpClientHttpFixtures([
@@ -89,7 +74,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/signout/', $response->getTargetUrl());
+        $this->assertEquals('/signout/', $response->getTargetUrl());
     }
 
     public function testIndexActionInvalidOwnerGetRequest()
@@ -160,9 +145,10 @@ class IndexControllerTest extends AbstractBaseTestCase
     ) {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->indexController->setContainer($this->container);
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
 
-        $response = $this->indexController->indexAction(
+        $response = $indexController->indexAction(
             $request,
             self::WEBSITE,
             self::TEST_ID
@@ -227,9 +213,10 @@ class IndexControllerTest extends AbstractBaseTestCase
     ) {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
-        $this->indexController->setContainer($this->container);
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
 
-        $response = $this->indexController->indexAction(
+        $response = $indexController->indexAction(
             $request,
             self::WEBSITE,
             self::TEST_ID
@@ -443,9 +430,10 @@ class IndexControllerTest extends AbstractBaseTestCase
             'taskIds' => [2],
         ]);
 
-        $this->indexController->setContainer($this->container);
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
 
-        $response = $this->indexController->indexAction(
+        $response = $indexController->indexAction(
             $request,
             self::WEBSITE,
             self::TEST_ID
@@ -459,7 +447,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $this->indexController->indexAction(
+        $newResponse = $indexController->indexAction(
             $newRequest,
             self::WEBSITE,
             self::TEST_ID

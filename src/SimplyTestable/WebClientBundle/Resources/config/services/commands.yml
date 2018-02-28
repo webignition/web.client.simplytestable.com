@@ -1,51 +1,7 @@
 services:
-  SimplyTestable\WebClientBundle\Command\CacheValidator\ClearCommand:
-    class: SimplyTestable\WebClientBundle\Command\CacheValidator\ClearCommand
-    arguments:
-      - '@SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService'
-    tags:
-      - { name: console.command }
-
-  SimplyTestable\WebClientBundle\Command\EmailList\RetrieveRecipientsCommand:
-    class: SimplyTestable\WebClientBundle\Command\EmailList\RetrieveRecipientsCommand
-    arguments:
-      - '@SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService'
-      - '@doctrine.orm.entity_manager'
-      - '@SimplyTestable\WebClientBundle\Services\MailChimp\Service'
-    tags:
-      - { name: console.command }
-
-  SimplyTestable\WebClientBundle\Command\EmailList\SubscribeCommand:
-    class: SimplyTestable\WebClientBundle\Command\EmailList\SubscribeCommand
-    arguments:
-      - '@SimplyTestable\WebClientBundle\Services\MailChimp\Service'
-    tags:
-      - { name: console.command }
-
-  SimplyTestable\WebClientBundle\Command\EmailList\UnsubscribeCommand:
-    class: SimplyTestable\WebClientBundle\Command\EmailList\UnsubscribeCommand
-    arguments:
-      - '@SimplyTestable\WebClientBundle\Services\MailChimp\Service'
-    tags:
-      - { name: console.command }
-
-  SimplyTestable\WebClientBundle\Command\Migrate\AddHashToHashlessOutputCommand:
-    class: SimplyTestable\WebClientBundle\Command\Migrate\AddHashToHashlessOutputCommand
-    arguments:
-      - '@doctrine.orm.entity_manager'
-    tags:
-      - { name: console.command }
-
-  SimplyTestable\WebClientBundle\Command\Migrate\CanonicaliseTaskOutputCommand:
-    class: SimplyTestable\WebClientBundle\Command\Migrate\CanonicaliseTaskOutputCommand
-    arguments:
-      - '@doctrine.orm.entity_manager'
-    tags:
-      - { name: console.command }
-
-  SimplyTestable\WebClientBundle\Command\Migrate\RemoveUnusedOutputCommand:
-    class: SimplyTestable\WebClientBundle\Command\Migrate\RemoveUnusedOutputCommand
-    arguments:
-      - '@doctrine.orm.entity_manager'
+  SimplyTestable\WebClientBundle\Command\:
+    resource: '../../../Command'
+    autowire: true
+    public: false
     tags:
       - { name: console.command }

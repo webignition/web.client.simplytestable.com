@@ -20,7 +20,7 @@ use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 class ConfirmControllerTest extends AbstractBaseTestCase
 {
     const EMAIL = 'user@example.com';
-    const EXPECTED_REDIRECT_URL = 'http://localhost/signup/confirm/'. self::EMAIL .'/';
+    const EXPECTED_REDIRECT_URL = '/signup/confirm/'. self::EMAIL .'/';
 
     /**
      * @var ConfirmController
@@ -34,8 +34,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->confirmController = new ConfirmController();
-        $this->confirmController->setContainer($this->container);
+        $this->confirmController = $this->container->get(ConfirmController::class);
     }
 
     public function testResendActionPostRequest()

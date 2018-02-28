@@ -2,18 +2,47 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\User\SignUp;
 
-use SimplyTestable\WebClientBundle\Controller\BaseViewController;
+use SimplyTestable\WebClientBundle\Controller\View\User\AbstractUserController;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\FlashBagValues;
 use SimplyTestable\WebClientBundle\Services\TeamInviteService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\SignUp\Team\InviteController as ActionInviteController;
+use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
-class InviteController extends BaseViewController
+class InviteController extends AbstractUserController
 {
+    /**
+     * @var TeamInviteService
+     */
+    private $teamInviteService;
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param FlashBagValues $flashBagValues
+     * @param TeamInviteService $teamInviteService
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        FlashBagValues $flashBagValues,
+        TeamInviteService $teamInviteService
+    ) {
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator, $flashBagValues);
+
+        $this->teamInviteService = $teamInviteService;
+    }
+
     /**
      * @param Request $request
      * @param string $token
@@ -25,20 +54,15 @@ class InviteController extends BaseViewController
      */
     public function indexAction(Request $request, $token)
     {
-        $teamInviteService = $this->container->get(TeamInviteService::class);
-        $flashBagValuesService = $this->container->get(FlashBagValues::class);
-        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
-        $templating = $this->container->get('templating');
-
         $staySignedIn = $request->query->get('stay-signed-in');
 
-        $invite = $teamInviteService->getForToken($token);
-        $flashBagValues = $flashBagValuesService->get([
+        $invite = $this->teamInviteService->getForToken($token);
+        $flashBagValues = $this->flashBagValues->get([
             ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY,
             ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY,
         ]);
 
-        $response = $cacheValidatorService->createResponse($request, array_merge(
+        $response = $this->cacheValidator->createResponse($request, array_merge(
             [
                 'token' => $token,
                 'invite' => json_encode($invite),
@@ -48,7 +72,7 @@ class InviteController extends BaseViewController
             $flashBagValues
         ));
 
-        if ($cacheValidatorService->isNotModified($response)) {
+        if ($this->cacheValidator->isNotModified($response)) {
             return $response;
         }
 
@@ -62,13 +86,10 @@ class InviteController extends BaseViewController
             $flashBagValues
         );
 
-        $content = $templating->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/User/SignUp/Invite:index.html.twig',
-            array_merge($this->getDefaultViewParameters(), $viewData)
+            $viewData,
+            $response
         );
-
-        $response->setContent($content);
-
-        return $response;
     }
 }

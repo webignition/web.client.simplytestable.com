@@ -12,29 +12,20 @@ use SimplyTestable\WebClientBundle\Model\Team\Invite;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
-use SimplyTestable\WebClientBundle\Services\TeamInviteService;
-use SimplyTestable\WebClientBundle\Services\TeamService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserService;
-use Tests\WebClientBundle\Factory\ContainerFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
+use Twig_Environment;
 
-class IndexControllerTest extends AbstractBaseTestCase
+class IndexControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/Account/Team/Index:index.html.twig';
     const ROUTE_NAME = 'view_user_account_team_index_index';
 
     const USER_EMAIL = 'user@example.com';
-
-    /**
-     * @var IndexController
-     */
-    private $indexController;
 
     /**
      * @var array
@@ -59,16 +50,6 @@ class IndexControllerTest extends AbstractBaseTestCase
             'id' => 'cus_aaaaaaaaaaaaa0',
         ],
     ];
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->indexController = new IndexController();
-    }
 
     /**
      * @dataProvider indexActionInvalidGetRequestDataProvider
@@ -101,14 +82,14 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse()
                 ],
-                'expectedRedirectUrl' => 'http://localhost/signout/',
+                'expectedRedirectUrl' => '/signout/',
             ],
             'public user' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                 ],
                 'expectedRedirectUrl' =>
-                    'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNl'
+                    '/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNl'
                     .'cl9hY2NvdW50X3RlYW1faW5kZXhfaW5kZXgifQ%3D%3D'
             ],
         ];
@@ -144,7 +125,7 @@ class IndexControllerTest extends AbstractBaseTestCase
      *
      * @param array $httpFixtures
      * @param array $flashBagValues
-     * @param EngineInterface $templatingEngine
+     * @param Twig_Environment $twig
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
@@ -153,7 +134,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionRender(
         array $httpFixtures,
         array $flashBagValues,
-        EngineInterface $templatingEngine
+        Twig_Environment $twig
     ) {
         $userManager = $this->container->get(UserManager::class);
 
@@ -171,23 +152,11 @@ class IndexControllerTest extends AbstractBaseTestCase
             }
         }
 
-        $containerFactory = new ContainerFactory($this->container);
-        $container = $containerFactory->create(
-            [
-                'session',
-                UserService::class,
-                TeamService::class,
-                TeamInviteService::class,
-                UserManager::class,
-            ],
-            [
-                'templating' => $templatingEngine,
-            ]
-        );
+        /* @var IndexController $indexController */
+        $indexController = $this->container->get(IndexController::class);
+        $this->setTwigOnController($twig, $indexController);
 
-        $this->indexController->setContainer($container);
-
-        $response = $this->indexController->indexAction();
+        $response = $indexController->indexAction();
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -207,12 +176,12 @@ class IndexControllerTest extends AbstractBaseTestCase
                     ])),
                 ],
                 'flashBagValues' => [],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
 
-                            $this->assertEmpty($parameters['team_create_error']);
+                            $this->assertArrayNotHasKey('team_create_error', $parameters);
 
                             return true;
                         },
@@ -233,7 +202,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                     TeamController::FLASH_BAG_CREATE_ERROR_KEY =>
                         TeamController::FLASH_BAG_CREATE_ERROR_MESSAGE_NAME_BLANK,
                 ],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -268,7 +237,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                             'invitee@example.com',
                     ],
                 ],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -309,7 +278,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                         TeamInviteController::FLASH_BAG_KEY_INVITEE => 'invitee@example.com',
                     ],
                 ],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
@@ -349,12 +318,12 @@ class IndexControllerTest extends AbstractBaseTestCase
                     ]),
                 ],
                 'flashBagValues' => [],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
 
-                            $this->assertEmpty($parameters['team_create_error']);
+                            $this->assertArrayNotHasKey('team_create_error', $parameters);
                             $this->assertArrayHasKey('team', $parameters);
                             $this->assertInstanceOf(Team::class, $parameters['team']);
 
@@ -382,12 +351,12 @@ class IndexControllerTest extends AbstractBaseTestCase
                     HttpResponseFactory::createJsonResponse([]),
                 ],
                 'flashBagValues' => [],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
 
-                            $this->assertEmpty($parameters['team_create_error']);
+                            $this->assertArrayNotHasKey('team_create_error', $parameters);
 
                             $this->assertArrayHasKey('team', $parameters);
                             $this->assertInstanceOf(Team::class, $parameters['team']);
@@ -425,12 +394,12 @@ class IndexControllerTest extends AbstractBaseTestCase
                     ]),
                 ],
                 'flashBagValues' => [],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
 
-                            $this->assertEmpty($parameters['team_create_error']);
+                            $this->assertArrayNotHasKey('team_create_error', $parameters);
 
                             $this->assertArrayHasKey('team', $parameters);
                             $this->assertInstanceOf(Team::class, $parameters['team']);
@@ -462,12 +431,12 @@ class IndexControllerTest extends AbstractBaseTestCase
                     ]),
                 ],
                 'flashBagValues' => [],
-                'templatingEngine' => MockFactory::createTemplatingEngine([
+                'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
 
-                            $this->assertEmpty($parameters['team_create_error']);
+                            $this->assertArrayNotHasKey('team_create_error', $parameters);
 
                             $this->assertArrayHasKey('invites', $parameters);
                             $this->assertInternalType('array', $parameters['invites']);
@@ -506,7 +475,6 @@ class IndexControllerTest extends AbstractBaseTestCase
                 'is_logged_in',
                 'plan_presentation_name',
                 'user_summary',
-                'team_create_error',
             ],
             array_keys($parameters)
         );

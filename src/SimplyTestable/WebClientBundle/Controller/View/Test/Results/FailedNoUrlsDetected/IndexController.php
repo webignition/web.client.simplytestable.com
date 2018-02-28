@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
@@ -14,10 +15,51 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
 class IndexController extends BaseViewController implements RequiresValidUser
 {
+    /**
+     * @var TestService
+     */
+    private $testService;
+
+    /**
+     * @var UrlViewValuesService
+     */
+    private $urlViewValues;
+
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param CacheValidatorService $cacheValidator
+     * @param TestService $testService
+     * @param UrlViewValuesService $urlViewValues
+     * @param UserManager $userManager
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        CacheValidatorService $cacheValidator,
+        TestService $testService,
+        UrlViewValuesService $urlViewValues,
+        UserManager $userManager
+    ) {
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
+
+        $this->testService = $testService;
+        $this->urlViewValues = $urlViewValues;
+        $this->userManager = $userManager;
+    }
+
     /**
      * @param Request $request
      * @param string $website
@@ -33,13 +75,6 @@ class IndexController extends BaseViewController implements RequiresValidUser
             return $this->response;
         }
 
-        $testService = $this->container->get(TestService::class);
-        $router = $this->container->get('router');
-        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
-        $templating = $this->container->get('templating');
-        $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
-        $userManager = $this->container->get(UserManager::class);
-
         $viewRedirectParameters = [
             'route' => 'view_test_progress_index_index',
             'parameters' => [
@@ -50,56 +85,48 @@ class IndexController extends BaseViewController implements RequiresValidUser
 
         $redirectParametersAsString = base64_encode(json_encode($viewRedirectParameters));
 
-        $response = $cacheValidatorService->createResponse($request, [
+        $response = $this->cacheValidator->createResponse($request, [
             'website' => $website,
             'redirect' => $redirectParametersAsString
         ]);
 
-        if ($cacheValidatorService->isNotModified($response)) {
+        if ($this->cacheValidator->isNotModified($response)) {
             return $response;
         }
 
-        $user = $userManager->getUser();
+        $user = $this->userManager->getUser();
 
-        $test = $testService->get($website, $test_id);
+        $test = $this->testService->get($website, $test_id);
 
         if ($test->getWebsite() != $website) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'app_test_redirector',
                 [
                     'website' => $test->getWebsite(),
                     'test_id' => $test_id
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 
         $testStateIsCorrect = Test::STATE_FAILED_NO_SITEMAP === $test->getState();
 
         if (!$testStateIsCorrect || !SystemUserService::isPublicUser($user)) {
-            return new RedirectResponse($router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'view_test_progress_index_index',
                 [
                     'website' => $website,
                     'test_id' => $test_id
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 
-        $viewData = [
-            'website' => $urlViewValuesService->create($website),
-            'redirect' => $redirectParametersAsString,
-        ];
-
-        $content = $templating->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/Test/Results/FailedNoUrlsDetected/Index:index.html.twig',
-            array_merge($this->getDefaultViewParameters(), $viewData)
+            [
+                'website' => $this->urlViewValues->create($website),
+                'redirect' => $redirectParametersAsString,
+            ],
+            $response
         );
-
-        $response->setContent($content);
-        $response->headers->set('content-type', 'text/html');
-
-        return $response;
     }
 }

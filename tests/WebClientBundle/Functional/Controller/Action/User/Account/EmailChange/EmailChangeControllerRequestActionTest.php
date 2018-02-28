@@ -21,7 +21,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 {
     const ROUTE_NAME = 'action_user_account_emailchange_request';
     const NEW_EMAIL = 'new-email@example.com';
-    const EXPECTED_REDIRECT_URL = 'http://localhost/account/';
+    const EXPECTED_REDIRECT_URL = '/account/';
 
     /**
      * @var User
@@ -106,8 +106,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 
         $userManager->setUser($this->user);
 
-        /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->requestAction($request);
+        $response = $this->callRequestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
@@ -179,8 +178,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
             'email' => self::NEW_EMAIL,
         ]);
 
-        /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->requestAction($request);
+        $response = $this->callRequestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
@@ -258,8 +256,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
             'email' => self::NEW_EMAIL,
         ]);
 
-        /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->requestAction($request);
+        $response = $this->callRequestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
@@ -370,8 +367,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
             'email' => self::NEW_EMAIL,
         ]);
 
-        /* @var RedirectResponse $response */
-        $response = $this->emailChangeController->requestAction($request);
+        $response = $this->callRequestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
@@ -380,5 +376,25 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
                 EmailChangeController::FLASH_BAG_REQUEST_MESSAGE_SUCCESS,
             ],
         ], $session->getFlashBag()->peekAll());
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return RedirectResponse
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     * @throws MailConfigurationException
+     */
+    private function callRequestAction(Request $request)
+    {
+        return $this->emailChangeController->requestAction(
+            $this->container->get(MailService::class),
+            $this->container->get('twig'),
+            $request
+        );
     }
 }

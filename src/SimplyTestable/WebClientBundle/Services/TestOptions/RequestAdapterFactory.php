@@ -2,6 +2,7 @@
 namespace SimplyTestable\WebClientBundle\Services\TestOptions;
 
 use SimplyTestable\WebClientBundle\Services\TaskTypeService;
+use SimplyTestable\WebClientBundle\Services\Configuration\TestOptionsConfiguration;
 
 class RequestAdapterFactory
 {
@@ -23,13 +24,16 @@ class RequestAdapterFactory
     /**
      * @param RequestAdapter $requestAdapter
      * @param TaskTypeService $taskTypeService
-     * @param array $parameters
+     * @param TestOptionsConfiguration $testOptionsConfiguration
      */
-    public function __construct(RequestAdapter $requestAdapter, TaskTypeService $taskTypeService, array $parameters)
-    {
+    public function __construct(
+        RequestAdapter $requestAdapter,
+        TaskTypeService $taskTypeService,
+        TestOptionsConfiguration $testOptionsConfiguration
+    ) {
         $this->requestAdapter = $requestAdapter;
         $this->taskTypeService = $taskTypeService;
-        $this->parameters = $parameters;
+        $this->parameters = $testOptionsConfiguration->getConfiguration();
     }
 
     /**

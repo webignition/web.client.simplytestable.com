@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class EmailChangeControllerCancelActionTest extends AbstractEmailChangeControllerTest
 {
     const ROUTE_NAME = 'action_user_account_emailchange_cancel';
-    const EXPECTED_REDIRECT_URL = 'http://localhost/account/';
+    const EXPECTED_REDIRECT_URL = '/account/';
 
     /**
      * {@inheritdoc}

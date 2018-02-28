@@ -4,20 +4,106 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Dashboard;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
+use SimplyTestable\WebClientBundle\Services\Configuration\CssValidationTestConfiguration;
+use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\FlashBagValues;
+use SimplyTestable\WebClientBundle\Services\Configuration\JsStaticAnalysisTestConfiguration;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskTypeService;
 use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter as TestOptionsRequestAdapter;
-use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory;
+use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
+use SimplyTestable\WebClientBundle\Services\Configuration\TestOptionsConfiguration;
 use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
+use Twig_Environment;
 
 class IndexController extends BaseViewController implements RequiresValidUser
 {
+    /**
+     * @var TaskTypeService
+     */
+    private $taskTypeService;
+
+    /**
+     * @var TestOptionsRequestAdapterFactory
+     */
+    private $testOptionsAdapterFactory;
+
+    /**
+     * @var UrlViewValuesService
+     */
+    private $urlViewValuesService;
+
+    /**
+     * @var FlashBagValues
+     */
+    private $flashBagValues;
+
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
+     * @var TestOptionsConfiguration
+     */
+    private $testOptionsConfiguration;
+
+    /**
+     * @var CssValidationTestConfiguration
+     */
+    private $cssValidationTestConfiguration;
+
+    /**
+     * @var JsStaticAnalysisTestConfiguration
+     */
+    private $jsStaticAnalysisTestConfiguration;
+
+    /**
+     * @param RouterInterface $router
+     * @param Twig_Environment $twig
+     * @param DefaultViewParameters $defaultViewParameters
+     * @param TaskTypeService $taskTypeService
+     * @param TestOptionsRequestAdapterFactory $testOptionsAdapterFactory
+     * @param UrlViewValuesService $urlViewValuesService
+     * @param CacheValidatorService $cacheValidator
+     * @param FlashBagValues $flashBagValues
+     * @param UserManager $userManager
+     * @param TestOptionsConfiguration $testOptionsConfiguration
+     * @param CssValidationTestConfiguration $cssValidationTestConfiguration
+     * @param JsStaticAnalysisTestConfiguration $jsStaticAnalysisTestConfiguration
+     */
+    public function __construct(
+        RouterInterface $router,
+        Twig_Environment $twig,
+        DefaultViewParameters $defaultViewParameters,
+        TaskTypeService $taskTypeService,
+        TestOptionsRequestAdapterFactory $testOptionsAdapterFactory,
+        UrlViewValuesService $urlViewValuesService,
+        CacheValidatorService $cacheValidator,
+        FlashBagValues $flashBagValues,
+        UserManager $userManager,
+        TestOptionsConfiguration $testOptionsConfiguration,
+        CssValidationTestConfiguration $cssValidationTestConfiguration,
+        JsStaticAnalysisTestConfiguration $jsStaticAnalysisTestConfiguration
+    ) {
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
+
+        $this->taskTypeService = $taskTypeService;
+        $this->testOptionsAdapterFactory = $testOptionsAdapterFactory;
+        $this->urlViewValuesService = $urlViewValuesService;
+        $this->flashBagValues = $flashBagValues;
+        $this->userManager = $userManager;
+        $this->testOptionsConfiguration = $testOptionsConfiguration;
+        $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
+        $this->jsStaticAnalysisTestConfiguration = $jsStaticAnalysisTestConfiguration;
+    }
+
     /**
      * @param Request $request
      *
@@ -29,69 +115,57 @@ class IndexController extends BaseViewController implements RequiresValidUser
             return $this->response;
         }
 
-        $taskTypeService = $this->container->get(TaskTypeService::class);
-        $testOptionsAdapterFactory = $this->container->get(RequestAdapterFactory::class);
-        $urlViewValuesService = $this->container->get(UrlViewValuesService::class);
-        $cacheValidatorService = $this->container->get(CacheValidatorService::class);
-        $flashBagValuesService = $this->container->get(FlashBagValues::class);
-        $templating = $this->container->get('templating');
-        $userManager = $this->container->get(UserManager::class);
-
-        $user = $userManager->getUser();
+        $user = $this->userManager->getUser();
         $isLoggedIn = !SystemUserService::isPublicUser($user);
 
-        $taskTypeService->setUser($user);
+        $this->taskTypeService->setUser($user);
         if ($isLoggedIn) {
-            $taskTypeService->setUserIsAuthenticated();
+            $this->taskTypeService->setUserIsAuthenticated();
         }
 
         $requestData = $request->query;
-        $testOptionsAdapter = $testOptionsAdapterFactory->create();
+        $testOptionsAdapter = $this->testOptionsAdapterFactory->create();
         $testOptionsAdapter->setRequestData($requestData);
 
-        $testStartError = $flashBagValuesService->getSingle('test_start_error');
+        $testStartError = $this->flashBagValues->getSingle('test_start_error');
         $hasTestStartError = !empty($testStartError);
 
         $website = $requestData->get('website');
-        $availableTaskTypes = $taskTypeService->getAvailable();
-        $taskTypes = $taskTypeService->get();
+        $availableTaskTypes = $this->taskTypeService->getAvailable();
+        $taskTypes = $this->taskTypeService->get();
         $testOptions = $this->getTestOptionsArray($testOptionsAdapter, $requestData, $hasTestStartError);
-        $cssValidationIgnoreCommonCdns = $this->container->getParameter('css-validation-ignore-common-cdns');
-        $jsStaticAnalysisIgnoreCommonCdns = $this->container->getParameter('js-static-analysis-ignore-common-cdns');
 
-        $response = $cacheValidatorService->createResponse($request, [
+        $cssValidationExcludedDomains = $this->cssValidationTestConfiguration->getExcludedDomains();
+        $jsStaticAnalysisExcludedDomains = $this->jsStaticAnalysisTestConfiguration->getExcludedDomains();
+
+        $response = $this->cacheValidator->createResponse($request, [
             'test_start_error' => $testStartError,
             'website' => $website,
             'available_task_types' => json_encode($availableTaskTypes),
             'task_types' => json_encode($taskTypes),
             'test_options' => json_encode($testOptions),
-            'css_validation_ignore_common_cdns' => json_encode($cssValidationIgnoreCommonCdns),
-            'js_static_analysis_ignore_common_cdns' => json_encode($jsStaticAnalysisIgnoreCommonCdns),
+            'css_validation_ignore_common_cdns' => json_encode($cssValidationExcludedDomains),
+            'js_static_analysis_ignore_common_cdns' => json_encode($jsStaticAnalysisExcludedDomains),
             'is_logged_in' => $isLoggedIn,
         ]);
 
-        if ($cacheValidatorService->isNotModified($response)) {
+        if ($this->cacheValidator->isNotModified($response)) {
             return $response;
         }
 
-        $viewData = [
-            'available_task_types' => $availableTaskTypes,
-            'task_types' => $taskTypes,
-            'test_options' => $testOptions,
-            'css_validation_ignore_common_cdns' => $cssValidationIgnoreCommonCdns,
-            'js_static_analysis_ignore_common_cdns' => $jsStaticAnalysisIgnoreCommonCdns,
-            'test_start_error' => $testStartError,
-            'website' => $urlViewValuesService->create($website),
-        ];
-
-        $content = $templating->render(
+        return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/Dashboard/Index:index.html.twig',
-            array_merge($this->getDefaultViewParameters(), $viewData)
+            [
+                'available_task_types' => $availableTaskTypes,
+                'task_types' => $taskTypes,
+                'test_options' => $testOptions,
+                'css_validation_ignore_common_cdns' => $cssValidationExcludedDomains,
+                'js_static_analysis_ignore_common_cdns' => $jsStaticAnalysisExcludedDomains,
+                'test_start_error' => $testStartError,
+                'website' => $this->urlViewValuesService->create($website),
+            ],
+            $response
         );
-
-        $response->setContent($content);
-
-        return $response;
     }
 
     /**
@@ -106,8 +180,10 @@ class IndexController extends BaseViewController implements RequiresValidUser
         ParameterBag $requestData,
         $hasTestStartError
     ) {
+        $testOptionsConfiguration = $this->testOptionsConfiguration->getConfiguration();
+
         $testOptionsData = array_merge(
-            $this->container->getParameter('test_options')['names_and_default_values'],
+            $testOptionsConfiguration['names_and_default_values'],
             $requestData->all()
         );
 
