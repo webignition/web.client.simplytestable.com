@@ -171,11 +171,11 @@ services:
 #  SimplyTestable\WebClientBundle\Services\UrlViewValuesService:
 #    class: SimplyTestable\WebClientBundle\Services\UrlViewValuesService
 
-  SimplyTestable\WebClientBundle\Services\CacheValidatorService:
-    class: SimplyTestable\WebClientBundle\Services\CacheValidatorService
-    arguments:
-      - '@SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService'
-      - '@SimplyTestable\WebClientBundle\Services\UserManager'
+#  SimplyTestable\WebClientBundle\Services\CacheValidatorService:
+#    class: SimplyTestable\WebClientBundle\Services\CacheValidatorService
+#    arguments:
+#      - '@SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService'
+#      - '@SimplyTestable\WebClientBundle\Services\UserManager'
 
   SimplyTestable\WebClientBundle\Services\FlashBagValues:
     class: SimplyTestable\WebClientBundle\Services\FlashBagValues
