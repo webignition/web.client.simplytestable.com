@@ -108,8 +108,8 @@ services:
     arguments:
       - '%mail%'
 
-  SimplyTestable\WebClientBundle\Services\PostmarkSender:
-    class:   SimplyTestable\WebClientBundle\Services\PostmarkSender
+#  SimplyTestable\WebClientBundle\Services\PostmarkSender:
+#    class:   SimplyTestable\WebClientBundle\Services\PostmarkSender
 
   SimplyTestable\WebClientBundle\Services\Mail\Service:
     class:   SimplyTestable\WebClientBundle\Services\Mail\Service
