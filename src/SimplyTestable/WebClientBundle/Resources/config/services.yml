@@ -75,7 +75,6 @@ services:
 #    class:  SimplyTestable\WebClientBundle\Services\TestOptions\CookieOptionsParser
 
   SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter:
-    class:  SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter
     calls:
       - [addFeatureOptionsParser, ['@SimplyTestable\WebClientBundle\Services\TestOptions\OptionsParser']]
       - [addFeatureOptionsParser, ['@SimplyTestable\WebClientBundle\Services\TestOptions\CookieOptionsParser', 'cookies']]
