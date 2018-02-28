@@ -22,3 +22,5 @@ services:
   SimplyTestable\WebClientBundle\Services\UserAccountCardService:
 
   SimplyTestable\WebClientBundle\Services\UserStripeEventService:
+
+  SimplyTestable\WebClientBundle\Services\MailChimp\Service:

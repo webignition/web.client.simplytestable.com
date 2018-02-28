@@ -97,11 +97,11 @@ services:
 #  SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService:
 #    class:  SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService
 
-  SimplyTestable\WebClientBundle\Services\MailChimp\Service:
-    class:   SimplyTestable\WebClientBundle\Services\MailChimp\Service
-    arguments:
-      - '@SimplyTestable\WebClientBundle\Services\MailChimp\Client'
-      - '@SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService'
+#  SimplyTestable\WebClientBundle\Services\MailChimp\Service:
+#    class:   SimplyTestable\WebClientBundle\Services\MailChimp\Service
+#    arguments:
+#      - '@SimplyTestable\WebClientBundle\Services\MailChimp\Client'
+#      - '@SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService'
 
   SimplyTestable\WebClientBundle\Services\Mail\Configuration:
     class:   SimplyTestable\WebClientBundle\Services\Mail\Configuration
