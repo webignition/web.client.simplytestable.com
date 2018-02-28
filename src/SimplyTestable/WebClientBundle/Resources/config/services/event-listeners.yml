@@ -1,10 +1,9 @@
 services:
   SimplyTestable\WebClientBundle\EventListener\Stripe\Listener:
-    class:   SimplyTestable\WebClientBundle\EventListener\Stripe\Listener
     arguments:
-      - '@logger'
-      - '@templating'
-      - '@router'
+      - '@Psr\Log\LoggerInterface'
+      - '@Twig_Environment'
+      - '@Symfony\Component\Routing\RouterInterface'
       - '@SimplyTestable\WebClientBundle\Services\Mail\Service'
     tags:
       - { name: kernel.event_listener, event: stripe.customer.subscription.created, method: onCustomerSubscriptionCreated }
@@ -15,10 +14,9 @@ services:
       - { name: kernel.event_listener, event: stripe.invoice.payment_failed, method: onInvoicePaymentFailed }
 
   SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener:
-    class:   SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener
     arguments:
       - '@SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService'
-      - '@doctrine.orm.entity_manager'
+      - '@Doctrine\ORM\EntityManagerInterface'
     tags:
       - { name: kernel.event_listener, event: mailchimp.subscribe, method: onSubscribe }
       - { name: kernel.event_listener, event: mailchimp.unsubscribe, method: onUnsubscribe }
@@ -26,41 +24,36 @@ services:
       - { name: kernel.event_listener, event: mailchimp.cleaned, method: onCleaned }
 
   SimplyTestable\WebClientBundle\EventListener\IEFilteredRequestListener:
-    class: SimplyTestable\WebClientBundle\EventListener\IEFilteredRequestListener
     arguments:
-      - '@logger'
+      - '@Psr\Log\LoggerInterface'
       - '%marketing_site%'
     tags:
       - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 25 }
 
   SimplyTestable\WebClientBundle\EventListener\RequiresValidUserRequestListener:
-    class: SimplyTestable\WebClientBundle\EventListener\RequiresValidUserRequestListener
     arguments:
       - '@SimplyTestable\WebClientBundle\Services\UserService'
-      - '@router'
+      - '@Symfony\Component\Routing\RouterInterface'
     tags:
       - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 24 }
 
   SimplyTestable\WebClientBundle\EventListener\RequiresPrivateUserRequestListener:
-    class: SimplyTestable\WebClientBundle\EventListener\RequiresPrivateUserRequestListener
     arguments:
       - '@SimplyTestable\WebClientBundle\Services\UserManager'
-      - '@session'
-      - '@router'
+      - '@Symfony\Component\HttpFoundation\Session\SessionInterface'
+      - '@Symfony\Component\Routing\RouterInterface'
     tags:
       - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 23 }
 
   SimplyTestable\WebClientBundle\EventListener\RequiresValidTestOwnerRequestListener:
-    class: SimplyTestable\WebClientBundle\EventListener\RequiresValidTestOwnerRequestListener
     arguments:
       - '@SimplyTestable\WebClientBundle\Services\TestService'
     tags:
       - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 22 }
 
   SimplyTestable\WebClientBundle\EventListener\RequiresCompletedTestRequestListener:
-    class: SimplyTestable\WebClientBundle\EventListener\RequiresCompletedTestRequestListener
     arguments:
       - '@SimplyTestable\WebClientBundle\Services\TestService'
-      - '@router'
+      - '@Symfony\Component\Routing\RouterInterface'
     tags:
       - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 21 }

@@ -4,15 +4,15 @@ namespace SimplyTestable\WebClientBundle\Controller\View\Dashboard;
 
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
-use SimplyTestable\WebClientBundle\Services\CssValidationTestConfiguration;
+use SimplyTestable\WebClientBundle\Services\Configuration\CssValidationTestConfiguration;
 use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
 use SimplyTestable\WebClientBundle\Services\FlashBagValues;
-use SimplyTestable\WebClientBundle\Services\JsStaticAnalysisTestConfiguration;
+use SimplyTestable\WebClientBundle\Services\Configuration\JsStaticAnalysisTestConfiguration;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskTypeService;
 use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter as TestOptionsRequestAdapter;
 use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
-use SimplyTestable\WebClientBundle\Services\TestOptionsConfiguration;
+use SimplyTestable\WebClientBundle\Services\Configuration\TestOptionsConfiguration;
 use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\ParameterBag;

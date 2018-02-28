@@ -1,7 +1,7 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Services;
 
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Psr\Log\LoggerInterface;
@@ -60,13 +60,13 @@ class TestService
     );
 
     /**
-     * @param EntityManager $entityManager
+     * @param EntityManagerInterface $entityManager
      * @param LoggerInterface $logger
      * @param TaskService $taskService
      * @param RemoteTestService $remoteTestService
      */
     public function __construct(
-        EntityManager $entityManager,
+        EntityManagerInterface $entityManager,
         LoggerInterface $logger,
         TaskService $taskService,
         RemoteTestService $remoteTestService

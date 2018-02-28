@@ -2,6 +2,7 @@
 namespace SimplyTestable\WebClientBundle\Services;
 
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class FlashBagValues
 {
@@ -11,9 +12,9 @@ class FlashBagValues
     private $session;
 
     /**
-     * @param Session $session
+     * @param SessionInterface $session
      */
-    public function __construct(Session $session)
+    public function __construct(SessionInterface $session)
     {
         $this->session = $session;
     }

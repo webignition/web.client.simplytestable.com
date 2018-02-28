@@ -1,6 +1,5 @@
 services:
   webignition\ResqueJobFactory\ResqueJobFactory:
-    class: webignition\ResqueJobFactory\ResqueJobFactory
     arguments:
         $queues:
           email-list-subscribe:

@@ -1,10 +1,10 @@
 <?php
-namespace SimplyTestable\WebClientBundle\Services\Mail;
+namespace SimplyTestable\WebClientBundle\Services\Configuration;
 
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class Configuration
+class MailConfiguration
 {
     const SENDERS_KEY = 'senders';
     const MESSAGE_PROPERTIES_COLLECTION_KEY = 'message_properties';
