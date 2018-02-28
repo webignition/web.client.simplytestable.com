@@ -254,46 +254,38 @@ services:
 #      - '@SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory'
 
   SimplyTestable\WebClientBundle\Services\CssValidationTestConfiguration:
-    class:  SimplyTestable\WebClientBundle\Services\CssValidationTestConfiguration
     arguments:
       - '%css-validation-ignore-common-cdns%'
 
   SimplyTestable\WebClientBundle\Services\JsStaticAnalysisTestConfiguration:
-    class:  SimplyTestable\WebClientBundle\Services\JsStaticAnalysisTestConfiguration
     arguments:
       - '%js-static-analysis-ignore-common-cdns%'
 
   SimplyTestable\WebClientBundle\Services\LinkIntegrityTestConfiguration:
-    class:  SimplyTestable\WebClientBundle\Services\LinkIntegrityTestConfiguration
     arguments:
       - '%link-integrity-excluded-domains%'
 
   SimplyTestable\WebClientBundle\Services\TestOptionsConfiguration:
-    class:  SimplyTestable\WebClientBundle\Services\TestOptionsConfiguration
     arguments:
       - '%test_options%'
 
-  SimplyTestable\WebClientBundle\Services\DefaultViewParameters:
-    class:  SimplyTestable\WebClientBundle\Services\DefaultViewParameters
-    arguments:
-      - '@SimplyTestable\WebClientBundle\Services\UserManager'
+#  SimplyTestable\WebClientBundle\Services\DefaultViewParameters:
+#    class:  SimplyTestable\WebClientBundle\Services\DefaultViewParameters
+#    arguments:
+#      - '@SimplyTestable\WebClientBundle\Services\UserManager'
 
   SimplyTestable\WebClientBundle\Services\LinkIntegrityErrorCodeMap:
-    class:  SimplyTestable\WebClientBundle\Services\LinkIntegrityErrorCodeMap
     arguments:
       - '%link_integrity_error_code_map%'
 
   SimplyTestable\WebClientBundle\Services\DocumentationSiteUrls:
-    class:  SimplyTestable\WebClientBundle\Services\DocumentationSiteUrls
     arguments:
       - '%documentation_site_urls%'
 
   SimplyTestable\WebClientBundle\Services\CurrencyMap:
-    class:  SimplyTestable\WebClientBundle\Services\CurrencyMap
     arguments:
       - '%currency_map%'
 
   SimplyTestable\WebClientBundle\Services\StripeConfiguration:
-    class:  SimplyTestable\WebClientBundle\Services\StripeConfiguration
     arguments:
       - '%stripe_publishable_key%'
