@@ -12,52 +12,44 @@ services:
     tags:
       - { name: console.command }
 
-  SimplyTestable\WebClientBundle\Services\TestService:
+  SimplyTestable\WebClientBundle\Services\:
+    resource: '../../../Services'
+    autowire: true
+    public: true
+    exclude: '../../../Services/{Configuration}'
 
-  SimplyTestable\WebClientBundle\Services\RemoteTestService:
+  SimplyTestable\WebClientBundle\Services\Configuration\CssValidationTestConfiguration:
+    arguments:
+      - '%css-validation-ignore-common-cdns%'
 
-  SimplyTestable\WebClientBundle\Services\TaskService:
+  SimplyTestable\WebClientBundle\Services\Configuration\JsStaticAnalysisTestConfiguration:
+    arguments:
+      - '%js-static-analysis-ignore-common-cdns%'
 
-  SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService:
+  SimplyTestable\WebClientBundle\Services\Configuration\LinkIntegrityTestConfiguration:
+    arguments:
+      - '%link-integrity-excluded-domains%'
 
-  SimplyTestable\WebClientBundle\Services\UserService:
+  SimplyTestable\WebClientBundle\Services\Configuration\TestOptionsConfiguration:
+    arguments:
+      - '%test_options%'
 
-  SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService:
+  SimplyTestable\WebClientBundle\Services\Configuration\MailConfiguration:
+    arguments:
+      - '%mail%'
 
-  SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService:
-
-  SimplyTestable\WebClientBundle\Services\UserAccountCardService:
-
-  SimplyTestable\WebClientBundle\Services\UserStripeEventService:
-
-  SimplyTestable\WebClientBundle\Services\MailChimp\Service:
-
-  SimplyTestable\WebClientBundle\Services\Mail\Service:
-
-  SimplyTestable\WebClientBundle\Services\PostmarkSender:
+  SimplyTestable\WebClientBundle\Services\Configuration\StripeConfiguration:
+    arguments:
+      - '%stripe_publishable_key%'
 
   SimplyTestable\WebClientBundle\Services\TaskTypeService:
     calls:
       - [setTaskTypes, ['%task_types%']]
       - [setEarlyAccessUsers, ['%early_access_users%']]
 
-  SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient:
-
-  SimplyTestable\WebClientBundle\Services\TeamService:
-
-  SimplyTestable\WebClientBundle\Services\UserManager:
-
-  SimplyTestable\WebClientBundle\Services\TeamInviteService:
-
-  SimplyTestable\WebClientBundle\Services\CouponService:
-    calls:
-      - [setCouponData, ['%coupons%']]
-
   SimplyTestable\WebClientBundle\Services\PlansService:
     calls:
       - [setPlansData, ['%plans%']]
-
-  SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory:
 
   SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory:
     calls:
@@ -65,8 +57,6 @@ services:
       - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser']]
       - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser']]
       - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser']]
-
-  SimplyTestable\WebClientBundle\Services\ResourceLocator:
 
   SimplyTestable\WebClientBundle\Services\CoreApplicationRouter:
     arguments:
@@ -96,10 +86,6 @@ services:
         announcements: '%mailchimp_announcements_list_id%'
         updates: '%mailchimp_updates_list_id%'
         introduction: '%mailchimp_introduction_list_id%'
-
-  SimplyTestable\WebClientBundle\Services\Configuration\MailConfiguration:
-    arguments:
-      - '%mail%'
 
   SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter:
     calls:

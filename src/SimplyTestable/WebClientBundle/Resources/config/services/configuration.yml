@@ -1,4 +1,7 @@
 services:
+  _defaults:
+    public: false
+
   SimplyTestable\WebClientBundle\Services\Configuration\CssValidationTestConfiguration:
     arguments:
       - '%css-validation-ignore-common-cdns%'
@@ -16,6 +19,7 @@ services:
       - '%test_options%'
 
   SimplyTestable\WebClientBundle\Services\Configuration\MailConfiguration:
+    public: false
     arguments:
       - '%mail%'
 

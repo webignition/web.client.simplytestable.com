@@ -4,6 +4,7 @@ imports:
     - { resource: services/controllers.yml }
     - { resource: services/resque-job-factory.yml }
     - { resource: services/redefinitions.yml }
+    - { resource: services/configuration.yml }
 
 services:
   _defaults:
