@@ -2,9 +2,9 @@
 
 namespace Tests\WebClientBundle\Functional\Services;
 
-use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
+use webignition\SimplyTestableUserModel\User;
 
 class SystemUserServiceTest extends AbstractBaseTestCase
 {

@@ -11,11 +11,12 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAlreadyExistsException;
 use SimplyTestable\WebClientBundle\Model\Coupon;
 use SimplyTestable\WebClientBundle\Model\Team\Invite;
-use SimplyTestable\WebClientBundle\Model\User;
+use SimplyTestable\WebClientBundle\Model\User\Summary;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
+use webignition\SimplyTestableUserModel\User;
 
 class UserServiceTest extends AbstractCoreApplicationServiceTest
 {
@@ -792,7 +793,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
         $userSummary = $this->userService->getSummary();
 
-        $this->assertInstanceOf(User\Summary::class, $userSummary);
+        $this->assertInstanceOf(Summary::class, $userSummary);
         $this->assertEquals($expectedRequestUrl, $this->getLastRequest()->getUrl());
     }
 

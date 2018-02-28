@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
-use SimplyTestable\WebClientBundle\Model\User;
+use webignition\SimplyTestableUserModel\User;
 
 class UserAccountCardService
 {
@@ -36,15 +36,6 @@ class UserAccountCardService
         $this->stripeErrorFactory = $stripeErrorFactory;
         $this->coreApplicationHttpClient = $coreApplicationHttpClient;
     }
-
-    /**
-     * @param User $user
-     * @param string $stripe_card_token
-     *
-     * @return bool|int|null
-     *
-     * @throws UserAccountCardException
-     */
 
     /**
      * @param User $user

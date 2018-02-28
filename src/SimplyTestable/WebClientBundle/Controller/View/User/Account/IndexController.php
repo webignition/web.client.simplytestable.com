@@ -6,7 +6,6 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\Configuration\CurrencyMap;
 use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
@@ -22,6 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
+use webignition\SimplyTestableUserModel\User;
 
 class IndexController extends AbstractUserAccountController
 {

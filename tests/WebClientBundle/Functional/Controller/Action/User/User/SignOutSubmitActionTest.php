@@ -2,10 +2,10 @@
 
 namespace Tests\WebClientBundle\Functional\Controller\Action\User\User;
 
-use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use webignition\SimplyTestableUserModel\User;
 
 class SignOutSubmitActionTest extends AbstractUserControllerTest
 {

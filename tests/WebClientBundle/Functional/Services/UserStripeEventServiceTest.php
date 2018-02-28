@@ -5,10 +5,10 @@ namespace Tests\WebClientBundle\Functional\Services;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserStripeEventService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use webignition\Model\Stripe\Event\Event as StripeEvent;
+use webignition\SimplyTestableUserModel\User;
 
 class UserStripeEventServiceTest extends AbstractCoreApplicationServiceTest
 {

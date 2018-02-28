@@ -12,7 +12,7 @@ use SimplyTestable\WebClientBundle\Model\TestList;
 use SimplyTestable\WebClientBundle\Model\TestOptions;
 use Pdp\PublicSuffixListManager as PdpPublicSuffixListManager;
 use Pdp\Parser as PdpParser;
-use SimplyTestable\WebClientBundle\Model\User;
+use webignition\SimplyTestableUserModel\User;
 
 class RemoteTestService
 {

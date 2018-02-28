@@ -3,7 +3,6 @@
 namespace Tests\WebClientBundle\Functional\Controller\View\User;
 
 use SimplyTestable\WebClientBundle\Controller\View\User\SignInController;
-use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -11,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
+use webignition\SimplyTestableUserModel\User;
 
 class SignInControllerTest extends AbstractViewControllerTest
 {

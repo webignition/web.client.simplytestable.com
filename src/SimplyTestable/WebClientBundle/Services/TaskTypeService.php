@@ -1,7 +1,7 @@
 <?php
 namespace SimplyTestable\WebClientBundle\Services;
 
-use SimplyTestable\WebClientBundle\Model\User;
+use webignition\SimplyTestableUserModel\User;
 
 class TaskTypeService
 {
