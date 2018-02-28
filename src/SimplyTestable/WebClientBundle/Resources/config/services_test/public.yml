@@ -33,3 +33,9 @@ services:
     calls:
       - [setTaskTypes, ['%task_types%']]
       - [setEarlyAccessUsers, ['%early_access_users%']]
+
+  SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient:
+
+  SimplyTestable\WebClientBundle\Services\TeamService:
+
+  SimplyTestable\WebClientBundle\Services\UserManager:
