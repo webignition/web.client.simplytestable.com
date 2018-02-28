@@ -63,11 +63,11 @@ services:
     arguments:
       - '%secret%'
 
-  SimplyTestable\WebClientBundle\Services\TestOptions\OptionsParser:
-    class:  SimplyTestable\WebClientBundle\Services\TestOptions\OptionsParser
-
-  SimplyTestable\WebClientBundle\Services\TestOptions\CookieOptionsParser:
-    class:  SimplyTestable\WebClientBundle\Services\TestOptions\CookieOptionsParser
+#  SimplyTestable\WebClientBundle\Services\TestOptions\OptionsParser:
+#    class:  SimplyTestable\WebClientBundle\Services\TestOptions\OptionsParser
+#
+#  SimplyTestable\WebClientBundle\Services\TestOptions\CookieOptionsParser:
+#    class:  SimplyTestable\WebClientBundle\Services\TestOptions\CookieOptionsParser
 
   SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter:
     class:  SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter
