@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyTestable\WebClientBundle\Services;
+namespace SimplyTestable\WebClientBundle\Services\Configuration;
 
 class LinkIntegrityErrorCodeMap
 {

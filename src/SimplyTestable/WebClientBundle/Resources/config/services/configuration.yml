@@ -27,3 +27,14 @@ services:
     arguments:
       - '%stripe_publishable_key%'
 
+  SimplyTestable\WebClientBundle\Services\Configuration\CurrencyMap:
+    arguments:
+      - '%currency_map%'
+
+  SimplyTestable\WebClientBundle\Services\Configuration\DocumentationSiteUrls:
+    arguments:
+      - '%documentation_site_urls%'
+
+  SimplyTestable\WebClientBundle\Services\Configuration\LinkIntegrityErrorCodeMap:
+    arguments:
+      - '%link_integrity_error_code_map%'
