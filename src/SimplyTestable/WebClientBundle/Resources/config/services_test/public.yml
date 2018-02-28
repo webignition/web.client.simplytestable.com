@@ -97,7 +97,7 @@ services:
         updates: '%mailchimp_updates_list_id%'
         introduction: '%mailchimp_introduction_list_id%'
 
-  SimplyTestable\WebClientBundle\Services\Mail\Configuration:
+  SimplyTestable\WebClientBundle\Services\Configuration\MailConfiguration:
     arguments:
       - '%mail%'
 

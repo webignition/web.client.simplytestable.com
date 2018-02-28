@@ -106,10 +106,6 @@ services:
 #      - '@SimplyTestable\WebClientBundle\Services\MailChimp\Client'
 #      - '@SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService'
 
-  SimplyTestable\WebClientBundle\Services\Mail\Configuration:
-    arguments:
-      - '%mail%'
-
 #  SimplyTestable\WebClientBundle\Services\PostmarkSender:
 #    class:   SimplyTestable\WebClientBundle\Services\PostmarkSender
 
@@ -251,22 +247,6 @@ services:
 #    arguments:
 #      - '@SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory'
 
-  SimplyTestable\WebClientBundle\Services\CssValidationTestConfiguration:
-    arguments:
-      - '%css-validation-ignore-common-cdns%'
-
-  SimplyTestable\WebClientBundle\Services\JsStaticAnalysisTestConfiguration:
-    arguments:
-      - '%js-static-analysis-ignore-common-cdns%'
-
-  SimplyTestable\WebClientBundle\Services\LinkIntegrityTestConfiguration:
-    arguments:
-      - '%link-integrity-excluded-domains%'
-
-  SimplyTestable\WebClientBundle\Services\TestOptionsConfiguration:
-    arguments:
-      - '%test_options%'
-
 #  SimplyTestable\WebClientBundle\Services\DefaultViewParameters:
 #    class:  SimplyTestable\WebClientBundle\Services\DefaultViewParameters
 #    arguments:
@@ -284,6 +264,3 @@ services:
     arguments:
       - '%currency_map%'
 
-  SimplyTestable\WebClientBundle\Services\StripeConfiguration:
-    arguments:
-      - '%stripe_publishable_key%'

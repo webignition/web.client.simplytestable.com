@@ -1,0 +1,25 @@
+services:
+  SimplyTestable\WebClientBundle\Services\Configuration\CssValidationTestConfiguration:
+    arguments:
+      - '%css-validation-ignore-common-cdns%'
+
+  SimplyTestable\WebClientBundle\Services\Configuration\JsStaticAnalysisTestConfiguration:
+    arguments:
+      - '%js-static-analysis-ignore-common-cdns%'
+
+  SimplyTestable\WebClientBundle\Services\Configuration\LinkIntegrityTestConfiguration:
+    arguments:
+      - '%link-integrity-excluded-domains%'
+
+  SimplyTestable\WebClientBundle\Services\Configuration\TestOptionsConfiguration:
+    arguments:
+      - '%test_options%'
+
+  SimplyTestable\WebClientBundle\Services\Configuration\MailConfiguration:
+    arguments:
+      - '%mail%'
+
+  SimplyTestable\WebClientBundle\Services\Configuration\StripeConfiguration:
+    arguments:
+      - '%stripe_publishable_key%'
+

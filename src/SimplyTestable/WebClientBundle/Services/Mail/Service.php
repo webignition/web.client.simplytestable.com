@@ -3,12 +3,13 @@
 namespace SimplyTestable\WebClientBundle\Services\Mail;
 
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
+use SimplyTestable\WebClientBundle\Services\Configuration\MailConfiguration;
 use SimplyTestable\WebClientBundle\Services\PostmarkSender;
 
 class Service
 {
     /**
-     * @var Configuration
+     * @var MailConfiguration
      */
     private $mailConfiguration;
 
@@ -25,12 +26,12 @@ class Service
     private $postmarkSender;
 
     /**
-     * @param Configuration $mailConfiguration
+     * @param MailConfiguration $mailConfiguration
      * @param PostmarkMessage $postmarkMessage
      * @param PostmarkSender $postmarkSender
      */
     public function __construct(
-        Configuration $mailConfiguration,
+        MailConfiguration $mailConfiguration,
         PostmarkMessage $postmarkMessage,
         PostmarkSender $postmarkSender
     ) {
@@ -41,7 +42,7 @@ class Service
     }
 
     /**
-     * @return Configuration
+     * @return MailConfiguration
      */
     public function getConfiguration()
     {
