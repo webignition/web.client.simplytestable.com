@@ -93,7 +93,7 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerT
                     TestFactory::KEY_STATE => Test::STATE_FAILED_NO_SITEMAP,
                 ],
                 'expectedHasResponse' => true,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/failed/no-urls-detected/',
+                'expectedRedirectUrl' => '/http://example.com//1/results/failed/no-urls-detected/',
             ],
             'state: rejected' => [
                 'httpFixtures' => [
@@ -111,7 +111,7 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerT
                     TestFactory::KEY_STATE => Test::STATE_REJECTED,
                 ],
                 'expectedHasResponse' => true,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/rejected/',
+                'expectedRedirectUrl' => '/http://example.com//1/results/rejected/',
             ],
             'state: in progress' => [
                 'httpFixtures' => [
@@ -129,7 +129,7 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerT
                     TestFactory::KEY_STATE => Test::STATE_IN_PROGRESS,
                 ],
                 'expectedHasResponse' => true,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
             'non-matching website' => [
                 'httpFixtures' => [
@@ -143,7 +143,7 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerT
                 ],
                 'testValues' => [],
                 'expectedHasResponse' => true,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/',
+                'expectedRedirectUrl' => '/http://example.com//1/',
             ],
             'state: completed' => [
                 'httpFixtures' => [
