@@ -177,10 +177,10 @@ services:
 #      - '@SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService'
 #      - '@SimplyTestable\WebClientBundle\Services\UserManager'
 
-  SimplyTestable\WebClientBundle\Services\FlashBagValues:
-    class: SimplyTestable\WebClientBundle\Services\FlashBagValues
-    arguments:
-      - '@session'
+#  SimplyTestable\WebClientBundle\Services\FlashBagValues:
+#    class: SimplyTestable\WebClientBundle\Services\FlashBagValues
+#    arguments:
+#      - '@session'
 
   SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser:
     class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser
