@@ -214,7 +214,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $responseData = json_decode($response->getContent());
 
-        $this->assertEquals($expectedRedirectUrl, $responseData->this_url);
+        $this->assertEquals('http://localhost' . $expectedRedirectUrl, $responseData->this_url);
         $this->assertEquals($expectedRequestUrl, $httpHistory->getLastRequest()->getUrl());
     }
 
@@ -470,7 +470,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         $this->assertEquals(self::TEST_ID, $responseData['remote_test']['id']);
         $this->assertEquals(self::WEBSITE, $responseData['remote_test']['website']);
 
-        $this->assertEquals('/http://example.com//1/progress/', $responseData['this_url']);
+        $this->assertEquals('http://localhost/http://example.com//1/progress/', $responseData['this_url']);
         $this->assertEquals($expectedStateLabel, $responseData['state_label']);
     }
 

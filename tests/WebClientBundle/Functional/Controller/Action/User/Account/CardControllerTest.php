@@ -84,7 +84,7 @@ class CardControllerTest extends AbstractUserAccountControllerTest
                     HttpResponseFactory::createSuccessResponse(),
                 ],
                 'expectedResponseData' => [
-                    'this_url' => '/account/',
+                    'this_url' => 'http://localhost/account/',
                 ],
             ],
             'stripe error' => [

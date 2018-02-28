@@ -25,6 +25,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 use webignition\NormalisedUrl\NormalisedUrl;
@@ -148,39 +149,36 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         $testWebsite = (string)$test->getWebsite();
 
         if ($testWebsite !== $website) {
-            $redirectUrl = $this->generateUrl(
+            return $this->createRedirectResponse(
+                $request,
                 'view_test_progress_index_index',
                 [
                     'website' => $testWebsite,
                     'test_id' => $test_id
                 ]
             );
-
-            return $this->createRedirectResponse($request, $redirectUrl);
         }
 
         if ($this->testService->isFinished($test)) {
             if (Test::STATE_FAILED_NO_SITEMAP  !== $test->getState() || SystemUserService::isPublicUser($user)) {
-                $redirectUrl = $this->generateUrl(
+                return $this->createRedirectResponse(
+                    $request,
                     'view_test_results_index_index',
                     [
                         'website' => $testWebsite,
                         'test_id' => $test_id
                     ]
                 );
-
-                return $this->createRedirectResponse($request, $redirectUrl);
             }
 
-            $redirectUrl = $this->generateUrl(
+            return $this->createRedirectResponse(
+                $request,
                 'app_test_retest',
                 [
                     'website' => $testWebsite,
                     'test_id' => $test_id
                 ]
             );
-
-            return $this->createRedirectResponse($request, $redirectUrl);
         }
 
         $requestTimeStamp = $request->query->get('timestamp');
@@ -214,17 +212,16 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         ];
 
         if ($this->requestIsForApplicationJson($request)) {
-            $testProgressUrl = $this->generateUrl(
-                'view_test_progress_index_index',
-                [
-                    'website' => $testWebsite,
-                    'test_id' => $test_id
-                ]
-            );
-
             $viewData = array_merge($commonViewData, [
                 'remote_test' => $remoteTest->__toArray(),
-                'this_url' => $testProgressUrl,
+                'this_url' => $this->generateUrl(
+                    'view_test_progress_index_index',
+                    [
+                        'website' => $testWebsite,
+                        'test_id' => $test_id
+                    ],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                ),
             ]);
 
             $response->setContent(json_encode($viewData));
@@ -302,27 +299,34 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
 
     /**
      * @param Request $request
-     * @param string $locationValue
+     * @param string $routeName
+     * @param array $routeParameters
      *
      * @return RedirectResponse|JsonResponse
      */
-    private function createRedirectResponse(Request $request, $locationValue)
+    private function createRedirectResponse(Request $request, $routeName, array $routeParameters = [])
     {
         $requestHeaders = $request->headers;
         $requestedWithHeaderName = 'X-Requested-With';
 
         $isXmlHttpRequest = $requestHeaders->get($requestedWithHeaderName) == 'XMLHttpRequest';
 
+        $urlReferenceType = $isXmlHttpRequest
+            ? UrlGeneratorInterface::ABSOLUTE_URL
+            : UrlGeneratorInterface::ABSOLUTE_PATH;
+
+        $redirectUrl = $this->generateUrl($routeName, $routeParameters, $urlReferenceType);
+
         if ($isXmlHttpRequest) {
             return new JsonResponse([
-                'this_url' => $locationValue
+                'this_url' => $redirectUrl
             ]);
         }
 
         $requestQuery = $request->query;
 
         if ($requestQuery->get('output') == 'json') {
-            $normalisedUrl = new NormalisedUrl($locationValue);
+            $normalisedUrl = new NormalisedUrl($redirectUrl);
 
             if ($normalisedUrl->hasQuery()) {
                 $normalisedUrl->getQuery()->set('output', 'json');
@@ -330,10 +334,10 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
                 $normalisedUrl->setQuery('output=json');
             }
 
-            $locationValue = (string)$normalisedUrl;
+            $redirectUrl = (string)$normalisedUrl;
         }
 
-        return new RedirectResponse($locationValue);
+        return new RedirectResponse($redirectUrl);
     }
 
     /**
