@@ -54,6 +54,10 @@ services:
     arguments:
       - '%link_integrity_error_code_map%'
 
+  SimplyTestable\WebClientBundle\Services\CouponService:
+    calls:
+      - [setCouponData, ['%coupons%']]
+
   SimplyTestable\WebClientBundle\Services\TaskTypeService:
     calls:
       - [setTaskTypes, ['%task_types%']]
