@@ -168,8 +168,8 @@ services:
 #      - '@SimplyTestable\WebClientBundle\Services\TaskTypeService'
 #      - '@SimplyTestable\WebClientBundle\Services\TestOptionsConfiguration'
 
-  SimplyTestable\WebClientBundle\Services\UrlViewValuesService:
-    class: SimplyTestable\WebClientBundle\Services\UrlViewValuesService
+#  SimplyTestable\WebClientBundle\Services\UrlViewValuesService:
+#    class: SimplyTestable\WebClientBundle\Services\UrlViewValuesService
 
   SimplyTestable\WebClientBundle\Services\CacheValidatorService:
     class: SimplyTestable\WebClientBundle\Services\CacheValidatorService
