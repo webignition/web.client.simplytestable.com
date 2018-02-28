@@ -13,11 +13,11 @@ services:
 #      - '@SimplyTestable\WebClientBundle\Services\TaskService'
 #      - '@SimplyTestable\WebClientBundle\Services\RemoteTestService'
 
-  SimplyTestable\WebClientBundle\Services\RemoteTestService:
-    class:   SimplyTestable\WebClientBundle\Services\RemoteTestService
-    arguments:
-      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
-      - '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
+#  SimplyTestable\WebClientBundle\Services\RemoteTestService:
+#    class:   SimplyTestable\WebClientBundle\Services\RemoteTestService
+#    arguments:
+#      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
+#      - '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
   SimplyTestable\WebClientBundle\Services\TaskService:
     class:   SimplyTestable\WebClientBundle\Services\TaskService

@@ -6,3 +6,5 @@ services:
     public: true
 
   SimplyTestable\WebClientBundle\Services\TestService:
+
+  SimplyTestable\WebClientBundle\Services\RemoteTestService:
