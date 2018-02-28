@@ -60,3 +60,15 @@ services:
       - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser']]
 
   SimplyTestable\WebClientBundle\Services\ResourceLocator:
+
+  SimplyTestable\WebClientBundle\Services\CoreApplicationRouter:
+    arguments:
+      - '%core_url%'
+      - '@SimplyTestable\WebClientBundle\Services\ResourceLocator'
+      - '%kernel.cache_dir%'
+
+  SimplyTestable\WebClientBundle\Services\SystemUserService:
+    class:  SimplyTestable\WebClientBundle\Services\SystemUserService
+    arguments:
+      - '%admin_user_username%'
+      - '%admin_user_password%'
