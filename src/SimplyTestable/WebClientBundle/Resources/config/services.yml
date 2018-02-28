@@ -81,12 +81,12 @@ services:
 #      - '@SimplyTestable\WebClientBundle\Services\StripeErrorFactory'
 #      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
 
-  SimplyTestable\WebClientBundle\Services\UserAccountCardService:
-    class:  SimplyTestable\WebClientBundle\Services\UserAccountCardService
-    arguments:
-      - '@SimplyTestable\WebClientBundle\Services\StripeErrorFactory'
-      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
-      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
+#  SimplyTestable\WebClientBundle\Services\UserAccountCardService:
+#    class:  SimplyTestable\WebClientBundle\Services\UserAccountCardService
+#    arguments:
+#      - '@SimplyTestable\WebClientBundle\Services\StripeErrorFactory'
+#      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
+#      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
 
   SimplyTestable\WebClientBundle\Services\UserStripeEventService:
     class:  SimplyTestable\WebClientBundle\Services\UserStripeEventService
