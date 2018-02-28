@@ -19,7 +19,7 @@ class DocumentationUrlCheckerServiceTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->documentationUrlCheckerService = $this->container->get(DocumentationUrlCheckerService::class);
+        $this->documentationUrlCheckerService = new DocumentationUrlCheckerService();
 
         $this->documentationUrlCheckerService->setDocumentationSitemapPath(
             $this->container->get('kernel')->locateResource(

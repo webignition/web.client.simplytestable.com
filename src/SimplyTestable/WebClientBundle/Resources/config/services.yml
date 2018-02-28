@@ -94,8 +94,8 @@ services:
 #      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
 #      - '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
-  SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService:
-    class:  SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService
+#  SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService:
+#    class:  SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService
 
   SimplyTestable\WebClientBundle\Services\MailChimp\Service:
     class:   SimplyTestable\WebClientBundle\Services\MailChimp\Service
