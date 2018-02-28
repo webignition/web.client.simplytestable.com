@@ -16,3 +16,5 @@ services:
   SimplyTestable\WebClientBundle\Services\UserService:
 
   SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService:
+
+  SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService:

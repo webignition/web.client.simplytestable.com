@@ -75,11 +75,11 @@ services:
       - [addFeatureOptionsParser, ['@SimplyTestable\WebClientBundle\Services\TestOptions\OptionsParser']]
       - [addFeatureOptionsParser, ['@SimplyTestable\WebClientBundle\Services\TestOptions\CookieOptionsParser', 'cookies']]
 
-  SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService:
-    class:  SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService
-    arguments:
-      - '@SimplyTestable\WebClientBundle\Services\StripeErrorFactory'
-      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
+#  SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService:
+#    class:  SimplyTestable\WebClientBundle\Services\UserPlanSubscriptionService
+#    arguments:
+#      - '@SimplyTestable\WebClientBundle\Services\StripeErrorFactory'
+#      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
 
   SimplyTestable\WebClientBundle\Services\UserAccountCardService:
     class:  SimplyTestable\WebClientBundle\Services\UserAccountCardService
