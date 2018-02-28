@@ -49,3 +49,5 @@ services:
   SimplyTestable\WebClientBundle\Services\PlansService:
     calls:
       - [setPlansData, ['%plans%']]
+
+  SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory:

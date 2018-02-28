@@ -161,12 +161,12 @@ services:
 #  SimplyTestable\WebClientBundle\Services\StripeErrorFactory:
 #    class: SimplyTestable\WebClientBundle\Services\StripeErrorFactory
 
-  SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory:
-    class: SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory
-    arguments:
-      - '@SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter'
-      - '@SimplyTestable\WebClientBundle\Services\TaskTypeService'
-      - '%test_options%'
+#  SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory:
+#    class: SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory
+#    arguments:
+#      - '@SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter'
+#      - '@SimplyTestable\WebClientBundle\Services\TaskTypeService'
+#      - '@SimplyTestable\WebClientBundle\Services\TestOptionsConfiguration'
 
   SimplyTestable\WebClientBundle\Services\UrlViewValuesService:
     class: SimplyTestable\WebClientBundle\Services\UrlViewValuesService
