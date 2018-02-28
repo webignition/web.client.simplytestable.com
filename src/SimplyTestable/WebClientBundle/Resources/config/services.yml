@@ -29,15 +29,15 @@ services:
 #      - '@SimplyTestable\WebClientBundle\Services\Factory\TaskFactory'
 #      - '@SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory'
 
-  SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService:
-    class:   SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService
-    arguments:
-      - '@doctrine.orm.entity_manager'
-
-  SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService:
-    class:   SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService
-    arguments:
-      - '@doctrine.orm.entity_manager'
+#  SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService:
+#    class:   SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService
+#    arguments:
+#      - '@doctrine.orm.entity_manager'
+#
+#  SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService:
+#    class:   SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService
+#    arguments:
+#      - '@doctrine.orm.entity_manager'
 
   SimplyTestable\WebClientBundle\Services\ResqueQueueService:
     class:   SimplyTestable\WebClientBundle\Services\ResqueQueueService
