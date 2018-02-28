@@ -39,19 +39,18 @@ services:
 #    arguments:
 #      - '@doctrine.orm.entity_manager'
 
-#  SimplyTestable\WebClientBundle\Services\ResqueQueueService:
-#    class:   SimplyTestable\WebClientBundle\Services\ResqueQueueService
-#    arguments:
-#      - '@resque'
-#      - '@logger'
-#      - '@webignition\ResqueJobFactory\ResqueJobFactory'
-#      - '%kernel.environment%'
-
-  SimplyTestable\WebClientBundle\Services\UserService:
-    class:  SimplyTestable\WebClientBundle\Services\UserService
+  SimplyTestable\WebClientBundle\Services\ResqueQueueService:
     arguments:
-      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
-      - '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
+      - '@resque'
+      - '@logger'
+      - '@webignition\ResqueJobFactory\ResqueJobFactory'
+      - '%kernel.environment%'
+
+#  SimplyTestable\WebClientBundle\Services\UserService:
+#    class:  SimplyTestable\WebClientBundle\Services\UserService
+#    arguments:
+#      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
+#      - '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
   SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService:
     class:  SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService

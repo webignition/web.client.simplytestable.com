@@ -12,3 +12,5 @@ services:
   SimplyTestable\WebClientBundle\Services\TaskService:
 
   SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService:
+
+  SimplyTestable\WebClientBundle\Services\UserService:
