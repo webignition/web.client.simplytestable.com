@@ -76,3 +76,16 @@ services:
   SimplyTestable\WebClientBundle\Services\UserSerializerService:
     arguments:
       - '%secret%'
+
+  SimplyTestable\WebClientBundle\Services\MailChimp\Client:
+    arguments:
+      - '%mailchimp_api_key%'
+
+  SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService:
+    arguments:
+      - '@doctrine.orm.entity_manager'
+      - '@logger'
+      -
+        announcements: '%mailchimp_announcements_list_id%'
+        updates: '%mailchimp_updates_list_id%'
+        introduction: '%mailchimp_introduction_list_id%'
