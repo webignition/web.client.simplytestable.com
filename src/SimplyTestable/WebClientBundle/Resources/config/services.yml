@@ -39,13 +39,13 @@ services:
 #    arguments:
 #      - '@doctrine.orm.entity_manager'
 
-  SimplyTestable\WebClientBundle\Services\ResqueQueueService:
-    class:   SimplyTestable\WebClientBundle\Services\ResqueQueueService
-    arguments:
-      - '@resque'
-      - '@logger'
-      - '@webignition\ResqueJobFactory\ResqueJobFactory'
-      - '%kernel.environment%'
+#  SimplyTestable\WebClientBundle\Services\ResqueQueueService:
+#    class:   SimplyTestable\WebClientBundle\Services\ResqueQueueService
+#    arguments:
+#      - '@resque'
+#      - '@logger'
+#      - '@webignition\ResqueJobFactory\ResqueJobFactory'
+#      - '%kernel.environment%'
 
   SimplyTestable\WebClientBundle\Services\UserService:
     class:  SimplyTestable\WebClientBundle\Services\UserService
