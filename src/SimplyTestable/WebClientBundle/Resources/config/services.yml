@@ -52,11 +52,11 @@ services:
 #      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
 #      - '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
-  SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService:
-    class:  SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService
-    arguments:
-      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
-      - '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
+#  SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService:
+#    class:  SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService
+#    arguments:
+#      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
+#      - '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
   SimplyTestable\WebClientBundle\Services\UserSerializerService:
     class:  SimplyTestable\WebClientBundle\Services\UserSerializerService

@@ -14,3 +14,5 @@ services:
   SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService:
 
   SimplyTestable\WebClientBundle\Services\UserService:
+
+  SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService:
