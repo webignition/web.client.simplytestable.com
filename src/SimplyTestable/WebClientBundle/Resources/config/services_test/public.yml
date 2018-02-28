@@ -51,3 +51,10 @@ services:
       - [setPlansData, ['%plans%']]
 
   SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory:
+
+  SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory:
+    calls:
+      - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser']]
+      - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser']]
+      - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser']]
+      - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser']]

@@ -182,20 +182,19 @@ services:
 #    arguments:
 #      - '@session'
 
-  SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser:
-    class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser
-
-  SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser:
-    class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser
-
-  SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser:
-    class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser
-
-  SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser:
-    class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser
+#  SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser:
+#    class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser
+#
+#  SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser:
+#    class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser
+#
+#  SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser:
+#    class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser
+#
+#  SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser:
+#    class: SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser
 
   SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory:
-    class:   SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory
     calls:
       - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser']]
       - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser']]
