@@ -3,6 +3,7 @@ imports:
     - { resource: services/commands.yml }
     - { resource: services/controllers.yml }
     - { resource: services/resque-job-factory.yml }
+    - { resource: services/redefinitions.yml }
 
 services:
 #  SimplyTestable\WebClientBundle\Services\TestService:
@@ -111,12 +112,12 @@ services:
 #  SimplyTestable\WebClientBundle\Services\PostmarkSender:
 #    class:   SimplyTestable\WebClientBundle\Services\PostmarkSender
 
-  SimplyTestable\WebClientBundle\Services\Mail\Service:
-    class:   SimplyTestable\WebClientBundle\Services\Mail\Service
-    arguments:
-      - '@SimplyTestable\WebClientBundle\Services\Mail\Configuration'
-      - '@postmark.message'
-      - '@SimplyTestable\WebClientBundle\Services\PostmarkSender'
+#  SimplyTestable\WebClientBundle\Services\Mail\Service:
+#    class:   SimplyTestable\WebClientBundle\Services\Mail\Service
+#    arguments:
+#      - '@SimplyTestable\WebClientBundle\Services\Mail\Configuration'
+#      - '@postmark.message'
+#      - '@SimplyTestable\WebClientBundle\Services\PostmarkSender'
 
   SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService:
     class:   SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService

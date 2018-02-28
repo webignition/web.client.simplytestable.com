@@ -24,3 +24,7 @@ services:
   SimplyTestable\WebClientBundle\Services\UserStripeEventService:
 
   SimplyTestable\WebClientBundle\Services\MailChimp\Service:
+
+  SimplyTestable\WebClientBundle\Services\Mail\Service:
+
+  SimplyTestable\WebClientBundle\Services\PostmarkSender:
