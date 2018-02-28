@@ -6,6 +6,11 @@ imports:
     - { resource: services/redefinitions.yml }
 
 services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
 #  SimplyTestable\WebClientBundle\Services\TestService:
 #    class:   SimplyTestable\WebClientBundle\Services\TestService
 #    arguments:
@@ -129,7 +134,6 @@ services:
         introduction: '%mailchimp_introduction_list_id%'
 
   SimplyTestable\WebClientBundle\Services\TaskTypeService:
-    class:  SimplyTestable\WebClientBundle\Services\TaskTypeService
     calls:
       - [setTaskTypes, ['%task_types%']]
       - [setEarlyAccessUsers, ['%early_access_users%']]
