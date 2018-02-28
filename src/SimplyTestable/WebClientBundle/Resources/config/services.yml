@@ -120,7 +120,6 @@ services:
 #      - '@SimplyTestable\WebClientBundle\Services\PostmarkSender'
 
   SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService:
-    class:   SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService
     arguments:
       - '@doctrine.orm.entity_manager'
       - '@logger'

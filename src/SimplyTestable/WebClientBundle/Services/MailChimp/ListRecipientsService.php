@@ -1,7 +1,8 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Services\MailChimp;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 
@@ -18,7 +19,7 @@ class ListRecipientsService
     private $logger;
 
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $entityManager;
 
@@ -28,12 +29,12 @@ class ListRecipientsService
     private $listNameToListIdMap = [];
 
     /**
-     * @param EntityManager $entityManager
+     * @param EntityManagerInterface $entityManager
      * @param LoggerInterface $logger
      * @param array $listIdentifiers
      */
     public function __construct(
-        EntityManager $entityManager,
+        EntityManagerInterface $entityManager,
         LoggerInterface $logger,
         array $listIdentifiers
     ) {
