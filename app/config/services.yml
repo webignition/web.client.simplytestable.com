@@ -17,6 +17,11 @@ services:
         # but if a service is unused, it's removed anyway
         exclude: '../../src/SimplyTestable/WebClientBundle/{Entity,Exception,Repository}'
 
+    SimplyTestable\WebClientBundle\Command\:
+        resource: '../../src/SimplyTestable/WebClientBundle/Command'
+        tags:
+          - { name: console.command }
+
     # controllers are imported separately to make sure they're public
     # and have a tag that allows actions to type-hint services
     SimplyTestable\WebClientBundle\Controller\:
