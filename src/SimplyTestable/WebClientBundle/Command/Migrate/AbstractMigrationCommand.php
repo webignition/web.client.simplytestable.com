@@ -4,7 +4,7 @@ namespace SimplyTestable\WebClientBundle\Command\Migrate;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 
-class AbstractMigrationCommand extends Command
+abstract class AbstractMigrationCommand extends Command
 {
     /**
      * @var EntityManagerInterface
