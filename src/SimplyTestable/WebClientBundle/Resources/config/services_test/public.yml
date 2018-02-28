@@ -8,3 +8,5 @@ services:
   SimplyTestable\WebClientBundle\Services\TestService:
 
   SimplyTestable\WebClientBundle\Services\RemoteTestService:
+
+  SimplyTestable\WebClientBundle\Services\TaskService:

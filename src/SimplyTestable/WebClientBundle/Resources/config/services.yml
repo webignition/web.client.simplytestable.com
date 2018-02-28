@@ -19,15 +19,15 @@ services:
 #      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
 #      - '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
-  SimplyTestable\WebClientBundle\Services\TaskService:
-    class:   SimplyTestable\WebClientBundle\Services\TaskService
-    arguments:
-      - '@doctrine.orm.entity_manager'
-      - '@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory'
-      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
-      - '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
-      - '@SimplyTestable\WebClientBundle\Services\Factory\TaskFactory'
-      - '@SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory'
+#  SimplyTestable\WebClientBundle\Services\TaskService:
+#    class:   SimplyTestable\WebClientBundle\Services\TaskService
+#    arguments:
+#      - '@doctrine.orm.entity_manager'
+#      - '@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory'
+#      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
+#      - '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
+#      - '@SimplyTestable\WebClientBundle\Services\Factory\TaskFactory'
+#      - '@SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory'
 
   SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService:
     class:   SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService
