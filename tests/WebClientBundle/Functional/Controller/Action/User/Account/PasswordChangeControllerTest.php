@@ -64,7 +64,7 @@ class PasswordChangeControllerTest extends AbstractUserAccountControllerTest
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
-        $this->assertTrue($response->isRedirect('http://localhost/signout/'));
+        $this->assertTrue($response->isRedirect('/signout/'));
     }
 
     public function testRequestActionPostRequest()
@@ -100,7 +100,7 @@ class PasswordChangeControllerTest extends AbstractUserAccountControllerTest
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
-        $this->assertTrue($response->isRedirect('http://localhost/account/'));
+        $this->assertTrue($response->isRedirect('/account/'));
     }
 
     /**
@@ -134,7 +134,7 @@ class PasswordChangeControllerTest extends AbstractUserAccountControllerTest
         $response = $this->passwordChangeController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/account/', $response->getTargetUrl());
+        $this->assertEquals('/account/', $response->getTargetUrl());
 
         $this->assertEquals(
             $expectedFlashBagValues,

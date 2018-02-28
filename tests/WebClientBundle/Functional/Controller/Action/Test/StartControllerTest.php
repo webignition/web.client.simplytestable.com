@@ -109,7 +109,7 @@ class StartControllerTest extends AbstractBaseTestCase
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
         $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
 
-        $expectedProgressRedirectUrl = 'http://localhost/http://example.com//1/progress/';
+        $expectedProgressRedirectUrl = '/http://example.com//1/progress/';
 
         return [
             'website missing' => [
@@ -619,6 +619,6 @@ class StartControllerTest extends AbstractBaseTestCase
      */
     private function createExpectedStartFailureRedirectUrl(array $queryStringParameters)
     {
-        return 'http://localhost/?' . http_build_query($queryStringParameters);
+        return '/?' . http_build_query($queryStringParameters);
     }
 }

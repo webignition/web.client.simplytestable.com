@@ -10,7 +10,6 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
@@ -52,11 +51,7 @@ class SignInController extends AbstractUserController
         $user = $this->userManager->getUser();
 
         if (!SystemUserService::isPublicUser($user)) {
-            return new RedirectResponse($this->router->generate(
-                'view_dashboard_index_index',
-                [],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            ));
+            return new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
         }
 
         $requestData = $request->query;

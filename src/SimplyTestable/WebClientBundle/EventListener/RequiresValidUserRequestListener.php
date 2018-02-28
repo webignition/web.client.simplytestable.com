@@ -6,7 +6,6 @@ use SimplyTestable\WebClientBundle\Interfaces\Controller\RequiresValidUser;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class RequiresValidUserRequestListener extends AbstractRequestListener
@@ -41,7 +40,7 @@ class RequiresValidUserRequestListener extends AbstractRequestListener
         }
 
         if ($this->controller instanceof RequiresValidUser && !$this->userService->authenticate()) {
-            $redirectUrl = $this->router->generate('sign_out_submit', [], UrlGeneratorInterface::ABSOLUTE_URL);
+            $redirectUrl = $this->router->generate('sign_out_submit');
 
             /* @var RequiresValidUser $controller */
             $controller = $this->controller;

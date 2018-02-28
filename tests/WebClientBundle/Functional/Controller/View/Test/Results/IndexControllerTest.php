@@ -145,7 +145,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'expectedRedirectUrl' => 'http://localhost/signout/',
+                'expectedRedirectUrl' => '/signout/',
             ],
             'invalid owner, not logged in' => [
                 'httpFixtures' => [
@@ -153,7 +153,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                     HttpResponseFactory::createForbiddenResponse(),
                 ],
                 'expectedRedirectUrl' => sprintf(
-                    'http://localhost/signin/?redirect=%s%s',
+                    '/signin/?redirect=%s%s',
                     'eyJyb3V0ZSI6InZpZXdfdGVzdF9wcm9ncmVzc19pbmRleF9pbmRleCIsInBhcmFtZXRlcnMiOnsid2Vic2l0ZSI6I',
                     'mh0dHA6XC9cL2V4YW1wbGUuY29tXC8iLCJ0ZXN0X2lkIjoiMSJ9fQ%3D%3D'
                 ),
@@ -165,7 +165,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                         'state' => Test::STATE_IN_PROGRESS,
                     ])),
                 ],
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
             'website mismatch' => [
                 'httpFixtures' => [
@@ -174,7 +174,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                         'website' => 'http://foo.example.com/',
                     ])),
                 ],
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/',
+                'expectedRedirectUrl' => '/http://example.com//1/',
             ],
             'failed test' => [
                 'httpFixtures' => [
@@ -183,7 +183,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                         'state' => Test::STATE_FAILED_NO_SITEMAP,
                     ])),
                 ],
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/failed/no-urls-detected/',
+                'expectedRedirectUrl' => '/http://example.com//1/results/failed/no-urls-detected/',
             ],
             'rejected test' => [
                 'httpFixtures' => [
@@ -192,7 +192,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                         'state' => Test::STATE_REJECTED,
                     ])),
                 ],
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/rejected/',
+                'expectedRedirectUrl' => '/http://example.com//1/results/rejected/',
             ],
         ];
     }
@@ -325,7 +325,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 ],
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/preparing/',
+                'expectedRedirectUrl' => '/http://example.com//1/results/preparing/',
                 'expectedRequestUrls' => [
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
                 ],
@@ -340,7 +340,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'request' => new Request([
                     'filter' => 'foo',
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/?filter=with-errors',
+                'expectedRedirectUrl' => '/http://example.com//1/results/?filter=with-errors',
                 'expectedRequestUrls' => [
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/ids/',
@@ -371,7 +371,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'request' => new Request([
                     'filter' => IndexController::FILTER_WITH_ERRORS,
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/?filter=without-errors',
+                'expectedRedirectUrl' => '/http://example.com//1/results/?filter=without-errors',
                 'expectedRequestUrls' => [
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/ids/',
@@ -402,7 +402,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'request' => new Request([
                     'filter' => IndexController::FILTER_WITH_ERRORS,
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/?filter=with-warnings',
+                'expectedRedirectUrl' => '/http://example.com//1/results/?filter=with-warnings',
                 'expectedRequestUrls' => [
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/ids/',

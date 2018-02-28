@@ -21,7 +21,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use webignition\NormalisedUrl\NormalisedUrl;
 
@@ -165,13 +164,12 @@ class StartController extends AbstractController
         try {
             $remoteTest = $this->remoteTestService->start($urlToTest, $testOptions, $testType);
 
-            return new RedirectResponse($this->router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'view_test_progress_index_index',
                 [
                     'website' => $remoteTest->getWebsite(),
                     'test_id' => $remoteTest->getId(),
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
             $flashBag->set('test_start_error', 'web_resource_exception');
@@ -282,10 +280,6 @@ class StartController extends AbstractController
      */
     private function createStartErrorRedirectUrl(array $redirectRouteParameters)
     {
-        return $this->router->generate(
-            'view_dashboard_index_index',
-            $redirectRouteParameters,
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
+        return $this->generateUrl('view_dashboard_index_index', $redirectRouteParameters);
     }
 }

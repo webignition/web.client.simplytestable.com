@@ -68,7 +68,7 @@ class TestControllerTest extends AbstractBaseTestCase
         $response = $this->client->getResponse();
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/http://example.com//1/results/', $response->getTargetUrl());
+        $this->assertEquals('/http://example.com//1/results/', $response->getTargetUrl());
     }
 
     /**
@@ -164,7 +164,7 @@ class TestControllerTest extends AbstractBaseTestCase
                     $forbiddenResponse,
                     $forbiddenResponse,
                 ],
-                'expectedRedirectUrl' => 'http://localhost/',
+                'expectedRedirectUrl' => '/',
             ],
             'HTTP 500' => [
                 'httpFixtures' => [
@@ -175,7 +175,7 @@ class TestControllerTest extends AbstractBaseTestCase
                     $internalServerErrorResponse,
                     $internalServerErrorResponse,
                 ],
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
             'CURL exception' => [
                 'httpFixtures' => [
@@ -186,14 +186,14 @@ class TestControllerTest extends AbstractBaseTestCase
                     $curlTimeoutConnectException,
                     $curlTimeoutConnectException,
                 ],
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
             'Success' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse($this->remoteTestData),
                     HttpResponseFactory::createSuccessResponse(),
                 ],
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/',
+                'expectedRedirectUrl' => '/http://example.com//1/results/',
             ],
         ];
     }
@@ -219,7 +219,7 @@ class TestControllerTest extends AbstractBaseTestCase
         $response = $this->client->getResponse();
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/http://example.com//1/progress/', $response->getTargetUrl());
+        $this->assertEquals('/http://example.com//1/progress/', $response->getTargetUrl());
     }
 
     /**
@@ -291,7 +291,7 @@ class TestControllerTest extends AbstractBaseTestCase
         $response = $this->client->getResponse();
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/http://example.com//2/progress/', $response->getTargetUrl());
+        $this->assertEquals('/http://example.com//2/progress/', $response->getTargetUrl());
     }
 
     /**

@@ -12,7 +12,6 @@ use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class PasswordChangeController extends AbstractUserAccountController
@@ -67,11 +66,7 @@ class PasswordChangeController extends AbstractUserAccountController
         $currentPassword = trim($requestData->get('current-password'));
         $newPassword = trim($requestData->get('new-password'));
 
-        $redirectResponse = new RedirectResponse($this->router->generate(
-            'view_user_account_index_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account_index_index'));
 
         if (empty($currentPassword) || empty($newPassword)) {
             $this->session->getFlashBag()->set(

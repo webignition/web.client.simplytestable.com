@@ -94,7 +94,7 @@ class PlanControllerTest extends AbstractUserAccountControllerTest
         $response = $this->client->getResponse();
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/account/plan/', $response->getTargetUrl());
+        $this->assertEquals('/account/plan/', $response->getTargetUrl());
     }
 
     /**
@@ -124,7 +124,7 @@ class PlanControllerTest extends AbstractUserAccountControllerTest
         /* @var RedirectResponse $response */
         $response = $this->planController->subscribeAction($request);
 
-        $this->assertEquals('http://localhost/account/plan/', $response->getTargetUrl());
+        $this->assertEquals('/account/plan/', $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
     }
 

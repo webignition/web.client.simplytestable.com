@@ -21,7 +21,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
@@ -129,28 +128,26 @@ class ByTaskTypeController extends AbstractResultsController
         $selectedTaskType = $this->getSelectedTaskType($remoteTest, $requestTaskType);
 
         if (empty($selectedTaskType)) {
-            return new RedirectResponse($this->router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'view_test_results_index_index',
                 [
                     'website' => $website,
                     'test_id' => $test_id
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 
         $hasValidFilter = in_array($filter, $this->allowedFilters);
 
         if (!$hasValidFilter) {
-            return new RedirectResponse($this->router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'view_test_results_bytasktype_index',
                 [
                     'website' => $website,
                     'test_id' => $test_id,
                     'task_type' => strtolower(str_replace(' ', '+', $selectedTaskType)),
                     'filter' => self::DEFAULT_FILTER
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 
@@ -166,13 +163,12 @@ class ByTaskTypeController extends AbstractResultsController
         }
 
         if ($this->requiresPreparation($remoteTest, $test)) {
-            return new RedirectResponse($this->router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'view_test_results_preparing_index_index',
                 [
                     'website' => $website,
                     'test_id' => $test_id,
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 
@@ -259,15 +255,14 @@ class ByTaskTypeController extends AbstractResultsController
         $filter = trim($request->attributes->get('filter'));
         $hasValidFilter = in_array($filter, $this->allowedFilters);
 
-        return new RedirectResponse($this->router->generate(
+        return new RedirectResponse($this->generateUrl(
             'view_test_results_bytasktype_index',
             [
                 'website' => $remoteTest->getWebsite(),
                 'test_id' => $request->attributes->get('test_id'),
                 'task_type' => str_replace(' ', '+', $request->attributes->get('task_type')),
                 'filter' => $hasValidFilter ? $filter : self::DEFAULT_FILTER
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         ));
     }
 }

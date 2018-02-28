@@ -25,7 +25,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 use webignition\NormalisedUrl\NormalisedUrl;
@@ -149,13 +148,12 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         $testWebsite = (string)$test->getWebsite();
 
         if ($testWebsite !== $website) {
-            $redirectUrl = $this->router->generate(
+            $redirectUrl = $this->generateUrl(
                 'view_test_progress_index_index',
                 [
                     'website' => $testWebsite,
                     'test_id' => $test_id
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             );
 
             return $this->createRedirectResponse($request, $redirectUrl);
@@ -163,25 +161,23 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
 
         if ($this->testService->isFinished($test)) {
             if (Test::STATE_FAILED_NO_SITEMAP  !== $test->getState() || SystemUserService::isPublicUser($user)) {
-                $redirectUrl = $this->router->generate(
+                $redirectUrl = $this->generateUrl(
                     'view_test_results_index_index',
                     [
                         'website' => $testWebsite,
                         'test_id' => $test_id
-                    ],
-                    UrlGeneratorInterface::ABSOLUTE_URL
+                    ]
                 );
 
                 return $this->createRedirectResponse($request, $redirectUrl);
             }
 
-            $redirectUrl = $this->router->generate(
+            $redirectUrl = $this->generateUrl(
                 'app_test_retest',
                 [
                     'website' => $testWebsite,
                     'test_id' => $test_id
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             );
 
             return $this->createRedirectResponse($request, $redirectUrl);
@@ -218,13 +214,12 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         ];
 
         if ($this->requestIsForApplicationJson($request)) {
-            $testProgressUrl = $this->router->generate(
+            $testProgressUrl = $this->generateUrl(
                 'view_test_progress_index_index',
                 [
                     'website' => $testWebsite,
                     'test_id' => $test_id
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             );
 
             $viewData = array_merge($commonViewData, [

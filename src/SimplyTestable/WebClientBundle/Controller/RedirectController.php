@@ -12,21 +12,14 @@ use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\RouterInterface;
 use webignition\NormalisedUrl\NormalisedUrl;
 
 /**
  * Redirects valid-looking URLs to those that match actual controller actions
  */
-class RedirectController
+class RedirectController extends AbstractController
 {
     const TASK_RESULTS_URL_PATTERN = '/\/[0-9]+\/[0-9]+\/results\/?$/';
-
-    /**
-     * @var RouterInterface
-     */
-    private $router;
 
     /**
      * @var string[]
@@ -36,14 +29,6 @@ class RedirectController
         Test::STATE_COMPLETED,
         Test::STATE_FAILED_NO_SITEMAP,
     ];
-
-    /**
-     * @param RouterInterface $router
-     */
-    public function __construct(RouterInterface $router)
-    {
-        $this->router = $router;
-    }
 
     /**
      * @param TestService $testService
@@ -73,10 +58,9 @@ class RedirectController
         if ($isTaskResultsUrl) {
             $routeParameters = $this->getWebsiteAndTestIdAndTaskIdFromWebsite($website);
 
-            return new RedirectResponse($this->router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'view_test_task_results_index_index_verbose',
-                $routeParameters,
-                UrlGeneratorInterface::ABSOLUTE_URL
+                $routeParameters
             ));
         }
 
@@ -93,13 +77,12 @@ class RedirectController
             $latestRemoteTest = $remoteTestService->retrieveLatest($normalisedWebsite);
 
             if ($latestRemoteTest instanceof RemoteTest) {
-                return new RedirectResponse($this->router->generate(
+                return new RedirectResponse($this->generateUrl(
                     'app_test_redirector',
                     [
                         'website' => $latestRemoteTest->getWebsite(),
                         'test_id' => $latestRemoteTest->getId()
-                    ],
-                    UrlGeneratorInterface::ABSOLUTE_URL
+                    ]
                 ));
             }
 
@@ -111,21 +94,16 @@ class RedirectController
             ]);
 
             if (!empty($latestTest)) {
-                return new RedirectResponse($this->router->generate(
+                return new RedirectResponse($this->generateUrl(
                     'app_test_redirector',
                     [
                         'website' => $normalisedWebsite,
                         'test_id' => $latestTest->getTestId(),
-                    ],
-                    UrlGeneratorInterface::ABSOLUTE_URL
+                    ]
                 ));
             }
 
-            return new RedirectResponse($this->router->generate(
-                'view_dashboard_index_index',
-                [],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            ));
+            return new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
         }
 
         if ($hasWebsite && $hasTestId) {
@@ -145,12 +123,11 @@ class RedirectController
                     ]
                 );
 
-                return new RedirectResponse($this->router->generate(
+                return new RedirectResponse($this->generateUrl(
                     'app_website',
                     [
                         'website' => $website
-                    ],
-                    UrlGeneratorInterface::ABSOLUTE_URL
+                    ]
                 ));
             }
 
@@ -158,21 +135,16 @@ class RedirectController
                 ? 'view_test_results_index_index'
                 : 'view_test_progress_index_index';
 
-            return new RedirectResponse($this->router->generate(
+            return new RedirectResponse($this->generateUrl(
                 $routeName,
                 [
                     'website' => $normalisedWebsite,
                     'test_id' => $normalisedTestId
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 
-        return new RedirectResponse($this->router->generate(
-            'view_dashboard_index_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        return new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
     }
 
     /**
@@ -184,14 +156,13 @@ class RedirectController
      */
     public function taskAction($website, $test_id, $task_id)
     {
-        return new RedirectResponse($this->router->generate(
+        return new RedirectResponse($this->generateUrl(
             'view_test_task_results_index_index',
             [
                 'website' => $website,
                 'test_id' => $test_id,
                 'task_id' => $task_id
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         ));
     }
 

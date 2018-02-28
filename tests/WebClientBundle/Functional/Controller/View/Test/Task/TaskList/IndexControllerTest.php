@@ -74,7 +74,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/signout/', $response->getTargetUrl());
+        $this->assertEquals('/signout/', $response->getTargetUrl());
     }
 
     public function testIndexActionInvalidOwnerGetRequest()

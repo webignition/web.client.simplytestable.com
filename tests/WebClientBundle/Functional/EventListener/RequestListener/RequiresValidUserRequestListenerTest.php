@@ -63,7 +63,7 @@ class OnKernelControllerRequiresValidUserTest extends AbstractKernelControllerTe
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'expectedHasResponse' => true,
-                'expectedRedirectUrl' => 'http://localhost/signout/',
+                'expectedRedirectUrl' => '/signout/',
             ],
             'authenticated' => [
                 'httpFixtures' => [

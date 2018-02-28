@@ -65,7 +65,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
-        $this->assertTrue($response->isRedirect('http://localhost/signout/'));
+        $this->assertTrue($response->isRedirect('/signout/'));
     }
 
     public function testIndexActionInvalidOwnerGetRequest()
@@ -130,7 +130,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $response = $indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/http://example.com//1/', $response->getTargetUrl());
+        $this->assertEquals('/http://example.com//1/', $response->getTargetUrl());
     }
 
     /**
@@ -188,7 +188,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'website' => 'http://foo.example.com/',
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/',
+                'expectedRedirectUrl' => '/http://example.com//1/',
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Ffoo.example.com%2F/1/',
             ],
             'incorrect state' => [
@@ -200,7 +200,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'website' => self::WEBSITE,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => '/http://example.com//1/progress/',
                 'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
         ];

@@ -39,7 +39,7 @@ abstract class AbstractUserAccountControllerTest extends AbstractBaseTestCase
         $response = $this->client->getResponse();
 
         $this->assertTrue($response->isRedirect(
-            'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2luZGV4X2luZGV4In0%3D'
+            '/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2luZGV4X2luZGV4In0%3D'
         ));
     }
 

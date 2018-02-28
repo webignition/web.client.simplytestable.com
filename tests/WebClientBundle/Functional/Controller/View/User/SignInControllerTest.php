@@ -45,7 +45,7 @@ class SignInControllerTest extends AbstractViewControllerTest
         $response = $signInController->indexAction(new Request());
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/', $response->getTargetUrl());
+        $this->assertEquals('/', $response->getTargetUrl());
     }
 
     /**

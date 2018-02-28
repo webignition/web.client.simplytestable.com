@@ -16,7 +16,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class PlanController extends AbstractUserAccountController
@@ -83,11 +82,7 @@ class PlanController extends AbstractUserAccountController
         }
 
         $user = $this->userManager->getUser();
-        $redirectResponse = new RedirectResponse($this->router->generate(
-            'view_user_account_plan_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account_plan_index'));
 
         $userSummary = $this->userService->getSummary($user);
         $requestData = $request->request;

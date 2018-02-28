@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 use Symfony\Component\Routing\RouterInterface;
@@ -100,19 +99,14 @@ class IndexController extends AbstractController
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_BLANK
             );
 
-            return new RedirectResponse($this->router->generate(
-                'view_user_resetpassword_index_index',
-                [],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            ));
+            return new RedirectResponse($this->generateUrl('view_user_resetpassword_index_index'));
         }
 
-        $redirectResponse = new RedirectResponse($this->router->generate(
+        $redirectResponse = new RedirectResponse($this->generateUrl(
             'view_user_resetpassword_index_index',
             [
                 'email' => $email
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         ));
 
         $emailValidator = new EmailValidator;
@@ -194,13 +188,12 @@ class IndexController extends AbstractController
         $sender = $mailServiceConfiguration->getSender('default');
         $messageProperties = $mailServiceConfiguration->getMessageProperties('user_reset_password');
 
-        $confirmationUrl = $this->router->generate(
+        $confirmationUrl = $this->generateUrl(
             'view_user_resetpassword_choose_index',
             [
                 'email' => $email,
                 'token' => $token
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         );
 
         $viewName = 'SimplyTestableWebClientBundle:Email:reset-password-confirmation.txt.twig';

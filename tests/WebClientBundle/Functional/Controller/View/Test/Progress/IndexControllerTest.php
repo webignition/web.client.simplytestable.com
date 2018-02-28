@@ -74,7 +74,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'expectedRedirectUrl' => 'http://localhost/signout/',
+                'expectedRedirectUrl' => '/signout/',
             ],
             'invalid owner, not logged in' => [
                 'httpFixtures' => [
@@ -82,7 +82,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                     HttpResponseFactory::createForbiddenResponse(),
                 ],
                 'expectedRedirectUrl' => sprintf(
-                    'http://localhost/signin/?redirect=%s%s',
+                    '/signin/?redirect=%s%s',
                     'eyJyb3V0ZSI6InZpZXdfdGVzdF9wcm9ncmVzc19pbmRleF9pbmRleCIsInBhcmFtZXRlcnMiOnsid2Vic2l0ZSI6I',
                     'mh0dHA6XC9cL2V4YW1wbGUuY29tXC8iLCJ0ZXN0X2lkIjoiMSJ9fQ%3D%3D'
                 ),
@@ -234,7 +234,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'user' => $publicUser,
                 'website' => 'foo',
                 'testId' => self::TEST_ID,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => '/http://example.com//1/progress/',
                 'expectedRequestUrl' => 'http://null/job/foo/1/',
             ],
             'finished test; state=completed' => [
@@ -246,7 +246,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'user' => $publicUser,
                 'website' => self::WEBSITE,
                 'testId' => self::TEST_ID,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/',
+                'expectedRedirectUrl' => '/http://example.com//1/results/',
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
             'finished test; state=failed_no_sitemap; public user' => [
@@ -259,7 +259,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'user' => $publicUser,
                 'website' => self::WEBSITE,
                 'testId' => self::TEST_ID,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/',
+                'expectedRedirectUrl' => '/http://example.com//1/results/',
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
             'finished test; state=failed_no_sitemap; private user' => [
@@ -272,7 +272,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'user' => $privateUser,
                 'website' => self::WEBSITE,
                 'testId' => self::TEST_ID,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/re-test/',
+                'expectedRedirectUrl' => '/http://example.com//1/re-test/',
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
         ];
@@ -470,7 +470,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         $this->assertEquals(self::TEST_ID, $responseData['remote_test']['id']);
         $this->assertEquals(self::WEBSITE, $responseData['remote_test']['website']);
 
-        $this->assertEquals('http://localhost/http://example.com//1/progress/', $responseData['this_url']);
+        $this->assertEquals('/http://example.com//1/progress/', $responseData['this_url']);
         $this->assertEquals($expectedStateLabel, $responseData['state_label']);
     }
 

@@ -24,7 +24,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
     const USER_USERNAME = 'user@example.com';
     const INVITEE_EMAIL = 'invitee@example.com';
     const TEAM_NAME = 'Team Name';
-    const EXPECTED_REDIRECT_URL = 'http://localhost/account/team/';
+    const EXPECTED_REDIRECT_URL = '/account/team/';
 
     /**
      * @var User

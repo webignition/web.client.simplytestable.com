@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 class TeamInviteControllerRespondInviteActionTest extends AbstractTeamInviteControllerTest
 {
     const ROUTE_NAME = 'action_user_account_team_respondinvite';
-    const EXPECTED_REDIRECT_URL = 'http://localhost/account/team/';
+    const EXPECTED_REDIRECT_URL = '/account/team/';
 
     /**
      * {@inheritdoc}

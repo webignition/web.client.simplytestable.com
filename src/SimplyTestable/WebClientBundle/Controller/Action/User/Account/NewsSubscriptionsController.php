@@ -11,7 +11,6 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Services\MailChimp\Service as MailChimpService;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -112,10 +111,6 @@ class NewsSubscriptionsController extends AbstractUserAccountController
 
         $this->session->getFlashBag()->set('user_account_newssubscriptions_update', $flashData);
 
-        return new RedirectResponse($this->router->generate(
-            'view_user_account_index_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ) . '#news-subscriptions');
+        return new RedirectResponse($this->generateUrl('view_user_account_index_index') . '#news-subscriptions');
     }
 }

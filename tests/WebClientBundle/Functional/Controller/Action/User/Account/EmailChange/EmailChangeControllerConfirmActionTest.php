@@ -19,7 +19,7 @@ use webignition\ResqueJobFactory\ResqueJobFactory;
 class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControllerTest
 {
     const ROUTE_NAME = 'action_user_account_emailchange_confirm';
-    const EXPECTED_REDIRECT_URL = 'http://localhost/account/';
+    const EXPECTED_REDIRECT_URL = '/account/';
 
     /**
      * {@inheritdoc}
@@ -54,7 +54,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $response = $this->client->getResponse();
 
         $this->assertEquals(
-            'http://localhost/account/',
+            '/account/',
             $response->getTargetUrl()
         );
     }
@@ -68,7 +68,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $response = $this->callConfirmAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/account/', $response->getTargetUrl());
+        $this->assertEquals('/account/', $response->getTargetUrl());
         $this->assertEquals([
             EmailChangeController::FLASH_BAG_CONFIRM_KEY => [
                 EmailChangeController::FLASH_BAG_CONFIRM_ERROR_MESSAGE_TOKEN_INVALID,
@@ -93,7 +93,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $response = $this->callConfirmAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/account/', $response->getTargetUrl());
+        $this->assertEquals('/account/', $response->getTargetUrl());
         $this->assertEquals([
             EmailChangeController::FLASH_BAG_CONFIRM_KEY => [
                 EmailChangeController::FLASH_BAG_CONFIRM_ERROR_MESSAGE_TOKEN_INVALID,
@@ -116,7 +116,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $response = $this->callConfirmAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/account/', $response->getTargetUrl());
+        $this->assertEquals('/account/', $response->getTargetUrl());
         $this->assertEquals([], $session->getFlashBag()->peekAll());
     }
 
@@ -151,7 +151,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $response = $this->callConfirmAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/account/', $response->getTargetUrl());
+        $this->assertEquals('/account/', $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
     }
 
@@ -219,7 +219,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $response = $this->callConfirmAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/account/', $response->getTargetUrl());
+        $this->assertEquals('/account/', $response->getTargetUrl());
         $this->assertEquals([
             EmailChangeController::FLASH_BAG_CONFIRM_KEY => [
                 EmailChangeController::FLASH_BAG_CONFIRM_MESSAGE_SUCCESS
