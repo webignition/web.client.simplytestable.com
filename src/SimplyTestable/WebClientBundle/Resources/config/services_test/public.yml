@@ -72,3 +72,7 @@ services:
     arguments:
       - '%admin_user_username%'
       - '%admin_user_password%'
+
+  SimplyTestable\WebClientBundle\Services\UserSerializerService:
+    arguments:
+      - '%secret%'

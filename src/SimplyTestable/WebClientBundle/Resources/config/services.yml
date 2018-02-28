@@ -65,7 +65,6 @@ services:
 #      - '@SimplyTestable\WebClientBundle\Services\JsonResponseHandler'
 
   SimplyTestable\WebClientBundle\Services\UserSerializerService:
-    class:  SimplyTestable\WebClientBundle\Services\UserSerializerService
     arguments:
       - '%secret%'
 
@@ -232,13 +231,13 @@ services:
       - '%admin_user_username%'
       - '%admin_user_password%'
 
-  SimplyTestable\WebClientBundle\Services\UserManager:
-    class:  SimplyTestable\WebClientBundle\Services\UserManager
-    arguments:
-      - '@request_stack'
-      - '@SimplyTestable\WebClientBundle\Services\UserSerializerService'
-      - '@session'
-      - '@SimplyTestable\WebClientBundle\Services\SystemUserService'
+#  SimplyTestable\WebClientBundle\Services\UserManager:
+#    class:  SimplyTestable\WebClientBundle\Services\UserManager
+#    arguments:
+#      - '@request_stack'
+#      - '@SimplyTestable\WebClientBundle\Services\UserSerializerService'
+#      - '@session'
+#      - '@SimplyTestable\WebClientBundle\Services\SystemUserService'
 
   SimplyTestable\WebClientBundle\Services\MailChimp\Client:
     class:  SimplyTestable\WebClientBundle\Services\MailChimp\Client
