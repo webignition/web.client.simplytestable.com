@@ -91,7 +91,6 @@ services:
 #    class:  SimplyTestable\WebClientBundle\Services\UserAccountCardService
 #    arguments:
 #      - '@SimplyTestable\WebClientBundle\Services\StripeErrorFactory'
-#      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationRouter'
 #      - '@SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient'
 
 #  SimplyTestable\WebClientBundle\Services\UserStripeEventService:
