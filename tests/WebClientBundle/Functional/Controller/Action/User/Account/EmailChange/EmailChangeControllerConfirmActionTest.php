@@ -7,14 +7,14 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use webignition\ResqueJobFactory\ResqueJobFactory;
+use webignition\SimplyTestableUserModel\User;
+use webignition\SimplyTestableUserSerializer\UserSerializer;
 
 class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControllerTest
 {
@@ -191,14 +191,14 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
     {
         $session = $this->container->get('session');
         $resqueQueueService = $this->container->get(ResqueQueueService::class);
-        $userSerializerService = $this->container->get(UserSerializerService::class);
+        $userSerializer = $this->container->get(UserSerializer::class);
         $userManager = $this->container->get(UserManager::class);
 
         $userEmail = 'user@example.com';
         $userNewEmail = 'new-email@example.com';
 
         $user = new User($userEmail, 'password');
-        $serializerUser = $userSerializerService->serializeToString($user);
+        $serializerUser = $userSerializer->serializeToString($user);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([

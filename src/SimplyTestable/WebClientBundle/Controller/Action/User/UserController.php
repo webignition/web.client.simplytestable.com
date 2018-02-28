@@ -16,7 +16,6 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use SimplyTestable\WebClientBundle\Model\User;
 use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -26,6 +25,7 @@ use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 use webignition\ResqueJobFactory\ResqueJobFactory;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
+use webignition\SimplyTestableUserModel\User;
 
 class UserController extends AbstractController
 {

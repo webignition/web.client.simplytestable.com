@@ -2,10 +2,10 @@
 
 namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account\Team;
 
-use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use webignition\SimplyTestableUserModel\User;
 
 class TeamControllerLeaveActionTest extends AbstractTeamControllerTest
 {

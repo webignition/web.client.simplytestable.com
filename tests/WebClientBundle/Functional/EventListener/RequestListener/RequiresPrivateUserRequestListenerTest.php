@@ -3,13 +3,13 @@
 namespace Tests\WebClientBundle\Functional\EventListener\RequestListener;
 
 use SimplyTestable\WebClientBundle\EventListener\RequiresPrivateUserRequestListener;
-use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\NewsSubscriptionsController;
+use webignition\SimplyTestableUserModel\User;
 
 class RequiresPrivateUserRequestListenerTest extends AbstractKernelControllerTest
 {

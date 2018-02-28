@@ -4,11 +4,11 @@ namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account\TeamIn
 
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use webignition\SimplyTestableUserModel\User;
 
 class TeamInviteControllerRespondInviteActionTest extends AbstractTeamInviteControllerTest
 {

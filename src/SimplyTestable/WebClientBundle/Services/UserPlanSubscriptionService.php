@@ -5,7 +5,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAccountCardException;
-use SimplyTestable\WebClientBundle\Model\User;
+use webignition\SimplyTestableUserModel\User;
 
 class UserPlanSubscriptionService
 {

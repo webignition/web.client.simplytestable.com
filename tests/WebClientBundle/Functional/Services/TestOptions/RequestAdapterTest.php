@@ -2,11 +2,11 @@
 
 namespace Tests\WebClientBundle\Functional\Services\TestOptions;
 
-use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\TaskTypeService;
 use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use webignition\SimplyTestableUserModel\User;
 
 class RequestAdapterTest extends AbstractBaseTestCase
 {

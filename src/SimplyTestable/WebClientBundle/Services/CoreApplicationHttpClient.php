@@ -14,9 +14,9 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Model\User;
 use GuzzleHttp\Subscriber\Retry\RetrySubscriber as HttpRetrySubscriber;
 use webignition\GuzzleHttp\Exception\CurlException\Factory as CurlExceptionFactory;
+use webignition\SimplyTestableUserModel\User;
 
 class CoreApplicationHttpClient
 {

@@ -3,10 +3,10 @@
 namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account;
 
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\CardController;
-use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use webignition\SimplyTestableUserModel\User;
 
 class CardControllerTest extends AbstractUserAccountControllerTest
 {

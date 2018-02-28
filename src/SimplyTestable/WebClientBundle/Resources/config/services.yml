@@ -19,7 +19,7 @@ services:
       - '@webignition\ResqueJobFactory\ResqueJobFactory'
       - '%kernel.environment%'
 
-  SimplyTestable\WebClientBundle\Services\UserSerializerService:
+  webignition\SimplyTestableUserSerializer\UserSerializer:
     arguments:
       - '%secret%'
 

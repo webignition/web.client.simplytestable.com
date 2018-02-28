@@ -3,10 +3,8 @@
 namespace Tests\WebClientBundle\Functional\Controller\View\Dashboard;
 
 use SimplyTestable\WebClientBundle\Controller\View\Dashboard\IndexController;
-use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
-use SimplyTestable\WebClientBundle\Services\UserSerializerService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Symfony\Component\BrowserKit\Cookie;
@@ -15,6 +13,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
+use webignition\SimplyTestableUserModel\User;
+use webignition\SimplyTestableUserSerializer\UserSerializer;
 
 class IndexControllerTest extends AbstractViewControllerTest
 {
@@ -65,7 +65,7 @@ class IndexControllerTest extends AbstractViewControllerTest
     public function testIndexActionPrivateUserGetRequest()
     {
         $user = new User(self::USER_EMAIL);
-        $userSerializerService = $this->container->get(UserSerializerService::class);
+        $userSerializer = $this->container->get(UserSerializer::class);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -76,7 +76,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $this->client->getCookieJar()->set(new Cookie(
             UserManager::USER_COOKIE_KEY,
-            $userSerializerService->serializeToString($user)
+            $userSerializer->serializeToString($user)
         ));
 
         $this->client->request(

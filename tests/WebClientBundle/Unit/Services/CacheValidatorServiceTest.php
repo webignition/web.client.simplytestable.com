@@ -3,7 +3,6 @@
 namespace Tests\WebClientBundle\Unit\Services;
 
 use SimplyTestable\WebClientBundle\Model\CacheValidatorIdentifier;
-use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
@@ -11,6 +10,7 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Tests\WebClientBundle\Factory\ModelFactory;
 use Symfony\Component\HttpFoundation\Request;
+use webignition\SimplyTestableUserModel\User;
 
 class CacheValidatorServiceTest extends \PHPUnit_Framework_TestCase
 {

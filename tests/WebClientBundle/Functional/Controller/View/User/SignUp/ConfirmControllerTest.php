@@ -5,7 +5,6 @@ namespace Tests\WebClientBundle\Functional\Controller\View\User\SignUp;
 use SimplyTestable\WebClientBundle\Controller\Action\User\UserController;
 use SimplyTestable\WebClientBundle\Controller\View\User\SignUp\ConfirmController;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
-use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
@@ -14,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use SimplyTestable\WebClientBundle\Controller\Action\SignUp\User\ConfirmController as ActionConfirmController;
 use Tests\WebClientBundle\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
+use webignition\SimplyTestableUserModel\User;
 
 class ConfirmControllerTest extends AbstractViewControllerTest
 {

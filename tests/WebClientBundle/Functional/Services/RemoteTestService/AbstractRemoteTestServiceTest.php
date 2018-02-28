@@ -5,9 +5,9 @@ namespace Tests\WebClientBundle\Functional\Services\RemoteTestService;
 use ReflectionClass;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
-use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use Tests\WebClientBundle\Functional\Services\AbstractCoreApplicationServiceTest;
+use webignition\SimplyTestableUserModel\User;
 
 abstract class AbstractRemoteTestServiceTest extends AbstractCoreApplicationServiceTest
 {

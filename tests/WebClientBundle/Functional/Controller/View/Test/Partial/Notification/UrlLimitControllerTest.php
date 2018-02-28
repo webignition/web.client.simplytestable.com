@@ -4,7 +4,6 @@ namespace Tests\WebClientBundle\Functional\Controller\View\Test\Partial\Notifica
 
 use SimplyTestable\WebClientBundle\Controller\View\Test\Partial\Notification\UrlLimitController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
-use SimplyTestable\WebClientBundle\Model\User;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
@@ -12,6 +11,7 @@ use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use webignition\SimplyTestableUserModel\User;
 
 class UrlLimitControllerTest extends AbstractBaseTestCase
 {

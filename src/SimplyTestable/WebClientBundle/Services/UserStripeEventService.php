@@ -5,7 +5,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use webignition\Model\Stripe\Event\Event as StripeEvent;
-use SimplyTestable\WebClientBundle\Model\User;
+use webignition\SimplyTestableUserModel\User;
 
 class UserStripeEventService
 {

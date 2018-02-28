@@ -2,10 +2,11 @@
 
 namespace SimplyTestable\WebClientBundle\Services;
 
-use SimplyTestable\WebClientBundle\Model\User;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use webignition\SimplyTestableUserModel\User;
+use webignition\SimplyTestableUserSerializer\UserSerializer;
 
 class UserManager
 {
@@ -17,7 +18,7 @@ class UserManager
     const ONE_YEAR_IN_SECONDS = 31536000;
 
     /**
-     * @var UserSerializerService
+     * @var UserSerializer
      */
     private $userSerializer;
 
@@ -38,13 +39,13 @@ class UserManager
 
     /**
      * @param RequestStack $requestStack
-     * @param UserSerializerService $userSerializer
+     * @param UserSerializer $userSerializer
      * @param SessionInterface $session
      * @param SystemUserService $systemUserService
      */
     public function __construct(
         RequestStack $requestStack,
-        UserSerializerService $userSerializer,
+        UserSerializer $userSerializer,
         SessionInterface $session,
         SystemUserService $systemUserService
     ) {
@@ -57,7 +58,7 @@ class UserManager
 
         if (!empty($request)) {
             if ($request->cookies->has(self::USER_COOKIE_KEY)) {
-                $user = $this->userSerializer->unserializedFromString(
+                $user = $this->userSerializer->deserializeFromString(
                     $request->cookies->get(self::USER_COOKIE_KEY)
                 );
             }
@@ -67,7 +68,7 @@ class UserManager
             $sessionUser = $this->session->get(self::SESSION_USER_KEY);
 
             if (!empty($sessionUser)) {
-                $user = $this->userSerializer->unserialize($sessionUser);
+                $user = $this->userSerializer->deserialize($sessionUser);
             }
         }
 
