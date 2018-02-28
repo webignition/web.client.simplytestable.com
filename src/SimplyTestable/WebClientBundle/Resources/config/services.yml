@@ -5,13 +5,13 @@ imports:
     - { resource: services/resque-job-factory.yml }
 
 services:
-  SimplyTestable\WebClientBundle\Services\TestService:
-    class:   SimplyTestable\WebClientBundle\Services\TestService
-    arguments:
-      - '@doctrine.orm.entity_manager'
-      - '@logger'
-      - '@SimplyTestable\WebClientBundle\Services\TaskService'
-      - '@SimplyTestable\WebClientBundle\Services\RemoteTestService'
+#  SimplyTestable\WebClientBundle\Services\TestService:
+#    class:   SimplyTestable\WebClientBundle\Services\TestService
+#    arguments:
+#      - '@doctrine.orm.entity_manager'
+#      - '@logger'
+#      - '@SimplyTestable\WebClientBundle\Services\TaskService'
+#      - '@SimplyTestable\WebClientBundle\Services\RemoteTestService'
 
   SimplyTestable\WebClientBundle\Services\RemoteTestService:
     class:   SimplyTestable\WebClientBundle\Services\RemoteTestService

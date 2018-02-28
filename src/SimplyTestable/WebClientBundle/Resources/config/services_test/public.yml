@@ -1,0 +1,8 @@
+## Services that need to be public to allow them to be retrieved from the container in functional tests
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  SimplyTestable\WebClientBundle\Services\TestService:
