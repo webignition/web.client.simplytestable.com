@@ -146,7 +146,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'expectedRedirectUrl' => 'http://localhost/signout/',
+                'expectedRedirectUrl' => '/signout/',
             ],
             'invalid owner, not logged in' => [
                 'httpFixtures' => [
@@ -154,7 +154,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                     HttpResponseFactory::createForbiddenResponse(),
                 ],
                 'expectedRedirectUrl' => sprintf(
-                    'http://localhost/signin/?redirect=%s%s',
+                    '/signin/?redirect=%s%s',
                     'eyJyb3V0ZSI6InZpZXdfdGVzdF9wcm9ncmVzc19pbmRleF9pbmRleCIsInBhcmFtZXRlcnMiOnsid2Vic2l0ZSI6I',
                     'mh0dHA6XC9cL2V4YW1wbGUuY29tXC8iLCJ0ZXN0X2lkIjoiMSJ9fQ%3D%3D'
                 ),
@@ -166,7 +166,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                         'state' => Test::STATE_IN_PROGRESS,
                     ])),
                 ],
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/progress/',
+                'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
             'website mismatch' => [
                 'httpFixtures' => [
@@ -175,7 +175,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                         'website' => 'http://foo.example.com/',
                     ])),
                 ],
-                'expectedRedirectUrl' => 'http://localhost/http://foo.example.com//1/results/HTML+validation/by-error/',
+                'expectedRedirectUrl' => '/http://foo.example.com//1/results/HTML+validation/by-error/',
             ],
         ];
     }
@@ -317,7 +317,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'request' => new Request(),
                 'taskType' => '',
                 'filter' => '',
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/',
+                'expectedRedirectUrl' => '/http://example.com//1/results/',
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
             'invalid task type' => [
@@ -328,7 +328,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'request' => new Request(),
                 'taskType' => 'foo',
                 'filter' => '',
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/',
+                'expectedRedirectUrl' => '/http://example.com//1/results/',
                 'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
             'empty filter' => [
@@ -339,7 +339,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'request' => new Request(),
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => '',
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/html+validation/by-error/',
+                'expectedRedirectUrl' => '/http://example.com//1/results/html+validation/by-error/',
                 'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
             'invalid filter' => [
@@ -350,7 +350,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'request' => new Request(),
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => 'foo',
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/html+validation/by-error/',
+                'expectedRedirectUrl' => '/http://example.com//1/results/html+validation/by-error/',
                 'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
             'requires preparation' => [
@@ -363,7 +363,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'request' => new Request(),
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/results/preparing/',
+                'expectedRedirectUrl' => '/http://example.com//1/results/preparing/',
                 'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
         ];

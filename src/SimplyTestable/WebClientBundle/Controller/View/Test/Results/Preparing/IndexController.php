@@ -17,7 +17,6 @@ use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
@@ -95,13 +94,12 @@ class IndexController extends BaseViewController implements RequiresValidUser, R
         $remoteTaskCount = $remoteTest->getTaskCount();
 
         if (0 === $remoteTaskCount) {
-            return new RedirectResponse($this->router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'app_test_redirector',
                 [
                     'website' => $test->getWebsite(),
                     'test_id' => $test_id,
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 
@@ -120,24 +118,22 @@ class IndexController extends BaseViewController implements RequiresValidUser, R
         }
 
         if (!$this->testService->isFinished($test)) {
-            return new RedirectResponse($this->router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'view_test_progress_index_index',
                 [
                     'website' => $website,
                     'test_id' => $test_id,
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 
         if ($test->getWebsite() != $website) {
-            return new RedirectResponse($this->router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'app_test_redirector',
                 [
                     'website' => $test->getWebsite(),
                     'test_id' => $test_id,
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 

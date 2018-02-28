@@ -82,14 +82,14 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse()
                 ],
-                'expectedRedirectUrl' => 'http://localhost/signout/',
+                'expectedRedirectUrl' => '/signout/',
             ],
             'public user' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                 ],
                 'expectedRedirectUrl' =>
-                    'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNl'
+                    '/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNl'
                     .'cl9hY2NvdW50X3RlYW1faW5kZXhfaW5kZXgifQ%3D%3D'
             ],
         ];

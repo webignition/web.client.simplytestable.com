@@ -15,7 +15,6 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
@@ -93,11 +92,7 @@ class EmailChangeController extends AbstractUserAccountController
 
         $requestData = $request->request;
 
-        $redirectResponse = new RedirectResponse($this->router->generate(
-            'view_user_account_index_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account_index_index'));
 
         $user = $this->userManager->getUser();
         $username = $user->getUsername();
@@ -234,11 +229,7 @@ class EmailChangeController extends AbstractUserAccountController
             }
         }
 
-        return new RedirectResponse($this->router->generate(
-            'view_user_account_index_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        return new RedirectResponse($this->generateUrl('view_user_account_index_index'));
     }
 
     /**
@@ -264,11 +255,7 @@ class EmailChangeController extends AbstractUserAccountController
 
         $requestData = $request->request;
 
-        $redirectResponse =  new RedirectResponse($this->router->generate(
-            'view_user_account_index_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        $redirectResponse =  new RedirectResponse($this->generateUrl('view_user_account_index_index'));
 
         $token = trim($requestData->get('token'));
 
@@ -373,11 +360,7 @@ class EmailChangeController extends AbstractUserAccountController
         $this->emailChangeRequestService->cancelEmailChangeRequest();
         $this->session->getFlashBag()->set('user_account_details_cancel_email_change_notice', 'cancelled');
 
-        return new RedirectResponse($this->router->generate(
-            'view_user_account_index_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        return new RedirectResponse($this->generateUrl('view_user_account_index_index'));
     }
 
     /**
@@ -401,12 +384,11 @@ class EmailChangeController extends AbstractUserAccountController
         $sender = $mailServiceConfiguration->getSender('default');
         $messageProperties = $mailServiceConfiguration->getMessageProperties('user_email_change_request_confirmation');
 
-        $confirmationUrl = $this->router->generate(
+        $confirmationUrl = $this->generateUrl(
             'view_user_account_index_index',
             [
                 'token' => $emailChangeRequest['token'],
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         );
 
         $viewName = 'SimplyTestableWebClientBundle:Email:user-email-change-request-confirmation.txt.twig';

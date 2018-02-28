@@ -8,7 +8,7 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class UserAccountCardControllerTest extends AbstractUserAccountControllerTest
+class CardControllerTest extends AbstractUserAccountControllerTest
 {
     const ROUTE_NAME = 'user_account_card_associate';
 
@@ -84,7 +84,7 @@ class UserAccountCardControllerTest extends AbstractUserAccountControllerTest
                     HttpResponseFactory::createSuccessResponse(),
                 ],
                 'expectedResponseData' => [
-                    'this_url' => 'http://localhost/account/',
+                    'this_url' => '/account/',
                 ],
             ],
             'stripe error' => [

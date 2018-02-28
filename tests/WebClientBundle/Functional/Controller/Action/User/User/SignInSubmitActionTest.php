@@ -41,7 +41,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
-        $this->assertEquals('http://localhost/', $response->getTargetUrl());
+        $this->assertEquals('/', $response->getTargetUrl());
     }
 
     /**
@@ -78,7 +78,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         return [
             'empty email' => [
                 'request' => new Request(),
-                'expectedRedirectLocation' => 'http://localhost/signin/?redirect=&stay-signed-in=0',
+                'expectedRedirectLocation' => '/signin/?redirect=&stay-signed-in=0',
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_IN_ERROR_KEY => [
                         UserController::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_EMAIL_BLANK,
@@ -89,7 +89,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                 'request' => new Request([], [
                     'email' => 'foo',
                 ]),
-                'expectedRedirectLocation' => 'http://localhost/signin/?email=foo&redirect=&stay-signed-in=0',
+                'expectedRedirectLocation' => '/signin/?email=foo&redirect=&stay-signed-in=0',
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_IN_ERROR_KEY => [
                         UserController::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_EMAIL_INVALID,
@@ -101,7 +101,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                     'email' => 'user@example.com',
                 ]),
                 'expectedRedirectLocation' =>
-                    'http://localhost/signin/?email=user%40example.com&redirect=&stay-signed-in=0',
+                    '/signin/?email=user%40example.com&redirect=&stay-signed-in=0',
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_IN_ERROR_KEY => [
                         UserController::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_PASSWORD_BLANK,
@@ -114,7 +114,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                     'password' => 'foo',
                 ]),
                 'expectedRedirectLocation' =>
-                    'http://localhost/signin/?email=public%40simplytestable.com&redirect=&stay-signed-in=0',
+                    '/signin/?email=public%40simplytestable.com&redirect=&stay-signed-in=0',
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_IN_ERROR_KEY => [
                         UserController::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_PUBLIC_USER,
@@ -152,7 +152,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         $response = $this->callSignInSubmitAction($request);
 
         $this->assertEquals(
-            'http://localhost/signin/?email=user%40example.com&redirect=&stay-signed-in=0',
+            '/signin/?email=user%40example.com&redirect=&stay-signed-in=0',
             $response->getTargetUrl()
         );
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -238,7 +238,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         $response = $this->callSignInSubmitAction($request);
 
         $this->assertEquals(
-            'http://localhost/signin/?email=user%40example.com&redirect=&stay-signed-in=0',
+            '/signin/?email=user%40example.com&redirect=&stay-signed-in=0',
             $response->getTargetUrl()
         );
 
@@ -330,7 +330,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                     'password' => 'foo',
                 ]),
                 'expectedResponseHasUserCookie' => false,
-                'expectedRedirectUrl' => 'http://localhost/',
+                'expectedRedirectUrl' => '/',
             ],
             'stay-signed-in true' => [
                 'request' => new Request([], [
@@ -339,7 +339,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                     'stay-signed-in' => true,
                 ]),
                 'expectedResponseHasUserCookie' => true,
-                'expectedRedirectUrl' => 'http://localhost/',
+                'expectedRedirectUrl' => '/',
             ],
             'redirect without route, without parameters' => [
                 'request' => new Request([], [
@@ -348,7 +348,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                     'redirect' => base64_encode(json_encode([])),
                 ]),
                 'expectedResponseHasUserCookie' => false,
-                'expectedRedirectUrl' => 'http://localhost/',
+                'expectedRedirectUrl' => '/',
             ],
             'redirect with invalid route, without parameters' => [
                 'request' => new Request([], [
@@ -359,7 +359,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                     ])),
                 ]),
                 'expectedResponseHasUserCookie' => false,
-                'expectedRedirectUrl' => 'http://localhost/',
+                'expectedRedirectUrl' => '/',
             ],
             'redirect with valid route, without parameters' => [
                 'request' => new Request([], [
@@ -370,7 +370,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                     ])),
                 ]),
                 'expectedResponseHasUserCookie' => false,
-                'expectedRedirectUrl' => 'http://localhost/account/card/',
+                'expectedRedirectUrl' => '/account/card/',
             ],
             'redirect with valid route, invalid parameters' => [
                 'request' => new Request([], [
@@ -384,7 +384,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                     ])),
                 ]),
                 'expectedResponseHasUserCookie' => false,
-                'expectedRedirectUrl' => 'http://localhost/',
+                'expectedRedirectUrl' => '/',
             ],
             'redirect with valid route, with parameters' => [
                 'request' => new Request([], [
@@ -399,7 +399,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                     ])),
                 ]),
                 'expectedResponseHasUserCookie' => false,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com/1/progress/',
+                'expectedRedirectUrl' => '/http://example.com/1/progress/',
             ],
         ];
     }

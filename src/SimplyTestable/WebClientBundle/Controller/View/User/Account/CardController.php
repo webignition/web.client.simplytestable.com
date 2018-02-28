@@ -14,7 +14,6 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
@@ -92,11 +91,7 @@ class CardController extends AbstractUserAccountController
             $team = $this->teamService->getTeam();
 
             if ($team->getLeader() !== $user->getUsername()) {
-                return new RedirectResponse($this->router->generate(
-                    'view_user_account_index_index',
-                    [],
-                    UrlGeneratorInterface::ABSOLUTE_URL
-                ));
+                return new RedirectResponse($this->generateUrl('view_user_account_index_index'));
             }
         }
 

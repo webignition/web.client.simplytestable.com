@@ -41,7 +41,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
         $response = $this->client->getResponse();
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/signin/?email=user%40example.com', $response->getTargetUrl());
+        $this->assertEquals('/signin/?email=user%40example.com', $response->getTargetUrl());
     }
 
     /**
@@ -89,7 +89,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
                 ],
                 'request' => new Request(),
                 'email' => 'foo@example.com',
-                'expectedRedirectLocation' => 'http://localhost/signup/confirm/foo@example.com/',
+                'expectedRedirectLocation' => '/signup/confirm/foo@example.com/',
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_UP_CONFIRM_USER_ERROR_KEY => [
                         UserController::FLASH_BAG_SIGN_UP_CONFIRM_USER_ERROR_MESSAGE_USER_INVALID,
@@ -104,7 +104,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
                     'token' => '',
                 ]),
                 'email' => self::USER_EMAIL,
-                'expectedRedirectLocation' => 'http://localhost/signup/confirm/user@example.com/',
+                'expectedRedirectLocation' => '/signup/confirm/user@example.com/',
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_KEY => [
                         UserController::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_MESSAGE_TOKEN_BLANK,
@@ -123,7 +123,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
                     'token' => self::TOKEN,
                 ]),
                 'email' => self::USER_EMAIL,
-                'expectedRedirectLocation' => 'http://localhost/signup/confirm/user@example.com/',
+                'expectedRedirectLocation' => '/signup/confirm/user@example.com/',
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_KEY => [
                         UserController::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_MESSAGE_FAILED_READ_ONLY,
@@ -142,7 +142,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
                     'token' => 'invalid token',
                 ]),
                 'email' => self::USER_EMAIL,
-                'expectedRedirectLocation' => 'http://localhost/signup/confirm/user@example.com/',
+                'expectedRedirectLocation' => '/signup/confirm/user@example.com/',
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_KEY => [
                         UserController::FLASH_BAG_SIGN_UP_CONFIRM_TOKEN_ERROR_MESSAGE_TOKEN_INVALID,
@@ -196,13 +196,13 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
         return [
             'without redirect cookie' => [
                 'requestCookies' => [],
-                'expectedRedirectUrl' => 'http://localhost/signin/?email=user%40example.com',
+                'expectedRedirectUrl' => '/signin/?email=user%40example.com',
             ],
             'has redirect cookie' => [
                 'requestCookies' => [
                     'simplytestable-redirect' => 'foo',
                 ],
-                'expectedRedirectUrl' => 'http://localhost/signin/?email=user%40example.com&redirect=foo',
+                'expectedRedirectUrl' => '/signin/?email=user%40example.com&redirect=foo',
             ],
         ];
     }

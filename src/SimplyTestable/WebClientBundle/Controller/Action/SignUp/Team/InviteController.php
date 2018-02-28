@@ -16,7 +16,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use webignition\ResqueJobFactory\ResqueJobFactory;
 
@@ -105,21 +104,13 @@ class InviteController extends AbstractController
         $requestData = $request->request;
 
         if (empty($token)) {
-            return new RedirectResponse($this->router->generate(
-                'view_user_signup_index_index',
-                [],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            ));
+            return new RedirectResponse($this->generateUrl('view_user_signup_index_index'));
         }
 
         $invite = $this->teamInviteService->getForToken($token);
 
         if (empty($invite)) {
-            return new RedirectResponse($this->router->generate(
-                'view_user_signup_index_index',
-                [],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            ));
+            return new RedirectResponse($this->generateUrl('view_user_signup_index_index'));
         }
 
         $password = trim($requestData->get('password'));
@@ -129,12 +120,11 @@ class InviteController extends AbstractController
                 self::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_PASSWORD_BLANK
             );
 
-            return new RedirectResponse($this->router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'view_user_signup_invite_index',
                 [
                     'token' => $token
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 
@@ -161,12 +151,11 @@ class InviteController extends AbstractController
                 $activateAndAcceptFailureCode
             );
 
-            return new RedirectResponse($this->router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'view_user_signup_invite_index',
                 [
                     'token' => $token
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 
@@ -195,11 +184,7 @@ class InviteController extends AbstractController
 
         $staySignedIn = !empty(trim($requestData->get('stay-signed-in')));
 
-        $response = new RedirectResponse($this->router->generate(
-            'view_dashboard_index_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        $response = new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
 
         if ($staySignedIn) {
             $response->headers->setCookie($this->userManager->createUserCookie());

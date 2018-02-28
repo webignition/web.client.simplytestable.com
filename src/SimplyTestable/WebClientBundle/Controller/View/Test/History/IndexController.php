@@ -16,7 +16,6 @@ use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
@@ -84,11 +83,7 @@ class IndexController extends BaseViewController implements RequiresValidUser
         $pageNumber = (int)$request->attributes->get('page_number');
 
         if ($pageNumber < self::DEFAULT_PAGE_NUMBER) {
-            return new RedirectResponse($this->router->generate(
-                'view_test_history_index_index',
-                [],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            ));
+            return new RedirectResponse($this->generateUrl('view_test_history_index_index'));
         }
 
         $filter = trim($request->get('filter'));
@@ -117,13 +112,12 @@ class IndexController extends BaseViewController implements RequiresValidUser
         $isPageNumberAboveRange = $pageNumber > $testList->getPageCount() && $testList->getPageCount() > 0;
 
         if ($isPageNumberAboveRange) {
-            return new RedirectResponse($this->router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'app_history',
                 [
                     'page_number' => $testList->getPageCount(),
                     'filter' => $filter,
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 
@@ -137,11 +131,7 @@ class IndexController extends BaseViewController implements RequiresValidUser
             return $response;
         }
 
-        $websitesSourceUrl = $this->router->generate(
-            'view_test_history_websitelist_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
+        $websitesSourceUrl = $this->generateUrl('view_test_history_websitelist_index');
 
         return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/Test/History/Index:index.html.twig',

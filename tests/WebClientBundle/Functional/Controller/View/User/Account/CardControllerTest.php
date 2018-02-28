@@ -79,14 +79,14 @@ class CardControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'expectedRedirectUrl' => 'http://localhost/signout/',
+                'expectedRedirectUrl' => '/signout/',
             ],
             'public user' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse()
                 ],
                 'expectedRedirectUrl' =>
-                    'http://localhost/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2NhcmRfaW5kZXgifQ%3D%3D'
+                    '/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2NhcmRfaW5kZXgifQ%3D%3D'
             ],
         ];
     }
@@ -149,7 +149,7 @@ class CardControllerTest extends AbstractViewControllerTest
         $response = $cardController->indexAction();
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('http://localhost/account/', $response->getTargetUrl());
+        $this->assertEquals('/account/', $response->getTargetUrl());
     }
 
     /**

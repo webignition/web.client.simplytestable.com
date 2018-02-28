@@ -17,7 +17,6 @@ use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 use Symfony\Component\Routing\RouterInterface;
@@ -100,11 +99,7 @@ class TeamInviteController extends AbstractUserAccountController
 
         $requestData = $request->request;
 
-        $redirectResponse = new RedirectResponse($this->router->generate(
-            'view_user_account_team_index_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account_team_index_index'));
 
         $invitee = trim($requestData->get('email'));
 
@@ -242,11 +237,7 @@ class TeamInviteController extends AbstractUserAccountController
 
         $requestData = $request->request;
 
-        $redirectResponse = new RedirectResponse($this->router->generate(
-            'view_user_account_team_index_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account_team_index_index'));
 
         $response = trim($requestData->get('response'));
 
@@ -292,11 +283,7 @@ class TeamInviteController extends AbstractUserAccountController
             'user' => $invitee
         ]));
 
-        return new RedirectResponse($this->router->generate(
-            'view_user_account_team_index_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        return new RedirectResponse($this->generateUrl('view_user_account_team_index_index'));
     }
 
     /**
@@ -354,11 +341,7 @@ class TeamInviteController extends AbstractUserAccountController
 
         $this->session->getFlashBag()->set(self::FLASH_BAG_TEAM_RESEND_INVITE_KEY, $flashData);
 
-        return new RedirectResponse($this->router->generate(
-            'view_user_account_team_index_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        return new RedirectResponse($this->generateUrl('view_user_account_team_index_index'));
     }
 
     /**
@@ -385,11 +368,7 @@ class TeamInviteController extends AbstractUserAccountController
         $message->setSubject(str_replace('{{team_name}}', $invite->getTeam(), $messageProperties['subject']));
         $message->setTextMessage($twig->render($viewName, [
             'team_name' => $invite->getTeam(),
-            'account_team_page_url' => $this->router->generate(
-                'view_user_account_team_index_index',
-                [],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            )
+            'account_team_page_url' => $this->generateUrl('view_user_account_team_index_index')
         ]));
 
         $mailService->getSender()->send($message);
@@ -413,12 +392,11 @@ class TeamInviteController extends AbstractUserAccountController
         $sender = $mailServiceConfiguration->getSender('default');
         $messageProperties = $mailServiceConfiguration->getMessageProperties('user_team_invite_newuser_invitation');
 
-        $confirmationUrl = $this->router->generate(
+        $confirmationUrl = $this->generateUrl(
             'view_user_signup_invite_index',
             [
                 'token' => $invite->getToken()
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         );
 
         $viewName = 'SimplyTestableWebClientBundle:Email:user-team-invite-newuser-invitation.txt.twig';

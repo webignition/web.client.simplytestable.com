@@ -21,7 +21,6 @@ use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
@@ -287,11 +286,7 @@ class UserController extends AbstractController
         $routeParameters = isset($redirectValues['parameters']) ? $redirectValues['parameters'] : [];
 
         try {
-            return new RedirectResponse($this->router->generate(
-                $routeName,
-                $routeParameters,
-                UrlGeneratorInterface::ABSOLUTE_URL
-            ));
+            return new RedirectResponse($this->generateUrl($routeName, $routeParameters));
         } catch (\Exception $exception) {
         }
 
@@ -319,11 +314,7 @@ class UserController extends AbstractController
         $userExists = $this->userService->exists($email);
 
         if (!$this->isEmailValid($email) || empty($requestToken) || !$userExists) {
-            return new RedirectResponse($this->router->generate(
-                'view_user_resetpassword_index_index',
-                [],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            ));
+            return new RedirectResponse($this->generateUrl('view_user_resetpassword_index_index'));
         }
 
         $failureRedirectResponse = $this->createPasswordChooseRedirectResponse([
@@ -505,12 +496,11 @@ class UserController extends AbstractController
             self::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED
         );
 
-        $successRedirectUrl = $this->router->generate(
+        $successRedirectUrl = $this->generateUrl(
             'view_user_signup_confirm_index',
             [
                 'email' => $email,
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         );
 
         return new RedirectResponse($successRedirectUrl);
@@ -536,13 +526,12 @@ class UserController extends AbstractController
         $sender = $mailConfiguration->getSender('default');
         $messageProperties = $mailConfiguration->getMessageProperties('user_creation_confirmation');
 
-        $confirmationUrl = $this->router->generate(
+        $confirmationUrl = $this->generateUrl(
             'view_user_signup_confirm_index',
             [
                 'email' => $email,
                 'token' => $token,
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         );
 
         $message = $mailService->getNewMessage();
@@ -582,12 +571,11 @@ class UserController extends AbstractController
         $flashBag = $this->session->getFlashBag();
         $requestData = $request->request;
 
-        $failureRedirect = new RedirectResponse($this->router->generate(
+        $failureRedirect = new RedirectResponse($this->generateUrl(
             'view_user_signup_confirm_index',
             [
                 'email' => $email,
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         ));
 
         if (!$userExists) {
@@ -658,11 +646,7 @@ class UserController extends AbstractController
             $redirectParameters['redirect'] = $requestRedirectCookie;
         }
 
-        return new RedirectResponse($this->router->generate(
-            'view_user_signin_index',
-            $redirectParameters,
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        return new RedirectResponse($this->generateUrl('view_user_signin_index', $redirectParameters));
     }
 
     /**
@@ -684,11 +668,7 @@ class UserController extends AbstractController
      */
     private function createSignInRedirectResponse(array $routeParameters)
     {
-        return new RedirectResponse($this->router->generate(
-            'view_user_signin_index',
-            $routeParameters,
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        return new RedirectResponse($this->generateUrl('view_user_signin_index', $routeParameters));
     }
 
     /**
@@ -696,11 +676,7 @@ class UserController extends AbstractController
      */
     private function createDashboardRedirectResponse()
     {
-        return new RedirectResponse($this->router->generate(
-            'view_dashboard_index_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        return new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
     }
 
     /**
@@ -710,10 +686,9 @@ class UserController extends AbstractController
      */
     private function createPasswordChooseRedirectResponse(array $routeParameters)
     {
-        return new RedirectResponse($this->router->generate(
+        return new RedirectResponse($this->generateUrl(
             'view_user_resetpassword_choose_index',
-            $routeParameters,
-            UrlGeneratorInterface::ABSOLUTE_URL
+            $routeParameters
         ));
     }
 
@@ -724,10 +699,9 @@ class UserController extends AbstractController
      */
     private function createSignUpRedirectResponse(array $routeParameters = [])
     {
-        return new RedirectResponse($this->router->generate(
+        return new RedirectResponse($this->generateUrl(
             'view_user_signup_index_index',
-            $routeParameters,
-            UrlGeneratorInterface::ABSOLUTE_URL
+            $routeParameters
         ));
     }
 }

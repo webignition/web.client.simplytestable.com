@@ -47,7 +47,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
-        $this->assertTrue($response->isRedirect('http://localhost/signout/'));
+        $this->assertTrue($response->isRedirect('/signout/'));
     }
 
     public function testIndexActionPublicUserGetRequest()
@@ -138,7 +138,7 @@ class IndexControllerTest extends AbstractViewControllerTest
             'no page number' => [
                 'httpFixtures' => [],
                 'request' => new Request(),
-                'expectedRedirectUrl' => 'http://localhost/history/',
+                'expectedRedirectUrl' => '/history/',
                 'expectedRequestUrls' => [],
             ],
             'zero page number' => [
@@ -146,7 +146,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'request' => new Request([], [], [
                     'page_number' => 0,
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/history/',
+                'expectedRedirectUrl' => '/history/',
                 'expectedRequestUrls' => [],
             ],
             'negative page number' => [
@@ -154,7 +154,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'request' => new Request([], [], [
                     'page_number' => -1,
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/history/',
+                'expectedRedirectUrl' => '/history/',
                 'expectedRequestUrls' => [],
             ],
             'greater than the number of pages: page number 10' => [
@@ -189,7 +189,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'request' => new Request([], [], [
                     'page_number' => 10,
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/history/9/',
+                'expectedRedirectUrl' => '/history/9/',
                 'expectedRequestUrls' => [
                     'http://null/jobs/list/10/90/?exclude-states%5B0%5D=rejected&exclude-current=1',
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/ids/',
@@ -210,7 +210,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 ], [], [
                     'page_number' => 10,
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/history/9/?filter=foo',
+                'expectedRedirectUrl' => '/history/9/?filter=foo',
                 'expectedRequestUrls' => [
                     'http://null/jobs/list/10/90/?exclude-states%5B0%5D=rejected&exclude-current=1&url-filter=foo',
                 ],
@@ -227,7 +227,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'request' => new Request([], [], [
                     'page_number' => 20,
                 ]),
-                'expectedRedirectUrl' => 'http://localhost/history/19/',
+                'expectedRedirectUrl' => '/history/19/',
                 'expectedRequestUrls' => [
                     'http://null/jobs/list/10/190/?exclude-states%5B0%5D=rejected&exclude-current=1',
                 ],
@@ -297,7 +297,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
                             $this->assertEmpty($parameters['filter']);
                             $this->assertEquals(
-                                'http://localhost/history/websites/',
+                                '/history/websites/',
                                 $parameters['websites_source']
                             );
 
@@ -338,7 +338,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
                             $this->assertEquals('foo', $parameters['filter']);
                             $this->assertEquals(
-                                'http://localhost/history/websites/',
+                                '/history/websites/',
                                 $parameters['websites_source']
                             );
 
@@ -377,7 +377,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
                             $this->assertEmpty($parameters['filter']);
                             $this->assertEquals(
-                                'http://localhost/history/websites/',
+                                '/history/websites/',
                                 $parameters['websites_source']
                             );
 
@@ -423,7 +423,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
                             $this->assertEmpty($parameters['filter']);
                             $this->assertEquals(
-                                'http://localhost/history/websites/',
+                                '/history/websites/',
                                 $parameters['websites_source']
                             );
 

@@ -7,7 +7,6 @@ use SimplyTestable\WebClientBundle\Controller\AbstractController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class ByUrlController extends AbstractController
@@ -47,11 +46,7 @@ class ByUrlController extends AbstractController
         ]);
 
         if (empty($test)) {
-            return new RedirectResponse($this->router->generate(
-                'view_dashboard_index_index',
-                [],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            ));
+            return new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
         }
 
         $task = $taskRepository->findOneBy([
@@ -61,24 +56,22 @@ class ByUrlController extends AbstractController
         ]);
 
         if (empty($task)) {
-            return new RedirectResponse($this->router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'app_test_redirector',
                 [
                     'website' => $website,
                     'test_id' => $test_id
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 
-        return new RedirectResponse($this->router->generate(
+        return new RedirectResponse($this->generateUrl(
             'view_test_task_results_index_index',
             [
                 'website' => $website,
                 'test_id' => $test_id,
                 'task_id' => $task->getTaskId()
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         ));
     }
 }

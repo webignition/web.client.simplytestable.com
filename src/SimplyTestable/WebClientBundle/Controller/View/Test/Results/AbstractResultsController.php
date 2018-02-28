@@ -10,7 +10,6 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 abstract class AbstractResultsController extends AbstractRequiresValidOwnerController implements
@@ -30,8 +29,7 @@ abstract class AbstractResultsController extends AbstractRequiresValidOwnerContr
             [
                 'website' => $request->attributes->get('website'),
                 'test_id' => $request->attributes->get('test_id')
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         ));
     }
 
@@ -45,8 +43,7 @@ abstract class AbstractResultsController extends AbstractRequiresValidOwnerContr
             [
                 'website' => $request->attributes->get('website'),
                 'test_id' => $request->attributes->get('test_id')
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         ));
     }
 
@@ -60,8 +57,7 @@ abstract class AbstractResultsController extends AbstractRequiresValidOwnerContr
             [
                 'website' => $request->attributes->get('website'),
                 'test_id' => $request->attributes->get('test_id')
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         ));
     }
 

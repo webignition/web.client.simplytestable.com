@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
@@ -83,12 +82,11 @@ abstract class AbstractRequiresValidOwnerController extends BaseViewController i
 
         $this->session->getFlashBag()->set('user_signin_error', 'test-not-logged-in');
 
-        return new RedirectResponse($this->router->generate(
+        return new RedirectResponse($this->generateUrl(
             'view_user_signin_index',
             [
                 'redirect' => base64_encode($redirectParameters)
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         ));
     }
 }

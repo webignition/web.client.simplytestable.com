@@ -10,7 +10,6 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class TestController extends AbstractController
@@ -57,13 +56,12 @@ class TestController extends AbstractController
             // We already redirect back to test results regardless of if this action succeeds
         }
 
-        return new RedirectResponse($this->router->generate(
+        return new RedirectResponse($this->generateUrl(
             'view_test_results_index_index',
             [
                 'website' => $website,
                 'test_id' => $test_id,
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         ));
     }
 
@@ -82,13 +80,12 @@ class TestController extends AbstractController
             // We already redirect back to test results regardless of if this action succeeds
         }
 
-        return new RedirectResponse($this->router->generate(
+        return new RedirectResponse($this->generateUrl(
             'view_test_results_index_index',
             [
                 'website' => $website,
                 'test_id' => $test_id,
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         ));
     }
 
@@ -111,23 +108,17 @@ class TestController extends AbstractController
             $this->testService->get($website, $test_id);
             $this->remoteTestService->cancel();
         } catch (InvalidCredentialsException $invalidCredentialsException) {
-            return new RedirectResponse($this->router->generate(
-                'view_dashboard_index_index',
-                [],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            ));
+            return new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
-            return new RedirectResponse($this->router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'view_test_progress_index_index',
-                $routeParameters,
-                UrlGeneratorInterface::ABSOLUTE_URL
+                $routeParameters
             ));
         }
 
-        return new RedirectResponse($this->router->generate(
+        return new RedirectResponse($this->generateUrl(
             'view_test_results_index_index',
-            $routeParameters,
-            UrlGeneratorInterface::ABSOLUTE_URL
+            $routeParameters
         ));
     }
 
@@ -153,13 +144,12 @@ class TestController extends AbstractController
             // Nothing happens, we redirect to the test progress page regardless
         }
 
-        return new RedirectResponse($this->router->generate(
+        return new RedirectResponse($this->generateUrl(
             'view_test_progress_index_index',
             [
                 'website' => $website,
                 'test_id' => $test_id,
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         ));
     }
 
@@ -178,13 +168,12 @@ class TestController extends AbstractController
     {
         $remoteTest = $this->remoteTestService->retest($test_id, $website);
 
-        return new RedirectResponse($this->router->generate(
+        return new RedirectResponse($this->generateUrl(
             'view_test_progress_index_index',
             [
                 'website' => $remoteTest->getWebsite(),
                 'test_id' => $remoteTest->getId(),
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         ));
     }
 }

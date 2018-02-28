@@ -13,7 +13,6 @@ use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
@@ -87,10 +86,11 @@ class ConfirmController extends AbstractController
      */
     public function resendAction($email)
     {
-        $redirectResponse = new RedirectResponse($this->router->generate(
+        $redirectResponse = new RedirectResponse($this->generateUrl(
             'view_user_signup_confirm_index',
-            ['email' => $email],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            [
+                'email' => $email
+            ]
         ));
 
         try {
@@ -160,13 +160,12 @@ class ConfirmController extends AbstractController
         $sender = $mailConfiguration->getSender('default');
         $messageProperties = $mailConfiguration->getMessageProperties('user_creation_confirmation');
 
-        $confirmationUrl = $this->router->generate(
+        $confirmationUrl = $this->generateUrl(
             'view_user_signup_confirm_index',
             [
                 'email' => $email,
                 'token' => $token,
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         );
 
         $viewName = 'SimplyTestableWebClientBundle:Email:user-creation-confirmation.txt.twig';

@@ -10,7 +10,6 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class TeamController extends AbstractUserAccountController
@@ -56,11 +55,7 @@ class TeamController extends AbstractUserAccountController
 
         $requestData = $request->request;
 
-        $redirectResponse = new RedirectResponse($this->router->generate(
-            'view_user_account_team_index_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account_team_index_index'));
 
         $name = trim($requestData->get('name'));
 
@@ -98,11 +93,7 @@ class TeamController extends AbstractUserAccountController
 
         $this->teamService->removeFromTeam($member);
 
-        return new RedirectResponse($this->router->generate(
-            'view_user_account_team_index_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        return new RedirectResponse($this->generateUrl('view_user_account_team_index_index'));
     }
 
     /**
@@ -120,10 +111,6 @@ class TeamController extends AbstractUserAccountController
 
         $this->teamService->leave();
 
-        return new RedirectResponse($this->router->generate(
-            'view_user_account_team_index_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
+        return new RedirectResponse($this->generateUrl('view_user_account_team_index_index'));
     }
 }

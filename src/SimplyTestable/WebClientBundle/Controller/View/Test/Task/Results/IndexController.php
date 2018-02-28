@@ -27,7 +27,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 use webignition\HtmlValidationErrorLinkifier\HtmlValidationErrorLinkifier;
@@ -150,13 +149,12 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         $task = $this->taskService->get($test, $task_id);
 
         if (empty($task)) {
-            return new RedirectResponse($this->router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'app_test_redirector',
                 [
                     'website' => $website,
                     'test_id' => $test_id
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 
@@ -164,13 +162,12 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         $taskHasErrorsOrWarnings = $taskOutput->getErrorCount() > 0 || $taskOutput->getWarningCount() > 0;
 
         if (!$taskHasErrorsOrWarnings || $this->taskService->isIncomplete($task)) {
-            return new RedirectResponse($this->router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'app_test_redirector',
                 [
                     'website' => $website,
                     'test_id' => $test_id
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 

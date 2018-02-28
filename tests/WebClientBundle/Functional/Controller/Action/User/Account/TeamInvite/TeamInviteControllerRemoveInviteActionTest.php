@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class TeamInviteControllerRemoveInviteActionTest extends AbstractTeamInviteControllerTest
 {
     const ROUTE_NAME = 'action_user_account_team_removeinvite';
-    const EXPECTED_REDIRECT_URL = 'http://localhost/account/team/';
+    const EXPECTED_REDIRECT_URL = '/account/team/';
 
     /**
      * {@inheritdoc}

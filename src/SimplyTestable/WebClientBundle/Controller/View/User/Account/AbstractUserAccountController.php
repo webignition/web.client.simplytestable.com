@@ -12,7 +12,6 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
@@ -74,8 +73,7 @@ abstract class AbstractUserAccountController extends AbstractUserController impl
             'view_user_signin_index',
             [
                 'redirect' => base64_encode(json_encode(['route' => $this->getUserSignInRedirectResponseRoute()]))
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         ));
     }
 }

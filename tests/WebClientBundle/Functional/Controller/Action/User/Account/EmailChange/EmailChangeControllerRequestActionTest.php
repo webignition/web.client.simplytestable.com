@@ -21,7 +21,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 {
     const ROUTE_NAME = 'action_user_account_emailchange_request';
     const NEW_EMAIL = 'new-email@example.com';
-    const EXPECTED_REDIRECT_URL = 'http://localhost/account/';
+    const EXPECTED_REDIRECT_URL = '/account/';
 
     /**
      * @var User

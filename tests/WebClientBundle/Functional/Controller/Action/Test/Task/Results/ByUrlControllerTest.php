@@ -64,7 +64,7 @@ class ByUrlControllerTest extends AbstractBaseTestCase
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
-        $this->assertTrue($response->isRedirect('http://localhost/http://example.com//1/2/results/'));
+        $this->assertTrue($response->isRedirect('/http://example.com//1/2/results/'));
     }
 
     /**
@@ -94,25 +94,25 @@ class ByUrlControllerTest extends AbstractBaseTestCase
                 'testId' => self::TEST_ID - 1,
                 'taskUrl' => self::TASK_URL,
                 'taskType' => Task::TYPE_HTML_VALIDATION,
-                'expectedRedirectUrl' => 'http://localhost/',
+                'expectedRedirectUrl' => '/',
             ],
             'invalid task by url' => [
                 'testId' => self::TEST_ID,
                 'taskUrl' => self::TASK_URL . '/bar/',
                 'taskType' => Task::TYPE_HTML_VALIDATION,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/',
+                'expectedRedirectUrl' => '/http://example.com//1/',
             ],
             'invalid task by type' => [
                 'testId' => self::TEST_ID,
                 'taskUrl' => self::TASK_URL,
                 'taskType' => Task::TYPE_CSS_VALIDATION,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/',
+                'expectedRedirectUrl' => '/http://example.com//1/',
             ],
             'valid' => [
                 'testId' => self::TEST_ID,
                 'taskUrl' => self::TASK_URL,
                 'taskType' => Task::TYPE_HTML_VALIDATION,
-                'expectedRedirectUrl' => 'http://localhost/http://example.com//1/2/results/',
+                'expectedRedirectUrl' => '/http://example.com//1/2/results/',
             ],
         ];
     }

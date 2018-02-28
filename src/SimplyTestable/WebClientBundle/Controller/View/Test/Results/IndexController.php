@@ -24,7 +24,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
@@ -148,13 +147,12 @@ class IndexController extends AbstractResultsController
      */
     public function getRequestWebsiteMismatchResponse(RouterInterface $router, Request $request)
     {
-        return new RedirectResponse($this->router->generate(
+        return new RedirectResponse($this->generateUrl(
             'app_test_redirector',
             [
                 'website' => $request->attributes->get('website'),
                 'test_id' => $request->attributes->get('test_id')
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            ]
         ));
     }
 
@@ -186,13 +184,12 @@ class IndexController extends AbstractResultsController
         }
 
         if ($this->requiresPreparation($remoteTest, $test)) {
-            return new RedirectResponse($this->router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'view_test_results_preparing_index_index',
                 [
                     'website' => $website,
                     'test_id' => $test_id,
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 
@@ -208,14 +205,13 @@ class IndexController extends AbstractResultsController
         $filteredTaskCounts = $this->createFilteredTaskCounts();
 
         if (!$this->isFilterValid($filter, $filteredTaskCounts)) {
-            return new RedirectResponse($this->router->generate(
+            return new RedirectResponse($this->generateUrl(
                 'view_test_results_index_index',
                 [
                     'website' => $website,
                     'test_id' => $test_id,
                     'filter' => $defaultFilter
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                ]
             ));
         }
 
