@@ -158,8 +158,8 @@ services:
     calls:
       - [setPlansData, ['%plans%']]
 
-  SimplyTestable\WebClientBundle\Services\StripeErrorFactory:
-    class: SimplyTestable\WebClientBundle\Services\StripeErrorFactory
+#  SimplyTestable\WebClientBundle\Services\StripeErrorFactory:
+#    class: SimplyTestable\WebClientBundle\Services\StripeErrorFactory
 
   SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory:
     class: SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory
