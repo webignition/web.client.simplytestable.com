@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use webignition\SimplyTestableUserModel\User;
+use webignition\SimplyTestableUserSerializer\InvalidCipherTextException;
 use webignition\SimplyTestableUserSerializer\UserSerializer;
 
 class UserManager
@@ -58,9 +59,12 @@ class UserManager
 
         if (!empty($request)) {
             if ($request->cookies->has(self::USER_COOKIE_KEY)) {
-                $user = $this->userSerializer->deserializeFromString(
-                    $request->cookies->get(self::USER_COOKIE_KEY)
-                );
+                try {
+                    $user = $this->userSerializer->deserializeFromString(
+                        $request->cookies->get(self::USER_COOKIE_KEY)
+                    );
+                } catch (InvalidCipherTextException $invalidHmacException) {
+                }
             }
         }
 
@@ -68,7 +72,10 @@ class UserManager
             $sessionUser = $this->session->get(self::SESSION_USER_KEY);
 
             if (!empty($sessionUser)) {
-                $user = $this->userSerializer->deserialize($sessionUser);
+                try {
+                    $user = $this->userSerializer->deserialize($sessionUser);
+                } catch (InvalidCipherTextException $invalidHmacException) {
+                }
             }
         }
 

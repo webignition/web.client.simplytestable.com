@@ -12,6 +12,7 @@ use webignition\SimplyTestableUserSerializer\UserSerializer;
 class UserManagerTest extends AbstractCoreApplicationServiceTest
 {
     const USER_EMAIL = 'user@example.com';
+    const USER_PASSWORD = 'password';
 
     /**
      * @dataProvider getUserDataProvider
@@ -29,12 +30,10 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
         $session = $this->container->get('session');
         $userSerializer = $this->container->get(UserSerializer::class);
 
-        $privateUser = new User(self::USER_EMAIL);
-
         $cookieUser = $request->cookies->get(UserManager::USER_COOKIE_KEY);
 
         if ($cookieUser) {
-            $request->cookies->set(UserManager::USER_COOKIE_KEY, $userSerializer->serializeToString($privateUser));
+            $request->cookies->set(UserManager::USER_COOKIE_KEY, $userSerializer->serializeToString($expectedUser));
         }
 
         $requestStack->push($request);
@@ -60,7 +59,7 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
      */
     public function getUserDataProvider()
     {
-        $user = new User(self::USER_EMAIL);
+        $user = new User(self::USER_EMAIL, self::USER_PASSWORD);
 
         return [
             'no user in request' => [
@@ -98,7 +97,7 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
 
         $originalSerializedUser = $session->get(UserManager::SESSION_USER_KEY);
 
-        $user = new User('user@example.com');
+        $user = new User(self::USER_EMAIL, self::USER_PASSWORD);
 
         $userManager->setUser($user);
 
@@ -164,7 +163,7 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
             $this->container->get(SystemUserService::class)
         );
 
-        $user = new User(self::USER_EMAIL);
+        $user = new User(self::USER_EMAIL, self::USER_PASSWORD);
         $serializedUser = $userSerializer->serializeToString($user);
 
         $session->set(UserManager::SESSION_USER_KEY, $serializedUser);
@@ -187,16 +186,16 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
             $this->container->get(SystemUserService::class)
         );
 
-        $user = new User(self::USER_EMAIL);
-        $serializedUser = $userSerializer->serializeToString($user);
-
+        $user = new User(self::USER_EMAIL, self::USER_PASSWORD);
         $userManager->setUser($user);
 
         $userCookie = $userManager->createUserCookie();
 
         $this->assertInstanceOf(Cookie::class, $userCookie);
-
         $this->assertEquals(UserManager::USER_COOKIE_KEY, $userCookie->getName());
-        $this->assertEquals($serializedUser, $userCookie->getValue());
+
+        $cookieSerializedUser = $userCookie->getValue();
+
+        $this->assertEquals($user, $userSerializer->deserializeFromString($cookieSerializedUser));
     }
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8c70a639c1664af71a9e57ca94f55f11",
+    "content-hash": "e64c26b3adf26ff1f72400eb89361492",
     "packages": [
         {
             "name": "chrisboulton/php-resque",
@@ -3627,16 +3627,16 @@
         },
         {
             "name": "webignition/simplytestable-user-serializer",
-            "version": "1.0",
+            "version": "1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/simplytestable-user-serializer.git",
-                "reference": "4b863b4b73882a3e11c0b806ad599c8d54c09282"
+                "reference": "23157d4e02d2a726ab0d4a8e1db67eb49235f0fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/simplytestable-user-serializer/zipball/4b863b4b73882a3e11c0b806ad599c8d54c09282",
-                "reference": "4b863b4b73882a3e11c0b806ad599c8d54c09282",
+                "url": "https://api.github.com/repos/webignition/simplytestable-user-serializer/zipball/23157d4e02d2a726ab0d4a8e1db67eb49235f0fd",
+                "reference": "23157d4e02d2a726ab0d4a8e1db67eb49235f0fd",
                 "shasum": ""
             },
             "require": {
@@ -3666,7 +3666,7 @@
             ],
             "description": "Serializes a SimplyTestable user to a string",
             "homepage": "https://github.com/webignition/simplytestable-user-serializer",
-            "time": "2018-03-01T11:01:14+00:00"
+            "time": "2018-03-01T12:09:29+00:00"
         },
         {
             "name": "webignition/url",
