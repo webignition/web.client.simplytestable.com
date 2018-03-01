@@ -41,7 +41,7 @@
         "webignition/resque-job-factory": ">=0.1.1,<1.0",
         "webignition/php-ie-detector": "0.1",
         "webignition/simplytestable-user-model": ">=0.1,<1",
-        "webignition/simplytestable-user-serializer": ">=0.1,<1"
+        "webignition/simplytestable-user-serializer": ">=1.1,<2"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
