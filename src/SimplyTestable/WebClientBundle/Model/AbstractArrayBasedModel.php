@@ -32,6 +32,15 @@ abstract class AbstractArrayBasedModel
     }
 
     /**
+     * @param string $key
+     * @param mixed $value
+     */
+    protected function setProperty($key, $value)
+    {
+        $this->source[$key] = $value;
+    }
+
+    /**
      * @param string $name
      *
      * @return bool
