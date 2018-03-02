@@ -2,7 +2,9 @@
 
 namespace SimplyTestable\WebClientBundle\Model\RemoteTest;
 
-class Rejection extends AbstractStandardObject
+use SimplyTestable\WebClientBundle\Model\AbstractArrayBasedModel;
+
+class Rejection extends AbstractArrayBasedModel
 {
     /**
      * @return string

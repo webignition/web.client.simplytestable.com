@@ -1,7 +1,8 @@
 <?php
-namespace SimplyTestable\WebClientBundle\Model\RemoteTest;
 
-class AbstractStandardObject
+namespace SimplyTestable\WebClientBundle\Model;
+
+abstract class AbstractArrayBasedModel
 {
     /**
      * @var array
@@ -14,22 +15,6 @@ class AbstractStandardObject
     public function __construct(array $source)
     {
         $this->source = $source;
-    }
-
-    /**
-     * @return array
-     */
-    public function getSource()
-    {
-        return $this->source;
-    }
-
-    /**
-     * @return array
-     */
-    public function getArraySource()
-    {
-        return $this->source;
     }
 
     /**
