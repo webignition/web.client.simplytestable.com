@@ -49,4 +49,12 @@ abstract class AbstractArrayBasedModel
     {
         return array_key_exists($name, $this->source);
     }
+
+    /**
+     * @return array
+     */
+    public function getSource()
+    {
+        return $this->source;
+    }
 }
