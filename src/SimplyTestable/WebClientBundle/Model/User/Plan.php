@@ -1,78 +1,80 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Model\User;
 
-use SimplyTestable\WebClientBundle\Model\Object;
+use SimplyTestable\WebClientBundle\Model\AbstractArrayBasedModel;
 use SimplyTestable\WebClientBundle\Model\AccountPlan;
 
-class Plan extends Object {
-
+class Plan extends AbstractArrayBasedModel
+{
     /**
      * @var float
      */
     private $priceModifier = 1;
 
-    
-    public function __construct($data) {
-        parent::__construct($data);
-        $this->setDataProperty('plan', new AccountPlan($this->getDataProperty('plan')));
-    }
-    
-    
     /**
-     * 
-     * @return int
+     * {@inheritdoc}
      */
-    public function getStartTrialPeriod() {
-        return $this->getDataProperty('start_trial_period');
-    }
-    
-    
-    /**
-     * 
-     * @return \SimplyTestable\WebClientBundle\Model\AccountPlan
-     */
-    public function getAccountPlan() {
-        return $this->getDataProperty('plan');
-    }
-    
-    
-    /**
-     * 
-     * @return boolean
-     */
-    public function hasTrialPeriodAvailable() {
-        return $this->getStartTrialPeriod() > 0;
+    public function __construct(array $source)
+    {
+        parent::__construct($source);
+
+        $this->setProperty('plan', new AccountPlan($this->getProperty('plan')));
     }
 
+    /**
+     * @return int
+     */
+    public function getStartTrialPeriod()
+    {
+        return $this->getProperty('start_trial_period');
+    }
+
+    /**
+     * @return AccountPlan
+     */
+    public function getAccountPlan()
+    {
+        return $this->getProperty('plan');
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasTrialPeriodAvailable()
+    {
+        return $this->getStartTrialPeriod() > 0;
+    }
 
     /**
      * @param float $priceModifier
      */
-    public function setPriceModifier($priceModifier) {
+    public function setPriceModifier($priceModifier)
+    {
         $this->priceModifier = $priceModifier;
     }
 
-
     /**
      * @return float
      */
-    public function getPriceModifier() {
+    public function getPriceModifier()
+    {
         return $this->priceModifier;
     }
 
-
     /**
      * @return float
      */
-    public function getPrice() {
+    public function getPrice()
+    {
         return $this->getAccountPlan()->getPrice() * $this->getPriceModifier();
     }
 
-
     /**
      * @return float
      */
-    public function getOriginalPrice() {
+    public function getOriginalPrice()
+    {
         return $this->getAccountPlan()->getPrice();
     }
 }

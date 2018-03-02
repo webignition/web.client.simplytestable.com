@@ -9,9 +9,9 @@ class Team extends AbstractArrayBasedModel
     /**
      * {@inheritdoc}
      */
-    public function __construct($data)
+    public function __construct(array $source)
     {
-        parent::__construct($data);
+        parent::__construct($source);
 
         if (is_null($this->getProperty('people'))) {
             $this->setProperty('people', [

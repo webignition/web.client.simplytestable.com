@@ -1,73 +1,73 @@
 <?php
 namespace SimplyTestable\WebClientBundle\Model\User;
 
-use SimplyTestable\WebClientBundle\Model\Object;
+use SimplyTestable\WebClientBundle\Model\AbstractArrayBasedModel;
 use SimplyTestable\WebClientBundle\Model\User\Team\Summary as TeamSummary;
+use webignition\Model\Stripe\Customer as StripeCustomerModel;
 
-class Summary extends Object {
-
+class Summary extends AbstractArrayBasedModel
+{
     /**
-     *
-     * @param $data
+     * {@inheritdoc}
      */
-    public function __construct($data) {
-        parent::__construct($data);
+    public function __construct(array $source)
+    {
+        parent::__construct($source);
 
-        if ($this->hasDataProperty('stripe_customer')) {
-            $this->setDataProperty('stripe_customer', new \webignition\Model\Stripe\Customer(json_encode($this->getDataProperty('stripe_customer'))));
+        if ($this->hasProperty('stripe_customer')) {
+            $this->setProperty(
+                'stripe_customer',
+                new StripeCustomerModel(json_encode($this->getProperty('stripe_customer')))
+            );
         }
 
-        if ($this->hasDataProperty('user_plan')) {
-            $this->setDataProperty('user_plan', new Plan($this->getDataProperty('user_plan')));
+        if ($this->hasProperty('user_plan')) {
+            $this->setProperty('user_plan', new Plan($this->getProperty('user_plan')));
         }
 
-        if ($this->hasDataProperty('team_summary')) {
-            $this->setDataProperty('team_summary', new TeamSummary($this->getDataProperty('team_summary')));
+        if ($this->hasProperty('team_summary')) {
+            $this->setProperty('team_summary', new TeamSummary($this->getProperty('team_summary')));
         }
     }
 
-
     /**
-     *
-     * @return \webignition\Model\Stripe\Customer|null
+     * @return StripeCustomerModel|null
      */
-    public function getStripeCustomer() {
-        return $this->getDataProperty('stripe_customer');
+    public function getStripeCustomer()
+    {
+        return $this->getProperty('stripe_customer');
     }
 
-
     /**
-     *
-     * @return \SimplyTestable\WebClientBundle\Model\User\Plan
+     * @return Plan
      */
-    public function getPlan() {
-        return $this->getDataProperty('user_plan');
+    public function getPlan()
+    {
+        return $this->getProperty('user_plan');
     }
 
-
     /**
      *
-     * @return boolean
+     * @return bool
      */
-    public function hasPlan() {
+    public function hasPlan()
+    {
         return !is_null($this->getPlan());
     }
 
-
     /**
-     *
-     * @return boolean
+     * @return bool
      */
-    public function hasStripeCustomer() {
+    public function hasStripeCustomer()
+    {
         return !is_null($this->getStripeCustomer());
     }
 
-
     /**
-     *
      * @return int
      */
-    public function getDayOfTrialPeriod() {
+    public function getDayOfTrialPeriod()
+    {
         if (!$this->hasStripeCustomer()) {
             return null;
         }
@@ -83,11 +83,11 @@ class Summary extends Object {
         return (int)($this->getPlan()->getStartTrialPeriod() - floor($this->getTrialPeriodRemaining() / 86400));
     }
 
-
     /**
      * @return bool
      */
-    private function hasDayOfTrialPeriod() {
+    private function hasDayOfTrialPeriod()
+    {
         if (!$this->hasStripeCustomer()) {
             return false;
         }
@@ -103,11 +103,11 @@ class Summary extends Object {
         return true;
     }
 
-
     /**
      * @return int
      */
-    public function getTrialPeriodRemaining() {
+    public function getTrialPeriodRemaining()
+    {
         if (!$this->hasDayOfTrialPeriod()) {
             return $this->getPlan()->getStartTrialPeriod() * 86400;
         }
@@ -115,21 +115,19 @@ class Summary extends Object {
         return $this->getStripeCustomer()->getSubscription()->getTrialPeriod()->getEnd() - time();
     }
 
-
     /**
-     *
-     * @return \stdClass
+     * @return array
      */
-    public function getPlanConstraints() {
-        return $this->getDataProperty('plan_constraints');
+    public function getPlanConstraints()
+    {
+        return $this->getProperty('plan_constraints');
     }
-
 
     /**
      * @return TeamSummary
      */
-    public function getTeamSummary() {
-        return $this->getDataProperty('team_summary');
+    public function getTeamSummary()
+    {
+        return $this->getProperty('team_summary');
     }
-
 }

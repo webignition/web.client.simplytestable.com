@@ -1,31 +1,24 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Model\User\Team;
 
-use SimplyTestable\WebClientBundle\Model\Object;
+use SimplyTestable\WebClientBundle\Model\AbstractArrayBasedModel;
 
-class Summary extends Object {
-    
-    /**
-     * 
-     * @param \stdClass $data
-     */
-    public function __construct(\stdClass $data) {
-        parent::__construct($data);
-    }
-
-
+class Summary extends AbstractArrayBasedModel
+{
     /**
      * @return bool
      */
-    public function isInTeam() {
-        return $this->getDataProperty('in');
+    public function isInTeam()
+    {
+        return $this->getProperty('in');
     }
 
     /**
      * @return bool
      */
-    public function hasInvite() {
-        return $this->getDataProperty('has_invite');
+    public function hasInvite()
+    {
+        return $this->getProperty('has_invite');
     }
-    
 }

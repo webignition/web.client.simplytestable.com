@@ -116,7 +116,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         if ($this->isRejectedDueToCreditLimit($remoteTest)) {
             $userSummary = $this->userService->getSummary();
             $planConstraints = $userSummary->getPlanConstraints();
-            $planCredits = $planConstraints->credits;
+            $planCredits = $planConstraints['credits'];
 
             $rejection = $remoteTest->getRejection();
             $constraint = $rejection->getConstraint();
