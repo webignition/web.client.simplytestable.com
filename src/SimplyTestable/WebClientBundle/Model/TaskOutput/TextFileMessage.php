@@ -2,31 +2,26 @@
 
 namespace SimplyTestable\WebClientBundle\Model\TaskOutput;
 
-class TextFileMessage extends Message {
-    
+class TextFileMessage extends Message
+{
     /**
-     *
      * @var int
      */
-    private $lineNumber;    
-    
+    private $lineNumber;
+
     /**
-     *
      * @param int $lineNumber
-     * @return \SimplyTestable\WebClientBundle\Model\TaskOutput\TextFileError 
      */
-    public function setLineNumber($lineNumber) {
+    public function setLineNumber($lineNumber)
+    {
         $this->lineNumber = $lineNumber;
-        return $this;
-    }  
-    
-    
+    }
+
     /**
-     *
-     * @return int 
-     */    
-    public function getLineNumber() {
+     * @return int
+     */
+    public function getLineNumber()
+    {
         return $this->lineNumber;
-    }       
-    
+    }
 }

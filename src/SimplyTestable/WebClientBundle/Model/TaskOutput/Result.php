@@ -2,56 +2,39 @@
 
 namespace SimplyTestable\WebClientBundle\Model\TaskOutput;
 
-class Result {
-    
+class Result
+{
     const OUTCOME_PASSED = 'passed';
     const OUTCOME_FAILED = 'failed';
-    
+
     /**
-     * Collection of Message objects
-     * 
-     * @var array
+     * @var Message[]
      */
-    private $messages;
-    
-    
+    private $messages = [];
+
     /**
-     *
-     * @var string
-     */
-    private $outcome;
-    
-    public function __construct() {
-        $this->messages = array();
-    }
-    
-    
-    /**
-     *
      * @param Message $message
-     * @return \SimplyTestable\WebClientBundle\Model\TaskOutput\Result 
      */
-    public function addMessage(Message $message) {
+    public function addMessage(Message $message)
+    {
         $this->messages[] = $message;
-        return $this;
     }
-    
-    
+
     /**
-     * Get collection of error messages
-     *  
      * @return Message[]
-     */    
-    public function getErrors() {
+     */
+    public function getErrors()
+    {
         return $this->getMessagesOfType(Message::TYPE_ERROR);
     }
 
-
     /**
      * @param string $message
+     *
      * @return int
      */
-    public function getCountByMessage($message) {
+    public function getCountByMessage($message)
+    {
         $comparator = strtolower($message);
         $count = 0;
 
@@ -63,19 +46,22 @@ class Result {
 
         return $count;
     }
-    
-    
+
     /**
-     * Get collection of warning messages
-     * 
-     * @return array
+     * @return Message[]
      */
-    public function getWarnings() {
+    public function getWarnings()
+    {
         return $this->getMessagesOfType(Message::TYPE_WARNING);
     }
-    
-    
-    private function getMessagesOfType($type) {
+
+    /**
+     * @param string
+     *
+     * @return Message[]
+     */
+    private function getMessagesOfType($type)
+    {
         $messages = array();
 
         foreach ($this->messages as $message) {
@@ -84,235 +70,218 @@ class Result {
                 $messages[] = $message;
             }
         }
-        
-        return $messages;          
-    }
-    
-    public function getFirstError() {        
-        $errors = $this->getErrors();
-        return $errors[0];
-    }
-    
-    
-    /**
-     *
-     * @return int
-     */
-    public function getErrorCount() {
-        return count($this->getErrors());
-    }
-    
-    
-    /**
-     * 
-     * @return int
-     */
-    public function getWarningCount() {
-        return count($this->getWarnings());
-    }
-    
-    
-    /**
-     *
-     * @return boolean
-     */
-    public function hasErrors() {
-        return $this->getErrorCount() > 0;
-    }
-    
-    
-    /**
-     * 
-     * @return boolean
-     */
-    public function hasWarnings() {
-        return $this->getWarningCount() > 0;
-    }
-    
-    
-    /**
-     *
-     * @return string
-     */
-    public function getOutcome() {
-        if ($this->hasErrors()) {
-            return self::OUTCOME_FAILED;
-        }
-        
-        return self::OUTCOME_PASSED;
+
+        return $messages;
     }
 
-    
     /**
-     * 
-     * @return boolean
+     * @return Message
      */
-    public function isHtmlMissingDocumentTypeFailure() {
-        return $this->isOfErrorClass('/document-type-missing/');         
+    public function getFirstError()
+    {
+        $errors = $this->getErrors();
+
+        return $errors[0];
     }
-    
-    
+
     /**
-     * 
-     * @return boolean
+     * @return int
      */
-    public function isHtmlInvalidDocumentTypeFailure() {
-        return $this->isOfErrorClass('/document-type-invalid/');         
+    public function getErrorCount()
+    {
+        return count($this->getErrors());
     }
-    
+
     /**
-     * 
-     * @return boolean
+     * @return int
      */
-    public function isMarkuplessTextHtmlFailure() {
-        return $this->isOfErrorClass('/document-is-not-markup/');         
-    }    
-    
-    
+    public function getWarningCount()
+    {
+        return count($this->getWarnings());
+    }
+
     /**
-     *
-     * @return boolean 
+     * @return bool
      */
-    public function isHttpRedirectLoopFailure() {
-        return $this->isOfErrorClass('/http-retrieval-redirect-loop/');        
-    } 
-    
-    
+    public function hasErrors()
+    {
+        return $this->getErrorCount() > 0;
+    }
+
     /**
-     *
-     * @return boolean 
+     * @return bool
      */
-    public function isHttpRedirectLimitFailure() {
-        return $this->isOfErrorClass('/http-retrieval-redirect-limit-reached/');       
-    }     
-    
-    
+    public function hasWarnings()
+    {
+        return $this->getWarningCount() > 0;
+    }
+
     /**
-     *
-     * @return boolean 
+     * @return string
      */
-    public function isCharacterEncodingFailure() {
+    public function getOutcome()
+    {
+        return $this->hasErrors()
+            ? self::OUTCOME_FAILED
+            : self::OUTCOME_PASSED;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHtmlMissingDocumentTypeFailure()
+    {
+        return $this->isOfErrorClass('/document-type-missing/');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHtmlInvalidDocumentTypeFailure()
+    {
+        return $this->isOfErrorClass('/document-type-invalid/');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMarkuplessTextHtmlFailure()
+    {
+        return $this->isOfErrorClass('/document-is-not-markup/');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHttpRedirectLoopFailure()
+    {
+        return $this->isOfErrorClass('/http-retrieval-redirect-loop/');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHttpRedirectLimitFailure()
+    {
+        return $this->isOfErrorClass('/http-retrieval-redirect-limit-reached/');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCharacterEncodingFailure()
+    {
         return $this->isOfErrorClass('/character-encoding/');
-    }  
-    
-    /**
-     * 
-     * @return boolean
-     */
-    public function isCurlTimeoutFailure() {
-        return $this->isOfErrorClass('/http-retrieval-curl-code-28/');      
     }
-    
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function isCurlDnsResolutionFailure() {
-        return $this->isOfErrorClass('/http-retrieval-curl-code-6/');      
+    public function isCurlTimeoutFailure()
+    {
+        return $this->isOfErrorClass('/http-retrieval-curl-code-28/');
     }
-    
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function isCurlUrlFormatFailure() {
-        return $this->isOfErrorClass('/http-retrieval-curl-code-3$/');      
-    }  
-    
-    
+    public function isCurlDnsResolutionFailure()
+    {
+        return $this->isOfErrorClass('/http-retrieval-curl-code-6/');
+    }
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function isCurlSslFailure() {        
-        return $this->isOfErrorClass('/http-retrieval-curl-code-35$/');      
-    }  
-        
-    
-    
+    public function isCurlUrlFormatFailure()
+    {
+        return $this->isOfErrorClass('/http-retrieval-curl-code-3$/');
+    }
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function isHttpClientErrorFailure() {
+    public function isCurlSslFailure()
+    {
+        return $this->isOfErrorClass('/http-retrieval-curl-code-35$/');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHttpClientErrorFailure()
+    {
         return $this->isOfErrorClass('/http-retrieval-4\d\d/');
     }
-    
-    
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function isHttpServerErrorFailure() {
+    public function isHttpServerErrorFailure()
+    {
         return $this->isOfErrorClass('/http-retrieval-5\d\d/');
     }
-    
-    
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function isHttpClientOrServerErrorFailure() {
+    public function isHttpClientOrServerErrorFailure()
+    {
         return $this->isHttpClientErrorFailure() || $this->isHttpServerErrorFailure();
     }
-    
-    
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function isValidatorServerErrorFailure() {
+    public function isValidatorServerErrorFailure()
+    {
         $errors = $this->getErrors();
-        if (count($errors) === 0) {
+        if (empty($errors)) {
             return false;
-        }       
-        
+        }
+
         return $errors[0]->getClass() == 'validator-internal-server-error';
     }
-    
-    
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function isCssValidationUnknownExceptionError() {        
+    public function isCssValidationUnknownExceptionError()
+    {
         $errors = $this->getErrors();
-        if (count($errors) === 0) {
+        if (empty($errors)) {
             return false;
-        }        
-        
+        }
+
         return $errors[0]->getMessage() == 'Unknown error';
     }
-    
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function isCssValidationSslExceptionError() {        
+    public function isCssValidationSslExceptionError()
+    {
         $errors = $this->getErrors();
-        if (count($errors) === 0) {
+        if (empty($errors)) {
             return false;
-        }        
-        
+        }
+
         return $errors[0]->getMessage() == 'SSL Error';
-    }    
-    
-    
-    
+    }
+
     /**
-     * 
      * @param string $errorClassPattern
-     * @return boolean
+     *
+     * @return bool
      */
-    private function isOfErrorClass($errorClassPattern) {
+    private function isOfErrorClass($errorClassPattern)
+    {
         foreach ($this->getErrors() as $error) {
             if (preg_match($errorClassPattern, $error->getClass()) > 0) {
                 return true;
             }
         }
-        
-        return false;          
+
+        return false;
     }
-        
-    
 }
