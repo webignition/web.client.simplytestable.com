@@ -46,8 +46,8 @@ class TeamServiceTest extends AbstractCoreApplicationServiceTest
 
     public function testGetTeam()
     {
-        $teamData = (object)[
-            'team' => (object)[
+        $teamData = [
+            'team' => [
                 'name' => self::TEAM_NAME,
                 'leader' => 'leader@example.com',
             ],
