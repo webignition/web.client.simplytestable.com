@@ -4,89 +4,84 @@ namespace SimplyTestable\WebClientBundle\Model\Test\Task;
 use Doctrine\Common\Collections\ArrayCollection;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 
-class ErrorTaskMap  {
-
+class ErrorTaskMap
+{
     /**
      * @var string
      */
     private $message = '';
-
 
     /**
      * @var ArrayCollection
      */
     private $tasks;
 
-
     /**
      * @param string $message
      */
-    public function __construct($message = '') {
+    public function __construct($message = '')
+    {
         $this->setMessage($message);
         $this->tasks = new ArrayCollection();
     }
 
-
     /**
      * @param string $message
-     * @return $this
      */
-    public function setMessage($message) {
+    public function setMessage($message)
+    {
         $this->message = $message;
-        return $this;
     }
-
 
     /**
      * @return string
      */
-    public function getMessage() {
+    public function getMessage()
+    {
         return $this->message;
     }
 
-
     /**
      * @param string $message
+     *
      * @return bool
      */
-    public function match($message) {
+    public function match($message)
+    {
         return strtolower($this->getMessage()) == strtolower($message);
     }
-
 
     /**
      * @return string
      */
-    public function getMessageHash() {
+    public function getMessageHash()
+    {
         return md5($this->getMessage());
     }
-
 
     /**
      * @return ArrayCollection|Task[]
      */
-    public function getTasks() {
+    public function getTasks()
+    {
         return $this->tasks;
     }
 
-
     /**
      * @param Task $task
-     * @return $this
      */
-    public function addTask(Task $task) {
+    public function addTask(Task $task)
+    {
         if (!$this->getTasks()->contains($task)) {
             $this->getTasks()->add($task);
         }
-
-        return $this;
     }
-
 
     /**
      * @return int
      */
-    public function getCumulativeOccurrenceCount() {
+    public function getCumulativeOccurrenceCount()
+    {
         $count = 0;
 
         foreach ($this->getTasks() as $task) {
@@ -98,21 +93,23 @@ class ErrorTaskMap  {
         return $count;
     }
 
-
-    public function sortByUrl() {
+    public function sortByUrl()
+    {
         $this->sortFromIndex($this->getUrlSortIndex());
     }
 
-
-    public function sortByOccurrenceCount() {
+    public function sortByOccurrenceCount()
+    {
         $this->sortFromIndex($this->getOccurrenceCountSortIndex());
     }
 
     /**
      * @param Task[] $tasks
+     *
      * @return array
      */
-    private function getUrlSortIndex($tasks = null) {
+    private function getUrlSortIndex($tasks = null)
+    {
         if (is_null($tasks)) {
             $tasks = $this->getTasks();
         }
@@ -126,8 +123,11 @@ class ErrorTaskMap  {
         return $index;
     }
 
-
-    private function getOccurrenceCountSortIndex() {
+    /**
+     * @return array
+     */
+    private function getOccurrenceCountSortIndex()
+    {
         $index = [];
 
         foreach ($this->getTasks() as $position => $task) {
@@ -166,8 +166,15 @@ class ErrorTaskMap  {
         return $index;
     }
 
-
-    private function mergeSubsetIndex($index, $subsetIndex, $offset) {
+    /**
+     * @param array $index
+     * @param array $subsetIndex
+     * @param int $offset
+     *
+     * @return array
+     */
+    private function mergeSubsetIndex($index, $subsetIndex, $offset)
+    {
         $newIndex = [];
         $indexOffset = 0;
 
@@ -184,8 +191,11 @@ class ErrorTaskMap  {
         return $newIndex;
     }
 
-
-    private function sortFromIndex($index) {
+    /**
+     * @param $index
+     */
+    private function sortFromIndex($index)
+    {
         $unsortedTasks = clone $this->getTasks();
         $this->tasks = new ArrayCollection();
 
@@ -193,5 +203,4 @@ class ErrorTaskMap  {
             $this->addTask($unsortedTasks->get($position));
         }
     }
-    
 }

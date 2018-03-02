@@ -3,51 +3,47 @@ namespace SimplyTestable\WebClientBundle\Model\Test\Task;
 
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 
-class ErrorTaskMapCollection  {
-
+class ErrorTaskMapCollection
+{
     /**
      * @var Task[]
      */
     private $tasks = [];
-
 
     /**
      * @var ErrorTaskMap[]
      */
     private $errorTaskMaps;
 
-
     /**
      * @param Task[] $tasks
      */
-    public function __construct($tasks = []) {
+    public function __construct($tasks = [])
+    {
         $this->setTasks($tasks);
     }
 
-
     /**
      * @param Task[] $tasks
-     * @return $this
      */
-    public function setTasks($tasks) {
+    public function setTasks($tasks)
+    {
         $this->tasks = $tasks;
         $this->buildErrorPageListMap();
 
         unset($this->tasks);
-
-        return $this;
     }
-
 
     /**
      * @return ErrorTaskMap[]
      */
-    public function getErrorTaskMaps() {
+    public function getErrorTaskMaps()
+    {
         return $this->errorTaskMaps;
     }
 
-
-    private function buildErrorPageListMap() {
+    private function buildErrorPageListMap()
+    {
         $this->errorTaskMaps = [];
 
         foreach ($this->tasks as $task) {
@@ -62,21 +58,24 @@ class ErrorTaskMapCollection  {
         }
     }
 
-
     /**
      * @param string $message
+     *
      * @return bool
      */
-    private function hasMapForMessage($message) {
+    private function hasMapForMessage($message)
+    {
         return !is_null($this->getMapForMessage($message));
     }
 
 
     /**
      * @param $message
+     *
      * @return null|ErrorTaskMap
      */
-    private function getMapForMessage($message) {
+    private function getMapForMessage($message)
+    {
         foreach ($this->errorTaskMaps as $errorTaskMap) {
             if ($errorTaskMap->match($message)) {
                 return $errorTaskMap;
@@ -86,49 +85,38 @@ class ErrorTaskMapCollection  {
         return null;
     }
 
-
     /**
      * @return int
      */
-    public function getUniqueErrorCount() {
+    public function getUniqueErrorCount()
+    {
         return count($this->errorTaskMaps);
     }
 
-
-    /**
-     * @return $this
-     */
-    public function sortMapsByUrl() {
+    public function sortMapsByUrl()
+    {
         foreach ($this->getErrorTaskMaps() as $errorTaskMap) {
             $errorTaskMap->sortByUrl();
         }
-
-        return $this;
     }
 
-
-    /**
-     * @return $this
-     */
-    public function sortMapsByOccurrenceCount() {
+    public function sortMapsByOccurrenceCount()
+    {
         foreach ($this->getErrorTaskMaps() as $errorTaskMap) {
             $errorTaskMap->sortByOccurrenceCount();
         }
-
-        return $this;
     }
 
+    public function sortByOccurrenceCount()
+    {
+        $this->sortFromIndex($this->getOccurrenceCountSortIndex());
+    }
 
     /**
-     * @return $this
+     * @param array $index
      */
-    public function sortByOccurrenceCount() {
-        $this->sortFromIndex($this->getOccurrenceCountSortIndex());
-        return $this;
-    }
-
-
-    private function sortFromIndex($index) {
+    private function sortFromIndex($index)
+    {
         $unsortedErrorTaskMaps = $this->getErrorTaskMaps();
         $this->errorTaskMaps = [];
 
@@ -137,12 +125,13 @@ class ErrorTaskMapCollection  {
         }
     }
 
-
     /**
      * @param string[] $messages
+     *
      * @return array
      */
-    private function getMessageSortIndex($messages) {
+    private function getMessageSortIndex($messages)
+    {
         $index = [];
         foreach ($messages as $position => $message) {
             $index[$position] = strtolower($message);
@@ -152,8 +141,11 @@ class ErrorTaskMapCollection  {
         return $index;
     }
 
-
-    private function getOccurrenceCountSortIndex() {
+    /**
+     * @return array
+     */
+    private function getOccurrenceCountSortIndex()
+    {
         $index = [];
 
         foreach ($this->getErrorTaskMaps() as $position => $errorTaskMap) {
@@ -192,8 +184,15 @@ class ErrorTaskMapCollection  {
         return $index;
     }
 
-
-    private function mergeSubsetIndex($index, $subsetIndex, $offset) {
+    /**
+     * @param array $index
+     * @param array $subsetIndex
+     * @param int $offset
+     *
+     * @return array
+     */
+    private function mergeSubsetIndex($index, $subsetIndex, $offset)
+    {
         $newIndex = [];
         $indexOffset = 0;
 
@@ -209,5 +208,4 @@ class ErrorTaskMapCollection  {
 
         return $newIndex;
     }
-
 }
