@@ -121,8 +121,8 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
             $rejection = $remoteTest->getRejection();
             $constraint = $rejection->getConstraint();
 
-            $cacheValidatorParameters['limits'] = $constraint['limit'] . ':' . $planCredits->limit;
-            $cacheValidatorParameters['credits_remaining'] = $planCredits->limit - $planCredits->used;
+            $cacheValidatorParameters['limits'] = $constraint['limit'] . ':' . $planCredits['limit'];
+            $cacheValidatorParameters['credits_remaining'] = $planCredits['limit'] - $planCredits['used'];
         }
 
         $response = $this->cacheValidator->createResponse($request, $cacheValidatorParameters);
