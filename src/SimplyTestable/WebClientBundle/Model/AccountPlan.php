@@ -1,57 +1,54 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Model;
 
-use SimplyTestable\WebClientBundle\Model\Object;
-
-class AccountPlan extends Object {
-
+class AccountPlan extends AbstractArrayBasedModel
+{
     /**
-     * 
      * @return string
      */
-    public function getName() {
-        return $this->getDataProperty('name');
+    public function getName()
+    {
+        return $this->getProperty('name');
     }
-    
-    
-    /**
-     * 
-     * @return boolean
-     */
-    public function getIsPremium() {
-        return $this->getDataProperty('is_premium');
-    }
-
 
     /**
      * @return bool
      */
-    public function getIsCustom() {
+    public function getIsPremium()
+    {
+        return $this->getProperty('is_premium');
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsCustom()
+    {
         return preg_match('/-custom$/', $this->getName()) > 0;
     }
 
+    /**
+     * @return int
+     */
+    public function getPrice()
+    {
+        return (int)$this->getProperty('price');
+    }
 
     /**
      * @return int
      */
-    public function getPrice() {
-        return (int)$this->getDataProperty('price');
+    public function getUrlsPerJob()
+    {
+        return (int)$this->getProperty('urls_per_job');
     }
-
 
     /**
      * @return int
      */
-    public function getUrlsPerJob() {
-        return (int)$this->getDataProperty('urls_per_job');
+    public function getCreditsPerMonth()
+    {
+        return (int)$this->getProperty('credits_per_month');
     }
-
-
-    /**
-     * @return int
-     */
-    public function getCreditsPerMonth() {
-        return (int)$this->getDataProperty('credits_per_month');
-    }
-    
 }

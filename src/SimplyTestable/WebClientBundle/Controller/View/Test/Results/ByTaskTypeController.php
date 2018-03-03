@@ -185,7 +185,8 @@ class ByTaskTypeController extends AbstractResultsController
         $tasks = $this->sortTasks($filteredTasks);
 
         $errorTaskMaps = new ErrorTaskMapCollection($tasks);
-        $errorTaskMaps->sortMapsByOccurrenceCount()->sortByOccurrenceCount();
+        $errorTaskMaps->sortMapsByOccurrenceCount();
+        $errorTaskMaps->sortByOccurrenceCount();
 
         return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/Test/Results/ByTaskType:index.html.twig',

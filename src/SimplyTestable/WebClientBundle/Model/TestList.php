@@ -1,205 +1,288 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Model;
 
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 
-class TestList  {
-    
+class TestList
+{
     const PAGINATION_PAGE_COLLECTION_SIZE = 10;
-    
+
+    /**
+     * @var int
+     */
     private $maxResults = 0;
+
+    /**
+     * @var int
+     */
     private $offset = 0;
+
+    /**
+     * @var int
+     */
     private $limit = 1;
-    
+
+    /**
+     * @var Test[]
+     */
     private $tests = array();
-    
-    public function setMaxResults($maxResults) {
+
+    /**
+     * @param int $maxResults
+     */
+    public function setMaxResults($maxResults)
+    {
         $this->maxResults = $maxResults;
     }
-    
-    public function getMaxResults() {
+
+    /**
+     * @return int
+     */
+    public function getMaxResults()
+    {
         return $this->maxResults;
     }
-    
-    public function setOffset($offset) {
+
+    /**
+     * @param int $offset
+     */
+    public function setOffset($offset)
+    {
         $this->offset = $offset;
     }
-    
-    public function getOffset() {
+
+    /**
+     * @return int
+     */
+    public function getOffset()
+    {
         return $this->offset;
     }
-    
-    public function setLimit($limit) {
+
+    /**
+     * @param int $limit
+     */
+    public function setLimit($limit)
+    {
         $this->limit = $limit;
     }
-    
-    public function getLimit() {
+
+    /**
+     * @return int
+     */
+    public function getLimit()
+    {
         return $this->limit;
     }
-    
-    public function addRemoteTest(RemoteTest $remoteTest) {
+
+    /**
+     * @param RemoteTest $remoteTest
+     */
+    public function addRemoteTest(RemoteTest $remoteTest)
+    {
         if (!isset($this->tests[$remoteTest->getId()])) {
             $this->tests[$remoteTest->getId()] = array();
         }
-        
+
         $this->tests[$remoteTest->getId()]['remote_test'] = $remoteTest;
-    }        
-    
-    public function addTest(Test $test) {
+    }
+
+    /**
+     * @param Test $test
+     */
+    public function addTest(Test $test)
+    {
         if (!isset($this->tests[$test->getTestId()])) {
             $this->tests[$test->getTestId()] = array();
-        } 
-        
+        }
+
         $this->tests[$test->getTestId()]['test'] = $test;
     }
-    
-    public function get() {
+
+    /**
+     * @return Test[]
+     */
+    public function get()
+    {
         return $this->tests;
     }
-    
+
     /**
-     * 
      * @return int
      */
-    public function getLength() {
+    public function getLength()
+    {
         return count($this->tests);
     }
-    
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function isEmpty() {
+    public function isEmpty()
+    {
         return $this->getLength() === 0;
     }
-    
-    
-    public function getPageNumber() {        
+
+    /**
+     * @return int
+     */
+    public function getPageNumber()
+    {
         return $this->getPageIndex() + 1;
     }
-    
-    
-    public function getPageCount() {
+
+    /**
+     * @return int
+     */
+    public function getPageCount()
+    {
         return (int)ceil($this->getMaxResults() / $this->getLimit());
     }
-    
-    public function getPageIndex() {        
+
+    /**
+     * @return int
+     */
+    public function getPageIndex() {
         return $this->getOffset() / $this->getLimit();
     }
-    
-    
+
     /**
-     * 
-     * @param \SimplyTestable\WebClientBundle\Entity\Test\Test $test
-     * @return boolean|null
+     * @param Test $test
+     *
+     * @return bool|null
      */
-    public function requiresResults(Test $test) {
+    public function requiresResults(Test $test)
+    {
         if (!$this->containsLocal($test->getTestId()) || !$this->containsRemote($test->getTestId())) {
             return null;
         }
-        
-        return $this->tests[$test->getTestId()]['remote_test']->getTaskCount() != $test->getTaskCount();
+
+        /* @var RemoteTest $remoteTest */
+        $remoteTest = $this->tests[$test->getTestId()]['remote_test'];
+
+        return $remoteTest->getTaskCount() != $test->getTaskCount();
     }
-    
 
     /**
-     * 
      * @param int $testId
-     * @return boolean
-     */    
-    private function containsRemote($testId) {
+     *
+     * @return bool
+     */
+    private function containsRemote($testId)
+    {
         if (!isset($this->tests[$testId])) {
             return false;
         }
-        
+
         return isset($this->tests[$testId]['remote_test']);
     }
-    
 
     /**
-     * 
      * @param int $testId
-     * @return boolean
+     *
+     * @return bool
      */
-    private function containsLocal($testId) {
+    private function containsLocal($testId)
+    {
         if (!isset($this->tests[$testId])) {
             return false;
         }
-        
+
         return isset($this->tests[$testId]['test']);
     }
-    
-    
+
     /**
-     * 
      * @return int
      */
-    public function getPageCollectionNumber() {
+    public function getPageCollectionNumber()
+    {
         return $this->getPageIndex() + 1;
     }
-    
-    public function getPageCollectionIndex() {
+
+    /**
+     * @return int
+     */
+    public function getPageCollectionIndex()
+    {
         return (int)floor($this->getPageIndex() / self::PAGINATION_PAGE_COLLECTION_SIZE);
-    }    
-    
-    public function getPageNumbers() {               
-        if ($this->getMaxResults() <= $this->getLimit()) {            
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getPageNumbers()
+    {
+        if ($this->getMaxResults() <= $this->getLimit()) {
             return array();
         }
-        
-        
+
+
         $start = $this->getPageCollectionIndex() * $this->getLimit();
         $end = $start + $this->getLimit() - 1;
-        
+
         $pageNumbers = array();
-        
-        for ($pageIndex = $start; $pageIndex <= $end; $pageIndex++) {                        
-            if ($this->isValidPageIndex($pageIndex)) {                
+
+        for ($pageIndex = $start; $pageIndex <= $end; $pageIndex++) {
+            if ($this->isValidPageIndex($pageIndex)) {
                 $pageNumbers[] = $pageIndex + 1;
-            }            
+            }
         }
-      
+
         return $pageNumbers;
     }
-    
-    private function isValidPageIndex($index) {
+
+    /**
+     * @param int $index
+     *
+     * @return bool
+     */
+    private function isValidPageIndex($index)
+    {
         return $this->getMaxResults() > ($index) * $this->getLimit();
     }
-    
+
     /**
-     * 
      * @return string
      */
-    public function getHash() {
+    public function getHash()
+    {
         return md5($this->getHashableContent());
     }
-    
-    
+
     /**
      * @return string
      */
-    private function getHashableContent() {        
+    private function getHashableContent()
+    {
         $hashableContent = json_encode($this->getPropertiesString());
-        
+
         foreach ($this->get() as $testId => $testData) {
             $testDataHashableContent = array();
-            
+
             if ($this->containsLocal($testId)) {
                 $testDataHashableContent['requires_results'] = $this->requiresResults($testData['test']);
             }
-            
+
             if ($this->containsRemote($testId) && $this->requiresResults($testData['test'])) {
-                $testDataHashableContent['remote_test'] = $testData['remote_test']->getSource();
+                /* @var RemoteTest $remoteTest */
+                $remoteTest = $testData['remote_test'];
+
+                $testDataHashableContent['remote_test'] = $remoteTest->getSource();
             }
-            
+
             $hashableContent .= json_encode($testDataHashableContent);
         }
-        
-        return $hashableContent;        
+
+        return $hashableContent;
     }
-    
-    private function getPropertiesString() {
+
+    /**
+     * @return string
+     */
+    private function getPropertiesString()
+    {
         return json_encode(array(
             'max_results' => $this->getMaxResults(),
             'offset' => $this->getOffset(),
@@ -209,5 +292,4 @@ class TestList  {
             'length' => $this->getLength()
         ));
     }
-    
 }

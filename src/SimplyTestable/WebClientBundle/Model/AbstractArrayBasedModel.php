@@ -1,7 +1,8 @@
 <?php
-namespace SimplyTestable\WebClientBundle\Model\RemoteTest;
 
-class AbstractStandardObject
+namespace SimplyTestable\WebClientBundle\Model;
+
+abstract class AbstractArrayBasedModel
 {
     /**
      * @var array
@@ -14,22 +15,6 @@ class AbstractStandardObject
     public function __construct(array $source)
     {
         $this->source = $source;
-    }
-
-    /**
-     * @return array
-     */
-    public function getSource()
-    {
-        return $this->source;
-    }
-
-    /**
-     * @return array
-     */
-    public function getArraySource()
-    {
-        return $this->source;
     }
 
     /**
@@ -47,6 +32,15 @@ class AbstractStandardObject
     }
 
     /**
+     * @param string $key
+     * @param mixed $value
+     */
+    protected function setProperty($key, $value)
+    {
+        $this->source[$key] = $value;
+    }
+
+    /**
      * @param string $name
      *
      * @return bool
@@ -54,5 +48,13 @@ class AbstractStandardObject
     protected function hasProperty($name)
     {
         return array_key_exists($name, $this->source);
+    }
+
+    /**
+     * @return array
+     */
+    public function getSource()
+    {
+        return $this->source;
     }
 }

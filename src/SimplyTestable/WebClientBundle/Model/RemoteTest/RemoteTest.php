@@ -4,10 +4,11 @@ namespace SimplyTestable\WebClientBundle\Model\RemoteTest;
 
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Entity\TimePeriod;
+use SimplyTestable\WebClientBundle\Model\AbstractArrayBasedModel;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Doctrine\Common\Collections\ArrayCollection;
 
-class RemoteTest extends AbstractStandardObject
+class RemoteTest extends AbstractArrayBasedModel
 {
     /**
      * @var string[]

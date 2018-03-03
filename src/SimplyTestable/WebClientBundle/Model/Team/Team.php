@@ -1,54 +1,54 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Model\Team;
 
-use SimplyTestable\WebClientBundle\Model\Object;
+use SimplyTestable\WebClientBundle\Model\AbstractArrayBasedModel;
 
-class Team extends Object {
-
+class Team extends AbstractArrayBasedModel
+{
     /**
-     *
-     * @param \stdClass $data
+     * {@inheritdoc}
      */
-    public function __construct($data) {
-        parent::__construct($data);
-        if (is_null($this->getDataProperty('people'))) {
-            $this->setDataProperty('people', [
+    public function __construct(array $source)
+    {
+        parent::__construct($source);
+
+        if (is_null($this->getProperty('people'))) {
+            $this->setProperty('people', [
                 $this->getLeader()
             ]);
         }
-
     }
-
 
     /**
      * @return string
      */
-    public function getLeader() {
-        return $this->getDataProperty('team')->leader;
+    public function getLeader()
+    {
+        return $this->getProperty('team')['leader'];
     }
-
 
     /**
      * @return string
      */
-    public function getName() {
-        return $this->getDataProperty('team')->name;
+    public function getName()
+    {
+        return $this->getProperty('team')['name'];
     }
-
 
     /**
      * @return string[]
      */
-    public function getMembers() {
-        return $this->getDataProperty('members');
+    public function getMembers()
+    {
+        return $this->getProperty('members');
     }
-
 
     /**
      * @return bool
      */
-    public function hasMembers() {
-        return count($this->getMembers()) > 0;
+    public function hasMembers()
+    {
+        return !empty($this->getMembers());
     }
-
 }

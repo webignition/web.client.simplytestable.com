@@ -27,7 +27,7 @@ class PostmarkSender
      */
     public function send(PostmarkMessage $message)
     {
-        $response = new PostmarkResponse($this->getJsonRespnse($message));
+        $response = new PostmarkResponse($this->getJsonResponse($message));
 
         $this->lastMessage = $message;
         $this->lastResponse = $response;
@@ -60,7 +60,7 @@ class PostmarkSender
      *
      * @return string
      */
-    protected function getJsonRespnse(PostmarkMessage $message)
+    private function getJsonResponse(PostmarkMessage $message)
     {
         return $message->send();
     }
