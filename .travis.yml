@@ -35,4 +35,6 @@ before_script:
   - php bin/console --env=test cache:warmup
 
 script:
+  - yarn lint
+  - yarn run encore production
   - composer test
