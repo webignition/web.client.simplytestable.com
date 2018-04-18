@@ -11,11 +11,6 @@ body {
     padding-left: 6px;
 }
 
-body.IE8 .submit,
-body.IE8 .intro{
-    padding-left:8px;
-}
-
 .submit {
     /*margin-top: 40px;*/
 }
@@ -64,10 +59,6 @@ body.IE8 .intro{
     .submit {
         padding-left: 14px;
     }
-
-    body.IE8 .submit {
-        padding-left:16px;
-    }
 }
 
 @media (max-width: 768px) {
@@ -77,11 +68,6 @@ body.IE8 .intro{
 
     .submit {
         padding-left: 15px;
-    }
-
-    body.IE8 .intro {
-        padding-left: 0;
-        margin-left: 0;
     }
 
     .cvc-form-group label .help-block {

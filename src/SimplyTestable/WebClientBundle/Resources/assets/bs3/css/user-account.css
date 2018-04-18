@@ -16,7 +16,7 @@ h2 {
 h3 {
     font-size: 18px;
     line-height: 24px;
-    opacity: 0.7;    
+    opacity: 0.7;
 }
 
 .affix {
@@ -61,23 +61,9 @@ h3 {
     margin-top: 20px;
 }
 
-/*
-   Need background colour on opaqued items in IE otherwise it doesn't
-   know what colour to anti-alias against.
- */
-body.IE8 h2,
-body.IE8 h3 {
-    background-color: #fff;
-}
-
 @media (max-width: 768px) {
     body {
         margin-top: 40px;
-        background-color: #eee;
-    }
-
-    body.IE8 h2,
-    body.IE8 h3 {
         background-color: #eee;
     }
 

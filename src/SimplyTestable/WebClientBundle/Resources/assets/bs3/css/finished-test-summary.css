@@ -56,7 +56,3 @@
         margin-right: 10px;
     }
 }
-
-body.IE8 .summary-stats .outline-container .count {
-    background-color: #ddd;
-}
