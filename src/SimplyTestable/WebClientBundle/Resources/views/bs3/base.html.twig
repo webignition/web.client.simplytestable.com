@@ -11,29 +11,8 @@
         <title>{% block title %}Simply Testable professional automated front-end web testing{% endblock %}</title>
 
         {% block stylesheets %}
-            <!--[if lt IE 9]>
-            {% stylesheets
-            '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/bootstrap.min.css'
-            filter='cssrewrite' %}
-            <link rel="stylesheet" href="{{ asset_url }}" />
-            {% endstylesheets %}
-
-            {% stylesheets
-            '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/font-awesome.css'
-            filter='cssrewrite' %}
-            <link rel="stylesheet" href="{{ asset_url }}" />
-            {% endstylesheets %}
-            <![endif]-->
-
-            <!--[if gt IE 8]>
             <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
             <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet">
-            <![endif]-->
-
-            <!--[if !IE]><!-->
-            <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-            <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-            <!--<![endif]-->
 
             {% stylesheets
             '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/main.css'
