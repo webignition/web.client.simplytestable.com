@@ -6,55 +6,57 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
         <meta name="description" content="">
         <meta name="author" content="">
-        
+
 
         <title>{% block title %}Simply Testable professional automated front-end web testing{% endblock %}</title>
 
         {% block stylesheets %}
             <!--[if lt IE 9]>
-            {% stylesheets    
+            {% stylesheets
             '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/bootstrap.min.css'
             filter='cssrewrite' %}
             <link rel="stylesheet" href="{{ asset_url }}" />
-            {% endstylesheets %}                
-            
-            {% stylesheets    
+            {% endstylesheets %}
+
+            {% stylesheets
             '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/font-awesome.css'
             filter='cssrewrite' %}
             <link rel="stylesheet" href="{{ asset_url }}" />
             {% endstylesheets %}
             <![endif]-->
-            
+
             <!--[if gt IE 8]>
             <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
             <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet">
-            <![endif]-->            
-           
+            <![endif]-->
+
             <!--[if !IE]><!-->
             <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
             <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
             <!--<![endif]-->
 
-            {% stylesheets    
+            {% stylesheets
             '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/main.css'
             filter='cssrewrite' %}
             <link rel="stylesheet" href="{{ asset_url }}" />
             {% endstylesheets %}
-        {% endblock %}     
+
+            <link rel="stylesheet" href="{{ asset('build/app.css') }}">
+        {% endblock %}
 
 
-        {% block javascripts %}        
+        {% block javascripts %}
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-            <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.7.1/modernizr.min.js"></script>        
+            <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.7.1/modernizr.min.js"></script>
 
             <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
             <!--[if lt IE 9]>
               <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
               <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-            
+
             {% javascripts '@SimplyTestableWebClientBundle/Resources/assets/vendor/internet-explorer-opacity-polyfill/internet-explorer-opacity-polyfill/ie-opacity-polyfill.js' %}
                 <script type="text/javascript" src="{{ asset_url }}"></script>
-            {% endjavascripts %}             
+            {% endjavascripts %}
             <![endif]-->
 
             <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
@@ -66,26 +68,26 @@
             %}
             <script type="text/javascript" src="{{ asset_url }}"></script>
             {% endjavascripts %}
-            
-            {#<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>#}
+
+            <script src="{{ asset('build/app.js') }}"></script>
 
         {% endblock %}
 
 
-    </head>   
-    
+    </head>
+
 {% set route_body_class = app.request.get('_route') | replace({'_' : '-'})  %}
-{% set is_logged_in_body_class = (is_logged_in) ? 'logged-in' : 'not-logged-in' %} 
+{% set is_logged_in_body_class = (is_logged_in) ? 'logged-in' : 'not-logged-in' %}
 {% set default_body_class = [route_body_class, is_logged_in_body_class]|join(' ') %}
 
 {% set body_class %}{{ default_body_class }} {% block body_class %} {% endblock %}{% endset %}
 {% set body_attrs %}{% block body_attrs %}{% endblock %}{% endset %}
 
 
-    
+
     <!--[if lt IE 8]>
     <body class="ltIE8 {{ body_class }} {% block body_ltIE8_class %} {% endblock %}" {{ body_attrs }}>
-    <![endif]-->                                
+    <![endif]-->
     <!--[if IE 8]>
     <body class="IE8 {{ body_class }} {% block body_IE8_class %} {% endblock %}" {{ body_attrs }}>
     <![endif]-->
@@ -94,7 +96,7 @@
     <![endif]-->
     <!--[if !IE]> -->
     <body class="{{ body_class }}" {{ body_attrs }}>
-    <!-- <![endif]-->    
+    <!-- <![endif]-->
 
 {% block body %}
     {% include 'SimplyTestableWebClientBundle:bs3/Partials:navbar.html.twig' %}
