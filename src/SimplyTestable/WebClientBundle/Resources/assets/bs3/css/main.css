@@ -31,7 +31,7 @@ body {
 
 .logged-in .navbar .user-actions .highlighted-spacer {
     margin-right: 10px;
-    margin-left: -2px;    
+    margin-left: -2px;
 }
 
 section {
@@ -49,26 +49,25 @@ label {
 .input-group-larger .form-control {
     padding-top: 12px;
     padding-bottom: 12px;
-    height: auto;    
+    height: auto;
 }
 
-body.IE8 .input-group-larger .btn,
 body.IE9 .input-group-larger .btn {
     padding-top: 10px;
-    padding-bottom: 10px;  
+    padding-bottom: 10px;
 }
 
 .form-group-collection {
-    margin: 40px 0 20px 0;    
+    margin: 40px 0 20px 0;
 }
 
 .navbar-nav>li>a.btn-bordered,
 .btn-bordered {
     border: 2px solid #357ebd;
     padding-top: 6px;
-    padding-bottom: 6px;    
-    margin-top: 8px;    
-    border-radius: 4px;    
+    padding-bottom: 6px;
+    margin-top: 8px;
+    border-radius: 4px;
 }
 
 .navbar-nav>li>a.btn-bordered:hover,
@@ -111,7 +110,7 @@ blockquote {
     color: #222;
 }
 
-@media (max-width: 768px) {    
+@media (max-width: 768px) {
     .navbar a.btn,
     .navbar-form {
         margin-left: 34px;
@@ -125,8 +124,8 @@ blockquote {
 
     .navbar .text a i {
         margin-right: 6px;
-    } 
-    
+    }
+
     .logged-in .navbar-form {
         margin-left: 18px;
     }
