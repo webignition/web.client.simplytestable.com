@@ -24,6 +24,7 @@ before_install:
   - cp src/SimplyTestable/WebClientBundle/Resources/config/parameters.yml.travis src/SimplyTestable/WebClientBundle/Resources/config/parameters.yml
   - mysql -e 'CREATE DATABASE myapp_test;'
   - rake
+  - yarn install
 
 install:
   - composer install --prefer-dist

@@ -7,6 +7,8 @@
 /web/bundles/
 web/js
 web/css
+/node_modules
+/yarn-error.log
 
 /.idea
 /build
