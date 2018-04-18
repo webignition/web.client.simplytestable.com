@@ -21,7 +21,8 @@ framework:
     session:
       cookie_domain: .simplytestable.com
       save_path: "%simplytestable_session_savepath%"
-    assets: ~
+    assets:
+      json_manifest_path: '%kernel.project_dir%/web/build/manifest.json'
 
 # Twig Configuration
 twig:
