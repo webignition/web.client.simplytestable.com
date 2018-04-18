@@ -1,2 +1,1 @@
 require('../css/app.scss');
-
