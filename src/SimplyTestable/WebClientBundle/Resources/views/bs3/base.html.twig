@@ -51,9 +51,6 @@
 {% set body_class %}{{ default_body_class }} {% block body_class %} {% endblock %}{% endset %}
 {% set body_attrs %}{% block body_attrs %}{% endblock %}{% endset %}
 
-    <!--[if IE 8]>
-    <body class="IE8 {{ body_class }} {% block body_IE8_class %} {% endblock %}" {{ body_attrs }}>
-    <![endif]-->
     <!--[if IE 9]>
     <body class="IE9 {{ body_class }} {% block body_IE9_class %} {% endblock %}" {{ body_attrs }}>
     <![endif]-->
