@@ -1,5 +1,4 @@
 src/SimplyTestable/WebClientBundle/Resources/assets/vendor:
-  supersleight: http://24ways.org/code/supersleight-transparent-png-in-ie6/supersleight.zip
   jquery-placeholder: https://github.com/diy/jquery-placeholder.git
   jquery-scrollto: https://github.com/flesler/jquery.scrollTo/archive/1.4.12.zip
   google-code-prettify: https://github.com/google/code-prettify/releases/download/2013-03-04/prettify-small-4-Mar-2013.tar.bz2
