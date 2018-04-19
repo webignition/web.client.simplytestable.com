@@ -1,11 +1,12 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * 
  * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SimplyTestable\WebClientBundle\Repository\CacheValidatorHeadersRepository")
  * @ORM\Table(
  *     name="CacheValidatorHeaders",
  *     uniqueConstraints={
@@ -14,38 +15,32 @@ use Doctrine\ORM\Mapping as ORM;
  * )
  */
 class CacheValidatorHeaders
-{    
+{
     /**
-     * 
-     * @var integer
-     * 
+     * @var int
+     *
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
-    
+
     /**
-     *
      * @var string
+     *
      * @ORM\Column(type="string", nullable=false)
      */
     private $identifier;
-    
-    
+
     /**
-     *
      * @var \DateTime
+     *
      * @ORM\Column(type="datetime", nullable=false)
      */
     private $lastModifiedDate;
-    
 
     /**
-     * Get id
-     *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
@@ -53,22 +48,15 @@ class CacheValidatorHeaders
     }
 
     /**
-     * Set identifier
-     *
      * @param string $identifier
-     * @return CacheValidatorHeaders
      */
     public function setIdentifier($identifier)
     {
         $this->identifier = $identifier;
-    
-        return $this;
     }
 
     /**
-     * Get identifier
-     *
-     * @return string 
+     * @return string
      */
     public function getIdentifier()
     {
@@ -76,22 +64,15 @@ class CacheValidatorHeaders
     }
 
     /**
-     * Set lastModifiedDate
-     *
-     * @param DateTime $lastModifiedDate
-     * @return CacheValidatorHeaders
+     * @param \DateTime $lastModifiedDate
      */
     public function setLastModifiedDate(\DateTime $lastModifiedDate)
     {
         $this->lastModifiedDate = $lastModifiedDate;
-    
-        return $this;
     }
 
     /**
-     * Get lastModifiedDate
-     *
-     * @return DateTime 
+     * @return \DateTime
      */
     public function getLastModifiedDate()
     {
@@ -99,9 +80,7 @@ class CacheValidatorHeaders
     }
 
     /**
-     * Get eTag
-     *
-     * @return string 
+     * @return string
      */
     public function getETag()
     {

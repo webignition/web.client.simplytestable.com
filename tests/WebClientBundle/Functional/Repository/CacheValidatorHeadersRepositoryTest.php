@@ -1,14 +1,20 @@
 <?php
 
-namespace Tests\WebClientBundle\Functional\Services;
+namespace Tests\WebClientBundle\Functional\Repository;
 
 use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
+use SimplyTestable\WebClientBundle\Entity\Task\Task;
+use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Repository\CacheValidatorHeadersRepository;
+use SimplyTestable\WebClientBundle\Repository\TaskRepository;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
+use Tests\WebClientBundle\Factory\OutputFactory;
+use Tests\WebClientBundle\Factory\TaskFactory;
+use Tests\WebClientBundle\Factory\TestFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 
-class CacheValidatorHeadersServiceTest extends AbstractBaseTestCase
+class CacheValidatorHeadersRepositoryTest extends AbstractBaseTestCase
 {
     /**
      * @var CacheValidatorHeadersService
@@ -34,29 +40,13 @@ class CacheValidatorHeadersServiceTest extends AbstractBaseTestCase
         $this->cacheValidatorHeadersRepository = $entityManager->getRepository(CacheValidatorHeaders::class);
     }
 
-    public function testGet()
-    {
-        $this->assertEmpty($this->cacheValidatorHeadersRepository->findAll());
-
-        $cacheValidatorHeaders = $this->cacheValidatorHeadersService->get('foo');
-
-        $this->assertInstanceOf(CacheValidatorHeaders::class, $cacheValidatorHeaders);
-
-        $this->assertEquals(
-            $cacheValidatorHeaders,
-            $this->cacheValidatorHeadersRepository->findOneBy([
-                'identifier' => $cacheValidatorHeaders->getIdentifier(),
-            ])
-        );
-    }
-
     /**
-     * @dataProvider clearDataProvider
+     * @dataProvider findAllDataProvider
      *
-     * @param $limit
-     * @param array $expectedCacheValidatorHeaderIndices
+     * @param int|null $limit
+     * @param int[] $expectedCacheValidatorHeaderIndices
      */
-    public function testClear($limit, array $expectedCacheValidatorHeaderIndices)
+    public function testFindAll($limit, array $expectedCacheValidatorHeaderIndices)
     {
         /* @var CacheValidatorHeaders[] $cacheValidatorHeadersCollection */
         $cacheValidatorHeadersCollection = [];
@@ -72,76 +62,69 @@ class CacheValidatorHeadersServiceTest extends AbstractBaseTestCase
             }
         }
 
-        $this->assertEquals(
-            array_reverse($cacheValidatorHeadersCollection),
-            $this->cacheValidatorHeadersRepository->findAll()
-        );
+        /* @var CacheValidatorHeaders[] $retrievedCacheValidatorHeadersCollection */
+        $retrievedCacheValidatorHeadersCollection = $this->cacheValidatorHeadersRepository->findAll($limit);
 
-        $this->cacheValidatorHeadersService->clear($limit);
-
-        /* @var CacheValidatorHeaders[] $allCacheValidatorHeaders */
-        $allCacheValidatorHeaders = $this->cacheValidatorHeadersRepository->findAll();
-        $cacheValidatorHeaderIds = [];
-
-        foreach ($allCacheValidatorHeaders as $cacheValidatorHeader) {
-            $cacheValidatorHeaderIds[] = $cacheValidatorHeader->getId();
+        $resultIds = [];
+        foreach ($retrievedCacheValidatorHeadersCollection as $retrievedCacheValidatorHeaders) {
+            $resultIds[] = $retrievedCacheValidatorHeaders->getId();
         }
 
-        $this->assertEquals(array_reverse($expectedCacheValidatorHeaderIds), $cacheValidatorHeaderIds);
+        $this->assertEquals(array_reverse($expectedCacheValidatorHeaderIds), $resultIds);
     }
 
     /**
      * @return array
      */
-    public function clearDataProvider()
+    public function findAllDataProvider()
     {
         return [
             'no limit' => [
                 'limit' => null,
-                'expectedCacheValidatorHeaderIndices' => [],
+                'expectedCacheValidatorHeaderIndices' => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
             ],
             'limit: 0' => [
                 'limit' => 0,
-                'expectedCacheValidatorHeaderIndices' => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                'expectedCacheValidatorHeaderIndices' => [],
             ],
             'limit: 1' => [
                 'limit' => 1,
-                'expectedCacheValidatorHeaderIndices' => [0, 1, 2, 3, 4, 5, 6, 7, 8],
+                'expectedCacheValidatorHeaderIndices' => [9],
             ],
             'limit: 2' => [
                 'limit' => 2,
-                'expectedCacheValidatorHeaderIndices' => [0, 1, 2, 3, 4, 5, 6, 7],
+                'expectedCacheValidatorHeaderIndices' => [8, 9],
             ],
             'limit: 3' => [
                 'limit' => 3,
-                'expectedCacheValidatorHeaderIndices' => [0, 1, 2, 3, 4, 5, 6],
+                'expectedCacheValidatorHeaderIndices' => [7, 8, 9],
             ],
             'limit: 9' => [
                 'limit' => 9,
-                'expectedCacheValidatorHeaderIndices' => [0],
+                'expectedCacheValidatorHeaderIndices' => [1, 2, 3, 4, 5, 6, 7, 8, 9],
             ],
             'limit: 10' => [
                 'limit' => 10,
-                'expectedCacheValidatorHeaderIndices' => [],
+                'expectedCacheValidatorHeaderIndices' => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
             ],
             'limit: 11' => [
                 'limit' => 11,
-                'expectedCacheValidatorHeaderIndices' => [],
+                'expectedCacheValidatorHeaderIndices' => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
             ],
         ];
     }
 
     public function testCount()
     {
-        $this->assertEquals(0, $this->cacheValidatorHeadersService->count());
+        $this->assertEquals(0, $this->cacheValidatorHeadersRepository->count());
 
         $this->cacheValidatorHeadersService->get(0);
-        $this->assertEquals(1, $this->cacheValidatorHeadersService->count());
+        $this->assertEquals(1, $this->cacheValidatorHeadersRepository->count());
 
         $this->cacheValidatorHeadersService->get(1);
-        $this->assertEquals(2, $this->cacheValidatorHeadersService->count());
+        $this->assertEquals(2, $this->cacheValidatorHeadersRepository->count());
 
         $this->cacheValidatorHeadersService->get(2);
-        $this->assertEquals(3, $this->cacheValidatorHeadersService->count());
+        $this->assertEquals(3, $this->cacheValidatorHeadersRepository->count());
     }
 }
