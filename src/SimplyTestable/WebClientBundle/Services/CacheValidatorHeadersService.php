@@ -56,6 +56,14 @@ class CacheValidatorHeadersService
     }
 
     /**
+     * @return int
+     */
+    public function count()
+    {
+        return $this->entityRepository->count();
+    }
+
+    /**
      * @param string $identifier
      *
      * @return CacheValidatorHeaders
