@@ -1,14 +1,17 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Command\CacheValidator;
 
 use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ClearCommand extends Command
 {
     const NAME = 'simplytestable:cachevalidator:clear';
+    const DEFAULT_LIMIT = 100;
 
     /**
      * @var CacheValidatorHeadersService
@@ -34,6 +37,12 @@ class ClearCommand extends Command
         $this
             ->setName(self::NAME)
             ->setDescription('Clear cache validator headers')
+            ->addArgument(
+                'limit',
+                InputArgument::OPTIONAL,
+                '',
+                self::DEFAULT_LIMIT
+            )
         ;
     }
 
@@ -42,7 +51,41 @@ class ClearCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('Clearing cache validator headers');
-        $this->cacheValidatorHeadersService->clear();
+        $limit = $this->getLimit($input);
+        $count = $this->cacheValidatorHeadersService->count();
+
+        $output->writeln([
+            '<info>Clearing cache validator headers</info>',
+            sprintf('<comment>%s</comment> items to delete', $this->cacheValidatorHeadersService->count()),
+            sprintf('<comment>%s</comment> items per batch', $limit),
+            ''
+        ]);
+
+        while ($count > 0) {
+            $output->writeln(sprintf(
+                'Deleting up to <comment>%s</comment> of <comment>%s</comment>',
+                $limit,
+                $count
+            ));
+
+            $this->cacheValidatorHeadersService->clear($limit);
+            $count = $this->cacheValidatorHeadersService->count();
+        }
+
+        $output->writeln([
+            '<info>Done!</info>',
+        ]);
+    }
+
+    /**
+     * @param InputInterface $input
+     *
+     * @return int
+     */
+    private function getLimit(InputInterface $input)
+    {
+        $limit = (int)$input->getArgument('limit');
+
+        return ($limit <= 0) ? self::DEFAULT_LIMIT : $limit;
     }
 }
