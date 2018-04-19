@@ -10,6 +10,7 @@ Encore
 
     // will create web/build/app.js and web/build/app.css
     .addEntry('app', './assets/js/app.js')
+    .addStyleEntry('single-page-dialog', './assets/css/single-page-dialog.scss')
 
     // allow sass/scss files to be processed
     .enableSassLoader()

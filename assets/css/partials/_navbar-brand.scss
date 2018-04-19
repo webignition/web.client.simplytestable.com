@@ -1,0 +1,16 @@
+.navbar-brand {
+  background: url('../images/st30.png') transparent no-repeat 0 9px;
+  color: $brand;
+  padding-left: 40px;
+  margin-left: -30px;
+
+  &:hover {
+    color: #0ae;
+  }
+
+  span {
+    @media (max-width: 490px) {
+      display: none;
+    }
+  }
+}

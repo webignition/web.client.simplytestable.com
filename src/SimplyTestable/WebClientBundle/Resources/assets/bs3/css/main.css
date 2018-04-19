@@ -2,38 +2,6 @@ body {
     margin-top: 80px;
 }
 
-.navbar-inverse .container .navbar-brand {
-    background: url('/bundles/simplytestablewebclient/images/st30.png') transparent no-repeat 0px 9px;
-    color: #08C;
-    padding-left: 40px;
-    margin-left: -35px;
-}
-
-.navbar .spacer {
-    width:0;
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
-.navbar-inverse .navbar-nav>.active>a,
-.navbar-inverse .navbar-nav>.active>a:hover,
-.navbar-inverse .navbar-nav>.active>a:focus {
-    background-color: transparent;
-}
-
-.navbar .user-actions .spacer {
-    border-left: 1px solid #999;
-}
-
-.not-logged-in .navbar .user-actions .highlighted-spacer {
-    display: none;
-}
-
-.logged-in .navbar .user-actions .highlighted-spacer {
-    margin-right: 10px;
-    margin-left: -2px;
-}
-
 section {
     background-color: #eee;
     padding: 20px 30px;
@@ -61,7 +29,6 @@ body.IE9 .input-group-larger .btn {
     margin: 40px 0 20px 0;
 }
 
-.navbar-nav>li>a.btn-bordered,
 .btn-bordered {
     border: 2px solid #357ebd;
     padding-top: 6px;
@@ -70,7 +37,6 @@ body.IE9 .input-group-larger .btn {
     border-radius: 4px;
 }
 
-.navbar-nav>li>a.btn-bordered:hover,
 .btn-bordered:hover {
     border-color: #458ecd;
     background-color: rgba(69,142,205, 0.3);
@@ -108,25 +74,4 @@ blockquote {
 .label-plain {
     background-color: #ccc;
     color: #222;
-}
-
-@media (max-width: 768px) {
-    .navbar a.btn,
-    .navbar-form {
-        margin-left: 34px;
-        border: none;
-        box-shadow: none;
-    }
-
-    .navbar-form {
-        margin-right: 0;
-    }
-
-    .navbar .text a i {
-        margin-right: 6px;
-    }
-
-    .logged-in .navbar-form {
-        margin-left: 18px;
-    }
 }
