@@ -1,9 +1,0 @@
-@import "modules/variables";
-
-body {
-  &.single-page-dialog {
-    .navbar {
-      @import "partials/_navbar-brand.scss";
-    }
-  }
-}
