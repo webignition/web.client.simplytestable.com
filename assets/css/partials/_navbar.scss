@@ -1,0 +1,48 @@
+a {
+  &.btn {
+    @media (max-width: 768px) {
+      margin-left: 34px;
+      border: none;
+      box-shadow: none;
+    }
+  }
+}
+
+.text {
+  a {
+    i {
+      @media (max-width: 768px) {
+        margin-right: 6px;
+      }
+    }
+  }
+}
+
+.navbar-nav {
+  > .active {
+    > a,
+    > a:hover {
+      background: transparent;
+    }
+  }
+}
+
+.signout-form {
+  padding: 0;
+}
+
+.spacer {
+  width: 0;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.user-actions .spacer {
+  border-left: 1px solid #999;
+}
+
+.navbar-form {
+  @media (max-width: 768px) {
+    margin-right: 0;
+  }
+}
