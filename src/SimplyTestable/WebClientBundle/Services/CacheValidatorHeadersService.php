@@ -41,9 +41,12 @@ class CacheValidatorHeadersService
         return $cacheValidatorHeader;
     }
 
-    public function clear()
+    /**
+     * @param int|null $limit
+     */
+    public function clear($limit = null)
     {
-        $all = $this->entityRepository->findAll();
+        $all = $this->entityRepository->findAll($limit);
 
         foreach ($all as $cacheValidatorHeaders) {
             $this->entityManager->remove($cacheValidatorHeaders);

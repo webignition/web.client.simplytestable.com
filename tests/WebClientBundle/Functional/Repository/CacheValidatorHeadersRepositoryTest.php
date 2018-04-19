@@ -66,8 +66,6 @@ class CacheValidatorHeadersRepositoryTest extends AbstractBaseTestCase
             $resultIds[] = $retrievedCacheValidatorHeaders->getId();
         }
 
-//        var_dump($expectedCacheValidatorHeaderIds, $resultIds);
-
         $this->assertEquals(array_reverse($expectedCacheValidatorHeaderIds), $resultIds);
     }
 

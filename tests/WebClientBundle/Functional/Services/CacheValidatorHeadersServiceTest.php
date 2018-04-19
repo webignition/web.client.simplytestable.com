@@ -4,6 +4,7 @@ namespace Tests\WebClientBundle\Functional\Services;
 
 use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
+use SimplyTestable\WebClientBundle\Repository\CacheValidatorHeadersRepository;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 
@@ -15,6 +16,11 @@ class CacheValidatorHeadersServiceTest extends AbstractBaseTestCase
     private $cacheValidatorHeadersService;
 
     /**
+     * @var CacheValidatorHeadersRepository
+     */
+    private $cacheValidatorHeadersRepository;
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp()
@@ -22,15 +28,15 @@ class CacheValidatorHeadersServiceTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->cacheValidatorHeadersService = $this->container->get(CacheValidatorHeadersService::class);
+
+        /* @var EntityManagerInterface $entityManager */
+        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+        $this->cacheValidatorHeadersRepository = $entityManager->getRepository(CacheValidatorHeaders::class);
     }
 
     public function testGet()
     {
-        /* @var EntityManagerInterface $entityManager */
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
-        $cacheValidatorHeadersRepository = $entityManager->getRepository(CacheValidatorHeaders::class);
-
-        $this->assertEmpty($cacheValidatorHeadersRepository->findAll());
+        $this->assertEmpty($this->cacheValidatorHeadersRepository->findAll());
 
         $cacheValidatorHeaders = $this->cacheValidatorHeadersService->get('foo');
 
@@ -38,24 +44,90 @@ class CacheValidatorHeadersServiceTest extends AbstractBaseTestCase
 
         $this->assertEquals(
             $cacheValidatorHeaders,
-            $cacheValidatorHeadersRepository->findOneBy([
+            $this->cacheValidatorHeadersRepository->findOneBy([
                 'identifier' => $cacheValidatorHeaders->getIdentifier(),
             ])
         );
     }
 
-    public function testClear()
+    /**
+     * @dataProvider clearDataProvider
+     *
+     * @param $limit
+     * @param array $expectedCacheValidatorHeaderIndices
+     */
+    public function testClear($limit, array $expectedCacheValidatorHeaderIndices)
     {
-        /* @var EntityManagerInterface $entityManager */
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
-        $cacheValidatorHeadersRepository = $entityManager->getRepository(CacheValidatorHeaders::class);
+        /* @var CacheValidatorHeaders[] $cacheValidatorHeadersCollection */
+        $cacheValidatorHeadersCollection = [];
 
-        $this->assertEmpty($cacheValidatorHeadersRepository->findAll());
+        for ($identifier = 0; $identifier < 10; $identifier++) {
+            $cacheValidatorHeadersCollection[] = $this->cacheValidatorHeadersService->get($identifier);
+        }
 
-        $this->cacheValidatorHeadersService->get('foo');
-        $this->assertNotEmpty($cacheValidatorHeadersRepository->findAll());
+        $expectedCacheValidatorHeaderIds = [];
+        foreach ($cacheValidatorHeadersCollection as $index => $cacheValidatorHeaders) {
+            if (in_array($index, $expectedCacheValidatorHeaderIndices)) {
+                $expectedCacheValidatorHeaderIds[] = $cacheValidatorHeaders->getId();
+            }
+        }
 
-        $this->cacheValidatorHeadersService->clear();
-        $this->assertEmpty($cacheValidatorHeadersRepository->findAll());
+        $this->assertEquals(
+            array_reverse($cacheValidatorHeadersCollection),
+            $this->cacheValidatorHeadersRepository->findAll()
+        );
+
+        $this->cacheValidatorHeadersService->clear($limit);
+
+        /* @var CacheValidatorHeaders[] $allCacheValidatorHeaders */
+        $allCacheValidatorHeaders = $this->cacheValidatorHeadersRepository->findAll();
+        $cacheValidatorHeaderIds = [];
+
+        foreach ($allCacheValidatorHeaders as $cacheValidatorHeader) {
+            $cacheValidatorHeaderIds[] = $cacheValidatorHeader->getId();
+        }
+
+        $this->assertEquals(array_reverse($expectedCacheValidatorHeaderIds), $cacheValidatorHeaderIds);
+    }
+
+    /**
+     * @return array
+     */
+    public function clearDataProvider()
+    {
+        return [
+            'no limit' => [
+                'limit' => null,
+                'expectedCacheValidatorHeaderIndices' => [],
+            ],
+            'limit: 0' => [
+                'limit' => 0,
+                'expectedCacheValidatorHeaderIndices' => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+            ],
+            'limit: 1' => [
+                'limit' => 1,
+                'expectedCacheValidatorHeaderIndices' => [0, 1, 2, 3, 4, 5, 6, 7, 8],
+            ],
+            'limit: 2' => [
+                'limit' => 2,
+                'expectedCacheValidatorHeaderIndices' => [0, 1, 2, 3, 4, 5, 6, 7],
+            ],
+            'limit: 3' => [
+                'limit' => 3,
+                'expectedCacheValidatorHeaderIndices' => [0, 1, 2, 3, 4, 5, 6],
+            ],
+            'limit: 9' => [
+                'limit' => 9,
+                'expectedCacheValidatorHeaderIndices' => [0],
+            ],
+            'limit: 10' => [
+                'limit' => 10,
+                'expectedCacheValidatorHeaderIndices' => [],
+            ],
+            'limit: 11' => [
+                'limit' => 11,
+                'expectedCacheValidatorHeaderIndices' => [],
+            ],
+        ];
     }
 }
