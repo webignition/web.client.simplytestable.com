@@ -54,7 +54,8 @@ class IEFilteredRequestListener extends AbstractRequestListener
             $isUsingOldIE =
                 IEDetector::isIE6($userAgentString) ||
                 IEDetector::isIE7($userAgentString) ||
-                IEDetector::isIE8($userAgentString);
+                IEDetector::isIE8($userAgentString) ||
+                IEDetector::isIE9($userAgentString);
 
             if ($isUsingOldIE) {
                 $this->logger->error(sprintf(
