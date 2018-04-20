@@ -1,11 +1,13 @@
 @import "modules/variables";
-@import "components/_buttons.scss";
+@import "components/buttons";
+@import "components/modal";
+@import "components/action-badge";
 
 body {
   .navbar {
     .container {
       @import "partials/navbar";
-      @import "partials/_navbar-brand.scss";
+      @import "partials/navbar-brand";
     }
   }
 

@@ -3,7 +3,7 @@
 body {
   &.single-page-dialog {
     .navbar {
-      @import "partials/_navbar-brand.scss";
+      @import "partials/navbar-brand";
     }
   }
 }

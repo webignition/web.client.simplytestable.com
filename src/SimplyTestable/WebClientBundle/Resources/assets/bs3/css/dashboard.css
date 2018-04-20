@@ -27,10 +27,6 @@ h2 {
     margin-bottom: 15px;
 }
 
-.buttons .modal {
-    text-align: left;
-}
-
 .buttons .fa {
     opacity: 0.8;
 }
@@ -70,7 +66,7 @@ h2 {
     margin: 15px 0 0 0;
 }
 
-.modal-action-badge {
+.modal-launcher {
     text-align: left;
     padding-left: 28px;
 }
@@ -111,10 +107,6 @@ h2 {
     opacity: 0.6;
 }
 
-.modal .cta .btn {
-    width: 100%;
-}
-
 @media (min-width: 1200px) {
     #test-start-form .buttons .btn-container {
         padding-right:0;
@@ -153,20 +145,12 @@ h2 {
         padding-left: 6px;
     }
 
-    .modal .cta .btn {
-        margin-bottom: 20px;
-    }
-
-    .modal .cta .btn-last {
-        margin-bottom: 0;
-    }
-
     .task-types .checkbox {
         margin-bottom: 0;
         margin-top: 0;
     }
 
-    .modal-action-badge {
+    .modal-launcher {
         padding-left: 20px;
     }
 }
