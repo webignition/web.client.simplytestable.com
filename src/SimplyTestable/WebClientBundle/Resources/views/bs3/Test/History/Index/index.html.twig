@@ -6,7 +6,6 @@
     {{ parent() }}
 
     {% stylesheets
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/modal.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/full-width.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/summary-stats.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-list.css'
@@ -15,8 +14,6 @@
     filter='cssrewrite' %}
     <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
-
-    <link rel="stylesheet" href="{{ asset('build/test-history.css') }}">
 {% endblock %}
 
 {% block javascripts %}

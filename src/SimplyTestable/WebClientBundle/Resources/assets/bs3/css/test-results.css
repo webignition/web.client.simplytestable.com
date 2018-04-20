@@ -115,10 +115,6 @@ h2 {
     text-align: right;
 }
 
-.side-actions .modal {
-    text-align: left;
-}
-
 .side-actions .test-option {
     margin: 0 0 10px 0;
 }
@@ -256,10 +252,6 @@ a.clear-type .fa {
 
 .task-type-summary .not-available-icon .fa {
     opacity: 0.6;
-}
-
-.modal .cta .btn {
-    width: 100%;
 }
 
 @media (min-width: 992px) {
