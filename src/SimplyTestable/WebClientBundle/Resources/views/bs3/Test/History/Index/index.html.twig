@@ -8,7 +8,6 @@
     {% stylesheets
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/modal.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/full-width.css'
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/action-badge.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/summary-stats.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-list.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/pagination.css'
@@ -16,6 +15,8 @@
     filter='cssrewrite' %}
     <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
+
+    <link rel="stylesheet" href="{{ asset('build/test-history.css') }}">
 {% endblock %}
 
 {% block javascripts %}
@@ -33,7 +34,7 @@
     {% endjavascripts %}
 {% endblock %}
 
-{% block body_class %} {{ parent() }} full-width {% endblock %}
+{% block body_class %} {{ parent() }} page-test-history full-width {% endblock %}
 
 {% block body %}
     {{ parent() }}
