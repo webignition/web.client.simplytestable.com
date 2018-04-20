@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ea130641b55721b495b4ca9b1bf4354e",
+    "content-hash": "296fc69947780c12b2d40aac0c4d03f1",
     "packages": [
         {
             "name": "chrisboulton/php-resque",
@@ -3441,16 +3441,16 @@
         },
         {
             "name": "webignition/php-ie-detector",
-            "version": "0.1",
+            "version": "0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/php-ie-detector.git",
-                "reference": "85225da9a9b2e2a866c4a85f962af83e51bae7b9"
+                "reference": "e4e75b271c6cca7bb6d68fb9e5b28cd15ef63da1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/php-ie-detector/zipball/85225da9a9b2e2a866c4a85f962af83e51bae7b9",
-                "reference": "85225da9a9b2e2a866c4a85f962af83e51bae7b9",
+                "url": "https://api.github.com/repos/webignition/php-ie-detector/zipball/e4e75b271c6cca7bb6d68fb9e5b28cd15ef63da1",
+                "reference": "e4e75b271c6cca7bb6d68fb9e5b28cd15ef63da1",
                 "shasum": ""
             },
             "require": {
@@ -3485,7 +3485,7 @@
                 "internet explorer",
                 "user-agent"
             ],
-            "time": "2018-02-21T17:04:02+00:00"
+            "time": "2018-04-19T16:58:09+00:00"
         },
         {
             "name": "webignition/php-stripe-models",

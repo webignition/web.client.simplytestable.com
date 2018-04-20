@@ -39,7 +39,7 @@
         "chrisboulton/php-resque-scheduler": "dev-master#ab8bd52949cac1f815bbb97aa39f51c7b5766a86",
         "resquebundle/resque": "1.2.0",
         "webignition/resque-job-factory": ">=0.1.1,<1.0",
-        "webignition/php-ie-detector": "0.1",
+        "webignition/php-ie-detector": ">=0.2,<1",
         "webignition/simplytestable-user-model": ">=0.1,<1",
         "webignition/simplytestable-user-serializer": ">=1.1,<2"
     },

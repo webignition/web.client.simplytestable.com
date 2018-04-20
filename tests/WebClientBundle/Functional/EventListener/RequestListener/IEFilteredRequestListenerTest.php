@@ -15,6 +15,7 @@ class IEFilteredRequestListenerTest extends AbstractKernelControllerTest
     const OPERA_950_USER_AGENT = 'Mozilla/4.0 (compatible; MSIE 6.0; X11; Linux x86_64; en) Opera 9.50';
     const IE8_USER_AGENT = 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)';
     const IE9_USER_AGENT = 'Mozilla/5.0 (Windows; U; MSIE 9.0; WIndows NT 9.0; en-US))';
+    const IE10_USER_AGENT = 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)';
     const CHROME_64_WINDOWS_USER_AGENT =
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
         .'Chrome/64.0.3282.186 Safari/537.36';
@@ -89,6 +90,10 @@ class IEFilteredRequestListenerTest extends AbstractKernelControllerTest
             ],
             'IE9' => [
                 'userAgent' => self::IE9_USER_AGENT,
+                'expectedHasResponse' => true,
+            ],
+            'IE10' => [
+                'userAgent' => self::IE10_USER_AGENT,
                 'expectedHasResponse' => false,
             ],
             'Chrome 64 Windows' => [
