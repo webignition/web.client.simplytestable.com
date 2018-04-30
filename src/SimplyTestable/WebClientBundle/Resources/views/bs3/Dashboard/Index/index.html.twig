@@ -10,10 +10,11 @@
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-options.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/summary-stats.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-list.css'
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/dashboard.css'
     filter='cssrewrite' %}
     <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
+
+    <link rel="stylesheet" href="{{ asset('build/dashboard.css') }}">
 {% endblock %}
 
 {% block javascripts %}
@@ -34,7 +35,7 @@
     {% endjavascripts %}
 {% endblock %}
 
-{% block body_class %} {% if test_start_error is defined and test_start_error is not empty %}{{ test_start_error }}{% endif %} {{ parent() }} full-width {% endblock %}
+{% block body_class %} {% if test_start_error is defined and test_start_error is not empty %}{{ test_start_error }}{% endif %} {{ parent() }} full-width dashboard {% endblock %}
 
 {% block body %}
     {{ parent() }}
