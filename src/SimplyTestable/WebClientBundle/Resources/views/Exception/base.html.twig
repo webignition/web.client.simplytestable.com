@@ -1,15 +1,5 @@
 {% extends 'SimplyTestableWebClientBundle:bs3/Abstract:single-page-dialog.html.twig' %}
 
-{% block stylesheets %}
-    {{ parent() }}
-
-    {% stylesheets
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/exception.css'
-    filter='cssrewrite' %}
-    <link rel="stylesheet" href="{{ asset_url }}"/>
-    {% endstylesheets %}
-{% endblock %}
-
 {% block navbar_content %}
     {% include 'SimplyTestableWebClientBundle:bs3/Partials/SinglePageDialog:exception-navbar.html.twig' %}
 {% endblock %}
