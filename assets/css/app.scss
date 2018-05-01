@@ -23,4 +23,10 @@ body {
       @import "partials/navbar-logged-in";
     }
   }
+
+  &.full-width {
+    @import "partials/page-full-width";
+
+    margin-top: 51px;
+  }
 }
