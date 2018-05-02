@@ -16,11 +16,13 @@ use Symfony\Component\HttpFoundation\Request;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
+use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
 
 class IndexControllerTest extends AbstractBaseTestCase
 {
     const ROUTE_NAME = 'action_user_resetpassword_index_request';
     const EMAIL = 'user@example.com';
+    const CONFIRMATION_TOKEN = 'confirmation-token-here';
 
     /**
      * @var IndexController
@@ -53,7 +55,7 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createJsonResponse('confirmation-token-here'),
+            HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);
 
         $router = $this->container->get('router');
@@ -231,7 +233,7 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createJsonResponse('confirmation-token-here'),
+            HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);
 
         $mailService->setPostmarkMessage($postmarkMessage);
@@ -316,6 +318,40 @@ class IndexControllerTest extends AbstractBaseTestCase
         ];
     }
 
+    public function testRequestActionMessageConfirmationUrl()
+    {
+        $postmarkMessage = MockPostmarkMessageFactory::createMockPostmarkMessage(
+            self::EMAIL,
+            MockPostmarkMessageFactory::SUBJECT_RESET_YOUR_PASSWORD,
+            [
+                'ErrorCode' => 0,
+                'Message' => 'OK',
+            ],
+            [
+                'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
+                    sprintf(
+                        'http://localhost/reset-password/%s/%s/',
+                        self::EMAIL,
+                        self::CONFIRMATION_TOKEN
+                    )
+                ])),
+            ]
+        );
+
+        $mailService = $this->container->get(MailService::class);
+
+        $this->setCoreApplicationHttpClientHttpFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
+        ]);
+
+        $mailService->setPostmarkMessage($postmarkMessage);
+
+        $this->indexController->requestAction(new Request([], [
+            'email' => self::EMAIL,
+        ]));
+    }
+
     public function testResendActionSuccess()
     {
         $session = $this->container->get('session');
@@ -324,7 +360,7 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createJsonResponse('confirmation-token-here'),
+            HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);
 
         $mailService->setPostmarkMessage(MockPostmarkMessageFactory::createMockResetPasswordPostmarkMessage(

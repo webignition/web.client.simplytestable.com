@@ -7,6 +7,8 @@ use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 
 class MockPostmarkMessageFactory
 {
+     const SUBJECT_RESET_YOUR_PASSWORD = '[Simply Testable] Reset your password';
+
     /**
      * @param string $to
      * @param array $responseData
@@ -72,7 +74,7 @@ class MockPostmarkMessageFactory
      * @param string $to
      * @param array $responseData
      *
-     * @return PostmarkMessage
+     * @return Mock|PostmarkMessage
      */
     public static function createMockResetPasswordPostmarkMessage($to, $responseData)
     {
