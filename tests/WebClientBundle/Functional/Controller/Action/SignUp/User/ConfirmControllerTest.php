@@ -16,10 +16,12 @@ use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
+use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
 
 class ConfirmControllerTest extends AbstractBaseTestCase
 {
     const EMAIL = 'user@example.com';
+    const CONFIRMATION_TOKEN = 'confirmation-token-here';
     const EXPECTED_REDIRECT_URL = '/signup/confirm/'. self::EMAIL .'/';
 
     /**
@@ -53,7 +55,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createJsonResponse('confirmation-token-here'),
+            HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);
 
         $router = $this->container->get('router');
@@ -161,7 +163,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createJsonResponse('confirmation-token-here'),
+            HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);
 
         $mailService->setPostmarkMessage($postmarkMessage);
@@ -236,16 +238,28 @@ class ConfirmControllerTest extends AbstractBaseTestCase
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createJsonResponse('confirmation-token-here'),
+            HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);
 
-        $mailService->setPostmarkMessage(MockPostmarkMessageFactory::createMockActivateAccountPostmarkMessage(
+        $postmarkMessage = MockPostmarkMessageFactory::createMockPostmarkMessage(
             self::EMAIL,
+            MockPostmarkMessageFactory::SUBJECT_ACTIVATE_YOUR_ACCOUNT,
             [
                 'ErrorCode' => 0,
                 'Message' => 'OK',
+            ],
+            [
+                'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
+                    sprintf(
+                        'http://localhost/signup/confirm/%s/?token=%s',
+                        self::EMAIL,
+                        self::CONFIRMATION_TOKEN
+                    )
+                ])),
             ]
-        ));
+        );
+
+        $mailService->setPostmarkMessage($postmarkMessage);
 
         /* @var RedirectResponse $response */
         $response = $this->confirmController->resendAction(self::EMAIL);
