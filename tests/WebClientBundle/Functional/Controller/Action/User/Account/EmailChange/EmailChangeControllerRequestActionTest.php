@@ -15,12 +15,14 @@ use Symfony\Component\HttpFoundation\Request;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
+use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
 use webignition\SimplyTestableUserModel\User;
 
 class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControllerTest
 {
     const ROUTE_NAME = 'action_user_account_emailchange_request';
     const NEW_EMAIL = 'new-email@example.com';
+    const CONFIRMATION_TOKEN = 'email-change-request-token';
     const EXPECTED_REDIRECT_URL = '/account/';
 
     /**
@@ -67,7 +69,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
-                'token' => 'email-change-request-token',
+                'token' => self::CONFIRMATION_TOKEN,
                 'new_email' => self::NEW_EMAIL,
             ]),
             HttpResponseFactory::createSuccessResponse(),
@@ -246,7 +248,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse([
-                'token' => 'email-change-request-token',
+                'token' => self::CONFIRMATION_TOKEN,
                 'new_email' => self::NEW_EMAIL,
             ]),
             HttpResponseFactory::createSuccessResponse(),
@@ -347,18 +349,30 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser($this->user);
-        $mailService->setPostmarkMessage(MockPostmarkMessageFactory::createMockConfirmEmailAddressPostmarkMessage(
+
+        $postmarkMessage = MockPostmarkMessageFactory::createMockPostmarkMessage(
             self::NEW_EMAIL,
+            MockPostmarkMessageFactory::SUBJECT_CONFIRM_EMAIL_ADDRESS_CHANGE,
             [
                 'ErrorCode' => 0,
                 'Message' => 'OK',
+            ],
+            [
+                'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
+                    sprintf(
+                        'http://localhost/account/?token=%s',
+                        self::CONFIRMATION_TOKEN
+                    )
+                ])),
             ]
-        ));
+        );
+
+        $mailService->setPostmarkMessage($postmarkMessage);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse([
-                'token' => 'email-change-request-token',
+                'token' => self::CONFIRMATION_TOKEN,
                 'new_email' => self::NEW_EMAIL,
             ]),
         ]);

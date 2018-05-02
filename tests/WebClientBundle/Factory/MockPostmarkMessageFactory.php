@@ -9,6 +9,7 @@ class MockPostmarkMessageFactory
 {
      const SUBJECT_RESET_YOUR_PASSWORD = '[Simply Testable] Reset your password';
      const SUBJECT_ACTIVATE_YOUR_ACCOUNT = '[Simply Testable] Activate your account';
+     const SUBJECT_CONFIRM_EMAIL_ADDRESS_CHANGE = '[Simply Testable] Confirm your email address change';
 
     /**
      * @param string $to
@@ -35,7 +36,7 @@ class MockPostmarkMessageFactory
     {
         return self::createMockPostmarkMessage(
             $to,
-            '[Simply Testable] Confirm your email address change',
+            self::SUBJECT_CONFIRM_EMAIL_ADDRESS_CHANGE,
             $responseData
         );
     }
