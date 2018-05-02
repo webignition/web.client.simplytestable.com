@@ -8,16 +8,20 @@ use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Services\PostmarkSender;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
-use Tests\WebClientBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
+use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
+use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
 
 class SignInSubmitActionTest extends AbstractUserControllerTest
 {
+    const EMAIL = 'user@example.com';
+    const CONFIRMATION_TOKEN = 'confirmation-token-here';
+
     public function testSignInSubmitActionPostRequest()
     {
         $this->setCoreApplicationHttpClientHttpFixtures([
@@ -33,7 +37,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             'POST',
             $requestUrl,
             [
-                'email' => 'user@example.com',
+                'email' => self::EMAIL,
                 'password' => 'foo',
             ]
         );
@@ -98,7 +102,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             ],
             'empty password' => [
                 'request' => new Request([], [
-                    'email' => 'user@example.com',
+                    'email' => self::EMAIL,
                 ]),
                 'expectedRedirectLocation' =>
                     '/signin/?email=user%40example.com&redirect=&stay-signed-in=0',
@@ -145,7 +149,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $request = new Request([], [
-            'email' => 'user@example.com',
+            'email' => self::EMAIL,
             'password' => 'foo',
         ]);
 
@@ -212,33 +216,34 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $request = new Request([], [
-            'email' => 'user@example.com',
+            'email' => self::EMAIL,
             'password' => 'foo',
         ]);
 
-        $postmarkMessage = MockFactory::createPostmarkMessage([
-            'setFrom' => true,
-            'setSubject' => [
-                'with' => '[Simply Testable] Activate your account',
+        $postmarkMessage = MockPostmarkMessageFactory::createMockPostmarkMessage(
+            self::EMAIL,
+            MockPostmarkMessageFactory::SUBJECT_ACTIVATE_YOUR_ACCOUNT,
+            [
+                'ErrorCode' => 0,
+                'Message' => 'OK',
             ],
-            'setTextMessage' => true,
-            'addTo' => [
-                'with' => 'user@example.com',
-            ],
-            'send' => [
-                'return' => json_encode([
-                    'ErrorCode' => 0,
-                    'Message' => 'OK',
-                ]),
-            ],
-        ]);
+            [
+                'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
+                    sprintf(
+                        'http://localhost/signup/confirm/%s/?token=%s',
+                        self::EMAIL,
+                        self::CONFIRMATION_TOKEN
+                    )
+                ])),
+            ]
+        );
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
         $response = $this->callSignInSubmitAction($request);
 
         $this->assertEquals(
-            '/signin/?email=user%40example.com&redirect=&stay-signed-in=0',
+            sprintf('/signin/?email=%s&redirect=&stay-signed-in=0', urlencode(self::EMAIL)),
             $response->getTargetUrl()
         );
 
@@ -266,14 +271,14 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                     HttpResponseFactory::createNotFoundResponse(),
                     HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createJsonResponse('confirmation-token-here'),
+                    HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
                 ],
             ],
             'authentication success and user is not enabled' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createNotFoundResponse(),
-                    HttpResponseFactory::createJsonResponse('confirmation-token-here'),
+                    HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
                 ],
             ],
         ];
@@ -326,7 +331,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         return [
             'stay-signed-in false' => [
                 'request' => new Request([], [
-                    'email' => 'user@example.com',
+                    'email' => self::EMAIL,
                     'password' => 'foo',
                 ]),
                 'expectedResponseHasUserCookie' => false,
@@ -334,7 +339,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             ],
             'stay-signed-in true' => [
                 'request' => new Request([], [
-                    'email' => 'user@example.com',
+                    'email' => self::EMAIL,
                     'password' => 'foo',
                     'stay-signed-in' => true,
                 ]),
@@ -343,7 +348,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             ],
             'redirect without route, without parameters' => [
                 'request' => new Request([], [
-                    'email' => 'user@example.com',
+                    'email' => self::EMAIL,
                     'password' => 'foo',
                     'redirect' => base64_encode(json_encode([])),
                 ]),
@@ -352,7 +357,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             ],
             'redirect with invalid route, without parameters' => [
                 'request' => new Request([], [
-                    'email' => 'user@example.com',
+                    'email' => self::EMAIL,
                     'password' => 'foo',
                     'redirect' => base64_encode(json_encode([
                         'route' => 'foo',
@@ -363,7 +368,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             ],
             'redirect with valid route, without parameters' => [
                 'request' => new Request([], [
-                    'email' => 'user@example.com',
+                    'email' => self::EMAIL,
                     'password' => 'foo',
                     'redirect' => base64_encode(json_encode([
                         'route' => 'view_user_account_card_index',
@@ -374,7 +379,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             ],
             'redirect with valid route, invalid parameters' => [
                 'request' => new Request([], [
-                    'email' => 'user@example.com',
+                    'email' => self::EMAIL,
                     'password' => 'foo',
                     'redirect' => base64_encode(json_encode([
                         'route' => 'view_test_progress_index_index',
@@ -388,7 +393,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             ],
             'redirect with valid route, with parameters' => [
                 'request' => new Request([], [
-                    'email' => 'user@example.com',
+                    'email' => self::EMAIL,
                     'password' => 'foo',
                     'redirect' => base64_encode(json_encode([
                         'route' => 'view_test_progress_index_index',
