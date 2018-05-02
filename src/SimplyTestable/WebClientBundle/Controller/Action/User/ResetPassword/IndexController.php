@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
@@ -193,19 +194,21 @@ class IndexController extends AbstractController
             [
                 'email' => $email,
                 'token' => $token
-            ]
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
         );
-
-        $viewName = 'SimplyTestableWebClientBundle:Email:reset-password-confirmation.txt.twig';
 
         $message = $this->mailService->getNewMessage();
         $message->setFrom($sender['email'], $sender['name']);
         $message->addTo($email);
         $message->setSubject($messageProperties['subject']);
-        $message->setTextMessage($this->twig->render($viewName, [
-            'confirmation_url' => $confirmationUrl,
-            'email' => $email
-        ]));
+        $message->setTextMessage($this->twig->render(
+            'SimplyTestableWebClientBundle:Email:reset-password-confirmation.txt.twig',
+            [
+                'confirmation_url' => $confirmationUrl,
+                'email' => $email
+            ]
+        ));
 
         $this->mailService->getSender()->send($message);
     }

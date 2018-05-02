@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 use webignition\ResqueJobFactory\ResqueJobFactory;
@@ -388,21 +389,23 @@ class EmailChangeController extends AbstractUserAccountController
             'view_user_account_index_index',
             [
                 'token' => $emailChangeRequest['token'],
-            ]
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
         );
-
-        $viewName = 'SimplyTestableWebClientBundle:Email:user-email-change-request-confirmation.txt.twig';
 
         $message = $mailService->getNewMessage();
         $message->setFrom($sender['email'], $sender['name']);
         $message->addTo($emailChangeRequest['new_email']);
         $message->setSubject($messageProperties['subject']);
-        $message->setTextMessage($twig->render($viewName, [
-            'current_email' => $userName,
-            'new_email' => $emailChangeRequest['new_email'],
-            'confirmation_url' => $confirmationUrl,
-            'confirmation_code' => $emailChangeRequest['token']
-        ]));
+        $message->setTextMessage($twig->render(
+            'SimplyTestableWebClientBundle:Email:user-email-change-request-confirmation.txt.twig',
+            [
+                'current_email' => $userName,
+                'new_email' => $emailChangeRequest['new_email'],
+                'confirmation_url' => $confirmationUrl,
+                'confirmation_code' => $emailChangeRequest['token']
+            ]
+        ));
 
         $mailService->getSender()->send($message);
     }

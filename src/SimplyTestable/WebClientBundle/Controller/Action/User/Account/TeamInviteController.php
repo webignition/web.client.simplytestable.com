@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
@@ -359,17 +360,24 @@ class TeamInviteController extends AbstractUserAccountController
         $sender = $mailServiceConfiguration->getSender('default');
         $messageProperties = $mailServiceConfiguration->getMessageProperties('user_team_invite_invitation');
 
-        $viewName = 'SimplyTestableWebClientBundle:Email:user-team-invite-invitation.txt.twig';
+        $confirmationUrl = $this->generateUrl(
+            'view_user_account_team_index_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
 
         $message = $mailService->getNewMessage();
 
         $message->setFrom($sender['email'], $sender['name']);
         $message->addTo($invite->getUser());
         $message->setSubject(str_replace('{{team_name}}', $invite->getTeam(), $messageProperties['subject']));
-        $message->setTextMessage($twig->render($viewName, [
-            'team_name' => $invite->getTeam(),
-            'account_team_page_url' => $this->generateUrl('view_user_account_team_index_index')
-        ]));
+        $message->setTextMessage($twig->render(
+            'SimplyTestableWebClientBundle:Email:user-team-invite-invitation.txt.twig',
+            [
+                'team_name' => $invite->getTeam(),
+                'account_team_page_url' => $confirmationUrl
+            ]
+        ));
 
         $mailService->getSender()->send($message);
     }
@@ -396,19 +404,21 @@ class TeamInviteController extends AbstractUserAccountController
             'view_user_signup_invite_index',
             [
                 'token' => $invite->getToken()
-            ]
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
         );
-
-        $viewName = 'SimplyTestableWebClientBundle:Email:user-team-invite-newuser-invitation.txt.twig';
 
         $message = $mailService->getNewMessage();
         $message->setFrom($sender['email'], $sender['name']);
         $message->addTo($invite->getUser());
         $message->setSubject(str_replace('{{team_name}}', $invite->getTeam(), $messageProperties['subject']));
-        $message->setTextMessage($twig->render($viewName, [
-            'team_name' => $invite->getTeam(),
-            'confirmation_url' => $confirmationUrl
-        ]));
+        $message->setTextMessage($twig->render(
+            'SimplyTestableWebClientBundle:Email:user-team-invite-newuser-invitation.txt.twig',
+            [
+                'team_name' => $invite->getTeam(),
+                'confirmation_url' => $confirmationUrl
+            ]
+        ));
 
         $mailService->getSender()->send($message);
     }

@@ -21,6 +21,7 @@ use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as Post
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 use webignition\ResqueJobFactory\ResqueJobFactory;
@@ -531,7 +532,8 @@ class UserController extends AbstractController
             [
                 'email' => $email,
                 'token' => $token,
-            ]
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
         );
 
         $message = $mailService->getNewMessage();
