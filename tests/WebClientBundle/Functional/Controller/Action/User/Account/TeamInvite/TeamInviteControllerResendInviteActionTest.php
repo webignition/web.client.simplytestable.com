@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
+use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
 use webignition\SimplyTestableUserModel\User;
 
 class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteControllerTest
@@ -22,6 +23,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
     const ROUTE_NAME = 'action_user_account_team_resendinvite';
     const USER_USERNAME = 'user@example.com';
     const INVITEE_EMAIL = 'invitee@example.com';
+    const INVITE_TOKEN = 'invite-token';
     const TEAM_NAME = 'Team Name';
     const EXPECTED_REDIRECT_URL = '/account/team/';
 
@@ -62,7 +64,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
         $inviteData = [
             'team' => self::TEAM_NAME,
             'user' => self::INVITEE_EMAIL,
-            'token' => 'invite-token',
+            'token' => self::INVITE_TOKEN,
         ];
 
         $this->setCoreApplicationHttpClientHttpFixtures([
@@ -168,7 +170,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
         $inviteData = [
             'team' => self::TEAM_NAME,
             'user' => self::INVITEE_EMAIL,
-            'token' => 'invite-token',
+            'token' => self::INVITE_TOKEN,
         ];
 
         $this->setCoreApplicationHttpClientHttpFixtures([
@@ -240,7 +242,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
         $inviteData = [
             'team' => self::TEAM_NAME,
             'user' => self::INVITEE_EMAIL,
-            'token' => 'invite-token',
+            'token' => self::INVITE_TOKEN,
         ];
 
         $this->setCoreApplicationHttpClientHttpFixtures(array_merge(
@@ -274,7 +276,12 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
                     HttpResponseFactory::createSuccessResponse(),
                 ],
                 'postmarkMessage' => MockPostmarkMessageFactory::createMockTeamInviteSuccessPostmarkMessage(
-                    self::INVITEE_EMAIL
+                    self::INVITEE_EMAIL,
+                    [
+                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
+                            'http://localhost/account/team/',
+                        ])),
+                    ]
                 ),
                 'expectedFlashBagValues' => [
                     TeamInviteController::FLASH_BAG_TEAM_RESEND_INVITE_KEY => [
@@ -290,7 +297,12 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'postmarkMessage' => MockPostmarkMessageFactory::createMockTeamInviteSuccessPostmarkMessage(
-                    self::INVITEE_EMAIL
+                    self::INVITEE_EMAIL,
+                    [
+                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
+                            sprintf('http://localhost/signup/invite/%s/', self::INVITE_TOKEN),
+                        ])),
+                    ]
                 ),
                 'expectedFlashBagValues' => [
                     TeamInviteController::FLASH_BAG_TEAM_RESEND_INVITE_KEY => [

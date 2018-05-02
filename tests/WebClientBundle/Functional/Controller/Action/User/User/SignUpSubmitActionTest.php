@@ -10,40 +10,35 @@ use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as Mai
 use SimplyTestable\WebClientBundle\Services\CouponService;
 use SimplyTestable\WebClientBundle\Services\PostmarkSender;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
-use Tests\WebClientBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
+use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
+use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
 
 class SignUpSubmitActionTest extends AbstractUserControllerTest
 {
+    const EMAIL = 'user@example.com';
+    const CONFIRMATION_TOKEN = 'confirmation-token-here';
+
     public function testSignUpSubmitActionPostRequest()
     {
         $mailService = $this->container->get(MailService::class);
 
-        $postmarkMessage = MockFactory::createPostmarkMessage([
-            'setFrom' => true,
-            'setSubject' => [
-                'with' => '[Simply Testable] Activate your account',
-            ],
-            'setTextMessage' => true,
-            'addTo' => [
-                'with' => 'user@example.com',
-            ],
-            'send' => [
-                'return' => json_encode([
-                    'ErrorCode' => 0,
-                    'Message' => 'OK',
-                ]),
-            ],
-        ]);
+        $postmarkMessage = MockPostmarkMessageFactory::createMockActivateAccountPostmarkMessage(
+            self::EMAIL,
+            [
+                'ErrorCode' => 0,
+                'Message' => 'OK',
+            ]
+        );
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createJsonResponse('confirmation-token-here'),
+            HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);
 
         $router = $this->container->get('router');
@@ -54,7 +49,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             $requestUrl,
             [
                 'plan' => 'basic',
-                'email' => 'user@example.com',
+                'email' => self::EMAIL,
                 'password' => 'password',
             ]
         );
@@ -125,12 +120,12 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             'empty password' => [
                 'request' => new Request([], [
                     'plan' => 'basic',
-                    'email' => 'user@example.com',
+                    'email' => self::EMAIL,
                 ]),
                 'expectedRedirectLocation' => '/signup/?email=user%40example.com&plan=basic',
                 'expectedFlashBagValues' => [
                     'user_create_prefil' => [
-                        'user@example.com',
+                        self::EMAIL,
                     ],
                     UserController::FLASH_BAG_SIGN_UP_ERROR_KEY => [
                         UserController::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_PASSWORD_BLANK,
@@ -163,7 +158,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 
         $request = new Request([], [
             'plan' => 'basic',
-            'email' => 'user@example.com',
+            'email' => self::EMAIL,
             'password' => 'password',
         ]);
 
@@ -242,12 +237,12 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createJsonResponse('confirmation-token-here'),
+            HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);
 
         $request = new Request([], [
             'plan' => 'basic',
-            'email' => 'user@example.com',
+            'email' => self::EMAIL,
             'password' => 'password',
         ]);
 
@@ -273,22 +268,13 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
     {
         return [
             'postmark not allowed to send to user email' => [
-                'postmarkMessage' => MockFactory::createPostmarkMessage([
-                    'setFrom' => true,
-                    'setSubject' => [
-                        'with' => '[Simply Testable] Activate your account',
-                    ],
-                    'setTextMessage' => true,
-                    'addTo' => [
-                        'with' => 'user@example.com',
-                    ],
-                    'send' => [
-                        'return' => json_encode([
-                            'ErrorCode' => 405,
-                            'Message' => 'foo',
-                        ]),
-                    ],
-                ]),
+                'postmarkMessage' => MockPostmarkMessageFactory::createMockActivateAccountPostmarkMessage(
+                    self::EMAIL,
+                    [
+                        'ErrorCode' => 405,
+                        'Message' => 'foo',
+                    ]
+                ),
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_UP_ERROR_KEY => [
                         UserController::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND,
@@ -296,22 +282,13 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                 ],
             ],
             'postmark inactive recipient' => [
-                'postmarkMessage' => MockFactory::createPostmarkMessage([
-                    'setFrom' => true,
-                    'setSubject' => [
-                        'with' => '[Simply Testable] Activate your account',
-                    ],
-                    'setTextMessage' => true,
-                    'addTo' => [
-                        'with' => 'user@example.com',
-                    ],
-                    'send' => [
-                        'return' => json_encode([
-                            'ErrorCode' => 406,
-                            'Message' => 'foo',
-                        ]),
-                    ],
-                ]),
+                'postmarkMessage' => MockPostmarkMessageFactory::createMockActivateAccountPostmarkMessage(
+                    self::EMAIL,
+                    [
+                        'ErrorCode' => 406,
+                        'Message' => 'foo',
+                    ]
+                ),
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_UP_ERROR_KEY => [
                         UserController::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT,
@@ -319,22 +296,13 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                 ],
             ],
             'invalid email address' => [
-                'postmarkMessage' => MockFactory::createPostmarkMessage([
-                    'setFrom' => true,
-                    'setSubject' => [
-                        'with' => '[Simply Testable] Activate your account',
-                    ],
-                    'setTextMessage' => true,
-                    'addTo' => [
-                        'with' => 'user@example.com',
-                    ],
-                    'send' => [
-                        'return' => json_encode([
-                            'ErrorCode' => 300,
-                            'Message' => 'foo',
-                        ]),
-                    ],
-                ]),
+                'postmarkMessage' => MockPostmarkMessageFactory::createMockActivateAccountPostmarkMessage(
+                    self::EMAIL,
+                    [
+                        'ErrorCode' => 300,
+                        'Message' => 'foo',
+                    ]
+                ),
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_UP_ERROR_KEY => [
                         UserController::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_INVALID,
@@ -364,25 +332,26 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createJsonResponse('confirmation-token-here'),
+            HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);
 
-        $postmarkMessage = MockFactory::createPostmarkMessage([
-            'setFrom' => true,
-            'setSubject' => [
-                'with' => '[Simply Testable] Activate your account',
+        $postmarkMessage = MockPostmarkMessageFactory::createMockPostmarkMessage(
+            self::EMAIL,
+            MockPostmarkMessageFactory::SUBJECT_ACTIVATE_YOUR_ACCOUNT,
+            [
+                'ErrorCode' => 0,
+                'Message' => 'OK',
             ],
-            'setTextMessage' => true,
-            'addTo' => [
-                'with' => 'user@example.com',
-            ],
-            'send' => [
-                'return' => json_encode([
-                    'ErrorCode' => 0,
-                    'Message' => 'OK',
-                ]),
-            ],
-        ]);
+            [
+                'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
+                    sprintf(
+                        'http://localhost/signup/confirm/%s/?token=%s',
+                        self::EMAIL,
+                        self::CONFIRMATION_TOKEN
+                    )
+                ])),
+            ]
+        );
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
@@ -391,7 +360,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         $response = $this->callSignUpSubmitAction($request);
 
         $this->assertEquals(
-            '/signup/confirm/user@example.com/',
+            sprintf('/signup/confirm/%s/', self::EMAIL),
             $response->getTargetUrl()
         );
 
@@ -417,7 +386,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             'without coupon' => [
                 'request' => new Request([], [
                     'plan' => 'basic',
-                    'email' => 'user@example.com',
+                    'email' => self::EMAIL,
                     'password' => 'password',
                 ]),
                 'couponData' => [],
@@ -427,7 +396,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                     [],
                     [
                         'plan' => 'basic',
-                        'email' => 'user@example.com',
+                        'email' => self::EMAIL,
                         'password' => 'password',
                     ],
                     [],
@@ -448,7 +417,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                     [],
                     [
                     'plan' => 'basic',
-                    'email' => 'user@example.com',
+                    'email' => self::EMAIL,
                     'password' => 'password',
                     ],
                     [],

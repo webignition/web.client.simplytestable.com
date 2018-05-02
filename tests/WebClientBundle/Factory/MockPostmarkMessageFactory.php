@@ -7,6 +7,10 @@ use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 
 class MockPostmarkMessageFactory
 {
+     const SUBJECT_RESET_YOUR_PASSWORD = '[Simply Testable] Reset your password';
+     const SUBJECT_ACTIVATE_YOUR_ACCOUNT = '[Simply Testable] Activate your account';
+     const SUBJECT_CONFIRM_EMAIL_ADDRESS_CHANGE = '[Simply Testable] Confirm your email address change';
+
     /**
      * @param string $to
      * @param array $responseData
@@ -17,7 +21,7 @@ class MockPostmarkMessageFactory
     {
         return self::createMockPostmarkMessage(
             $to,
-            '[Simply Testable] Activate your account',
+            self::SUBJECT_ACTIVATE_YOUR_ACCOUNT,
             $responseData
         );
     }
@@ -32,7 +36,7 @@ class MockPostmarkMessageFactory
     {
         return self::createMockPostmarkMessage(
             $to,
-            '[Simply Testable] Confirm your email address change',
+            self::SUBJECT_CONFIRM_EMAIL_ADDRESS_CHANGE,
             $responseData
         );
     }
@@ -40,31 +44,35 @@ class MockPostmarkMessageFactory
     /**
      * @param string $to
      * @param array $responseData
+     * @param mixed $textMessage
      *
      * @return Mock|PostmarkMessage
      */
-    public static function createMockTeamInvitePostmarkMessage($to, $responseData)
+    public static function createMockTeamInvitePostmarkMessage($to, $responseData, $textMessage = true)
     {
         return MockPostmarkMessageFactory::createMockPostmarkMessage(
             $to,
             '[Simply Testable] You have been invited to join the Team Name team',
-            $responseData
+            $responseData,
+            $textMessage
         );
     }
 
     /**
      * @param string $to
+     * @param mixed $textMessage
      *
      * @return Mock|PostmarkMessage
      */
-    public static function createMockTeamInviteSuccessPostmarkMessage($to)
+    public static function createMockTeamInviteSuccessPostmarkMessage($to, $textMessage = true)
     {
         return MockPostmarkMessageFactory::createMockTeamInvitePostmarkMessage(
             $to,
             [
                 'ErrorCode' => 0,
                 'Message' => 'OK',
-            ]
+            ],
+            $textMessage
         );
     }
 
@@ -72,13 +80,13 @@ class MockPostmarkMessageFactory
      * @param string $to
      * @param array $responseData
      *
-     * @return PostmarkMessage
+     * @return Mock|PostmarkMessage
      */
     public static function createMockResetPasswordPostmarkMessage($to, $responseData)
     {
         return MockPostmarkMessageFactory::createMockPostmarkMessage(
             $to,
-            '[Simply Testable] Reset your password',
+            self::SUBJECT_RESET_YOUR_PASSWORD,
             $responseData
         );
     }
