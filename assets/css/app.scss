@@ -35,4 +35,8 @@ body {
   &.sign-in {
     @import "partials/page-sign-in";
   }
+
+  &.sign-up {
+    @import "partials/page-sign-up";
+  }
 }
