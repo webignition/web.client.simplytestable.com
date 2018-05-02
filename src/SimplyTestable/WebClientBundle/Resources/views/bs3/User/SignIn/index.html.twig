@@ -2,16 +2,6 @@
 
 {% block title %}Sign in - {{ parent() }}{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-
-    {% stylesheets    
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/sign-in.css'
-    filter='cssrewrite' %}
-    <link rel="stylesheet" href="{{ asset_url }}" />
-    {% endstylesheets %}
-{% endblock %}
-
 {% block javascripts %}
     {{ parent() }}
 
@@ -25,11 +15,13 @@
     {% endjavascripts %}
 {% endblock %}
 
+{% block body_class %} {{ parent() }} sign-in {% endblock %}
+
 {% block content %}
 
     <h1>Sign in</h1>
 
-    {% if user_signin_error is defined and user_signin_error != '' %}    
+    {% if user_signin_error is defined and user_signin_error != '' %}
         {% if user_signin_error == 'invalid-user' %}
             <div class="alert alert-info" data-for="email">
                 <button type="button" class="close" data-dismiss="alert">×</button>
@@ -41,12 +33,12 @@
                     Good news - we can do that for you if you like.
                 </p>
                 <form role="form" class="single-button-form" method="get" action="{{ path('view_user_signup_index_index') }}">
-                    <div> 
+                    <div>
                         <input type="hidden" name="email" value="{{ email }}" />
                         <button class="btn btn-success" type="submit">Yes, sign me up please!</button>
-                    </div>      
+                    </div>
                 </form>
-            </div>                
+            </div>
         {% endif %}
 
         {% if user_signin_error == 'authentication-failure' %}
@@ -59,10 +51,10 @@
                     That's not the right password. Try again.
                 </p>
 
-                <div class="single-button-form" > 
+                <div class="single-button-form" >
                     <a class="btn btn-success" href="{{ path('view_user_resetpassword_index_index', {'email': email}) }}">Ok, maybe I need to reset my password <i class="fa fa-caret-right"></i></a>
                 </div>
-            </div>                
+            </div>
         {% endif %}
 
         {% if user_signin_error == 'user-not-enabled' %}
@@ -73,18 +65,18 @@
 
                 <p>
                     You need to verify your email address before you can sign in.
-                </p>            
+                </p>
 
                 <form role="form" class="single-button-form" method="get" action="{{ path('view_user_signup_confirm_index', {'email': email}) }}">
-                    <div> 
+                    <div>
                         <button class="btn btn-success" type="submit">Go to account activation <i class="fa fa-caret-right"></i></button>
-                    </div>      
+                    </div>
                 </form>
             </div>
-        {% endif %}               
+        {% endif %}
     {% endif %}
 
-    {% if user_signin_confirmation is defined and user_signin_confirmation != '' %}    
+    {% if user_signin_confirmation is defined and user_signin_confirmation != '' %}
         {% if user_signin_confirmation == 'user-activated' %}
             <div class="alert alert-success">
                 <button type="button" class="close" data-dismiss="alert">×</button>
@@ -94,7 +86,7 @@
                 <p>
                     Your account is now active. Go ahead, sign in and enjoy.
                 </p>
-            </div>                
+            </div>
         {% endif %}
     {% endif %}
 
@@ -104,22 +96,22 @@
                 <div class="alert alert-danger" data-for="email">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <strong>Hmmm.</strong> I'm not convinced that <strong>{{ email }}</strong> is a valid email address.
-                </div>                
-            {% endif %}        
+                </div>
+            {% endif %}
 
             {% if user_signin_error == 'blank-email' %}
                 <div class="alert alert-danger" data-for="email">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <strong>Slow down!</strong> You're going to have to enter in your email address to sign in.
-                </div>                
-            {% endif %}                                                   
+                </div>
+            {% endif %}
 
             {% if user_signin_error == 'blank-password' %}
                 <div class="alert alert-danger" data-for="password">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <strong>Slow down!</strong> You're going to have to enter in your password to sign in.
-                </div>                
-            {% endif %}   
+                </div>
+            {% endif %}
 
             {% if user_signin_error == 'account-not-logged-in' %}
                 <div class="alert alert-info">
@@ -130,8 +122,8 @@
                     <p>
                         You need to sign in to access your account.
                     </p>
-                </div>                
-            {% endif %}         
+                </div>
+            {% endif %}
 
             {% if user_signin_error == 'test-not-logged-in' %}
                 <div class="alert alert-info">
@@ -142,8 +134,8 @@
                     <p>
                         You need to sign in to access this test.
                     </p>
-                </div>                
-            {% endif %}           
+                </div>
+            {% endif %}
 
             {% if user_signin_error == 'public-user' %}
                 <div class="alert alert-info">
@@ -157,8 +149,8 @@
                     <p>
                         The public user is special, you're not allowed to sign in as it.
                     </p>
-                </div>                
-            {% endif %}               
+                </div>
+            {% endif %}
         {% endif %}
 
         <div class="form-group-collection">
@@ -171,20 +163,20 @@
                 <label for="password">Password</label>
                 <input name="password" type="password" class="form-control input-larger" id="password" placeholder="Enter your password">
             </div>
-        </div> 
+        </div>
 
-        <div class="form-group-collection form-group-submit-collection">            
+        <div class="form-group-collection form-group-submit-collection">
             <input type="hidden" name="redirect" value="{{ redirect }}" />
 
-            <button id="submit" type="submit" class="btn btn btn-primary">Sign in!</button> 
+            <button id="submit" type="submit" class="btn btn btn-primary">Sign in!</button>
 
             <label class="checkbox">
                 <input type="checkbox" {% if stay_signed_in != "0" %}checked="checked"{% endif %} name="stay-signed-in" value="1"><span>Stay signed in</span>
-            </label> 
-        </div>                   
-    </form> 
+            </label>
+        </div>
+    </form>
 
-    <div class="additional single-button-form" > 
+    <div class="additional single-button-form" >
         <a class="btn btn-default" href="{{ path('view_user_resetpassword_index_index', {'email': email}) }}">I need to reset my password <i class="fa fa-caret-right"></i></a>
     </div>
 

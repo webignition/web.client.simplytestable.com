@@ -31,4 +31,8 @@ body {
 
     margin-top: 51px;
   }
+
+  &.sign-in {
+    @import "partials/page-sign-in";
+  }
 }
