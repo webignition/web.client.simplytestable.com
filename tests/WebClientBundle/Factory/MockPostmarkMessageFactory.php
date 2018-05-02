@@ -44,31 +44,35 @@ class MockPostmarkMessageFactory
     /**
      * @param string $to
      * @param array $responseData
+     * @param mixed $textMessage
      *
      * @return Mock|PostmarkMessage
      */
-    public static function createMockTeamInvitePostmarkMessage($to, $responseData)
+    public static function createMockTeamInvitePostmarkMessage($to, $responseData, $textMessage = true)
     {
         return MockPostmarkMessageFactory::createMockPostmarkMessage(
             $to,
             '[Simply Testable] You have been invited to join the Team Name team',
-            $responseData
+            $responseData,
+            $textMessage
         );
     }
 
     /**
      * @param string $to
+     * @param mixed $textMessage
      *
      * @return Mock|PostmarkMessage
      */
-    public static function createMockTeamInviteSuccessPostmarkMessage($to)
+    public static function createMockTeamInviteSuccessPostmarkMessage($to, $textMessage = true)
     {
         return MockPostmarkMessageFactory::createMockTeamInvitePostmarkMessage(
             $to,
             [
                 'ErrorCode' => 0,
                 'Message' => 'OK',
-            ]
+            ],
+            $textMessage
         );
     }
 
