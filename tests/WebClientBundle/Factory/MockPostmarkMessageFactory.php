@@ -8,6 +8,7 @@ use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 class MockPostmarkMessageFactory
 {
      const SUBJECT_RESET_YOUR_PASSWORD = '[Simply Testable] Reset your password';
+     const SUBJECT_ACTIVATE_YOUR_ACCOUNT = '[Simply Testable] Activate your account';
 
     /**
      * @param string $to
@@ -19,7 +20,7 @@ class MockPostmarkMessageFactory
     {
         return self::createMockPostmarkMessage(
             $to,
-            '[Simply Testable] Activate your account',
+            self::SUBJECT_ACTIVATE_YOUR_ACCOUNT,
             $responseData
         );
     }
@@ -80,7 +81,7 @@ class MockPostmarkMessageFactory
     {
         return MockPostmarkMessageFactory::createMockPostmarkMessage(
             $to,
-            '[Simply Testable] Reset your password',
+            self::SUBJECT_RESET_YOUR_PASSWORD,
             $responseData
         );
     }
