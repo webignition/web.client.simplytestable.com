@@ -6,7 +6,6 @@
     {{ parent() }}
 
     {% stylesheets
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/plan-selection.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/sign-up.css'
     filter='cssrewrite' %}
     <link rel="stylesheet" href="{{ asset_url }}" />
@@ -24,13 +23,13 @@
         '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/form-helper.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %} 
+    {% endjavascripts %}
 {% endblock %}
 
 {% block content %}
 
     <h1>Create your account</h1>
-    
+
     <p>
         Private tests, all types of test, your own test history.
         <a class="account-benefits-link" href="{{ [public_site.urls.home,public_site.urls.account_benefits]|join('') }}">Account benefits <i class="fa fa-caret-right"></i></a>
@@ -65,15 +64,15 @@
                 <div class="alert alert-danger for:email" data-for="email">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <strong>Slow down!</strong> You're going to have to enter in your email address to sign up.
-                </div>                
+                </div>
             {% endif %}
 
             {% if user_create_error == 'blank-password' %}
                 <div class="alert alert-danger">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <strong>Slow down!</strong> You're going to have to choose a password for your account.
-                </div>                
-            {% endif %}        
+                </div>
+            {% endif %}
 
             {% if user_create_error == 'postmark-not-allowed-to-send' %}
                 <div class="alert alert-info" data-for="email">
@@ -128,23 +127,23 @@
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <strong>Something went wrong.</strong> I tried to sign up <strong>{{ email }}</strong> but it didn't
                     work. I don't know why.
-                </div>                
-            {% endif %}                                                    
+                </div>
+            {% endif %}
 
             {% if user_create_error == 'create-failed-read-only' %}
                 <div class="alert alert-danger for:email" data-for="email">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <p><strong>Sorry, I can't do that right now</strong></p>
                     <p>
-                        We're in a <strong>read-only</strong> state whilst some 
+                        We're in a <strong>read-only</strong> state whilst some
                         <strong>maintenance</strong> is going on.
                     </p>
                     <p>
                         Give it a go again soon, this won't take long.
                     </p>
-                </div>                
-            {% endif %}         
-        {% endif %}        
+                </div>
+            {% endif %}
+        {% endif %}
 
         <div class="form-group-collection">
             <div class="form-group">
@@ -156,8 +155,8 @@
                 <label for="password">Password</label>
                 <input name="password" type="password" class="form-control input-larger" id="password" placeholder="Choose a password">
             </div>
-        </div>  
-        <div class="form-group-collection">
+        </div>
+        <div class="form-group-collection plan-selection">
             <div class="form-group">
                 <p>
                     <i class="fa fa-heart"></i> Free for 30 days, no credit card required.
@@ -168,12 +167,12 @@
             </div>
         </div>
 
-        <div class="form-group-collection form-group-submit-collection">            
+        <div class="form-group-collection form-group-submit-collection">
             <button id="submit" type="submit" class="btn btn btn-primary">Sign up! <i class="fa fa-fw fa-caret-right"></i></button>
 
             <p class="terms-notice additional">
                 By making use of this website you agree to the <a href="{{ external_links.terms }}">terms of service</a>.
-            </p>  
+            </p>
         </div>
 
     </form>
