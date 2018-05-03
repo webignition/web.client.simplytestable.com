@@ -40,27 +40,14 @@ h2 {
 }
 
 .summary-stats .label {
-    display: block;
-    text-align: right;
-    width: 100%;
     padding-right: 40px;
     position: relative;
-    margin: 0 0 10px 0;
-}
-
-.summary-stats .count {
-    display: block;
-    margin-bottom: -6px;
 }
 
 .summary-stats .label .icon {
     position: absolute;
     right: 15px;
-    top: 20px;
-}
-
-.task-type-summary .item {
-
+    top: 16px;
 }
 
 .task-type-summary .task-type-name {
@@ -265,6 +252,10 @@ a.clear-type .fa {
         width: auto;
         right: 0;
     }
+
+    .summary-stats .count {
+        margin-bottom: -6px;
+    }
 }
 
 @media (max-width: 1200px) and (min-width: 992px) {
@@ -303,7 +294,7 @@ a.clear-type .fa {
     }
 
     .summary-stats .label .icon {
-        top: 12px;
+        top: 6px;
     }
 }
 

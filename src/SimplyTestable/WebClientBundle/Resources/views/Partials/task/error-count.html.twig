@@ -1,9 +1,0 @@
-<div class="span2">
-    <div class="summary-container summary-figure {% if task.output.errorCount > 0 %}error-container{% else %}success-container{% endif %}">    
-        {% if task.output.errorCount > 0 %}
-            <a href="#error-list"><span class="count">{{ task.output.errorCount }}</span> <span class="stat-label">error{% if test.errorCount != 1 %}s{% endif %}</span><i class="icon icon-caret-down"></i></a>
-        {% else %}
-            <span class="anchor"><span class="count">{{ task.output.errorCount }}</span> <span class="stat-label">error{% if test.errorCount != 1 %}s{% endif %}</span><i class="icon icon-ok"></i></span>                    
-        {% endif %}            
-    </div> 
-</div> 

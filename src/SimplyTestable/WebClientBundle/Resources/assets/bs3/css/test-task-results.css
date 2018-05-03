@@ -220,18 +220,6 @@ pre.prettyprint {
     opacity: 1;
 }
 
-/*.summary-stats .row {*/
-    /*padding-left: 0;*/
-    /*padding-right: 0;*/
-/*}*/
-
-/*.summary-stats .count,*/
-/*.summary-stats .name {*/
-    /*width: auto;*/
-    /*display: inline;*/
-    /*float:none;*/
-/*}*/
-
 .link-integrity-issue-list .error-group {
 
 }
@@ -251,6 +239,17 @@ pre.prettyprint {
 
     .issue-list .content {
         padding-left:0;
+    }
+
+    .summary-stats .label {
+        display: inline-block;
+        margin-right: 30px;
+    }
+
+    .summary-stats .icon {
+        vertical-align: middle;
+        display: inline-block;
+        margin-left: 4px;
     }
 }
 
