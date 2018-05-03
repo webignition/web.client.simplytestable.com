@@ -2,7 +2,9 @@
 
 {% block body_attrs %}data-spy="scroll" data-target=".sidenav" data-offset="100"{% endblock %}
 
-{% block body%}    
+{% block body_class %} {{ parent() }} user-account {% endblock %}
+
+{% block body%}
     {{ parent() }}
     <div class="container">
         <div class="row">

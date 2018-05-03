@@ -44,14 +44,14 @@
 <form role="form" method="post" action="{{ path('action_user_account_newssubscriptions_update') }}">
     <label class="checkbox" id="news-subscriptions-product-announcements">
         <input type="checkbox" name="announcements" {% if mailchimp_announcements_subscribed %}checked{% endif %}>
-        <strong>Product and Service Announcements (infrequent)</strong>
-        <span>Service announcements and new feature releases as needed</span>
-    </label>    
+        <strong class="title">Product and Service Announcements (infrequent)</strong>
+        <span class="description">Service announcements and new feature releases as needed</span>
+    </label>
     <label class="checkbox" id="news-subscriptions-weekly-updates">
         <input type="checkbox" name="updates" {% if mailchimp_updates_subscribed %}checked{% endif %}>
-        <strong>Behind the Scenes Newsletter (weekly)</strong>
-        <span>On-going development, new feature plans and advance access to new features
-        as they happen</span>        
+        <strong class="title">Behind the Scenes Newsletter (weekly)</strong>
+        <span class="description">On-going development, new feature plans and advance access to new features
+        as they happen</span>
     </label>
     <button name="confirm" value="1" type="submit" class="btn btn-default xs-full">Save news subscription options</button>
 </form>

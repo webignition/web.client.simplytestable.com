@@ -9,17 +9,6 @@
 {% block title %}Your card details ({{ user.username }}) - {{ parent() }}{% endblock %}
 {% block heading %}<a href="{{ path('view_user_account_index_index') }}">{{ parent() }}</a>: your card details{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-
-    {% stylesheets
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/user-account.css'
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/user-account-card.css'
-    filter='cssrewrite' %}
-    <link rel="stylesheet" href="{{ asset_url }}"/>
-    {% endstylesheets %}
-{% endblock %}
-
 {% block javascripts %}
     <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
     <script type="text/javascript">
@@ -36,6 +25,8 @@
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 {% endblock %}
+
+{% block body_class %} {{ parent() }} user-account-card {% endblock %}
 
 {% block account_content %}
     <form class="form-horizontal"
