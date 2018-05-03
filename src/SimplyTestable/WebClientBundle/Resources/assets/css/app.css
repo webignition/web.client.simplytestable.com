@@ -20,7 +20,7 @@
 .navbar .nav > li i.icon {
     position: absolute;
     top: 12px;
-    left: -4px;    
+    left: -4px;
 }
 
 .navbar .nav > li:hover i.icon {
@@ -54,7 +54,7 @@ body {
     background: url('/bundles/simplytestablewebclient/images/logo100-bold-bordered.png') transparent no-repeat top left;
     width: 100px;
     height: 100px;
-    left: -50px;    
+    left: -50px;
 }
 
 .outer {
@@ -72,17 +72,17 @@ div.main section {
 div.main section h1,
 div.main section h1 label {
     font-size: 28px;
-    line-height: 32px; 
+    line-height: 32px;
     font-weight: normal;
 }
 
 section .fields i,
-section .info i {   
-    color:#08c;    
+section .info i {
+    color:#08c;
     position: absolute;
     padding-left: 10px;
     padding-top: 5px;
-    margin-top:-4px;   
+    margin-top:-4px;
 }
 
 body.app div.main section .fields i {
@@ -96,10 +96,10 @@ div.main section .fields i
     background: url('/bundles/simplytestablewebclient/images/circle54.png') transparent no-repeat top left;
     width:56px;
     height:56px;
-    line-height: 32px;     
+    line-height: 32px;
     left: -28px;
     font-size: 48px;
-    line-height: 48px;     
+    line-height: 48px;
     margin-top:-8px;
 }
 
@@ -147,19 +147,19 @@ div.main #progress p.info {
 
 #latest h2 i {
     right:-25px;
-    margin-top: -10px;    
+    margin-top: -10px;
     font-size: 28px;
-    line-height: 32px;  
+    line-height: 32px;
     background: url('/bundles/simplytestablewebclient/images/circle40.png') transparent no-repeat top left;
     width:40px;
     height:40px;
-    line-height: 32px;    
+    line-height: 32px;
 }
 
 #latest section {
     background-color: #eee;
     padding:20px;
-    margin-bottom: 30px;    
+    margin-bottom: 30px;
 }
 
 #latest h2 {
@@ -264,8 +264,8 @@ section h2 {
 
 #test-list .tab-list-control {
     color: #08c;
-    display: block; 
-    font-size: 20px;  
+    display: block;
+    font-size: 20px;
     padding:8px 12px;
 }
 
@@ -297,7 +297,7 @@ section h2 {
 }
 
 #test-summary .test-states .label {
-    display:inline-block;  
+    display:inline-block;
     padding: 3px 5px;
 }
 
@@ -306,7 +306,7 @@ section h2 {
 }
 
 #test-summary .test-states .bar span {
-    width:100%;    
+    width:100%;
     margin-left: 6px;
     margin-top:1px;
     padding-top:1px;
@@ -327,12 +327,12 @@ section h2 {
 
 #test-list #task-list-container h2 i {
     font-size: 38px;
-    line-height: 48px;    
+    line-height: 48px;
 }
 
 #test-list span.info i {
     font-size: 38px;
-    line-height: 48px;    
+    line-height: 48px;
 }
 
 body.app-task-results #main h1 i,
@@ -340,7 +340,7 @@ body.app-results #main h1 i,
 body.app-task-results div.main h1 i,
 body.app-results div.main h1 i {
     font-size: 38px;
-    line-height: 48px;        
+    line-height: 48px;
 }
 
 #test-list #task-list-container .taskSet {
@@ -371,7 +371,7 @@ body.app-task-results .errors li {
 
 body.app-task-results .errors li pre {
     background-color: transparent;
-    border: none;    
+    border: none;
     margin-left:0;
     padding-left:0;
     opacity: 0.8;
@@ -420,7 +420,7 @@ div.main .notification-panel h3,
 body.app-task-results section .notification p code {
     font-size: 22px;
     line-height: 22px;
-    padding: 6px 6px 2px 6px;    
+    padding: 6px 6px 2px 6px;
 }
 
 body.app-task-results section .notification p {
@@ -443,7 +443,7 @@ body.single-page-dialog .intro p {
 
 body.single-page-dialog #main section,
 body.single-page-dialog div.main section {
-    margin-top:80px;  
+    margin-top:80px;
 }
 
 body.single-page-dialog section .content {
@@ -473,12 +473,12 @@ body.single-page-dialog div.main button.submit {
 
 form .larger input {
     font-size: 15px;
-    padding: 12px 9px 12px 9px;      
+    padding: 12px 9px 12px 9px;
 }
 
 body.app-progress form .larger input {
     font-size: 15px;
-    padding: 14px 9px 13px 9px;      
+    padding: 14px 9px 13px 9px;
 }
 
 body.app #input .btn-primary {
@@ -486,13 +486,13 @@ body.app #input .btn-primary {
 }
 
 form .larger button {
-    padding-top: 12px;    
+    padding-top: 12px;
     padding-bottom:13px;
 }
 
 form .larger .control-label,
 form .larger label {
-    font-size: 15px;    
+    font-size: 15px;
     padding-top:13px;
 }
 
@@ -524,19 +524,19 @@ div.input-secondary {
     margin:0 0 0 6px;
 }
 
-/*#recent-site-tests h3 {        
+/*#recent-site-tests h3 {
     margin: 0 0 0 -30px;
-    padding: 10px 0 10px 30px;       
+    padding: 10px 0 10px 30px;
 }
 
 #recent-site-tests {
-  
+
 }
 
 
 #recent-site-tests .site {
     position:relative;
-    padding-right:3%;  
+    padding-right:3%;
 }
 
 */#current-tests .site .wrapper {
@@ -562,7 +562,7 @@ div.input-secondary {
     padding-left: 14px;
 }
 
-#current-tests .site .badge {    
+#current-tests .site .badge {
     margin-right:6px;
     padding-left: 4px;
     padding-right: 4px;
@@ -578,7 +578,7 @@ div.input-secondary {
     color: #666;
     font-size: 30px;
     line-height: 30px;
-    display: block;    
+    display: block;
     margin-top: 10px;
 }
 
@@ -657,7 +657,7 @@ div.input-secondary {
     padding-left: 14px;
 }
 
-#finished-tests .site .url .badge {    
+#finished-tests .site .url .badge {
     margin-right:6px;
     padding-left: 4px;
     padding-right: 4px;
@@ -665,7 +665,7 @@ div.input-secondary {
 
 body.app-task-results #task-summary h3 {
     font-size: 16px;
-    font-weight: normal;    
+    font-weight: normal;
     opacity:0.9;
 }
 
@@ -741,12 +741,12 @@ body.app-results #no-errors p {
     font-size: 66px;
     line-height: 76px;
     opacity: 0.8;
-    top: 40px;    
+    top: 40px;
 }
 
 #test-options .ignore-common-cdn-domains ul {
     margin: 0;
-    padding: 0;    
+    padding: 0;
 }
 
 #test-options .ignore-common-cdn-domains ul li {
@@ -815,7 +815,7 @@ body.single-page-notification h1 {
 
 body.single-page-notification p.intro {
     font-size:18px;
-    line-height: 24px;    
+    line-height: 24px;
 }
 
 body.single-page-notification .cta {
@@ -829,11 +829,11 @@ body.single-page-notification #detail-expandable ul {
 
 body.single-page-notification h3 {
     font-size: 14px;
-    line-height: 22px;    
+    line-height: 22px;
 }
 
 body.app-results-preparing .summary {
-    margin-top: 30px;    
+    margin-top: 30px;
 }
 
 body.app-results-preparing #completion-percent {
@@ -844,7 +844,7 @@ body.app-results-preparing #completion-percent {
     body.single-page-dialog #main input,
     body.single-page-dialog div.main input {
         width:96%;
-    }    
+    }
 
     body.single-page-dialog #main .input-append input,
     body.single-page-dialog div.main .input-append input {
@@ -855,9 +855,9 @@ body.app-results-preparing #completion-percent {
         width:14%
     }
 
-    body.app-task-results .errors .content {        
+    body.app-task-results .errors .content {
         width:82%;
-    }    
+    }
 }
 
 body.sign-in #stay-signed-in-container {
@@ -927,7 +927,7 @@ body.account .confirm-email-change form #token {
 }
 
 .navbar-link {
-    text-decoration:none;    
+    text-decoration:none;
 }
 
 .navbar-link:hover {
@@ -960,7 +960,7 @@ body.user-account-index .card-container .card-container-label {
 body.user-account-index .card-type {
     display:block;
     background-repeat: no-repeat;
-    height: 32px; 
+    height: 32px;
     position: absolute;
     right:0;
     width:51px;
@@ -968,7 +968,7 @@ body.user-account-index .card-type {
 
 /**
 * Credit card icons from http://media.smashingmagazine.com/wp-content/uploads/2010/10/payment-icon-set.zip
-* as referenced by http://www.smashingmagazine.com/2010/10/21/free-png-credit-card-debit-card-and-payment-icons-set-18-icons/ 
+* as referenced by http://www.smashingmagazine.com/2010/10/21/free-png-credit-card-debit-card-and-payment-icons-set-18-icons/
 * Icons are free to use
 */
 body.user-account-index .card-type-visa {
@@ -1054,7 +1054,7 @@ body.crawl-progress h1 .background {
     background-color: #eee;
     border-radius: 50%;
     width: 100px;
-    height: 100px;   
+    height: 100px;
 }
 
 body.crawl-progress h1 .icon {
@@ -1062,7 +1062,7 @@ body.crawl-progress h1 .icon {
     font-size: 80px;
     margin-top: 33px;
     margin-left: 21px;
-    display: block;    
+    display: block;
 }
 
 body.crawl-progress h1 {
@@ -1095,7 +1095,7 @@ body.user-account-index .news-subscriptions label span {
 .top-right-form {
     position:absolute;
     top:0;
-    right:30px;      
+    right:30px;
 }
 
 .stop-on-errors {
@@ -1149,13 +1149,13 @@ body.full-width {
 }
 
 .full-width-container div.main section {
-    padding-top:0;    
+    padding-top:0;
     padding-bottom:0;
-    margin-bottom: 0;    
+    margin-bottom: 0;
 }
 
 .full-width-container div.main section {
-    background-color: transparent;    
+    background-color: transparent;
 }
 
 #test-options .test-options-set label b {
@@ -1201,52 +1201,6 @@ body.app-results #test-start-form {
     margin-top:8px;
 }
 
-.summary-stats .summary-figure {
-    text-align: center;
-    border-radius: 60px;
-    width:120px;
-    height:120px;   
-    background-color: #ddd;
-    color:#fff;
-}
-
-#finished-tests .summary-figure {
-    border-radius: 40px;
-    width:80px;
-    height:80px;     
-    position:relative;
-}
-
-.summary-stats .summary-figure .stat-label {
-    font-size: 12px;    
-}
-
-.summary-stats .summary-figure .icon {
-    display:block;
-    font-size:20px;
-}
-
-#finished-tests .summary-stats .summary-figure .icon {
-    display:none;
-}
-
-.summary-stats .summary-figure a,
-.summary-stats .summary-figure .anchor {
-    color:#fff;
-    opacity:0.8;
-    display: block;
-    padding-top: 24px;
-}
-
-.summary-stats .outline-container .anchor {
-    color:#222;
-}
-
-#finished-tests .summary-stats .summary-figure a,
-#finished-tests .summary-stats .summary-figure .anchor {
-    padding-top: 20px;
-}
-
 body.app-results .summary-stats .span2,
 body.app-task-results .summary-stats .span2 {
     width:120px;
@@ -1260,21 +1214,8 @@ body.app-task-results .summary-stats .span2 {
     margin-left: 4px;
 }
 
-.summary-stats .summary-figure a:hover {
-    text-decoration: none;
-    opacity: 1;
-}
-
-.summary-stats .error-container {
-    background-color: #b94a48;
-}
-
 .summary-stats .warning-container {
     background-color: #0088cc;
-}
-
-.summary-stats .success-container {
-    background-color: #468847;
 }
 
 .summary-stats .fix-container {
@@ -1293,7 +1234,7 @@ body.app-task-results .summary-stats .span2 {
 
 #finished-tests .summary-stats .count {
     font-size:20px;
-    line-height: 20px;        
+    line-height: 20px;
 }
 
 #finished-tests a .icon-bar-chart {
@@ -1312,7 +1253,7 @@ body.app-task-results .summary-stats .span2 {
     margin-right: 6px;
 }
 
-.borderradius body.app-results #task-list-container .nav-tabs i {    
+.borderradius body.app-results #task-list-container .nav-tabs i {
     width:20px;
     height:20px;
     border-radius: 10px;
@@ -1327,7 +1268,7 @@ body.app-task-results .summary-stats .span2 {
 
 .borderradius body.app-results #task-list-container .nav-tabs i.icon-text {
     font-style: normal;
-    background-color: #b94a48; 
+    background-color: #b94a48;
     text-align: center;
     font-weight: bold;
 }
@@ -1356,7 +1297,7 @@ body.app-task-results .issue-list .icon-heart {
 body.app-task-results h3 {
     font-weight: normal;
     font-size: 18px;
-    line-height: 20px;    
+    line-height: 20px;
 }
 
 body.app-results h2 a {
@@ -1373,7 +1314,7 @@ body.app-results h2 a {
 }
 
 .summary-prose ul {
-    list-style: none;    
+    list-style: none;
 }
 
 #finished-tests .summary-prose ul {
@@ -1406,7 +1347,7 @@ body.app-history-all .progress {
 #finished-tests .re-test {
     position: absolute;
     right: 0;
-    top: 30px;    
+    top: 30px;
 }
 
 #finished-tests .summary-stats {
@@ -1422,7 +1363,7 @@ body.app-history-all .progress {
     margin:0;
 
     background-color: #d9edf7;
-    color: #3a87ad; 
+    color: #3a87ad;
 
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
 
@@ -1498,7 +1439,7 @@ body.app-history-all .no-tests {
 body.single-page-dialog .additional {
     border-top: 1px solid #ddd;
     margin-top: 26px;
-    padding-top: 20px;  
+    padding-top: 20px;
 }
 
 body.single-page-dialog .additional ul {
@@ -1573,13 +1514,13 @@ body.single-page-dialog .additional ul a:hover .icon {
 }
 
 .action-badge-label {
-    display:inline-block;    
+    display:inline-block;
     padding-right: 3px;
 }
 
 .action-badge a {
     color:#666;
-    padding-left:6px;    
+    padding-left:6px;
     border-left:1px solid #eee;
 }
 
