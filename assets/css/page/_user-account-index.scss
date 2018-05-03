@@ -1,0 +1,108 @@
+.confirm-email-change {
+  form {
+    margin-top: 20px;
+  }
+
+  .secondary {
+    border-top: 1px solid #ddd;
+    margin-top: 20px;
+  }
+}
+
+.account-section {
+  margin-bottom: 40px;
+}
+
+#news-subscriptions {
+  .checkbox {
+    margin-bottom: 20px;
+  }
+
+  .title {
+    display: block;
+    font-weight: normal;
+  }
+
+  .description {
+    opacity: 0.7;
+  }
+}
+
+.plan-allowances {
+  th {
+    font-weight: normal;
+    padding-left: 0;
+    width: 40%;
+  }
+}
+
+#plan-upgrade-downgrade {
+  form {
+    margin-bottom: 12px;
+  }
+}
+
+.card-details {
+  .fa {
+    font-size:7px;
+    vertical-align: middle;
+  }
+
+  .exp_date {
+    opacity: 0.7;
+    font-size: 12px;
+    display: block;
+  }
+}
+
+.card-type {
+  display: block;
+  background-repeat: no-repeat;
+  height: 32px;
+  position: absolute;
+  right: 0;
+  width: 51px;
+
+  // Credit card icons from http://media.smashingmagazine.com/wp-content/uploads/2010/10/payment-icon-set.zip
+  // as referenced by http://www.smashingmagazine.com/2010/10/21/free-png-credit-card-debit-card-and-payment-icons-set-18-icons/
+  // Icons are free to use
+  &.card-type-visa {
+    background-image: url('../images/visa-straight-32px.png');
+  }
+
+  &.card-type-mastercard {
+    background-image: url('../images/mastercard-straight-32px.png');
+  }
+}
+
+.latest-invoice {
+  .fa-check {
+    color: #468847;
+  }
+
+  td {
+    padding-left: 0;
+
+    span {
+      opacity: 0.7;
+    }
+  }
+
+  .value {
+    text-align: right;
+  }
+}
+
+#email-address-and-password-section {
+  .alert-postmark-inactive-recipient {
+    .actions {
+      margin-top: 20px;
+    }
+  }
+
+  .plan-section {
+    margin-bottom: 40px;
+  }
+}
+
+

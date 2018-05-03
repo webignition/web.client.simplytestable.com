@@ -27,16 +27,59 @@ body {
   }
 
   &.full-width {
-    @import "partials/page-full-width";
+    @import "page/full-width";
 
     margin-top: 51px;
   }
 
   &.sign-in {
-    @import "partials/page-sign-in";
+    @import "page/sign-in";
   }
 
   &.sign-up {
-    @import "partials/page-sign-up";
+    @import "page/sign-up";
+  }
+
+  &.user-account {
+    @import "page/user-account";
+
+    position: relative;
+    margin-top: 40px;
+    background-color: #eee;
+
+    @media (min-width: 769px) {
+      margin-top: 80px;
+      background-color: #fff;
+    }
+  }
+
+  &.user-account-card {
+    @import "page/user-account-card";
+
+    padding-bottom: 40px;
+  }
+
+  &.user-account-team {
+    @import "page/user-account-team";
+
+    &.no-team-no-invite {
+      @import "page/user-account-team-no-team-no-invite";
+    }
+
+    &.team-leader {
+      @import "page/user-account-team-team-leader";
+    }
+
+    &.has-invite {
+      @import "page/user-account-team-has-invite";
+    }
+  }
+
+  &.user-account-plan {
+    @import "page/user-account-plan";
+  }
+
+  &.user-account-index {
+    @import "page/user-account-index";
   }
 }

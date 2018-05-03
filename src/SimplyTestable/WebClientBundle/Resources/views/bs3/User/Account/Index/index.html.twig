@@ -6,17 +6,6 @@
 {% set field_col_class = 'col-lg-9 col-md-6 col-sm-8' %}
 {% set submit_col_class = 'col-lg-offset-3 col-lg-9 col-md-offset-3 col-md-6 col-sm-offset-4 col-sm-8' %}
 
-{% block stylesheets %}
-    {{ parent() }}
-
-    {% stylesheets
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/user-account.css'
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/user-account-index.css'
-    filter='cssrewrite' %}
-    <link rel="stylesheet" href="{{ asset_url }}" />
-    {% endstylesheets %}
-{% endblock %}
-
 {% block javascripts %}
     {{ parent() }}
 
@@ -27,6 +16,8 @@
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 {% endblock %}
+
+{% block body_class %} {{ parent() }} user-account-index {% endblock %}
 
 {% block account_content %}
     <div class="plan-section" id="email-address-and-password-section">
