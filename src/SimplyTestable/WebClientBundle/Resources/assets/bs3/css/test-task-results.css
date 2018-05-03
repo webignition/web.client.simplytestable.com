@@ -240,6 +240,17 @@ pre.prettyprint {
     .issue-list .content {
         padding-left:0;
     }
+
+    .summary-stats .label {
+        display: inline-block;
+        margin-right: 30px;
+    }
+
+    .summary-stats .icon {
+        vertical-align: middle;
+        display: inline-block;
+        margin-left: 4px;
+    }
 }
 
 @media (max-width: 992px) {
