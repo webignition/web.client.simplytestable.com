@@ -8,16 +8,6 @@
     {% endif %}
 {% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-
-    {% stylesheets
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/sign-up-invite-confirm.css'
-    filter='cssrewrite' %}
-    <link rel="stylesheet" href="{{ asset_url }}" />
-    {% endstylesheets %}
-{% endblock %}
-
 {% block javascripts %}
     {{ parent() }}
 
@@ -28,11 +18,11 @@
         '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/form-helper.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %} 
+    {% endjavascripts %}
 
 {% endblock %}
 
-{% block body_class %}{{ has_invite ? '' : 'no-invite' }} {{ parent() }} {% endblock %}
+{% block body_class %} {{ parent() }} sign-up-invite {{ has_invite ? '' : 'no-invite' }}{% endblock %}
 
 {% block content %}
     <h1>Accept invitation to team {{ has_invite ? invite.team : '' }}</h1>

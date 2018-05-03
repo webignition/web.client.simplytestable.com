@@ -40,6 +40,10 @@ body {
     @import "page/sign-up";
   }
 
+  &.sign-up-invite {
+    @import "page/sign-up-invite";
+  }
+
   &.user-account {
     @import "page/user-account";
 
