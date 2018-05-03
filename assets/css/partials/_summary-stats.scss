@@ -1,0 +1,49 @@
+.summary-stats {
+  margin-top: 30px;
+
+  .label {
+    font-size: 28px;
+    line-height: 28px;
+    font-weight: normal;
+    //margin-right: 30px;
+    display: block;
+    text-align: right;
+    width: 100%;
+    margin: 0 0 10px 0;
+    padding-right: 40px;
+
+    @media (min-width: 992px) {
+      display: inline-block;
+      width: auto;
+      padding-right: 0.6em;
+    }
+
+    span {
+      opacity: 0.8;
+    }
+
+    .count {
+      vertical-align: middle;
+    }
+
+    .name {
+      font-size: 14px;
+      text-align: left;
+
+      @media (min-width: 992px) {
+        text-align: right;
+      }
+    }
+
+    .icon {
+      font-size: 20px;
+      line-height: 20px;
+      vertical-align: text-bottom;
+      margin-left: 4px;
+    }
+
+    .fa {
+      font-size: 20px;
+    }
+  }
+}
