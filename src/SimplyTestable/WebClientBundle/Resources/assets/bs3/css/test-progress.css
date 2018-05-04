@@ -93,18 +93,6 @@ h2 {
     margin-left: 15px;
 }
 
-.tasks {
-    margin-top: 0;
-}
-
-/*#cancel-button,*/
-/*#cancel-crawl-button {*/
-    /*width: auto;*/
-    /*position: absolute;*/
-    /*right: 15px;*/
-    /*top: 0;*/
-/*}*/
-
 .test-summary,
 .side-actions .test-options {
     visibility: hidden;

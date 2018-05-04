@@ -305,4 +305,42 @@ class Task
     {
         return rawurldecode($this->getUrl());
     }
+
+    /**
+     * @return bool
+     */
+    public function getStateLabel()
+    {
+        $isFailed = $this->isStateInSet([
+            self::STATE_FAILED,
+            self::STATE_FAILED_NO_RETRY_AVAILABLE,
+            self::STATE_FAILED_RETRY_AVAILABLE,
+            self::STATE_FAILED_RETRY_LIMIT_REACHED,
+        ]);
+
+        if ($isFailed) {
+            return self::STATE_FAILED;
+        }
+
+        $isQueued = $this->isStateInSet([
+            self::STATE_QUEUED,
+            self::STATE_QUEUED_FOR_ASSIGNMENT,
+        ]);
+
+        if ($isQueued) {
+            return self::STATE_QUEUED;
+        }
+
+        return $this->state;
+    }
+
+    /**
+     * @param string[] $stateSet
+     *
+     * @return bool
+     */
+    private function isStateInSet(array $stateSet)
+    {
+        return in_array($this->state, $stateSet);
+    }
 }

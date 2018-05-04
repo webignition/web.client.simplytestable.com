@@ -1,5 +1,26 @@
+.header {
+    margin-bottom: 40px;
+}
+
 .header .lead {
     margin: 20px 0 -10px 0;
+}
+
+ul.nav-tabs {
+    border-bottom: 1px solid #999;
+}
+
+.nav-tabs>li.active>a {
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #999;
+    border-bottom-color: transparent;
+}
+
+.nav-tabs>li>a:hover,
+.nav-tabs>li>a:focus {
+    border: 1px solid #999;
+    color: #333;
 }
 
 .task {
@@ -58,12 +79,8 @@
 }
 
 .task.sort,
-.tasks .task {
+.task-list .task {
     margin-left: 18px;
-}
-
-.tasks .task:first-of-type {
-    margin-top: 0;
 }
 
 .by-error-list .lead {

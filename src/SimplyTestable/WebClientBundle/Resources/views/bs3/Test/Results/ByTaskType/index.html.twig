@@ -9,8 +9,6 @@
 
     {% stylesheets
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-options.css'
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/task-list.css'
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-results.css'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-results-by-task-type.css'
     filter='cssrewrite' %}
     <link rel="stylesheet" href="{{ asset_url }}"/>
@@ -86,7 +84,7 @@
                 </ul>
 
                 {% if filter == 'by-page' %}
-                    <ul class="tasks list-unstyled by-page-list">
+                    <ul class="task-list list-unstyled by-page-list">
                         {% for task in tasks %}
                             <li>
                                 <a class="page" href="{{ path('view_test_task_results_index_index', {'website': website.raw, 'test_id': test.testId, 'task_id': task.taskId}) }}">
@@ -108,7 +106,7 @@
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <ul class="tasks list-unstyled by-error-list">
+                    <ul class="task-list list-unstyled by-error-list">
                         {% for error_task_map in error_task_maps.errorTaskMaps %}
                             <li class="error">
                                 <h3>{{ error_task_map.message }}</h3>

@@ -123,7 +123,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         ];
 
         return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/Test/Task/TaskList/Index:index.html.twig',
+            'SimplyTestableWebClientBundle:bs3/Partials/Test/TaskList:task-list.html.twig',
             $viewData,
             $response
         );

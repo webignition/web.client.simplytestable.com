@@ -27,7 +27,6 @@ h2 {
 
 .header {
     margin-bottom: 40px;
-    padding-top: 40px;
 }
 
 .header .details {
@@ -155,7 +154,6 @@ ul.nav-tabs.without-errors li a:hover {
 
 .nav-tabs>li>a:hover,
 .nav-tabs>li>a:focus {
-    /*background-color: #ddd;*/
     border: 1px solid #999;
     color: #333;
 }
@@ -239,6 +237,10 @@ a.clear-type .fa {
 
 .task-type-summary .not-available-icon .fa {
     opacity: 0.6;
+}
+
+.task-list {
+    margin-top: 20px;
 }
 
 @media (min-width: 992px) {
