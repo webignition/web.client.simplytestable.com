@@ -111,7 +111,7 @@ $(document).ready(function() {
          * @returns {Number}
          */
         var getTestListLength = function () {
-            return $('.site', getTestList()).length;
+            return $('.listed-test', getTestList()).length;
         };
 
 
@@ -157,7 +157,7 @@ $(document).ready(function() {
 
         var updateTestList = function () {
             if (getTestListLength() === 0) {
-                $($('.site', updatedTestList).get().reverse()).each(function () {
+                $($('.listed-test', updatedTestList).get().reverse()).each(function () {
                     getTestList().prepend($(this).clone());
                 });
 
@@ -168,7 +168,7 @@ $(document).ready(function() {
                 return;
             }
 
-            $('.site', updatedTestList).each(function () {
+            $('.listed-test', updatedTestList).each(function () {
                 var updatedTest = $(this);
                 var testId = updatedTest.attr('data-test-id');
 
@@ -229,7 +229,7 @@ $(document).ready(function() {
                 }
             });
 
-            $('.site', getTestList()).each(function () {
+            $('.listed-test', getTestList()).each(function () {
                 var currentTest = $(this);
                 var testId = currentTest.attr('data-test-id');
 

@@ -1,0 +1,25 @@
+.listed-test {
+  .fa {
+    &.primary {
+      margin-right: 6px;
+    }
+  }
+
+  &.finished {
+    .primary {
+      color: #5cb85c;
+    }
+  }
+
+  &.incomplete {
+    .primary {
+      color: #428bca;
+    }
+  }
+
+  &.state-crawling {
+    .primary {
+      color: #f8b426;
+    }
+  }
+}

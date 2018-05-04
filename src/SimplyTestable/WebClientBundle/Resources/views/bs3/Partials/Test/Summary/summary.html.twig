@@ -1,4 +1,4 @@
-{% set container_class %}row site state-{{ test.test.state }} {% block container_class %}{% endblock %}{% endset %}
+{% set container_class %}row listed-test state-{{ test.test.state }} {% block container_class %}{% endblock %}{% endset %}
 
 {% if icon is not defined %}
     {% set icon = 'fa-spin fa-spinner' %}
