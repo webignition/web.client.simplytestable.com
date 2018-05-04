@@ -305,4 +305,19 @@ class Task
     {
         return rawurldecode($this->getUrl());
     }
+
+    /**
+     * @return bool
+     */
+    public function hasFailed()
+    {
+        $failedStates = [
+            self::STATE_FAILED,
+            self::STATE_FAILED_NO_RETRY_AVAILABLE,
+            self::STATE_FAILED_RETRY_AVAILABLE,
+            self::STATE_FAILED_RETRY_LIMIT_REACHED,
+        ];
+
+        return in_array($this->state, $failedStates);
+    }
 }
