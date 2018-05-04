@@ -1,7 +1,5 @@
 {% for task in tasks %}
-    {% set state_label = task.hasFailed ? 'failed' : task.state %}
-
-    <div class="task {{ state_label }}" id="task{{ task.taskId }}" data-state="{{ task.state }}">
+    <div class="task {{ task.stateLabel }}" id="task{{ task.taskId }}" data-state="{{ task.state }}">
         {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/TaskList/Task:task.html.twig' %}
     </div>
 {% endfor %}
