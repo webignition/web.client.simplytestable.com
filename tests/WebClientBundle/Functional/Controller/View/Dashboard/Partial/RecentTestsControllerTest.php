@@ -19,7 +19,7 @@ use Twig_Environment;
 
 class RecentTestsControllerTest extends AbstractViewControllerTest
 {
-    const INDEX_ACTION_VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Dashboard/Partial/RecentTests:index.html.twig';
+    const INDEX_ACTION_VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Partials/Dashboard:recent-tests.html.twig';
     const VIEW_NAME = 'view_dashboard_partial_recenttests_index';
 
     const USER_EMAIL = 'user@example.com';
