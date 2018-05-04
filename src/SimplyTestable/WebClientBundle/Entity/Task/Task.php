@@ -311,13 +311,32 @@ class Task
      */
     public function hasFailed()
     {
-        $failedStates = [
+        return $this->isStateInSet([
             self::STATE_FAILED,
             self::STATE_FAILED_NO_RETRY_AVAILABLE,
             self::STATE_FAILED_RETRY_AVAILABLE,
             self::STATE_FAILED_RETRY_LIMIT_REACHED,
-        ];
+        ]);
+    }
 
-        return in_array($this->state, $failedStates);
+    /**
+     * @return bool
+     */
+    public function isQueued()
+    {
+        return $this->isStateInSet([
+            self::STATE_QUEUED,
+            self::STATE_QUEUED_FOR_ASSIGNMENT,
+        ]);
+    }
+
+    /**
+     * @param string[] $stateSet
+     *
+     * @return bool
+     */
+    private function isStateInSet(array $stateSet)
+    {
+        return in_array($this->state, $stateSet);
     }
 }

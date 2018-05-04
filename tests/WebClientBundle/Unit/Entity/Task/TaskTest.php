@@ -72,4 +72,71 @@ class TaskTest extends \PHPUnit_Framework_TestCase
             ],
         ];
     }
+
+    /**
+     * @dataProvider isQueuedDataProvider
+     *
+     * @param string $state
+     * @param bool $expectedIsQueued
+     */
+    public function testIsQueued($state, $expectedIsQueued)
+    {
+        $task = new Task();
+        $task->setState($state);
+
+        $this->assertEquals($expectedIsQueued, $task->isQueued());
+    }
+
+    /**
+     * @return array
+     */
+    public function isQueuedDataProvider()
+    {
+        return [
+            Task::STATE_CANCELLED => [
+                'state' => Task::STATE_CANCELLED,
+                'expectedIsQueued' => false,
+            ],
+            Task::STATE_QUEUED => [
+                'state' => Task::STATE_QUEUED,
+                'expectedIsQueued' => true,
+            ],
+            Task::STATE_IN_PROGRESS => [
+                'state' => Task::STATE_IN_PROGRESS,
+                'expectedIsQueued' => false,
+            ],
+            Task::STATE_COMPLETED => [
+                'state' => Task::STATE_COMPLETED,
+                'expectedIsQueued' => false,
+            ],
+            Task::STATE_AWAITING_CANCELLATION => [
+                'state' => Task::STATE_AWAITING_CANCELLATION,
+                'expectedIsQueued' => false,
+            ],
+            Task::STATE_QUEUED_FOR_ASSIGNMENT => [
+                'state' => Task::STATE_QUEUED_FOR_ASSIGNMENT,
+                'expectedIsQueued' => true,
+            ],
+            Task::STATE_SKIPPED => [
+                'state' => Task::STATE_SKIPPED,
+                'expectedIsQueued' => false,
+            ],
+            Task::STATE_FAILED_NO_RETRY_AVAILABLE => [
+                'state' => Task::STATE_FAILED_NO_RETRY_AVAILABLE,
+                'expectedIsQueued' => false,
+            ],
+            Task::STATE_FAILED_RETRY_AVAILABLE => [
+                'state' => Task::STATE_FAILED_RETRY_AVAILABLE,
+                'expectedIsQueued' => false,
+            ],
+            Task::STATE_FAILED_RETRY_LIMIT_REACHED => [
+                'state' => Task::STATE_FAILED_RETRY_LIMIT_REACHED,
+                'expectedIsQueued' => false,
+            ],
+            Task::STATE_FAILED => [
+                'state' => Task::STATE_FAILED,
+                'expectedIsQueued' => false,
+            ],
+        ];
+    }
 }
