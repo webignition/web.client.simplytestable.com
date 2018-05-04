@@ -1,4 +1,4 @@
-.test-list .site {
+.test-list .listed-test {
     padding-bottom: 40px;
     margin-bottom: 40px;
     border-bottom: 1px solid #ddd;
@@ -6,19 +6,19 @@
     overflow: hidden;
 }
 
-.test-list .site i.primary {
+.test-list .listed-test i.primary {
     margin-right: 6px;
 }
 
-.test-list .site.finished .primary {
+.test-list .listed-test.finished .primary {
     color: #5cb85c;
 }
 
-.test-list .site.incomplete .primary {
+.test-list .listed-test.incomplete .primary {
     color: #428bca;
 }
 
-.test-list .site.state-crawling .primary {
+.test-list .listed-test.state-crawling .primary {
     color: #f8b426;
 }
 
@@ -62,7 +62,7 @@
     display: block;
 }
 
-.test-list .site.requires-results .summary-stats {
+.test-list .listed-test.requires-results .summary-stats {
     visibility: hidden;
 }
 
@@ -99,7 +99,7 @@
     margin-top: 12px;
 }
 
-.test-list .site {
+.test-list .listed-test {
     min-height: 200px;
 }
 
@@ -112,7 +112,7 @@
 }
 
 @media (max-width: 768px) {
-    .test-list .site {
+    .test-list .listed-test {
         padding-bottom: 0;
         min-height: 160px;
     }
