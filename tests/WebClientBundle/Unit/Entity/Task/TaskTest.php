@@ -7,135 +7,68 @@ use SimplyTestable\WebClientBundle\Entity\Task\Task;
 class TaskTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @dataProvider hasFailedDataProvider
+     * @dataProvider getStateLabelDataProvider
      *
      * @param string $state
-     * @param bool $expectedHasFailed
+     * @param bool $expectedStateLabel
      */
-    public function testHasFailed($state, $expectedHasFailed)
+    public function testGetStateLabel($state, $expectedStateLabel)
     {
         $task = new Task();
         $task->setState($state);
 
-        $this->assertEquals($expectedHasFailed, $task->hasFailed());
+        $this->assertEquals($expectedStateLabel, $task->getStateLabel());
     }
 
     /**
      * @return array
      */
-    public function hasFailedDataProvider()
+    public function getStateLabelDataProvider()
     {
         return [
             Task::STATE_CANCELLED => [
                 'state' => Task::STATE_CANCELLED,
-                'expectedHasFailed' => false,
+                'expectedStateLabel' => Task::STATE_CANCELLED,
             ],
             Task::STATE_QUEUED => [
                 'state' => Task::STATE_QUEUED,
-                'expectedHasFailed' => false,
+                'expectedStateLabel' => Task::STATE_QUEUED,
             ],
             Task::STATE_IN_PROGRESS => [
                 'state' => Task::STATE_IN_PROGRESS,
-                'expectedHasFailed' => false,
+                'expectedStateLabel' => Task::STATE_IN_PROGRESS,
             ],
             Task::STATE_COMPLETED => [
                 'state' => Task::STATE_COMPLETED,
-                'expectedHasFailed' => false,
+                'expectedStateLabel' => Task::STATE_COMPLETED,
             ],
             Task::STATE_AWAITING_CANCELLATION => [
                 'state' => Task::STATE_AWAITING_CANCELLATION,
-                'expectedHasFailed' => false,
+                'expectedStateLabel' => Task::STATE_AWAITING_CANCELLATION,
             ],
             Task::STATE_QUEUED_FOR_ASSIGNMENT => [
                 'state' => Task::STATE_QUEUED_FOR_ASSIGNMENT,
-                'expectedHasFailed' => false,
+                'expectedStateLabel' => Task::STATE_QUEUED,
             ],
             Task::STATE_SKIPPED => [
                 'state' => Task::STATE_SKIPPED,
-                'expectedHasFailed' => false,
+                'expectedStateLabel' => Task::STATE_SKIPPED,
             ],
             Task::STATE_FAILED_NO_RETRY_AVAILABLE => [
                 'state' => Task::STATE_FAILED_NO_RETRY_AVAILABLE,
-                'expectedHasFailed' => true,
+                'expectedStateLabel' => Task::STATE_FAILED,
             ],
             Task::STATE_FAILED_RETRY_AVAILABLE => [
                 'state' => Task::STATE_FAILED_RETRY_AVAILABLE,
-                'expectedHasFailed' => true,
+                'expectedStateLabel' => Task::STATE_FAILED,
             ],
             Task::STATE_FAILED_RETRY_LIMIT_REACHED => [
                 'state' => Task::STATE_FAILED_RETRY_LIMIT_REACHED,
-                'expectedHasFailed' => true,
+                'expectedStateLabel' => Task::STATE_FAILED,
             ],
             Task::STATE_FAILED => [
                 'state' => Task::STATE_FAILED,
-                'expectedHasFailed' => true,
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider isQueuedDataProvider
-     *
-     * @param string $state
-     * @param bool $expectedIsQueued
-     */
-    public function testIsQueued($state, $expectedIsQueued)
-    {
-        $task = new Task();
-        $task->setState($state);
-
-        $this->assertEquals($expectedIsQueued, $task->isQueued());
-    }
-
-    /**
-     * @return array
-     */
-    public function isQueuedDataProvider()
-    {
-        return [
-            Task::STATE_CANCELLED => [
-                'state' => Task::STATE_CANCELLED,
-                'expectedIsQueued' => false,
-            ],
-            Task::STATE_QUEUED => [
-                'state' => Task::STATE_QUEUED,
-                'expectedIsQueued' => true,
-            ],
-            Task::STATE_IN_PROGRESS => [
-                'state' => Task::STATE_IN_PROGRESS,
-                'expectedIsQueued' => false,
-            ],
-            Task::STATE_COMPLETED => [
-                'state' => Task::STATE_COMPLETED,
-                'expectedIsQueued' => false,
-            ],
-            Task::STATE_AWAITING_CANCELLATION => [
-                'state' => Task::STATE_AWAITING_CANCELLATION,
-                'expectedIsQueued' => false,
-            ],
-            Task::STATE_QUEUED_FOR_ASSIGNMENT => [
-                'state' => Task::STATE_QUEUED_FOR_ASSIGNMENT,
-                'expectedIsQueued' => true,
-            ],
-            Task::STATE_SKIPPED => [
-                'state' => Task::STATE_SKIPPED,
-                'expectedIsQueued' => false,
-            ],
-            Task::STATE_FAILED_NO_RETRY_AVAILABLE => [
-                'state' => Task::STATE_FAILED_NO_RETRY_AVAILABLE,
-                'expectedIsQueued' => false,
-            ],
-            Task::STATE_FAILED_RETRY_AVAILABLE => [
-                'state' => Task::STATE_FAILED_RETRY_AVAILABLE,
-                'expectedIsQueued' => false,
-            ],
-            Task::STATE_FAILED_RETRY_LIMIT_REACHED => [
-                'state' => Task::STATE_FAILED_RETRY_LIMIT_REACHED,
-                'expectedIsQueued' => false,
-            ],
-            Task::STATE_FAILED => [
-                'state' => Task::STATE_FAILED,
-                'expectedIsQueued' => false,
+                'expectedStateLabel' => Task::STATE_FAILED,
             ],
         ];
     }

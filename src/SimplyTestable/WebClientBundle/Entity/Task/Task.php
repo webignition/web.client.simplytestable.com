@@ -309,25 +309,29 @@ class Task
     /**
      * @return bool
      */
-    public function hasFailed()
+    public function getStateLabel()
     {
-        return $this->isStateInSet([
+        $isFailed = $this->isStateInSet([
             self::STATE_FAILED,
             self::STATE_FAILED_NO_RETRY_AVAILABLE,
             self::STATE_FAILED_RETRY_AVAILABLE,
             self::STATE_FAILED_RETRY_LIMIT_REACHED,
         ]);
-    }
 
-    /**
-     * @return bool
-     */
-    public function isQueued()
-    {
-        return $this->isStateInSet([
+        if ($isFailed) {
+            return self::STATE_FAILED;
+        }
+
+        $isQueued = $this->isStateInSet([
             self::STATE_QUEUED,
             self::STATE_QUEUED_FOR_ASSIGNMENT,
         ]);
+
+        if ($isQueued) {
+            return self::STATE_QUEUED;
+        }
+
+        return $this->state;
     }
 
     /**
