@@ -124,15 +124,15 @@ var testProgressTasksController = function () {
         };
 
         var isCurrentPageDisplayed = function () {
-            return parseInt($('.tasks').attr('data-page'), 10) === currentPage;
+            return parseInt($('.task-list').attr('data-page'), 10) === currentPage;
         };
 
         var isAnyPageDisplayed = function () {
-            return $('.tasks').length > 0;
+            return $('.task-list').length > 0;
         };
 
         var draw = function (pageNumber) {
-            var currentTaskList = $('.tasks');
+            var currentTaskList = $('.task-list');
             if (currentTaskList.length) {
                 currentTaskList.remove();
             }
@@ -159,7 +159,7 @@ var testProgressTasksController = function () {
                     var retriever = new taskListRetrieveController();
                     retriever.retrieve(taskIdList.getCurrentPageList(), function (data) {
                         var taskList = $('<div>').append(data);
-                        $('.tasks', taskList).attr('data-page', pageNumber);
+                        $('.task-list', taskList).attr('data-page', pageNumber);
 
                         taskLists[pageNumber] = taskList.html();
                         render(pageNumber);
@@ -315,7 +315,7 @@ var testProgressTasksController = function () {
 
             for (var stateIndex = 0; stateIndex < states.length; stateIndex++) {
                 if (taskIds.length <= 2) {
-                    $('.tasks [data-state=' + states[stateIndex] + ']').each(function () {
+                    $('.task-list [data-state=' + states[stateIndex] + ']').each(function () {
                         taskIds.push(parseInt($(this).attr('id').replace('task', ''), 10));
                     });
                 }
@@ -357,7 +357,7 @@ var testProgressTasksController = function () {
     $('body').on('tasklist.render.before', function (event, pageNumber) {
         if (!taskList.isCurrentPageDisplayed()) {
             busyIndicator.show();
-            $('.tasks').animate({
+            $('.task-list').animate({
                 'opacity':0.6
             });
         }
@@ -367,7 +367,7 @@ var testProgressTasksController = function () {
         if (taskList.isCurrentPageDisplayed()) {
             busyIndicator.hide();
 
-            $('.tasks').animate({
+            $('.task-list').animate({
                 'opacity':1
             });
         }
