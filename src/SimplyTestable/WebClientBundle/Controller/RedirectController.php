@@ -161,7 +161,8 @@ class RedirectController extends AbstractController
             [
                 'website' => $website,
                 'test_id' => $test_id,
-                'task_id' => $task_id
+                'task_id' => $task_id,
+                'trailingSlash' => '',
             ]
         ));
     }

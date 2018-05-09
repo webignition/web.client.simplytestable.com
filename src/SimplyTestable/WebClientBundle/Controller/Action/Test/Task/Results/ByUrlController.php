@@ -65,17 +65,14 @@ class ByUrlController extends AbstractController
             ));
         }
 
-        $redirectUrl = $this->generateUrl(
+        return new RedirectResponse($this->generateUrl(
             'view_test_task_results_index_index',
             [
                 'website' => $website,
                 'test_id' => $test_id,
-                'task_id' => $task->getTaskId()
+                'task_id' => $task->getTaskId(),
+                'trailingSlash' => '',
             ]
-        );
-
-        $redirectUrl = rtrim($redirectUrl, '/') . '/';
-
-        return new RedirectResponse($redirectUrl);
+        ));
     }
 }
