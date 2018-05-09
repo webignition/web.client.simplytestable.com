@@ -315,7 +315,7 @@ var testProgressTasksController = function () {
 
             for (var stateIndex = 0; stateIndex < states.length; stateIndex++) {
                 if (taskIds.length <= 2) {
-                    $('.tasks [data-state=' + states[stateIndex] + ']').each(function () {
+                    $('.task-list [data-state=' + states[stateIndex] + ']').each(function () {
                         taskIds.push(parseInt($(this).attr('id').replace('task', ''), 10));
                     });
                 }
