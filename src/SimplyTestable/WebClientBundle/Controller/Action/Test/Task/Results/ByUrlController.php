@@ -70,7 +70,8 @@ class ByUrlController extends AbstractController
             [
                 'website' => $website,
                 'test_id' => $test_id,
-                'task_id' => $task->getTaskId()
+                'task_id' => $task->getTaskId(),
+                'trailingSlash' => '',
             ]
         ));
     }

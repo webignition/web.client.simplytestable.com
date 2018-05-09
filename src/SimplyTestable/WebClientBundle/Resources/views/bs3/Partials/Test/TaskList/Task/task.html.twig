@@ -22,7 +22,7 @@
 {% endif %}
 
 {% if use_link %}
-    <a class="meta"  href="{{ path('view_test_task_results_index_index', { 'website': test.website, 'test_id': test.testId, 'task_id':task.taskId }) }}">
+    <a class="meta"  href="{{ path('view_test_task_results_index_index', { 'website': test.website, 'test_id': test.testId, 'task_id':task.taskId, 'trailingSlash':'' }) }}">
 {% else %}
     <span class="meta">
 {% endif %}

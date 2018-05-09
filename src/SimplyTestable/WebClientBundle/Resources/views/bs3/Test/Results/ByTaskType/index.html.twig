@@ -87,7 +87,7 @@
                     <ul class="task-list list-unstyled by-page-list">
                         {% for task in tasks %}
                             <li>
-                                <a class="page" href="{{ path('view_test_task_results_index_index', {'website': website.raw, 'test_id': test.testId, 'task_id': task.taskId}) }}">
+                                <a class="page" href="{{ path('view_test_task_results_index_index', {'website': website.raw, 'test_id': test.testId, 'task_id': task.taskId, 'trailingSlash':''}) }}">
                                     <div class="row task">
                                         <div class="meta">
                                             <div class="col-lg-10 url-container">
