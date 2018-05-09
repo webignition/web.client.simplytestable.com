@@ -147,7 +147,12 @@ class IndexControllerTest extends AbstractViewControllerTest
         $this->assertContains('<title>Not authorised', $response->getContent());
     }
 
-    public function testIndexActionPublicUserGetRequest()
+    /**
+     * @dataProvider indexActionPublicUserGetRequestDataProvider
+     *
+     * @param bool $includeAdditionalTrailingSlash
+     */
+    public function testIndexActionPublicUserGetRequest($includeAdditionalTrailingSlash)
     {
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -157,12 +162,27 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->createRequestUrl()
+            $this->createRequestUrl() . ($includeAdditionalTrailingSlash ? '/' : '')
         );
 
         /* @var Response $response */
         $response = $this->client->getResponse();
         $this->assertTrue($response->isSuccessful());
+    }
+
+    /**
+     * @return array
+     */
+    public function indexActionPublicUserGetRequestDataProvider()
+    {
+        return [
+            'without additional trailing slash' => [
+                'includeAdditionalTrailingSlash' => false,
+            ],
+            'with additional trailing slash' => [
+                'includeAdditionalTrailingSlash' => true,
+            ],
+        ];
     }
 
     /**
