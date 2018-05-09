@@ -226,21 +226,23 @@ class IndexControllerTest extends AbstractViewControllerTest
         $this->assertContains('<title>Not authorised', $response->getContent());
     }
 
-    public function testIndexActionPublicUserGetRequest()
+    /**
+     * @dataProvider indexActionPublicUserGetRequestDataProvider
+     *
+     * @param string $website
+     * @param int $testId
+     * @param string $filter
+     * @param array $httpFixtures
+     */
+    public function testIndexActionPublicUserGetRequest($website, $testId, $filter, array $httpFixtures)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
-            HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
-            HttpResponseFactory::createJsonResponse($this->remoteTasksData),
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
+        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
 
         $router = $this->container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-            'filter' => IndexController::FILTER_WITH_ERRORS,
+            'website' => $website,
+            'test_id' => $testId,
+            'filter' => $filter,
         ]);
 
         $this->client->request(
@@ -250,7 +252,43 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         /* @var Response $response */
         $response = $this->client->getResponse();
+
         $this->assertTrue($response->isSuccessful());
+    }
+
+    /**
+     * @return array
+     */
+    public function indexActionPublicUserGetRequestDataProvider()
+    {
+        return [
+            'default' => [
+                'website' => self::WEBSITE,
+                'testId' => self::TEST_ID,
+                'filter' => IndexController::FILTER_WITH_ERRORS,
+                'httpFixtures' => [
+                    HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
+                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
+                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
+                    HttpResponseFactory::createSuccessResponse(),
+                ],
+            ],
+            'integer in website url path' => [
+                'website' => 'http://example.com/articles/foo/bar/6875374/foobar/',
+                'testId' => self::TEST_ID,
+                'filter' => IndexController::FILTER_WITH_ERRORS,
+                'httpFixtures' => [
+                    HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
+                        'website' => 'http://example.com/articles/foo/bar/6875374/foobar/',
+                    ])),
+                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
+                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
+                    HttpResponseFactory::createSuccessResponse(),
+                ],
+            ],
+        ];
     }
 
     /**
