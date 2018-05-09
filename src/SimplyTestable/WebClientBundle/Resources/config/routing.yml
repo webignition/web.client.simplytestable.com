@@ -176,12 +176,13 @@ view_test_task_results_index_index_verbose:
         task_id: '\d+'
 
 view_test_task_results_index_index:
-    path: /{website}/{test_id}/{task_id}/results/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Task/Results/Index:index }
+    path: /{website}/{test_id}/{task_id}/results/{trailingSlash}
+    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Task/Results/Index:index, trailingSlash : "/" }
     requirements:
         website: '.+'
         test_id: '\d+'
         task_id: '\d+'
+        trailingSlash : "[/]{0,1}"
 
 action_test_task_results_byurl_index:
     path: /{website}/{test_id}/{task_url}/{task_type}/results/
