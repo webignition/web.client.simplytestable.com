@@ -10,8 +10,6 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\TestList;
 use SimplyTestable\WebClientBundle\Model\TestOptions;
-use Pdp\PublicSuffixListManager as PdpPublicSuffixListManager;
-use Pdp\Parser as PdpParser;
 use webignition\SimplyTestableUserModel\User;
 
 class RemoteTestService
@@ -37,15 +35,23 @@ class RemoteTestService
     private $jsonResponseHandler;
 
     /**
+     * @var RegisterableDomainService
+     */
+    private $registerableDomainService;
+
+    /**
      * @param CoreApplicationHttpClient $coreApplicationHttpClient
      * @param JsonResponseHandler $jsonResponseHandler
+     * @param RegisterableDomainService $registerableDomainService
      */
     public function __construct(
         CoreApplicationHttpClient $coreApplicationHttpClient,
-        JsonResponseHandler $jsonResponseHandler
+        JsonResponseHandler $jsonResponseHandler,
+        RegisterableDomainService $registerableDomainService
     ) {
         $this->coreApplicationHttpClient = $coreApplicationHttpClient;
         $this->jsonResponseHandler = $jsonResponseHandler;
+        $this->registerableDomainService = $registerableDomainService;
     }
 
     /**
@@ -78,10 +84,15 @@ class RemoteTestService
      */
     public function start($canonicalUrl, TestOptions $testOptions, $testType = 'full site')
     {
-        $this->setCustomCookieDomain(
-            $testOptions,
-            $this->getCookieDomain($canonicalUrl)
-        );
+        if ($testOptions->hasFeatureOptions('cookies')) {
+            $cookieDomain = $this->registerableDomainService->getRegisterableDomain($canonicalUrl);
+
+            if (empty($cookieDomain)) {
+                $testOptions->removeFeatureOptions('cookies');
+            } else {
+                $this->setCustomCookieDomain($testOptions, $cookieDomain);
+            }
+        }
 
         $response = $this->coreApplicationHttpClient->post(
             'test_start',
@@ -102,28 +113,11 @@ class RemoteTestService
     }
 
     /**
-     * @param string $canonicalUrl
-     *
-     * @return string
-     */
-    private function getCookieDomain($canonicalUrl)
-    {
-        $pslManager = new PdpPublicSuffixListManager();
-        $parser = new PdpParser($pslManager->getList());
-
-        return $parser->parseUrl($canonicalUrl)->host->registerableDomain;
-    }
-
-    /**
      * @param TestOptions $testOptions
      * @param string $domain
      */
     private function setCustomCookieDomain(TestOptions $testOptions, $domain)
     {
-        if (!$testOptions->hasFeatureOptions('cookies')) {
-            return;
-        }
-
         $cookieOptions = $testOptions->getFeatureOptions('cookies');
         $cookies = $cookieOptions['cookies'];
 
