@@ -106,6 +106,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
     /**
      * @dataProvider startSuccessDataProvider
      *
+     * @param string $url
      * @param TestOptions $testOptions
      * @param string $expectedRequestUrl
      * @param array $expectedPostData
@@ -115,7 +116,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function testStartSuccess(TestOptions $testOptions, $expectedRequestUrl, array $expectedPostData)
+    public function testStartSuccess($url, TestOptions $testOptions, $expectedRequestUrl, array $expectedPostData)
     {
         $this->setCoreApplicationHttpClientHttpFixtures([
             HttpResponseFactory::createJsonResponse([
@@ -124,7 +125,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
         ]);
 
         $remoteTest = $this->remoteTestService->start(
-            self::CANONICAL_URL,
+            $url,
             $testOptions
         );
 
@@ -146,6 +147,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
     {
         return [
             'default' => [
+                'url' => self::CANONICAL_URL,
                 'testOptions' => ModelFactory::createTestOptions(),
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com/start/',
                 'expectedPostData' => [
@@ -153,6 +155,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
                 ],
             ],
             'custom cookies' => [
+                'url' => self::CANONICAL_URL,
                 'testOptions' => ModelFactory::createTestOptions([
                     ModelFactory::TEST_OPTIONS_FEATURE_OPTIONS => [
                         'cookies' => [
@@ -178,6 +181,25 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
                             ],
                         ],
                     ],
+                ],
+            ],
+            'custom cookies; invalid url' => [
+                'url' => 'foo',
+                'testOptions' => ModelFactory::createTestOptions([
+                    ModelFactory::TEST_OPTIONS_FEATURE_OPTIONS => [
+                        'cookies' => [
+                            'cookies' => [
+                                [
+                                    'name' => 'cookie-name',
+                                    'value' => 'cookie-value',
+                                ],
+                            ],
+                        ],
+                    ],
+                ]),
+                'expectedRequestUrl' => 'http://null/job/foo/start/',
+                'expectedPostData' => [
+                    'type' => 'full site',
                 ],
             ],
         ];
