@@ -200,6 +200,10 @@ class StartController extends AbstractController
             $url->setScheme('http');
         }
 
+        if (!$url->isPubliclyRoutable()) {
+            return $website;
+        }
+
         if ($isFullSiteTest) {
             $url->setFragment(null);
             $url->setPath('/');
