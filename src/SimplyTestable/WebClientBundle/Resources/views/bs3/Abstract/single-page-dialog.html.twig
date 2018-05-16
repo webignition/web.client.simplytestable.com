@@ -28,18 +28,6 @@
 
 {% block body_class %} single-page-dialog single-page-dialog-{{ dialog_width }} {{ parent() }} {% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-
-    {% stylesheets
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/single-page-dialog.css'
-    filter='cssrewrite' %}
-    <link rel="stylesheet" href="{{ asset_url }}" />
-    {% endstylesheets %}
-
-    <link rel="stylesheet" href="{{ asset('build/single-page-dialog.css') }}">
-{% endblock %}
-
 {% block body%}
     <div class="container">
         <div class="row">

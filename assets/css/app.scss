@@ -2,6 +2,7 @@
 @import "components/buttons";
 @import "components/modal";
 @import "components/action-badge";
+@import "partials/navbar";
 @import "partials/ctas";
 @import "partials/pagination";
 @import "partials/plan-selection";
@@ -11,10 +12,15 @@
 @import "partials/test-list";
 
 body {
-  .navbar {
-    .container {
-      @import "partials/navbar";
-      @import "partials/navbar-brand";
+  &.single-page-dialog {
+    @import "page/single-page-dialog";
+
+    background-color: #eee;
+    margin-top: 0;
+
+    @media (min-width: 768px) {
+      background-color: #4f4f4f;
+      margin-top: 40px;
     }
   }
 
