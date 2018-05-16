@@ -23,11 +23,9 @@
                     <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" value="1" name="js-static-analysis-ignore-common-cdns" {% if (test_options['js-static-analysis-ignore-common-cdns'] is defined and test_options['js-static-analysis-ignore-common-cdns'] == 1) or ((test_options['js-static-analysis'] is not defined or test_options['js-static-analysis'] == '') and default_js_static_analysis_options['ignore-common-cdns'] == 1) %} checked {% endif %} /> Ignore JS from common CDNs:
 
                     {% if js_static_analysis_ignore_common_cdns|length > 0 %}
-                        <ul class="list-unstyled">
-                            {% for cdn_domain_to_ignore in js_static_analysis_ignore_common_cdns %}
-                                <li>&ndash; {{ cdn_domain_to_ignore }}</li>
-                            {% endfor %}
-                        </ul>
+                        {% include '@SimplyTestableWebClient/bs3/Partials/Test/Options/domains-to-ignore.html.twig' with {
+                            'domains_to_ignore': js_static_analysis_ignore_common_cdns
+                        } only %}
                     {% endif %}
                 </label>
             </div>
