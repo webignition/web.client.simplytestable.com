@@ -96,4 +96,8 @@ body {
   &.user-account-index {
     @import "page/user-account-index";
   }
+
+  &.test-history {
+    @import "page/test-history";
+  }
 }

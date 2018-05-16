@@ -2,16 +2,6 @@
 
 {% block title %}Test History - {{ parent() }}{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-
-    {% stylesheets
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-history.css'
-    filter='cssrewrite' %}
-    <link rel="stylesheet" href="{{ asset_url }}"/>
-    {% endstylesheets %}
-{% endblock %}
-
 {% block javascripts %}
     {{ parent() }}
 
@@ -27,7 +17,7 @@
     {% endjavascripts %}
 {% endblock %}
 
-{% block body_class %} {{ parent() }} page-test-history full-width {% endblock %}
+{% block body_class %} {{ parent() }} test-history full-width {% endblock %}
 
 {% block body %}
     {{ parent() }}
