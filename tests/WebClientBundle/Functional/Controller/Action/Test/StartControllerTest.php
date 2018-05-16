@@ -4,11 +4,18 @@ namespace Tests\WebClientBundle\Functional\Controller\Action\Test;
 
 use GuzzleHttp\Post\PostBody;
 use GuzzleHttp\Subscriber\History as HttpHistorySubscriber;
+use Mockery\Mock;
 use SimplyTestable\WebClientBundle\Controller\Action\Test\StartController;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
+use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
+use SimplyTestable\WebClientBundle\Services\Configuration\LinkIntegrityTestConfiguration;
+use SimplyTestable\WebClientBundle\Services\Configuration\TestOptionsConfiguration;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use SimplyTestable\WebClientBundle\Services\TaskTypeService;
+use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
@@ -608,6 +615,97 @@ class StartControllerTest extends AbstractBaseTestCase
                         ],
                     ],
                 ],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider startNewActionVerifyUrlToTestDataProvider
+     *
+     * @param string $url
+     * @param string $expectedUrlToTest
+     *
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     */
+    public function testStartNewActionVerifyUrlToTest($url, $expectedUrlToTest)
+    {
+        $router = $this->container->get('router');
+        $testOptionsRequestAdapterFactory = $this->container->get(TestOptionsRequestAdapterFactory::class);
+        $taskTypeService = $this->container->get(TaskTypeService::class);
+        $userManager = $this->container->get(UserManager::class);
+        $linkIntegrityTestConfiguration = $this->container->get(LinkIntegrityTestConfiguration::class);
+        $testOptionsConfiguration = $this->container->get(TestOptionsConfiguration::class);
+        $session = $this->container->get('session');
+
+        /* @var RemoteTestService|Mock $remoteTestService */
+        $remoteTestService = \Mockery::mock(RemoteTestService::class);
+        $remoteTestService
+            ->shouldReceive('start')
+            ->withArgs(function ($urlToTest) use ($expectedUrlToTest) {
+                $this->assertEquals($expectedUrlToTest, $urlToTest);
+
+                return true;
+            })
+            ->andReturn(new RemoteTest([
+                'id' => 1,
+                'website' => $expectedUrlToTest,
+            ]));
+
+        $testStartController = new StartController(
+            $router,
+            $remoteTestService,
+            $testOptionsRequestAdapterFactory,
+            $taskTypeService,
+            $userManager,
+            $linkIntegrityTestConfiguration,
+            $testOptionsConfiguration,
+            $session
+        );
+
+        $requestData = [
+            'html-validation' => 1,
+            'website' => $url,
+        ];
+
+        $request = new Request([], $requestData);
+
+        $testStartController->startNewAction($request);
+    }
+
+    /**
+     * @return array
+     */
+    public function startNewActionVerifyUrlToTestDataProvider()
+    {
+        return [
+            'valid url; http://example.com/' => [
+                'url' => 'http://example.com/',
+                'expectedUrlToTest' => 'http://example.com/',
+            ],
+            'valid url; //example.com/' => [
+                'url' => '//example.com/',
+                'expectedUrlToTest' => 'http://example.com/',
+            ],
+            'valid url; example.com/' => [
+                'url' => 'example.com/',
+                'expectedUrlToTest' => 'http://example.com/',
+            ],
+            'invalid url; foo' => [
+                'url' => 'foo',
+                'expectedUrlToTest' => 'foo',
+            ],
+            'invalid url; linux-like path' => [
+                'url' => '/home/foo/file.html',
+                'expectedUrlToTest' => '/home/foo/file.html',
+            ],
+            'invalid url; windows-like path' => [
+                'url' => 'c:\\Users\\Desktop\\file.html',
+                'expectedUrlToTest' => 'c:\\Users\\Desktop\\file.html',
+            ],
+            'invalid url; not even close' => [
+                'url' => 'vertical-align:top',
+                'expectedUrlToTest' => 'vertical-align:top',
             ],
         ];
     }
