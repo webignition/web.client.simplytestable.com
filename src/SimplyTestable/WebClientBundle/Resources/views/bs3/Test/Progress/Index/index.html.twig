@@ -2,16 +2,6 @@
 
 {% block title %}Testing {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-
-    {% stylesheets
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-progress.css'
-    filter='cssrewrite' %}
-    <link rel="stylesheet" href="{{ asset_url }}"/>
-    {% endstylesheets %}
-{% endblock %}
-
 {% block javascripts %}
     {{ parent() }}
 
@@ -27,7 +17,7 @@
     {% endjavascripts %}
 {% endblock %}
 
-{% block body_class %} {{ parent() }} full-width job-{{ remote_test.state }} {% endblock %}
+{% block body_class %} {{ parent() }} full-width test-progress job-{{ remote_test.state }} {% endblock %}
 
 {% block body %}
     {{ parent() }}
