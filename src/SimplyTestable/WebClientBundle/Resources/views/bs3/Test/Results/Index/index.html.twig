@@ -4,16 +4,6 @@
 
 {% block title %}Results for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-
-    {% stylesheets
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-results.css'
-    filter='cssrewrite' %}
-    <link rel="stylesheet" href="{{ asset_url }}"/>
-    {% endstylesheets %}
-{% endblock %}
-
 {% block javascripts %}
     {{ parent() }}
 
@@ -30,7 +20,7 @@
     {% endjavascripts %}
 {% endblock %}
 
-{% block body_class %} {{ parent() }} full-width {% endblock %}
+{% block body_class %} {{ parent() }} full-width test-results {% endblock %}
 
 {% block body %}
     {{ parent() }}
@@ -170,8 +160,7 @@
         <div class="row">
             {% if remote_test.taskcount > 0 %}
                 <div class="col-lg-12">
-                    <span id="test-list"></span>
-                    <h2 class="hidden-xs">
+                    <h2>
                         {% if (filter == 'all' and type is empty) %}
                             All results
                         {% elseif (filter == 'all') %}

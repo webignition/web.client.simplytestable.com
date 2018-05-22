@@ -2,6 +2,7 @@
 @import "components/buttons";
 @import "components/modal";
 @import "components/action-badge";
+@import "components/modal-launcher";
 @import "partials/navbar";
 @import "partials/ctas";
 @import "partials/pagination";
@@ -102,7 +103,17 @@ body {
     @import "page/test-history";
   }
 
+  &.test-progress,
+  &.test-results {
+    @import "partials/test-progress-results-side-actions";
+    @import "partials/test-progress-results-test-options";
+  }
+
   &.test-progress {
     @import "page/test-progress";
+  }
+
+  &.test-results {
+    @import "page/test-results";
   }
 }

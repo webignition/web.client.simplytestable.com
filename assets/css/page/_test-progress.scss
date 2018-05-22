@@ -74,18 +74,6 @@ h2 {
   }
 }
 
-.side-actions {
-  text-align: left;
-
-  @media (min-width: 768px) {
-    text-align: right;
-  }
-
-  @media (min-width: 992px) {
-    position: static;
-  }
-}
-
 .test-summary {
   display: none;
 
@@ -141,16 +129,16 @@ h2 {
   .side-actions {
     .test-options {
       display: inherit;
+
+      @media (min-width: 768px) {
+        visibility: visible;
+      }
     }
   }
 }
 
 .test-option {
   margin: 0 0 10px 0;
-
-  .icon-primary {
-    opacity: 0.6;
-  }
 }
 
 .btn {
@@ -185,10 +173,6 @@ h2 {
   .task-type {
     margin-bottom: 6px;
   }
-}
-
-#test-options {
-  margin-top: 30px;
 }
 
 #tasks {

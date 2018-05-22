@@ -1,0 +1,11 @@
+.modal-launcher {
+  .icon-primary {
+    opacity: 0.6;
+  }
+
+  &.action-badge-enabled {
+    .icon-primary {
+      opacity: 1;
+    }
+  }
+}
