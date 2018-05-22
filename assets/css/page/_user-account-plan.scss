@@ -1,3 +1,9 @@
+button {
+  .fa-times-circle {
+    opacity: 0.6;
+  }
+}
+
 .plan-allowances {
   th {
     font-weight: normal;
@@ -22,10 +28,4 @@
 
 .plan.checked {
   background-color: #eee;
-}
-
-button {
-  .fa-times-circle {
-    opacity: 0.6;
-  }
 }
