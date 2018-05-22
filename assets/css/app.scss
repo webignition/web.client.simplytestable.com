@@ -103,15 +103,17 @@ body {
     @import "page/test-history";
   }
 
-  &.test-progress {
+  &.test-progress,
+  &.test-results {
     @import "partials/test-progress-results-side-actions";
     @import "partials/test-progress-results-test-options";
+  }
+
+  &.test-progress {
     @import "page/test-progress";
   }
 
   &.test-results {
-    @import "partials/test-progress-results-side-actions";
-    @import "partials/test-progress-results-test-options";
     @import "page/test-results";
   }
 }
