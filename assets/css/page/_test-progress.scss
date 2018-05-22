@@ -69,7 +69,7 @@ h2 {
     .wrapper {
       display: block;
       background-color: #e6e6e6;
-      border-radius: .25em;
+      border-radius: 0.25em;
     }
   }
 }
@@ -202,7 +202,7 @@ h2 {
 }
 
 #cancel-crawl-button {
-  display:none;
+  display: none;
 }
 
 &.job-crawling {
