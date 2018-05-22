@@ -101,4 +101,8 @@ body {
   &.test-history {
     @import "page/test-history";
   }
+
+  &.test-progress {
+    @import "page/test-progress";
+  }
 }

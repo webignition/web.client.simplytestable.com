@@ -1,0 +1,220 @@
+h1 {
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+h2 {
+  margin: 20px 0;
+  font-size: 28px;
+}
+
+.ammendment-clone,
+.ammendment-clone a {
+  background-color: #eee;
+  color: transparent;
+  border-color: transparent;
+}
+
+.header {
+  @media (min-width: 768px) {
+    margin-bottom: 40px;
+    padding: 40px 0;
+  }
+
+  .details {
+    position: relative;
+  }
+}
+
+.subtle {
+  opacity: 0.6;
+}
+
+.progress {
+  margin: 8px 0 4px 0;
+  height: 4px;
+}
+
+.progress-summary {
+  margin-bottom: 10px;
+}
+
+.task-queues {
+  .queue {
+    margin: 0 0 5px 0;
+  }
+
+  .label {
+    padding-top: 3px;
+  }
+
+  .name {
+    padding-right: 5px;
+    padding-left: 0;
+
+    .label {
+      display: block;
+      text-align: right;
+    }
+  }
+
+  .bar {
+    padding-left: 0;
+
+    .label {
+      display: inline-block;
+      text-align: left;
+    }
+
+    .wrapper {
+      display: block;
+      background-color: #e6e6e6;
+      border-radius: .25em;
+    }
+  }
+}
+
+.side-actions {
+  text-align: left;
+
+  @media (min-width: 768px) {
+    text-align: right;
+  }
+
+  @media (min-width: 992px) {
+    position: static;
+  }
+}
+
+.test-summary {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: block;
+    visibility: hidden;
+  }
+}
+
+.test-options {
+  display: none;
+  margin-top: 20px;
+
+  @media (min-width: 768px) {
+    display: block;
+    visibility: hidden;
+    margin-top: 0;
+  }
+
+  @media (min-width: 992px) {
+    position: absolute;
+    bottom: 10px;
+    width: auto;
+    right: 0;
+  }
+}
+
+&.job-queued {
+  .test-summary {
+    display: block;
+
+    @media (min-width: 768px) {
+      visibility: visible;
+    }
+  }
+
+  .side-actions {
+    .test-options {
+      display: inherit;
+    }
+  }
+}
+
+&.job-in-progress {
+  .test-summary {
+    display: block;
+
+    @media (min-width: 768px) {
+      visibility: visible;
+    }
+  }
+
+  .side-actions {
+    .test-options {
+      display: inherit;
+    }
+  }
+}
+
+.test-option {
+  margin: 0 0 10px 0;
+
+  .icon-primary {
+    opacity: 0.6;
+  }
+}
+
+.btn {
+  &.btn-significant {
+    margin-top: 20px;
+
+    @media (min-width: 768px) {
+      margin-top: 0;
+    }
+
+    span {
+      display: inline;
+    }
+  }
+}
+
+.task-types {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: block;
+  }
+
+  .fa {
+    opacity: 0.6;
+  }
+
+  .not-available {
+    opacity: 0.6;
+  }
+
+  .task-type {
+    margin-bottom: 6px;
+  }
+}
+
+#test-options {
+  margin-top: 30px;
+}
+
+#tasks {
+  display: none;
+
+  h2 {
+    .fa {
+      margin-left: 15px;
+    }
+  }
+}
+
+#cancel-crawl-button {
+  display:none;
+}
+
+&.job-crawling {
+  #cancel-button {
+    display: none;
+  }
+
+  #cancel-crawl-button {
+    display: inherit;
+    position: absolute;
+    top: 0;
+    right: 15px;
+    width: auto;
+  }
+}
