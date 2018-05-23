@@ -1,0 +1,111 @@
+.header {
+  margin-bottom: 40px;
+
+  .lead {
+    margin: 20px 0 -10px 0;
+  }
+}
+
+.nav-tabs {
+  border-bottom: 1px solid #999;
+
+  a {
+    &:hover,
+    &:focus {
+      border: 1px solid #999;
+    }
+  }
+
+  .active {
+    a {
+      border: 1px solid #999;
+      border-bottom-color: transparent;
+    }
+  }
+}
+
+.url {
+  color: #333;
+}
+
+.task {
+  margin: 10px 0 20px 0;
+
+  &.sort {
+    margin-left: 18px;
+  }
+
+  &:hover {
+    .url {
+      color: #000;
+    }
+  }
+}
+
+.url-container {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.occurrences-container {
+  padding-left: 0;
+}
+
+.url-container,
+.occurrences-container {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 20px;
+}
+
+.sort {
+  .url-container,
+  .occurrences-container {
+    border-bottom: 1px solid #aaa;
+    padding-bottom: 10px;
+  }
+}
+
+.by-error-list {
+  h3 {
+    border-left: 3px solid #d9534f;
+    padding-left: 15px;
+  }
+
+  .error {
+    margin-bottom: 60px;
+
+    p {
+      padding-left: 18px;
+    }
+  }
+
+  .lead {
+    margin-top: 20px;
+  }
+
+  .sort {
+    p {
+      margin: 0 0 0 -15px;
+    }
+  }
+}
+
+.caret-container {
+  margin-left: 6px;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.task-list {
+  .task {
+    margin-left: 18px;
+  }
+}
+
+.by-page {
+  .sort {
+    margin-top: 20px;
+  }
+}
