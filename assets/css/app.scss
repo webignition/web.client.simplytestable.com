@@ -124,4 +124,8 @@ body {
   &.task-results {
     @import "page/task-results";
   }
+
+  &.test-results-preparing {
+    @import "page/test-results-preparing";
+  }
 }
