@@ -5,9 +5,7 @@
     The page at <a href="{{ task.url }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> contains an invalid doctype declaration:
 </p>
 
-{%  set message = '<!DOCTYPE html PUBLIC "-/W3C/DTD XHTML 1.0 Transitional/EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">' %}
-
-<pre class="prettyprint">{{ message }}</pre>
+<pre>{{ task.output.result.firstError.message }}</pre>
 
 <p>
     Have a look at <a href="http://www.w3.org/QA/2002/04/valid-dtd-list.html">recommended doctype declarations</a>
@@ -16,6 +14,3 @@
 {% endset %}
 
 {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results/Task/Failed:failure-message.html.twig' %}
-
-
-
