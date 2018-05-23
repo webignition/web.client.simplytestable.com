@@ -1,0 +1,15 @@
+.cta {
+  .btn {
+    padding-right: 36px;
+
+    .fa {
+      font-size: 24px;
+    }
+  }
+}
+
+.additional {
+  &.support-hint {
+    opacity: 0.8;
+  }
+}

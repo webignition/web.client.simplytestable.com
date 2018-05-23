@@ -128,4 +128,8 @@ body {
   &.test-results-preparing {
     @import "page/test-results-preparing";
   }
+
+  &.test-results-rejected {
+    @import "page/test-results-rejected";
+  }
 }
