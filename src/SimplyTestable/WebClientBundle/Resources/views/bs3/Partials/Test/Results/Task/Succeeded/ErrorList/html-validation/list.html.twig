@@ -1,6 +1,6 @@
 <ul class="issues html-validation-issues collapse in" id="error-list-content">
     {% for error in task.output.result.getErrors %}
-        <li>
+        <li class="issue">
             {% include [
             'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded/ErrorList/html-validation:error.html.twig'
             ]|join('') %}

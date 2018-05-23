@@ -1,7 +1,7 @@
 <ul class="refs grouped-issues collapse in" id="error-list-content">
     {% for context,errors in errors_by_js_context %}
         <li>
-            <h3 class="">
+            <h3>
                 <a href="{{ context|escape('html') }}">
                     <i class="fa fa-file-code-o"></i>{{ (context is empty) ? task.url : context }}
                 </a>
@@ -9,63 +9,13 @@
 
             <ul class="issues js-static-analysis-issues">
                 {% for error in errors %}
-                    {% if ((error.message | replace({'Stopping': ''})) == error.message and (error.message | replace({'Too many errors': ''})) == error.message) %}
-                        <li>
+                    {% if (not error.isLinterNotice) %}
+                        <li class="issue">
                             {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded/ErrorList/js-static-analysis:error.html.twig' %}
                         </li>
                     {% endif %}
                 {% endfor %}
             </ul>
         </li>
-
-
-        {#<div>#}
-            {#<h3><i class="{% if errors[0].isException %}icon icon-ban-circle{% else %}icon icon-file{% endif %}"></i> {% if context == 'inline' %}Inline in your HTML{% else %}{{ context }}{% endif %}:</h3>#}
-            {#<ul class="errors">#}
-                {#{% for error in errors %}#}
-                    {#{% if ((error.message | replace({'Stopping': ''})) == error.message and (error.message | replace({'Too many errors': ''})) == error.message) %}#}
-                        {#<li>#}
-                            {#{% include 'SimplyTestableWebClientBundle:Partials:task/js-static-analysis-result.html.twig' %}#}
-                        {#</li>#}
-                    {#{% endif %}#}
-                {#{% endfor %}#}
-            {#</ul>#}
-        {#</div>#}
     {% endfor %}
-
-    {#{% for ref,errors in errors_by_ref %}#}
-        {#<li>#}
-            {#<h3 class="col-lg-offset-1">#}
-                {#<a href="{{ ref|escape('html') }}">#}
-                    {#<i class="fa fa-file-code-o"></i>{{ (ref is empty) ? task.url : ref }}#}
-                {#</a>#}
-            {#</h3>#}
-
-            {#<ul class="issues css-validation-issues">#}
-                {#{% for message in errors %}#}
-                    {#<li>#}
-                        {#{% include [#}
-                        {#'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded/ErrorList/css-validation:error.html.twig'#}
-                        {#]|join('') %}#}
-                    {#</li>#}
-                {#{% endfor %}#}
-            {#</ul>#}
-        {#</li>#}
-    {#{% endfor %}#}
-
-
-    {#{% for context,errors in errors_by_js_context %}#}
-        {#<div>#}
-            {#<h3><i class="{% if errors[0].isException %}icon icon-ban-circle{% else %}icon icon-file{% endif %}"></i> {% if context == 'inline' %}Inline in your HTML{% else %}{{ context }}{% endif %}:</h3>#}
-            {#<ul class="errors">#}
-                {#{% for error in errors %}#}
-                    {#{% if ((error.message | replace({'Stopping': ''})) == error.message and (error.message | replace({'Too many errors': ''})) == error.message) %}#}
-                        {#<li>#}
-                            {#{% include 'SimplyTestableWebClientBundle:Partials:task/js-static-analysis-result.html.twig' %}#}
-                        {#</li>#}
-                    {#{% endif %}#}
-                {#{% endfor %}#}
-            {#</ul>#}
-        {#</div>#}
-    {#{% endfor %}    #}
 </ul>

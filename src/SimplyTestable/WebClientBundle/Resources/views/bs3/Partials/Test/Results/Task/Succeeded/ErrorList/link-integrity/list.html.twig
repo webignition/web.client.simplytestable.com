@@ -22,7 +22,7 @@
                             {% endif %}
                             <ul class="urls">
                                 {% for error in errors %}
-                                    <li>
+                                    <li class="issue">
                                         <a href="{{ error.url }}">
                                             <pre class="prettyprint">{{ error.context }}</pre>
                                         </a>

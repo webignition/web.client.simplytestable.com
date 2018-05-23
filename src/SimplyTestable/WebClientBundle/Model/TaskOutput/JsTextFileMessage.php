@@ -100,4 +100,28 @@ class JsTextFileMessage extends TextFileMessage
     {
         return substr($this->getFragment(), 0, self::FRAGMENT_TRUNCATION_LENGTH);
     }
+
+    /**
+     * @return bool
+     */
+    public function isLinterNotice()
+    {
+        return $this->isLinterStoppingNotice() || $this->isLinterTooManyErrorsNotice();
+    }
+
+    /**
+     * @return bool
+     */
+    private function isLinterStoppingNotice()
+    {
+        return preg_match('/Stopping\. \([0-9]{1,3}% scanned\)\.$/', $this->getMessage()) > 0;
+    }
+
+    /**
+     * @return bool
+     */
+    private function isLinterTooManyErrorsNotice()
+    {
+        return preg_match('/Too many errors\. \([0-9]{1,3}% scanned\)\.$/', $this->getMessage()) > 0;
+    }
 }

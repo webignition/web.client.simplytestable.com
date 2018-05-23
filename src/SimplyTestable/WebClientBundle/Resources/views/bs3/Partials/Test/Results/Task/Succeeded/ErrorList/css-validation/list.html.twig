@@ -10,7 +10,7 @@
 
             <ul class="issues css-validation-issues">
                 {% for message in errors %}
-                    <li class="error">
+                    <li class="issue error">
                         {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded/ErrorList/css-validation:error.html.twig' %}
                     </li>
                 {% endfor %}
