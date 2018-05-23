@@ -2,11 +2,6 @@
 
 {% block title %}{% if is_logged_in == false %}Demo{% endif %} Dashboard (Start Test, Test History) - {{ parent() }}{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('build/dashboard.css') }}">
-{% endblock %}
-
 {% block javascripts %}
     {{ parent() }}
 

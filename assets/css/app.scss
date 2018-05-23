@@ -56,6 +56,10 @@ body {
     @import "page/sign-up-invite";
   }
 
+  &.dashboard {
+    @import "page/dashboard";
+  }
+
   &.user-account {
     @import "page/user-account";
 
