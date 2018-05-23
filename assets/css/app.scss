@@ -120,4 +120,8 @@ body {
   &.test-results-by-task-type {
     @import "page/test-results- by-task-type";
   }
+
+  &.task-results {
+    @import "page/task-results";
+  }
 }
