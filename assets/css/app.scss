@@ -116,4 +116,8 @@ body {
   &.test-results {
     @import "page/test-results";
   }
+
+  &.test-results-by-task-type {
+    @import "page/test-results- by-task-type";
+  }
 }

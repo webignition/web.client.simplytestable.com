@@ -4,16 +4,6 @@
 
 {% block title %}{{ task_type }} report for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-
-    {% stylesheets
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/test-results-by-task-type.css'
-    filter='cssrewrite' %}
-    <link rel="stylesheet" href="{{ asset_url }}"/>
-    {% endstylesheets %}
-{% endblock %}
-
 {% block javascripts %}
     {{ parent() }}
 
@@ -31,7 +21,7 @@
     {% endjavascripts %}
 {% endblock %}
 
-{% block body_class %} {{ parent() }} full-width task-type-{{ task_type|lower|replace({' ': '-'}) }} {{ filter }} {% endblock %}
+{% block body_class %} {{ parent() }} full-width test-results-by-task-type task-type-{{ task_type|lower|replace({' ': '-'}) }} {{ filter }} {% endblock %}
 
 {% block body %}
     {{ parent() }}
@@ -141,40 +131,6 @@
                                 </div>
                             </li>
                         {% endfor %}
-
-                        {#{% for error, url_set in error_url_map %}#}
-                            {#<li class="error">#}
-                                {#<h3>{{ error }}</h3>#}
-
-                                {#<p class="lead">#}
-                                    {#Found <span class="error-count" data-count="{{ error_count[error] }}">{% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:once-twice-x-times.html.twig' with {'value': error_count[error]} %}</span> in {{ url_set|length }} page{{ (url_set|length == 1) ? '' : 's' }}<span class="colon">:</span>#}
-                                {#</p>#}
-
-                                {#<div class="pages">#}
-                                    {#{% for url in url_set %}#}
-                                        {#<a class="page" href="{{ path('action_test_task_results_byurl_index', {'website': website.raw, 'test_id': test.testId, 'task_url': url}) }}#{{ error_hash_map[error] }}">#}
-                                            {#<div class="row task">#}
-                                                {#<div class="meta">#}
-                                                    {#<div class="col-lg-9 url-container">#}
-                                                {#<span class="url">#}
-                                                    {#{{ url|replace({'http://': '', 'https://': ''}) }}#}
-                                                {#</span>#}
-                                                    {#</div>#}
-                                                    {#<div class="col-lg-3 occurrences-container">#}
-                                                {#<span class="label label-danger">#}
-                                                    {#{% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': task_error_count[url][error], 'singular': 'occurrence'} %} <i class="fa fa-caret-right"></i>#}
-                                                {#</span>#}
-                                                    {#</div>#}
-                                                {#</div>#}
-
-                                            {#</div>#}
-                                        {#</a>#}
-                                    {#{% endfor %}#}
-                                {#</div>#}
-
-
-                            {#</li>#}
-                        {#{% endfor %}#}
                     </ul>
                 {% endif %}
             </div>
