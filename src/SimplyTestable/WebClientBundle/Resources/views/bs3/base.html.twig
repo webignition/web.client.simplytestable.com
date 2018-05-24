@@ -11,13 +11,6 @@
         {% block stylesheets %}
             <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
             <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet">
-
-            {% stylesheets
-            '@SimplyTestableWebClientBundle/Resources/assets/bs3/css/main.css'
-            filter='cssrewrite' %}
-            <link rel="stylesheet" href="{{ asset_url }}" />
-            {% endstylesheets %}
-
             <link rel="stylesheet" href="{{ asset('build/app.css') }}">
         {% endblock %}
 
