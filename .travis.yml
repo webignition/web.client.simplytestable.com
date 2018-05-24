@@ -15,6 +15,7 @@ env:
 cache:
   directories:
     - $HOME/.composer/cache/files
+    - $HOME/.cache/yarn
 
 before_install:
   - composer self-update
