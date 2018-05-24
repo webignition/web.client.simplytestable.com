@@ -8,7 +8,6 @@
     {% javascripts
         '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormErrorHelper.js'
         '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
-        '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/reset-password.js'
         '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/form-helper.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
@@ -26,7 +25,7 @@
 
     <p>
         Follow the instructions in the email to choose a new password.
-    </p>    
+    </p>
 
     <form role="form" method="post" action="{{ path('action_user_resetpassword_index_request') }}">
         {% if user_reset_password_error is defined and user_reset_password_error is not empty %}
@@ -34,15 +33,15 @@
                 <div class="alert alert-danger" data-for="email">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <strong>Slow down!</strong> You're going to have to enter in your email address of your account.
-                </div>                
-            {% endif %}  
+                </div>
+            {% endif %}
 
             {% if user_reset_password_error == 'invalid-email' %}
                 <div class="alert alert-danger" data-for="email">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <strong>Hmmm.</strong> I'm not convinced that <strong>{{ email }}</strong> is a valid email address.
-                </div>                
-            {% endif %}         
+                </div>
+            {% endif %}
 
             {% if user_reset_password_error == 'invalid-user' %}
                 <div class="alert alert-danger" data-for="email">
@@ -50,7 +49,7 @@
                     <p><strong>Hmmm.</strong> I've got no accounts for <strong>{{ email }}</strong>.</p>
                     <p>Are you sure you
                         entered the right email address?</p>
-                </div>                
+                </div>
             {% endif %}
 
             {% if user_reset_password_error == 'postmark-failure' %}
@@ -128,7 +127,7 @@
 
                 </div>
             {% endif %}
-        {% endif %}  
+        {% endif %}
 
         {% if user_reset_password_confirmation is defined and user_reset_password_confirmation is not empty %}
             {% if user_reset_password_confirmation == 'token-sent' %}
@@ -142,20 +141,27 @@
                     </p>
                     <p>
                         Follow the link in the email to choose a new password.
-                    </p>            
+                    </p>
                 </div>
 
-            {% endif %}          
+            {% endif %}
         {% endif %}
 
         <div class="form-group-collection form-group-collection-single">
             <div class="input-group input-group-larger">
-                <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email address" value="{{ email }}">
+                <input type="text"
+                       class="form-control"
+                       id="email"
+                       name="email"
+                       placeholder="Enter your email address"
+                       value="{{ email }}"
+                       data-focused
+                >
                 <span class="input-group-btn">
                     <button class="btn btn-primary" type="submit">Send email!</button>
                 </span>
-            </div>                
+            </div>
         </div>
-    </form> 
+    </form>
 
 {% endblock %}
