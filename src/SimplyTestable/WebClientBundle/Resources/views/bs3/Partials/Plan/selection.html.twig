@@ -13,35 +13,37 @@
 {% endif %}
 
 {% for currentPlan in plans|reverse %}
-    {% set is_selected = currentPlan.accountPlan.name|lower == selected_plan %}
-    {% set is_current = currentPlan.accountPlan.name|lower == current_plan %}
+    {% set account_plan = currentPlan.accountPlan %}
+    {% set plan_name = account_plan.name|lower %}
+    {% set is_selected = plan_name == selected_plan %}
+    {% set is_current = plan_name == current_plan %}
+    {% set plan_id = 'plan-' ~ loop.index0 %}
+    {% set plan_full_price = (account_plan.price / 100)|number_format(2) %}
+    {% set plan_discounted_price = (currentPlan.price / 100)|number_format(2) %}
 
-    <div class="row plan {{ (is_current) ? 'current' : '' }} {{ (is_selected) ? 'checked' : '' }}">
-        <div class="col-lg-12">
-            <div class="radio">
-                <label>
-                    <input type="radio"
-                           name="plan"
-                           value="{{ currentPlan.accountPlan.name|lower }}" {{ is_selected ? 'checked' : '' }}>
+    <div class="plan">
+        <input type="radio"
+               name="plan"
+               value="{{ plan_name }}"
+               id="{{ plan_id }}"
+                {{ is_selected ? 'checked' : '' }}>
 
-                    {% if has_coupon %}
-                        <span class="name">
-                            {{ currentPlan.accountPlan.name }}
-                            - <del>&pound;{{ (currentPlan.accountPlan.price / 100)|number_format(2) }}</del> &pound;{{ (currentPlan.price / 100)|number_format(2) }} per month
-                            (Save &pound;{{ (((currentPlan.accountPlan.price - currentPlan.price) * 12) / 100)|number_format(2) }} per year)
-                        </span>
-                    {% else %}
-                        <span class="name">
-                            {{ currentPlan.accountPlan.name }}
-                            - &pound;{{ (currentPlan.accountPlan.price / 100)|number_format(2) }} per month
-                        </span>
-                    {% endif %}
-                    <span class="features">
-                        {{ currentPlan.accountPlan.urlsPerJob|number_format }} pages per test,
-                        {{ currentPlan.accountPlan.creditsPerMonth|number_format }} credits
-                    </span>
-                </label>
-            </div>
-        </div>
+        <label for="{{ plan_id }}">
+            {% if has_coupon %}
+                <span class="name">
+                    {{ account_plan.name }}
+                    - <del>&pound;{{ plan_full_price }}</del> &pound;{{ plan_discounted_price }} per month
+                    (Save &pound;{{ (((account_plan.price - currentPlan.price) * 12) / 100)|number_format(2) }} per year)
+                </span>
+            {% else %}
+                <span class="name">
+                    {{ account_plan.name }}
+                    - &pound;{{ plan_full_price }} per month
+                </span>
+            {% endif %}
+            <span class="features">
+                {{ account_plan.urlsPerJob|number_format }} pages per test, {{ account_plan.creditsPerMonth|number_format }} credits
+            </span>
+        </label>
     </div>
 {% endfor %}

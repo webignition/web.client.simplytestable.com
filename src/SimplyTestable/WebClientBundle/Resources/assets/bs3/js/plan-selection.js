@@ -1,10 +1,4 @@
 $(document).ready(function() {
-    $('.plan input').change(function () {
-        $('.plan.checked').removeClass('checked');
-
-        $(this).closest('.plan').addClass('checked');
-    });
-
     $('button[type=submit]').click(function () {
         var button = $(this);
 

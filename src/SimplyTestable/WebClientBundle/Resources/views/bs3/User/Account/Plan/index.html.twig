@@ -39,7 +39,7 @@
     </div>
 
     {% if not user_summary.getTeamSummary.isInTeam or (user_summary.getTeamSummary.isInTeam and team.leader == user.username) %}
-        <div class="plan-section" id="plan-upgrade-downgrade">
+        <div class="plan-section plan-selection" id="plan-upgrade-downgrade">
             <h2>Upgrade/downgrade</h2>
 
             {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Plan:card-error-notifications.html.twig' %}
