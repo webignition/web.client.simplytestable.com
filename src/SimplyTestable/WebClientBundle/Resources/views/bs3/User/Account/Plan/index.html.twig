@@ -18,7 +18,6 @@
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/form-helper.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/user-account.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/user-account-plan.js'
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/plan-selection.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
@@ -39,7 +38,7 @@
     </div>
 
     {% if not user_summary.getTeamSummary.isInTeam or (user_summary.getTeamSummary.isInTeam and team.leader == user.username) %}
-        <div class="plan-section" id="plan-upgrade-downgrade">
+        <div class="plan-section plan-selection" id="plan-upgrade-downgrade">
             <h2>Upgrade/downgrade</h2>
 
             {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Plan:card-error-notifications.html.twig' %}
@@ -65,7 +64,7 @@
                 {% endif %}
             {% endif %}
 
-            <form id="upgrade-downgrade-form" role="form" method="post" action="{{ path('user_account_plan_subscribe') }}">
+            <form class="js-form-button-spinner" id="upgrade-downgrade-form" role="form" method="post" action="{{ path('user_account_plan_subscribe') }}">
 
                 {% include 'SimplyTestableWebClientBundle:bs3/Partials/Plan:selection.html.twig' with {
                     selected_plan: user_summary.plan.accountplan.name,
