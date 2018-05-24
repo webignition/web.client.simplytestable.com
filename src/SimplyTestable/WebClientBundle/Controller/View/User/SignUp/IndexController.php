@@ -71,6 +71,11 @@ class IndexController extends AbstractUserController
         $userCreateConfirmation = $this->flashBagValues->getSingle('user_create_confirmation');
         $email = strtolower(trim($request->query->get('email')));
 
+        if ($hasCoupon) {
+            $coupon = $this->couponService->get();
+            $this->plansService->setPriceModifier($coupon->getPriceModifier());
+        }
+
         $plans = $this->plansService->getList();
         $requestedPlan = $this->getRequestedPlan($request->query->get('plan'), $plans);
 
@@ -105,9 +110,7 @@ class IndexController extends AbstractUserController
 
         if ($hasCoupon) {
             $coupon = $this->couponService->get();
-
             $viewData['coupon'] = $coupon;
-            $this->plansService->setPriceModifier($coupon->getPriceModifier());
         }
 
         $response = $this->renderWithDefaultViewParameters(
