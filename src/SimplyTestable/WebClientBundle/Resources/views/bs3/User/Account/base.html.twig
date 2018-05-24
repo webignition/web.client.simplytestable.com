@@ -1,5 +1,16 @@
 {% extends 'SimplyTestableWebClientBundle::bs3/base.html.twig' %}
 
+{% block javascripts %}
+    {{ parent() }}
+
+    {% javascripts
+        '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/modernizer-custom.min.js'
+        '@SimplyTestableWebClientBundle/Resources/assets/vendor/stickyfill/stickyfill-2.0.3/dist/stickyfill.min.js'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
 {% block body_attrs %}data-spy="scroll" data-target=".sidenav" data-offset="100"{% endblock %}
 
 {% block body_class %} {{ parent() }} user-account {% endblock %}
@@ -14,7 +25,7 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-3 col-md-4 col-sm-5 hidden-xs sidenav">
+            <div class="col-lg-3 col-md-4 col-sm-5 hidden-xs sidenav js-sticky-nav">
                 {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:sidenav.html.twig' %}
             </div>
             <div class="col-lg-6 col-md-8 col-sm-7 account-content">
