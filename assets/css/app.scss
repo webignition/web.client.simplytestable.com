@@ -138,3 +138,7 @@ body {
     @import "page/test-results-rejected";
   }
 }
+
+.prettyprint {
+  @import "~color-themes-for-google-code-prettify/src/themes/github";
+}
