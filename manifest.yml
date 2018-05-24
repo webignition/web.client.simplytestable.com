@@ -1,3 +1,4 @@
 src/SimplyTestable/WebClientBundle/Resources/assets/vendor:
   jquery-scrollto: https://github.com/flesler/jquery.scrollTo/archive/1.4.12.zip
-  google-code-prettify: https://github.com/google/code-prettify/releases/download/2013-03-04/prettify-small-4-Mar-2013.tar.bz2
+  google-code-prettify: https://github.com/google/code-prettify/archive/2013-03-04.zip
+  spark-md5: https://github.com/satazor/js-spark-md5/archive/3.0.0.zip
