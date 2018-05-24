@@ -8,7 +8,6 @@
     {% javascripts
         '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormErrorHelper.js'
         '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
-        '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/reset-password-choose.js'
         '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/form-helper.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
@@ -23,7 +22,7 @@
         Hello <strong>{{ email }}</strong>.
 
         Pop in your choice of new password below.
-    </p> 
+    </p>
 
     <form role="form" method="post" action="{{ path('reset_password_choose_submit') }}">
         {% if user_reset_password_error is defined and user_reset_password_error != '' %}
@@ -32,21 +31,21 @@
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <p><strong>Sorry, I can't do that right now</strong></p>
                     <p>
-                        We're in a <strong>read-only</strong> state whilst some 
+                        We're in a <strong>read-only</strong> state whilst some
                         <strong>maintenance</strong> is going on.
                     </p>
                     <p>
                         Give it a go again soon, this won't take long.
                     </p>
-                </div>                
-            {% endif %}            
+                </div>
+            {% endif %}
 
             {% if user_reset_password_error == 'blank-password' %}
                 <div class="alert alert-danger" data-for="password">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <strong>Slow down!</strong> You're going to have to enter your choice of password.
-                </div>                
-            {% endif %}         
+                </div>
+            {% endif %}
 
             {% if user_reset_password_error == 'invalid-token' %}
                 <div class="alert alert-danger" data-for="password">
@@ -59,17 +58,17 @@
                     </p>
                     <div class="single-button-form">
                         <a class="btn btn-success" href="{{ path('view_user_resetpassword_index_index', {'email': email}) }}">Get a new password reset link <i class="fa fa-caret-right"></i></a>
-                    </div>    
-                </div>                
-            {% endif %}         
+                    </div>
+                </div>
+            {% endif %}
 
             {% if user_reset_password_error == 'unknown-error' %}
                 <div class="alert alert-danger" data-for="password">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <strong>Hmmm. </strong> Something went wrong and I have no idea what. Can you try again?
-                </div>                
-            {% endif %}          
-        {% endif %}  
+                </div>
+            {% endif %}
+        {% endif %}
 
         {% if user_reset_password_confirmation is defined and user_reset_password_confirmation != '' %}
             {% if user_reset_password_confirmation == 'token-sent' %}
@@ -83,25 +82,31 @@
                     </p>
                     <p>
                         Follow the link in the email to choose a new password.
-                    </p>            
+                    </p>
                 </div>
 
-            {% endif %}          
+            {% endif %}
         {% endif %}
 
         <div class="form-group-collection form-group-collection-single">
             <div class="input-group input-group-larger">
                 <input type="hidden" name="email" value="{{ email }}" />
-                <input type="hidden" name="token" value="{{ token }}" />                
-                <input type="password" class="form-control input-larger" id="password" name="password" placeholder="Choose a new password">
+                <input type="hidden" name="token" value="{{ token }}" />
+                <input type="password"
+                       class="form-control input-larger"
+                       id="password"
+                       name="password"
+                       placeholder="Choose a new password"
+                       data-focused
+                >
                 <span class="input-group-btn">
                     <button class="btn btn-primary" type="submit">Reset!</button>
-                </span>                  
-            </div>     
+                </span>
+            </div>
             <label class="checkbox">
                 <input type="checkbox" {% if stay_signed_in != "0" %}checked="checked"{% endif %} name="stay-signed-in" value="1"><span>Stay signed in</span>
             </label>
         </div>
-    </form> 
+    </form>
 
 {% endblock %}
