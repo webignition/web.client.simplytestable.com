@@ -9,7 +9,10 @@ use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAlreadyExistsException;
+use SimplyTestable\WebClientBundle\Request\User\SignInRequest;
 use SimplyTestable\WebClientBundle\Services\CouponService;
+use SimplyTestable\WebClientBundle\Services\Request\Factory\User\SignInRequestFactory;
+use SimplyTestable\WebClientBundle\Services\Request\Validator\User\SignInRequestValidator;
 use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
@@ -119,7 +122,9 @@ class UserController extends AbstractController
     /**
      * @param MailService $mailService
      * @param Twig_Environment $twig
-     * @param Request $request
+     * @param SignInRequestFactory $signInRequestFactory
+     * @param SignInRequestValidator $signInRequestValidator
+     *
      * @return RedirectResponse
      *
      * @throws CoreApplicationRequestException
@@ -128,53 +133,64 @@ class UserController extends AbstractController
      * @throws MailConfigurationException
      * @throws PostmarkResponseException
      */
-    public function signInSubmitAction(MailService $mailService, Twig_Environment $twig, Request $request)
-    {
-        $requestData = $request->request;
+    public function signInSubmitAction(
+        MailService $mailService,
+        Twig_Environment $twig,
+        SignInRequestFactory $signInRequestFactory,
+        SignInRequestValidator $signInRequestValidator
+    ) {
+        $signInRequest = $signInRequestFactory->create();
+        $signInRequestValidator->validate($signInRequest);
 
-        $email = strtolower(trim($requestData->get('email')));
-        $redirect = trim($requestData->get('redirect'));
-        $staySignedIn = empty(trim($requestData->get('stay-signed-in'))) ? 0 : 1;
-        $password = trim($requestData->get('password'));
+        $email = $signInRequest->getEmail();
+        $password = $signInRequest->getPassword();
+        $staySignedIn = $signInRequest->getStaySignedIn();
+        $redirect = $signInRequest->getRedirect();
 
         $flashBag = $this->session->getFlashBag();
 
-        if (empty($email)) {
-            $flashBag->set(
-                self::FLASH_BAG_SIGN_IN_ERROR_KEY,
-                self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_EMAIL_BLANK
-            );
+        if (false === $signInRequestValidator->getIsValid()) {
+            if (SignInRequest::PARAMETER_EMAIL === $signInRequestValidator->getInvalidFieldName()) {
+                if (SignInRequestValidator::STATE_EMPTY === $signInRequestValidator->getInvalidFieldState()) {
+                    $flashBag->set(
+                        self::FLASH_BAG_SIGN_IN_ERROR_KEY,
+                        self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_EMAIL_BLANK
+                    );
 
-            return $this->createSignInRedirectResponse([
-                'redirect' => $redirect,
-                'stay-signed-in' => $staySignedIn,
-            ]);
-        }
+                    return $this->createSignInRedirectResponse([
+                        'redirect' => $redirect,
+                        'stay-signed-in' => $staySignedIn,
+                    ]);
+                }
 
-        if (!$this->isEmailValid($email)) {
-            $flashBag->set(
-                self::FLASH_BAG_SIGN_IN_ERROR_KEY,
-                self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_EMAIL_INVALID
-            );
+                if (SignInRequestValidator::STATE_INVALID === $signInRequestValidator->getInvalidFieldState()) {
+                    $flashBag->set(
+                        self::FLASH_BAG_SIGN_IN_ERROR_KEY,
+                        self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_EMAIL_INVALID
+                    );
 
-            return $this->createSignInRedirectResponse([
-                'email' => $email,
-                'redirect' => $redirect,
-                'stay-signed-in' => $staySignedIn,
-            ]);
-        }
+                    return $this->createSignInRedirectResponse([
+                        'email' => $email,
+                        'redirect' => $redirect,
+                        'stay-signed-in' => $staySignedIn,
+                    ]);
+                }
+            }
 
-        if (empty($password)) {
-            $flashBag->set(
-                self::FLASH_BAG_SIGN_IN_ERROR_KEY,
-                self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_PASSWORD_BLANK
-            );
+            if (SignInRequest::PARAMETER_PASSWORD === $signInRequestValidator->getInvalidFieldName()) {
+                if (SignInRequestValidator::STATE_EMPTY === $signInRequestValidator->getInvalidFieldState()) {
+                    $flashBag->set(
+                        self::FLASH_BAG_SIGN_IN_ERROR_KEY,
+                        self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_PASSWORD_BLANK
+                    );
 
-            return $this->createSignInRedirectResponse([
-                'email' => $email,
-                'redirect' => $redirect,
-                'stay-signed-in' => $staySignedIn,
-            ]);
+                    return $this->createSignInRedirectResponse([
+                        'email' => $email,
+                        'redirect' => $redirect,
+                        'stay-signed-in' => $staySignedIn,
+                    ]);
+                }
+            }
         }
 
         $user = new User($email, $password);

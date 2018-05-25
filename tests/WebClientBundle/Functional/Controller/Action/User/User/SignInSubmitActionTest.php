@@ -2,11 +2,15 @@
 
 namespace Tests\WebClientBundle\Functional\Controller\Action\User\User;
 
+use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Controller\Action\User\UserController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Services\PostmarkSender;
+use SimplyTestable\WebClientBundle\Services\Request\Factory\User\SignInRequestFactory;
+use SimplyTestable\WebClientBundle\Services\Request\Validator\User\SignInRequestValidator;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -420,10 +424,17 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      */
     private function callSignInSubmitAction(Request $request)
     {
+        $requestStack = new RequestStack();
+        $requestStack->push($request);
+
+        $signInRequestFactory = new SignInRequestFactory($requestStack);
+        $signInRequestValidator = new SignInRequestValidator(new EmailValidator());
+
         return $this->userController->signInSubmitAction(
             $this->container->get(MailService::class),
             $this->container->get('twig'),
-            $request
+            $signInRequestFactory,
+            $signInRequestValidator
         );
     }
 }
