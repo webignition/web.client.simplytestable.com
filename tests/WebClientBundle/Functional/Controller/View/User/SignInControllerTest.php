@@ -91,10 +91,13 @@ class SignInControllerTest extends AbstractViewControllerTest
                             $this->assertCommonViewData($viewName, $parameters);
 
                             $this->assertEmpty($parameters['email']);
+                            $this->assertEmpty($parameters['error_field']);
+                            $this->assertEmpty($parameters['error_state']);
                             $this->assertEmpty($parameters['user_signin_error']);
                             $this->assertEmpty($parameters['user_signin_confirmation']);
                             $this->assertEmpty($parameters['redirect']);
                             $this->assertEmpty($parameters['stay_signed_in']);
+                            $this->assertEquals('email', $parameters['selected_field']);
 
                             return true;
                         },
@@ -115,10 +118,13 @@ class SignInControllerTest extends AbstractViewControllerTest
                             $this->assertCommonViewData($viewName, $parameters);
 
                             $this->assertEquals(self::USER_EMAIL, $parameters['email']);
+                            $this->assertEmpty($parameters['error_field']);
+                            $this->assertEmpty($parameters['error_state']);
                             $this->assertEmpty($parameters['user_signin_error']);
                             $this->assertEmpty($parameters['user_signin_confirmation']);
                             $this->assertEquals('foo', $parameters['redirect']);
                             $this->assertEquals(1, $parameters['stay_signed_in']);
+                            $this->assertEquals('password', $parameters['selected_field']);
 
                             return true;
                         },
@@ -138,10 +144,13 @@ class SignInControllerTest extends AbstractViewControllerTest
                             $this->assertCommonViewData($viewName, $parameters);
 
                             $this->assertEmpty($parameters['email']);
+                            $this->assertEmpty($parameters['error_field']);
+                            $this->assertEmpty($parameters['error_state']);
                             $this->assertEquals('account-not-logged-in', $parameters['user_signin_error']);
                             $this->assertEquals('user-activated', $parameters['user_signin_confirmation']);
                             $this->assertEmpty($parameters['redirect']);
                             $this->assertEmpty($parameters['stay_signed_in']);
+                            $this->assertEquals('email', $parameters['selected_field']);
 
                             return true;
                         },
@@ -197,10 +206,13 @@ class SignInControllerTest extends AbstractViewControllerTest
                 'user',
                 'is_logged_in',
                 'email',
+                'error_field',
+                'error_state',
                 'user_signin_error',
                 'user_signin_confirmation',
                 'redirect',
                 'stay_signed_in',
+                'selected_field',
             ],
             array_keys($parameters)
         );
