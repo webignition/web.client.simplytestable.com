@@ -60,6 +60,13 @@ class SignInRequestValidatorTest extends \PHPUnit_Framework_TestCase
                 'expectedInvalidFieldName' => SignInRequest::PARAMETER_PASSWORD,
                 'expectedInvalidFieldState' => SignInRequestValidator::STATE_EMPTY,
             ],
+            'public user' => [
+                'emailValidator' => $this->createEmailValidator(true),
+                'signInRequest' => new SignInRequest('public@simplytestable.com', 'foo', '', false),
+                'expectedIsValid' => false,
+                'expectedInvalidFieldName' => SignInRequest::PARAMETER_EMAIL,
+                'expectedInvalidFieldState' => SignInRequestValidator::STATE_PUBLIC_USER,
+            ],
             'valid' => [
                 'emailValidator' => $this->createEmailValidator(true),
                 'signInRequest' => new SignInRequest('user@example.com', 'password value', '', false),

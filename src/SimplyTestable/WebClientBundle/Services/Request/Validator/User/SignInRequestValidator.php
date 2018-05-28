@@ -4,11 +4,14 @@ namespace SimplyTestable\WebClientBundle\Services\Request\Validator\User;
 
 use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Request\User\SignInRequest;
+use SimplyTestable\WebClientBundle\Services\SystemUserService;
+use webignition\SimplyTestableUserModel\User;
 
 class SignInRequestValidator
 {
     const STATE_EMPTY = 'empty';
     const STATE_INVALID = 'invalid';
+    const STATE_PUBLIC_USER = 'public-user';
 
     /**
      * @var EmailValidator
@@ -67,6 +70,15 @@ class SignInRequestValidator
             $this->isValid = false;
             $this->invalidFieldName = SignInRequest::PARAMETER_PASSWORD;
             $this->invalidFieldState = self::STATE_EMPTY;
+
+            return;
+        }
+
+        $user = new User($email, $password);
+        if (SystemUserService::isPublicUser($user)) {
+            $this->isValid = false;
+            $this->invalidFieldName = SignInRequest::PARAMETER_EMAIL;
+            $this->invalidFieldState = self::STATE_PUBLIC_USER;
 
             return;
         }
