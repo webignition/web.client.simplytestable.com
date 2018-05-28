@@ -52,84 +52,41 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         $this->assertEquals('/', $response->getTargetUrl());
     }
 
-    /**
-     * @dataProvider signInSubmitActionBadRequestDataProvider
-     *
-     * @param Request $request
-     * @param $expectedRedirectLocation
-     * @param array $expectedFlashBagValues
-     *
-     * @throws MailConfigurationException
-     * @throws PostmarkResponseException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     */
-    public function testSignInSubmitActionBadRequest(
-        Request $request,
-        $expectedRedirectLocation,
-        array $expectedFlashBagValues
-    ) {
+    public function testSignInSubmitActionBadRequest()
+    {
+        $request = new Request();
+        $signInRequestValidator = \Mockery::mock(SignInRequestValidator::class);
+
+        $signInRequestValidator
+            ->shouldReceive('validate')
+            ->withArgs(function () {
+                return true;
+            });
+
+        $signInRequestValidator
+            ->shouldReceive('getIsValid')
+            ->andReturn(false);
+
+        $signInRequestValidator
+            ->shouldReceive('getInvalidFieldName')
+            ->andReturn('email');
+
+        $signInRequestValidator
+            ->shouldReceive('getInvalidFieldState')
+            ->andReturn('empty');
+
         $session = $this->container->get('session');
 
-        $response = $this->callSignInSubmitAction($request);
+        $response = $this->callSignInSubmitAction($request, $signInRequestValidator);
 
-        $this->assertEquals($expectedRedirectLocation, $response->getTargetUrl());
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
-    }
-
-    /**
-     * @return array
-     */
-    public function signInSubmitActionBadRequestDataProvider()
-    {
-        return [
-            'empty email' => [
-                'request' => new Request(),
-                'expectedRedirectLocation' => '/signin/?redirect=&stay-signed-in=0',
-                'expectedFlashBagValues' => [
-                    UserController::FLASH_BAG_SIGN_IN_ERROR_KEY => [
-                        UserController::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_EMAIL_BLANK,
-                    ]
-                ],
+        $this->assertEquals('/signin/?stay-signed-in=0', $response->getTargetUrl());
+        $this->assertEquals(
+            [
+                UserController::FLASH_SIGN_IN_ERROR_FIELD_KEY => ['email'],
+                UserController::FLASH_SIGN_IN_ERROR_STATE_KEY => ['empty'],
             ],
-            'invalid email' => [
-                'request' => new Request([], [
-                    'email' => 'foo',
-                ]),
-                'expectedRedirectLocation' => '/signin/?email=foo&redirect=&stay-signed-in=0',
-                'expectedFlashBagValues' => [
-                    UserController::FLASH_BAG_SIGN_IN_ERROR_KEY => [
-                        UserController::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_EMAIL_INVALID,
-                    ]
-                ],
-            ],
-            'empty password' => [
-                'request' => new Request([], [
-                    'email' => self::EMAIL,
-                ]),
-                'expectedRedirectLocation' =>
-                    '/signin/?email=user%40example.com&redirect=&stay-signed-in=0',
-                'expectedFlashBagValues' => [
-                    UserController::FLASH_BAG_SIGN_IN_ERROR_KEY => [
-                        UserController::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_PASSWORD_BLANK,
-                    ]
-                ],
-            ],
-            'public user' => [
-                'request' => new Request([], [
-                    'email' => 'public@simplytestable.com',
-                    'password' => 'foo',
-                ]),
-                'expectedRedirectLocation' =>
-                    '/signin/?email=public%40simplytestable.com&redirect=&stay-signed-in=0',
-                'expectedFlashBagValues' => [
-                    UserController::FLASH_BAG_SIGN_IN_ERROR_KEY => [
-                        UserController::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_PUBLIC_USER,
-                    ]
-                ],
-            ],
-        ];
+            $session->getFlashBag()->peekAll()
+        );
     }
 
     /**
@@ -160,7 +117,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         $response = $this->callSignInSubmitAction($request);
 
         $this->assertEquals(
-            '/signin/?email=user%40example.com&redirect=&stay-signed-in=0',
+            '/signin/?email=user%40example.com&stay-signed-in=0',
             $response->getTargetUrl()
         );
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -180,9 +137,8 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'expectedFlashBagValues' => [
-                    UserController::FLASH_BAG_SIGN_IN_ERROR_KEY => [
-                        UserController::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_INVALID_USER,
-                    ]
+                    UserController::FLASH_SIGN_IN_ERROR_FIELD_KEY => ['email'],
+                    UserController::FLASH_SIGN_IN_ERROR_STATE_KEY => ['invalid-user'],
                 ],
             ],
             'user is enabled' => [
@@ -192,9 +148,8 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                     HttpResponseFactory::createSuccessResponse(),
                 ],
                 'expectedFlashBagValues' => [
-                    UserController::FLASH_BAG_SIGN_IN_ERROR_KEY => [
-                        UserController::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_AUTHENTICATION_FAILURE,
-                    ]
+                    UserController::FLASH_SIGN_IN_ERROR_FIELD_KEY => ['email'],
+                    UserController::FLASH_SIGN_IN_ERROR_STATE_KEY => ['authentication-failure'],
                 ],
             ],
         ];
@@ -247,15 +202,14 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         $response = $this->callSignInSubmitAction($request);
 
         $this->assertEquals(
-            sprintf('/signin/?email=%s&redirect=&stay-signed-in=0', urlencode(self::EMAIL)),
+            sprintf('/signin/?email=%s&stay-signed-in=0', urlencode(self::EMAIL)),
             $response->getTargetUrl()
         );
 
         $this->assertEquals(
             [
-                UserController::FLASH_BAG_SIGN_IN_ERROR_KEY => [
-                    UserController::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_USER_NOT_ENABLED,
-                ]
+                UserController::FLASH_SIGN_IN_ERROR_FIELD_KEY => ['email'],
+                UserController::FLASH_SIGN_IN_ERROR_STATE_KEY => ['user-not-enabled'],
             ],
             $session->getFlashBag()->peekAll()
         );
@@ -415,6 +369,8 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
 
     /**
      * @param Request $request
+     * @param SignInRequestValidator|null $signInRequestValidator
+     *
      * @return RedirectResponse
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
@@ -422,13 +378,16 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      * @throws MailConfigurationException
      * @throws PostmarkResponseException
      */
-    private function callSignInSubmitAction(Request $request)
+    private function callSignInSubmitAction(Request $request, $signInRequestValidator = null)
     {
         $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $signInRequestFactory = new SignInRequestFactory($requestStack);
-        $signInRequestValidator = new SignInRequestValidator(new EmailValidator());
+
+        if (empty($signInRequestValidator)) {
+            $signInRequestValidator = new SignInRequestValidator(new EmailValidator());
+        }
 
         return $this->userController->signInSubmitAction(
             $this->container->get(MailService::class),
@@ -436,5 +395,15 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             $signInRequestFactory,
             $signInRequestValidator
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        \Mockery::close();
     }
 }

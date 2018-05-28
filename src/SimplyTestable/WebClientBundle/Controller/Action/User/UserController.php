@@ -11,10 +11,10 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAlreadyExistsException;
 use SimplyTestable\WebClientBundle\Request\User\SignInRequest;
 use SimplyTestable\WebClientBundle\Services\CouponService;
+use SimplyTestable\WebClientBundle\Services\RedirectResponseFactory;
 use SimplyTestable\WebClientBundle\Services\Request\Factory\User\SignInRequestFactory;
 use SimplyTestable\WebClientBundle\Services\Request\Validator\User\SignInRequestValidator;
 use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
-use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -36,13 +36,13 @@ class UserController extends AbstractController
     const ONE_YEAR_IN_SECONDS = 31536000;
 
     const FLASH_BAG_SIGN_IN_ERROR_KEY = 'user_signin_error';
-    const FLASH_BAG_SIGN_IN_ERROR_MESSAGE_EMAIL_BLANK = 'blank-email';
-    const FLASH_BAG_SIGN_IN_ERROR_MESSAGE_EMAIL_INVALID = 'invalid-email';
-    const FLASH_BAG_SIGN_IN_ERROR_MESSAGE_PASSWORD_BLANK = 'blank-password';
-    const FLASH_BAG_SIGN_IN_ERROR_MESSAGE_PUBLIC_USER = 'public-user';
-    const FLASH_BAG_SIGN_IN_ERROR_MESSAGE_INVALID_USER = 'invalid-user';
-    const FLASH_BAG_SIGN_IN_ERROR_MESSAGE_AUTHENTICATION_FAILURE = 'authentication-failure';
-    const FLASH_BAG_SIGN_IN_ERROR_MESSAGE_USER_NOT_ENABLED = 'user-not-enabled';
+
+    const FLASH_SIGN_IN_ERROR_FIELD_KEY = 'user_signin_error_field';
+    const FLASH_SIGN_IN_ERROR_STATE_KEY = 'user_signin_error_state';
+    const FLASH_SIGN_IN_ERROR_STATE_PUBLIC_USER = 'public-user';
+    const FLASH_SIGN_IN_ERROR_STATE_INVALID_USER = 'invalid-user';
+    const FLASH_SIGN_IN_ERROR_STATE_AUTHENTICATION_FAILURE = 'authentication-failure';
+    const FLASH_SIGN_IN_ERROR_STATE_USER_NOT_ENABLED = 'user-not-enabled';
 
     const FLASH_BAG_SIGN_UP_ERROR_KEY = 'user_create_error';
     const FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_BLANK = 'blank-email';
@@ -86,16 +86,23 @@ class UserController extends AbstractController
     private $session;
 
     /**
+     * @var RedirectResponseFactory
+     */
+    private $redirectResponseFactory;
+
+    /**
      * @param RouterInterface $router
      * @param UserManager $userManager
      * @param UserService $userService
      * @param SessionInterface $session
+     * @param RedirectResponseFactory $redirectResponseFactory
      */
     public function __construct(
         RouterInterface $router,
         UserManager $userManager,
         UserService $userService,
-        SessionInterface $session
+        SessionInterface $session,
+        RedirectResponseFactory $redirectResponseFactory
     ) {
         parent::__construct($router);
 
@@ -103,6 +110,7 @@ class UserController extends AbstractController
         $this->userService = $userService;
         $this->router = $router;
         $this->session = $session;
+        $this->redirectResponseFactory = $redirectResponseFactory;
     }
 
     /**
@@ -149,96 +157,38 @@ class UserController extends AbstractController
 
         $flashBag = $this->session->getFlashBag();
 
+        $signInRedirectResponse = $this->redirectResponseFactory->createSignInRedirectResponse($signInRequest);
+
         if (false === $signInRequestValidator->getIsValid()) {
-            if (SignInRequest::PARAMETER_EMAIL === $signInRequestValidator->getInvalidFieldName()) {
-                if (SignInRequestValidator::STATE_EMPTY === $signInRequestValidator->getInvalidFieldState()) {
-                    $flashBag->set(
-                        self::FLASH_BAG_SIGN_IN_ERROR_KEY,
-                        self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_EMAIL_BLANK
-                    );
+            $flashBag->set(self::FLASH_SIGN_IN_ERROR_FIELD_KEY, $signInRequestValidator->getInvalidFieldName());
+            $flashBag->set(self::FLASH_SIGN_IN_ERROR_STATE_KEY, $signInRequestValidator->getInvalidFieldState());
 
-                    return $this->createSignInRedirectResponse([
-                        'redirect' => $redirect,
-                        'stay-signed-in' => $staySignedIn,
-                    ]);
-                }
-
-                if (SignInRequestValidator::STATE_INVALID === $signInRequestValidator->getInvalidFieldState()) {
-                    $flashBag->set(
-                        self::FLASH_BAG_SIGN_IN_ERROR_KEY,
-                        self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_EMAIL_INVALID
-                    );
-
-                    return $this->createSignInRedirectResponse([
-                        'email' => $email,
-                        'redirect' => $redirect,
-                        'stay-signed-in' => $staySignedIn,
-                    ]);
-                }
-            }
-
-            if (SignInRequest::PARAMETER_PASSWORD === $signInRequestValidator->getInvalidFieldName()) {
-                if (SignInRequestValidator::STATE_EMPTY === $signInRequestValidator->getInvalidFieldState()) {
-                    $flashBag->set(
-                        self::FLASH_BAG_SIGN_IN_ERROR_KEY,
-                        self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_PASSWORD_BLANK
-                    );
-
-                    return $this->createSignInRedirectResponse([
-                        'email' => $email,
-                        'redirect' => $redirect,
-                        'stay-signed-in' => $staySignedIn,
-                    ]);
-                }
-            }
+            return $signInRedirectResponse;
         }
 
         $user = new User($email, $password);
-
-        if (SystemUserService::isPublicUser($user)) {
-            $flashBag->set(
-                self::FLASH_BAG_SIGN_IN_ERROR_KEY,
-                self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_PUBLIC_USER
-            );
-
-            return $this->createSignInRedirectResponse([
-                'email' => $email,
-                'redirect' => $redirect,
-                'stay-signed-in' => $staySignedIn,
-            ]);
-        }
-
         $this->userManager->setUser($user);
 
         if (!$this->userService->authenticate()) {
             if (!$this->userService->exists()) {
                 $this->userManager->clearSessionUser();
 
-                $flashBag->set(
-                    self::FLASH_BAG_SIGN_IN_ERROR_KEY,
-                    self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_INVALID_USER
-                );
+                $flashBag->set(self::FLASH_SIGN_IN_ERROR_FIELD_KEY, SignInRequest::PARAMETER_EMAIL);
+                $flashBag->set(self::FLASH_SIGN_IN_ERROR_STATE_KEY, self::FLASH_SIGN_IN_ERROR_STATE_INVALID_USER);
 
-                return $this->createSignInRedirectResponse([
-                    'email' => $email,
-                    'redirect' => $redirect,
-                    'stay-signed-in' => $staySignedIn,
-                ]);
+                return $signInRedirectResponse;
             }
 
             if ($this->userService->isEnabled()) {
                 $this->userManager->clearSessionUser();
 
+                $flashBag->set(self::FLASH_SIGN_IN_ERROR_FIELD_KEY, SignInRequest::PARAMETER_EMAIL);
                 $flashBag->set(
-                    self::FLASH_BAG_SIGN_IN_ERROR_KEY,
-                    self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_AUTHENTICATION_FAILURE
+                    self::FLASH_SIGN_IN_ERROR_STATE_KEY,
+                    self::FLASH_SIGN_IN_ERROR_STATE_AUTHENTICATION_FAILURE
                 );
 
-                return $this->createSignInRedirectResponse([
-                    'email' => $email,
-                    'redirect' => $redirect,
-                    'stay-signed-in' => $staySignedIn,
-                ]);
+                return $signInRedirectResponse;
             }
 
             $this->userManager->clearSessionUser();
@@ -247,16 +197,10 @@ class UserController extends AbstractController
 
             $this->sendConfirmationToken($mailService, $twig, $email, $token);
 
-            $flashBag->set(
-                self::FLASH_BAG_SIGN_IN_ERROR_KEY,
-                self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_USER_NOT_ENABLED
-            );
+            $flashBag->set(self::FLASH_SIGN_IN_ERROR_FIELD_KEY, SignInRequest::PARAMETER_EMAIL);
+            $flashBag->set(self::FLASH_SIGN_IN_ERROR_STATE_KEY, self::FLASH_SIGN_IN_ERROR_STATE_USER_NOT_ENABLED);
 
-            return $this->createSignInRedirectResponse([
-                'email' => $email,
-                'redirect' => $redirect,
-                'stay-signed-in' => $staySignedIn,
-            ]);
+            return $signInRedirectResponse;
         }
 
         if (!$this->userService->isEnabled()) {
@@ -265,16 +209,10 @@ class UserController extends AbstractController
             $token = $this->userService->getConfirmationToken($email);
             $this->sendConfirmationToken($mailService, $twig, $email, $token);
 
-            $flashBag->set(
-                self::FLASH_BAG_SIGN_IN_ERROR_KEY,
-                self::FLASH_BAG_SIGN_IN_ERROR_MESSAGE_USER_NOT_ENABLED
-            );
+            $flashBag->set(self::FLASH_SIGN_IN_ERROR_FIELD_KEY, SignInRequest::PARAMETER_EMAIL);
+            $flashBag->set(self::FLASH_SIGN_IN_ERROR_STATE_KEY, self::FLASH_SIGN_IN_ERROR_STATE_USER_NOT_ENABLED);
 
-            return $this->createSignInRedirectResponse([
-                'email' => $email,
-                'redirect' => $redirect,
-                'stay-signed-in' => $staySignedIn,
-            ]);
+            return $signInRedirectResponse;
         }
 
         $response = $this->createPostSignInRedirectResponse($redirect);
@@ -677,16 +615,6 @@ class UserController extends AbstractController
         $validator = new EmailValidator();
 
         return $validator->isValid($email);
-    }
-
-    /**
-     * @param array $routeParameters
-     *
-     * @return RedirectResponse
-     */
-    private function createSignInRedirectResponse(array $routeParameters)
-    {
-        return new RedirectResponse($this->generateUrl('view_user_signin_index', $routeParameters));
     }
 
     /**
