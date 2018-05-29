@@ -8,11 +8,10 @@
     {% javascripts
         '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormErrorHelper.js'
         '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
-        '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/sign-up-confirm.js'
         '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/form-helper.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %} 
+    {% endjavascripts %}
 
 {% endblock %}
 
@@ -177,7 +176,14 @@
 
         <div class="form-group-collection form-group-collection-single">
             <div class="input-group input-group-larger">
-                <input type="text" class="form-control" id="token" name="token" placeholder="Enter your activation code (it was emailed to you)" value="{{ token }}">
+                <input type="text"
+                       class="form-control"
+                       id="token"
+                       name="token"
+                       placeholder="Enter your activation code (it was emailed to you)"
+                       value="{{ token }}"
+                       data-focused
+                >
             <span class="input-group-btn">
                 <button class="btn btn-primary" type="submit">Activate!</button>
             </span>
