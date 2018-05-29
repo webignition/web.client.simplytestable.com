@@ -14,7 +14,6 @@
     {% javascripts
         '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormErrorHelper.js'
         '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
-        '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/sign-up-invite-confirm.js'
         '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/form-helper.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
@@ -103,7 +102,13 @@
             <div class="form-group-collection">
                 <div class="form-group">
                     <label for="password">Choose a password</label>
-                    <input type="password" class="form-control input-larger" id="password" name="password" placeholder="Choose a password for your account">
+                    <input type="password"
+                           class="form-control input-larger"
+                           id="password"
+                           name="password"
+                           placeholder="Choose a password for your account"
+                           data-focused
+                    >
                 </div>
             </div>
 
