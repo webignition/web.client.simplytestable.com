@@ -1,5 +1,8 @@
 {% extends 'SimplyTestableWebClientBundle::bs3/Abstract/single-page-dialog.html.twig' %}
 
+{% set field_email = constant('SimplyTestable\\WebClientBundle\\Request\\User\\SignUpRequest::PARAMETER_EMAIL') %}
+{% set field_password = constant('SimplyTestable\\WebClientBundle\\Request\\User\\SignUpRequest::PARAMETER_PASSWORD') %}
+
 {% block title %}Sign up - {{ parent() }}{% endblock %}
 
 {% block javascripts %}
@@ -8,7 +11,6 @@
     {% javascripts
         '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormErrorHelper.js'
         '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
-        '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/sign-up.js'
         '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/form-helper.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
@@ -26,7 +28,7 @@
         <a class="account-benefits-link" href="{{ [public_site.urls.home,public_site.urls.account_benefits]|join('') }}">Account benefits <i class="fa fa-caret-right"></i></a>
     </p>
 
-    {% if has_coupon %}
+    {% if coupon %}
         <div class="alert alert-info alert-coupon">
             <p>
                 {{ coupon.intro|raw }}
@@ -37,8 +39,7 @@
 
     <form class="js-form-button-spinner" role="form" method="post" action="{{ path('sign_up_submit') }}" novalidate>
 
-        {% if user_create_confirmation is defined and user_create_confirmation == 'user-exists' %}
-
+        {% if user_create_confirmation == 'user-exists' %}
             <div class="alert alert-success" data-for="email">
                 <button type="button" class="close" data-dismiss="alert">×</button>
                 <p>
@@ -47,104 +48,106 @@
                     Do you need to <a href="{{ path('view_user_resetpassword_index_index', {'email': email}) }}">reset your password</a>?
                 </p>
             </div>
-
         {% endif %}
 
-        {% if user_create_error is defined and user_create_error != '' %}
-            {% if user_create_error == 'blank-email' %}
-                <div class="alert alert-danger for:email" data-for="email">
-                    <button type="button" class="close" data-dismiss="alert">×</button>
-                    <strong>Slow down!</strong> You're going to have to enter in your email address to sign up.
-                </div>
-            {% endif %}
+        {% if error_field == 'email' and error_state == 'empty' %}
+            <div class="alert alert-danger for:email" data-for="email">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>Slow down!</strong> You're going to have to enter in your email address to sign up.
+            </div>
+        {% endif %}
 
-            {% if user_create_error == 'blank-password' %}
-                <div class="alert alert-danger">
-                    <button type="button" class="close" data-dismiss="alert">×</button>
-                    <strong>Slow down!</strong> You're going to have to choose a password for your account.
-                </div>
-            {% endif %}
+        {% if error_field == 'email' and error_state == 'invalid' %}
+            <div class="alert alert-danger" data-for="email">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>Hmmm.</strong> I'm not convinced that <strong>{{ email }}</strong> is a valid email address.
+            </div>
+        {% endif %}
 
-            {% if user_create_error == 'postmark-not-allowed-to-send' %}
-                <div class="alert alert-info" data-for="email">
-                    <button type="button" class="close" data-dismiss="alert">×</button>
+        {% if error_field == 'password' and error_state == 'empty' %}
+            <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>Slow down!</strong> You're going to have to choose a password for your account.
+            </div>
+        {% endif %}
 
-                    <p>
-                        <strong>Well, this is embarrassing.</strong>
-                    </p>
+        {% if user_create_error == 'postmark-not-allowed-to-send' %}
+            <div class="alert alert-info" data-for="email">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <p>
+                    <strong>Well, this is embarrassing.</strong>
+                </p>
+                <p>
+                    I can't send email at the moment. Neither can I email my makers so that they can fix this. Awkward.
+                </p>
+                <p>
+                    You're a nice person. Could you <a href="{{ external_links.contact_email }}">email my makers</a> so that they can fix this?
+                </p>
+            </div>
+        {% endif %}
 
-                    <p>
-                        I can't send email at the moment. Neither can I email my makers so that they can fix this. Awkward.
-                    </p>
+        {% if user_create_error == 'postmark-inactive-recipient' %}
+            <div class="alert alert-danger" data-for="email">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <p>
+                    <strong>Hmmm. That's not going to work.</strong>
+                </p>
+                <p>
+                    I can't send a confirmation email to <strong>{{ email }}</strong>.
+                </p>
+                <p>
+                    Perhaps your mailbox is full, perhaps the email address doesn't exist.
+                </p>
+                <p>
+                    Maybe try with a different email address?
+                </p>
+            </div>
+        {% endif %}
 
-                    <p>
-                        You're a nice person. Could you <a href="{{ external_links.contact_email }}">email my makers</a> so that they can fix this?
-                    </p>
-                </div>
-            {% endif %}
+        {% if user_create_error == 'create-failed' %}
+            <div class="alert alert-danger" data-for="email">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>Something went wrong.</strong> I tried to sign up <strong>{{ email }}</strong> but it didn't
+                work. I don't know why.
+            </div>
+        {% endif %}
 
-            {% if user_create_error == 'postmark-inactive-recipient' %}
-                <div class="alert alert-danger" data-for="email">
-                    <button type="button" class="close" data-dismiss="alert">×</button>
-
-                    <p>
-                        <strong>Hmmm. That's not going to work.</strong>
-                    </p>
-
-                    <p>
-                        I can't send a confirmation email to <strong>{{ email }}</strong>.
-                    </p>
-
-                    <p>
-                        Perhaps your mailbox is full, perhaps the email address doesn't exist.
-                    </p>
-
-                    <p>
-                        Maybe try with a different email address?
-                    </p>
-
-                </div>
-            {% endif %}
-
-            {% if user_create_error == 'invalid-email' %}
-                <div class="alert alert-danger" data-for="email">
-                    <button type="button" class="close" data-dismiss="alert">×</button>
-                    <strong>Hmmm.</strong> I'm not convinced that <strong>{{ email }}</strong> is a valid email address.
-                </div>
-            {% endif %}
-
-            {% if user_create_error == 'create-failed' %}
-                <div class="alert alert-danger" data-for="email">
-                    <button type="button" class="close" data-dismiss="alert">×</button>
-                    <strong>Something went wrong.</strong> I tried to sign up <strong>{{ email }}</strong> but it didn't
-                    work. I don't know why.
-                </div>
-            {% endif %}
-
-            {% if user_create_error == 'create-failed-read-only' %}
-                <div class="alert alert-danger for:email" data-for="email">
-                    <button type="button" class="close" data-dismiss="alert">×</button>
-                    <p><strong>Sorry, I can't do that right now</strong></p>
-                    <p>
-                        We're in a <strong>read-only</strong> state whilst some
-                        <strong>maintenance</strong> is going on.
-                    </p>
-                    <p>
-                        Give it a go again soon, this won't take long.
-                    </p>
-                </div>
-            {% endif %}
+        {% if user_create_error == 'create-failed-read-only' %}
+            <div class="alert alert-danger for:email" data-for="email">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <p><strong>Sorry, I can't do that right now</strong></p>
+                <p>
+                    We're in a <strong>read-only</strong> state whilst some
+                    <strong>maintenance</strong> is going on.
+                </p>
+                <p>
+                    Give it a go again soon, this won't take long.
+                </p>
+            </div>
         {% endif %}
 
         <div class="form-group-collection">
             <div class="form-group">
                 <label for="email">Email address</label>
-                <input name="email" type="email" class="form-control input-larger" id="email" placeholder="Enter your email address" {% if email != '' %} value="{{ email }}" {% endif %}>
+                <input name="{{ field_email }}"
+                       type="email"
+                       class="form-control input-larger"
+                       id="email"
+                       placeholder="Enter your email address"
+                       value="{{ email }}"
+                       {{ selected_field == field_email ? 'data-focused' : '' }}
+                >
             </div>
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input name="password" type="password" class="form-control input-larger" id="password" placeholder="Choose a password">
+                <input name="{{ field_password }}"
+                       type="password"
+                       class="form-control input-larger"
+                       id="password"
+                       placeholder="Choose a password"
+                       {{ selected_field == field_password ? 'data-focused' : '' }}
+                >
             </div>
         </div>
         <div class="form-group-collection plan-selection">
@@ -154,7 +157,10 @@
                     <a href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">Plans and pricing <i class="fa fa-caret-right"></i></a>
                 </p>
 
-                {% include 'SimplyTestableWebClientBundle:bs3/Partials/Plan:selection.html.twig' with {selected_plan: plan} %}
+                {% include 'SimplyTestableWebClientBundle:bs3/Partials/Plan:selection.html.twig' with {
+                    selected_plan: plan,
+                    has_coupon: coupon is not null
+                } %}
             </div>
         </div>
 

@@ -6,7 +6,9 @@ use SimplyTestable\WebClientBundle\Controller\Action\User\UserController;
 use SimplyTestable\WebClientBundle\Controller\View\User\SignUp\IndexController;
 use SimplyTestable\WebClientBundle\Model\Coupon;
 use SimplyTestable\WebClientBundle\Model\User\Plan;
+use SimplyTestable\WebClientBundle\Request\User\SignUpRequest;
 use SimplyTestable\WebClientBundle\Services\CouponService;
+use SimplyTestable\WebClientBundle\Services\Request\Validator\User\UserAccountRequestValidator;
 use Tests\WebClientBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
@@ -90,13 +92,13 @@ class IndexControllerTest extends AbstractViewControllerTest
                             $this->assertCommonViewData($viewName, $parameters);
 
                             $this->assertEmpty($parameters['email']);
+                            $this->assertEmpty($parameters['error_field']);
+                            $this->assertEmpty($parameters['error_state']);
+                            $this->assertEmpty($parameters['user_create_error']);
+                            $this->assertEmpty($parameters['user_create_confirmation']);
                             $this->assertEquals('personal', $parameters['plan']);
                             $this->assertEmpty($parameters['redirect']);
-                            $this->assertFalse($parameters['has_coupon']);
-
-                            $this->assertArrayNotHasKey('user_create_error', $parameters);
-                            $this->assertArrayNotHasKey('user_create_confirmation', $parameters);
-                            $this->assertArrayNotHasKey('coupon', $parameters);
+                            $this->assertEmpty($parameters['coupon']);
 
                             return true;
                         },
@@ -116,13 +118,13 @@ class IndexControllerTest extends AbstractViewControllerTest
                             $this->assertCommonViewData($viewName, $parameters);
 
                             $this->assertEmpty($parameters['email']);
+                            $this->assertEmpty($parameters['error_field']);
+                            $this->assertEmpty($parameters['error_state']);
+                            $this->assertEmpty($parameters['user_create_error']);
+                            $this->assertEmpty($parameters['user_create_confirmation']);
                             $this->assertEquals('personal', $parameters['plan']);
                             $this->assertEmpty($parameters['redirect']);
-                            $this->assertFalse($parameters['has_coupon']);
-
-                            $this->assertArrayNotHasKey('user_create_error', $parameters);
-                            $this->assertArrayNotHasKey('user_create_confirmation', $parameters);
-                            $this->assertArrayNotHasKey('coupon', $parameters);
+                            $this->assertEmpty($parameters['coupon']);
 
                             return true;
                         },
@@ -144,13 +146,13 @@ class IndexControllerTest extends AbstractViewControllerTest
                             $this->assertCommonViewData($viewName, $parameters);
 
                             $this->assertEquals(self::USER_EMAIL, $parameters['email']);
+                            $this->assertEmpty($parameters['error_field']);
+                            $this->assertEmpty($parameters['error_state']);
+                            $this->assertEmpty($parameters['user_create_error']);
+                            $this->assertEmpty($parameters['user_create_confirmation']);
                             $this->assertEquals('agency', $parameters['plan']);
                             $this->assertEquals('foo', $parameters['redirect']);
-                            $this->assertFalse($parameters['has_coupon']);
-
-                            $this->assertArrayNotHasKey('user_create_error', $parameters);
-                            $this->assertArrayNotHasKey('user_create_confirmation', $parameters);
-                            $this->assertArrayNotHasKey('coupon', $parameters);
+                            $this->assertEmpty($parameters['coupon']);
 
                             return true;
                         },
@@ -159,12 +161,12 @@ class IndexControllerTest extends AbstractViewControllerTest
                 ]),
                 'expectedHasRedirectCookie' => true,
             ],
-            'user_create_error and user_create_confirmation' => [
+            'invalid email with error_field and error_state' => [
                 'flashBagValues' => [
-                    UserController::FLASH_BAG_SIGN_UP_ERROR_KEY =>
-                        UserController::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_INVALID,
-                    UserController::FLASH_BAG_SIGN_UP_SUCCESS_KEY =>
-                        UserController::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED
+                    UserController::FLASH_SIGN_UP_ERROR_FIELD_KEY =>
+                        SignUpRequest::PARAMETER_EMAIL,
+                    UserController::FLASH_SIGN_UP_ERROR_STATE_KEY =>
+                        UserAccountRequestValidator::STATE_INVALID,
                 ],
                 'request' => new Request(),
                 'twig' => MockFactory::createTwig([
@@ -173,13 +175,70 @@ class IndexControllerTest extends AbstractViewControllerTest
                             $this->assertCommonViewData($viewName, $parameters);
 
                             $this->assertEmpty($parameters['email']);
+                            $this->assertEquals('email', $parameters['error_field']);
+                            $this->assertEquals('invalid', $parameters['error_state']);
+                            $this->assertEmpty($parameters['user_create_error']);
+                            $this->assertEmpty($parameters['user_create_confirmation']);
                             $this->assertEquals('personal', $parameters['plan']);
                             $this->assertEmpty($parameters['redirect']);
-                            $this->assertFalse($parameters['has_coupon']);
+                            $this->assertEmpty($parameters['coupon']);
 
-                            $this->assertEquals('invalid-email', $parameters['user_create_error']);
+                            return true;
+                        },
+                        'return' => new Response(),
+                    ],
+                ]),
+                'expectedHasRedirectCookie' => false,
+            ],
+            'user_create_error' => [
+                'flashBagValues' => [
+                    UserController::FLASH_SIGN_UP_ERROR_KEY =>
+                        UserController::FLASH_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_READ_ONLY,
+                ],
+                'request' => new Request(),
+                'twig' => MockFactory::createTwig([
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
+                            $this->assertCommonViewData($viewName, $parameters);
+
+                            $this->assertEmpty($parameters['email']);
+                            $this->assertEmpty($parameters['error_field']);
+                            $this->assertEmpty($parameters['error_state']);
+                            $this->assertEquals(
+                                UserController::FLASH_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_READ_ONLY,
+                                $parameters['user_create_error']
+                            );
+                            $this->assertEmpty($parameters['user_create_confirmation']);
+                            $this->assertEquals('personal', $parameters['plan']);
+                            $this->assertEmpty($parameters['redirect']);
+                            $this->assertEmpty($parameters['coupon']);
+
+                            return true;
+                        },
+                        'return' => new Response(),
+                    ],
+                ]),
+                'expectedHasRedirectCookie' => false,
+            ],
+            'user_create_confirmation' => [
+                'flashBagValues' => [
+                     UserController::FLASH_SIGN_UP_SUCCESS_KEY =>
+                        UserController::FLASH_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED
+                ],
+                'request' => new Request(),
+                'twig' => MockFactory::createTwig([
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
+                            $this->assertCommonViewData($viewName, $parameters);
+
+                            $this->assertEmpty($parameters['email']);
+                            $this->assertEmpty($parameters['error_field']);
+                            $this->assertEmpty($parameters['error_state']);
+                            $this->assertEmpty($parameters['user_create_error']);
                             $this->assertEquals('user-created', $parameters['user_create_confirmation']);
-                            $this->assertArrayNotHasKey('coupon', $parameters);
+                            $this->assertEquals('personal', $parameters['plan']);
+                            $this->assertEmpty($parameters['redirect']);
+                            $this->assertEmpty($parameters['coupon']);
 
                             return true;
                         },
@@ -199,12 +258,12 @@ class IndexControllerTest extends AbstractViewControllerTest
                             $this->assertCommonViewData($viewName, $parameters);
 
                             $this->assertEmpty($parameters['email']);
+                            $this->assertEmpty($parameters['error_field']);
+                            $this->assertEmpty($parameters['error_state']);
+                            $this->assertEmpty($parameters['user_create_error']);
+                            $this->assertEmpty($parameters['user_create_confirmation']);
                             $this->assertEquals('personal', $parameters['plan']);
                             $this->assertEmpty($parameters['redirect']);
-                            $this->assertTrue($parameters['has_coupon']);
-
-                            $this->assertArrayNotHasKey('user_create_error', $parameters);
-                            $this->assertArrayNotHasKey('user_create_confirmation', $parameters);
                             $this->assertInstanceOf(Coupon::class, $parameters['coupon']);
 
                             return true;
@@ -270,10 +329,15 @@ class IndexControllerTest extends AbstractViewControllerTest
             [
                 'user',
                 'is_logged_in',
+                'error_field',
+                'error_state',
+                'user_create_error',
+                'user_create_confirmation',
                 'email',
                 'plan',
                 'redirect',
-                'has_coupon',
+                'coupon',
+                'selected_field',
                 'plans',
             ],
             array_keys($parameters)

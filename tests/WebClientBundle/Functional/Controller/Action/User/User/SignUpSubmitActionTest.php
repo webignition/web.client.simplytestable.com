@@ -8,6 +8,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use SimplyTestable\WebClientBundle\Request\User\SignUpRequest;
 use SimplyTestable\WebClientBundle\Services\CouponService;
 use SimplyTestable\WebClientBundle\Services\PostmarkSender;
 use SimplyTestable\WebClientBundle\Services\Request\Factory\User\SignUpRequestFactory;
@@ -97,8 +98,8 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         $this->assertEquals('/signup/?plan=personal', $response->getTargetUrl());
         $this->assertEquals(
             [
-                UserController::FLASH_SIGN_IN_ERROR_FIELD_KEY => ['email'],
-                UserController::FLASH_SIGN_IN_ERROR_STATE_KEY => ['empty'],
+                UserController::FLASH_SIGN_UP_ERROR_FIELD_KEY => ['email'],
+                UserController::FLASH_SIGN_UP_ERROR_STATE_KEY => ['empty'],
             ],
             $session->getFlashBag()->peekAll()
         );
@@ -149,9 +150,12 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                 ],
                 'expectedRedirectLocation' => '/signup/?email=user%40example.com&plan=basic',
                 'expectedFlashBagValues' => [
-                    UserController::FLASH_BAG_SIGN_UP_SUCCESS_KEY => [
-                        UserController::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS,
-                    ]
+                    UserController::FLASH_SIGN_UP_ERROR_FIELD_KEY => [
+                        SignUpRequest::PARAMETER_EMAIL,
+                    ],
+                    UserController::FLASH_SIGN_UP_SUCCESS_KEY => [
+                        UserController::FLASH_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS,
+                    ],
                 ],
             ],
             'failed due to read-only' => [
@@ -163,8 +167,9 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                 ],
                 'expectedRedirectLocation' => '/signup/?email=user%40example.com&plan=basic',
                 'expectedFlashBagValues' => [
-                    UserController::FLASH_BAG_SIGN_UP_ERROR_KEY => [
-                        UserController::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_READ_ONLY,
+                    UserController::FLASH_SIGN_UP_ERROR_FIELD_KEY => [],
+                    UserController::FLASH_SIGN_UP_ERROR_KEY => [
+                        UserController::FLASH_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_READ_ONLY,
                     ]
                 ],
             ],
@@ -177,8 +182,9 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                 ],
                 'expectedRedirectLocation' => '/signup/?email=user%40example.com&plan=basic',
                 'expectedFlashBagValues' => [
-                    UserController::FLASH_BAG_SIGN_UP_ERROR_KEY => [
-                        UserController::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_UNKNOWN,
+                    UserController::FLASH_SIGN_UP_ERROR_FIELD_KEY => [],
+                    UserController::FLASH_SIGN_UP_ERROR_KEY => [
+                        UserController::FLASH_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_UNKNOWN,
                     ]
                 ],
             ],
@@ -245,8 +251,11 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                     ]
                 ),
                 'expectedFlashBagValues' => [
-                    UserController::FLASH_BAG_SIGN_UP_ERROR_KEY => [
-                        UserController::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND,
+                    UserController::FLASH_SIGN_UP_ERROR_FIELD_KEY => [
+                        SignUpRequest::PARAMETER_EMAIL,
+                    ],
+                    UserController::FLASH_SIGN_UP_ERROR_KEY => [
+                        UserController::FLASH_SIGN_UP_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND,
                     ]
                 ],
             ],
@@ -259,8 +268,11 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                     ]
                 ),
                 'expectedFlashBagValues' => [
-                    UserController::FLASH_BAG_SIGN_UP_ERROR_KEY => [
-                        UserController::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT,
+                    UserController::FLASH_SIGN_UP_ERROR_FIELD_KEY => [
+                        SignUpRequest::PARAMETER_EMAIL,
+                    ],
+                    UserController::FLASH_SIGN_UP_ERROR_KEY => [
+                        UserController::FLASH_SIGN_UP_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT,
                     ]
                 ],
             ],
@@ -273,8 +285,11 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                     ]
                 ),
                 'expectedFlashBagValues' => [
-                    UserController::FLASH_BAG_SIGN_UP_ERROR_KEY => [
-                        UserController::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_INVALID,
+                    UserController::FLASH_SIGN_UP_ERROR_FIELD_KEY => [
+                        SignUpRequest::PARAMETER_EMAIL,
+                    ],
+                    UserController::FLASH_SIGN_UP_ERROR_STATE_KEY => [
+                        UserAccountRequestValidator::STATE_INVALID,
                     ]
                 ],
             ],
@@ -335,8 +350,8 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 
         $this->assertEquals(
             [
-                UserController::FLASH_BAG_SIGN_UP_SUCCESS_KEY => [
-                    UserController::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED,
+                UserController::FLASH_SIGN_UP_SUCCESS_KEY => [
+                    UserController::FLASH_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED,
                 ]
             ],
             $session->getFlashBag()->peekAll()
@@ -440,12 +455,5 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             $userAccounRequestValidator,
             $request
         );
-
-//        return $this->userController->signUpSubmitAction(
-//            $this->container->get(MailService::class),
-//            $this->container->get(CouponService::class),
-//            $this->container->get('twig'),
-//            $request
-//        );
     }
 }

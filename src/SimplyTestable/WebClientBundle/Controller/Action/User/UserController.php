@@ -10,6 +10,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAlreadyExistsException;
 use SimplyTestable\WebClientBundle\Request\User\SignInRequest;
+use SimplyTestable\WebClientBundle\Request\User\SignUpRequest;
 use SimplyTestable\WebClientBundle\Services\CouponService;
 use SimplyTestable\WebClientBundle\Services\RedirectResponseFactory;
 use SimplyTestable\WebClientBundle\Services\Request\Factory\User\SignInRequestFactory;
@@ -46,18 +47,19 @@ class UserController extends AbstractController
     const FLASH_SIGN_IN_ERROR_STATE_AUTHENTICATION_FAILURE = 'authentication-failure';
     const FLASH_SIGN_IN_ERROR_STATE_USER_NOT_ENABLED = 'user-not-enabled';
 
-    const FLASH_BAG_SIGN_UP_ERROR_KEY = 'user_create_error';
-    const FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_BLANK = 'blank-email';
-    const FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_INVALID = 'invalid-email';
-    const FLASH_BAG_SIGN_UP_ERROR_MESSAGE_PASSWORD_BLANK = 'blank-password';
-    const FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_READ_ONLY = 'create-failed-read-only';
-    const FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_UNKNOWN = 'create-failed';
-    const FLASH_BAG_SIGN_UP_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND = 'postmark-not-allowed-to-send';
-    const FLASH_BAG_SIGN_UP_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT = 'postmark-inactive-recipient';
+    const FLASH_SIGN_UP_ERROR_KEY = 'user_create_error';
 
-    const FLASH_BAG_SIGN_UP_SUCCESS_KEY = 'user_create_confirmation';
-    const FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS = 'user-exists';
-    const FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED = 'user-created';
+    const FLASH_SIGN_UP_ERROR_FIELD_KEY = 'user_signup_error_field';
+    const FLASH_SIGN_UP_ERROR_STATE_KEY = 'user_signup_error_state';
+
+    const FLASH_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_READ_ONLY = 'create-failed-read-only';
+    const FLASH_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_UNKNOWN = 'create-failed';
+    const FLASH_SIGN_UP_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND = 'postmark-not-allowed-to-send';
+    const FLASH_SIGN_UP_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT = 'postmark-inactive-recipient';
+
+    const FLASH_SIGN_UP_SUCCESS_KEY = 'user_create_confirmation';
+    const FLASH_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS = 'user-exists';
+    const FLASH_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED = 'user-created';
 
     const FLASH_BAG_RESET_PASSWORD_ERROR_KEY = 'user_reset_password_error';
     const FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_TOKEN_INVALID = 'invalid-token';
@@ -360,8 +362,8 @@ class UserController extends AbstractController
         $signUpRedirectResponse = $this->redirectResponseFactory->createSignUpRedirectResponse($signUpRequest);
 
         if (false === $userAccountRequestValidator->getIsValid()) {
-            $flashBag->set(self::FLASH_SIGN_IN_ERROR_FIELD_KEY, $userAccountRequestValidator->getInvalidFieldName());
-            $flashBag->set(self::FLASH_SIGN_IN_ERROR_STATE_KEY, $userAccountRequestValidator->getInvalidFieldState());
+            $flashBag->set(self::FLASH_SIGN_UP_ERROR_FIELD_KEY, $userAccountRequestValidator->getInvalidFieldName());
+            $flashBag->set(self::FLASH_SIGN_UP_ERROR_STATE_KEY, $userAccountRequestValidator->getInvalidFieldState());
 
             return $signUpRedirectResponse;
         }
@@ -379,24 +381,18 @@ class UserController extends AbstractController
         try {
             $this->userService->create($email, $password, $plan, $coupon);
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
-            $flashBag->set(
-                self::FLASH_BAG_SIGN_UP_ERROR_KEY,
-                self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_READ_ONLY
-            );
+            $flashBag->set(self::FLASH_SIGN_UP_ERROR_FIELD_KEY, null);
+            $flashBag->set(self::FLASH_SIGN_UP_ERROR_KEY, self::FLASH_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_READ_ONLY);
 
             return $signUpRedirectResponse;
         } catch (UserAlreadyExistsException $userAlreadyExistsException) {
-            $flashBag->set(
-                self::FLASH_BAG_SIGN_UP_SUCCESS_KEY,
-                self::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS
-            );
+            $flashBag->set(self::FLASH_SIGN_UP_ERROR_FIELD_KEY, SignUpRequest::PARAMETER_EMAIL);
+            $flashBag->set(self::FLASH_SIGN_UP_SUCCESS_KEY, self::FLASH_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS);
 
             return $signUpRedirectResponse;
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
-            $flashBag->set(
-                self::FLASH_BAG_SIGN_UP_ERROR_KEY,
-                self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_UNKNOWN
-            );
+            $flashBag->set(self::FLASH_SIGN_UP_ERROR_FIELD_KEY, null);
+            $flashBag->set(self::FLASH_SIGN_UP_ERROR_KEY, self::FLASH_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_UNKNOWN);
 
             return $signUpRedirectResponse;
         }
@@ -406,30 +402,26 @@ class UserController extends AbstractController
         try {
             $this->sendConfirmationToken($mailService, $twig, $email, $token);
         } catch (PostmarkResponseException $postmarkResponseException) {
+            $flashBag->set(self::FLASH_SIGN_UP_ERROR_FIELD_KEY, SignUpRequest::PARAMETER_EMAIL);
+
             if ($postmarkResponseException->isNotAllowedToSendException()) {
                 $flashBag->set(
-                    self::FLASH_BAG_SIGN_UP_ERROR_KEY,
-                    self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND
+                    self::FLASH_SIGN_UP_ERROR_KEY,
+                    self::FLASH_SIGN_UP_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND
                 );
             } elseif ($postmarkResponseException->isInactiveRecipientException()) {
                 $flashBag->set(
-                    self::FLASH_BAG_SIGN_UP_ERROR_KEY,
-                    self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT
+                    self::FLASH_SIGN_UP_ERROR_KEY,
+                    self::FLASH_SIGN_UP_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT
                 );
             } else {
-                $flashBag->set(
-                    self::FLASH_BAG_SIGN_UP_ERROR_KEY,
-                    self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_INVALID
-                );
+                $flashBag->set(self::FLASH_SIGN_UP_ERROR_STATE_KEY, UserAccountRequestValidator::STATE_INVALID);
             }
 
             return $signUpRedirectResponse;
         }
 
-        $flashBag->set(
-            self::FLASH_BAG_SIGN_UP_SUCCESS_KEY,
-            self::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED
-        );
+        $flashBag->set(self::FLASH_SIGN_UP_SUCCESS_KEY, self::FLASH_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED);
 
         $successRedirectUrl = $this->generateUrl(
             'view_user_signup_confirm_index',

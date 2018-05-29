@@ -5,6 +5,7 @@ namespace SimplyTestable\WebClientBundle\Controller\View\User\SignUp;
 use SimplyTestable\WebClientBundle\Controller\Action\User\UserController;
 use SimplyTestable\WebClientBundle\Controller\View\User\AbstractUserController;
 use SimplyTestable\WebClientBundle\Model\User\Plan;
+use SimplyTestable\WebClientBundle\Request\User\SignUpRequest;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
 use SimplyTestable\WebClientBundle\Services\CouponService;
 use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
@@ -64,54 +65,42 @@ class IndexController extends AbstractUserController
         $this->couponService->setRequest($request);
         $this->plansService->listPremiumOnly();
 
-        $hasCoupon = $this->couponService->has();
-        $redirect = trim($request->query->get('redirect'));
-
-        $userCreateError = $this->flashBagValues->getSingle(UserController::FLASH_BAG_SIGN_UP_ERROR_KEY);
+        $requestData = $request->query;
+        $email = strtolower(trim($requestData->get('email')));
+        $redirect = trim($requestData->get('redirect'));
+        $errorField = $this->flashBagValues->getSingle('user_signup_error_field');
+        $errorState = $this->flashBagValues->getSingle('user_signup_error_state');
+        $userCreateError = $this->flashBagValues->getSingle(UserController::FLASH_SIGN_UP_ERROR_KEY);
         $userCreateConfirmation = $this->flashBagValues->getSingle('user_create_confirmation');
-        $email = strtolower(trim($request->query->get('email')));
 
-        if ($hasCoupon) {
-            $coupon = $this->couponService->get();
+        $coupon = $this->couponService->get();
+        if ($coupon) {
             $this->plansService->setPriceModifier($coupon->getPriceModifier());
         }
 
         $plans = $this->plansService->getList();
-        $requestedPlan = $this->getRequestedPlan($request->query->get('plan'), $plans);
+        $requestedPlan = $this->getRequestedPlan($requestData->get('plan'), $plans);
+        $selectedField = empty($email) ? SignUpRequest::PARAMETER_EMAIL : $errorField;
 
-        $response = $this->cacheValidator->createResponse($request, [
+        $viewData = [
+            'error_field' => $errorField,
+            'error_state' => $errorState,
             'user_create_error' => $userCreateError,
             'user_create_confirmation' => $userCreateConfirmation,
             'email' => $email,
             'plan' => $requestedPlan,
             'redirect' => $redirect,
-            'coupon' => $hasCoupon ? $this->couponService->get()->__toString() : ''
-        ]);
+            'coupon' => $coupon,
+            'selected_field' => $selectedField,
+        ];
+
+        $response = $this->cacheValidator->createResponse($request, $viewData);
 
         if ($this->cacheValidator->isNotModified($response)) {
             return $response;
         }
 
-        $viewData = [
-            'email' => $email,
-            'plan' => $requestedPlan,
-            'redirect' => $redirect,
-            'has_coupon' => $hasCoupon,
-            'plans' => $plans,
-        ];
-
-        if ($userCreateError) {
-            $viewData['user_create_error'] = $userCreateError;
-        }
-
-        if ($userCreateConfirmation) {
-            $viewData['user_create_confirmation'] = $userCreateConfirmation;
-        }
-
-        if ($hasCoupon) {
-            $coupon = $this->couponService->get();
-            $viewData['coupon'] = $coupon;
-        }
+        $viewData['plans'] = $plans;
 
         $response = $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/User/SignUp/Index:index.html.twig',
@@ -135,7 +124,6 @@ class IndexController extends AbstractUserController
 
         return $response;
     }
-
 
     /**
      * @param string $plan
