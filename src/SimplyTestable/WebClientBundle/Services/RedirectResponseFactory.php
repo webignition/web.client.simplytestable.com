@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Services;
 
 use SimplyTestable\WebClientBundle\Request\User\SignInRequest;
+use SimplyTestable\WebClientBundle\Request\User\SignUpRequest;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -43,5 +44,26 @@ class RedirectResponseFactory
         }
 
         return new RedirectResponse($this->router->generate('view_user_signin_index', $routeParameters));
+    }
+
+    /**
+     * @param SignUpRequest $signUpRequest
+     *
+     * @return RedirectResponse
+     */
+    public function createSignUpRedirectResponse(SignUpRequest $signUpRequest)
+    {
+        $email = $signUpRequest->getEmail();
+        $plan = $signUpRequest->getPlan();
+
+        $routeParameters = [];
+
+        if (!empty($email)) {
+            $routeParameters[SignUpRequest::PARAMETER_EMAIL] = $email;
+        }
+
+        $routeParameters[SignUpRequest::PARAMETER_PLAN] = $plan;
+
+        return new RedirectResponse($this->router->generate('view_user_signup_index_index', $routeParameters));
     }
 }

@@ -2,22 +2,10 @@
 
 namespace SimplyTestable\WebClientBundle\Request\User;
 
-class SignInRequest
+class SignInRequest extends AbstractUserAccountRequest
 {
-    const PARAMETER_EMAIL = 'email';
-    const PARAMETER_PASSWORD = 'password';
     const PARAMETER_REDIRECT = 'redirect';
     const PARAMETER_STAY_SIGNED_IN = 'stay-signed-in';
-
-    /**
-     * @var string
-     */
-    private $email;
-
-    /**
-     * @var string
-     */
-    private $password;
 
     /**
      * @var string
@@ -37,26 +25,10 @@ class SignInRequest
      */
     public function __construct($email, $password, $redirect, $staySignedIn)
     {
-        $this->email = $email;
-        $this->password = $password;
+        parent::__construct($email, $password);
+
         $this->redirect = $redirect;
         $this->staySignedIn = $staySignedIn;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPassword()
-    {
-        return $this->password;
     }
 
     /**

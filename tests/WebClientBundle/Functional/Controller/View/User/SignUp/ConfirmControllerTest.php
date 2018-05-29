@@ -199,8 +199,8 @@ class ConfirmControllerTest extends AbstractViewControllerTest
                     HttpResponseFactory::createSuccessResponse(),
                 ],
                 'flashBagValues' => [
-                    UserController::FLASH_BAG_SIGN_UP_SUCCESS_KEY =>
-                        UserController::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED
+                    UserController::FLASH_SIGN_UP_SUCCESS_KEY =>
+                        UserController::FLASH_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED
                 ],
                 'request' => new Request(),
                 'twig' => MockFactory::createTwig([
