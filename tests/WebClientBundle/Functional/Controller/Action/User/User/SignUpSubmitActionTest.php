@@ -2,6 +2,7 @@
 
 namespace Tests\WebClientBundle\Functional\Controller\Action\User\User;
 
+use Egulias\EmailValidator\EmailValidator;
 use SimplyTestable\WebClientBundle\Controller\Action\User\UserController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
@@ -9,6 +10,9 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use SimplyTestable\WebClientBundle\Services\CouponService;
 use SimplyTestable\WebClientBundle\Services\PostmarkSender;
+use SimplyTestable\WebClientBundle\Services\Request\Factory\User\SignUpRequestFactory;
+use SimplyTestable\WebClientBundle\Services\Request\Validator\User\UserAccountRequestValidator;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -63,76 +67,41 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         );
     }
 
-    /**
-     * @dataProvider signUpSubmitActionBadRequestDataProvider
-     *
-     * @param Request $request
-     * @param string $expectedRedirectLocation
-     * @param array $expectedFlashBagValues
-     *
-     * @throws CoreApplicationRequestException
-     * @throws MailConfigurationException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     */
-    public function testSignUpSubmitActionBadRequest(
-        Request $request,
-        $expectedRedirectLocation,
-        array $expectedFlashBagValues
-    ) {
+    public function testSignUpSubmitActionBadRequest()
+    {
+        $request = new Request([], ['plan' => 'personal']);
+        $userAccountRequestValidator = \Mockery::mock(UserAccountRequestValidator::class);
+
+        $userAccountRequestValidator
+            ->shouldReceive('validate')
+            ->withArgs(function () {
+                return true;
+            });
+
+        $userAccountRequestValidator
+            ->shouldReceive('getIsValid')
+            ->andReturn(false);
+
+        $userAccountRequestValidator
+            ->shouldReceive('getInvalidFieldName')
+            ->andReturn('email');
+
+        $userAccountRequestValidator
+            ->shouldReceive('getInvalidFieldState')
+            ->andReturn('empty');
+
         $session = $this->container->get('session');
 
-        $response = $this->callSignUpSubmitAction($request);
+        $response = $this->callSignUpSubmitAction($request, $userAccountRequestValidator);
 
-        $this->assertEquals($expectedRedirectLocation, $response->getTargetUrl());
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
-    }
-
-    /**
-     * @return array
-     */
-    public function signUpSubmitActionBadRequestDataProvider()
-    {
-        return [
-            'empty email' => [
-                'request' => new Request([], [
-                    'plan' => 'basic',
-                ]),
-                'expectedRedirectLocation' => '/signup/?plan=basic',
-                'expectedFlashBagValues' => [
-                    UserController::FLASH_BAG_SIGN_UP_ERROR_KEY => [
-                        UserController::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_BLANK,
-                    ]
-                ],
+        $this->assertEquals('/signup/?plan=personal', $response->getTargetUrl());
+        $this->assertEquals(
+            [
+                UserController::FLASH_SIGN_IN_ERROR_FIELD_KEY => ['email'],
+                UserController::FLASH_SIGN_IN_ERROR_STATE_KEY => ['empty'],
             ],
-            'invalid email' => [
-                'request' => new Request([], [
-                    'plan' => 'basic',
-                    'email' => 'foo',
-                ]),
-                'expectedRedirectLocation' => '/signup/?email=foo&plan=basic',
-                'expectedFlashBagValues' => [
-                    UserController::FLASH_BAG_SIGN_UP_ERROR_KEY => [
-                        UserController::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_INVALID,
-                    ]
-                ],
-            ],
-            'empty password' => [
-                'request' => new Request([], [
-                    'plan' => 'basic',
-                    'email' => self::EMAIL,
-                ]),
-                'expectedRedirectLocation' => '/signup/?email=user%40example.com&plan=basic',
-                'expectedFlashBagValues' => [
-                    'user_create_prefil' => [
-                        self::EMAIL,
-                    ],
-                    UserController::FLASH_BAG_SIGN_UP_ERROR_KEY => [
-                        UserController::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_PASSWORD_BLANK,
-                    ]
-                ],
-            ],
-        ];
+            $session->getFlashBag()->peekAll()
+        );
     }
 
     /**
@@ -178,7 +147,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createRedirectResponse(),
                 ],
-                'expectedRedirectLocation' => '/signup/?email=user%40example.com',
+                'expectedRedirectLocation' => '/signup/?email=user%40example.com&plan=basic',
                 'expectedFlashBagValues' => [
                     UserController::FLASH_BAG_SIGN_UP_SUCCESS_KEY => [
                         UserController::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS,
@@ -443,6 +412,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 
     /**
      * @param Request $request
+     * @param UserAccountRequestValidator|null $userAccounRequestValidator
      *
      * @return RedirectResponse
      *
@@ -451,13 +421,31 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
      * @throws InvalidContentTypeException
      * @throws MailConfigurationException
      */
-    private function callSignUpSubmitAction(Request $request)
+    private function callSignUpSubmitAction(Request $request, $userAccounRequestValidator = null)
     {
+        $requestStack = new RequestStack();
+        $requestStack->push($request);
+
+        $signInRequestFactory = new SignUpRequestFactory($requestStack);
+
+        if (empty($userAccounRequestValidator)) {
+            $userAccounRequestValidator = new UserAccountRequestValidator(new EmailValidator());
+        }
+
         return $this->userController->signUpSubmitAction(
             $this->container->get(MailService::class),
             $this->container->get(CouponService::class),
             $this->container->get('twig'),
+            $signInRequestFactory,
+            $userAccounRequestValidator,
             $request
         );
+
+//        return $this->userController->signUpSubmitAction(
+//            $this->container->get(MailService::class),
+//            $this->container->get(CouponService::class),
+//            $this->container->get('twig'),
+//            $request
+//        );
     }
 }

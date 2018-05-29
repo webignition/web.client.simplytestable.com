@@ -13,7 +13,9 @@ use SimplyTestable\WebClientBundle\Request\User\SignInRequest;
 use SimplyTestable\WebClientBundle\Services\CouponService;
 use SimplyTestable\WebClientBundle\Services\RedirectResponseFactory;
 use SimplyTestable\WebClientBundle\Services\Request\Factory\User\SignInRequestFactory;
+use SimplyTestable\WebClientBundle\Services\Request\Factory\User\SignUpRequestFactory;
 use SimplyTestable\WebClientBundle\Services\Request\Validator\User\SignInRequestValidator;
+use SimplyTestable\WebClientBundle\Services\Request\Validator\User\UserAccountRequestValidator;
 use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
@@ -327,6 +329,8 @@ class UserController extends AbstractController
      * @param MailService $mailService
      * @param CouponService $couponService
      * @param Twig_Environment $twig
+     * @param SignUpRequestFactory $signUpRequestFactory
+     * @param UserAccountRequestValidator $userAccountRequestValidator
      * @param Request $request
      *
      * @return RedirectResponse
@@ -340,48 +344,26 @@ class UserController extends AbstractController
         MailService $mailService,
         CouponService $couponService,
         Twig_Environment $twig,
+        SignUpRequestFactory $signUpRequestFactory,
+        UserAccountRequestValidator $userAccountRequestValidator,
         Request $request
     ) {
-        $requestData = $request->request;
+        $signUpRequest = $signUpRequestFactory->create();
+        $userAccountRequestValidator->validate($signUpRequest);
+
+        $email = $signUpRequest->getEmail();
+        $password = $signUpRequest->getPassword();
+        $plan = $signUpRequest->getPlan();
+
         $flashBag = $this->session->getFlashBag();
 
-        $plan = trim($requestData->get('plan'));
-        $email = strtolower(trim($requestData->get('email')));
-        $password = trim($requestData->get('password'));
+        $signUpRedirectResponse = $this->redirectResponseFactory->createSignUpRedirectResponse($signUpRequest);
 
-        if (empty($email)) {
-            $flashBag->set(
-                self::FLASH_BAG_SIGN_UP_ERROR_KEY,
-                self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_BLANK
-            );
+        if (false === $userAccountRequestValidator->getIsValid()) {
+            $flashBag->set(self::FLASH_SIGN_IN_ERROR_FIELD_KEY, $userAccountRequestValidator->getInvalidFieldName());
+            $flashBag->set(self::FLASH_SIGN_IN_ERROR_STATE_KEY, $userAccountRequestValidator->getInvalidFieldState());
 
-            return $this->createSignUpRedirectResponse([
-                'plan' => $plan,
-            ]);
-        }
-
-        $failureRedirectResponse = $this->createSignUpRedirectResponse([
-            'email' => $email,
-            'plan' => $plan,
-        ]);
-
-        if (!$this->isEmailValid($email)) {
-            $flashBag->set(
-                self::FLASH_BAG_SIGN_UP_ERROR_KEY,
-                self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_EMAIL_INVALID
-            );
-
-            return $failureRedirectResponse;
-        }
-
-        if (empty($password)) {
-            $flashBag->set('user_create_prefil', $email);
-            $flashBag->set(
-                self::FLASH_BAG_SIGN_UP_ERROR_KEY,
-                self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_PASSWORD_BLANK
-            );
-
-            return $failureRedirectResponse;
+            return $signUpRedirectResponse;
         }
 
         $couponService->setRequest($request);
@@ -402,23 +384,21 @@ class UserController extends AbstractController
                 self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_READ_ONLY
             );
 
-            return $failureRedirectResponse;
+            return $signUpRedirectResponse;
         } catch (UserAlreadyExistsException $userAlreadyExistsException) {
             $flashBag->set(
                 self::FLASH_BAG_SIGN_UP_SUCCESS_KEY,
                 self::FLASH_BAG_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS
             );
 
-            return $this->createSignUpRedirectResponse([
-                'email' => $email,
-            ]);
+            return $signUpRedirectResponse;
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             $flashBag->set(
                 self::FLASH_BAG_SIGN_UP_ERROR_KEY,
                 self::FLASH_BAG_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_UNKNOWN
             );
 
-            return $failureRedirectResponse;
+            return $signUpRedirectResponse;
         }
 
         $token = $this->userService->getConfirmationToken($email);
@@ -443,7 +423,7 @@ class UserController extends AbstractController
                 );
             }
 
-            return $failureRedirectResponse;
+            return $signUpRedirectResponse;
         }
 
         $flashBag->set(
@@ -634,19 +614,6 @@ class UserController extends AbstractController
     {
         return new RedirectResponse($this->generateUrl(
             'view_user_resetpassword_choose_index',
-            $routeParameters
-        ));
-    }
-
-    /**
-     * @param array $routeParameters
-     *
-     * @return RedirectResponse
-     */
-    private function createSignUpRedirectResponse(array $routeParameters = [])
-    {
-        return new RedirectResponse($this->generateUrl(
-            'view_user_signup_index_index',
             $routeParameters
         ));
     }
