@@ -6,10 +6,8 @@
     {{ parent() }}
 
     {% javascripts
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stModal.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormErrorHelper.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/modal.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/http-authentication-options-modal.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/cookie-options-modal.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/form-helper.js'
@@ -106,7 +104,7 @@
                             {% if test_options['http-authentication'] is defined %}
                                 <div class="test-option">
                                     {% if not is_logged_in %}
-                                        {% set data_for_attribute = 'http-authentication-account-required-modal' %}
+                                        {% set data_target_id = 'http-authentication-account-required-modal' %}
                                         {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:http-authentication.html.twig' %}
                                     {% endif %}
 
@@ -117,7 +115,7 @@
                             {% if test_options['cookies'] is defined %}
                                 <div class="test-option">
                                     {% if not is_logged_in %}
-                                        {% set data_for_attribute = 'cookies-account-required-modal' %}
+                                        {% set data_target_id = 'cookies-account-required-modal' %}
                                         {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:cookies.html.twig' %}
                                     {% endif %}
 

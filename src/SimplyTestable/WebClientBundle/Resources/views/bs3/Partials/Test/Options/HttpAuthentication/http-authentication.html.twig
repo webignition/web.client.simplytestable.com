@@ -16,12 +16,13 @@
     {% set read_only = false %}
 {% endif %}
 
-{% if data_for_attribute is not defined %}
-    {% set data_for_attribute = 'http-authentication-options-modal' %}
+{% if data_target_id is not defined %}
+    {% set data_target_id = 'http-authentication-options-modal' %}
 {% endif %}
 
 <div id="http-authentication-action-badge" class="modal-launcher{{ (test_authentication_enabled) ? 'action-badge-enabled' : '' }}">
     <i class="fa fa-fw fa-lock icon-primary"></i>
+
     <span class="content">
         HTTP authentication
 
@@ -29,8 +30,9 @@
             <span class="status">{{ (test_authentication_enabled) ? 'enabled' : 'not enabled' }}</span>
 
             {% if not read_only %}
-                <span class="modal-control" data-for="{{ data_for_attribute }}">
+            <span class="modal-control" data-toggle="modal" data-target="#{{ data_target_id }}">
                 change
+                <i class="fa fa-caret-right"></i>
             </span>
             {% endif %}
         </span>

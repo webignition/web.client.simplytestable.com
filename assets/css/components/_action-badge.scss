@@ -7,10 +7,13 @@
   color: #666;
   text-shadow: none;
 
-  a {
+  a,
+  .btn {
     color: #666;
     padding-left: 6px;
     border-left: 1px solid #eee;
+    font-size: 12px;
+    display: inline;
 
     &:hover {
       text-decoration: none;

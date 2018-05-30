@@ -1,8 +1,9 @@
 <span class="badge action-badge action-badge-filter-options {% if filter is not empty %}action-badge-enabled{% endif %}">
     <i class="fa fa-filter icon-primary"></i>
     <span class="action-badge-label">{% if filter is empty %}Showing all results{% else %}Showing results for <strong>{{ filter }}</strong>{% endif %}</span>
-    <span class="modal-control" data-for="filter-options-modal">
+    <span class="modal-control" data-toggle="modal" data-target="#filter-options-modal">
         filter by url
+        <i class="fa fa-caret-right"></i>
     </span>
 </span>
 
@@ -34,41 +35,3 @@
         </div>
     </div>
 </div>
-
-{#<span class="badge action-badge action-badge-filter-options {% if filter is not empty %}action-badge-enabled{% endif %}">#}
-    {#<i class="icon icon-filter icon-primary"></i>#}
-    {#<span class="action-badge-label">{% if filter is empty %}Showing all results{% else %}Showing results for <strong>{{ filter }}</strong>{% endif %}</span>#}
-    {#<span class="modal-control for-filter-options-modal">#}
-        {#filter by url#}
-    {#</span>#}
-{#</span> #}
-
-{#<div id="filter-options-modal" class="modal-content modal-type-filter-options">#}
-    {#<div class="modal-options">#}
-        {#<span class="action-label">Apply filter</span>#}
-    {#</div>#}
-
-    {#<div class="modal-header-content">#}
-        {#<h3>Filter by URL</h3>#}
-        {#<span class="help-block modal-transform modal-transform-p">#}
-            {#Filter the test list to those made against a given URL.#}
-        {#</span>           #}
-    {#</div>#}
-
-    {#<div class="modal-body-content">            #}
-        {#<input name="filter"                   #}
-               {#id="input-filter"#}
-               {#class="input-block-level"#}
-               {#type="text"#}
-               {#placeholder="URL to filter by &hellip;"#}
-               {#value="{{ filter }}"#}
-               {#data-source-url="{{ websites_source }}"#}
-               {#>#}
-
-
-    {#</div>#}
-
-    {#<div class="modal-footer-content">#}
-        {#<button id="clear-filter-button" class="btn" data-dismiss="modal" aria-hidden="true">Clear filter</button>#}
-    {#</div>#}
-{#</div>#}
