@@ -2,7 +2,8 @@
 
 <div class="test-options-set task-type-option {% if disable %}test-options-set-disabled{% endif %} {% if not is_available %}not-available modal-button{% endif %}"
      id="link-integrity-options"
-     {% if not is_available %}data-for="link-integrity-account-required-modal"{% endif %}>
+     data-task-type="link-integrity"
+>
     <label class="checkbox {% if disable %}disabled{% endif %}">
         <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="link-integrity" {% if (test_options['link-integrity'] is defined and test_options['link-integrity'] == 1) %} checked {% endif %} />
 
