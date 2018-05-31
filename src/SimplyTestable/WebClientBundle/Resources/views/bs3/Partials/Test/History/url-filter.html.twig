@@ -7,7 +7,7 @@
     </span>
 </span>
 
-<div class="modal" id="filter-options-modal">
+<div class="modal" id="filter-options-modal" data-source-url="{{ websites_source }}">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -20,12 +20,10 @@
             <div class="modal-body">
                 <input name="filter"
                 id="input-filter"
-                class="form-control typeahead"
+                class="form-control"
                 type="text"
                 placeholder="URL to filter by &hellip;"
-                value="{{ filter }}"
-                data-source-url="{{ websites_source }}"
-                data-provider="typeahead">
+                value="{{ filter }}"                >
                 <input name="closed_by" type="hidden">
             </div>
             <div class="modal-footer">
