@@ -2,6 +2,8 @@
   "devDependencies": {
     "@symfony/webpack-encore": "^0.20.0",
     "awesomplete": "^1.1.2",
+    "bootstrap.native": "^2.0.23",
+    "bootstrap.native-loader": "^1.0.7",
     "classlist-polyfill": "^1.2.0",
     "color-themes-for-google-code-prettify": "^2.0.4",
     "eslint": "^4.19.1",

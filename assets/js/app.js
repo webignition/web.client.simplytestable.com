@@ -1,3 +1,4 @@
+require('bootstrap.native');
 require('../css/app.scss');
 
 require('classlist-polyfill');
