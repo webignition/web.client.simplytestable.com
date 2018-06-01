@@ -6,6 +6,7 @@ require('classlist-polyfill');
 let formButtonSpinner = require('./form-button-spinner');
 let formFieldFocuser = require('./form-field-focuser');
 let modalControl = require('./modal-control');
+let collapseControlCaret = require('./collapse-control-caret');
 
 let dashboardPage = require('./page/dashboard');
 let testHistoryPage = require('./page/test-history');
@@ -39,6 +40,8 @@ const onDomContentLoaded = function () {
         let userAccount = new UserAccount(window, document);
         userAccount.init();
     }
+
+    collapseControlCaret(document.querySelectorAll('.collapse-control'));
 };
 
 document.addEventListener('DOMContentLoaded', onDomContentLoaded);
