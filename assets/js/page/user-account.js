@@ -1,6 +1,7 @@
 let ScrollSpy = require('../user-account/scrollspy');
 let NavBarList = require('../user-account/navbar-list');
 const ScrollTo = require('../scroll-to');
+const StickyFill = require('stickyfilljs');
 
 class UserAccount {
     /**
@@ -35,9 +36,24 @@ class UserAccount {
         }
     };
 
+    _applyPositionStickyPolyfill () {
+        const selector = '.csspositionsticky';
+        const stickyNavJsClass = 'js-sticky-nav';
+        const stickyNavJsSelector = '.' + stickyNavJsClass;
+
+        let stickyNav = document.querySelector(stickyNavJsSelector);
+
+        if (document.querySelector(selector)) {
+            stickyNav.classList.remove(stickyNavJsClass);
+        } else {
+            StickyFill.addOne(stickyNav);
+        }
+    };
+
     init () {
         this.sideNavElement.querySelector('a').classList.add('js-first');
         this.scrollspy.spy();
+        this._applyPositionStickyPolyfill();
         this._applyInitialScroll();
     };
 }
