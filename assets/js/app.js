@@ -10,6 +10,7 @@ let modalControl = require('./modal-control');
 let dashboardPage = require('./page/dashboard');
 let testHistoryPage = require('./page/test-history');
 let testResultsPage = require('./page/test-results');
+let UserAccount = require('./page/user-account');
 
 const onDomContentLoaded = function () {
     let body = document.getElementsByTagName('body').item(0);
@@ -32,6 +33,11 @@ const onDomContentLoaded = function () {
 
     if (body.classList.contains('test-results')) {
         testResultsPage(document);
+    }
+
+    if (body.classList.contains('user-account')) {
+        let userAccount = new UserAccount(window, document);
+        userAccount.init();
     }
 };
 

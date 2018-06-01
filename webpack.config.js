@@ -41,7 +41,5 @@ config.module.rules.push({
     }
 });
 
-// console.log(config.module.rules);
-
 // export the final configuration
 module.exports = config;
