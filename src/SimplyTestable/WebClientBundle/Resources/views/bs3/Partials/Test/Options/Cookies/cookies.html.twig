@@ -10,8 +10,8 @@
     {% set read_only = false %}
 {% endif %}
 
-{% if data_for_attribute is not defined %}
-    {% set data_for_attribute = 'cookies-options-modal' %}
+{% if data_target_id is not defined %}
+    {% set data_target_id = 'cookies-options-modal' %}
 {% endif %}
 
 <div id="cookies-action-badge" class="modal-launcher {{ (test_cookies_enabled) ? 'action-badge-enabled' : '' }}">
@@ -23,9 +23,10 @@
             <span class="status">{{ (test_cookies_enabled) ? 'enabled' : 'not enabled' }}</span>
 
             {% if not read_only %}
-                <span class="modal-control" data-for="{{ data_for_attribute }}">
-                    change
-                </span>
+            <span class="modal-control" data-toggle="modal" data-target="#{{ data_target_id }}">
+                change
+                <i class="fa fa-caret-right"></i>
+            </span>
             {% endif %}
         </span>
 

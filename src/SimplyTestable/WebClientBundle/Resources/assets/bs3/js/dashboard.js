@@ -261,34 +261,4 @@ $(document).ready(function() {
     //window.setTimeout(function () {
         updateRecentTests();
     //}, 3000);
-
-//    var jsStaticAnalysisAccountRequiredModal = $('#js-static-analysis-account-required-modal');
-//
-//    $('.task-type.js-static-analysis.not-available').click(function (event) {
-//        jsStaticAnalysisAccountRequiredModal.modal({
-//            backdrop: true,
-//            keyboard: true
-//        });
-//
-//        $('.modal-content', jsStaticAnalysisAccountRequiredModal).css({
-//            'display':'block'
-//        });
-//
-//        event.preventDefault();
-//    });
-//
-//    var linkIntegrityAccountRequiredModal = $('#link-integrity-account-required-modal');
-//
-//    $('.task-type.js-static-analysis.not-available').click(function (event) {
-//        jsStaticAnalysisAccountRequiredModal.modal({
-//            backdrop: true,
-//            keyboard: true
-//        });
-//
-//        $('.modal-content', jsStaticAnalysisAccountRequiredModal).css({
-//            'display':'block'
-//        });
-//
-//        event.preventDefault();
-//    });
 });

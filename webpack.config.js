@@ -1,5 +1,5 @@
 // webpack.config.js
-var Encore = require('@symfony/webpack-encore');
+let Encore = require('@symfony/webpack-encore');
 
 Encore
 // the project directory where all compiled assets will be stored
@@ -26,8 +26,20 @@ Encore
     .enableBuildNotifications()
 
     // create hashed filenames (e.g. app.abc123.css)
-    .enableVersioning()
-;
+    .enableVersioning();
+
+let config = Encore.getWebpackConfig();
+
+config.module.rules.push({
+    test: /bootstrap\.native/,
+    use: {
+        loader: 'bootstrap.native-loader',
+        options: {
+            only: ['modal', 'collapse'],
+            bsVersion: 3
+        }
+    }
+});
 
 // export the final configuration
-module.exports = Encore.getWebpackConfig();
+module.exports = config;

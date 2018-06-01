@@ -5,7 +5,8 @@
                 {% set is_available = task_type_key in available_task_types|keys %}
 
                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 task-type {{ task_type_key }} {% if not is_available %}not-available modal-button{% endif %}"
-                     {% if not is_available %}data-for="{{ task_type_key }}-account-required-modal"{% endif %}>
+                     data-task-type="{{ task_type_key }}"
+                >
                     <div class="checkbox inner">
                         <label title="{{ task_type_details.description|striptags }}{% if not is_available %} (account required){% endif %}">
                             <input type="checkbox"

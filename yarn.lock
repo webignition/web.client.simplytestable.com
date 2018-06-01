@@ -454,6 +454,10 @@ autoprefixer@^8.0.0:
     postcss "^6.0.21"
     postcss-value-parser "^3.2.3"
 
+awesomplete@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/awesomplete/-/awesomplete-1.1.2.tgz#b6e253f73474e46278bba5ae7f81d4262160fb75"
+
 aws-sign2@~0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/aws-sign2/-/aws-sign2-0.6.0.tgz#14342dd38dbcc94d0e5b87d763cd63612c0e794f"
@@ -1039,6 +1043,14 @@ boom@5.x.x:
   resolved "https://registry.yarnpkg.com/boom/-/boom-5.2.0.tgz#5dd9da6ee3a5f302077436290cb717d3f4a54e02"
   dependencies:
     hoek "4.x.x"
+
+bootstrap.native-loader@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/bootstrap.native-loader/-/bootstrap.native-loader-1.0.7.tgz#9259950c6641a928536aca5d844637580d952a38"
+
+bootstrap.native@^2.0.23:
+  version "2.0.23"
+  resolved "https://registry.yarnpkg.com/bootstrap.native/-/bootstrap.native-2.0.23.tgz#e505c93740db9d94994fdf075834f992512e72c1"
 
 brace-expansion@^1.1.7:
   version "1.1.11"
@@ -5841,6 +5853,10 @@ slice-ansi@1.0.0:
   resolved "https://registry.yarnpkg.com/slice-ansi/-/slice-ansi-1.0.0.tgz#044f1a49d8842ff307aad6b505ed178bd950134d"
   dependencies:
     is-fullwidth-code-point "^2.0.0"
+
+smooth-scroll@^14.2.0:
+  version "14.2.0"
+  resolved "https://registry.yarnpkg.com/smooth-scroll/-/smooth-scroll-14.2.0.tgz#87a224fc32c8956995e5bb014a5e1a07b8361e21"
 
 snapdragon-node@^2.0.1:
   version "2.1.1"
