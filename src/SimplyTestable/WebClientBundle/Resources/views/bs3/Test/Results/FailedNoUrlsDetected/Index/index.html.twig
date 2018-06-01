@@ -4,15 +4,6 @@
 
 {% block title %}No URLs detected for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} - {{ parent() }}{% endblock %}
 
-{% block javascripts %}
-    {{ parent() }}
-
-    {% javascripts
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/test-results-failednourlsdetected.js' %}
-    <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}
-{% endblock %}
-
 {% block content %}
 
     <h1>No sitemap or news feed, sign in to crawl this site</h1>
@@ -55,7 +46,7 @@
             </li>
             <li>
                 <p>
-                    <span class="collapse-control link" href="#" data-toggle="collapse" data-target="#more-detail">
+                    <span class="collapse-control collapsed link" data-toggle="collapse" data-target="#more-detail">
                     Why does this happen and what can I do?
                     </span>
                 </p>
