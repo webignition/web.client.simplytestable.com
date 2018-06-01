@@ -1,7 +1,9 @@
 module.exports = function (input) {
     let inputValue = input.value;
 
-    input.focus();
-    input.value = '';
-    input.value = inputValue;
+    window.setTimeout(function () {
+        input.focus();
+        input.value = '';
+        input.value = inputValue;
+    }, 1);
 };
