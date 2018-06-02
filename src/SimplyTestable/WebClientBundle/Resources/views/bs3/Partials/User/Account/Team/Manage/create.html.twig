@@ -38,9 +38,9 @@
     <form role="form" method="post" action="{{ path('action_user_account_team_create') }}">
         <label for="name">Choose a name for your team. Anything you like, must be unique.</label>
         <div class="input-group">
-            <input type="text" class="form-control" name="name" id="name">
+            <input type="text" class="form-control" name="name" id="name" data-focused>
             <span class="input-group-btn">
-                <button type="submit" class="btn btn-default" type="button">Create team</button>
+                <button type="submit" class="btn btn-default">Create team</button>
             </span>
         </div>
     </form>
