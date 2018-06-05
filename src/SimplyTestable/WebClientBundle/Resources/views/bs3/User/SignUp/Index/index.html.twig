@@ -51,10 +51,11 @@
         {% endif %}
 
         {% if error_field == 'email' and error_state == 'empty' %}
-            <div class="alert alert-danger for:email" data-for="email">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <strong>Slow down!</strong> You're going to have to enter in your email address to sign up.
-            </div>
+            {% include '@SimplyTestableWebClient/bs3/Partials/Alert/alert.html.twig' with {
+                'type': 'error',
+                'fieldSelector': 'email',
+                'content': '<strong>Slow down!</strong> You\'re going to have to enter in your email address to sign up.'
+            } only %}
         {% endif %}
 
         {% if error_field == 'email' and error_state == 'invalid' %}
