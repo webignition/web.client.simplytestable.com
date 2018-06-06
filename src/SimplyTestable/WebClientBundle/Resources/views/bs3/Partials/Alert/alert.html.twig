@@ -1,9 +1,0 @@
-{% set alert_type_map = {
-    'error': 'danger',
-    'success': 'success'
-} %}
-
-<div class="alert alert-{{ alert_type_map[type] }} fade in" data-for="{{ fieldSelector }}" role="alert">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">×</button>
-    {{ content|raw }}
-</div>

@@ -1,0 +1,49 @@
+{% if 'email' == error_field %}
+    {% if 'empty' == error_state %}
+        {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+            'type': 'error',
+            'field_selector': field_email,
+            'view': '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/email-empty.html.twig'
+        } only %}
+    {% endif %}
+
+    {% if 'invalid' == error_state %}
+        {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+            'type': 'error',
+            'field_selector': field_email,
+            'view': '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/email-invalid.html.twig',
+            'view_parameters': {email: email}
+        } only %}
+    {% endif %}
+
+    {% if 'public-user' == error_state %}
+        {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+            'type': 'info',
+            'field_selector': field_email,
+            'view': '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/email-public-user.html.twig'
+        } only %}
+    {% endif %}
+{% endif %}
+
+{% if 'password' == error_field %}
+    {% if 'empty' == error_state %}
+        {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+            'type': 'error',
+            'field_selector': field_password,
+            'view': '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/password-empty.html.twig'
+        } only %}
+    {% endif %}
+{% endif %}
+
+{% if user_signin_error is not empty %}
+    {% set alert_view = 'account-not-logged-in' == user_signin_error
+        ? '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/account-not-logged-in.html.twig'
+        : '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/test-not-logged-in.html.twig'
+    %}
+
+    {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+        'type': 'info',
+        'field_selector': field_email,
+        'view': alert_view
+    } only %}
+{% endif %}

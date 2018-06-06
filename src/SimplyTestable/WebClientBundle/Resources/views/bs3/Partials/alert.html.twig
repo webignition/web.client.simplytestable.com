@@ -1,0 +1,20 @@
+{% set alert_type_map = {
+    'error': 'danger',
+    'success': 'success',
+    'info': 'info',
+} %}
+
+{% set alert_type = alert_type_map[type] %}
+
+<div class="alert alert-{{ alert_type }} fade in"
+     {% if field_selector is defined %}data-for="{{ field_selector }}"{% endif %}
+     role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">×</button>
+
+    {% if view is defined %}
+        {% set view_parameters = view_parameters is defined ? view_parameters : {} %}
+        {% include view with view_parameters only %}
+    {% else %}
+        {{ content|raw }}
+    {% endif %}
+</div>

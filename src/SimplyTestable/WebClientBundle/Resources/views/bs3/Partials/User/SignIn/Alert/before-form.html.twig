@@ -1,0 +1,32 @@
+{% if 'invalid-user' == error_state %}
+    {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+        'type': 'info',
+        'field_selector': field_email,
+        'view': '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/invalid-user.html.twig',
+        'view_parameters': {email: email}
+    } only %}
+{% endif %}
+
+{% if 'authentication-failure' == error_state %}
+    {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+        'type': 'error',
+        'field_selector': field_password,
+        'view': '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/authentication-failure.html.twig',
+        'view_parameters': {email: email}
+    } only %}
+{% endif %}
+
+{% if 'user-not-enabled' == error_state %}
+    {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+        'type': 'info',
+        'view': '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/user-not-enabled.html.twig',
+        'view_parameters': {email: email}
+    } only %}
+{% endif %}
+
+{% if 'user-activated' == user_signin_confirmation %}
+    {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+        'type': 'success',
+        'view': '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/user-activated.html.twig'
+    } only %}
+{% endif %}
