@@ -1,49 +1,40 @@
-{% if 'email' == error_field %}
-    {% if 'empty' == error_state %}
-        {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
-            'type': 'error',
-            'field_selector': field_email,
-            'view': '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/email-empty.html.twig'
-        } only %}
-    {% endif %}
+{% set alert_type = 'error' %}
+{% set alert_field_selector = 'email' %}
+{% set alert_view = null %}
+{% set alert_view_parameters = {} %}
 
-    {% if 'invalid' == error_state %}
-        {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
-            'type': 'error',
-            'field_selector': field_email,
-            'view': '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/email-invalid.html.twig',
-            'view_parameters': {email: email}
-        } only %}
-    {% endif %}
-
-    {% if 'public-user' == error_state %}
-        {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
-            'type': 'info',
-            'field_selector': field_email,
-            'view': '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/email-public-user.html.twig'
-        } only %}
-    {% endif %}
+{% if 'email' == error_field and 'empty' == error_state %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/email-empty.html.twig' %}
 {% endif %}
 
-{% if 'password' == error_field %}
-    {% if 'empty' == error_state %}
-        {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
-            'type': 'error',
-            'field_selector': field_password,
-            'view': '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/password-empty.html.twig'
-        } only %}
-    {% endif %}
+{% if 'email' == error_field and 'invalid' == error_state %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/email-invalid.html.twig' %}
+    {% set alert_view_parameters = {email: email} %}
+{% endif %}
+
+{% if 'email' == error_field and 'public-user' == error_state %}
+    {% set alert_type = 'info' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/email-public-user.html.twig' %}
+{% endif %}
+
+{% if 'password' == error_field and 'empty' == error_state %}
+    {% set alert_field_selector = 'password' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/password-empty.html.twig' %}
 {% endif %}
 
 {% if user_signin_error is not empty %}
+    {% set alert_type = 'info' %}
     {% set alert_view = 'account-not-logged-in' == user_signin_error
         ? '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/account-not-logged-in.html.twig'
         : '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/test-not-logged-in.html.twig'
     %}
+{% endif %}
 
+{% if alert_view is not null %}
     {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
-        'type': 'info',
-        'field_selector': field_email,
-        'view': alert_view
+        'type': alert_type,
+        'field_selector': alert_field_selector,
+        'view': alert_view,
+        'view_parameters': alert_view_parameters
     } only %}
 {% endif %}

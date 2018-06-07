@@ -20,7 +20,6 @@
 {% block body_class %} {{ parent() }} sign-up {% endblock %}
 
 {% block content %}
-
     <h1>Create your account</h1>
 
     <p>
@@ -29,103 +28,21 @@
     </p>
 
     {% if coupon %}
-        <div class="alert alert-info alert-coupon">
+        {% set alert_content %}
             <p>
                 {{ coupon.intro|raw }}
             </p>
-        </div>
+        {% endset %}
 
+        {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+            'type': 'info',
+            'content': alert_content,
+            'dismissable': false
+        } only %}
     {% endif %}
 
     <form class="js-form-button-spinner" role="form" method="post" action="{{ path('sign_up_submit') }}" novalidate>
-
-        {% if user_create_confirmation == 'user-exists' %}
-            <div class="alert alert-success" data-for="email">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <p>
-                    Looks like <strong>{{ email }}</strong> already has an account.</p>
-                <p>
-                    Do you need to <a href="{{ path('view_user_resetpassword_index_index', {'email': email}) }}">reset your password</a>?
-                </p>
-            </div>
-        {% endif %}
-
-        {% if error_field == 'email' and error_state == 'empty' %}
-            {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
-                'type': 'error',
-                'fieldSelector': 'email',
-                'content': '<strong>Slow down!</strong> You\'re going to have to enter in your email address to sign up.'
-            } only %}
-        {% endif %}
-
-        {% if error_field == 'email' and error_state == 'invalid' %}
-            <div class="alert alert-danger" data-for="email">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <strong>Hmmm.</strong> I'm not convinced that <strong>{{ email }}</strong> is a valid email address.
-            </div>
-        {% endif %}
-
-        {% if error_field == 'password' and error_state == 'empty' %}
-            <div class="alert alert-danger">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <strong>Slow down!</strong> You're going to have to choose a password for your account.
-            </div>
-        {% endif %}
-
-        {% if user_create_error == 'postmark-not-allowed-to-send' %}
-            <div class="alert alert-info" data-for="email">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <p>
-                    <strong>Well, this is embarrassing.</strong>
-                </p>
-                <p>
-                    I can't send email at the moment. Neither can I email my makers so that they can fix this. Awkward.
-                </p>
-                <p>
-                    You're a nice person. Could you <a href="{{ external_links.contact_email }}">email my makers</a> so that they can fix this?
-                </p>
-            </div>
-        {% endif %}
-
-        {% if user_create_error == 'postmark-inactive-recipient' %}
-            <div class="alert alert-danger" data-for="email">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <p>
-                    <strong>Hmmm. That's not going to work.</strong>
-                </p>
-                <p>
-                    I can't send a confirmation email to <strong>{{ email }}</strong>.
-                </p>
-                <p>
-                    Perhaps your mailbox is full, perhaps the email address doesn't exist.
-                </p>
-                <p>
-                    Maybe try with a different email address?
-                </p>
-            </div>
-        {% endif %}
-
-        {% if user_create_error == 'create-failed' %}
-            <div class="alert alert-danger" data-for="email">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <strong>Something went wrong.</strong> I tried to sign up <strong>{{ email }}</strong> but it didn't
-                work. I don't know why.
-            </div>
-        {% endif %}
-
-        {% if user_create_error == 'create-failed-read-only' %}
-            <div class="alert alert-danger for:email" data-for="email">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <p><strong>Sorry, I can't do that right now</strong></p>
-                <p>
-                    We're in a <strong>read-only</strong> state whilst some
-                    <strong>maintenance</strong> is going on.
-                </p>
-                <p>
-                    Give it a go again soon, this won't take long.
-                </p>
-            </div>
-        {% endif %}
+        {% include '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Alert/within-form.html.twig' %}
 
         <div class="form-group-collection">
             <div class="form-group">
@@ -172,7 +89,6 @@
                 By making use of this website you agree to the <a href="{{ external_links.terms }}">terms of service</a>.
             </p>
         </div>
-
     </form>
 
 {% endblock %}
