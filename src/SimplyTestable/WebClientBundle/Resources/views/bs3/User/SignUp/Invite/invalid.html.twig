@@ -1,0 +1,27 @@
+{% extends 'SimplyTestableWebClientBundle::bs3/Abstract/single-page-dialog.html.twig' %}
+
+{% block title %}I'm not sure that's the right invitation code{% endblock %}
+
+{% block content %}
+    <h1>
+        <strong>Hmmm.</strong> I'm not sure that's the right invitation code.
+    </h1>
+
+    <ul>
+        <li>
+            <p class="lead">
+                check that the address of this page matches that given in your invitation email
+            </p>
+        </li>
+        <li>
+            <p class="lead">
+                ask your team leader to re-send your invitation
+            </p>
+        </li>
+        <li>
+            <p class="lead">
+                your invite only works once; trying again with an invite that you have already accepted won't get you far
+            </p>
+        </li>
+    </ul>
+{% endblock %}

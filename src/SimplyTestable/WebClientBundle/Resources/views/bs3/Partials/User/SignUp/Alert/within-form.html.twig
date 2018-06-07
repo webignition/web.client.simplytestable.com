@@ -20,7 +20,7 @@
 
 {% if error_field == 'password' and error_state == 'empty' %}
     {% set alert_field_selector = 'password' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Alert/Content/password-empty.html.twig' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/signup-password-empty.html.twig' %}
 {% endif %}
 
 {% if user_create_error == 'postmark-not-allowed-to-send' %}

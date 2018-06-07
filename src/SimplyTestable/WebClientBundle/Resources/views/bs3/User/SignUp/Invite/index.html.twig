@@ -1,12 +1,6 @@
 {% extends 'SimplyTestableWebClientBundle::bs3/Abstract/single-page-dialog.html.twig' %}
 
-{% block title %}
-    {% if has_invite %}
-        Accept invitation to team {{ invite.team }} - {{ parent() }}
-    {% else %}
-        I'm not sure that's the right invitation code
-    {% endif %}
-{% endblock %}
+{% block title %}Accept invitation to team {{ invite.team }} - {{ parent() }}{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
@@ -21,140 +15,44 @@
 
 {% endblock %}
 
-{% block body_class %} {{ parent() }} sign-up-invite {{ has_invite ? '' : 'no-invite' }}{% endblock %}
+{% block body_class %} {{ parent() }} sign-up-invite{% endblock %}
 
 {% block content %}
-    <h1>Accept invitation to team {{ has_invite ? invite.team : '' }}</h1>
+    <h1>Accept invitation to team {{ invite.team }}</h1>
 
-    {% if has_invite %}
-        <div class="intro">
-            <p>
-                Hello {{ invite.user }}, you've been invited to join the {{ invite.team }} testing team!
-            </p>
-            <p>
-                Choose your password to activate your account and join the team.
-            </p>
+    <div class="intro">
+        <p>
+            Hello {{ invite.user }}, you've been invited to join the {{ invite.team }} testing team!
+        </p>
+    </div>
+
+    {% include '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Invite/Alert/before-form.html.twig' %}
+
+    <form role="form" method="post" action="{{ path('action_signup_team_invite_accept', {'token': token}) }}" novalidate>
+        <div class="form-group-collection">
+            <div class="form-group">
+                <label for="password">Choose your password to activate your account and join the team.</label>
+                <input type="password"
+                       class="form-control input-larger"
+                       id="password"
+                       name="password"
+                       placeholder="Choose a password for your account"
+                       data-focused
+                >
+            </div>
         </div>
 
-        {% if invite_accept_error is defined and invite_accept_error is not empty %}
-            {% if invite_accept_error == 'blank-password' %}
-                <div class="alert alert-danger" data-for="password">
-                    <button type="button" class="close" data-dismiss="alert">×</button>
-                    <strong>Slow down!</strong> You're going to have to choose a password for your account.
-                </div>
-            {% endif %}
+        <div class="form-group-collection form-group-submit-collection">
+            <input type="hidden" id="token" name="token" value="{{ token }}">
+            <button type="submit" class="btn btn-primary">Join team {{ invite.team }}!</button>
 
-            {% if invite_accept_error == 'failure' %}
-                <div class="alert alert-danger">
-                    <button type="button" class="close" data-dismiss="alert">×</button>
-                    <p>
-                        <strong>Sorry, that didn't work.</strong>
-                    </p>
-                    <p>
-                        I'm not sure what to do about it. I encountered error {{ invite_accept_failure }}. Please
-                        <a href="{{ external_links.contact_email }}">let my owners know</a>
-                        if this keeps happening.
-                    </p>
-                </div>
-            {% endif %}
-        {% endif %}
+            <label class="checkbox">
+                <input type="checkbox" {% if stay_signed_in != "0" %}checked="checked"{% endif %} name="stay-signed-in" value="1"><span>Stay signed in</span>
+            </label>
 
-        <form role="form" method="post" action="{{ path('action_signup_team_invite_accept', {'token': token}) }}" novalidate>
-
-            {% if user_token_error is defined and user_token_error is not empty %}
-                {% if user_token_error == 'blank-token' %}
-                    <div class="alert alert-danger" data-for="token">
-                        <button type="button" class="close" data-dismiss="alert">×</button>
-                        <strong>Slow down!</strong> You're going to have to enter your activation code below.
-                    </div>
-                {% endif %}
-
-                {% if user_token_error == 'failed-read-only' %}
-                    <div class="alert alert-error">
-                        <button type="button" class="close" data-dismiss="alert">×</button>
-                        <p><strong>Sorry, I can't do that right now</strong></p>
-                        <p>
-                            We're in a <strong>read-only</strong> state whilst some
-                            <strong>maintenance</strong> is going on.
-                        </p>
-                        <p>
-                            Give it a go again soon, this won't take long.
-                        </p>
-                    </div>
-                {% endif %}
-
-                {% if user_token_error == 'invalid-token' %}
-                    <div class="alert alert-danger" data-for="token">
-                        <button type="button" class="close" data-dismiss="alert">×</button>
-                        <p><strong>Hmmm.</strong> I'm not sure that's the right activation code.</p>
-                        <p>There's a button below to have your activation code re-sent. Maybe try that?</p>
-                    </div>
-                {% endif %}
-            {% endif %}
-
-            {% if user_activate_error is defined and user_activate_error is not empty %}
-                <div class="alert alert-danger" data-for="password">
-                    <button type="button" class="close" data-dismiss="alert">×</button>
-                    <strong>Slow down!</strong> You're going to have to choose a password for your account.
-                </div>
-            {% endif %}
-
-            <div class="form-group-collection">
-                <div class="form-group">
-                    <label for="password">Choose a password</label>
-                    <input type="password"
-                           class="form-control input-larger"
-                           id="password"
-                           name="password"
-                           placeholder="Choose a password for your account"
-                           data-focused
-                    >
-                </div>
-            </div>
-
-            <div class="form-group-collection">
-                <div class="form-group">
-                    <label for="token">Activation code (it was emailed to you)</label>
-                    <input type="text" class="form-control input-larger" id="token" name="token" placeholder="Enter your activation code (it was emailed to you)" value="{{ token }}">
-                </div>
-            </div>
-
-            <div class="form-group-collection form-group-submit-collection">
-                <button type="submit" class="btn btn-primary">Join team {{ invite.team }}!</button>
-
-                <label class="checkbox">
-                    <input type="checkbox" {% if stay_signed_in != "0" %}checked="checked"{% endif %} name="stay-signed-in" value="1"><span>Stay signed in</span>
-                </label>
-
-                <p class="terms-notice additional">
-                    By making use of this website you agree to the <a href="{{ external_links.terms }}">terms of service</a>.
-                </p>
-            </div>
-        </form>
-
-    {% else %}
-        <div class="alert alert-danger">
-            <p>
-                <strong>Hmmm.</strong> I'm not sure that's the right invitation code.
+            <p class="terms-notice additional">
+                By making use of this website you agree to the <a href="{{ external_links.terms }}">terms of service</a>.
             </p>
-
-            <ul>
-                <li>
-                    <p>
-                        check that the address of this page matches that given in your invitation email
-                    </p>
-                </li>
-                <li>
-                    <p>
-                        ask your team leader to re-send your invitation
-                    </p>
-                </li>
-                <li>
-                    <p>
-                        your invite only works once; trying again with an invite that you have already accepted won't get you far
-                    </p>
-                </li>
-            </ul>
         </div>
-    {% endif %}
+    </form>
 {% endblock %}
