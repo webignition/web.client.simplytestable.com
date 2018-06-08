@@ -1,0 +1,22 @@
+{% extends 'SimplyTestableWebClientBundle::bs3/Abstract/single-page-dialog.html.twig' %}
+
+{% block title %}Password reset link expired{% endblock %}
+
+{% block content %}
+    <h1>
+        <strong>Hmmm.</strong> This password reset link feels a bit off.
+    </h1>
+
+    <p class="lead">
+        The password reset link you followed has expired or isn't quite correct.
+    </p>
+
+    <p class="lead">
+        Did you copy the link from the email you received? Try clicking the link. If you want to copy if, make sure
+        you get it right.
+    </p>
+
+    <div class="single-button-form">
+        <a class="btn btn-success" href="{{ path('view_user_resetpassword_index_index', {'email': email}) }}">Get a new password reset link <i class="fa fa-caret-right"></i></a>
+    </div>
+{% endblock %}
