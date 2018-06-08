@@ -57,6 +57,7 @@ class ConfirmController extends AbstractUserController
             'user_create_confirmation',
             'user_token_error',
             'token_resend_error',
+            'user_error',
         ];
 
         $viewData = array_merge([

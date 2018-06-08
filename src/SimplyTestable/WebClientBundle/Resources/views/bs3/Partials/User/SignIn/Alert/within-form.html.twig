@@ -32,9 +32,9 @@
 
 {% if alert_view is not null %}
     {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
-        'type': alert_type,
-        'field_selector': alert_field_selector,
-        'view': alert_view,
-        'view_parameters': alert_view_parameters
+        type: alert_type,
+        field_selector: alert_field_selector,
+        view: alert_view,
+        view_parameters: alert_view_parameters
     } only %}
 {% endif %}

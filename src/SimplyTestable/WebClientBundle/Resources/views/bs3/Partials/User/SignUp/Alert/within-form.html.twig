@@ -24,12 +24,12 @@
 {% endif %}
 
 {% if user_create_error == 'postmark-not-allowed-to-send' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Alert/Content/postmark-not-allowed-to-send.html.twig' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/postmark-not-allowed-to-send.html.twig' %}
     {% set alert_view_parameters = {contact_email: external_links.contact_email} %}
 {% endif %}
 
 {% if user_create_error == 'postmark-inactive-recipient' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Alert/Content/postmark-inactive-recipient.html.twig' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/postmark-inactive-recipient.html.twig' %}
     {% set alert_view_parameters = {email: email} %}
 {% endif %}
 
@@ -39,15 +39,14 @@
 {% endif %}
 
 {% if user_create_error == 'create-failed-read-only' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Alert/Content/create-failed-read-only.html.twig' %}
-    {% set alert_view_parameters = {email: email} %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/failed-read-only.html.twig' %}
 {% endif %}
 
 {% if alert_view is not null %}
     {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
-        'type': alert_type,
-        'field_selector': alert_field_selector,
-        'view': alert_view,
-        'view_parameters': alert_view_parameters
+        type: alert_type,
+        field_selector: alert_field_selector,
+        view: alert_view,
+        view_parameters: alert_view_parameters
     } only %}
 {% endif %}

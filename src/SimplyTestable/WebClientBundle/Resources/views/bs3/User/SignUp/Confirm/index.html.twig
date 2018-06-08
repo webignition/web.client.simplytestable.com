@@ -12,169 +12,18 @@
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
-
 {% endblock %}
+
+{% block body_class %} {{ parent() }} sign-up-confirm{% endblock %}
 
 {% block content %}
     <h1>Confirm sign up</h1>
 
-    {% if user_error is defined and user_error == 'invalid-user' %}
-        <div class="alert alert-info">
-            <p>
-                <strong>Hello!</strong>
-            </p>
-            <p>
-                There's no account for <strong>{{ email }}</strong>.
-                Good news - we can do that for you if you like.
-            </p>
-            <form role="form" class="single-button-form" method="get" action="{{ path('view_user_signup_index_index') }}">
-                <div>
-                    <input type="hidden" name="email" value="{{ email }}" />
-                    <button class="btn btn-success" type="submit">Yes, sign me up please!</button>
-                </div>
-            </form>
-
-        </div>
-    {% endif %}
-
-    {% if token_resend_error is defined and token_resend_error is not empty %}
-        {% if token_resend_error == 'postmark-failure' %}
-            <div class="alert alert-info">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <p>
-                    <strong>Sorry, that didn't work</strong>
-                </p>
-                <p>
-                    We tried to re-send your sign up confirmation email to <strong>{{ email }}</strong>
-                    but it didn't work.
-                </p>
-                <p>
-                    Could you try again?
-                </p>
-            </div>
-        {% endif %}
-
-        {% if token_resend_error == 'postmark-not-allowed-to-send' %}
-            <div class="alert alert-info" data-for="email">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-
-                <p>
-                    <strong>Well, this is embarrassing.</strong>
-                </p>
-
-                <p>
-                    I can't send email at the moment. Neither can I email my makers so that they can fix this. Awkward.
-                </p>
-
-                <p>
-                    You're a nice person. Could you <a href="{{ external_links.contact_email }}">email my makers</a> so that they can fix this?
-                </p>
-            </div>
-        {% endif %}
-
-        {% if token_resend_error == 'postmark-inactive-recipient' %}
-            <div class="alert alert-danger" data-for="email">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-
-                <p>
-                    <strong>Hmmm. That's not going to work.</strong>
-                </p>
-
-                <p>
-                    I can't send a confirmation email to <strong>{{ email }}</strong>.
-                </p>
-
-                <p>
-                    Perhaps your mailbox is full, perhaps the email address doesn't exist.
-                </p>
-
-                <p>
-                    Maybe try again later?
-                </p>
-
-            </div>
-        {% endif %}
-
-
-        {% if token_resend_error == 'core-app-invalid-credentials' %}
-            <div class="alert alert-info" data-for="email">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-
-                <p>
-                    <strong>Oops</strong>
-                </p>
-
-                <p>
-                    I can't do that right now; I haven't been configured correctly.
-                </p>
-
-                <p>
-                    I've sent my makers an email so that they can give me the right settings.
-                </p>
-
-            </div>
-        {% endif %}
-    {% endif %}
+    {% include '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Confirm/Alert/alerts.html.twig' %}
 
     <form role="form" method="post" action="{{ path('sign_up_confirm_submit', { 'email': email}) }}" novalidate>
-
-        {% if token_resend_confirmation is defined and token_resend_confirmation is not empty %}
-            <div class="alert alert-success" data-for="token">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <p><strong>Done!</strong></p><p>Activation code sent to <strong> {{ email }}</strong>.</p>
-                <p>
-                    Enter it below or click the activation link in the email.
-                </p>
-            </div>
-        {% endif %}
-
-        {% if user_create_confirmation is defined and user_create_confirmation is not empty or has_notification == false %}
-            <div class="alert alert-success">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <p>
-                    <strong>Nearly there</strong>.
-                </p>
-                <p>
-                    We've emailed an activation code to <strong> {{ email }}</strong>.
-                </p>
-                <p>
-                    Enter it below or click the activation link in the email.
-                </p>
-            </div>
-        {% endif %}
-
-        {% if user_token_error is defined and user_token_error is not empty %}
-            {% if user_token_error == 'blank-token' %}
-                <div class="alert alert-danger" data-for="token">
-                    <button type="button" class="close" data-dismiss="alert">×</button>
-                    <strong>Slow down!</strong> You're going to have to enter your activation code below.
-                </div>
-            {% endif %}
-
-            {% if user_token_error == 'failed-read-only' %}
-                <div class="alert alert-error">
-                    <button type="button" class="close" data-dismiss="alert">×</button>
-                    <p><strong>Sorry, I can't do that right now</strong></p>
-                    <p>
-                        We're in a <strong>read-only</strong> state whilst some
-                        <strong>maintenance</strong> is going on.
-                    </p>
-                    <p>
-                        Give it a go again soon, this won't take long.
-                    </p>
-                </div>
-            {% endif %}
-
-            {% if user_token_error == 'invalid-token' %}
-                <div class="alert alert-danger" data-for="token">
-                    <button type="button" class="close" data-dismiss="alert">×</button>
-                    <p><strong>Hmmm.</strong> I'm not sure that's the right activation code.</p>
-                    <p>There's a button below to have your activation code re-sent. Maybe try that?</p>
-                </div>
-            {% endif %}
-        {% endif %}
-
         <div class="form-group-collection form-group-collection-single">
+            <label for="token">Activation code</label>
             <div class="input-group input-group-larger">
                 <input type="text"
                        class="form-control"

@@ -1,0 +1,13 @@
+<p>
+    <strong>Hello!</strong>
+</p>
+<p>
+    There's no account for <strong>{{ email }}</strong>.
+    Good news - we can do that for you if you like.
+</p>
+<form role="form" class="single-button-form" method="get" action="{{ path('view_user_signup_index_index') }}">
+    <div>
+        <input type="hidden" name="email" value="{{ email }}" />
+        <button class="btn btn-success" type="submit">Yes, sign me up please!</button>
+    </div>
+</form>
