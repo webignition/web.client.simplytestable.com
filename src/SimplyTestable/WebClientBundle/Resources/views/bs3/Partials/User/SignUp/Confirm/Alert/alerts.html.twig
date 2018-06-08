@@ -32,7 +32,7 @@
 
 {% if token_resend_error is defined and token_resend_error == 'core-app-invalid-credentials' %}
     {% set alert_type  = 'info' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Confirm/Alert/Content/core-app-invalid-credentials.html.twig' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/core-app-invalid-credentials.html.twig' %}
 {% endif %}
 
 {% if token_resend_confirmation is defined and token_resend_confirmation is not empty %}
