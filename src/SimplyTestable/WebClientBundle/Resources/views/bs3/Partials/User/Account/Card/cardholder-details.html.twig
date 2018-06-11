@@ -17,18 +17,18 @@
     </div>
 </div>
 <div class="form-group">
-    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container"></div>
-
-    <label for="inputStreetAddress" class="{{ label_width_class }} control-label">Street address</label>
-
-    <div class="{{ full_field_width_class }} field">
+    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container">
         {% if user_summary.stripeCustomer.hasActiveCard and user_summary.stripeCustomer.activeCard.isPassedAddressLine1Check == false %}
             {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
                 type: 'error',
                 view: '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/Alert/Content/address-line1-unverified.html.twig'
             } only %}
         {% endif %}
+    </div>
 
+    <label for="inputStreetAddress" class="{{ label_width_class }} control-label">Street address</label>
+
+    <div class="{{ full_field_width_class }} field">
         <input type="text"
                class="form-control"
                id="inputStreetAddress"
@@ -66,18 +66,18 @@
     </div>
 </div>
 <div class="form-group">
-    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container"></div>
-
-    <label for="inputZip" class="{{ label_width_class }} control-label">Zip or postal code</label>
-
-    <div class="{{ field_width_class }} field">
+    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container">
         {% if (user_summary.stripeCustomer.hasActiveCard and user_summary.stripeCustomer.activeCard.isPassedAddressZipCheck == false) or (user_account_card_exception_param  is defined and user_account_card_exception_param  == 'address_zip') %}
             {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
                 type: 'error',
                 view: '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/Alert/Content/address-zip-unverified.html.twig'
             } only %}
         {% endif %}
+    </div>
 
+    <label for="inputZip" class="{{ label_width_class }} control-label">Zip or postal code</label>
+
+    <div class="{{ field_width_class }} field">
         <input type="text"
                class="form-control"
                id="inputZip"
