@@ -1,0 +1,14 @@
+{% extends '@SimplyTestableWebClient/bs3/Partials/User/Account/Plan/Alert/Content/abstract.html.twig' %}
+{% block message %}
+    <p>
+        An error occurred while processing payment for your premium subscription.
+    </p>
+    <p>
+        This can happen from time to time if your card provider is having issues.
+        Sometimes we ask them to charge your card and they just ignore us.
+    </p>
+    <p>
+        Please give it a go again in a few minutes.
+    </p>
+{% endblock %}
+{% block update_payment_details %}{% endblock %}

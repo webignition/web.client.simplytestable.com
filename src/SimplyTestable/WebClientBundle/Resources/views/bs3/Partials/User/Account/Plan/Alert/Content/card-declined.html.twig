@@ -1,0 +1,25 @@
+{% extends '@SimplyTestableWebClient/bs3/Partials/User/Account/Plan/Alert/Content/abstract.html.twig' %}
+{% block message %}
+    <p>
+        Your payment card was declined by your card provider.
+    </p>
+    <p>
+        Some common reasons for this:
+    </p>
+    <ul>
+        <li>
+            <p>you have reached your card's limit</p>
+        </li>
+        <li>
+            <p>your card has been blocked</p>
+        </li>
+        <li>
+            <p>your card provider's fraud checks are a little flaky</p>
+        </li>
+    </ul>
+    <p>
+        If you can't immediately figure this one out, give your
+        card provider a call and ask them why charges for Simply Testable
+        are being declined.
+    </p>
+{% endblock %}
