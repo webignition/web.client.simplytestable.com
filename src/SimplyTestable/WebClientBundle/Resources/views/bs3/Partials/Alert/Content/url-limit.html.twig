@@ -1,0 +1,10 @@
+{% set test_label = is_public_user_test ? '<strong>free demo</strong>' : 'test' %}
+
+This {{ test_label|raw }} has been limited to only the first <strong>{{ limit }}</strong>
+URLs of the <strong>{{ total }}</strong> that were discovered.
+
+{% if is_logged_in %}
+    Start a new test or <a href="{{ path('view_user_account_index_index') }}">upgrade your plan</a> to allow larger sites to be tested.
+{% else %}
+    <a href="{{ path('view_user_signup_index_index') }}">Create an account</a> or <a href="{{ path('view_user_signin_index') }}">sign in</a> to start a new test without this limit.
+{% endif %}
