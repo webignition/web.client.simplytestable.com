@@ -6,7 +6,11 @@
     {% if not user_summary.getTeamSummary.isInTeam or (user_summary.getTeamSummary.isInTeam and user.username == team.leader) %}
         {% if user_summary.stripeCustomer.hasActiveCard %}
             {% if user_summary.stripeCustomer.activeCard.hasCheckFailures %}
-                {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/PaymentDetails:payment-summary-card-check-failures.html.twig' %}
+                {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+                    type: 'error',
+                    view: '@SimplyTestableWebClient/bs3/Partials/User/Account/PaymentDetails/Alert/Content/payment-summary-card-check-failures.html.twig'
+                } only %}
+                <br>
             {% endif %}
             {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/PaymentDetails:card-summary.html.twig' %}
         {% else %}
