@@ -1,4 +1,6 @@
 {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
     type: 'info',
-    view: '@SimplyTestableWebClient/bs3/Partials/Alert/Content/demo-notification.html.twig'
+    view: '@SimplyTestableWebClient/bs3/Partials/Alert/Content/demo-notification.html.twig',
+    dismissable: false,
+    wrap_in_container: true
 } only %}
