@@ -18,7 +18,8 @@ use webignition\SimplyTestableUserModel\User;
 
 class ChooseControllerTest extends AbstractViewControllerTest
 {
-    const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/ResetPassword/Choose:index.html.twig';
+    const DEFAULT_VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/ResetPassword/Choose:index.html.twig';
+    const INVALID_TOKEN_VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/ResetPassword/Choose:invalid.html.twig';
     const ROUTE_NAME = 'view_user_resetpassword_choose_index';
 
     const USER_EMAIL = 'user@example.com';
@@ -100,11 +101,11 @@ class ChooseControllerTest extends AbstractViewControllerTest
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
-                            $this->assertCommonViewData($viewName, $parameters);
+                            $this->assertEquals(self::INVALID_TOKEN_VIEW_NAME, $viewName);
+                            $this->assertCommonViewData($parameters);
 
                             $this->assertEquals('invalid-token', $parameters['token']);
                             $this->assertNull($parameters['stay_signed_in']);
-                            $this->assertEquals('invalid-token', $parameters['user_reset_password_error']);
 
                             return true;
                         },
@@ -124,11 +125,11 @@ class ChooseControllerTest extends AbstractViewControllerTest
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
-                            $this->assertCommonViewData($viewName, $parameters);
+                            $this->assertEquals(self::INVALID_TOKEN_VIEW_NAME, $viewName);
+                            $this->assertCommonViewData($parameters);
 
                             $this->assertEquals('invalid-token', $parameters['token']);
                             $this->assertNull($parameters['stay_signed_in']);
-                            $this->assertEquals('invalid-token', $parameters['user_reset_password_error']);
 
                             return true;
                         },
@@ -149,7 +150,8 @@ class ChooseControllerTest extends AbstractViewControllerTest
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
-                            $this->assertCommonViewData($viewName, $parameters);
+                            $this->assertEquals(self::DEFAULT_VIEW_NAME, $viewName);
+                            $this->assertCommonViewData($parameters);
 
                             $this->assertEquals(self::TOKEN, $parameters['token']);
                             $this->assertNull($parameters['stay_signed_in']);
@@ -174,7 +176,8 @@ class ChooseControllerTest extends AbstractViewControllerTest
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
-                            $this->assertCommonViewData($viewName, $parameters);
+                            $this->assertEquals(self::DEFAULT_VIEW_NAME, $viewName);
+                            $this->assertCommonViewData($parameters);
 
                             $this->assertEquals(self::TOKEN, $parameters['token']);
                             $this->assertNull($parameters['stay_signed_in']);
@@ -198,7 +201,8 @@ class ChooseControllerTest extends AbstractViewControllerTest
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
-                            $this->assertCommonViewData($viewName, $parameters);
+                            $this->assertEquals(self::DEFAULT_VIEW_NAME, $viewName);
+                            $this->assertCommonViewData($parameters);
 
                             $this->assertEquals(self::TOKEN, $parameters['token']);
                             $this->assertEquals(1, $parameters['stay_signed_in']);
@@ -251,12 +255,10 @@ class ChooseControllerTest extends AbstractViewControllerTest
     }
 
     /**
-     * @param string $viewName
      * @param array $parameters
      */
-    private function assertCommonViewData($viewName, $parameters)
+    private function assertCommonViewData($parameters)
     {
-        $this->assertEquals(self::VIEW_NAME, $viewName);
         $this->assertViewParameterKeys($parameters);
 
         $this->assertEquals(self::USER_EMAIL, $parameters['email']);
