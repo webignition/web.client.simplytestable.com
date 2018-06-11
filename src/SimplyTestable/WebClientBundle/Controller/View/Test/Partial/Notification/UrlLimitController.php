@@ -88,11 +88,18 @@ class UrlLimitController extends BaseViewController implements RequiresValidUser
             return $response;
         }
 
+        $ammendments = $remoteTest->getAmmendments();
+        $firstAmmendment = $ammendments[0];
+
+        $total = (int)str_replace('plan-url-limit-reached:discovered-url-count-', '', $firstAmmendment['reason']);
+        $limit = $firstAmmendment['constraint']['limit'];
+
         return $this->renderWithDefaultViewParameters(
             'SimplyTestableWebClientBundle:bs3/Partials/Alert/Content:url-limit.html.twig',
             [
-                'remote_test' => $remoteTest,
                 'is_public_user_test' => $isPublicUserTest,
+                'total' => $total,
+                'limit' => $limit,
             ],
             $response
         );
