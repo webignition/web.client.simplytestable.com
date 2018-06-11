@@ -1,0 +1,19 @@
+<p><strong>Hmmm, that email address has been taken</strong></p>
+<p>
+    The email address <strong> {{ email }} </strong> is in use by someone else.
+    It wasn't before but it is now.
+</p>
+<p>
+    If you still want to change your email address you'll have
+    to try again with something different.
+</p>
+
+<form class="form-inline pull-right" role="form" method="post" action="{{ path('action_user_account_emailchange_cancel') }}">
+    <div class="form-group">
+        <div class="controls">
+            <button name="confirm" value="1" type="submit" class="btn btn-danger">Cancel change</button>
+        </div>
+    </div>
+</form>
+
+<div class="clearfix"></div>

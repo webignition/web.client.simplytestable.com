@@ -1,259 +1,27 @@
-{% if email_change_request is defined %}        
-    {% if user_account_details_update_email_confirm_notice is defined and user_account_details_update_email_confirm_notice is not empty %}
-
-        {% if user_account_details_update_email_confirm_notice == 'invalid-token' %}
-            <div class="alert alert-danger">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <p><strong>Hmmm, that's not the right confirmation code</strong></p>
-                <p>
-                    Try having the confirmation email re-sent if you're not
-                    sure the confirmation code is correct.
-                </p>
-                <p>
-                    If you're copying the confirmation code from the email,
-                    try instead to click the link below the code.
-                </p>
-            </div>               
-        {% endif %}
-
-        {% if user_account_details_update_email_confirm_notice == 'email-taken' %}
-            <div class="alert alert-danger">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <p><strong>Hmmm, that email address has been taken</strong></p>
-                <p>
-                    The email address <strong> {{ user_account_details_update_email }} </strong> is in use by someone else.
-                    It wasn't before but it is now.
-                </p>
-                <p>
-                    If you still want to change your email address you'll have
-                    to try again with something different.
-                </p>                    
-            </div>               
-        {% endif %}       
-
-        {% if user_account_details_update_email_confirm_notice == 'unknown' %}
-            <div class="alert alert-danger">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-
-                <strong>Hmmm.</strong><br>
-                Something went wrong when I tried to do that. I'm not sure what happened.
-                Would you mind trying that again?
-            </div>               
-        {% endif %}        
-    {% endif %}
-
-    {% if user_account_details_resend_email_change_error is defined and user_account_details_resend_email_change_error is not empty %}
-        {% if user_account_details_resend_email_change_error == 'postmark-inactive-recipient' %}
-            <div class="alert alert-danger alert-postmark-inactive-recipient">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-
-                <p>
-                    <strong>Hmmm. That's not going to work.</strong>
-                </p>
-
-                <p>
-                    I can't send a confirmation email to <strong>{{ email_change_request.new_email }}</strong>.
-                </p>
-
-                <p>
-                    Perhaps your mailbox is full, perhaps the email address doesn't exist.
-                </p>
-
-                <div class="actions">
-                    <form class="form-inline pull-left" role="form" method="post" action="{{ path('action_user_account_emailchange_resend') }}">
-                        <div class="form-group">
-                            <div class="controls">
-                                <button name="confirm" value="1" type="submit" class="btn btn-default">Re-send code</button>
-                            </div>
-                        </div>
-                    </form>
-
-                    <form class="form-inline pull-right" role="form" method="post" action="{{ path('action_user_account_emailchange_cancel') }}">
-                        <div class="form-group">
-                            <div class="controls">
-                                <button name="confirm" value="1" type="submit" class="btn btn-danger">Cancel change</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="clearfix"></div>
-            </div>
-        {% endif %}
-    {% else %}
-        <div class="alert alert-info confirm-email-change">
-            <p>
-                <strong>Confirm email address change</strong>
-            </p>
-            <p>
-                We've emailed a confirmation code to  <strong>{{ email_change_request['new_email'] }}</strong>.
-            </p>
-
-            <form role="form" method="post" action="{{ path('action_user_account_emailchange_confirm') }}">
-                <div class="form-group">
-                    <label class="control-label" for="token">Confirmation code</label>
-                    <input class="form-control" type="text" name="token" id="token" placeholder="Enter your confirmation code" value="{{token}}">
-                </div>
-                <div class="form-group">
-                    <div class="controls">
-                        <button name="confirm" value="1" type="submit" class="btn btn-primary">Confirm</button>
-                    </div>
-                </div>
-            </form>
-
-            <div class="secondary">
-                <form class="form-inline pull-left" role="form" method="post" action="{{ path('action_user_account_emailchange_resend') }}">
-                    <div class="form-group">
-                        <div class="controls">
-                            <button name="confirm" value="1" type="submit" class="btn btn-default">Re-send code</button>
-                        </div>
-                    </div>
-                </form>
-
-                <form class="form-inline pull-right" role="form" method="post" action="{{ path('action_user_account_emailchange_cancel') }}">
-                    <div class="form-group">
-                        <div class="controls">
-                            <button name="confirm" value="1" type="submit" class="btn btn-danger">Cancel change</button>
-                        </div>
-                    </div>
-                </form>
-
-                <div class="clearfix"></div>
-            </div>
-        </div>
-    {% endif %}
-
+{% if email_change_request is defined %}
+    {% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Email/Alert/HasEmailChangeRequest/alerts.html.twig' %}
 {% endif %}
 
 <form class="form-horizontal" role="form" method="post" action="{{ path('action_user_account_emailchange_request') }}" novalidate>
-
-    {% if user_account_details_update_email_request_notice is defined and user_account_details_update_email_request_notice is not empty %}
-
-        {% if user_account_details_update_email_request_notice == 'blank-email' %}
-            <div class="alert alert-info">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <p>
-                    <strong>Slow down!</strong>
-                </p>
-                <p>
-                    To change your email address, enter the new email
-                    address you would like to use.
-                </p>
-            </div>
-        {% endif %}
-
-        {% if user_account_details_update_email_request_notice == 'same-email' %}
-            <div class="alert alert-info">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <p>
-                    <strong>That's the email address you're already using!</strong>
-                </p>
-                <p>
-                    To change your email address, enter something different.
-                </p>
-            </div>                
-        {% endif %}  
-
-        {% if user_account_details_update_email_request_notice == 'email-taken' %}
-            <div class="alert alert-danger">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                The email address <strong> {{ user_account_details_update_email }} </strong> is in use by someone else.
-            </div>               
-        {% endif %}                 
-
-        {% if user_account_details_update_email_request_notice == 'invalid-email' %}
-            <div class="alert alert-danger">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <strong>Hmmm.</strong> I'm not convinced that <strong> {{ user_account_details_update_email }} </strong> is a valid email address.
-            </div>               
-        {% endif %}                           
-
-        {% if user_account_details_update_email_request_notice == 'unknown' %}
-            <div class="alert alert-danger">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-
-                <strong>Hmmm.</strong><br>
-                Something went wrong when I tried to do that. I'm not sure what happened.
-                Would you mind trying that again?
-            </div>               
-        {% endif %}
-
-        {% if user_account_details_update_email_request_notice == 'postmark-failure' %}
-            <div class="alert alert-info">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <p>
-                    <strong>Sorry, that didn't work</strong>
-                </p>
-                <p>
-                    We tried to re-send your password reset confirmation email to <strong>{{ email }}</strong>
-                    but it didn't work.
-                </p>
-                <p>
-                    Could you try again?
-                </p>
-            </div>
-        {% endif %}
-
-        {% if user_account_details_update_email_request_notice == 'postmark-not-allowed-to-send' %}
-            <div class="alert alert-info" data-for="email">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-
-                <p>
-                    <strong>Well, this is embarrassing.</strong>
-                </p>
-
-                <p>
-                    I can't send email at the moment. Neither can I email my makers so that they can fix this. Awkward.
-                </p>
-
-                <p>
-                    You're a nice person. Could you <a href="{{ external_links.contact_email }}">email my makers</a> so that they can fix this?
-                </p>
-            </div>
-        {% endif %}
-
-        {% if user_account_details_update_email_request_notice == 'postmark-inactive-recipient' %}
-            <div class="alert alert-danger" data-for="email">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-
-                <p>
-                    <strong>Hmmm. That's not going to work.</strong>
-                </p>
-
-                <p>
-                    I can't send a confirmation email to <strong>{{ user_account_details_update_email }}</strong>.
-                </p>
-
-                <p>
-                    Perhaps your mailbox is full, perhaps the email address doesn't exist.
-                </p>
-
-                <p>
-                    Maybe try again later?
-                </p>
-
-            </div>
-        {% endif %}
-
-    {% endif %}      
+    {% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Email/Alert/CreateEmailChangeRequest/alerts.html.twig' %}
 
     <div class="form-group">
-        {% if email_change_request is defined %} 
-            <label for="email" class="{{ label_col_class }} control-label">Email</label>
+        {% if email_change_request is defined %}
+            <label class="{{ label_col_class }} control-label">Email</label>
             <p class="{{ field_col_class }} form-control-static">{{ user.username }}</p>
-        {% else %}               
+        {% else %}
             <label for="email" class="{{ label_col_class }} control-label">Email</label>
             <div class="{{ field_col_class }}">
                 <input type="email" class="form-control" id="email" placeholder="Email" name="email" value="{{ user.username }}">
             </div>
-        {% endif %}        
-
-
+        {% endif %}
     </div>
 
-    <div class="form-group">
-        <div class="{{ submit_col_class }}">
-            <button type="submit" class="btn btn-default xs-full">Change email address</button>
+    {% if email_change_request is not defined %}
+        <div class="form-group">
+            <div class="{{ submit_col_class }}">
+                <button type="submit" class="btn btn-default xs-full">Change email address</button>
+            </div>
         </div>
-    </div>
+    {% endif %}
 </form>
