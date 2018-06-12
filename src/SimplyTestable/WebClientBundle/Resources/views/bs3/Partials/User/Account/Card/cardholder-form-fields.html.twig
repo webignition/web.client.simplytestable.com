@@ -10,29 +10,21 @@
 
 {% set card = user_summary.stripeCustomer.hasActiveCard ? user_summary.stripeCustomer.activeCard : empty_card %}
 
-{% set default_form_group_parameters = {
-    full_field_width_class: full_field_width_class,
-    full_field_width_offset: full_field_width_offset,
-    label_width_class: label_width_class,
-    field_width_class: full_field_width_class,
-    field_view: '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/FormField/text_field.html.twig'
-} %}
-
-{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/cardholder-details-form-group.html.twig' with default_form_group_parameters|merge({
+{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/form-group.html.twig' with default_form_group_parameters|merge({
     field_id: 'inputFirstName',
     label: 'Name',
     value: card.name,
     stripe_name: 'name'
 }) only %}
 
-{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/cardholder-details-form-group.html.twig' with default_form_group_parameters|merge({
+{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/form-group.html.twig' with default_form_group_parameters|merge({
     field_id: 'inputStreetAddress',
     label: 'Street address',
     value: card.addressLine1,
     stripe_name: 'address_line1'
 }) only %}
 
-{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/cardholder-details-form-group.html.twig' with default_form_group_parameters|merge({
+{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/form-group.html.twig' with default_form_group_parameters|merge({
     field_id: 'inputCity',
     label: 'City',
     value: card.addressCity,
@@ -40,7 +32,7 @@
     field_width_class: field_width_class
 }) only %}
 
-{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/cardholder-details-form-group.html.twig' with default_form_group_parameters|merge({
+{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/form-group.html.twig' with default_form_group_parameters|merge({
     field_id: 'inputState',
     label: 'State or County',
     value: card.addressState,
@@ -48,7 +40,7 @@
     field_width_class: field_width_class
 }) only %}
 
-{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/cardholder-details-form-group.html.twig' with default_form_group_parameters|merge({
+{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/form-group.html.twig' with default_form_group_parameters|merge({
     field_id: 'inputZip',
     label: 'Zip or postal code',
     value: card.addressZip,
@@ -62,7 +54,7 @@
     }
 }) only %}
 
-{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/cardholder-details-form-group.html.twig' with default_form_group_parameters|merge({
+{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/form-group.html.twig' with default_form_group_parameters|merge({
     field_id: 'inputCountry',
     label: 'Country',
     value: card.addressCountry,
