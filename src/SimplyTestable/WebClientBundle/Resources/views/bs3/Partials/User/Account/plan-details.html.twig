@@ -9,7 +9,7 @@
 
         {% if user_summary.plan.accountPlan.isCustom %}
             <p>
-                You're on a custom plan. <a href="mailto:{{ external_links.contact_email|raw }}">Contact us</a>
+                You're on a custom plan. <a href="mailto:{% autoescape false %}{{ external_links.contact_email }}{% endautoescape %}">Contact us</a>
                 if you need to modify your plan.
             </p>
         {% else %}

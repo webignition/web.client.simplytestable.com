@@ -10,7 +10,7 @@
 </p>
 
 <p>
-    Please <a href="mailto:{{ external_links.contact_email }}">let us know</a> if this you encounter this message.
+    Please <a href="mailto:{% autoescape false %}{{ external_links.contact_email }}{% endautoescape %}">let us know</a> if this you encounter this message.
 </p>
 
 {% endset %}
