@@ -58,23 +58,18 @@
 
 
 <div class="form-group cvc-form-group">
-    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container"></div>
+    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container">
+        {% if (user_summary.stripeCustomer.hasActiveCard and user_summary.stripeCustomer.activeCard.isPassedCvcCheck == false) or (user_account_card_exception_param  is defined and user_account_card_exception_param  == 'cvc') %}
+            {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+                type: 'error',
+                view: '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/Alert/Content/cvc-unverified.html.twig'
+            } only %}
+        {% endif %}
+    </div>
 
     <label for="inputCVC" class="{{ label_width_class }} control-label">CVC <span class="help-block hidden-sm hidden-md hidden-lg">usually 3 digits on the back</span></label>
 
     <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3 field">
-        {% if (user_summary.stripeCustomer.hasActiveCard and user_summary.stripeCustomer.activeCard.isPassedCvcCheck == false) or (user_account_card_exception_param  is defined and user_account_card_exception_param  == 'cvc') %}
-
-            <div class="alert alert-danger">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <p>
-                    Your card issuer could not verify that the CVC
-                    you provided is correct.
-                </p>
-            </div>
-
-        {% endif %}
-
         <input type="text"
                class="form-control"
                id="inputCVC"

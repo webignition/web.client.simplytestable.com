@@ -1,0 +1,25 @@
+{% set alert_field_selector = 'website' %}
+{% set alert_view = null %}
+
+{% set has_notification = test_start_error is defined and test_start_error is not empty %}
+
+{% if has_notification and test_start_error == 'website-blank' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Dashboard/TestStart/Alert/Content/website-empty.html.twig' %}
+{% endif %}
+
+{% if has_notification and test_start_error == 'web_resource_exception' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Dashboard/TestStart/Alert/Content/read-only.html.twig' %}
+{% endif %}
+
+{% if has_notification and test_start_error == 'no-test-types-selected' %}
+    {% set alert_field_selector = null %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Dashboard/TestStart/Alert/Content/no-test-types-selected.html.twig' %}
+{% endif %}
+
+{% if alert_view is not null %}
+    {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+        type: 'error',
+        field_selector: alert_field_selector,
+        view: alert_view
+    } only %}
+{% endif %}

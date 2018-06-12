@@ -65,9 +65,7 @@ class ChooseController extends AbstractUserController
             ResetPasswordActionController::FLASH_BAG_REQUEST_ERROR_KEY
         );
 
-        if ($token !== $actualToken) {
-            $userResetPasswordError = 'invalid-token';
-        }
+        $hasValidToken = $token == $actualToken;
 
         $viewData = [
             'email' => $email,
@@ -82,10 +80,11 @@ class ChooseController extends AbstractUserController
             return $response;
         }
 
-        return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/User/ResetPassword/Choose:index.html.twig',
-            $viewData,
-            $response
-        );
+        $view = $hasValidToken
+            ? 'SimplyTestableWebClientBundle:bs3/User/ResetPassword/Choose:index.html.twig'
+            : 'SimplyTestableWebClientBundle:bs3/User/ResetPassword/Choose:invalid.html.twig';
+
+
+        return $this->renderWithDefaultViewParameters($view, $viewData, $response);
     }
 }

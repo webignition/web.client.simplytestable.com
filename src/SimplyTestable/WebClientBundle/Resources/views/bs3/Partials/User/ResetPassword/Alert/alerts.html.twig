@@ -1,0 +1,56 @@
+{% set alert_type = 'error' %}
+{% set alert_field_selector = 'email' %}
+{% set alert_view = null %}
+{% set alert_view_parameters = {} %}
+
+{% if user_reset_password_error is defined and user_reset_password_error == 'blank-email' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/ResetPassword/Alert/Content/email-empty.html.twig' %}
+{% endif %}
+
+{% if user_reset_password_error is defined and user_reset_password_error == 'invalid-email' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/email-invalid.html.twig' %}
+    {% set alert_view_parameters = {email: email} %}
+{% endif %}
+
+{% if user_reset_password_error is defined and user_reset_password_error == 'invalid-user' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/ResetPassword/Alert/Content/user-invalid.html.twig' %}
+    {% set alert_view_parameters = {email: email} %}
+{% endif %}
+
+{% if user_reset_password_error is defined and user_reset_password_error == 'postmark-failure' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/ResetPassword/Alert/Content/postmark-failure.html.twig' %}
+    {% set alert_view_parameters = {email: email} %}
+{% endif %}
+
+{% if user_reset_password_error is defined and user_reset_password_error == 'postmark-not-allowed-to-send' %}
+    {% set alert_type  = 'info' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/postmark-not-allowed-to-send.html.twig' %}
+    {% set alert_view_parameters = {contact_email: external_links.contact_email} %}
+{% endif %}
+
+{% if user_reset_password_error is defined and user_reset_password_error == 'postmark-inactive-recipient' %}
+    {% set alert_type  = 'info' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/postmark-inactive-recipient.html.twig' %}
+    {% set alert_view_parameters = {email: email} %}
+{% endif %}
+
+{% if user_reset_password_error is defined and user_reset_password_error == 'core-app-invalid-credentials' %}
+    {% set alert_type  = 'info' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/core-app-invalid-credentials.html.twig' %}
+    {% set alert_view_parameters = {email: email} %}
+{% endif %}
+
+{% if user_reset_password_confirmation is defined and user_reset_password_confirmation == 'token-sent' %}
+    {% set alert_type  = 'success' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/reset-password-token-sent.html.twig' %}
+    {% set alert_view_parameters = {email: email} %}
+{% endif %}
+
+{% if alert_view is not null %}
+    {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+        type: alert_type,
+        field_selector: alert_field_selector,
+        view: alert_view,
+        view_parameters: alert_view_parameters
+    } only %}
+{% endif %}

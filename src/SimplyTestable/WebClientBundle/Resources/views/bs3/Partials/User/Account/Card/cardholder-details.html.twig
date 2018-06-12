@@ -17,23 +17,18 @@
     </div>
 </div>
 <div class="form-group">
-    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container"></div>
+    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container">
+        {% if user_summary.stripeCustomer.hasActiveCard and user_summary.stripeCustomer.activeCard.isPassedAddressLine1Check == false %}
+            {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+                type: 'error',
+                view: '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/Alert/Content/address-line1-unverified.html.twig'
+            } only %}
+        {% endif %}
+    </div>
 
     <label for="inputStreetAddress" class="{{ label_width_class }} control-label">Street address</label>
 
     <div class="{{ full_field_width_class }} field">
-        {% if user_summary.stripeCustomer.hasActiveCard and user_summary.stripeCustomer.activeCard.isPassedAddressLine1Check == false %}
-
-            <div class="alert alert-danger">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <p>
-                    Your card issuer could not verify that this line of the
-                    address is correct.
-                </p>
-            </div>
-
-        {% endif %}
-
         <input type="text"
                class="form-control"
                id="inputStreetAddress"
@@ -71,23 +66,18 @@
     </div>
 </div>
 <div class="form-group">
-    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container"></div>
+    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container">
+        {% if (user_summary.stripeCustomer.hasActiveCard and user_summary.stripeCustomer.activeCard.isPassedAddressZipCheck == false) or (user_account_card_exception_param  is defined and user_account_card_exception_param  == 'address_zip') %}
+            {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+                type: 'error',
+                view: '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/Alert/Content/address-zip-unverified.html.twig'
+            } only %}
+        {% endif %}
+    </div>
 
     <label for="inputZip" class="{{ label_width_class }} control-label">Zip or postal code</label>
 
     <div class="{{ field_width_class }} field">
-        {% if (user_summary.stripeCustomer.hasActiveCard and user_summary.stripeCustomer.activeCard.isPassedAddressZipCheck == false) or (user_account_card_exception_param  is defined and user_account_card_exception_param  == 'address_zip') %}
-
-            <div class="alert alert-danger">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <p>
-                    Your card issuer could not verify that the zip or postal
-                    code you provided is correct.
-                </p>
-            </div>
-
-        {% endif %}
-
         <input type="text"
                class="form-control"
                id="inputZip"

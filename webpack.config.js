@@ -35,7 +35,7 @@ config.module.rules.push({
     use: {
         loader: 'bootstrap.native-loader',
         options: {
-            only: ['modal', 'collapse'],
+            only: ['modal', 'collapse', 'alert'],
             bsVersion: 3
         }
     }

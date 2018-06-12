@@ -58,6 +58,10 @@ body {
     @import "page/sign-up-invite";
   }
 
+  &.sign-up-confirm {
+    @import "page/sign-up-confirm";
+  }
+
   &.dashboard {
     @import "page/dashboard";
   }

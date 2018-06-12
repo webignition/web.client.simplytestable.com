@@ -1,0 +1,16 @@
+<p>
+    <strong>Hmmm. That's not going to work.</strong>
+</p>
+<p>
+    I can't send a confirmation email to <strong>{{ email }}</strong>.
+</p>
+{% block perhaps_mailbox_full %}
+<p>
+    Perhaps your mailbox is full, perhaps the email address doesn't exist.
+</p>
+{% endblock %}
+{% block postmark_inactive_recipent_actions %}
+<p>
+    Maybe try again?
+</p>
+{% endblock %}

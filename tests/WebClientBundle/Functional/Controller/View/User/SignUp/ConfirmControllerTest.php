@@ -94,7 +94,7 @@ class ConfirmControllerTest extends AbstractViewControllerTest
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
 
-                            $this->assertFalse($parameters['has_notification']);
+                            $this->assertTrue($parameters['has_notification']);
                             $this->assertArrayHasKey('user_error', $parameters);
                             $this->assertEquals('invalid-user', $parameters['user_error']);
 
@@ -270,7 +270,7 @@ class ConfirmControllerTest extends AbstractViewControllerTest
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
 
-                            $this->assertFalse($parameters['has_notification']);
+                            $this->assertTrue($parameters['has_notification']);
                             $this->assertArrayNotHasKey('token_resend_confirmation', $parameters);
                             $this->assertArrayNotHasKey('user_create_confirmation', $parameters);
                             $this->assertArrayNotHasKey('user_token_error', $parameters);

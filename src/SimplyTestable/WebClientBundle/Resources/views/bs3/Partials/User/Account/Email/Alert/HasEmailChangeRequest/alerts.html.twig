@@ -1,0 +1,48 @@
+{% set alert_type = 'error' %}
+{% set alert_field_selector = 'token' %}
+{% set alert_view = null %}
+{% set alert_view_parameters = {} %}
+{% set alert_dismissable = true %}
+
+{% set has_confirm_notice = user_account_details_update_email_confirm_notice is defined and user_account_details_update_email_confirm_notice is not empty %}
+{% set has_resend_error = user_account_details_resend_email_change_error is defined and user_account_details_resend_email_change_error is not empty  %}
+
+{% if has_confirm_notice and user_account_details_update_email_confirm_notice == 'invalid-token' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/Account/Email/Alert/HasEmailChangeRequest/Content/token-invalid.html.twig' %}
+{% endif %}
+
+{% if has_confirm_notice and user_account_details_update_email_confirm_notice == 'email-taken' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/Account/Email/Alert/HasEmailChangeRequest/Content/email-taken.html.twig' %}
+    {% set alert_view_parameters = {email: email_change_request.new_email} %}
+{% endif %}
+
+{% if has_confirm_notice and user_account_details_update_email_confirm_notice == 'unknown' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/Account/Email/Alert/Content/failure-unknown.html.twig' %}
+{% endif %}
+
+{% if has_resend_error and user_account_details_resend_email_change_error =='postmark-inactive-recipient' %}
+    {% set alert_type = 'info' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/Account/Email/Alert/HasEmailChangeRequest/Content/postmark-inactive-recipient.html.twig' %}
+    {% set alert_view_parameters = {email: email_change_request.new_email} %}
+    {% set alert_dismissable = false %}
+{% endif %}
+
+{% if not has_resend_error %}
+    {% set alert_type = 'info' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/Account/Email/Alert/HasEmailChangeRequest/Content/confirm.html.twig' %}
+    {% set alert_view_parameters = {
+        email: email_change_request.new_email,
+        token: token
+    } %}
+    {% set alert_dismissable = false %}
+{% endif %}
+
+{% if alert_view is not null %}
+    {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+        type: alert_type,
+        field_selector: alert_field_selector,
+        view: alert_view,
+        view_parameters: alert_view_parameters,
+        dismissable: alert_dismissable
+    } only %}
+{% endif %}

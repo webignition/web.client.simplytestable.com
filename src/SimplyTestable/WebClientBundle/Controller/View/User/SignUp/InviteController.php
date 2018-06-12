@@ -66,7 +66,6 @@ class InviteController extends AbstractUserController
             [
                 'token' => $token,
                 'invite' => json_encode($invite),
-                'has_invite' => json_encode(!empty($invite)),
                 'stay_signed_in' => $staySignedIn
             ],
             $flashBagValues
@@ -80,16 +79,15 @@ class InviteController extends AbstractUserController
             [
                 'token' => $token,
                 'invite' => $invite,
-                'has_invite' => !empty($invite),
                 'stay_signed_in' => $staySignedIn,
             ],
             $flashBagValues
         );
 
-        return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/User/SignUp/Invite:index.html.twig',
-            $viewData,
-            $response
-        );
+        $view = !empty($invite)
+            ? 'SimplyTestableWebClientBundle:bs3/User/SignUp/Invite:index.html.twig'
+            : 'SimplyTestableWebClientBundle:bs3/User/SignUp/Invite:invalid.html.twig';
+
+        return $this->renderWithDefaultViewParameters($view, $viewData, $response);
     }
 }

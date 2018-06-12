@@ -1,0 +1,25 @@
+{% set alert_type = 'error' %}
+{% set alert_field_selector = 'password' %}
+{% set alert_view = null %}
+{% set alert_view_parameters = {} %}
+
+{% if invite_accept_error is defined and invite_accept_error == 'blank-password' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/signup-password-empty.html.twig' %}
+{% endif %}
+
+{% if invite_accept_error is defined and invite_accept_error == 'failure' %}
+    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Invite/Alert/Content/failed-unknown.html.twig' %}
+    {% set alert_view_parameters = {
+        invite_accept_failure: invite_accept_failure,
+        contact_email: external_links.contact_email
+    } %}
+{% endif %}
+
+{% if alert_view is not null %}
+    {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+        type: alert_type,
+        field_selector: alert_field_selector,
+        view: alert_view,
+        view_parameters: alert_view_parameters
+    } only %}
+{% endif %}

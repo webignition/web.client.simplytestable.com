@@ -1,55 +1,19 @@
-{% if user_account_newssubscriptions_update is defined and user_account_newssubscriptions_update is not empty %}
+{% set list_key_label_map = {
+    announcements: 'Product and Service Announcements',
+    updates: 'Behind the Scenes Newsletter'}
+%}
 
-    {% set list_key_label_map = {'announcements': 'Product and Service Announcements', 'updates': 'Behind the Scenes Newsletter'} %}
-
-    {% set has_banned_email_address = false %}
-    {% set has_unknown_error = false %}
-
-    {% for listName, outcome in user_account_newssubscriptions_update %}
-        {% if listName in ['announcements', 'updates'] %}
-            {% if user_account_newssubscriptions_update[listName] == 'subscribe-failed-banned' %}
-                {% set has_banned_email_address = true %}
-            {% endif %}
-
-            {% if user_account_newssubscriptions_update[listName] == 'subscribe-failed-unknown' %}
-                {% set has_unknown_error = true %}
-            {% endif %}
-        {% endif %}
-    {% endfor %}
-
-    {% if has_banned_email_address %}
-        <div class="alert alert-danger alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <strong>Sorry, I can't do that</strong> Your email address has been disallowed by our mailing list provider.
-        </div>
-    {% elseif has_unknown_error %}
-        <div class="alert alert-danger alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <strong>Sorry, I can't do that</strong> Something went wrong and I don' know what. Can you try again?
-        </div>
-    {% else %}
-        {% for listName, outcome in user_account_newssubscriptions_update %}
-            {% if listName in ['announcements', 'updates'] and user_account_newssubscriptions_update[listName] in ['subscribed', 'unsubscribed'] %}
-                <div class="alert alert-success alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-
-                    <strong><i class="fa fa-check"></i> {{ list_key_label_map[listName] }}</strong> - {{ user_account_newssubscriptions_update[listName] }}
-                </div>
-            {% endif %}
-        {% endfor %}
-    {% endif %}
-
-{% endif %}
+{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/NewsSubscriptions/Alert/alerts.html.twig' %}
 
 <form role="form" method="post" action="{{ path('action_user_account_newssubscriptions_update') }}">
     <label class="checkbox" id="news-subscriptions-product-announcements">
         <input type="checkbox" name="announcements" {% if mailchimp_announcements_subscribed %}checked{% endif %}>
-        <strong class="title">Product and Service Announcements (infrequent)</strong>
+        <strong class="title">{{ list_key_label_map.announcements }} (infrequent)</strong>
         <span class="description">Service announcements and new feature releases as needed</span>
     </label>
     <label class="checkbox" id="news-subscriptions-weekly-updates">
         <input type="checkbox" name="updates" {% if mailchimp_updates_subscribed %}checked{% endif %}>
-        <strong class="title">Behind the Scenes Newsletter (weekly)</strong>
+        <strong class="title">{{ list_key_label_map.updates }} (weekly)</strong>
         <span class="description">On-going development, new feature plans and advance access to new features
         as they happen</span>
     </label>
