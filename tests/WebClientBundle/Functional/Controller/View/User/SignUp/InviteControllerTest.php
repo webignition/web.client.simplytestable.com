@@ -128,11 +128,7 @@ class InviteControllerTest extends AbstractViewControllerTest
                                 $parameters
                             );
 
-                            $this->assertEquals(
-                                $invite,
-                                $parameters['invite']
-                            );
-                            $this->assertTrue($parameters['has_invite']);
+                            $this->assertEquals($invite, $parameters['invite']);
                             $this->assertNull($parameters['stay_signed_in']);
 
                             $this->assertTemplateParameters($parameters);
@@ -162,7 +158,7 @@ class InviteControllerTest extends AbstractViewControllerTest
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(
-                                'SimplyTestableWebClientBundle:bs3/User/SignUp/Invite:index.html.twig',
+                                'SimplyTestableWebClientBundle:bs3/User/SignUp/Invite:invalid.html.twig',
                                 $viewName
                             );
 
@@ -176,7 +172,6 @@ class InviteControllerTest extends AbstractViewControllerTest
                             );
 
                             $this->assertNull($parameters['invite']);
-                            $this->assertFalse($parameters['has_invite']);
                             $this->assertNull($parameters['stay_signed_in']);
 
                             $this->assertTemplateParameters($parameters);
@@ -213,7 +208,6 @@ class InviteControllerTest extends AbstractViewControllerTest
                             );
 
                             $this->assertEquals($invite, $parameters['invite']);
-                            $this->assertTrue($parameters['has_invite']);
                             $this->assertEquals(1, $parameters['stay_signed_in']);
 
                             $this->assertTemplateParameters($parameters);
