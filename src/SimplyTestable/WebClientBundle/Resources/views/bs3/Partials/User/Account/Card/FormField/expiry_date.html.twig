@@ -1,0 +1,27 @@
+<div class="row">
+    <div class="col-lg-4 col-md-3 col-sm-2 col-xs-6 select-col">
+        <select class="form-control" id="inputExpiryMonth" data-stripe="exp_month">
+            <option value="">Month</option>
+            <option value="01">January</option>
+            <option value="02">February</option>
+            <option value="03">March</option>
+            <option value="04">April</option>
+            <option value="05">May</option>
+            <option value="06">June</option>
+            <option value="07">July</option>
+            <option value="08">August</option>
+            <option value="09">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+        </select>
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-2 col-xs-4 select-col">
+        <select class="form-control" id="inputExpiryYear" data-stripe="exp_year">
+            <option value="">Year</option>
+            {% for year in expiry_year_start..expiry_year_end %}
+                <option>{{ year }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>

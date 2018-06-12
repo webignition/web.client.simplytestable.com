@@ -1,0 +1,75 @@
+{% set empty_card = {
+    name: '',
+    addressLine1: '',
+    addressCity: '',
+    addressState: '',
+    addressZip: '',
+    addressCountry: 'GB',
+    isPassedAddressZipCheck: true
+} %}
+
+{% set card = user_summary.stripeCustomer.hasActiveCard ? user_summary.stripeCustomer.activeCard : empty_card %}
+
+{% set default_form_group_parameters = {
+    full_field_width_class: full_field_width_class,
+    full_field_width_offset: full_field_width_offset,
+    label_width_class: label_width_class,
+    field_width_class: full_field_width_class,
+    field_view: '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/FormField/text_field.html.twig'
+} %}
+
+{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/cardholder-details-form-group.html.twig' with default_form_group_parameters|merge({
+    field_id: 'inputFirstName',
+    label: 'Name',
+    value: card.name,
+    stripe_name: 'name'
+}) only %}
+
+{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/cardholder-details-form-group.html.twig' with default_form_group_parameters|merge({
+    field_id: 'inputStreetAddress',
+    label: 'Street address',
+    value: card.addressLine1,
+    stripe_name: 'address_line1'
+}) only %}
+
+{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/cardholder-details-form-group.html.twig' with default_form_group_parameters|merge({
+    field_id: 'inputCity',
+    label: 'City',
+    value: card.addressCity,
+    stripe_name: 'address_city',
+    field_width_class: field_width_class
+}) only %}
+
+{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/cardholder-details-form-group.html.twig' with default_form_group_parameters|merge({
+    field_id: 'inputState',
+    label: 'State or County',
+    value: card.addressState,
+    stripe_name: 'address_state',
+    field_width_class: field_width_class
+}) only %}
+
+{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/cardholder-details-form-group.html.twig' with default_form_group_parameters|merge({
+    field_id: 'inputZip',
+    label: 'Zip or postal code',
+    value: card.addressZip,
+    stripe_name: 'address_zip',
+    field_width_class: field_width_class,
+    error_container_content_view: '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/address-zip-unverified.html.twig',
+    error_container_content_parameters: {
+        has_card: user_summary.stripeCustomer.hasActiveCard,
+        is_passed_address_zip_check: card.isPassedAddressZipCheck,
+        has_card_zip_error: user_account_card_exception_param is defined and user_account_card_exception_param  == 'address_zip'
+    }
+}) only %}
+
+{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/cardholder-details-form-group.html.twig' with default_form_group_parameters|merge({
+    field_id: 'inputCountry',
+    label: 'Country',
+    value: card.addressCountry,
+    stripe_name: 'address_country',
+    field_width_class: field_width_class,
+    field_view: '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/FormField/country.html.twig',
+    field_view_parameters: {
+        countries: countries
+    }
+}) only %}
