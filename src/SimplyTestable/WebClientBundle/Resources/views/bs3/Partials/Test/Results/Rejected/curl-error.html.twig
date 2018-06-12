@@ -37,6 +37,6 @@
 </div>
 
 <p class="additional support-hint">
-    If you need to <a href="mailto:{{ external_links.contact_email|raw }}">contact us</a>
+    If you need to <a href="mailto:{% autoescape false %}{{ external_links.contact_email }}{% endautoescape %}">contact us</a>
     about this, tell us you encountered curl error {{ curl_error_number }}. We'll know what this means.
 </p>
