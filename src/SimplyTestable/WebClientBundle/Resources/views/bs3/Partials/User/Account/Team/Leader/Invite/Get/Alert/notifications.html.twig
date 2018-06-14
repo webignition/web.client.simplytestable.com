@@ -32,7 +32,6 @@
 
 {% if has_error_notice and team_invite_get.error == 'invite-self' %}
     {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/Account/Team/Leader/Invite/Alert/Content/invite-self.html.twig' %}
-    {% set alert_view_parameters = {email: team_invite_get.invitee} %}
 {% endif %}
 
 {% if has_error_notice and team_invite_get.error in ['invitee-is-a-team-leader', 'invitee-is-already-on-a-team'] %}
