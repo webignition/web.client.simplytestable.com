@@ -1,17 +1,9 @@
-module.exports = function (forms) {
-    let foo = function (form) {
-        const submitButton = form.querySelector('button[type=submit]');
-        const submitButtonIcon = submitButton.querySelector('.fa');
-        const submitButtonIconClassList = submitButtonIcon.classList;
+let FormButton = require('./form-button');
 
-        form.addEventListener('submit', function (event) {
-            submitButtonIconClassList.remove('fa-caret-right');
-            submitButtonIconClassList.add('fa-spinner', 'fa-spin');
-            submitButton.classList.add('de-emphasize');
-        });
-    };
+module.exports = function (form) {
+    const submitButton = new FormButton(form.querySelector('button[type=submit]'));
 
-    for (let i = 0; i < forms.length; i++) {
-        foo(forms[i]);
-    }
+    form.addEventListener('submit', function () {
+        submitButton.startSpinning();
+    });
 };

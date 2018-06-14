@@ -1,0 +1,7 @@
+<select data-stripe="address_country"
+        id="inputCountry"
+        class="form-control">
+    {% for country_code, country_name in countries %}
+        <option {% if value == country_code %}selected{% endif %} value="{{ country_code }}">{{ country_name }}</option>
+    {% endfor %}
+</select>

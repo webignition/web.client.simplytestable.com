@@ -2,6 +2,8 @@ require('bootstrap.native');
 require('../css/app.scss');
 
 require('classlist-polyfill');
+require('./polyfill/custom-event');
+require('./polyfill/object-entries');
 
 let formButtonSpinner = require('./form-button-spinner');
 let formFieldFocuser = require('./form-field-focuser');
@@ -12,6 +14,8 @@ let dashboardPage = require('./page/dashboard');
 let testHistoryPage = require('./page/test-history');
 let testResultsPage = require('./page/test-results');
 let UserAccount = require('./page/user-account');
+let UserAccountCard = require('./page/user-account-card');
+let AlertFactory = require('./alert-factory');
 
 const onDomContentLoaded = function () {
     let body = document.getElementsByTagName('body').item(0);
@@ -21,7 +25,10 @@ const onDomContentLoaded = function () {
         formFieldFocuser(focusedField);
     }
 
-    formButtonSpinner(document.querySelectorAll('.js-form-button-spinner'));
+    [].forEach.call(document.querySelectorAll('.js-form-button-spinner'), function (formElement) {
+        formButtonSpinner(formElement);
+    });
+
     modalControl(document.querySelectorAll('.modal-control'));
 
     if (body.classList.contains('dashboard')) {
@@ -41,7 +48,16 @@ const onDomContentLoaded = function () {
         userAccount.init();
     }
 
+    if (body.classList.contains('user-account-card')) {
+        let userAccountCard = new UserAccountCard(document);
+        userAccountCard.init();
+    }
+
     collapseControlCaret(document.querySelectorAll('.collapse-control'));
+
+    [].forEach.call(document.querySelectorAll('.alert'), function (alertElement) {
+        AlertFactory.createFromElement(alertElement);
+    });
 };
 
 document.addEventListener('DOMContentLoaded', onDomContentLoaded);
