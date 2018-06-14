@@ -10,7 +10,7 @@ let formFieldFocuser = require('./form-field-focuser');
 let modalControl = require('./modal-control');
 let collapseControlCaret = require('./collapse-control-caret');
 
-let dashboardPage = require('./page/dashboard');
+let Dashboard = require('./page/dashboard');
 let testHistoryPage = require('./page/test-history');
 let testResultsPage = require('./page/test-results');
 let UserAccount = require('./page/user-account');
@@ -32,7 +32,8 @@ const onDomContentLoaded = function () {
     modalControl(document.querySelectorAll('.modal-control'));
 
     if (body.classList.contains('dashboard')) {
-        dashboardPage(document);
+        let dashboard = new Dashboard(document);
+        dashboard.init();
     }
 
     if (body.classList.contains('test-history')) {

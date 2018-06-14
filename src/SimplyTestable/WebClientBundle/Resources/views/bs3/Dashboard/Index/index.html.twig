@@ -17,7 +17,7 @@
     {% endjavascripts %}
 {% endblock %}
 
-{% block body_class %} {% if test_start_error is defined and test_start_error is not empty %}{{ test_start_error }}{% endif %} {{ parent() }} full-width dashboard {% endblock %}
+{% block body_class %}{{ parent() }} full-width dashboard {% endblock %}
 
 {% block body %}
     {{ parent() }}
@@ -43,9 +43,9 @@
                                name="website"
                                class="form-control"
                                placeholder="Enter the site or web page you want to test"
-                                {% if website is defined and website is not empty %}
-                            value="{{ website.raw }}"
-                                {% endif %}>
+                               {% if website is defined and website is not empty %}value="{{ website.raw }}"{% endif %}
+                               data-focused
+                        >
                     </div>
                 </div>
 
