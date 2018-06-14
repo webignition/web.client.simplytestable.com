@@ -18,7 +18,7 @@ class Form {
         return this.element.getAttribute('data-stripe-publishable-key');
     };
 
-    getUpdateCardEventName() {
+    getUpdateCardEventName () {
         return 'user.account.card.update';
     }
 
