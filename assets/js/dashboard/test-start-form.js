@@ -3,8 +3,6 @@ class TestStartForm {
         this.document = element.ownerDocument;
         this.element = element;
         this.submitButtons = this.element.querySelectorAll('[type=submit]');
-        this.taskTypeContainers = this.element.querySelectorAll('.task-type');
-        this.elementAnimator = new ElementAnimator();
     };
 
     init () {
@@ -15,9 +13,6 @@ class TestStartForm {
     };
 
     _submitEventListener (event) {
-        // event.preventDefault();
-        // event.stopPropagation();
-
         [].forEach.call(this.submitButtons, (button) => {
             button.setAttribute('disabled', 'disabled');
         });
