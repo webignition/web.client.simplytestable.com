@@ -1,5 +1,6 @@
 let Modal = require('../test-history/modal');
 let Suggestions = require('../test-history/suggestions');
+let ListedTestCollection = require('../model/listed-test-collection');
 
 module.exports = function (document) {
     const modalId = 'filter-options-modal';
@@ -39,4 +40,9 @@ module.exports = function (document) {
     modalElement.addEventListener(modal.filterChangedEventName, filterChangedEventListener);
 
     suggestions.retrieve();
+
+    let listedTestCollection = ListedTestCollection.createFromNodeList(document.querySelectorAll('.listed-test'));
+    listedTestCollection.forEach((listedTest) => {
+        listedTest.enable();
+    });
 };
