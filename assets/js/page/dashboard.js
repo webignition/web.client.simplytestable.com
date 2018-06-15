@@ -1,6 +1,5 @@
 let unavailableTaskTypeModalLauncher = require('../unavailable-task-type-modal-launcher');
 let TestStartForm = require('../dashboard/test-start-form');
-let ListedTest = require('../listed-test');
 let RecentTestList = require('../dashboard/recent-test-list');
 
 class Dashboard {
@@ -20,12 +19,6 @@ class Dashboard {
         unavailableTaskTypeModalLauncher(document.querySelectorAll('.task-type.not-available'));
         this.testStartForm.init();
         this.recentTestList.init();
-
-
-        // [].forEach.call(this.document.querySelectorAll('.requires-results'), (listedTestElement) => {
-        //     let listedTest = new ListedTest(listedTestElement);
-        //     listedTest.init();
-        // });
     };
 }
 

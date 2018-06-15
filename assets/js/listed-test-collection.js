@@ -1,4 +1,3 @@
-let ListedTest = require('./listed-test');
 let ListedTestFactory = require('./listed-test-factory');
 
 class ListedTestCollection {
