@@ -15,7 +15,7 @@ let testHistoryPage = require('./page/test-history');
 let testResultsPage = require('./page/test-results');
 let UserAccount = require('./page/user-account');
 let UserAccountCard = require('./page/user-account-card');
-let AlertFactory = require('./alert-factory');
+let AlertFactory = require('./services/alert-factory');
 
 const onDomContentLoaded = function () {
     let body = document.getElementsByTagName('body').item(0);

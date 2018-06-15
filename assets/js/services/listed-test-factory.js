@@ -1,7 +1,7 @@
-let ListedTest = require('./listed-test');
-let PreparingListedTest = require('./preparing-listed-test');
-let ProgressingListedTest = require('./progressing-listed-test');
-let CrawlingListedTest = require('./crawling-listed-test');
+let ListedTest = require('../model/element/listed-test/listed-test');
+let PreparingListedTest = require('../model/element/listed-test/preparing-listed-test');
+let ProgressingListedTest = require('../model/element/listed-test/progressing-listed-test');
+let CrawlingListedTest = require('../model/element/listed-test/crawling-listed-test');
 
 class ListedTestFactory {
     /**

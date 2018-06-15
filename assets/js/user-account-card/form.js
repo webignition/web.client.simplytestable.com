@@ -1,6 +1,6 @@
 let formFieldFocuser = require('../form-field-focuser');
-let AlertFactory = require('../alert-factory');
-let FormButton = require('../form-button');
+let AlertFactory = require('../services/alert-factory');
+let FormButton = require('../model/element/form-button');
 
 class Form {
     constructor (element, validator) {

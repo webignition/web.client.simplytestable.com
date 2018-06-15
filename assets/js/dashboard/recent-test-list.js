@@ -1,5 +1,5 @@
-let ListedTestCollection = require('../listed-test-collection');
-let HttpClient = require('../http-client');
+let ListedTestCollection = require('../model/listed-test-collection');
+let HttpClient = require('../services/http-client');
 
 class RecentTestList {
     constructor (element) {

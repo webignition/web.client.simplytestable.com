@@ -1,5 +1,5 @@
 let ProgressingListedTest = require('./progressing-listed-test');
-let TestResultRetriever = require('./test-result-retriever');
+let TestResultRetriever = require('../../../services/test-result-retriever');
 
 class PreparingListedTest extends ProgressingListedTest {
     enable () {

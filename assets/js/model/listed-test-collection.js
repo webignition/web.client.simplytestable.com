@@ -1,4 +1,4 @@
-let ListedTestFactory = require('./listed-test-factory');
+let ListedTestFactory = require('../services/listed-test-factory');
 
 class ListedTestCollection {
     constructor () {

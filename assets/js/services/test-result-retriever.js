@@ -1,5 +1,5 @@
 let HttpClient = require('./http-client');
-let ProgressBar = require('./progress-bar');
+let ProgressBar = require('../model/element/progress-bar');
 
 class TestResultRetriever {
     constructor (element) {

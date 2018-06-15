@@ -1,5 +1,5 @@
 let ListedTest = require('./listed-test');
-let ProgressBar = require('./progress-bar');
+let ProgressBar = require('../progress-bar');
 
 class ProgressingListedTest extends ListedTest {
     init (element) {
