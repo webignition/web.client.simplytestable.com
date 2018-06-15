@@ -7,15 +7,34 @@
 
 {% block container_class %}finished {% if was_not_started %}not-started{% endif %} {% if test_list is defined and test_list.requiresresults(test.test) %}requires-results{% endif %}{% endblock %}
 
+{% if test_list is defined and test_list.requiresresults(test.test) %}
+    {% set container_attributes = ['data-completion-percent="0"']|join('') %}
+{% endif %}
+
 {% block url_button_label %}View full results{% endblock %}
 
 {% set results_url = path('view_test_results_index_index', {'website': test.test.website, 'test_id': test.test.testid}) %}
 
 {% block pre_stats %}
     {% if test_list is defined and test_list.requiresresults(test.test) %}
-        <div class="row preparing">
+        {% set route_parameters = {
+            website: test.test.website,
+            test_id: test.test.testid
+        } %}
+
+        {% set status_url = path('view_test_results_preparingstats_index', route_parameters) %}
+        {% set unretrieved_task_ids_url = path('app_unretrieved_task_ids', route_parameters|merge({limit: 100})) %}
+        {% set retrieve_tasks_url = path('task_results_retrieve', route_parameters) %}
+        {% set summary_url = path('view_test_results_partial_finishedsummary_index', route_parameters) %}
+
+        <div class="row preparing js-urls"
+             data-status-url="{{ status_url }}"
+             data-unretrieved-task-ids-url="{{ unretrieved_task_ids_url }}"
+             data-retrieve-tasks-url="{{ retrieve_tasks_url }}"
+             data-summary-url="{{ summary_url }}"
+        >
             <div class="col-lg-12">
-                <p class="summary">Preparing &hellip;</p>
+                <p class="summary">Preparing results &hellip;</p>
                 <div class="progress">
                     <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
                     </div>

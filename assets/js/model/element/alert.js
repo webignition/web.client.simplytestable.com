@@ -1,5 +1,5 @@
 let bsn = require('bootstrap.native');
-let formFieldFocuser = require('./form-field-focuser');
+let formFieldFocuser = require('../../form-field-focuser');
 
 class Alert {
     constructor (element) {

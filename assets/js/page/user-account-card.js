@@ -1,6 +1,6 @@
 let Form = require('../user-account-card/form');
 let FormValidator = require('../user-account-card/form-validator');
-let StripeHandler = require('../stripe-handler');
+let StripeHandler = require('../services/stripe-handler');
 
 class UserAccountCard {
     /**

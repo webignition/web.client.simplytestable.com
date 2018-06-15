@@ -1,4 +1,4 @@
-let Alert = require('./alert.js');
+let Alert = require('../model/element/alert');
 
 class AlertFactory {
     static createFromContent (document, errorContent, relatedFieldId) {

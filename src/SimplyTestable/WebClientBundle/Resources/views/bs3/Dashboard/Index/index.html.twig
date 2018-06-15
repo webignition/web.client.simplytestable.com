@@ -11,13 +11,12 @@
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/http-authentication-options-modal.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/cookie-options-modal.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stTestResultPreparer.js'
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/dashboard.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 {% endblock %}
 
-{% block body_class %} {% if test_start_error is defined and test_start_error is not empty %}{{ test_start_error }}{% endif %} {{ parent() }} full-width dashboard {% endblock %}
+{% block body_class %}{{ parent() }} full-width dashboard {% endblock %}
 
 {% block body %}
     {{ parent() }}
@@ -43,9 +42,9 @@
                                name="website"
                                class="form-control"
                                placeholder="Enter the site or web page you want to test"
-                                {% if website is defined and website is not empty %}
-                            value="{{ website.raw }}"
-                                {% endif %}>
+                               {% if website is defined and website is not empty %}value="{{ website.raw }}"{% endif %}
+                               data-focused
+                        >
                     </div>
                 </div>
 
@@ -139,19 +138,18 @@
         </div>
     </div>
 
-
-    <div class="container">
+    <div class="container recent-activity-container hidden">
         <div class="row">
             <div class="col-lg-8 col-md-10 col-sm-12" id="recent-activity">
                 <h2>Recent activity</h2>
                 <a href="{{ path('view_test_history_index_index') }}">Full test history <i class="fa fa-caret-right"></i></a>
 
-                <div class="test-list">
-                    <i class="fa fa-spin fa-spinner"></i>
+                <div class="test-list"
+                     data-source-url="{{ path('view_dashboard_partial_recenttests_index') }}"
+                >
+                    <i class="fa fa-spin fa-spinner js-prefill-spinner"></i>
                 </div>
             </div>
         </div>
     </div>
-
-
 {% endblock %}
