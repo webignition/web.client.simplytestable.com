@@ -36,6 +36,10 @@ class ProgressingListedTest extends ListedTest {
             this.progressBar.setCompletionPercent(this.getCompletionPercent());
         }
     };
+
+    getType () {
+        return 'ProgressingListedTest';
+    };
 }
 
 module.exports = ProgressingListedTest;
