@@ -32,6 +32,10 @@ class ListedTest {
             this.enable();
         }
     };
+
+    getType () {
+        return 'ListedTest';
+    };
 }
 
 module.exports = ListedTest;

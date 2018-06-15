@@ -27,6 +27,10 @@ class PreparingListedTest extends ProgressingListedTest {
 
         testResultsRetriever.init();
     };
+
+    getType () {
+        return 'PreparingListedTest';
+    };
 }
 
 module.exports = PreparingListedTest;

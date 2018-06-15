@@ -39,7 +39,7 @@ class RecentTestList {
             if (this.listedTestCollection.contains(retrievedListedTest)) {
                 let listedTest = this.listedTestCollection.get(retrievedListedTest.getTestId());
 
-                if (retrievedListedTest.constructor.name !== listedTest.constructor.name) {
+                if (retrievedListedTest.getType() !== listedTest.getType()) {
                     this.listedTestCollection.remove(listedTest);
                     this.element.replaceChild(retrievedListedTest.element, listedTest.element);
 
