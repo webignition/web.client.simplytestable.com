@@ -101,7 +101,7 @@
             var test = $(this);
 
             checkStatus(test, function (data) {
-                $('.preparing .summary', test).html(getSummary(data.local_task_count, data.remote_task_count))
+                $('.preparing .summary', test).html(getSummary(data.local_task_count, data.remote_task_count));
                 getNextRemoteTaskIdCollection(test);
             });
 
