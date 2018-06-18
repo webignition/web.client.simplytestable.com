@@ -12,9 +12,9 @@ class TestStartForm {
         });
     };
 
-    _submitEventListener (event) {
+    _submitEventListener () {
         [].forEach.call(this.submitButtons, (button) => {
-            button.setAttribute('disabled', 'disabled');
+            button.classList.add('de-emphasize');
         });
 
         this._replaceUncheckedCheckboxesWithHiddenFields();
@@ -25,7 +25,6 @@ class TestStartForm {
         let icon = button.querySelector('.fa');
         let iconClassList = icon.classList;
 
-        button.classList.add('de-emphasize');
         iconClassList.remove('fa-globe', 'fa-circle-o');
         iconClassList.add('fa-spinner', 'fa-spin');
     };
