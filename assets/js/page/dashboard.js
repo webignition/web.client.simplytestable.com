@@ -1,6 +1,7 @@
 let unavailableTaskTypeModalLauncher = require('../unavailable-task-type-modal-launcher');
 let TestStartForm = require('../dashboard/test-start-form');
 let RecentTestList = require('../dashboard/recent-test-list');
+let HttpAuthenticationOptionsFactory = require('../services/http-authentication-options-factory');
 
 class Dashboard {
     /**
@@ -11,6 +12,7 @@ class Dashboard {
         this.document = document;
         this.testStartForm = new TestStartForm(document.getElementById('test-start-form'));
         this.recentTestList = new RecentTestList(document.querySelector('.test-list'));
+        this.httpAuthenticationOptions = HttpAuthenticationOptionsFactory.create(document.querySelector('.http-authentication-test-option'));
     }
 
     init () {
@@ -19,6 +21,7 @@ class Dashboard {
         unavailableTaskTypeModalLauncher(document.querySelectorAll('.task-type.not-available'));
         this.testStartForm.init();
         this.recentTestList.init();
+        this.httpAuthenticationOptions.init();
     };
 }
 
