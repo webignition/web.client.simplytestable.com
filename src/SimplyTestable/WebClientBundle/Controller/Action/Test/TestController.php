@@ -10,6 +10,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
 class TestController extends AbstractController
@@ -45,7 +46,7 @@ class TestController extends AbstractController
      * @param string $website
      * @param int $test_id
      *
-     * @return RedirectResponse
+     * @return Response
      */
     public function lockAction($website, $test_id)
     {
@@ -56,20 +57,14 @@ class TestController extends AbstractController
             // We already redirect back to test results regardless of if this action succeeds
         }
 
-        return new RedirectResponse($this->generateUrl(
-            'view_test_results_index_index',
-            [
-                'website' => $website,
-                'test_id' => $test_id,
-            ]
-        ));
+        return new Response();
     }
 
     /**
      * @param string $website
      * @param int $test_id
      *
-     * @return RedirectResponse
+     * @return Response
      */
     public function unlockAction($website, $test_id)
     {
@@ -80,13 +75,7 @@ class TestController extends AbstractController
             // We already redirect back to test results regardless of if this action succeeds
         }
 
-        return new RedirectResponse($this->generateUrl(
-            'view_test_results_index_index',
-            [
-                'website' => $website,
-                'test_id' => $test_id,
-            ]
-        ));
+        return new Response();
     }
 
     /**
