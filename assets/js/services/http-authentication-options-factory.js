@@ -5,6 +5,7 @@ let ActionBadge = require('../model/element/action-badge');
 class HttpAuthenticationOptionsFactory {
     static create (container) {
         return new HttpAuthenticationOptions(
+            container.ownerDocument,
             new HttpAuthenticationOptionsModal(container.querySelector('.modal')),
             new ActionBadge(container.querySelector('.modal-launcher')),
             container.querySelector('.status')
