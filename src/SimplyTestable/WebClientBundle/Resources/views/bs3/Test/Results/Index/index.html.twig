@@ -41,111 +41,111 @@
                         <span id="test-id">(#{{ test.testId }})</span>
                     </h1>
 
-                    <div class="row details">
-                        <div class="col-lg-8 col-md-7 col-sm-12 col-xs-12">
-                            <div class="row">
-                                <div class="col-lg-4 col-md-5 col-sm-6 col-xs-12">
-                                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index:summary-stats.html.twig' with {'stacked': true} %}
-                                </div>
-                                <div class="col-lg-8 col-md-7 col-sm-6 col-xs-12">
-                                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index:task-type-summary.html.twig' %}
+                    <form id="retest-form" role="form" method="post" action="{{ path('test_start') }}">
+                        <div class="row details">
+                            <div class="col-lg-8 col-md-7 col-sm-12 col-xs-12">
+                                <div class="row">
+                                    <div class="col-lg-4 col-md-5 col-sm-6 col-xs-12">
+                                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index:summary-stats.html.twig' with {'stacked': true} %}
+                                    </div>
+                                    <div class="col-lg-8 col-md-7 col-sm-6 col-xs-12">
+                                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Index:task-type-summary.html.twig' %}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="clearfix visible-xs"></div>
-                        <div class="col-lg-4 col-md-5 col-sm-12 side-actions">
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-4 col-xs-12 col-md-push-0 col-sm-push-8 col-xs-push-0 buttons">
-                                    <div class="row">
-                                        {% if is_owner or is_public_user_test %}
-                                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6 col-lg-push-0 col-md-push-0 col-sm-push-0 col-xs-push-6 retest-col">
-                                                <button id="retest-button" type="submit" class="btn btn-default btn-significant side-action" data-offset="0">
-                                                    <i class="fa fa-fw fa-refresh"></i>
-                                                    Re-test
-                                                    <span>Using selected settings</span>
-                                                </button>
+                            <div class="clearfix visible-xs"></div>
+                            <div class="col-lg-4 col-md-5 col-sm-12 side-actions">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-4 col-xs-12 col-md-push-0 col-sm-push-8 col-xs-push-0 buttons">
+                                        <div class="row">
+                                            {% if is_owner or is_public_user_test %}
+                                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6 col-lg-push-0 col-md-push-0 col-sm-push-0 col-xs-push-6 retest-col">
+                                                    <button id="retest-button" type="submit" class="btn btn-default btn-significant side-action" data-offset="0">
+                                                        <i class="fa fa-fw fa-refresh"></i>
+                                                        Re-test
+                                                        <span>Using selected settings</span>
+                                                    </button>
+                                                </div>
+                                            {% endif %}
+
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6 col-lg-pull-0 col-md-pull-0 col-sm-pull-0 col-xs-pull-6">
+                                                {% if is_owner and not is_public_user_test %}
+                                                    {% set route_parameters = { 'website': test.website, 'test_id': test.testId } %}
+
+                                                    {% set data_locked = {
+                                                        icon: 'unlock',
+                                                        action: 'Unlock',
+                                                        description: 'Make this test public',
+                                                        url: path('app_test_unlock', route_parameters)
+                                                    } %}
+
+                                                    {% set data_unlocked = {
+                                                        icon: 'lock',
+                                                        action: 'Lock',
+                                                        description: 'Make this test private',
+                                                        url: path('app_test_lock', route_parameters)
+                                                    } %}
+
+                                                    {% set locked_state = is_public ? 'unlocked' : 'locked' %}
+                                                    <button class="btn btn-default btn-significant side-action invisible btn-lock-unlock"
+                                                            data-state="{{ locked_state }}"
+                                                            data-locked="{{ data_locked|json_encode }}"
+                                                            data-unlocked="{{ data_unlocked|json_encode }}"
+                                                    >
+                                                        <i class="fa fa-fw"></i>
+                                                        <b class="action"></b>
+                                                        <span class="description"></span>
+                                                    </button>
+                                                {% endif %}
+
+                                                {% if is_owner or is_public_user_test %}
+                                                    <div class="history {% if is_owner and is_public_user_test == false %}history-with-owner{% endif %}">
+                                                        <a href="{{ path('view_test_history_index_index', {'filter': website.raw}) }}">
+                                                            {{ domain_test_count }} {% if is_public_user_test %}demo{% endif %} test{% if domain_test_count != 1%}s{% endif %} for this URL
+                                                            <i class="fa fa-caret-right"></i>
+                                                        </a>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-12 col-md-12 col-sm-8 col-xs-12 col-md-pull-0 col-sm-pull-4 col-xs-pull-0 test-options">
+                                        {% if test_options['http-authentication'] is defined %}
+                                            <div class="test-option http-authentication-test-option">
+                                                {% if not is_logged_in %}
+                                                    {% set data_target_id = 'http-authentication-account-required-modal' %}
+                                                    {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:http-authentication.html.twig' %}
+                                                {% endif %}
+
+                                                {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/HttpAuthentication:http-authentication.html.twig' with {'read_only': not is_owner and not is_public_user_test} %}
                                             </div>
                                         {% endif %}
 
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6 col-lg-pull-0 col-md-pull-0 col-sm-pull-0 col-xs-pull-6">
-                                            {% if is_owner and not is_public_user_test %}
-                                                {% set route_parameters = { 'website': test.website, 'test_id': test.testId } %}
+                                        {% if test_options['cookies'] is defined %}
+                                            <div class="test-option cookies-test-option">
+                                                {% if not is_logged_in %}
+                                                    {% set data_target_id = 'cookies-account-required-modal' %}
+                                                    {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:cookies.html.twig' %}
+                                                {% endif %}
 
-                                                {% set data_locked = {
-                                                    icon: 'unlock',
-                                                    action: 'Unlock',
-                                                    description: 'Make this test public',
-                                                    url: path('app_test_unlock', route_parameters)
-                                                } %}
+                                                {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/Cookies:cookies.html.twig' with {'read_only': not is_owner and not is_public_user_test } %}
+                                            </div>
+                                        {% endif %}
 
-                                                {% set data_unlocked = {
-                                                    icon: 'lock',
-                                                    action: 'Lock',
-                                                    description: 'Make this test private',
-                                                    url: path('app_test_lock', route_parameters)
-                                                } %}
-
-                                                {% set locked_state = is_public ? 'unlocked' : 'locked' %}
-                                                <button class="btn btn-default btn-significant side-action invisible btn-lock-unlock"
-                                                        data-state="{{ locked_state }}"
-                                                        data-locked="{{ data_locked|json_encode }}"
-                                                        data-unlocked="{{ data_unlocked|json_encode }}"
-                                                >
-                                                    <i class="fa fa-fw"></i>
-                                                    <b class="action"></b>
-                                                    <span class="description"></span>
-                                                </button>
-                                            {% endif %}
-
+                                        <span id="test-options-control" class="collapse-control collapsed link" data-toggle="collapse" data-target="#test-options">
                                             {% if is_owner or is_public_user_test %}
-                                                <div class="history {% if is_owner and is_public_user_test == false %}history-with-owner{% endif %}">
-                                                    <a href="{{ path('view_test_history_index_index', {'filter': website.raw}) }}">
-                                                        {{ domain_test_count }} {% if is_public_user_test %}demo{% endif %} test{% if domain_test_count != 1%}s{% endif %} for this URL
-                                                        <i class="fa fa-caret-right"></i>
-                                                    </a>
-                                                </div>
+                                                Choose what to test (with advanced options)
+                                            {% else %}
+                                                See what was tested
                                             {% endif %}
-                                        </div>
+                                        </span>
                                     </div>
                                 </div>
 
-                                <div class="col-lg-12 col-md-12 col-sm-8 col-xs-12 col-md-pull-0 col-sm-pull-4 col-xs-pull-0 test-options">
-                                    {% if test_options['http-authentication'] is defined %}
-                                        <div class="test-option http-authentication-test-option">
-                                            {% if not is_logged_in %}
-                                                {% set data_target_id = 'http-authentication-account-required-modal' %}
-                                                {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:http-authentication.html.twig' %}
-                                            {% endif %}
-
-                                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/HttpAuthentication:http-authentication.html.twig' with {'read_only': not is_owner and not is_public_user_test} %}
-                                        </div>
-                                    {% endif %}
-
-                                    {% if test_options['cookies'] is defined %}
-                                        <div class="test-option cookies-test-option">
-                                            {% if not is_logged_in %}
-                                                {% set data_target_id = 'cookies-account-required-modal' %}
-                                                {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:cookies.html.twig' %}
-                                            {% endif %}
-
-                                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/Cookies:cookies.html.twig' with {'read_only': not is_owner and not is_public_user_test } %}
-                                        </div>
-                                    {% endif %}
-
-                                    <span id="test-options-control" class="collapse-control collapsed link" data-toggle="collapse" data-target="#test-options">
-                                        {% if is_owner or is_public_user_test %}
-                                            Choose what to test (with advanced options)
-                                        {% else %}
-                                            See what was tested
-                                        {% endif %}
-                                    </span>
-                                </div>
                             </div>
-
                         </div>
-                    </div>
 
-                    <form id="retest-form" role="form" method="post" action="{{ path('test_start') }}">
                         <input type="hidden" name="website" value="{{ test.website }}" />
 
                         <div id="test-options" class="collapse">
