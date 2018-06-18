@@ -10,7 +10,6 @@
     {% javascripts
     '@SimplyTestableWebClientBundle/Resources/assets/vendor/jquery-scrollto/jquery.scrollTo-1.4.12/jquery.scrollTo.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/http-authentication-options-modal.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/cookie-options-modal.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/test-results.js'
     %}
@@ -99,7 +98,7 @@
 
                                 <div class="col-lg-12 col-md-12 col-sm-8 col-xs-12 col-md-pull-0 col-sm-pull-4 col-xs-pull-0 test-options">
                                     {% if test_options['http-authentication'] is defined %}
-                                        <div class="test-option">
+                                        <div class="test-option http-authentication-test-option">
                                             {% if not is_logged_in %}
                                                 {% set data_target_id = 'http-authentication-account-required-modal' %}
                                                 {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:http-authentication.html.twig' %}
@@ -110,7 +109,7 @@
                                     {% endif %}
 
                                     {% if test_options['cookies'] is defined %}
-                                        <div class="test-option">
+                                        <div class="test-option cookies-test-option">
                                             {% if not is_logged_in %}
                                                 {% set data_target_id = 'cookies-account-required-modal' %}
                                                 {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:cookies.html.twig' %}

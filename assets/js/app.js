@@ -12,7 +12,7 @@ let collapseControlCaret = require('./collapse-control-caret');
 
 let Dashboard = require('./page/dashboard');
 let testHistoryPage = require('./page/test-history');
-let testResultsPage = require('./page/test-results');
+let TestResults = require('./page/test-results');
 let UserAccount = require('./page/user-account');
 let UserAccountCard = require('./page/user-account-card');
 let AlertFactory = require('./services/alert-factory');
@@ -41,7 +41,8 @@ const onDomContentLoaded = function () {
     }
 
     if (body.classList.contains('test-results')) {
-        testResultsPage(document);
+        let testResults = new TestResults(document);
+        testResults.init();
     }
 
     if (body.classList.contains('user-account')) {

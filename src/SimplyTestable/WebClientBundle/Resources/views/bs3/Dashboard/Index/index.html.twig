@@ -8,7 +8,6 @@
     {% javascripts
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormErrorHelper.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/http-authentication-options-modal.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/cookie-options-modal.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
@@ -78,7 +77,7 @@
                         </div>
                         <div class="row options">
                             {% if test_options['http-authentication'] is defined %}
-                                <div class="test-option">
+                                <div class="test-option http-authentication-test-option">
                                     {% if not is_logged_in %}
                                         {% set data_target_id = 'http-authentication-account-required-modal' %}
                                         {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:http-authentication.html.twig' %}
@@ -89,7 +88,7 @@
                             {% endif %}
 
                             {% if test_options['cookies'] is defined %}
-                                <div class="test-option">
+                                <div class="test-option cookies-test-option">
                                     {% if not is_logged_in %}
                                         {% set data_target_id = 'cookies-account-required-modal' %}
                                         {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:cookies.html.twig' %}
