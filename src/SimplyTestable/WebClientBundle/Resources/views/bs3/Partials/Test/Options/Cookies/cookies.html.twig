@@ -33,7 +33,7 @@
     </span>
 </div>
 
-<div id="cookies-options-modal" class="modal modal-editable-list">
+<div id="cookies-options-modal" class="modal modal-editable-list" data-next-cookie-index="{{ test_cookies|length }}">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -54,7 +54,7 @@
                     </thead>
                     <tbody>
                     {% for cookie in test_cookies %}
-                        <tr>
+                        <tr class="js-cookie" id="cookie-data-row-{{ loop.index0 }}" data-index="{{ loop.index0 }}">
                             <td class="name">
                                 <input name="cookies[{{loop.index0}}][name]"
                                        class="form-control"
@@ -76,10 +76,9 @@
                     </tbody>
                 </table>
 
-                <button type="button" id="cookies-options-add-cookie" class="btn btn-default btn-sm"><i class="fa fa-plus"></i> Add another cookie</button>
+                <button type="button" class="btn btn-default btn-sm js-add-button"><i class="fa fa-plus"></i> Add another cookie</button>
             </div>
             <div class="modal-footer">
-                <input type="hidden" name="closed-by">
                 <button class="btn btn-primary" data-dismiss="modal" data-name="apply" aria-hidden="true">
                     Apply
                 </button>

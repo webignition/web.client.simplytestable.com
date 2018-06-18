@@ -20,6 +20,18 @@ class TestStartForm {
         this._replaceUncheckedCheckboxesWithHiddenFields();
     };
 
+    disable () {
+        [].forEach.call(this.submitButtons, (button) => {
+            button.setAttribute('disabled', 'disabled');
+        });
+    };
+
+    enable () {
+        [].forEach.call(this.submitButtons, (button) => {
+            button.removeAttribute('disabled');
+        });
+    };
+
     _submitButtonEventListener (event) {
         let button = event.target;
         let icon = button.querySelector('.fa');
