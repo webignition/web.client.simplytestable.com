@@ -5,6 +5,7 @@ namespace Tests\WebClientBundle\Functional\Controller\Action\Test;
 use SimplyTestable\WebClientBundle\Controller\Action\Test\TestController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
@@ -66,9 +67,9 @@ class TestControllerTest extends AbstractBaseTestCase
 
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
+        $this->assertTrue($response->isSuccessful());
 
-        $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('/http://example.com//1/results/', $response->getTargetUrl());
+        $this->assertInstanceOf(Response::class, $response);
     }
 
     /**
