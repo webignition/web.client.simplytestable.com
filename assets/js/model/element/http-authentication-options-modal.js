@@ -5,21 +5,36 @@ class HttpAuthenticationOptionsModal {
         this.element = element;
         this.usernameInput = element.querySelector('[name=http-auth-username]');
         this.passwordInput = element.querySelector('[name=http-auth-password]');
+        this.applyButton = element.querySelector('[data-name=apply]');
         this.closeButton = element.querySelector('[data-name=close]');
         this.clearButton = element.querySelector('[data-name=clear]');
         this.previousUsername = null;
         this.previousPassword = null;
     }
 
+    /**
+     * @returns {string}
+     */
+    static getOpenedEventName () {
+        return 'cookie-options-modal.opened';
+    }
+
+    /**
+     * @returns {string}
+     */
     static getClosedEventName () {
-        return 'http-authentication-options-modal.close';
+        return 'cookie-options-modal.closed';
+    }
+
+    init () {
+        this._addEventListeners();
     };
 
     isEmpty () {
         return this.usernameInput.value.trim() === '' && this.passwordInput.value.trim() === '';
     };
 
-    init () {
+    _addEventListeners () {
         let shownEventListener = () => {
             this.previousUsername = this.usernameInput.value.trim();
             this.previousPassword = this.passwordInput.value.trim();
@@ -32,6 +47,8 @@ class HttpAuthenticationOptionsModal {
                 : this.passwordInput;
 
             formFieldFocuser(focusedInput);
+
+            this.element.dispatchEvent(new CustomEvent(HttpAuthenticationOptionsModal.getOpenedEventName()));
         };
 
         let hiddenEventListener = () => {
@@ -52,6 +69,18 @@ class HttpAuthenticationOptionsModal {
         this.element.addEventListener('hidden.bs.modal', hiddenEventListener);
         this.closeButton.addEventListener('click', closeButtonClickEventListener);
         this.clearButton.addEventListener('click', clearButtonClickEventListener);
+        this.usernameInput.addEventListener('keydown', this._inputKeyDownEventListener.bind(this));
+        this.passwordInput.addEventListener('keydown', this._inputKeyDownEventListener.bind(this));
+    };
+
+    /**
+     * @param {KeyboardEvent} event
+     * @private
+     */
+    _inputKeyDownEventListener (event) {
+        if (event.type === 'keydown' && event.key === 'Enter') {
+            this.applyButton.click();
+        }
     };
 }
 

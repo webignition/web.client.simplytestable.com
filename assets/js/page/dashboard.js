@@ -2,6 +2,7 @@ let unavailableTaskTypeModalLauncher = require('../unavailable-task-type-modal-l
 let TestStartForm = require('../dashboard/test-start-form');
 let RecentTestList = require('../dashboard/recent-test-list');
 let HttpAuthenticationOptionsFactory = require('../services/http-authentication-options-factory');
+let HttpAuthenticationOptions = require('../model/http-authentication-options');
 let CookieOptionsFactory = require('../services/cookie-options-factory');
 let CookieOptions = require('../model/cookie-options');
 
@@ -25,6 +26,14 @@ class Dashboard {
         this.recentTestList.init();
         this.httpAuthenticationOptions.init();
         this.cookieOptions.init();
+
+        this.document.addEventListener(HttpAuthenticationOptions.getModalOpenedEventName(), () => {
+            this.testStartForm.disable();
+        });
+
+        this.document.addEventListener(HttpAuthenticationOptions.getModalClosedEventName(), () => {
+            this.testStartForm.enable();
+        });
 
         this.document.addEventListener(CookieOptions.getModalOpenedEventName(), () => {
             this.testStartForm.disable();

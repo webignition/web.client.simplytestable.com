@@ -34,16 +34,13 @@ class CookieOptions {
         };
 
         this.cookieOptionsModal.init();
-        this.cookieOptionsModal.element.addEventListener(
-            CookieOptionsModal.getClosedEventName(),
-            modalCloseEventListener
-        );
 
         this.cookieOptionsModal.element.addEventListener(CookieOptionsModal.getOpenedEventName(), () => {
             this.document.dispatchEvent(new CustomEvent(CookieOptions.getModalOpenedEventName()));
         });
 
         this.cookieOptionsModal.element.addEventListener(CookieOptionsModal.getClosedEventName(), () => {
+            modalCloseEventListener();
             this.document.dispatchEvent(new CustomEvent(CookieOptions.getModalClosedEventName()));
         });
     };
