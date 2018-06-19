@@ -5,6 +5,10 @@ class TaskQueue {
         this.label = element.querySelector('.label-value');
     }
 
+    init () {
+        this.label.style.width = this.label.getAttribute('data-width') + '%';
+    };
+
     getQueueId () {
         return this.element.getAttribute('data-queue-id');
     };

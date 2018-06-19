@@ -10,6 +10,7 @@ class TaskQueues {
 
         [].forEach.call(element.querySelectorAll('.queue'), (queueElement) => {
             let queue = new TaskQueue(queueElement);
+            queue.init();
             this.queues[queue.getQueueId()] = queue;
         });
     }

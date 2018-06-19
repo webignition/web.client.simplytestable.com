@@ -45,32 +45,6 @@ $(document).ready(function() {
         }
     };
 
-    var setQueueNameMinimumWidths = function () {
-        var maximumWidth = 0;
-
-        $('.task-queues .bar .label').each(function () {
-            var label = $(this);
-            if (label.width() > maximumWidth) {
-                maximumWidth = label.outerWidth();
-            }
-        });
-
-        $('.task-queues .bar .label').each(function () {
-            var label = $(this);
-            var width = maximumWidth + 'px';
-
-            if (label.attr('data-width')) {
-                width = label.attr('data-width') + '%';
-            }
-
-            $(this).css({
-                'min-width':maximumWidth + 'px',
-                'width':width,
-                'display':'block'
-            })
-        });
-    };
-
     var initialiseLiveResults = function () {
         if (['queued', 'in-progress'].indexOf(latestTestData.test.state) !== -1) {
             liveResultsController.initialise();
@@ -139,5 +113,4 @@ $(document).ready(function() {
     };
 
     refreshTestSummary();
-    setQueueNameMinimumWidths();
 });

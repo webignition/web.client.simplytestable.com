@@ -62,9 +62,11 @@ h2 {
     padding-left: 0;
 
     .label {
-      display: inline-block;
+      display: block;
       text-align: left;
       transition: width 0.6s ease;
+      min-width: 20px;
+      width: 20px;
     }
 
     .wrapper {
