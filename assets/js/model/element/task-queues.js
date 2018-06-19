@@ -31,8 +31,6 @@ class TaskQueues {
             return Math.ceil(taskCountByState[state] / taskCount * 100);
         };
 
-        console.log(taskCountByState);
-
         Object.keys(taskCountByState).forEach((state) => {
             let queue = this.queues[state];
             if (queue) {
