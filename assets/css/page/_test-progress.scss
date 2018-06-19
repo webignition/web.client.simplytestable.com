@@ -185,16 +185,16 @@ h2 {
   }
 }
 
-#cancel-crawl-button {
+.cancel-crawl-action {
   display: none;
 }
 
 &.job-crawling {
-  #cancel-button {
+  .cancel-action {
     display: none;
   }
 
-  #cancel-crawl-button {
+  .cancel-crawl-action {
     display: inherit;
     position: absolute;
     top: 0;

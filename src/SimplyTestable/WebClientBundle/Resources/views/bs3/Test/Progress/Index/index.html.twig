@@ -66,16 +66,16 @@
                         <div class="col-lg-3 col-md-3 col-sm-5 side-actions">
                             <div class="row">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 buttons">
-                                    <form id="cancel-form" role="form" method="post" action="{{ path('test_cancel', {website: website.raw, test_id: test.testId}) }}">
-                                        <button id="cancel-button" type="submit" class="btn btn-danger btn-significant side-action">
+                                    <form role="form" method="post" action="{{ path('test_cancel', {website: website.raw, test_id: test.testId}) }}">
+                                        <button type="submit" class="btn btn-danger btn-significant side-action cancel-action">
                                             <i class="fa fa-fw fa-power-off"></i>
                                             Stop test
                                             <span>and go to the results</span>
                                         </button>
                                     </form>
 
-                                    <form id="cancel-crawl-form" role="form" method="post" action="{{ path('test_cancel_crawl', {'test_id':test.testId, 'website':test.website}) }}">
-                                        <button id="cancel-crawl-button" type="submit" class="btn btn-warning btn-significant side-action">
+                                    <form role="form" method="post" action="{{ path('test_cancel_crawl', {'test_id':test.testId, 'website':test.website}) }}">
+                                        <button type="submit" class="btn btn-warning btn-significant side-action cancel-crawl-action">
                                             <i class="fa fa-fw fa-power-off"></i>
                                             Stop finding pages, start testing
                                         </button>
