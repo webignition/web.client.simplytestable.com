@@ -4,7 +4,7 @@ class FormButton {
         this.icon = element.querySelector('.fa');
     }
 
-    startSpinning () {
+    markAsBusy () {
         if (this.icon) {
             const iconClassList = this.icon.classList;
 
@@ -14,7 +14,7 @@ class FormButton {
         }
     }
 
-    stopSpinning () {
+    markAsAvailable () {
         if (this.icon) {
             const iconClassList = this.icon.classList;
 

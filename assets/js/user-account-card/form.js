@@ -27,7 +27,7 @@ class Form {
     };
 
     enable () {
-        this.submitButton.stopSpinning();
+        this.submitButton.markAsAvailable();
         this.submitButton.enable();
     };
 
