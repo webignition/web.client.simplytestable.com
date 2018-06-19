@@ -71,12 +71,6 @@ $(document).ready(function() {
         });
     };
 
-    var initialiseTestSummary = function () {
-        if (['queued', 'in-progress'].indexOf(latestTestData.test.state) !== -1) {
-            $('.test-summary', '.test-options').css('visibility', 'visible');
-        }
-    };
-
     var initialiseLiveResults = function () {
         if (['queued', 'in-progress'].indexOf(latestTestData.test.state) !== -1) {
             liveResultsController.initialise();
@@ -134,7 +128,6 @@ $(document).ready(function() {
                 body.addClass('job-' + latestTestData.test.state);
 
                 setAmmendments();
-                initialiseTestSummary();
                 initialiseLiveResults();
 
                 window.setTimeout(function() {
