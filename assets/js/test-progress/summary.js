@@ -1,4 +1,5 @@
 let FormButton = require('../model/element/form-button');
+let ProgressBar = require('../model/element/progress-bar');
 let HttpClient = require('../services/http-client');
 
 class Summary {
@@ -10,6 +11,7 @@ class Summary {
         this.sourceUrl = element.getAttribute('data-source-url');
         this.cancelAction = new FormButton(element.querySelector('.cancel-action'));
         this.cancelCrawlAction = new FormButton(element.querySelector('.cancel-crawl-action'));
+        this.progressBar = new ProgressBar(element.querySelector('.progress-bar'));
         this.summaryData = null;
     }
 
@@ -26,6 +28,11 @@ class Summary {
 
     _httpRequestRetrievedEventListener (event) {
         this.summaryData = event.detail.response;
+        this._render();
+
+        window.setTimeout(() => {
+            this._update();
+        }, 3000);
     };
 
     _cancelActionClickEventListener () {
@@ -42,9 +49,11 @@ class Summary {
         let now = new Date();
         let updateUrl = this.sourceUrl + '?timestamp=' + now.getTime();
 
-        console.log(updateUrl);
-
         HttpClient.getJson(updateUrl, this.element, 'default');
+    };
+
+    _render () {
+        this.progressBar.setCompletionPercent(this.summaryData.remote_test.completion_percent);
     };
 }
 

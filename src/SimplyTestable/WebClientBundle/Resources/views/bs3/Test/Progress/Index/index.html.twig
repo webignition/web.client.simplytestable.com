@@ -34,11 +34,12 @@
                         <span id="test-id">(#{{ test.testId }})</span>
                     </h1>
 
-                    <div class="row details js-summary">
+                    <div class="row details js-summary"
+                         data-source-url="{{ path('view_test_progress_index_index', {website: website.raw, test_id: test.testId}) }}"
+                    >
                         <div class="col-lg-12 progress-summary">
                             <div class="progress">
-                                <div id="completion-percent-bar"
-                                     class="progress-bar {% if remote_test.state == 'crawling' %}progress-bar-warning{% endif %}"
+                                <div class="progress-bar {% if remote_test.state == 'crawling' %}progress-bar-warning{% endif %}"
                                      role="progressbar"
                                      aria-valuenow="{{ remote_test.completionpercent }}"
                                      aria-valuemin="0"

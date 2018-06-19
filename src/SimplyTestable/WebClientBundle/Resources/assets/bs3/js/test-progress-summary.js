@@ -45,22 +45,6 @@ $(document).ready(function() {
         }
     };
 
-    var setCompletionPercentValue = function () {
-        var completionPercentBar = $('#completion-percent-bar');
-        completionPercentBar.attr('aria-valuenow', latestTestData.remote_test.completion_percent );
-
-        if ($('html.csstransitions').length > 0) {
-            completionPercentBar.css({
-                'width': latestTestData.remote_test.completion_percent + '%'
-            });
-        } else {
-            completionPercentBar.animate({
-                'width': latestTestData.remote_test.completion_percent + '%'
-            });
-        }
-
-    };
-
     var setCompletionPercentStateLabel = function() {
         var completionPercentStateLabel = $('#completion-percent-state-label');
         if (completionPercentStateLabel.text() !== latestTestData.state_label) {
@@ -200,7 +184,6 @@ $(document).ready(function() {
 
                 body.addClass('job-' + latestTestData.test.state);
 
-                setCompletionPercentValue();
                 setCompletionPercentStateLabel();
                 setTaskQueues();
                 setAmmendments();
