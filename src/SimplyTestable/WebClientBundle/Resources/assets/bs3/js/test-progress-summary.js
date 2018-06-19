@@ -45,13 +45,6 @@ $(document).ready(function() {
         }
     };
 
-    var setCompletionPercentStateLabel = function() {
-        var completionPercentStateLabel = $('#completion-percent-state-label');
-        if (completionPercentStateLabel.text() !== latestTestData.state_label) {
-            completionPercentStateLabel.text(latestTestData.state_label);
-        }
-    };
-
     var setTaskQueues = function () {
         var getWidthForState = function (state) {
             if (latestTestData.remote_test.task_count === 0) {
@@ -184,7 +177,6 @@ $(document).ready(function() {
 
                 body.addClass('job-' + latestTestData.test.state);
 
-                setCompletionPercentStateLabel();
                 setTaskQueues();
                 setAmmendments();
                 initialiseTestSummary();

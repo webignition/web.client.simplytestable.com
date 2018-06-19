@@ -12,6 +12,7 @@ class Summary {
         this.cancelAction = new FormButton(element.querySelector('.cancel-action'));
         this.cancelCrawlAction = new FormButton(element.querySelector('.cancel-crawl-action'));
         this.progressBar = new ProgressBar(element.querySelector('.progress-bar'));
+        this.stateLabel = element.querySelector('.js-state-label');
         this.summaryData = null;
     }
 
@@ -54,6 +55,7 @@ class Summary {
 
     _render () {
         this.progressBar.setCompletionPercent(this.summaryData.remote_test.completion_percent);
+        this.stateLabel.innerText = this.summaryData.state_label;
     };
 }
 
