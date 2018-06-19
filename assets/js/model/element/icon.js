@@ -12,21 +12,21 @@ class Icon {
     };
 
     setBusy () {
-        this._removePresentationClasses();
+        this.removePresentationClasses();
         this.element.classList.add('fa-spinner', 'fa-spin');
     };
 
     setAvailable (activeIconClass) {
-        this._removePresentationClasses();
+        this.removePresentationClasses();
         this.element.classList.add(activeIconClass);
     };
 
     setSuccessful () {
-        this._removePresentationClasses();
+        this.removePresentationClasses();
         this.setAvailable('fa-check');
     }
 
-    _removePresentationClasses () {
+    removePresentationClasses () {
         let classesToRetain = [
             Icon.getClass(),
             Icon.getClass() + '-fw'
