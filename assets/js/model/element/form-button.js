@@ -11,19 +11,14 @@ class FormButton {
     markAsBusy () {
         if (this.icon) {
             this.icon.setBusy();
-            this.element.classList.add('de-emphasize');
+            this.deEmphasize();
         }
     }
 
     markAsAvailable () {
         if (this.icon) {
             this.icon.setAvailable('fa-caret-right');
-
-            const iconClassList = this.icon.classList;
-
-            this.element.classList.remove('de-emphasize');
-            iconClassList.remove('fa-spinner', 'fa-spin');
-            iconClassList.add('fa-caret-right');
+            this.unDeEmphasize();
         }
     }
 
@@ -40,6 +35,14 @@ class FormButton {
     enable () {
         this.element.removeAttribute('disabled');
     }
+
+    deEmphasize () {
+        this.element.classList.add('de-emphasize');
+    };
+
+    unDeEmphasize () {
+        this.element.classList.remove('de-emphasize');
+    };
 }
 
 module.exports = FormButton;

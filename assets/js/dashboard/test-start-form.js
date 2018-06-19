@@ -1,44 +1,49 @@
+let FormButton = require('../model/element/form-button');
+
 class TestStartForm {
     constructor (element) {
         this.document = element.ownerDocument;
         this.element = element;
-        this.submitButtons = this.element.querySelectorAll('[type=submit]');
+        this.submitButtons = [];
+
+        [].forEach.call(this.element.querySelectorAll('[type=submit]'), (submitButton) => {
+            this.submitButtons.push(new FormButton(submitButton));
+        });
     };
 
     init () {
         this.element.addEventListener('submit', this._submitEventListener.bind(this));
-        [].forEach.call(this.submitButtons, (button) => {
-            button.addEventListener('click', this._submitButtonEventListener);
+
+        this.submitButtons.forEach((submitButton) => {
+            submitButton.element.addEventListener('click', this._submitButtonEventListener);
         });
     };
 
-    _submitEventListener () {
-        [].forEach.call(this.submitButtons, (button) => {
-            button.classList.add('de-emphasize');
+    _submitEventListener (event) {
+        this.submitButtons.forEach((submitButton) => {
+            submitButton.deEmphasize();
         });
 
         this._replaceUncheckedCheckboxesWithHiddenFields();
     };
 
     disable () {
-        [].forEach.call(this.submitButtons, (button) => {
-            button.setAttribute('disabled', 'disabled');
+        this.submitButtons.forEach((submitButton) => {
+            submitButton.disable();
         });
     };
 
     enable () {
-        [].forEach.call(this.submitButtons, (button) => {
-            button.removeAttribute('disabled');
+        this.submitButtons.forEach((submitButton) => {
+            submitButton.enable();
         });
     };
 
     _submitButtonEventListener (event) {
-        let button = event.target;
-        let icon = button.querySelector('.fa');
-        let iconClassList = icon.classList;
+        let buttonElement = event.target;
+        let button = new FormButton(buttonElement);
 
-        iconClassList.remove('fa-globe', 'fa-circle-o');
-        iconClassList.add('fa-spinner', 'fa-spin');
+        button.markAsBusy();
     };
 
     _replaceUncheckedCheckboxesWithHiddenFields () {
