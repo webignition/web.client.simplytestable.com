@@ -44,7 +44,7 @@ class UserAccountCard {
             let data = request.response;
 
             if (data.hasOwnProperty('this_url')) {
-                this.form.submitButton.stopSpinning();
+                this.form.submitButton.markAsAvailable();
                 this.form.submitButton.markSucceeded();
 
                 window.setTimeout(function () {

@@ -1,35 +1,30 @@
+let Icon = require('./icon');
+
 class FormButton {
     constructor (element) {
+        let iconElement = element.querySelector(Icon.getSelector());
+
         this.element = element;
-        this.icon = element.querySelector('.fa');
+        this.icon = iconElement ? new Icon(iconElement) : null;
     }
 
-    startSpinning () {
+    markAsBusy () {
         if (this.icon) {
-            const iconClassList = this.icon.classList;
-
-            iconClassList.remove('fa-caret-right');
-            iconClassList.add('fa-spinner', 'fa-spin');
-            this.element.classList.add('de-emphasize');
+            this.icon.setBusy();
+            this.deEmphasize();
         }
     }
 
-    stopSpinning () {
+    markAsAvailable () {
         if (this.icon) {
-            const iconClassList = this.icon.classList;
-
-            this.element.classList.remove('de-emphasize');
-            iconClassList.remove('fa-spinner', 'fa-spin');
-            iconClassList.add('fa-caret-right');
+            this.icon.setAvailable('fa-caret-right');
+            this.unDeEmphasize();
         }
     }
 
     markSucceeded () {
         if (this.icon) {
-            const iconClassList = this.icon.classList;
-
-            iconClassList.remove('fa-caret-right');
-            iconClassList.add('fa-check');
+            this.icon.setSuccessful();
         }
     }
 
@@ -40,6 +35,14 @@ class FormButton {
     enable () {
         this.element.removeAttribute('disabled');
     }
+
+    deEmphasize () {
+        this.element.classList.add('de-emphasize');
+    };
+
+    unDeEmphasize () {
+        this.element.classList.remove('de-emphasize');
+    };
 }
 
 module.exports = FormButton;
