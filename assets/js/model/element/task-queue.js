@@ -14,15 +14,6 @@ class TaskQueue {
     };
 
     setWidth (width) {
-        console.log(this.label);
-
-        // this.label.setAttribute('data-width', width);
-        // this.label.style('width', width + '%');
-
-        // label.animate({
-        //     'width':label.attr('data-width') + '%'
-        // });
-
         this.label.style.width = width + '%';
     };
 }
