@@ -119,14 +119,6 @@ $(document).ready(function() {
         }
     };
 
-    var setProgressBarStyle = function () {
-        if (latestTestData.test.state === 'crawling') {
-            $('.progress-bar').addClass('progress-bar-warning');
-        } else {
-            $('.progress-bar').removeClass('progress-bar-warning');
-        }
-    };
-
     var refreshTestSummary = function() {
         var now = new Date();
 
@@ -181,7 +173,6 @@ $(document).ready(function() {
                 setAmmendments();
                 initialiseTestSummary();
                 initialiseLiveResults();
-                setProgressBarStyle();
 
                 window.setTimeout(function() {
                     refreshTestSummary(10);

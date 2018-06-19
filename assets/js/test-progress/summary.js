@@ -55,6 +55,8 @@ class Summary {
 
     _render () {
         this.progressBar.setCompletionPercent(this.summaryData.remote_test.completion_percent);
+        this.progressBar.setStyle(this.summaryData.test.state === 'crawling' ? 'warning' : 'default');
+
         this.stateLabel.innerText = this.summaryData.state_label;
     };
 }
