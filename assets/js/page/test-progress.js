@@ -33,6 +33,7 @@ class TestProgress {
                 return;
             }
 
+            this._setBodyJobClass(this.document.body.classList, event.detail.response.test.state);
             this.summary.render(event.detail.response);
         }
 
@@ -46,6 +47,23 @@ class TestProgress {
         let now = new Date();
 
         HttpClient.getJson(summaryUrl + '?timestamp=' + now.getTime(), this.document.body, 'test-progress.summary.update');
+    };
+
+    /**
+     *
+     * @param {DOMTokenList} bodyClassList
+     * @param {string} testState
+     * @private
+     */
+    _setBodyJobClass (bodyClassList, testState) {
+        let jobClassPrefix = 'job-';
+        bodyClassList.forEach((className, index, classList) => {
+            if (className.indexOf(jobClassPrefix) === 0) {
+                classList.remove(className);
+            }
+        });
+
+        bodyClassList.add('job-' + testState);
     };
 }
 

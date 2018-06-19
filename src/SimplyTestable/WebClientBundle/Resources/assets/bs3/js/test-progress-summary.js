@@ -46,23 +46,7 @@ $(document).ready(function() {
                 }
 
                 latestTestData = data;
-
-                var body = $('body')
-                var bodyClasses = body.attr('class').split(' ');
-
-                for (var classIndex = 0; classIndex < bodyClasses.length; classIndex++) {
-                    if (bodyClasses[classIndex].match(/^job-/)) {
-                        body.removeClass(bodyClasses[classIndex]);
-                    }
-                }
-
-                body.addClass('job-' + latestTestData.test.state);
-
                 initialiseLiveResults();
-
-                window.setTimeout(function() {
-                    refreshTestSummary(10);
-                }, 3000);
             },
             url: getProgressUpdateUrl()
         });
