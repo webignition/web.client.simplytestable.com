@@ -45,42 +45,6 @@ $(document).ready(function() {
         }
     };
 
-    var setTaskQueues = function () {
-        var getWidthForState = function (state) {
-            if (latestTestData.remote_test.task_count === 0) {
-                return 0;
-            }
-
-            if (!latestTestData.remote_test.task_count_by_state.hasOwnProperty(state)) {
-                return 0;
-            }
-
-            if (latestTestData.remote_test.task_count_by_state[state] === 0) {
-                return 0;
-            }
-
-            return Math.ceil(latestTestData.remote_test.task_count_by_state[state] / latestTestData.remote_test.task_count * 100);
-        };
-
-        for (state in latestTestData.remote_test.task_count_by_state) {
-            if (latestTestData.remote_test.task_count_by_state.hasOwnProperty(state)) {
-                var label = $('#task-queue-' + state + ' .bar .label');
-                if (label.length) {
-                    var width = getWidthForState(state);
-
-                    if (width !== label.attr('data-width')) {
-                        label.attr('data-width', width);
-                        label.animate({
-                            'width':label.attr('data-width') + '%'
-                        });
-                    }
-
-                    $('.value', label).text(latestTestData.remote_test.task_count_by_state[state]);
-                }
-            }
-        }
-    };
-
     var setQueueNameMinimumWidths = function () {
         var maximumWidth = 0;
 
@@ -169,7 +133,6 @@ $(document).ready(function() {
 
                 body.addClass('job-' + latestTestData.test.state);
 
-                setTaskQueues();
                 setAmmendments();
                 initialiseTestSummary();
                 initialiseLiveResults();

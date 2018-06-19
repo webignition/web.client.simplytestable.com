@@ -1,5 +1,6 @@
 let FormButton = require('../model/element/form-button');
 let ProgressBar = require('../model/element/progress-bar');
+let TaskQueues = require('../model/element/task-queues');
 let HttpClient = require('../services/http-client');
 
 class Summary {
@@ -14,6 +15,8 @@ class Summary {
         this.progressBar = new ProgressBar(element.querySelector('.progress-bar'));
         this.stateLabel = element.querySelector('.js-state-label');
         this.summaryData = null;
+
+        this.taskQueues = new TaskQueues(element.querySelector('.task-queues'));
     }
 
     init () {
@@ -56,8 +59,8 @@ class Summary {
     _render () {
         this.progressBar.setCompletionPercent(this.summaryData.remote_test.completion_percent);
         this.progressBar.setStyle(this.summaryData.test.state === 'crawling' ? 'warning' : 'default');
-
         this.stateLabel.innerText = this.summaryData.state_label;
+        this.taskQueues.render(this.summaryData.remote_test.task_count, this.summaryData.remote_test.task_count_by_state);
     };
 }
 

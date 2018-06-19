@@ -64,6 +64,7 @@ h2 {
     .label {
       display: inline-block;
       text-align: left;
+      transition: width 0.6s ease;
     }
 
     .wrapper {
