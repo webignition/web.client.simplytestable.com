@@ -50,7 +50,9 @@ class TestLockUnlock {
         });
     };
 
-    _clickEventListener () {
+    _clickEventListener (event) {
+        event.preventDefault();
+
         this._removeStateIcons();
         this.element.classList.add('de-emphasize');
         this.icon.classList.add('fa-spin', 'fa-spinner');
