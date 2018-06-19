@@ -17,7 +17,8 @@ class HttpClient {
             let retrievedEvent = new CustomEvent(HttpClient.getRetrievedEventName(), {
                 detail: {
                     response: request.response,
-                    requestId: requestId
+                    requestId: requestId,
+                    request: request
                 }
             });
 

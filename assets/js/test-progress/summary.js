@@ -38,13 +38,20 @@ class Summary {
 
     _httpRequestRetrievedEventListener (event) {
         this.summaryData = event.detail.response;
+
+        if (event.detail.request.responseURL.indexOf(window.location.toString()) !== 0) {
+            this.progressBar.setCompletionPercent(100);
+            window.location.href = event.detail.request.responseURL;
+
+            return;
+        }
+
         this._render();
 
         window.setTimeout(() => {
             this._update();
         }, 3000);
     };
-
     _cancelActionClickEventListener () {
         this.cancelAction.markAsBusy();
         this.cancelAction.deEmphasize();

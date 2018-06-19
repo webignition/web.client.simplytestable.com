@@ -42,7 +42,6 @@ $(document).ready(function() {
             },
             success: function(data, textStatus, request) {
                 if (data.this_url !== getProgressUrl()) {
-                    window.location.href = data.this_url;
                     return;
                 }
 
