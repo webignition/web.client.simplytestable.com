@@ -11,6 +11,32 @@ class Alert {
         }
     }
 
+    setStyle (style) {
+        this._removePresentationalClasses();
+
+        this.element.classList.add('alert-' + style);
+    };
+
+    wrapContentInContainer () {
+        let container = this.element.ownerDocument.createElement('div');
+        container.classList.add('container');
+
+        container.innerHTML = this.element.innerHTML;
+        this.element.innerHTML = '';
+
+        this.element.appendChild(container);
+    };
+
+    _removePresentationalClasses  () {
+        let presentationalClassPrefix = 'alert-';
+
+        this.element.classList.forEach((className, index, classList) => {
+            if (className.indexOf(presentationalClassPrefix) === 0) {
+                classList.remove(className);
+            }
+        });
+    };
+
     _closeButtonClickEventHandler () {
         let relatedFieldId = this.element.getAttribute('data-for');
         if (relatedFieldId) {

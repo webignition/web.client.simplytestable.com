@@ -5,11 +5,11 @@ class AlertFactory {
         let element = document.createElement('div');
         element.classList.add('alert', 'alert-danger', 'fade', 'in');
         element.setAttribute('role', 'alert');
-        element.setAttribute('data-for', relatedFieldId);
 
         let elementInnerHTML = '';
 
         if (relatedFieldId) {
+            element.setAttribute('data-for', relatedFieldId);
             elementInnerHTML += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
         }
 

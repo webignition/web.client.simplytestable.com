@@ -18,7 +18,9 @@
 {% block body %}
     {{ parent() }}
 
-    <div class="alert-container">
+    <div class="alert-container"
+         data-url-limit-notification-url="{{ path('view_test_partial_notification_urlimit_index', {website: website.raw, test_id: test.testId}) }}"
+    >
         {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic/Notification/Conditional:url-limit.html.twig' with {'alert_classes':'alert-ammendment'} %}
     </div>
 

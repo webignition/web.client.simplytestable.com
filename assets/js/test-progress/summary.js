@@ -15,13 +15,19 @@ class Summary {
         this.progressBar = new ProgressBar(element.querySelector('.progress-bar'));
         this.stateLabel = element.querySelector('.js-state-label');
         this.summaryData = null;
-
         this.taskQueues = new TaskQueues(element.querySelector('.task-queues'));
     }
 
     init () {
         this._addEventListeners();
         this._update();
+    };
+
+    /**
+     * @returns {string}
+     */
+    static getRenderAmmendmentEventName () {
+        return 'test-progress.summary.render-ammendment';
     };
 
     _addEventListeners () {
@@ -57,10 +63,18 @@ class Summary {
     };
 
     _render () {
-        this.progressBar.setCompletionPercent(this.summaryData.remote_test.completion_percent);
+        let remoteTest = this.summaryData.remote_test;
+
+        this.progressBar.setCompletionPercent(remoteTest.completion_percent);
         this.progressBar.setStyle(this.summaryData.test.state === 'crawling' ? 'warning' : 'default');
         this.stateLabel.innerText = this.summaryData.state_label;
-        this.taskQueues.render(this.summaryData.remote_test.task_count, this.summaryData.remote_test.task_count_by_state);
+        this.taskQueues.render(remoteTest.task_count, remoteTest.task_count_by_state);
+
+        if (remoteTest.ammendments && remoteTest.ammendments.length > 0) {
+            this.element.dispatchEvent(new CustomEvent(Summary.getRenderAmmendmentEventName(), {
+                detail: remoteTest.ammendments[0]
+            }));
+        }
     };
 }
 
