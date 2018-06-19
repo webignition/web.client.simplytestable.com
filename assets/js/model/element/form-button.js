@@ -1,21 +1,24 @@
+let Icon = require('./icon');
+
 class FormButton {
     constructor (element) {
+        let iconElement = element.querySelector(Icon.getSelector());
+
         this.element = element;
-        this.icon = element.querySelector('.fa');
+        this.icon = iconElement ? new Icon(iconElement) : null;
     }
 
     markAsBusy () {
         if (this.icon) {
-            const iconClassList = this.icon.classList;
-
-            iconClassList.remove('fa-caret-right');
-            iconClassList.add('fa-spinner', 'fa-spin');
+            this.icon.setBusy();
             this.element.classList.add('de-emphasize');
         }
     }
 
     markAsAvailable () {
         if (this.icon) {
+            this.icon.setAvailable('fa-caret-right');
+
             const iconClassList = this.icon.classList;
 
             this.element.classList.remove('de-emphasize');
@@ -26,10 +29,7 @@ class FormButton {
 
     markSucceeded () {
         if (this.icon) {
-            const iconClassList = this.icon.classList;
-
-            iconClassList.remove('fa-caret-right');
-            iconClassList.add('fa-check');
+            this.icon.setSuccessful();
         }
     }
 
