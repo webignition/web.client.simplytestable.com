@@ -17,6 +17,7 @@ let UserAccount = require('./page/user-account');
 let UserAccountCard = require('./page/user-account-card');
 let AlertFactory = require('./services/alert-factory');
 let TestProgress = require('./page/test-progress');
+let TestResultsPreparing = require('./page/test-results-preparing');
 
 const onDomContentLoaded = function () {
     let body = document.getElementsByTagName('body').item(0);
@@ -49,6 +50,11 @@ const onDomContentLoaded = function () {
     if (body.classList.contains('test-results')) {
         let testResults = new TestResults(document);
         testResults.init();
+    }
+
+    if (body.classList.contains('test-results-preparing')) {
+        let testResultsPreparing = new TestResultsPreparing(document);
+        testResultsPreparing.init();
     }
 
     if (body.classList.contains('user-account')) {
