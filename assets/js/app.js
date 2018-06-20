@@ -16,6 +16,7 @@ let TestResults = require('./page/test-results');
 let UserAccount = require('./page/user-account');
 let UserAccountCard = require('./page/user-account-card');
 let AlertFactory = require('./services/alert-factory');
+let TestProgress = require('./page/test-progress');
 
 const onDomContentLoaded = function () {
     let body = document.getElementsByTagName('body').item(0);
@@ -34,6 +35,11 @@ const onDomContentLoaded = function () {
     if (body.classList.contains('dashboard')) {
         let dashboard = new Dashboard(document);
         dashboard.init();
+    }
+
+    if (body.classList.contains('test-progress')) {
+        let testProgress = new TestProgress(document);
+        testProgress.init();
     }
 
     if (body.classList.contains('test-history')) {

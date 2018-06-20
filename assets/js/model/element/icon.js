@@ -16,9 +16,12 @@ class Icon {
         this.element.classList.add('fa-spinner', 'fa-spin');
     };
 
-    setAvailable (activeIconClass) {
+    setAvailable (activeIconClass = null) {
         this.removePresentationClasses();
-        this.element.classList.add(activeIconClass);
+
+        if (activeIconClass !== null) {
+            this.element.classList.add(activeIconClass);
+        }
     };
 
     setSuccessful () {

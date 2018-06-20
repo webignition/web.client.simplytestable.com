@@ -6,7 +6,7 @@ class HttpClient {
     static request (url, method, responseType, element, requestId, data = null, requestHeaders = {}) {
         let request = new XMLHttpRequest();
 
-        request.open('POST', url);
+        request.open(method, url);
         request.responseType = responseType;
 
         for (const [key, value] of Object.entries(requestHeaders)) {
@@ -17,7 +17,8 @@ class HttpClient {
             let retrievedEvent = new CustomEvent(HttpClient.getRetrievedEventName(), {
                 detail: {
                     response: request.response,
-                    requestId: requestId
+                    requestId: requestId,
+                    request: request
                 }
             });
 
@@ -32,11 +33,19 @@ class HttpClient {
     };
 
     static get (url, responseType, element, requestId, requestHeaders = {}) {
-        HttpClient.request(url, 'GET', responseType, element, requestId, requestHeaders);
+        HttpClient.request(url, 'GET', responseType, element, requestId, null, requestHeaders);
     };
 
     static getJson (url, element, requestId, requestHeaders = {}) {
-        HttpClient.request(url, 'GET', 'json', element, requestId, requestHeaders);
+        let realRequestHeaders = {
+            'Accept': 'application/json'
+        };
+
+        for (const [key, value] of Object.entries(requestHeaders)) {
+            realRequestHeaders[key] = value;
+        }
+
+        HttpClient.request(url, 'GET', 'json', element, requestId, null, realRequestHeaders);
     };
 
     static getText (url, element, requestId, requestHeaders = {}) {

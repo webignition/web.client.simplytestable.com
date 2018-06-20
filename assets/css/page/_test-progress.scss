@@ -15,6 +15,25 @@ h2 {
   border-color: transparent;
 }
 
+.alert-container {
+  background-color: #eee;
+  max-height: 0;
+
+  &.reveal {
+    max-height: 500px;
+    transition: max-height 1s ease-in-out;
+  }
+
+  .alert {
+    opacity: 0;
+
+    &.reveal {
+      opacity: 1;
+      transition: opacity 0.6s ease-in-out;
+    }
+  }
+}
+
 .header {
   @media (min-width: 768px) {
     margin-bottom: 40px;
@@ -62,8 +81,11 @@ h2 {
     padding-left: 0;
 
     .label {
-      display: inline-block;
+      display: block;
       text-align: left;
+      transition: width 0.6s ease;
+      min-width: 20px;
+      width: 20px;
     }
 
     .wrapper {
@@ -175,9 +197,7 @@ h2 {
   }
 }
 
-#tasks {
-  display: none;
-
+.test-progress-tasks {
   h2 {
     .fa {
       margin-left: 15px;
@@ -185,16 +205,16 @@ h2 {
   }
 }
 
-#cancel-crawl-button {
+.cancel-crawl-action {
   display: none;
 }
 
 &.job-crawling {
-  #cancel-button {
+  .cancel-action {
     display: none;
   }
 
-  #cancel-crawl-button {
+  .cancel-crawl-action {
     display: inherit;
     position: absolute;
     top: 0;

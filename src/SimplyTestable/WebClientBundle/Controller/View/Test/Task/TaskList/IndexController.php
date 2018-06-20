@@ -14,6 +14,7 @@ use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -93,8 +94,10 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
             return $this->response;
         }
 
+        $requestData = $request->request;
+
         $test = $this->testService->get($website, $test_id);
-        $taskIds = $this->getTaskIdsFromRequest($request);
+        $taskIds = $this->getTaskIdsFromRequest($requestData);
 
         if (empty($taskIds)) {
             return new Response('');
@@ -119,7 +122,8 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
 
         $viewData = [
             'test' => $test,
-            'tasks' => $tasks
+            'tasks' => $tasks,
+            'page_index' => $requestData->get('pageIndex'),
         ];
 
         return $this->renderWithDefaultViewParameters(
@@ -129,16 +133,15 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         );
     }
 
-
     /**
-     * @param Request $request
+     * @param ParameterBag $requestData
      *
      * @return int[]
      */
-    private function getTaskIdsFromRequest(Request $request)
+    private function getTaskIdsFromRequest(ParameterBag $requestData)
     {
         $taskIds = [];
-        $requestTaskIds = $request->request->get('taskIds');
+        $requestTaskIds = $requestData->get('taskIds');
 
         if (!is_array($requestTaskIds)) {
             return [];

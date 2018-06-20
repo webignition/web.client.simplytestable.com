@@ -209,6 +209,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     public function testIndexActionRenderContent(
         array $httpFixtures,
         Request $request,
+        $expectedPageIndex,
         array $expectedTaskSetCollection
     ) {
         $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
@@ -225,10 +226,12 @@ class IndexControllerTest extends AbstractBaseTestCase
         $this->assertInstanceOf(Response::class, $response);
 
         $content = $response->getContent();
-
         $this->assertNotEmpty($content);
 
         $crawler = new Crawler($content);
+
+        $taskList = $crawler->filter('.task-list');
+        $this->assertEquals($expectedPageIndex, $taskList->attr('data-page-index'));
 
         $taskSets = $crawler->filter('.task-set');
 
@@ -247,7 +250,7 @@ class IndexControllerTest extends AbstractBaseTestCase
             $tasks->each(function (Crawler $task, $taskIndex) use ($expectedTasks) {
                 $expectedTask = $expectedTasks[$taskIndex];
 
-                $this->assertEquals('task' . $expectedTask['id'], $task->attr('id'));
+                $this->assertEquals($expectedTask['id'], $task->attr('data-task-id'));
                 $this->assertEquals($expectedTask['state'], $task->attr('data-state'));
                 $this->assertEquals($expectedTask['type'], $task->filter('.type')->text());
 
@@ -290,7 +293,9 @@ class IndexControllerTest extends AbstractBaseTestCase
                 ],
                 'request' => new Request([], [
                     'taskIds' => [2,],
+                    'pageIndex' => 0,
                 ]),
+                'expectedPageIndex' => 0,
                 'expectedTaskSetCollection' => [
                     [
                         'url' => 'http://example.com/',
@@ -326,7 +331,9 @@ class IndexControllerTest extends AbstractBaseTestCase
                 ],
                 'request' => new Request([], [
                     'taskIds' => [2,],
+                    'pageIndex' => 2,
                 ]),
+                'expectedPageIndex' => 2,
                 'expectedTaskSetCollection' => [
                     [
                         'url' => 'http://example.com/',
@@ -374,7 +381,9 @@ class IndexControllerTest extends AbstractBaseTestCase
                 ],
                 'request' => new Request([], [
                     'taskIds' => [2, 3, 4, 5, ],
+                    'pageIndex' => 3,
                 ]),
+                'expectedPageIndex' => 3,
                 'expectedTaskSetCollection' => [
                     [
                         'url' => 'http://example.com/',

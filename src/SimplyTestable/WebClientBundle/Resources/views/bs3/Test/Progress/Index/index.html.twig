@@ -2,23 +2,17 @@
 
 {% block title %}Testing {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
-{% block javascripts %}
-    {{ parent() }}
-
-    {% javascripts
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/test-progress-tasks.js'
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/test-progress-summary.js'
-    %}
-    <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}
-{% endblock %}
+{% set route_parameters = {website: website.raw, test_id: test.testId} %}
 
 {% block body_class %} {{ parent() }} full-width test-progress job-{{ remote_test.state }} {% endblock %}
+{% block body_attrs %}data-summary-url="{{ path('view_test_progress_index_index', route_parameters) }}"{% endblock %}
 
 {% block body %}
     {{ parent() }}
 
-    <div class="alert-container">
+    <div class="alert-container"
+         data-url-limit-notification-url="{{ path('view_test_partial_notification_urlimit_index', route_parameters) }}"
+    >
         {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic/Notification/Conditional:url-limit.html.twig' with {'alert_classes':'alert-ammendment'} %}
     </div>
 
@@ -34,18 +28,17 @@
                         <span id="test-id">(#{{ test.testId }})</span>
                     </h1>
 
-                    <div class="row details">
+                    <div class="row details js-summary">
                         <div class="col-lg-12 progress-summary">
                             <div class="progress">
-                                <div id="completion-percent-bar"
-                                     class="progress-bar {% if remote_test.state == 'crawling' %}progress-bar-warning{% endif %}"
+                                <div class="progress-bar {% if remote_test.state == 'crawling' %}progress-bar-warning{% endif %}"
                                      role="progressbar"
                                      aria-valuenow="{{ remote_test.completionpercent }}"
                                      aria-valuemin="0"
                                      aria-valuemax="100"
                                      style="width: {{ remote_test.completionpercent }}%;"></div>
                             </div>
-                            <p class="subtle" id="completion-percent-state-label">
+                            <p class="subtle js-state-label">
                                 <i class="fa fa-spin fa-spinner"></i>
                             </p>
                         </div>
@@ -66,16 +59,16 @@
                         <div class="col-lg-3 col-md-3 col-sm-5 side-actions">
                             <div class="row">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 buttons">
-                                    <form id="cancel-form" role="form" method="post" action="{{ path('test_cancel', {website: website.raw, test_id: test.testId}) }}">
-                                        <button id="cancel-button" type="submit" class="btn btn-danger btn-significant side-action">
+                                    <form role="form" method="post" action="{{ path('test_cancel', route_parameters) }}">
+                                        <button type="submit" class="btn btn-danger btn-significant side-action cancel-action">
                                             <i class="fa fa-fw fa-power-off"></i>
                                             Stop test
                                             <span>and go to the results</span>
                                         </button>
                                     </form>
 
-                                    <form id="cancel-crawl-form" role="form" method="post" action="{{ path('test_cancel_crawl', {'test_id':test.testId, 'website':test.website}) }}">
-                                        <button id="cancel-crawl-button" type="submit" class="btn btn-warning btn-significant side-action">
+                                    <form role="form" method="post" action="{{ path('test_cancel_crawl', route_parameters) }}">
+                                        <button type="submit" class="btn btn-warning btn-significant side-action cancel-crawl-action">
                                             <i class="fa fa-fw fa-power-off"></i>
                                             Stop finding pages, start testing
                                         </button>
@@ -113,8 +106,11 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-lg-12" id="tasks">
-                    <h2>Live results</h2>
+            <div class="col-lg-12 test-progress-tasks hidden"
+                 data-task-ids-url="{{ path('app_task_ids', route_parameters) }}"
+                 data-tasklist-url="{{ path('view_test_task_tasklist_index_index', route_parameters) }}"
+            >
+                <h2>Live results</h2>
             </div>
         </div>
     </div>
