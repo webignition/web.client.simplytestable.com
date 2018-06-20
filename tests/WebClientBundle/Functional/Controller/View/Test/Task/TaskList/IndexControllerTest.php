@@ -250,7 +250,7 @@ class IndexControllerTest extends AbstractBaseTestCase
             $tasks->each(function (Crawler $task, $taskIndex) use ($expectedTasks) {
                 $expectedTask = $expectedTasks[$taskIndex];
 
-                $this->assertEquals('task' . $expectedTask['id'], $task->attr('id'));
+                $this->assertEquals($expectedTask['id'], $task->attr('data-task-id'));
                 $this->assertEquals($expectedTask['state'], $task->attr('data-state'));
                 $this->assertEquals($expectedTask['type'], $task->filter('.type')->text());
 
