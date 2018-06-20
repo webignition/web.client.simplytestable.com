@@ -16,7 +16,7 @@ class ProgressBar {
         }
     }
 
-    _removePresentationalClasses  () {
+    _removePresentationalClasses () {
         let presentationalClassPrefix = 'progress-bar-';
 
         this.element.classList.forEach((className, index, classList) => {

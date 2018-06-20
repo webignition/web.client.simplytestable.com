@@ -26,7 +26,6 @@ class TestAlertContainer {
         this.element.addEventListener('transitionend', () => {
             this.alert.element.classList.add('reveal');
         });
-
     };
 
     renderUrlLimitNotification () {

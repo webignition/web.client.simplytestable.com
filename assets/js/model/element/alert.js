@@ -27,7 +27,7 @@ class Alert {
         this.element.appendChild(container);
     };
 
-    _removePresentationalClasses  () {
+    _removePresentationalClasses () {
         let presentationalClassPrefix = 'alert-';
 
         this.element.classList.forEach((className, index, classList) => {
