@@ -1,5 +1,7 @@
 {% extends 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:task-list.html.twig' %}
 
+{% block link_hash %}#{{ message_hash }}{% endblock %}
+
 {% block occurrences %}
     {% set value = task.output.result.countByMessage(error_message) %}
     {% set singular = 'occurrence' %}
