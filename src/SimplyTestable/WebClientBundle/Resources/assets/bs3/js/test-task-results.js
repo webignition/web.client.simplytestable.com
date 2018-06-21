@@ -145,13 +145,5 @@ $(document).ready(function() {
         return false;
     });
 
-    if ($(window.location.hash).length) {
-        var target = $(window.location.hash);
-
-        $.scrollTo(target, {
-            'offset':-50
-        });
-    }
-
     prettyPrint();
 });
