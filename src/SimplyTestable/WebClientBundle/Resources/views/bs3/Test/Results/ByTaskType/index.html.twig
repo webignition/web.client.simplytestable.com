@@ -82,31 +82,37 @@
                 {% else %}
                     <ul class="task-list list-unstyled by-error-container">
                         {% for error_index, error_task_map in error_task_maps.errorTaskMaps %}
+                            {% set is_collapsible = error_task_map.tasks|length > 1 %}
+
                             <li class="error">
                                 <h3>{{ error_task_map.message }}</h3>
 
-                                <p class="lead">
+                                {% set found_X_times_in_Y_pages %}
                                     Found
                                     <span class="error-count" data-count="{{ error_task_map.cumulativeOccurrenceCount }}">
                                         {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:once-twice-x-times.html.twig' with {'value': error_task_map.cumulativeOccurrenceCount} %}
                                     </span>
                                     in
                                     {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': error_task_map.tasks.count, 'singular': 'page'} %}
-                                    {% if error_task_map.tasks|length == 1 %}
-                                        <span class="colon">:</span>
-                                    {% else %}
-                                        <a class="caret-container collapse-control collapsed"
-                                           data-toggle="collapse"
-                                           data-target="collapse{{ error_index }}"
-                                           href="#collapse{{ error_index }}"
-                                        >
-                                            show page list
-                                        </a>
-                                    {% endif %}
-                                </p>
+                                {% endset %}
 
-                                <div class="by-page-container {% if error_task_map.tasks|length > 1 %}collapse{% endif %}" id="collapse{{ error_index }}">
-                                    {% if error_task_map.tasks|length > 1 %}
+                                {% if is_collapsible %}
+                                    <a class="lead caret-container collapse-control collapsed"
+                                       data-toggle="collapse"
+                                       data-target="collapse{{ error_index }}"
+                                       href="#collapse{{ error_index }}"
+                                    >
+                                        {{ found_X_times_in_Y_pages }}
+                                    </a>
+                                {% else %}
+                                    <p class="lead">
+                                        {{ found_X_times_in_Y_pages }}
+                                        <span class="colon">:</span>
+                                    </p>
+                                {% endif %}
+
+                                <div class="by-page-container {% if is_collapsible %}collapse{% endif %}" id="collapse{{ error_index }}">
+                                    {% if is_collapsible %}
                                         {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:sort-row.html.twig' with {} only %}
                                     {% endif %}
 
