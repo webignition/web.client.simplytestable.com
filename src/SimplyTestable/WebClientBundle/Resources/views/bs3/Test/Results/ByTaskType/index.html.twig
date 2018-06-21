@@ -69,44 +69,17 @@
 
                 {% if filter == 'by-page' %}
                     <div class="by-page-container">
-                        <div class="row task sort invisible">
-                            <div class="meta">
-                                <div class="col-lg-10 url-container">
-                                    <p class="sort-control link" data-sort-keys="{{ ['url']|json_encode }}">Sort by URL <i class="fa fa-caret-down"></i></p>
-                                </div>
-                                <div class="col-lg-2 occurrences-container">
-                                    <p class="sort-control sorted" data-sort-keys="{{ ['occurrences', 'url']|json_encode }}">Sorted by error count <i class="fa fa-caret-down"></i></p>
-                                </div>
-                            </div>
-                        </div>
 
-                        <ul class="task-list list-unstyled by-page-list">
-                            {% for task in tasks %}
-                                {% set schemeless_url = task.url|replace({'http://': '', 'https://': ''}) %}
-                                {% set sort_values = {
-                                    url: schemeless_url,
-                                    occurrences: task.output.errorCount
-                                } %}
+                        {% if tasks|length > 0 %}
+                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:sort-row.html.twig' with {} only %}
+                        {% endif %}
 
-                                <li class="js-sortable-item" data-sort-values="{{ sort_values|json_encode }}">
-                                    <a href="{{ path('view_test_task_results_index_index', {'website': website.raw, 'test_id': test.testId, 'task_id': task.taskId, 'trailingSlash':''}) }}">
-                                        <div class="row task">
-                                            <div class="meta">
-                                                <div class="col-lg-10 url-container">
-                                                    <span class="url">{{ schemeless_url }}</span>
-                                                </div>
-                                                <div class="col-lg-2 occurrences-container">
-                                                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/TaskList/Task/SummaryLabels:completed.html.twig' with {
-                                                        exclude_warning_count: true
-                                                    } %}
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </a>
-                                </li>
-                            {% endfor %}
-                        </ul>
+                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:task-error-count-task-list.html.twig' with {
+                            tasks: tasks,
+                            test_results_route_parameters: {
+                                website: website.raw, test_id: test.testId, trailingSlash:''
+                            }
+                        } only %}
                     </div>
                 {% else %}
                     <ul class="task-list list-unstyled by-error-list">
@@ -123,26 +96,17 @@
                                     {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': error_task_map.tasks.count, 'singular': 'page'} %}<span class="colon">:</span>
                                 </p>
 
-                                <div class="pages">
-                                    {% for task in error_task_map.tasks %}
-                                        <a class="page" href="{{ path('action_test_task_results_byurl_index', {'website': website.raw, 'test_id': test.testId, 'task_url': task.url, 'task_type': task_type|lower}) }}#{{ error_task_map.messageHash }}">
-                                            <div class="row task">
-                                                <div class="meta">
-                                                    <div class="col-lg-9 url-container">
-                                                        <span class="url">
-                                                            {{ task.url|replace({'http://': '', 'https://': ''}) }}
-                                                        </span>
-                                                    </div>
-                                                    <div class="col-lg-3 occurrences-container">
-                                                    <span class="label label-danger">
-                                                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': task.output.result.countByMessage(error_task_map.message), 'singular': 'occurrence'} %} <i class="fa fa-caret-right"></i>
-                                                    </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    {% endfor %}
-                                </div>
+                                {% if error_task_map.tasks|length > 1 %}
+                                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:sort-row.html.twig' with {} only %}
+                                {% endif %}
+
+                                {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:occurrence-count-by-error-message-task-list.html.twig' with {
+                                    tasks: error_task_map.tasks,
+                                    test_results_route_parameters: {
+                                        website: website.raw, test_id: test.testId, trailingSlash:''
+                                    },
+                                    error_message: error_task_map.message
+                                } only %}
                             </li>
                         {% endfor %}
                     </ul>
