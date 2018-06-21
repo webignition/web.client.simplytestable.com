@@ -25,8 +25,7 @@ class SortControl {
 
         this.element.dispatchEvent(new CustomEvent(SortControl.getSortRequestedEventName(), {
             detail: {
-                key: this.keys[0],
-                type: this.element.getAttribute('data-sort-type')
+                keys: this.keys
             }
         }));
     };

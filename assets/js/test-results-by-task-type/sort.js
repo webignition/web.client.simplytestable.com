@@ -62,9 +62,7 @@ class Sort {
             sortableItemElement.parentElement.removeChild(sortableItemElement);
         });
 
-        let sortedItems = this.sortableItemsList.sort(event.detail.key, event.detail.type);
-
-        // console.log(sortedItems);
+        let sortedItems = this.sortableItemsList.sort(event.detail.keys);
 
         sortedItems.forEach((sortableItem) => {
             parent.insertAdjacentElement('beforeend', sortableItem.element);

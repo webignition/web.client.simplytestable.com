@@ -6,34 +6,37 @@ class SortableItemList {
         this.items = items;
     };
 
-    sort (key, type) {
+    /**
+     * @param {string[]} keys
+     * @returns {SortableItem[]}
+     */
+    sort (keys) {
         let index = [];
-
         let sortedItems = [];
+
         this.items.forEach((sortableItem, position) => {
+            let values = [];
+
+            keys.forEach((key) => {
+                let value = sortableItem.getSortValue(key);
+                if (Number.isInteger(value)) {
+                    value = (1/value).toString();
+                }
+
+                values.push(value);
+            });
+
             index.push({
                 position: position,
-                value: sortableItem.getSortValue(key)
+                value: values.join(',')
             });
         });
 
         index.sort(this._compareFunction);
-        if (type === 'number') {
-            index.reverse();
-        }
 
         index.forEach((indexItem) => {
             sortedItems.push(this.items[indexItem.position]);
         });
-
-        // this.items.forEach((sortableItem) => {
-        //
-        //
-        //     // let sortValue = sortableItem.getSortValue(key);
-        //     // let indexPosition = sortValues.indexOf(sortValue);
-        //     //
-        //     // sortedItems[indexPosition] = sortableItem;
-        // });
 
         return sortedItems;
     };
