@@ -96,11 +96,12 @@
                                     {% if error_task_map.tasks|length == 1 %}
                                         <span class="colon">:</span>
                                     {% else %}
-                                        <a class="caret-container"
+                                        <a class="caret-container collapse-control collapsed"
                                            data-toggle="collapse"
+                                           data-target="collapse{{ error_index }}"
                                            href="#collapse{{ error_index }}"
                                         >
-                                            <i class="fa fa-caret-down"></i> show page list
+                                            show page list
                                         </a>
                                     {% endif %}
                                 </p>
