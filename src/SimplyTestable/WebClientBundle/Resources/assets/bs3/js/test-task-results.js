@@ -131,17 +131,4 @@ $(document).ready(function() {
     if ($('.issue-content').attr('data-filter-selector')) {
         filterErrors();
     }
-
-
-    $('.summary-stats a').click(function () {
-        var target = $($(this).attr('href'));
-
-        $.scrollTo(target, {
-            'offset':-50
-        });
-
-        window.location.hash = target.attr('id');
-
-        return false;
-    });
 });
