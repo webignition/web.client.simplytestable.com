@@ -109,3 +109,11 @@
     margin-top: 20px;
   }
 }
+
+.sort-control {
+  &.sorted {
+    .fa {
+      display: none;
+    }
+  }
+}

@@ -1,3 +1,5 @@
+{% set exclude_warning_count = exclude_warning_count is defined ? exclude_warning_count : false %}
+
 {% if task.output.hasIssues %}
     {% if task.output.hasErrors %}
         <span class="label label-danger">
@@ -7,7 +9,7 @@
         </span>
     {% endif %}
 
-    {% if task.output.hasWarnings %}
+    {% if task.output.hasWarnings and not exclude_warning_count %}
         <span class="label label-primary">
             {{ task.output.warningCount }}
             warning{% if task.output.warningCount != 1 %}s{% endif %}

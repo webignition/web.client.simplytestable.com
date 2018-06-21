@@ -217,7 +217,7 @@ $(document).ready(function() {
         });
     };
 
-    initialiseByErrorList();
-    initialiseByPageList();
+    // initialiseByErrorList();
+    // initialiseByPageList();
 
 });
