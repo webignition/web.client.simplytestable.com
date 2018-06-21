@@ -1,11 +1,11 @@
 {% set plural_suffix = plural_suffix is defined ? plural_suffix : 's' %}
-{% set positive is defined ? positive : 'success' %}
-{% set negative is defined ? negative : 'danger' %}
-{% set name_suffix is defined ? name_suffix : '' %}
-{% set anchor is defined ? anchor : '#' %}
-{% set stacked is defined ? stacked : false %}
-{% set include_icon is defined ? include_icon : true %}
-{% set split is defined ? split : false %}
+{% set positive = positive is defined ? positive : 'success' %}
+{% set negative = negative is defined ? negative : 'danger' %}
+{% set name_suffix = name_suffix is defined ? name_suffix : '' %}
+{% set anchor = anchor is defined ? anchor : '#' %}
+{% set stacked = stacked is defined ? stacked : false %}
+{% set include_icon = include_icon is defined ? include_icon : true %}
+{% set split = split is defined ? split : false %}
 
 {% if count == 0 %}
 <span class="{% if split %}split{% endif %} {% if stacked or split %}row{% endif %} label label-{{ count == 0 ? positive : negative }}">
