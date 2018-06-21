@@ -8,10 +8,9 @@ class TestResultsByTaskType {
     constructor (document) {
         this.document = document;
 
-        let byPageContainerElement = document.querySelector('.by-page-container');
         let byErrorContainerElement = document.querySelector('.by-error-container');
 
-        this.byPageList = byPageContainerElement ? new ByPageList(byPageContainerElement) : null;
+        this.byPageList = byErrorContainerElement ? null : new ByPageList(document.querySelector('.by-page-container'));
         this.byErrorList = byErrorContainerElement ? new ByErrorList(byErrorContainerElement) : null;
     }
 

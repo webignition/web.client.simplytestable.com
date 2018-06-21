@@ -69,7 +69,6 @@
 
                 {% if filter == 'by-page' %}
                     <div class="by-page-container">
-
                         {% if tasks|length > 0 %}
                             {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:sort-row.html.twig' with {} only %}
                         {% endif %}
@@ -82,7 +81,7 @@
                         } only %}
                     </div>
                 {% else %}
-                    <ul class="task-list list-unstyled by-error-list">
+                    <ul class="task-list list-unstyled by-error-container">
                         {% for error_task_map in error_task_maps.errorTaskMaps %}
                             <li class="error">
                                 <h3>{{ error_task_map.message }}</h3>
@@ -96,17 +95,19 @@
                                     {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': error_task_map.tasks.count, 'singular': 'page'} %}<span class="colon">:</span>
                                 </p>
 
-                                {% if error_task_map.tasks|length > 1 %}
-                                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:sort-row.html.twig' with {} only %}
-                                {% endif %}
+                                <div class="by-page-container">
+                                    {% if error_task_map.tasks|length > 1 %}
+                                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:sort-row.html.twig' with {} only %}
+                                    {% endif %}
 
-                                {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:occurrence-count-by-error-message-task-list.html.twig' with {
-                                    tasks: error_task_map.tasks,
-                                    test_results_route_parameters: {
-                                        website: website.raw, test_id: test.testId, trailingSlash:''
-                                    },
-                                    error_message: error_task_map.message
-                                } only %}
+                                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:occurrence-count-by-error-message-task-list.html.twig' with {
+                                        tasks: error_task_map.tasks,
+                                        test_results_route_parameters: {
+                                            website: website.raw, test_id: test.testId, trailingSlash:''
+                                        },
+                                        error_message: error_task_map.message
+                                    } only %}
+                                </div>
                             </li>
                         {% endfor %}
                     </ul>
