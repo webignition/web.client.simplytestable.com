@@ -82,7 +82,7 @@
                     </div>
                 {% else %}
                     <ul class="task-list list-unstyled by-error-container">
-                        {% for error_task_map in error_task_maps.errorTaskMaps %}
+                        {% for error_index, error_task_map in error_task_maps.errorTaskMaps %}
                             <li class="error">
                                 <h3>{{ error_task_map.message }}</h3>
 
@@ -92,10 +92,20 @@
                                         {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:once-twice-x-times.html.twig' with {'value': error_task_map.cumulativeOccurrenceCount} %}
                                     </span>
                                     in
-                                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': error_task_map.tasks.count, 'singular': 'page'} %}<span class="colon">:</span>
+                                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': error_task_map.tasks.count, 'singular': 'page'} %}
+                                    {% if error_task_map.tasks|length == 1 %}
+                                        <span class="colon">:</span>
+                                    {% else %}
+                                        <a class="caret-container"
+                                           data-toggle="collapse"
+                                           href="#collapse{{ error_index }}"
+                                        >
+                                            <i class="fa fa-caret-down"></i> show page list
+                                        </a>
+                                    {% endif %}
                                 </p>
 
-                                <div class="by-page-container">
+                                <div class="by-page-container {% if error_task_map.tasks|length > 1 %}collapse{% endif %}" id="collapse{{ error_index }}">
                                     {% if error_task_map.tasks|length > 1 %}
                                         {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:sort-row.html.twig' with {} only %}
                                     {% endif %}
