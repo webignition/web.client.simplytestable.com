@@ -20,7 +20,7 @@ class SortableItemList {
             keys.forEach((key) => {
                 let value = sortableItem.getSortValue(key);
                 if (Number.isInteger(value)) {
-                    value = (1/value).toString();
+                    value = (1 / value).toString();
                 }
 
                 values.push(value);

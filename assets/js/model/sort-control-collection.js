@@ -1,5 +1,3 @@
-let SortControl = require('../model/element/sort-control');
-
 class SortControlCollection {
     /**
      * @param {SortControl[]} controls
