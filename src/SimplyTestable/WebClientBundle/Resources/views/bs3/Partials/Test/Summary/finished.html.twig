@@ -45,7 +45,6 @@
 {% endblock %}
 
 {% block stats %}
-
     <div class="row summary-stats">
         {% if was_not_started %}
             <div class="col-lg-12 reason">
@@ -62,7 +61,7 @@
         {% else %}
             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 summary-col">
                 {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-                with { 'count': test.test.errorCount, 'name':'error', 'anchor': [results_url, '?filter=with-errors#test-list']|join(''), 'include_icon': false, 'split': true }
+                with { 'count': test.test.errorCount, 'name':'error', 'anchor': [results_url, '?filter=with-errors']|join(''), 'include_icon': false, 'split': true }
                 %}
 
                 {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
@@ -71,7 +70,7 @@
             </div>
             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 summary-col">
                 {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-                with { 'count': test.test.warningCount, 'name':'warning', 'anchor': [results_url, '?filter=with-warnings#test-list']|join(''), 'include_icon': false, 'split': true, 'negative': 'primary' }
+                with { 'count': test.test.warningCount, 'name':'warning', 'anchor': [results_url, '?filter=with-warnings']|join(''), 'include_icon': false, 'split': true, 'negative': 'primary' }
                 %}
 
                 {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
@@ -83,5 +82,4 @@
             </div>
         {% endif %}
     </div>
-
 {% endblock %}

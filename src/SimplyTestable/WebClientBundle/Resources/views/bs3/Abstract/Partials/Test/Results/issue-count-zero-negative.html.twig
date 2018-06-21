@@ -1,26 +1,9 @@
-{% if plural_suffix is not defined %}
-    {% set plural_suffix = 's' %}
-{% endif %}
-
-{% if positive is not defined %}
-    {% set positive = 'success' %}
-{% endif %}
-
-{% if negative is not defined %}
-    {% set negative = 'danger' %}
-{% endif %}
-
-{% if name_suffix is not defined %}
-    {% set name_suffix = '' %}
-{% endif %}
-
-{% if anchor is not defined %}
-    {%  set anchor = '#' %}
-{% endif %}
-
-{% if stacked is not defined %}
-    {% set stacked = false %}
-{% endif %}
+{% set plural_suffix = plural_suffix is defined ? plural_suffix : 's' %}
+{% set positive is defined ? positive : 'success' %}
+{% set negative is defined ? negative : 'danger' %}
+{% set name_suffix is defined ? name_suffix : '' %}
+{% set anchor is defined ? anchor : '#' %}
+{% set stacked is defined ? stacked : false %}
 
 {% if count == 0 %}
 <span class="{% if stacked %}row{% endif %} label label-{{ count == 0 ? positive : negative }}">
@@ -31,7 +14,7 @@
     </span>
 </span>
 {% else %}
-    <a data-target="#test-list" href="{{ anchor }}" class="{% if stacked %}row{% endif %} label label-{{ count == 0 ? positive : negative }}">
+    <a href="{{ anchor }}" class="{% if stacked %}row{% endif %} label label-{{ count == 0 ? positive : negative }}">
         <span class="{% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} count">{{ count|number_format }}</span>
         <span class="{% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} name">{{ name }}{% if count != 1 %}{{ plural_suffix }}{% endif %} {{ name_suffix }}</span>
     <span class="icon">
@@ -39,6 +22,3 @@
     </span>
     </a>
 {% endif %}
-
-
-

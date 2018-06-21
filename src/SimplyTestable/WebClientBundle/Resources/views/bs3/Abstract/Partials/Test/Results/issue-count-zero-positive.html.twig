@@ -1,34 +1,11 @@
-{% if plural_suffix is not defined %}
-    {% set plural_suffix = 's' %}
-{% endif %}
-
-{% if positive is not defined %}
-    {% set positive = 'success' %}
-{% endif %}
-
-{% if negative is not defined %}
-    {% set negative = 'danger' %}
-{% endif %}
-
-{% if name_suffix is not defined %}
-    {% set name_suffix = '' %}
-{% endif %}
-
-{% if anchor is not defined %}
-    {%  set anchor = '' %}
-{% endif %}
-
-{% if stacked is not defined %}
-    {% set stacked = false %}
-{% endif %}
-
-{% if include_icon is not defined %}
-    {% set include_icon = true %}
-{% endif %}
-
-{% if split is not defined %}
-    {% set split = false %}
-{% endif %}
+{% set plural_suffix = plural_suffix is defined ? plural_suffix : 's' %}
+{% set positive is defined ? positive : 'success' %}
+{% set negative is defined ? negative : 'danger' %}
+{% set name_suffix is defined ? name_suffix : '' %}
+{% set anchor is defined ? anchor : '#' %}
+{% set stacked is defined ? stacked : false %}
+{% set include_icon is defined ? include_icon : true %}
+{% set split is defined ? split : false %}
 
 {% if count == 0 %}
 <span class="{% if split %}split{% endif %} {% if stacked or split %}row{% endif %} label label-{{ count == 0 ? positive : negative }}">
@@ -53,7 +30,7 @@
     {% if anchor is empty %}
         <span class="{% if split %}split{% endif %} {% if stacked or split %}row{% endif %} label label-{{ count == 0 ? positive : negative }}">
     {% else %}
-        <a data-target="#test-list" href="{{ anchor }}" class="{% if split %}split{% endif %} {% if stacked or split %}row{% endif %} label label-{{ count == 0 ? positive : negative }}">
+        <a href="{{ anchor }}" class="{% if split %}split{% endif %} {% if stacked or split %}row{% endif %} label label-{{ count == 0 ? positive : negative }}">
     {% endif %}
 
         <span class="{% if split %}col-lg-6 col-md-6 col-sm-6 col-xs-6{% endif %} {% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} count">
@@ -75,6 +52,3 @@
         </span>
     {% endif %}
 {% endif %}
-
-
-
