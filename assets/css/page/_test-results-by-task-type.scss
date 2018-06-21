@@ -65,7 +65,7 @@
   }
 }
 
-.by-error-list {
+.by-error-container {
   h3 {
     border-left: 3px solid #d9534f;
     padding-left: 15px;
@@ -81,6 +81,8 @@
 
   .lead {
     margin-top: 20px;
+    margin-bottom: 0;
+    padding-bottom: 10px;
   }
 
   .sort {
@@ -107,5 +109,13 @@
 .by-page {
   .sort {
     margin-top: 20px;
+  }
+}
+
+.sort-control {
+  &.sorted {
+    .fa {
+      display: none;
+    }
   }
 }

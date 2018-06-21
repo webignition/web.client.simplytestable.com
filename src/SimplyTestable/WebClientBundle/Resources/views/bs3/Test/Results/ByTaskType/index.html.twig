@@ -10,7 +10,6 @@
     {% javascripts
     '@SimplyTestableWebClientBundle/Resources/assets/vendor/jquery-scrollto/jquery.scrollTo-1.4.12/jquery.scrollTo.js'
     '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/test-results-by-task-type.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
@@ -68,61 +67,62 @@
                 </ul>
 
                 {% if filter == 'by-page' %}
-                    <ul class="task-list list-unstyled by-page-list">
-                        {% for task in tasks %}
-                            <li>
-                                <a class="page" href="{{ path('view_test_task_results_index_index', {'website': website.raw, 'test_id': test.testId, 'task_id': task.taskId, 'trailingSlash':''}) }}">
-                                    <div class="row task">
-                                        <div class="meta">
-                                            <div class="col-lg-10 url-container">
-                                                <span class="url">
-                                                    {{ task.url|replace({'http://': '', 'https://': ''}) }}
-                                                </span>
-                                            </div>
-                                            <div class="col-lg-2 occurrences-container">
-                                                {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/TaskList/Task/SummaryLabels:completed.html.twig' %}
-                                            </div>
-                                        </div>
+                    <div class="by-page-container">
+                        {% if tasks|length > 0 %}
+                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:sort-row.html.twig' with {} only %}
+                        {% endif %}
 
-                                    </div>
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
+                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:task-error-count-task-list.html.twig' with {
+                            tasks: tasks,
+                            test_results_route_parameters: {
+                                website: website.raw, test_id: test.testId, trailingSlash:''
+                            }
+                        } only %}
+                    </div>
                 {% else %}
-                    <ul class="task-list list-unstyled by-error-list">
-                        {% for error_task_map in error_task_maps.errorTaskMaps %}
+                    <ul class="task-list list-unstyled by-error-container">
+                        {% for error_index, error_task_map in error_task_maps.errorTaskMaps %}
+                            {% set is_collapsible = error_task_map.tasks|length > 1 %}
+
                             <li class="error">
                                 <h3>{{ error_task_map.message }}</h3>
 
-                                <p class="lead">
+                                {% set found_X_times_in_Y_pages %}
                                     Found
                                     <span class="error-count" data-count="{{ error_task_map.cumulativeOccurrenceCount }}">
                                         {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:once-twice-x-times.html.twig' with {'value': error_task_map.cumulativeOccurrenceCount} %}
                                     </span>
                                     in
-                                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': error_task_map.tasks.count, 'singular': 'page'} %}<span class="colon">:</span>
-                                </p>
+                                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': error_task_map.tasks.count, 'singular': 'page'} %}
+                                {% endset %}
 
-                                <div class="pages">
-                                    {% for task in error_task_map.tasks %}
-                                        <a class="page" href="{{ path('action_test_task_results_byurl_index', {'website': website.raw, 'test_id': test.testId, 'task_url': task.url, 'task_type': task_type|lower}) }}#{{ error_task_map.messageHash }}">
-                                            <div class="row task">
-                                                <div class="meta">
-                                                    <div class="col-lg-9 url-container">
-                                                        <span class="url">
-                                                            {{ task.url|replace({'http://': '', 'https://': ''}) }}
-                                                        </span>
-                                                    </div>
-                                                    <div class="col-lg-3 occurrences-container">
-                                                    <span class="label label-danger">
-                                                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {'value': task.output.result.countByMessage(error_task_map.message), 'singular': 'occurrence'} %} <i class="fa fa-caret-right"></i>
-                                                    </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    {% endfor %}
+                                {% if is_collapsible %}
+                                    <a class="lead caret-container collapse-control collapsed"
+                                       data-toggle="collapse"
+                                       data-target="collapse{{ error_index }}"
+                                       href="#collapse{{ error_index }}"
+                                    >
+                                        {{ found_X_times_in_Y_pages }}
+                                    </a>
+                                {% else %}
+                                    <p class="lead">
+                                        {{ found_X_times_in_Y_pages }}
+                                        <span class="colon">:</span>
+                                    </p>
+                                {% endif %}
+
+                                <div class="by-page-container {% if is_collapsible %}collapse{% endif %}" id="collapse{{ error_index }}">
+                                    {% if is_collapsible %}
+                                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:sort-row.html.twig' with {} only %}
+                                    {% endif %}
+
+                                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:occurrence-count-by-error-message-task-list.html.twig' with {
+                                        tasks: error_task_map.tasks,
+                                        test_results_route_parameters: {
+                                            website: website.raw, test_id: test.testId, trailingSlash:''
+                                        },
+                                        error_message: error_task_map.message
+                                    } only %}
                                 </div>
                             </li>
                         {% endfor %}
