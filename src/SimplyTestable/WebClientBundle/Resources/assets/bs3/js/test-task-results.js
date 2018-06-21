@@ -154,17 +154,4 @@ $(document).ready(function() {
     }
 
     prettyPrint();
-
-    $('h2').each(function () {
-        var heading = $(this);
-        var sectionName = heading.attr('data-section');
-
-        if (sectionName === undefined) {
-            return;
-        }
-
-        heading.append(
-            '<span class="collapse-control link" data-toggle="collapse" data-target="#' + sectionName + '-content"></span>'
-        );
-    });
 });
