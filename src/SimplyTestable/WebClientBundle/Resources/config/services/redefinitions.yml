@@ -6,9 +6,3 @@ services:
 # Fix for ResqueBundle\Resque\Resque uses of resque
   ResqueBundle\Resque\Resque:
     alias: resque
-
-# Fix for AsseticBundle use of assetic.parameter_bag service
-# Remove when switching to webpack encore
-  Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface:
-    alias: assetic.parameter_bag
-
