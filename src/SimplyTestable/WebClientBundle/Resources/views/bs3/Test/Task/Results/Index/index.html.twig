@@ -15,12 +15,7 @@
 {% block javascripts %}
     {{ parent() }}
 
-    {% javascripts
-    '@SimplyTestableWebClientBundle/Resources/assets/vendor/jquery-scrollto/jquery.scrollTo-1.4.12/jquery.scrollTo.js'
-    %}
     <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
-    <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}
 {% endblock %}
 
 {% block body_class %} {{ parent() }} {{ task_type_key }} full-width task-results {{ is_failed ? 'task-results-failed' : '' }} {% endblock %}

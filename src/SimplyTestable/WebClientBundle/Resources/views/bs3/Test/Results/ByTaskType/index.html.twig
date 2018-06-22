@@ -4,17 +4,6 @@
 
 {% block title %}{{ task_type }} report for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
-{% block javascripts %}
-    {{ parent() }}
-
-    {% javascripts
-    '@SimplyTestableWebClientBundle/Resources/assets/vendor/jquery-scrollto/jquery.scrollTo-1.4.12/jquery.scrollTo.js'
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
-    %}
-    <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}
-{% endblock %}
-
 {% block body_class %} {{ parent() }} full-width test-results-by-task-type task-type-{{ task_type|lower|replace({' ': '-'}) }} {{ filter }} {% endblock %}
 
 {% block body %}
