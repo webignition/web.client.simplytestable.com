@@ -2,6 +2,7 @@ let ScrollSpy = require('../user-account/scrollspy');
 let NavBarList = require('../user-account/navbar-list');
 const ScrollTo = require('../scroll-to');
 const StickyFill = require('stickyfilljs');
+const PositionStickyDetector = require('../services/position-sticky-detector');
 
 class UserAccount {
     /**
@@ -37,13 +38,13 @@ class UserAccount {
     };
 
     _applyPositionStickyPolyfill () {
-        const selector = '.csspositionsticky';
         const stickyNavJsClass = 'js-sticky-nav';
         const stickyNavJsSelector = '.' + stickyNavJsClass;
 
         let stickyNav = document.querySelector(stickyNavJsSelector);
 
-        if (document.querySelector(selector)) {
+        let supportsPositionSticky = PositionStickyDetector.supportsPositionSticky();
+        if (supportsPositionSticky) {
             stickyNav.classList.remove(stickyNavJsClass);
         } else {
             StickyFill.addOne(stickyNav);
