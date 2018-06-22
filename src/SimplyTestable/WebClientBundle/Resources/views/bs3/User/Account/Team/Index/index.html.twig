@@ -11,17 +11,6 @@
     {% endif %}
 {% endblock %}
 
-{% block javascripts %}
-    {{ parent() }}
-
-    {% javascripts
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormErrorHelper.js'
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/jQuery/stFormHelper.js'
-    %}
-    <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}
-{% endblock %}
-
 {% block account_content %}
 
 {% if not user_summary.getTeamSummary.isInTeam and not user_summary.getTeamSummary.hasInvite %}

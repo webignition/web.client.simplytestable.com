@@ -24,7 +24,6 @@ before_install:
   - mv --force app/config/config_travis.yml app/config/config_test.yml
   - cp src/SimplyTestable/WebClientBundle/Resources/config/parameters.yml.travis src/SimplyTestable/WebClientBundle/Resources/config/parameters.yml
   - mysql -e 'CREATE DATABASE myapp_test;'
-  - rake
   - yarn install
 
 install:
