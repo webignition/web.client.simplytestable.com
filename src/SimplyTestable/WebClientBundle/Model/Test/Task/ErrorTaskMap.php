@@ -56,7 +56,17 @@ class ErrorTaskMap
      */
     public function getMessageHash()
     {
-        return md5($this->getMessage());
+        return md5($this->normalisedMessageForHashing($this->getMessage()));
+    }
+
+    /**
+     * @param string $message
+     *
+     * @return string
+     */
+    private function normalisedMessageForHashing($message)
+    {
+        return trim(str_replace('&#39;', "'", $message));
     }
 
     /**

@@ -21,6 +21,12 @@ class IssueContent {
         this.issueSections.forEach((issueSection) => {
             issueSection.init();
         });
+
+        this.issueSections.forEach((issueSection) => {
+            if (issueSection.isFilterable()) {
+                issueSection.filter();
+            }
+        });
     };
 
     /**

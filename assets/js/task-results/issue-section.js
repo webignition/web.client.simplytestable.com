@@ -10,18 +10,23 @@ class IssueSection {
         this.element = element;
         this.issueType = element.getAttribute('data-issue-type');
         this.issueCountElement = element.querySelector('.issue-count');
+        this.issueLists = [];
 
-        let issuesElement = element.querySelector('.issues');
+        [].forEach.call(element.querySelectorAll('.issues'), (issuesElement) => {
+            let issueList = null;
 
-        if (this.element.hasAttribute('data-filter')) {
-            this.issueList = new FilterableIssueList(issuesElement, element.getAttribute('data-filter-selector'));
-        } else {
-            if (this.issueType === 'fix') {
-                this.issueList = new FixList(issuesElement);
+            if (this.element.hasAttribute('data-filter')) {
+                issueList = new FilterableIssueList(issuesElement, element.getAttribute('data-filter-selector'));
             } else {
-                this.issueList = new IssueList(issuesElement);
+                if (this.issueType === 'fix') {
+                    issueList = new FixList(issuesElement);
+                } else {
+                    issueList = new IssueList(issuesElement);
+                }
             }
-        }
+
+            this.issueLists.push(issueList);
+        });
     }
 
     /**
@@ -33,27 +38,39 @@ class IssueSection {
 
     init () {
         if (this.isFilterable()) {
-            let filter = window.location.hash.replace('#', '').trim()
+            let filter = window.location.hash.replace('#', '').trim();
 
             if (filter) {
-                this.issueList.addHashIdAttributeToIssues();
-                this.issueList.filter(window.location.hash.replace('#', ''));
+                this.issueLists.forEach((issueList) => {
+                    issueList.addHashIdAttributeToIssues();
+                });
+            }
+        }
+    };
 
-                let issueCount = parseInt(this.issueCountElement.innerText.trim(), 10);
-                let filteredIssueCount = this.issueList.count();
+    filter () {
+        let filter = window.location.hash.replace('#', '').trim();
 
-                if (issueCount !== filteredIssueCount) {
-                    this.element.classList.add('filtered');
-                    this.renderIssueCount(filteredIssueCount);
-                    this.element.dispatchEvent(new CustomEvent(IssueSection.getIssueCountChangedEventName(), {
-                        detail: {
-                            'issue-type': this.issueType,
-                            count: filteredIssueCount
-                        }
-                    }));
-                } else {
-                    this.element.classList.remove('filtered');
-                }
+        if (filter) {
+            let filteredIssueCount = 0;
+
+            this.issueLists.forEach((issueList) => {
+                issueList.filter(window.location.hash.replace('#', ''));
+                filteredIssueCount += issueList.count();
+            });
+
+            let issueCount = parseInt(this.issueCountElement.innerText.trim(), 10);
+            if (issueCount !== filteredIssueCount) {
+                this.element.classList.add('filtered');
+                this.renderIssueCount(filteredIssueCount);
+                this.element.dispatchEvent(new CustomEvent(IssueSection.getIssueCountChangedEventName(), {
+                    detail: {
+                        'issue-type': this.issueType,
+                        count: filteredIssueCount
+                    }
+                }));
+            } else {
+                this.element.classList.remove('filtered');
             }
         }
     };
@@ -83,14 +100,32 @@ class IssueSection {
      * @returns {string}
      */
     getFirstIssueMessage () {
-        return this.issueList.getFirstMessage();
+        let firstIssueMessage = null;
+
+        this.issueLists.forEach((issueList) => {
+            let issueListFirstMessage = issueList.getFirstMessage();
+            if (firstIssueMessage === null && issueListFirstMessage !== null) {
+                firstIssueMessage = issueListFirstMessage;
+            }
+        });
+
+        return firstIssueMessage;
     };
 
     /**
      * @returns {Element}
      */
     getFirstIssue () {
-        return this.issueList.getFirst();
+        let firstIssue = null;
+
+        this.issueLists.forEach((issueList) => {
+            let issueListFirstIssue = issueList.getFirst();
+            if (firstIssue === null && issueListFirstIssue !== null) {
+                firstIssue = issueListFirstIssue;
+            }
+        });
+
+        return firstIssue;
     }
 }
 

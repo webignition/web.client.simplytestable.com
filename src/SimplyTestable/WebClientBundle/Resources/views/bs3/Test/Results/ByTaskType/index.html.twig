@@ -85,7 +85,7 @@
                             {% set is_collapsible = error_task_map.tasks|length > 1 %}
 
                             <li class="error">
-                                <h3>{{ error_task_map.message }}</h3>
+                                <h3>{{ error_task_map.message|replace({'&#39;': "'"}) }}</h3>
 
                                 {% set found_X_times_in_Y_pages %}
                                     Found

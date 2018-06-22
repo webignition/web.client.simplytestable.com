@@ -47,6 +47,18 @@ class TaskResults {
 
         document.querySelector('.issue-content').insertAdjacentElement('afterbegin', this._createFilterNotice());
 
+        [].forEach.call(this.document.querySelectorAll('.grouped-issues'), (groupedIssuesElement) => {
+            [].forEach.call(groupedIssuesElement.querySelectorAll('.error-group'), (errorGroupElement) => {
+                let issueCount = errorGroupElement.querySelectorAll('.issue').length;
+
+                if (issueCount === 0) {
+                    groupedIssuesElement.removeChild(errorGroupElement);
+                } else {
+                    groupedIssuesElement.querySelector('.issue-count').innerText = issueCount;
+                }
+            });
+        });
+
         let firstFilteredIssue = this.issueContent.getFirstFilteredIssue();
         let fixElement = firstFilteredIssue.querySelector('.fix');
 
@@ -56,7 +68,7 @@ class TaskResults {
             /**
              * @type {FixList}
              */
-            let fixList = fixIssueSection.issueList;
+            let fixList = fixIssueSection.issueLists[0];
             fixList.filterTo(fixElement.getAttribute('href'));
 
             let fixCount = fixList.count();

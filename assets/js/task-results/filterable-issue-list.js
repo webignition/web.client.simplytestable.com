@@ -14,7 +14,7 @@ class FilterableIssueList extends IssueList {
 
     addHashIdAttributeToIssues () {
         [].forEach.call(this.issues, (issueElement) => {
-            let errorMessage = issueElement.querySelector(this.filterSelector).innerText.trim();
+            let errorMessage = issueElement.querySelector(this.filterSelector).textContent.trim();
             let errorMessageHash = SparkMD5.hash(errorMessage);
             let id = this._generateUniqueId(this.hashIdPrefix + errorMessageHash);
 
@@ -38,10 +38,11 @@ class FilterableIssueList extends IssueList {
     };
 
     /**
-     * @returns {string}
+     * @returns {string | null}
      */
     getFirstMessage () {
-        return this.getFirst().querySelector(this.filterSelector).innerText;
+        let firstIssue = this.getFirst();
+        return firstIssue ? firstIssue.querySelector(this.filterSelector).innerText : null;
     }
 
     /**
