@@ -6,11 +6,7 @@ class SummaryStats {
      */
     constructor (element) {
         this.element = element;
-
-        /**
-         * @type {SummaryStatsLabel[]}
-         */
-        this.labels = [];
+        this.labels = {};
 
         [].forEach.call(this.element.querySelectorAll('.label'), (labelElement) => {
             let label = new SummaryStatsLabel(labelElement);
@@ -19,8 +15,8 @@ class SummaryStats {
     };
 
     init () {
-        this.labels.forEach((label) => {
-            label.init();
+        Object.keys(this.labels).forEach((type) => {
+            this.labels[type].init();
         });
     };
 
