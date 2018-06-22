@@ -1,5 +1,6 @@
 let FilteredIssueSection = require('../task-results/filtered-issue-section');
 let SummaryStats = require('../task-results/summary-stats');
+let IssueContent = require('../task-results/issue-content');
 
 class TaskResults {
     /**
@@ -13,17 +14,10 @@ class TaskResults {
          */
         this.summaryStats = [];
 
-        /**
-         * @type {FilteredIssueSection[]}
-         */
-        this.filteredIssueSections = [];
+        this.issueContent = new IssueContent(document.querySelector('.issue-content'));
 
         [].forEach.call(this.document.querySelectorAll('.summary-stats'), (summaryStatsElement) => {
             this.summaryStats.push(new SummaryStats(summaryStatsElement));
-        });
-
-        [].forEach.call(this.document.querySelectorAll('[data-filter]'), (filteredIssueSectionElement) => {
-            this.filteredIssueSections.push(new FilteredIssueSection(filteredIssueSectionElement));
         });
     }
 
@@ -32,20 +26,37 @@ class TaskResults {
             summaryStats.init();
         });
 
-        this.filteredIssueSections.forEach((filteredIssueSection) => {
+        this.issueContent.filteredIssueSections.forEach((filteredIssueSection) => {
             filteredIssueSection.element.addEventListener(
                 FilteredIssueSection.getIssueCountChangedEventName(),
                 this._filteredIssueSectionIssueCountChangedEventListener.bind(this)
             );
-
-            filteredIssueSection.init();
         });
+
+        this.issueContent.init();
     };
 
+    /**
+     * @param {CustomEvent} event
+     * @private
+     */
     _filteredIssueSectionIssueCountChangedEventListener (event) {
         this.summaryStats.forEach((summaryStats) => {
             summaryStats.setIssueCount(event.detail['issue-type'], event.detail.count);
         });
+
+        document.querySelector('.issue-content').insertAdjacentElement('afterbegin', this._createFilterNotice());
+    };
+
+    /**
+     * @returns {Element}
+     * @private
+     */
+    _createFilterNotice () {
+        let container = this.document.createElement('div');
+        container.innerHTML = '<p class="filter-notice lead">Showing only <span class="message">&ldquo;' + this.issueContent.getFilteredIssueMessage() + '&rdquo;</span> errors. <a href="">Show all.</a></p>';
+
+        return container.querySelector('.filter-notice');
     };
 }
 

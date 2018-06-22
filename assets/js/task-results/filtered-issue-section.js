@@ -26,6 +26,7 @@ class FilteredIssueSection {
         let filteredIssueCount = this.issueList.count();
 
         if (issueCount !== filteredIssueCount) {
+            this.element.classList.add('filtered');
             this.issueCountElement.innerText = filteredIssueCount;
             this.element.dispatchEvent(new CustomEvent(FilteredIssueSection.getIssueCountChangedEventName(), {
                 detail: {
@@ -33,7 +34,23 @@ class FilteredIssueSection {
                     count: filteredIssueCount
                 }
             }));
+        } else {
+            this.element.classList.remove('filtered');
         }
+    };
+
+    /**
+     * @returns {boolean}
+     */
+    isFiltered () {
+        return this.element.classList.contains('filtered');
+    };
+
+    /**
+     * @returns {string}
+     */
+    getFirstIssueMessage () {
+        return this.issueList.getFirstMessage();
     };
 }
 

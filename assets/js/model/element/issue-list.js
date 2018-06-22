@@ -48,6 +48,13 @@ class IssueList {
     }
 
     /**
+     * @returns {string}
+     */
+    getFirstMessage () {
+        return this.element.querySelector('.issue').querySelector(this.filterSelector).innerText;
+    }
+
+    /**
      * @param {string} seed
      * @returns {string}
      * @private
