@@ -1,6 +1,9 @@
 {% set fix_count = distinct_fixes|length %}
 
-<div class="row issue-list {{ [task_type_key, 'issue-list']|join('-') }} fixes-list {{ [task_type_key, 'fixes-list']|join('-') }}" id="fixes">
+<div class="row issue-list {{ [task_type_key, 'issue-list']|join('-') }} fixes-list {{ [task_type_key, 'fixes-list']|join('-') }}"
+     id="fixes"
+     data-issue-type="fix"
+>
     <div class="col-sm-12">
         <h2 data-section="fixes-list">
             Fixes <span class="badge alert-fixes issue-count">{{ fix_count }}</span>
@@ -11,7 +14,7 @@
 
         <ul class="issues collapse in" id="fixes-list-content">
             {% for fix in distinct_fixes %}
-                <li>
+                <li class="issue subtle">
                     {% include [
                     'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded/FixesList:',
                     task_type_key,

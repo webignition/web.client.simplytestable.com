@@ -1,22 +1,19 @@
+let IssueList = require('./issue-list');
 let SparkMD5 = require('spark-md5');
 
-class IssueList {
+class FilterableIssueList extends IssueList {
     /**
      * @param {Element} element
      * @param {string} filterSelector
      */
     constructor (element, filterSelector) {
-        this.element = element;
+        super(element);
         this.filterSelector = filterSelector;
         this.hashIdPrefix = 'hash-';
     }
 
-    init () {
-        this._addHashIdAttributeToIssues();
-    };
-
-    _addHashIdAttributeToIssues () {
-        [].forEach.call(this.element.querySelectorAll('.issue'), (issueElement) => {
+    addHashIdAttributeToIssues () {
+        [].forEach.call(this.issues, (issueElement) => {
             let errorMessage = issueElement.querySelector(this.filterSelector).innerText.trim();
             let errorMessageHash = SparkMD5.hash(errorMessage);
             let id = this._generateUniqueId(this.hashIdPrefix + errorMessageHash);
@@ -41,17 +38,10 @@ class IssueList {
     };
 
     /**
-     * @returns {number}
-     */
-    count () {
-        return this.element.querySelectorAll('.issue').length;
-    }
-
-    /**
      * @returns {string}
      */
     getFirstMessage () {
-        return this.element.querySelector('.issue').querySelector(this.filterSelector).innerText;
+        return this.getFirst().querySelector(this.filterSelector).innerText;
     }
 
     /**
@@ -72,4 +62,4 @@ class IssueList {
     };
 }
 
-module.exports = IssueList;
+module.exports = FilterableIssueList;

@@ -1,4 +1,4 @@
-let FilteredIssueSection = require('../task-results/filtered-issue-section');
+let IssueSection = require('../task-results/issue-section');
 let SummaryStats = require('../task-results/summary-stats');
 let IssueContent = require('../task-results/issue-content');
 
@@ -26,9 +26,9 @@ class TaskResults {
             summaryStats.init();
         });
 
-        this.issueContent.filteredIssueSections.forEach((filteredIssueSection) => {
-            filteredIssueSection.element.addEventListener(
-                FilteredIssueSection.getIssueCountChangedEventName(),
+        this.issueContent.issueSections.forEach((issueSection) => {
+            issueSection.element.addEventListener(
+                IssueSection.getIssueCountChangedEventName(),
                 this._filteredIssueSectionIssueCountChangedEventListener.bind(this)
             );
         });
@@ -46,6 +46,26 @@ class TaskResults {
         });
 
         document.querySelector('.issue-content').insertAdjacentElement('afterbegin', this._createFilterNotice());
+
+        let firstFilteredIssue = this.issueContent.getFirstFilteredIssue();
+        let fixElement = firstFilteredIssue.querySelector('.fix');
+
+        if (fixElement) {
+            let fixIssueSection = this.issueContent.getIssueSection('fix');
+
+            /**
+             * @type {FixList}
+             */
+            let fixList = fixIssueSection.issueList;
+            fixList.filterTo(fixElement.getAttribute('href'));
+
+            let fixCount = fixList.count();
+            fixIssueSection.renderIssueCount(fixCount);
+
+            this.summaryStats.forEach((summaryStats) => {
+                summaryStats.setIssueCount('fix', fixCount);
+            });
+        }
     };
 
     /**

@@ -1,4 +1,4 @@
-let FilteredIssueSection = require('../task-results/filtered-issue-section');
+let IssueSection = require('../task-results/issue-section');
 
 class IssueContent {
     /**
@@ -8,19 +8,35 @@ class IssueContent {
         this.element = element;
 
         /**
-         * @type {FilteredIssueSection[]}
+         * @type {IssueSection[]}
          */
-        this.filteredIssueSections = [];
+        this.issueSections = [];
 
-        [].forEach.call(this.element.querySelectorAll('[data-filter]'), (filteredIssueSectionElement) => {
-            this.filteredIssueSections.push(new FilteredIssueSection(filteredIssueSectionElement));
+        [].forEach.call(this.element.querySelectorAll('.issue-list'), (issueSectionElement) => {
+            this.issueSections.push(new IssueSection(issueSectionElement));
         });
     }
 
     init () {
-        this.filteredIssueSections.forEach((filteredIssueSection) => {
-            filteredIssueSection.init();
+        this.issueSections.forEach((issueSection) => {
+            issueSection.init();
         });
+    };
+
+    /**
+     * @param {string} type
+     * @returns {IssueSection}
+     */
+    getIssueSection (type) {
+        let issueSection = null;
+
+        this.issueSections.forEach((currentIssueSection) => {
+            if (currentIssueSection.issueType === type) {
+                issueSection = currentIssueSection;
+            }
+        });
+
+        return issueSection;
     };
 
     /**
@@ -29,7 +45,7 @@ class IssueContent {
     getFilteredIssueMessage () {
         let filteredIssueMessage = '';
 
-        this.filteredIssueSections.forEach((filteredIssueSection) => {
+        this.issueSections.forEach((filteredIssueSection) => {
             if (filteredIssueSection.isFiltered()) {
                 filteredIssueMessage = filteredIssueSection.getFirstIssueMessage();
             }
@@ -37,6 +53,21 @@ class IssueContent {
 
         return filteredIssueMessage;
     }
+
+    /**
+     * @returns {Element}
+     */
+    getFirstFilteredIssue () {
+        let firstFilteredIssue = null;
+
+        this.issueSections.forEach((filteredIssueSection) => {
+            if (filteredIssueSection.isFiltered()) {
+                firstFilteredIssue = filteredIssueSection.getFirstIssue();
+            }
+        });
+
+        return firstFilteredIssue;
+    };
 }
 
 module.exports = IssueContent;
