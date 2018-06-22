@@ -1,4 +1,5 @@
-let ScrollTo = require('../scroll-to');
+let FilteredIssueSection = require('../task-results/filtered-issue-section');
+let SummaryStats = require('../task-results/summary-stats');
 
 class TaskResults {
     /**
@@ -6,31 +7,45 @@ class TaskResults {
      */
     constructor (document) {
         this.document = document;
+
+        /**
+         * @type {SummaryStats[]}
+         */
+        this.summaryStats = [];
+
+        /**
+         * @type {FilteredIssueSection[]}
+         */
+        this.filteredIssueSections = [];
+
+        [].forEach.call(this.document.querySelectorAll('.summary-stats'), (summaryStatsElement) => {
+            this.summaryStats.push(new SummaryStats(summaryStatsElement));
+        });
+
+        [].forEach.call(this.document.querySelectorAll('[data-filter]'), (filteredIssueSectionElement) => {
+            this.filteredIssueSections.push(new FilteredIssueSection(filteredIssueSectionElement));
+        });
     }
 
     init () {
-        [].forEach.call(this.document.querySelectorAll('.summary-stats a'), (anchorElement) => {
-            anchorElement.addEventListener('click', this._summaryStatsAnchorClickEventListener.bind(this));
+        this.summaryStats.forEach((summaryStats) => {
+            summaryStats.init();
+        });
+
+        this.filteredIssueSections.forEach((filteredIssueSection) => {
+            filteredIssueSection.element.addEventListener(
+                FilteredIssueSection.getIssueCountChangedEventName(),
+                this._filteredIssueSectionIssueCountChangedEventListener.bind(this)
+            );
+
+            filteredIssueSection.init();
         });
     };
 
-    _summaryStatsAnchorClickEventListener (event) {
-        event.preventDefault();
-
-        let anchorElement = null;
-
-        event.path.forEach(function (pathElement) {
-            if (!anchorElement && pathElement.nodeName === 'A') {
-                anchorElement = pathElement;
-            }
+    _filteredIssueSectionIssueCountChangedEventListener (event) {
+        this.summaryStats.forEach((summaryStats) => {
+            summaryStats.setIssueCount(event.detail['issue-type'], event.detail.count);
         });
-
-        let targetId = anchorElement.getAttribute('href').replace('#', '');
-        let target = this.document.getElementById(targetId);
-
-        if (target) {
-            ScrollTo.scrollTo(target, -50);
-        }
     };
 }
 

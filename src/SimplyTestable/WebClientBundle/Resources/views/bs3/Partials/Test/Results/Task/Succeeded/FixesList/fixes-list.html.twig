@@ -1,9 +1,9 @@
 {% set fix_count = distinct_fixes|length %}
 
-<div class="row issue-list  {{ [task_type_key, 'issue-list']|join('-') }} fixes-list {{ [task_type_key, 'fixes-list']|join('-') }}" id="fixes">
+<div class="row issue-list {{ [task_type_key, 'issue-list']|join('-') }} fixes-list {{ [task_type_key, 'fixes-list']|join('-') }}" id="fixes">
     <div class="col-sm-12">
         <h2 data-section="fixes-list">
-            Fixes <span class="badge alert-fixes">{{ fix_count }}</span>
+            Fixes <span class="badge alert-fixes issue-count">{{ fix_count }}</span>
             {% if fix_count > 1 %}
                 <span  class="collapse-control link" data-toggle="collapse" data-target="#fixes-list-content"></span>
             {% endif %}
