@@ -123,3 +123,6 @@ services:
             requiredArgs:
               - listId
               - email
+
+  test.logger:
+    alias: Psr\Log\LoggerInterface
