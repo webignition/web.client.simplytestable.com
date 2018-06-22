@@ -6,22 +6,6 @@
     stripe_name: 'number'
 }) only %}
 
-
-{#<div class="form-group">#}
-    {#<div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container"></div>#}
-
-    {#<label for="inputNumber" class="{{ label_width_class }} control-label">Number</label>#}
-
-    {#<div class="{{ full_field_width_class }} field">#}
-        {#<input type="text"#}
-               {#class="form-control"#}
-               {#id="inputNumber"#}
-               {#placeholder="15 or 16 digits across the front"#}
-               {#data-stripe="number">#}
-    {#</div>#}
-{#</div>#}
-
-
 {% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/form-group.html.twig' with default_form_group_parameters|merge({
     form_group_class: 'expiry-date',
     field_id: 'inputExpiryMonth|inputExpiryYear',
@@ -36,44 +20,6 @@
     }
 }) only %}
 
-
-{#<div class="form-group expiry-date">#}
-    {#<div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container"></div>#}
-
-    {#<label for="inputExpiryMonth" class="{{ label_width_class }} control-label">Expiry date</label>#}
-
-    {#<div class="col-lg-9 field">#}
-        {#<div class="row">#}
-            {#<div class="col-lg-4 col-md-3 col-sm-2 col-xs-6 select-col">#}
-                {#<select class="form-control" id="inputExpiryMonth" data-stripe="exp_month">#}
-                    {#<option value="">Month</option>#}
-                    {#<option value="01">January</option>#}
-                    {#<option value="02">February</option>#}
-                    {#<option value="03">March</option>#}
-                    {#<option value="04">April</option>#}
-                    {#<option value="05">May</option>#}
-                    {#<option value="06">June</option>#}
-                    {#<option value="07">July</option>#}
-                    {#<option value="08">August</option>#}
-                    {#<option value="09">September</option>#}
-                    {#<option value="10">October</option>#}
-                    {#<option value="11">November</option>#}
-                    {#<option value="12">December</option>#}
-                {#</select>#}
-            {#</div>#}
-            {#<div class="col-lg-3 col-md-3 col-sm-2 col-xs-4 select-col">#}
-                {#<select class="form-control" id="inputExpiryYear" data-stripe="exp_year">#}
-                    {#<option value="">Year</option>#}
-                    {#{% for year in expiry_year_start..expiry_year_end %}#}
-                        {#<option>{{ year }}</option>#}
-                    {#{% endfor %}#}
-                {#</select>#}
-            {#</div>#}
-        {#</div>#}
-    {#</div>#}
-{#</div>#}
-
-
 {% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/form-group.html.twig' with default_form_group_parameters|merge({
     form_group_class: 'cvc-form-group',
     field_id: 'inputCVC',
@@ -86,32 +32,6 @@
     post_field_content: '<span class="help-block hidden-xs">Usually 3 digits on the back</span>',
     placeholder: null
 }) only %}
-
-
-
-{#<div class="form-group cvc-form-group">#}
-    {#<div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container">#}
-        {#{% if (user_summary.stripeCustomer.hasActiveCard and user_summary.stripeCustomer.activeCard.isPassedCvcCheck == false) or (user_account_card_exception_param  is defined and user_account_card_exception_param  == 'cvc') %}#}
-            {#{% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {#}
-                {#type: 'error',#}
-                {#view: '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/Alert/Content/cvc-unverified.html.twig'#}
-            {#} only %}#}
-        {#{% endif %}#}
-    {#</div>#}
-
-    {#<label for="inputCVC" class="{{ label_width_class }} control-label">CVC <span class="help-block hidden-sm hidden-md hidden-lg">usually 3 digits on the back</span></label>#}
-
-    {#<div class="col-lg-2 col-md-2 col-sm-2 col-xs-3 field">#}
-        {#<input type="text"#}
-               {#class="form-control"#}
-               {#id="inputCVC"#}
-               {#data-stripe="cvc"#}
-               {#maxlength="3">#}
-
-    {#</div>#}
-
-    {#<span class="help-block hidden-xs">Usually 3 digits on the back</span>#}
-{#</div>#}
 
 <div class="{{ intro_width_class }} intro">
     <span class="collapse-control collapsed link" href="#" data-toggle="collapse" data-target="#cvc-info">
@@ -126,7 +46,7 @@
         <p>
             It's commonly a 3-digit code on the back of your card:
         </p>
-        <img src="/bundles/simplytestablewebclient/images/CVC2SampleVisaNew.png">
+        <img src="/images/CVC2SampleVisaNew.png">
         <a href="http://en.wikipedia.org/wiki/File:CVC2SampleVisaNew.png">Image credit</a>
     </div>
 </div>
