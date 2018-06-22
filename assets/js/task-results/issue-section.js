@@ -33,23 +33,27 @@ class IssueSection {
 
     init () {
         if (this.isFilterable()) {
-            this.issueList.addHashIdAttributeToIssues();
-            this.issueList.filter(window.location.hash.replace('#', ''));
+            let filter = window.location.hash.replace('#', '').trim()
 
-            let issueCount = parseInt(this.issueCountElement.innerText.trim(), 10);
-            let filteredIssueCount = this.issueList.count();
+            if (filter) {
+                this.issueList.addHashIdAttributeToIssues();
+                this.issueList.filter(window.location.hash.replace('#', ''));
 
-            if (issueCount !== filteredIssueCount) {
-                this.element.classList.add('filtered');
-                this.renderIssueCount(filteredIssueCount);
-                this.element.dispatchEvent(new CustomEvent(IssueSection.getIssueCountChangedEventName(), {
-                    detail: {
-                        'issue-type': this.issueType,
-                        count: filteredIssueCount
-                    }
-                }));
-            } else {
-                this.element.classList.remove('filtered');
+                let issueCount = parseInt(this.issueCountElement.innerText.trim(), 10);
+                let filteredIssueCount = this.issueList.count();
+
+                if (issueCount !== filteredIssueCount) {
+                    this.element.classList.add('filtered');
+                    this.renderIssueCount(filteredIssueCount);
+                    this.element.dispatchEvent(new CustomEvent(IssueSection.getIssueCountChangedEventName(), {
+                        detail: {
+                            'issue-type': this.issueType,
+                            count: filteredIssueCount
+                        }
+                    }));
+                } else {
+                    this.element.classList.remove('filtered');
+                }
             }
         }
     };
