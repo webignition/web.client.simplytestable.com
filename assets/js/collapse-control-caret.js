@@ -8,6 +8,10 @@ module.exports = function (controls) {
         const controlIcon = document.createElement('i');
         controlIcon.classList.add(controlIconClass);
 
+        if (control.hasAttribute('data-icon-additional-classes')) {
+            controlIcon.classList.add(control.getAttribute('data-icon-additional-classes'));
+        }
+
         if (control.classList.contains(controlCollapsedClass)) {
             controlIcon.classList.add(caretDownClass);
         } else {
